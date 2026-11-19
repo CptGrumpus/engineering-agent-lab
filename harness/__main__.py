@@ -5,6 +5,7 @@
     python -m harness report   runs/<run_id>           # requirements report
     python -m harness pipeline cases/msd_step.toml     # run + verify + report
     python -m harness rerun    runs/<run_id>           # reproduce from saved inputs
+    python -m harness compare  runs/<run_id> runs/<other_run_id>   # cross-tool check
 
 Exit code: 0 when the step completed and every check passed; 1 when the step
 completed but something failed (simulation, check, or reproducibility);
@@ -28,8 +29,12 @@ def main(argv: list[str] | None = None) -> int:
         sp.add_argument(target)
         if target == "case":
             sp.add_argument("--runs-root", default="runs")
+    sp = sub.add_parser("compare")
+    sp.add_argument("run_dir")
+    sp.add_argument("against_dir")
     args = ap.parse_args(argv)
 
+    from harness.compare import compare_runs
     from harness.report import build_report
     from harness.rerun import rerun
     from harness.run import run_case
@@ -57,12 +62,19 @@ def main(argv: list[str] | None = None) -> int:
             print(f"VERIFICATION {summary['status']}")
             print(f"REPORT {out.as_posix()}")
             return 0 if summary["status"] == "PASS" else 1
+        if args.cmd == "compare":
+            result = compare_runs(args.run_dir, args.against_dir)
+            for pt in result["points"]:
+                print(f"{pt['label']}: {pt['status']}  max_rel_diff "
+                      f"{pt.get('max_rel_diff', float('nan')):.3e}  tol {result['tolerance']:.0e}")
+            print(f"CROSS_CHECK {result['status']}")
+            return 0 if result["status"] == "PASS" else 1
         if args.cmd == "rerun":
             new_dir, result = rerun(args.run_dir)
             print(f"RUN_DIR {new_dir.as_posix()}")
             print(f"REPRODUCIBILITY {result['status']}")
             return 0 if result["status"] == "PASS" else 1
-    except (CaseError, FileNotFoundError) as e:
+    except (CaseError, FileNotFoundError, ValueError) as e:
         print(f"ERROR {e}", file=sys.stderr)
         return 2
     return 2

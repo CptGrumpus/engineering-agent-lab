@@ -2,27 +2,15 @@
 
 from __future__ import annotations
 
+import shutil
 import traceback
 from datetime import datetime, timezone
 from pathlib import Path
 
+from harness.backends import REPO, get_backend, sha256_file
 from harness.case import expand_points, load_case
 from harness.metrics import step_metrics
 from harness.runio import close_logger, environment, get_logger, write_json, write_timeseries
-from models.msd import MSDParameters, simulate
-
-
-def solve_point(params: dict, numerics: dict, tolerance_scale: float = 1.0) -> tuple[MSDParameters, dict]:
-    p = MSDParameters.from_dict(params)
-    result = simulate(
-        p,
-        t_end_s=float(numerics["t_end_s"]),
-        n_points=int(numerics["n_points"]),
-        method=str(numerics["method"]),
-        rtol=float(numerics["rtol"]) * tolerance_scale,
-        atol=float(numerics["atol"]) * tolerance_scale,
-    )
-    return p, result
 
 
 def _new_run_dir(runs_root: Path, case_name: str) -> Path:
@@ -35,26 +23,46 @@ def _new_run_dir(runs_root: Path, case_name: str) -> Path:
     return run_dir
 
 
-def run_case(case_path: str | Path, runs_root: str | Path = "runs", rerun_of: str | None = None) -> Path:
+def run_case(case_path: str | Path, runs_root: str | Path = "runs", rerun_of: str | None = None,
+             model_source_dir: Path | None = None) -> Path:
     """Run every point of a case. Returns the new run directory.
+
+    model_source_dir: read model sources from here instead of the repo (used by
+    rerun so a reproduction uses the exact saved model files).
 
     Failed points are kept (status 'failed' with the error recorded) rather than
     aborting the run, so failures remain available as diagnostic evidence.
     """
     case, raw, digest = load_case(case_path)
     run_dir = _new_run_dir(Path(runs_root), case["case"]["name"])
-    (run_dir / "inputs").mkdir(parents=True)
-    (run_dir / "inputs" / "case.toml").write_bytes(raw)
+    inputs = run_dir / "inputs"
+    inputs.mkdir(parents=True)
+    (inputs / "case.toml").write_bytes(raw)
 
     log = get_logger(run_dir, "run")
     started = datetime.now(timezone.utc)
     log.info("run %s: case %s (sha256 %s)", run_dir.name, case_path, digest[:12])
 
+    backend = get_backend(case["case"]["model"])
+    model_sources = {}
+    for rel in backend.sources:
+        src = REPO / rel
+        if model_source_dir and (Path(model_source_dir) / Path(rel).name).exists():
+            src = Path(model_source_dir) / Path(rel).name
+        elif model_source_dir:
+            log.warning("no saved copy of %s in %s; using repository version", rel,
+                        model_source_dir)
+        dst = inputs / Path(rel).name
+        shutil.copyfile(src, dst)
+        model_sources[rel] = sha256_file(dst)
+
     manifest = {
         "run_id": run_dir.name,
         "case_name": case["case"]["name"],
+        "model": case["case"]["model"],
         "case_source": Path(case_path).as_posix(),
         "case_sha256": digest,
+        "model_sources_sha256": model_sources,
         "rerun_of": rerun_of,
         "started_utc": started.isoformat(timespec="seconds"),
         "environment": environment(),
@@ -62,12 +70,24 @@ def run_case(case_path: str | Path, runs_root: str | Path = "runs", rerun_of: st
         "points": [],
     }
 
+    try:
+        backend.prepare(source_dir=inputs if backend.sources else None,
+                        log_dir=run_dir / "build")
+        manifest["environment"]["tools"] = backend.tool_versions()
+        prepared = True
+    except Exception as e:
+        log.error("backend %s: prepare failed\n%s", backend.name, traceback.format_exc())
+        manifest["prepare_error"] = f"{type(e).__name__}: {e}"
+        prepared = False
+
     for label, params in expand_points(case):
         pdir = run_dir / "points" / label
         pdir.mkdir(parents=True)
         entry = {"label": label, "parameters": params, "status": "failed"}
         try:
-            p, res = solve_point(params, case["numerics"])
+            if not prepared:
+                raise RuntimeError("backend preparation failed; see prepare_error")
+            p, res = backend.solve(params, case["numerics"])
             entry["derived"] = p.derived()
             entry["solver"] = {k: res[k] for k in ("success", "message", "nfev")}
             if not res["success"]:
@@ -79,14 +99,14 @@ def run_case(case_path: str | Path, runs_root: str | Path = "runs", rerun_of: st
                 )
                 entry["status"] = "completed"
                 m = entry["metrics"]
-                log.info("%s: overshoot %.3f %%, settling %.4f s, deflection %.4f mm (nfev %d)",
-                         label, m["overshoot_pct"], m["settling_time_s"], m["static_deflection_mm"],
-                         res["nfev"])
+                log.info("%s: overshoot %.3f %%, settling %.4f s, deflection %.4f mm",
+                         label, m["overshoot_pct"], m["settling_time_s"], m["static_deflection_mm"])
         except Exception as e:  # keep going; the failure is evidence
             entry["error"] = f"{type(e).__name__}: {e}"
             log.error("%s: exception\n%s", label, traceback.format_exc())
         write_json(pdir / "point.json", entry)
         manifest["points"].append(entry)
+    backend.close()
 
     n_ok = sum(pt["status"] == "completed" for pt in manifest["points"])
     manifest["status"] = "completed" if n_ok == len(manifest["points"]) else (

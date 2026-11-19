@@ -1,0 +1,80 @@
+# Same physical case as msd_step.toml, built from Modelica Standard Library
+# components (Mass, Spring, Damper, Force) and solved by OpenModelica.
+#
+# Requirements and tolerances were fixed BEFORE the first run; change them only
+# with a written reason in the git commit message.
+
+[case]
+name = "msd_step_modelica"
+model = "msd_modelica"
+description = "1-DOF mass-spring-damper subjected to a 10 N step force, modelled with Modelica Standard Library translational components and solved by OpenModelica (DASSL); damping-ratio sweep against the same requirements as the SciPy case, plus a cross-tool comparison."
+assumptions = [
+  "Single translational degree of freedom; no gravity or preload.",
+  "Linear spring and viscous damper, constant over the full stroke.",
+  "Constant force applied at t = 0 from rest (x = 0, v = 0).",
+  "Rigid mass (MSL Mass with L = 0); no compliance or friction elsewhere in the load path.",
+]
+limitations = [
+  "Synthetic parameters; not calibrated to any physical part.",
+  "Checks establish numerical verification only. No physical validation data exists for this case.",
+]
+
+[parameters]
+mass_kg = 1.0
+stiffness_N_per_m = 1000.0
+damping_ratio = 0.5
+step_force_N = 10.0
+
+[sweep]
+parameter = "damping_ratio"
+values = [0.1, 0.3, 0.5, 0.7, 1.0, 2.0]
+
+[numerics]
+method = "dassl"      # OpenModelica default variable-order BDF solver
+rtol = 1e-8           # passed as the simulation 'tolerance'; OM applies it as relative
+                      # and nominal-scaled absolute tolerance (nominal of x is 1 m)
+atol = 1e-8           # recorded for completeness; not separately settable for dassl here
+t_end_s = 3.0
+n_points = 30001
+
+[metrics]
+settling_band_fraction = 0.02
+
+[verification]
+# Looser than the SciPy case: DASSL's absolute tolerance scales with the 1 m
+# nominal, i.e. ~1e-8 m = 1e-6 of the 10 mm deflection per step, accumulated over
+# ~30 periods. 1e-4 of F/k is 1 micrometre, far below engineering significance.
+reference_max_rel_error = 1e-4
+overshoot_abs_tol_pct = 0.05
+settling_time_abs_tol_s = 1e-3
+steady_state_rel_tol = 1e-3
+energy_residual_rel_tol = 1e-4
+convergence_max_rel_change = 1e-4
+
+[cross_check]
+against_case = "msd_step"   # SciPy implementation of the same physics
+max_rel_diff = 1e-4         # max |x_modelica - x_scipy| / (F/k)
+
+[[requirements]]
+id = "REQ-001"
+text = "Peak overshoot of the step response shall not exceed 20 %."
+metric = "overshoot_pct"
+operator = "<="
+limit = 20.0
+units = "%"
+
+[[requirements]]
+id = "REQ-002"
+text = "The response shall settle within +/-2 % of its final value in 0.5 s or less."
+metric = "settling_time_s"
+operator = "<="
+limit = 0.5
+units = "s"
+
+[[requirements]]
+id = "REQ-003"
+text = "Static deflection under the 10 N load shall not exceed 12 mm."
+metric = "static_deflection_mm"
+operator = "<="
+limit = 12.0
+units = "mm"

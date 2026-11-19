@@ -23,7 +23,7 @@ from scipy.integrate import trapezoid
 from harness.case import load_case
 from harness.metrics import step_metrics
 from harness.plotting import plot_response
-from harness.run import solve_point
+from harness.backends import get_backend, sha256_file
 from harness.runio import close_logger, get_logger, read_json, read_timeseries, write_json
 from validation import msd_analytical as ref
 
@@ -40,7 +40,7 @@ def _check(cid: str, description: str, value: float, tolerance: float) -> dict:
     }
 
 
-def verify_point(case: dict, point: dict, pdir: Path) -> list[dict]:
+def verify_point(case: dict, point: dict, pdir: Path, backend) -> list[dict]:
     tol = case["verification"]
     band = float(case["metrics"]["settling_band_fraction"])
     t, x, v = read_timeseries(pdir / "timeseries.csv")
@@ -84,7 +84,7 @@ def verify_point(case: dict, point: dict, pdir: Path) -> list[dict]:
                          abs(work_in - stored - dissipated) / abs(work_in),
                          tol["energy_residual_rel_tol"]))
 
-    _, tight = solve_point(params, case["numerics"], tolerance_scale=1e-2)
+    _, tight = backend.solve(params, case["numerics"], tolerance_scale=1e-2)
     if tight["success"]:
         change = np.max(np.abs(tight["x"] - x)) / abs(xs)
     else:
@@ -112,6 +112,9 @@ def verify_run(run_dir: str | Path) -> dict:
     manifest = read_json(run_dir / "manifest.json")
     if digest != manifest["case_sha256"]:
         raise RuntimeError("inputs/case.toml no longer matches the hash recorded in manifest.json")
+    for rel, digest_src in manifest.get("model_sources_sha256", {}).items():
+        if sha256_file(run_dir / "inputs" / Path(rel).name) != digest_src:
+            raise RuntimeError(f"inputs/{Path(rel).name} no longer matches manifest.json")
 
     log = get_logger(run_dir, "verify")
     summary = {
@@ -120,15 +123,26 @@ def verify_run(run_dir: str | Path) -> dict:
         "tolerances": case["verification"],
         "points": [],
     }
+    backend = get_backend(case["case"]["model"])
+    prepare_error = None
+    if any(p["status"] == "completed" for p in manifest["points"]):
+        try:
+            backend.prepare(source_dir=run_dir / "inputs" if backend.sources else None)
+        except Exception as e:
+            prepare_error = f"backend prepare failed: {type(e).__name__}: {e}"
+            log.error("%s", prepare_error)
     for point in manifest["points"]:
         pdir = run_dir / "points" / point["label"]
         if point["status"] != "completed":
             entry = {"label": point["label"], "status": "NOT_RUN",
                      "reason": f"simulation status '{point['status']}'", "checks": []}
             log.warning("%s: not verified (%s)", point["label"], entry["reason"])
+        elif prepare_error:
+            entry = {"label": point["label"], "status": "ERROR", "reason": prepare_error,
+                     "checks": []}
         else:
             try:
-                checks = verify_point(case, point, pdir)
+                checks = verify_point(case, point, pdir, backend)
                 status = "PASS" if all(c["status"] == "PASS" for c in checks) else "FAIL"
                 entry = {"label": point["label"], "status": status, "checks": checks}
                 for c in checks:
@@ -141,6 +155,7 @@ def verify_run(run_dir: str | Path) -> dict:
         write_json(pdir / "checks.json", entry)
         summary["points"].append(entry)
 
+    backend.close()
     statuses = {p["status"] for p in summary["points"]}
     summary["status"] = "PASS" if statuses == {"PASS"} else "FAIL"
     write_json(run_dir / "verification.json", summary)

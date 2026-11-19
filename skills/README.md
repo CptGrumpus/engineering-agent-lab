@@ -13,7 +13,7 @@ automatically. This file tracks the skill plan and the standard each skill must 
 | Verification and evidence | **Built** | [verify-against-reference](../.claude/skills/verify-against-reference/SKILL.md) |
 | Engineering review report | **Built** | [requirements-report](../.claude/skills/requirements-report/SKILL.md) |
 
-All built skills support model `msd` (Python + SciPy) only.
+The built skills support two models: `msd` (Python + SciPy) and `msd_modelica` (OpenModelica + MSL). `verify-against-reference` also covers the cross-tool comparison between them.
 
 ## Requirements and assumptions
 

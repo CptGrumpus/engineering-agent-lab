@@ -44,6 +44,22 @@ Tolerances come from `[verification]` in the run's saved `inputs/case.toml`.
    - `energy_balance` fails: the output grid is too coarse for the trapezoid integral, or the
      model dissipates energy wrongly.
 
+## Cross-tool check
+
+When a case file has a `[cross_check]` section (for example `cases/msd_step_modelica.toml`
+checked against case `msd_step`), compare it with a completed run of the other case:
+
+1. Find a run of the `against_case` with the same sweep. If there isn't one, run that case with
+   the `run-case` skill.
+2. Run `.venv/Scripts/python.exe -m harness compare runs/<this_run> runs/<other_run>`.
+   This writes `cross_check_<other_run>.json` into `<this_run>`.
+3. Run `.venv/Scripts/python.exe -m harness report runs/<this_run>` again so the report
+   includes the cross-check table.
+
+The two tools agreeing does not replace the analytical check. It adds evidence that neither
+implementation has a set-up error, such as a sign, units, or parameter-mapping slip, that the
+other lacks.
+
 ## Rules
 
 - A solver success message or a plausible plot is not verification.

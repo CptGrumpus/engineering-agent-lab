@@ -11,8 +11,22 @@ is the `verify-against-reference` skill.
 
 ## Supported
 
-- Model `msd` (1-DOF mass-spring-damper step response, `models/msd.py`) via SciPy `solve_ivp`.
+| `model` in case file | Tool | Source |
+|---|---|---|
+| `msd` | SciPy `solve_ivp` | `models/msd.py` |
+| `msd_modelica` | OpenModelica 1.26.3 (omc, DASSL) + Modelica Standard Library 4.1.0 | `models/modelica/EngLab.mo` (`EngLab.MSDStep`) |
+
 - Python 3.14 in `.venv` (numpy, scipy, matplotlib pinned in `requirements-lock.txt`).
+- For `msd_modelica`, the harness finds `omc` via `OPENMODELICAHOME` or
+  `C:/Program Files/OpenModelica*/bin`. It compiles the model once per run, then runs
+  the executable for each point. Model parameters are passed with `-override`; stop
+  time, step size, tolerance, and solver are passed as their own flags
+  (`-stopTime`, `-stepSize`, `-tolerance`, `-s`), because OpenModelica 1.26 silently
+  ignores them inside `-override`. The harness rejects any output that is not on the
+  requested time grid.
+- If MSL is missing, omc's build log (`<run_dir>/build/omc_build.log`) will say
+  `Failed to load package Modelica`. Install it with an omc script containing
+  `installPackage(Modelica);`, and tell the user.
 
 For any other model, stop and tell the user it is not supported yet. Do not
 improvise a new model inside this skill.
@@ -45,7 +59,12 @@ Run every command from the repository root.
 ## Artifacts
 
 `runs/<run_id>/`: `inputs/case.toml`, `manifest.json`, `run.log`,
-`points/<label>/{timeseries.csv, point.json}`. See `runs/README.md`.
+`points/<label>/{timeseries.csv, point.json}`; for Modelica, also `inputs/EngLab.mo` and
+`build/{build.mos, omc_build.log}`. See `runs/README.md`.
+
+If a point fails with `output grid mismatch`, the executable ignored the requested time
+settings. Check the flags in `harness/backends.py` against `<exe> -help`. Do not relax
+the grid check.
 
 ## Failure handling
 

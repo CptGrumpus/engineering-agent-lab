@@ -1,0 +1,54 @@
+{
+  "label": "p05_damping_ratio-2",
+  "status": "PASS",
+  "checks": [
+    {
+      "id": "reference_agreement",
+      "description": "max |x_num - x_ref| / (F/k) over the full time history",
+      "value": 3.9199985766083523e-07,
+      "tolerance": 0.0001,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "overshoot_reference",
+      "description": "|overshoot_num - overshoot_closed_form| in percentage points",
+      "value": 4.554447956840238e-07,
+      "tolerance": 0.05,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "settling_reference",
+      "description": "|settling_num - settling of analytical curve| in s",
+      "value": 5.551115123125783e-17,
+      "tolerance": 0.001,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "steady_state",
+      "description": "|x(t_end) - F/k| / (F/k)",
+      "value": 1.7037340288572622e-09,
+      "tolerance": 0.001,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "energy_balance",
+      "description": "|W_in - (KE + PE + E_dissipated)| / W_in",
+      "value": 6.656181518222569e-08,
+      "tolerance": 0.0001,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "solver_convergence",
+      "description": "max |x(rtol, atol) - x(rtol/100, atol/100)| / (F/k)",
+      "value": 3.9371085584424814e-07,
+      "tolerance": 0.0001,
+      "comparison": "<=",
+      "status": "PASS"
+    }
+  ]
+}

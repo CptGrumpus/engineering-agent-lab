@@ -14,6 +14,8 @@ Each execution writes `runs/<YYYYmmdd-HHMMSS>_<case>/`:
 | `points/<label>/response.png` | Numerical vs reference overlay and error plot (after verify) |
 | `verification.json` | Check summary across points |
 | `report.md`, `report.json` | Requirement -> result -> check -> evidence traceability |
+| `inputs/EngLab.mo`, `build/` | Modelica runs only: saved model source (hash in manifest), omc build script and log |
+| `cross_check_<run_id>.json` | Cross-tool comparison against another run (after `compare`) |
 | `reproducibility.json` | Only in rerun directories: comparison against the original run |
 
 Run directories are git-ignored. Commit a curated example with `git add -f`.

@@ -30,8 +30,15 @@ def load_case(path: str | Path) -> tuple[dict, bytes, str]:
     if missing:
         raise CaseError(f"{path}: missing sections {missing}")
 
-    if case["case"].get("model") != "msd":
-        raise CaseError(f"{path}: unsupported model {case['case'].get('model')!r} (supported: 'msd')")
+    from harness.backends import BACKENDS
+
+    if case["case"].get("model") not in BACKENDS:
+        raise CaseError(f"{path}: unsupported model {case['case'].get('model')!r} "
+                        f"(supported: {sorted(BACKENDS)})")
+
+    xc = case.get("cross_check")
+    if xc is not None and not {"against_case", "max_rel_diff"} <= set(xc):
+        raise CaseError(f"{path}: [cross_check] needs 'against_case' and 'max_rel_diff'")
 
     ids = set()
     for r in case["requirements"]:

@@ -26,19 +26,26 @@ The first milestone is one reproducible engineering example with independent che
 
 Working baseline: **Python + SciPy, mass-spring-damper step response** ([cases/msd_step.toml](cases/msd_step.toml)). A damping-ratio sweep is checked against overshoot, settling-time, and deflection requirements. Every point is verified against a closed-form solution, an energy balance, a steady-state check, and a solver-convergence check. Reruns from the saved inputs are bit-identical.
 
-Environment: Python 3.14 in `.venv`; package versions pinned in [requirements-lock.txt](requirements-lock.txt).
+The same case is also built from **Modelica Standard Library components** ([models/modelica/EngLab.mo](models/modelica/EngLab.mo), [cases/msd_step_modelica.toml](cases/msd_step_modelica.toml)) and solved by OpenModelica. It passes the same checks and agrees with the SciPy implementation to within 2.5e-6 of the static deflection (cross-tool check).
+
+Environment: Python 3.14 in `.venv`, with package versions pinned in [requirements-lock.txt](requirements-lock.txt); OpenModelica 1.26.3 with Modelica Standard Library 4.1.0.
 
 ```powershell
 # one-time setup
 py -3.14 -m venv .venv   # or the full path to python 3.14
 .venv\Scripts\python.exe -m pip install -r requirements-lock.txt
+winget install --id OpenModelica.OpenModelica.Official        # optional: Modelica path
+# then run an omc script containing: installPackage(Modelica);
 
-.venv\Scripts\python.exe -m harness pipeline cases\msd_step.toml   # run + verify + report
-.venv\Scripts\python.exe -m harness rerun runs\<run_id>            # reproduce
-.venv\Scripts\python.exe -m pytest -q                              # tests
+.venv\Scripts\python.exe -m harness pipeline cases\msd_step.toml            # run + verify + report
+.venv\Scripts\python.exe -m harness pipeline cases\msd_step_modelica.toml
+.venv\Scripts\python.exe -m harness compare runs\<modelica_run> runs\<scipy_run>
+.venv\Scripts\python.exe -m harness report runs\<modelica_run>              # adds cross-check table
+.venv\Scripts\python.exe -m harness rerun runs\<run_id>                     # reproduce
+.venv\Scripts\python.exe -m pytest -q        # tests (Modelica tests skip if omc is absent)
 ```
 
-Not yet done: OpenModelica cross-check, structural (FreeCAD/CalculiX) path, any physical validation data.
+Not yet done: structural (FreeCAD/CalculiX) path, a less trivial systems model (e.g. quarter-car or thermal network), any physical validation data.
 
 ## First implementation milestone
 

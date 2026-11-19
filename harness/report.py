@@ -73,6 +73,9 @@ def build_report(run_dir: str | Path) -> Path:
     L.append(f"- **Environment:** Python {env['python']}, "
              + ", ".join(f"{k} {v}" for k, v in env["packages"].items())
              + f"; {env['platform']}")
+    tools = env.get("tools") or {}
+    if tools:
+        L.append("- **Tools:** " + "; ".join(f"{k} {v}" for k, v in tools.items()))
     L.append(f"- **Code version:** git `{git.get('commit') or 'none'}`"
              + (" (uncommitted changes present)" if git.get("dirty") else ""))
     L.append(f"- **Simulation status:** {manifest['status']}")
@@ -148,6 +151,23 @@ def build_report(run_dir: str | Path) -> Path:
             L.append(f"![{pt['label']} response]({rel}/response.png)")
         else:
             L.append(f"No verification checks recorded (status: {pt['verification_status']}).")
+
+    for xc_path in sorted(run_dir.glob("cross_check_*.json")):
+        xc = read_json(xc_path)
+        L.append("")
+        L.append(f"## Cross-tool check against `{xc['against']}` ({xc.get('against_model')})")
+        L.append("")
+        L.append(f"Status: **{xc['status']}** (tolerance: max |x - x_other| / (F/k) <= "
+                 f"{xc['tolerance']:g}). Evidence: [{xc_path.name}]({xc_path.name})")
+        L.append("")
+        L.append("| Point | Max rel. diff | Overshoot diff (pct pts) | Settling diff (s) | Status |")
+        L.append("|---|---|---|---|---|")
+        for pt in xc["points"]:
+            m = pt.get("metrics", {})
+            L.append(f"| {pt['label']} | {pt.get('max_rel_diff', float('nan')):.2e} | "
+                     f"{m.get('overshoot_pct', {}).get('diff', float('nan')):.2e} | "
+                     f"{m.get('settling_time_s', {}).get('diff', float('nan')):.2e} | "
+                     f"{pt['status']} |")
 
     L.append("")
     L.append("## Limitations")

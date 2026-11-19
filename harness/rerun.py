@@ -18,7 +18,8 @@ def rerun(run_dir: str | Path, rel_tol: float = 1e-12) -> tuple[Path, dict]:
     """
     old = Path(run_dir)
     old_manifest = read_json(old / "manifest.json")
-    new = run_case(old / "inputs" / "case.toml", runs_root=old.parent, rerun_of=old.name)
+    new = run_case(old / "inputs" / "case.toml", runs_root=old.parent, rerun_of=old.name,
+                   model_source_dir=old / "inputs")
     new_manifest = read_json(new / "manifest.json")
 
     env_diff = {
