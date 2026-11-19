@@ -14,9 +14,12 @@ from pathlib import Path
 import numpy as np
 
 from harness.case import load_case
-from harness.runio import read_json, read_timeseries, write_json
+from harness.registry import study_for
+from harness.runio import read_json, read_series, write_json
 
-METRIC_KEYS = ("overshoot_pct", "settling_time_s", "static_deflection_mm")
+
+def _model_of(manifest: dict, rdir: Path) -> str:  # older manifests did not record the model
+    return manifest.get("model") or load_case(rdir / "inputs" / "case.toml")[0]["case"]["model"]
 
 
 def compare_runs(run_dir: str | Path, against_dir: str | Path) -> dict:
@@ -32,6 +35,10 @@ def compare_runs(run_dir: str | Path, against_dir: str | Path) -> dict:
     if mb["case_name"] != xc["against_case"]:
         raise ValueError(f"[cross_check] expects case '{xc['against_case']}', "
                          f"but {against_dir.name} is case '{mb['case_name']}'")
+    model_a, model_b = _model_of(ma, run_dir), _model_of(mb, against_dir)
+    study = study_for(model_a)
+    if study_for(model_b) is not study:
+        raise ValueError(f"models {model_a} and {model_b} belong to different studies")
     b_points = {p["label"]: p for p in mb["points"]}
 
     points = []
@@ -45,27 +52,27 @@ def compare_runs(run_dir: str | Path, against_dir: str | Path) -> dict:
         elif pa["status"] != "completed" or pb["status"] != "completed":
             entry.update(status="NOT_RUN", reason="a simulation did not complete")
         else:
-            ta, xa, _ = read_timeseries(run_dir / "points" / pa["label"] / "timeseries.csv")
-            tb, xb, _ = read_timeseries(against_dir / "points" / pb["label"] / "timeseries.csv")
-            xs = pa["parameters"]["step_force_N"] / pa["parameters"]["stiffness_N_per_m"]
-            if ta.shape != tb.shape or not np.allclose(ta, tb, rtol=0, atol=1e-12):
-                xb = np.interp(ta, tb, xb)
+            sa = read_series(run_dir / "points" / pa["label"] / study.series_file)
+            sb = read_series(against_dir / "points" / pb["label"] / study.series_file)
+            ta, tb = sa.get("t_s"), sb.get("t_s")
+            if ta is not None and (ta.shape != tb.shape
+                                   or not np.allclose(ta, tb, rtol=0, atol=1e-12)):
+                sb = {k: np.interp(ta, tb, v) for k, v in sb.items()}
                 entry["note"] = "time grids differ; comparison run interpolated"
-            diff = float(np.max(np.abs(xa - xb)) / abs(xs))
+            diff = study.compare_point(case, pa["parameters"], sa, sb)
             entry.update(
                 max_rel_diff=diff, tolerance=tol, status="PASS" if diff <= tol else "FAIL",
                 metrics={k: {"run": pa["metrics"][k], "against": pb["metrics"][k],
-                             "diff": pa["metrics"][k] - pb["metrics"][k]} for k in METRIC_KEYS},
+                             "diff": pa["metrics"][k] - pb["metrics"][k]}
+                         for k in pa["metrics"] if k in pb["metrics"]},
             )
         points.append(entry)
 
-    def model_of(manifest, rdir):  # older manifests did not record the model
-        return manifest.get("model") or load_case(rdir / "inputs" / "case.toml")[0]["case"]["model"]
-
     result = {
-        "run": ma["run_id"], "model": model_of(ma, run_dir),
-        "against": mb["run_id"], "against_model": model_of(mb, against_dir),
+        "run": ma["run_id"], "model": model_a,
+        "against": mb["run_id"], "against_model": model_b,
         "compared_utc": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+        "measure": study.compare_description,
         "tolerance": tol, "points": points,
         "status": "PASS" if all(p["status"] == "PASS" for p in points) else "FAIL",
     }

@@ -12,9 +12,6 @@ from pathlib import Path
 
 import numpy as np
 
-TIMESERIES_HEADER = "t_s,x_m,v_m_per_s"
-
-
 def environment() -> dict:
     pkgs = {}
     for name in ("numpy", "scipy", "matplotlib"):
@@ -87,11 +84,24 @@ def _json_default(o):
     raise TypeError(f"not JSON serializable: {type(o)}")
 
 
+def write_series(path: Path, series: dict) -> None:
+    cols = list(series)
+    np.savetxt(path, np.column_stack([np.asarray(series[c], float) for c in cols]),
+               delimiter=",", header=",".join(cols), comments="", fmt="%.15e")
+
+
+def read_series(path: Path) -> dict:
+    with open(path, encoding="utf-8") as fh:
+        cols = fh.readline().strip().split(",")
+    data = np.loadtxt(path, delimiter=",", skiprows=1, ndmin=2)
+    return {c: data[:, i] for i, c in enumerate(cols)}
+
+
+# Backward-compatible helpers for the original 3-column MSD files.
 def write_timeseries(path: Path, t, x, v) -> None:
-    np.savetxt(path, np.column_stack([t, x, v]), delimiter=",", header=TIMESERIES_HEADER,
-               comments="", fmt="%.15e")
+    write_series(path, {"t_s": t, "x_m": x, "v_m_per_s": v})
 
 
 def read_timeseries(path: Path) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
-    data = np.loadtxt(path, delimiter=",", skiprows=1)
-    return data[:, 0], data[:, 1], data[:, 2]
+    s = read_series(path)
+    return s["t_s"], s["x_m"], s["v_m_per_s"]

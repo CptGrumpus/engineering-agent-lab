@@ -7,10 +7,9 @@ import operator
 import tomllib
 from pathlib import Path
 
-from harness.metrics import METRICS
 
 OPERATORS = {"<=": operator.le, ">=": operator.ge, "<": operator.lt, ">": operator.gt}
-REQUIRED_SECTIONS = ("case", "parameters", "numerics", "metrics", "verification", "requirements")
+REQUIRED_SECTIONS = ("case", "parameters", "numerics", "verification", "requirements")
 
 
 class CaseError(ValueError):
@@ -30,11 +29,16 @@ def load_case(path: str | Path) -> tuple[dict, bytes, str]:
     if missing:
         raise CaseError(f"{path}: missing sections {missing}")
 
-    from harness.backends import BACKENDS
+    from harness.registry import models
 
-    if case["case"].get("model") not in BACKENDS:
+    table = models()
+    if case["case"].get("model") not in table:
         raise CaseError(f"{path}: unsupported model {case['case'].get('model')!r} "
-                        f"(supported: {sorted(BACKENDS)})")
+                        f"(supported: {sorted(table)})")
+    study = table[case["case"]["model"]][0]
+    missing_params = [p for p in study.param_names if p not in case["parameters"]]
+    if missing_params:
+        raise CaseError(f"{path}: [parameters] missing {missing_params}")
 
     xc = case.get("cross_check")
     if xc is not None and not {"against_case", "max_rel_diff"} <= set(xc):
@@ -50,8 +54,8 @@ def load_case(path: str | Path) -> tuple[dict, bytes, str]:
         ids.add(r["id"])
         if r["operator"] not in OPERATORS:
             raise CaseError(f"{path}: {r['id']} operator must be one of {list(OPERATORS)}")
-        if r["metric"] not in METRICS:
-            raise CaseError(f"{path}: {r['id']} metric must be one of {sorted(METRICS)}")
+        if r["metric"] not in study.metrics:
+            raise CaseError(f"{path}: {r['id']} metric must be one of {sorted(study.metrics)}")
 
     sweep = case.get("sweep")
     if sweep:

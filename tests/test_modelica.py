@@ -7,7 +7,7 @@ from pathlib import Path
 
 import pytest
 
-from harness.backends import ModelicaError, find_omc
+from harness.backend_base import ModelicaError, find_omc
 from harness.compare import compare_runs
 from harness.rerun import rerun
 from harness.run import run_case

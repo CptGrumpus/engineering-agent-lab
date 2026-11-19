@@ -41,6 +41,10 @@ def evaluate(case: dict, manifest: dict, verification: dict | None) -> dict:
     return {"points": points}
 
 
+def _fmtv(v):
+    return f"{v:.4g}" if isinstance(v, (int, float)) else str(v)
+
+
 def _fmt(v, digits=4):
     if v is None:
         return "-"
@@ -127,12 +131,12 @@ def build_report(run_dir: str | Path) -> Path:
         L.append("")
         L.append(f"### {pt['label']}")
         L.append("")
-        params = ", ".join(f"{k} = {v:g}" for k, v in pt["parameters"].items())
+        params = ", ".join(f"{k} = {_fmtv(v)}" for k, v in pt["parameters"].items())
         L.append(f"Parameters: {params}")
         if pt["derived"]:
-            d = pt["derived"]
-            L.append(f"  (derived: c = {d['damping_N_s_per_m']:.4g} N·s/m, "
-                     f"f_n = {d['natural_frequency_Hz']:.4g} Hz)")
+            derived = ", ".join(f"{k} = {_fmtv(v)}" for k, v in pt["derived"].items())
+            L.append("")
+            L.append(f"Derived: {derived}")
         L.append("")
         L.append("| Requirement | Result | Limit | Margin | Verdict | Evidence |")
         L.append("|---|---|---|---|---|---|")
@@ -147,8 +151,9 @@ def build_report(run_dir: str | Path) -> Path:
             for c in pt["checks"]:
                 L.append(f"| {c['id']} | {c['description']} | {c['value']:.2e} | "
                          f"{c['tolerance']:.0e} | {c['status']} |")
-            L.append("")
-            L.append(f"![{pt['label']} response]({rel}/response.png)")
+            for fig in sorted((run_dir / "points" / pt["label"]).glob("*.png")):
+                L.append("")
+                L.append(f"![{pt['label']} {fig.stem}]({rel}/{fig.name})")
         else:
             L.append(f"No verification checks recorded (status: {pt['verification_status']}).")
 
@@ -157,17 +162,19 @@ def build_report(run_dir: str | Path) -> Path:
         L.append("")
         L.append(f"## Cross-tool check against `{xc['against']}` ({xc.get('against_model')})")
         L.append("")
-        L.append(f"Status: **{xc['status']}** (tolerance: max |x - x_other| / (F/k) <= "
+        measure = xc.get("measure", "max |x - x_other| / (F/k)")
+        L.append(f"Status: **{xc['status']}** (tolerance: {measure} <= "
                  f"{xc['tolerance']:g}). Evidence: [{xc_path.name}]({xc_path.name})")
         L.append("")
-        L.append("| Point | Max rel. diff | Overshoot diff (pct pts) | Settling diff (s) | Status |")
-        L.append("|---|---|---|---|---|")
+        req_metrics = [r["metric"] for r in reqs]
+        L.append("| Point | Max rel. diff | " + " | ".join(f"{m} diff" for m in req_metrics)
+                 + " | Status |")
+        L.append("|" + "---|" * (len(req_metrics) + 3))
         for pt in xc["points"]:
             m = pt.get("metrics", {})
+            cells = [f"{m.get(k, {}).get('diff', float('nan')):.2e}" for k in req_metrics]
             L.append(f"| {pt['label']} | {pt.get('max_rel_diff', float('nan')):.2e} | "
-                     f"{m.get('overshoot_pct', {}).get('diff', float('nan')):.2e} | "
-                     f"{m.get('settling_time_s', {}).get('diff', float('nan')):.2e} | "
-                     f"{pt['status']} |")
+                     + " | ".join(cells) + f" | {pt['status']} |")
 
     L.append("")
     L.append("## Limitations")

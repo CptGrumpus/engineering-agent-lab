@@ -7,10 +7,10 @@ import traceback
 from datetime import datetime, timezone
 from pathlib import Path
 
-from harness.backends import REPO, get_backend, sha256_file
+from harness.backend_base import REPO, sha256_file
 from harness.case import expand_points, load_case
-from harness.metrics import step_metrics
-from harness.runio import close_logger, environment, get_logger, write_json, write_timeseries
+from harness.registry import resolve
+from harness.runio import close_logger, environment, get_logger, write_json, write_series
 
 
 def _new_run_dir(runs_root: Path, case_name: str) -> Path:
@@ -21,6 +21,10 @@ def _new_run_dir(runs_root: Path, case_name: str) -> Path:
         run_dir = runs_root / f"{stamp}-{n}_{case_name}"
         n += 1
     return run_dir
+
+
+def _fmt_metrics(m: dict) -> str:
+    return ", ".join(f"{k} {v:.4g}" for k, v in m.items())
 
 
 def run_case(case_path: str | Path, runs_root: str | Path = "runs", rerun_of: str | None = None,
@@ -43,26 +47,13 @@ def run_case(case_path: str | Path, runs_root: str | Path = "runs", rerun_of: st
     started = datetime.now(timezone.utc)
     log.info("run %s: case %s (sha256 %s)", run_dir.name, case_path, digest[:12])
 
-    backend = get_backend(case["case"]["model"])
-    model_sources = {}
-    for rel in backend.sources:
-        src = REPO / rel
-        if model_source_dir and (Path(model_source_dir) / Path(rel).name).exists():
-            src = Path(model_source_dir) / Path(rel).name
-        elif model_source_dir:
-            log.warning("no saved copy of %s in %s; using repository version", rel,
-                        model_source_dir)
-        dst = inputs / Path(rel).name
-        shutil.copyfile(src, dst)
-        model_sources[rel] = sha256_file(dst)
-
     manifest = {
         "run_id": run_dir.name,
         "case_name": case["case"]["name"],
         "model": case["case"]["model"],
         "case_source": Path(case_path).as_posix(),
         "case_sha256": digest,
-        "model_sources_sha256": model_sources,
+        "model_sources_sha256": {},
         "rerun_of": rerun_of,
         "started_utc": started.isoformat(timespec="seconds"),
         "environment": environment(),
@@ -70,15 +61,25 @@ def run_case(case_path: str | Path, runs_root: str | Path = "runs", rerun_of: st
         "points": [],
     }
 
+    prepared = False
+    backend = None
     try:
-        backend.prepare(source_dir=inputs if backend.sources else None,
-                        log_dir=run_dir / "build")
+        study, backend = resolve(case["case"]["model"])
+        manifest["study"] = study.name
+        for rel in backend.sources:
+            src = backend.source_path(rel, model_source_dir)
+            if model_source_dir and src.parent != Path(model_source_dir).resolve():
+                log.warning("no saved copy of %s in %s; using repository version", rel,
+                            model_source_dir)
+            dst = inputs / Path(rel).name
+            shutil.copyfile(src, dst)
+            manifest["model_sources_sha256"][rel] = sha256_file(dst)
+        backend.prepare(source_dir=inputs, log_dir=run_dir / "build")
         manifest["environment"]["tools"] = backend.tool_versions()
         prepared = True
     except Exception as e:
-        log.error("backend %s: prepare failed\n%s", backend.name, traceback.format_exc())
+        log.error("backend prepare failed\n%s", traceback.format_exc())
         manifest["prepare_error"] = f"{type(e).__name__}: {e}"
-        prepared = False
 
     for label, params in expand_points(case):
         pdir = run_dir / "points" / label
@@ -87,26 +88,23 @@ def run_case(case_path: str | Path, runs_root: str | Path = "runs", rerun_of: st
         try:
             if not prepared:
                 raise RuntimeError("backend preparation failed; see prepare_error")
-            p, res = backend.solve(params, case["numerics"])
-            entry["derived"] = p.derived()
+            entry["derived"] = study.derive(params)
+            res = backend.solve(params, case["numerics"])
             entry["solver"] = {k: res[k] for k in ("success", "message", "nfev")}
             if not res["success"]:
                 log.error("%s: solver failed: %s", label, res["message"])
             else:
-                write_timeseries(pdir / "timeseries.csv", res["t"], res["x"], res["v"])
-                entry["metrics"] = step_metrics(
-                    res["t"], res["x"], float(case["metrics"]["settling_band_fraction"])
-                )
+                write_series(pdir / study.series_file, res["series"])
+                entry["metrics"] = study.compute_metrics(res["series"], params, case)
                 entry["status"] = "completed"
-                m = entry["metrics"]
-                log.info("%s: overshoot %.3f %%, settling %.4f s, deflection %.4f mm",
-                         label, m["overshoot_pct"], m["settling_time_s"], m["static_deflection_mm"])
+                log.info("%s: %s", label, _fmt_metrics(entry["metrics"]))
         except Exception as e:  # keep going; the failure is evidence
             entry["error"] = f"{type(e).__name__}: {e}"
             log.error("%s: exception\n%s", label, traceback.format_exc())
         write_json(pdir / "point.json", entry)
         manifest["points"].append(entry)
-    backend.close()
+    if backend is not None:
+        backend.close()
 
     n_ok = sum(pt["status"] == "completed" for pt in manifest["points"])
     manifest["status"] = "completed" if n_ok == len(manifest["points"]) else (
