@@ -1,0 +1,73 @@
+# Mass-spring-damper step response: baseline case + damping-ratio sweep.
+#
+# Synthetic example. Requirements and tolerances were fixed BEFORE the first
+# run; change them only with a written reason in the git commit message.
+
+[case]
+name = "msd_step"
+model = "msd"
+description = "1-DOF mass-spring-damper subjected to a 10 N step force; damping-ratio sweep against overshoot, settling-time, and deflection requirements."
+assumptions = [
+  "Single translational degree of freedom; no gravity or preload.",
+  "Linear spring and viscous damper, constant over the full stroke.",
+  "Ideal step force applied at t = 0 from rest (x = 0, v = 0).",
+  "Rigid mass; no compliance or friction elsewhere in the load path.",
+]
+limitations = [
+  "Synthetic parameters; not calibrated to any physical part.",
+  "Checks establish numerical verification only. No physical validation data exists for this case.",
+]
+
+[parameters]
+mass_kg = 1.0
+stiffness_N_per_m = 1000.0
+damping_ratio = 0.5
+step_force_N = 10.0
+
+[sweep]
+parameter = "damping_ratio"
+values = [0.1, 0.3, 0.5, 0.7, 1.0, 2.0]
+
+[numerics]
+method = "DOP853"
+rtol = 1e-9
+atol = 1e-12          # m; ~1e-10 of the 10 mm static deflection
+t_end_s = 3.0         # long enough for zeta = 0.1 to decay within 0.1 % (e^-9.5)
+n_points = 30001      # 0.1 ms output grid
+
+[metrics]
+settling_band_fraction = 0.02   # 2 % settling criterion
+
+[verification]
+# Acceptance tolerances for the independent checks. All errors are relative to
+# the static deflection F/k unless stated.
+reference_max_rel_error = 1e-6      # numerical vs closed-form x(t)
+overshoot_abs_tol_pct = 0.05        # percentage points vs closed-form overshoot
+settling_time_abs_tol_s = 1e-3      # vs settling time of analytical curve (10x grid step)
+steady_state_rel_tol = 1e-3         # x(t_end) vs F/k (proves t_end is long enough)
+energy_residual_rel_tol = 1e-4      # work in = KE + PE + dissipated
+convergence_max_rel_change = 1e-6   # rerun with rtol/atol tightened 100x
+
+[[requirements]]
+id = "REQ-001"
+text = "Peak overshoot of the step response shall not exceed 20 %."
+metric = "overshoot_pct"
+operator = "<="
+limit = 20.0
+units = "%"
+
+[[requirements]]
+id = "REQ-002"
+text = "The response shall settle within +/-2 % of its final value in 0.5 s or less."
+metric = "settling_time_s"
+operator = "<="
+limit = 0.5
+units = "s"
+
+[[requirements]]
+id = "REQ-003"
+text = "Static deflection under the 10 N load shall not exceed 12 mm."
+metric = "static_deflection_mm"
+operator = "<="
+limit = 12.0
+units = "mm"

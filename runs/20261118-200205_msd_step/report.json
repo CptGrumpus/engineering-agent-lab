@@ -1,0 +1,613 @@
+{
+  "points": [
+    {
+      "label": "p00_damping_ratio-0.1",
+      "parameters": {
+        "mass_kg": 1.0,
+        "stiffness_N_per_m": 1000.0,
+        "damping_ratio": 0.1,
+        "step_force_N": 10.0
+      },
+      "derived": {
+        "damping_N_s_per_m": 6.324555320336759,
+        "natural_frequency_rad_per_s": 31.622776601683793,
+        "natural_frequency_Hz": 5.032921210448704
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "reference_agreement",
+          "description": "max |x_num - x_ref| / (F/k) over the full time history",
+          "value": 2.167065832336945e-09,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "overshoot_reference",
+          "description": "|overshoot_num - overshoot_closed_form| in percentage points",
+          "value": 0.013090724478814764,
+          "tolerance": 0.05,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "settling_reference",
+          "description": "|settling_num - settling of analytical curve| in s",
+          "value": 0.0,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "steady_state",
+          "description": "|x(t_end) - F/k| / (F/k)",
+          "value": 7.614936336566847e-05,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "energy_balance",
+          "description": "|W_in - (KE + PE + E_dissipated)| / W_in",
+          "value": 2.0260573394005651e-10,
+          "tolerance": 0.0001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "solver_convergence",
+          "description": "max |x(rtol, atol) - x(rtol/100, atol/100)| / (F/k)",
+          "value": 2.165818913102413e-09,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-001",
+          "text": "Peak overshoot of the step response shall not exceed 20 %.",
+          "metric": "overshoot_pct",
+          "operator": "<=",
+          "limit": 20.0,
+          "units": "%",
+          "value": 72.93785215324591,
+          "margin": -52.93785215324591,
+          "verdict": "FAIL"
+        },
+        {
+          "id": "REQ-002",
+          "text": "The response shall settle within +/-2 % of its final value in 0.5 s or less.",
+          "metric": "settling_time_s",
+          "operator": "<=",
+          "limit": 0.5,
+          "units": "s",
+          "value": 1.2136,
+          "margin": -0.7136,
+          "verdict": "FAIL"
+        },
+        {
+          "id": "REQ-003",
+          "text": "Static deflection under the 10 N load shall not exceed 12 mm.",
+          "metric": "static_deflection_mm",
+          "operator": "<=",
+          "limit": 12.0,
+          "units": "mm",
+          "value": 9.999238506366343,
+          "margin": 2.0007614936336573,
+          "verdict": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p01_damping_ratio-0.3",
+      "parameters": {
+        "mass_kg": 1.0,
+        "stiffness_N_per_m": 1000.0,
+        "damping_ratio": 0.3,
+        "step_force_N": 10.0
+      },
+      "derived": {
+        "damping_N_s_per_m": 18.973665961010276,
+        "natural_frequency_rad_per_s": 31.622776601683793,
+        "natural_frequency_Hz": 5.032921210448704
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "reference_agreement",
+          "description": "max |x_num - x_ref| / (F/k) over the full time history",
+          "value": 1.1192441071172787e-09,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "overshoot_reference",
+          "description": "|overshoot_num - overshoot_closed_form| in percentage points",
+          "value": 3.407385624853987e-05,
+          "tolerance": 0.05,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "settling_reference",
+          "description": "|settling_num - settling of analytical curve| in s",
+          "value": 0.0,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "steady_state",
+          "description": "|x(t_end) - F/k| / (F/k)",
+          "value": 2.770353391134961e-13,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "energy_balance",
+          "description": "|W_in - (KE + PE + E_dissipated)| / W_in",
+          "value": 8.212930335813551e-11,
+          "tolerance": 0.0001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "solver_convergence",
+          "description": "max |x(rtol, atol) - x(rtol/100, atol/100)| / (F/k)",
+          "value": 1.1237549085718612e-09,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-001",
+          "text": "Peak overshoot of the step response shall not exceed 20 %.",
+          "metric": "overshoot_pct",
+          "operator": "<=",
+          "limit": 20.0,
+          "units": "%",
+          "value": 37.232576418802395,
+          "margin": -17.232576418802395,
+          "verdict": "FAIL"
+        },
+        {
+          "id": "REQ-002",
+          "text": "The response shall settle within +/-2 % of its final value in 0.5 s or less.",
+          "metric": "settling_time_s",
+          "operator": "<=",
+          "limit": 0.5,
+          "units": "s",
+          "value": 0.3552,
+          "margin": 0.14479999999999998,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-003",
+          "text": "Static deflection under the 10 N load shall not exceed 12 mm.",
+          "metric": "static_deflection_mm",
+          "operator": "<=",
+          "limit": 12.0,
+          "units": "mm",
+          "value": 10.00000000000277,
+          "margin": 1.9999999999972307,
+          "verdict": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p02_damping_ratio-0.5",
+      "parameters": {
+        "mass_kg": 1.0,
+        "stiffness_N_per_m": 1000.0,
+        "damping_ratio": 0.5,
+        "step_force_N": 10.0
+      },
+      "derived": {
+        "damping_N_s_per_m": 31.622776601683793,
+        "natural_frequency_rad_per_s": 31.622776601683793,
+        "natural_frequency_Hz": 5.032921210448704
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "reference_agreement",
+          "description": "max |x_num - x_ref| / (F/k) over the full time history",
+          "value": 5.073707079472634e-10,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "overshoot_reference",
+          "description": "|overshoot_num - overshoot_closed_form| in percentage points",
+          "value": 1.7790299366993167e-06,
+          "tolerance": 0.05,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "settling_reference",
+          "description": "|settling_num - settling of analytical curve| in s",
+          "value": 0.0,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "steady_state",
+          "description": "|x(t_end) - F/k| / (F/k)",
+          "value": 1.618497003086361e-13,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "energy_balance",
+          "description": "|W_in - (KE + PE + E_dissipated)| / W_in",
+          "value": 5.960856808152469e-12,
+          "tolerance": 0.0001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "solver_convergence",
+          "description": "max |x(rtol, atol) - x(rtol/100, atol/100)| / (F/k)",
+          "value": 5.080083922970324e-10,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-001",
+          "text": "Peak overshoot of the step response shall not exceed 20 %.",
+          "metric": "overshoot_pct",
+          "operator": "<=",
+          "limit": 20.0,
+          "units": "%",
+          "value": 16.30335170312811,
+          "margin": 3.6966482968718886,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-002",
+          "text": "The response shall settle within +/-2 % of its final value in 0.5 s or less.",
+          "metric": "settling_time_s",
+          "operator": "<=",
+          "limit": 0.5,
+          "units": "s",
+          "value": 0.2554,
+          "margin": 0.24459999999999998,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-003",
+          "text": "Static deflection under the 10 N load shall not exceed 12 mm.",
+          "metric": "static_deflection_mm",
+          "operator": "<=",
+          "limit": 12.0,
+          "units": "mm",
+          "value": 9.999999999998382,
+          "margin": 2.0000000000016183,
+          "verdict": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p03_damping_ratio-0.7",
+      "parameters": {
+        "mass_kg": 1.0,
+        "stiffness_N_per_m": 1000.0,
+        "damping_ratio": 0.7,
+        "step_force_N": 10.0
+      },
+      "derived": {
+        "damping_N_s_per_m": 44.27188724235731,
+        "natural_frequency_rad_per_s": 31.622776601683793,
+        "natural_frequency_Hz": 5.032921210448704
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "reference_agreement",
+          "description": "max |x_num - x_ref| / (F/k) over the full time history",
+          "value": 1.600703944393267e-09,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "overshoot_reference",
+          "description": "|overshoot_num - overshoot_closed_form| in percentage points",
+          "value": 3.354447137837724e-07,
+          "tolerance": 0.05,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "settling_reference",
+          "description": "|settling_num - settling of analytical curve| in s",
+          "value": 2.7755575615628914e-17,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "steady_state",
+          "description": "|x(t_end) - F/k| / (F/k)",
+          "value": 9.020562075079397e-15,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "energy_balance",
+          "description": "|W_in - (KE + PE + E_dissipated)| / W_in",
+          "value": 1.598339516295496e-11,
+          "tolerance": 0.0001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "solver_convergence",
+          "description": "max |x(rtol, atol) - x(rtol/100, atol/100)| / (F/k)",
+          "value": 1.604711329095121e-09,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-001",
+          "text": "Peak overshoot of the step response shall not exceed 20 %.",
+          "metric": "overshoot_pct",
+          "operator": "<=",
+          "limit": 20.0,
+          "units": "%",
+          "value": 4.598790690582061,
+          "margin": 15.40120930941794,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-002",
+          "text": "The response shall settle within +/-2 % of its final value in 0.5 s or less.",
+          "metric": "settling_time_s",
+          "operator": "<=",
+          "limit": 0.5,
+          "units": "s",
+          "value": 0.18910000000000002,
+          "margin": 0.31089999999999995,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-003",
+          "text": "Static deflection under the 10 N load shall not exceed 12 mm.",
+          "metric": "static_deflection_mm",
+          "operator": "<=",
+          "limit": 12.0,
+          "units": "mm",
+          "value": 10.000000000000094,
+          "margin": 1.9999999999999059,
+          "verdict": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p04_damping_ratio-1",
+      "parameters": {
+        "mass_kg": 1.0,
+        "stiffness_N_per_m": 1000.0,
+        "damping_ratio": 1.0,
+        "step_force_N": 10.0
+      },
+      "derived": {
+        "damping_N_s_per_m": 63.245553203367585,
+        "natural_frequency_rad_per_s": 31.622776601683793,
+        "natural_frequency_Hz": 5.032921210448704
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "reference_agreement",
+          "description": "max |x_num - x_ref| / (F/k) over the full time history",
+          "value": 2.2427910223443703e-10,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "overshoot_reference",
+          "description": "|overshoot_num - overshoot_closed_form| in percentage points",
+          "value": 1.9146836893746533e-08,
+          "tolerance": 0.05,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "settling_reference",
+          "description": "|settling_num - settling of analytical curve| in s",
+          "value": 0.0,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "steady_state",
+          "description": "|x(t_end) - F/k| / (F/k)",
+          "value": 6.418476861114186e-15,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "energy_balance",
+          "description": "|W_in - (KE + PE + E_dissipated)| / W_in",
+          "value": 1.7053025658242511e-12,
+          "tolerance": 0.0001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "solver_convergence",
+          "description": "max |x(rtol, atol) - x(rtol/100, atol/100)| / (F/k)",
+          "value": 2.2416634520849854e-10,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-001",
+          "text": "Peak overshoot of the step response shall not exceed 20 %.",
+          "metric": "overshoot_pct",
+          "operator": "<=",
+          "limit": 20.0,
+          "units": "%",
+          "value": 1.9146836893746533e-08,
+          "margin": 19.999999980853165,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-002",
+          "text": "The response shall settle within +/-2 % of its final value in 0.5 s or less.",
+          "metric": "settling_time_s",
+          "operator": "<=",
+          "limit": 0.5,
+          "units": "s",
+          "value": 0.1845,
+          "margin": 0.3155,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-003",
+          "text": "Static deflection under the 10 N load shall not exceed 12 mm.",
+          "metric": "static_deflection_mm",
+          "operator": "<=",
+          "limit": 12.0,
+          "units": "mm",
+          "value": 9.999999999999936,
+          "margin": 2.000000000000064,
+          "verdict": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p05_damping_ratio-2",
+      "parameters": {
+        "mass_kg": 1.0,
+        "stiffness_N_per_m": 1000.0,
+        "damping_ratio": 2.0,
+        "step_force_N": 10.0
+      },
+      "derived": {
+        "damping_N_s_per_m": 126.49110640673517,
+        "natural_frequency_rad_per_s": 31.622776601683793,
+        "natural_frequency_Hz": 5.032921210448704
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "reference_agreement",
+          "description": "max |x_num - x_ref| / (F/k) over the full time history",
+          "value": 6.848511341361885e-10,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "overshoot_reference",
+          "description": "|overshoot_num - overshoot_closed_form| in percentage points",
+          "value": 2.3012841632515747e-09,
+          "tolerance": 0.05,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "settling_reference",
+          "description": "|settling_num - settling of analytical curve| in s",
+          "value": 5.551115123125783e-17,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "steady_state",
+          "description": "|x(t_end) - F/k| / (F/k)",
+          "value": 9.013449708827892e-12,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "energy_balance",
+          "description": "|W_in - (KE + PE + E_dissipated)| / W_in",
+          "value": 5.1568888049156785e-11,
+          "tolerance": 0.0001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "solver_convergence",
+          "description": "max |x(rtol, atol) - x(rtol/100, atol/100)| / (F/k)",
+          "value": 6.847602346260473e-10,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-001",
+          "text": "Peak overshoot of the step response shall not exceed 20 %.",
+          "metric": "overshoot_pct",
+          "operator": "<=",
+          "limit": 20.0,
+          "units": "%",
+          "value": 2.3012841632515747e-09,
+          "margin": 19.999999997698716,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-002",
+          "text": "The response shall settle within +/-2 % of its final value in 0.5 s or less.",
+          "metric": "settling_time_s",
+          "operator": "<=",
+          "limit": 0.5,
+          "units": "s",
+          "value": 0.47050000000000003,
+          "margin": 0.02949999999999997,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-003",
+          "text": "Static deflection under the 10 N load shall not exceed 12 mm.",
+          "metric": "static_deflection_mm",
+          "operator": "<=",
+          "limit": 12.0,
+          "units": "mm",
+          "value": 9.999999999909866,
+          "margin": 2.000000000090134,
+          "verdict": "PASS"
+        }
+      ]
+    }
+  ],
+  "run_id": "20261118-200205_msd_step",
+  "generated_utc": "2026-11-19T01:02:09+00:00",
+  "verification_status": "PASS"
+}
