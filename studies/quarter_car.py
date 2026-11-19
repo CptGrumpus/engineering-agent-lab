@@ -95,7 +95,7 @@ class QuarterCarStudy(Study):
         d["slowest_decay_rate_per_s"] = ref.slowest_decay_rate(params)
         return d
 
-    def compute_metrics(self, series, params, case):
+    def compute_metrics(self, series, params, case, outputs=None):
         acc = body_accel(series, params)
         travel = series["zs_m"] - series["zu_m"]
         load = tire_load_ratio(series, params)

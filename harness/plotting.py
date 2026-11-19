@@ -257,3 +257,30 @@ def cantilever_figure(path, s, p, d, m, *, title):
     fig.tight_layout()
     fig.savefig(path, dpi=130, facecolor=SURFACE)
     plt.close(fig)
+
+
+def plate_figure(path, outline_xy, holes, p, *, title, mass_g):
+    """Top view of the plate from B-rep edges, with measured holes and key dimensions."""
+    L, W = float(p["length_mm"]), float(p["width_mm"])
+    fig, ax = plt.subplots(figsize=(7.5, 5.2), facecolor=SURFACE)
+    xy = np.array(outline_xy)
+    ax.plot(xy[:, 0], xy[:, 1], ".", color=SERIES_1, markersize=1.5)
+    for x, y, d in zip(holes["x_mm"], holes["y_mm"], holes["diameter_mm"]):
+        ax.add_patch(plt.Circle((x, y), d / 2, fill=False, color=SERIES_1, linewidth=1.5))
+        ax.plot([x], [y], "+", color=TEXT_2, markersize=6)
+    ex = (L - (int(p["holes_x"]) - 1) * float(p["hole_pitch_x_mm"])) / 2
+    x0 = holes["x_mm"].max() if len(holes["x_mm"]) else 0
+    ax.annotate("", (L / 2, 0), (x0, 0), arrowprops=dict(arrowstyle="<->", color=TEXT_2, lw=1))
+    ax.annotate(f"{ex:g}", ((x0 + L / 2) / 2, 0), xytext=(0, 4), textcoords="offset points",
+                ha="center", fontsize=8.5, color=TEXT_2)
+    ax.set_aspect("equal")
+    ax.set_xlim(-L / 2 - 8, L / 2 + 8)
+    ax.set_ylim(-W / 2 - 8, W / 2 + 8)
+    ax.set_xlabel("x (mm)")
+    ax.set_ylabel("y (mm)")
+    ax.set_title(f"{title}: top view from the B-rep, {len(holes['x_mm'])} holes measured, "
+                 f"{mass_g:.1f} g", color=TEXT, fontsize=10, loc="left")
+    _style(ax)
+    fig.tight_layout()
+    fig.savefig(path, dpi=130, facecolor=SURFACE)
+    plt.close(fig)

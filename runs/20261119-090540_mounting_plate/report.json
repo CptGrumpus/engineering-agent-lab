@@ -1,0 +1,667 @@
+{
+  "points": [
+    {
+      "label": "p00_hole_diameter_mm-5.5",
+      "parameters": {
+        "length_mm": 120.0,
+        "width_mm": 80.0,
+        "thickness_mm": 6.0,
+        "corner_radius_mm": 8.0,
+        "hole_diameter_mm": 5.5,
+        "holes_x": 3,
+        "holes_y": 2,
+        "hole_pitch_x_mm": 40.0,
+        "hole_pitch_y_mm": 40.0,
+        "density_g_per_mm3": 0.0027
+      },
+      "derived": {
+        "volume_closed_form_mm3": 56415.072979038654,
+        "mass_closed_form_g": 152.32069704340438,
+        "edge_distance_design_mm": 20.0,
+        "ligament_design_mm": 34.5
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "valid_solid",
+          "description": "B-rep validity (0 = valid, 1 = invalid)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "volume_reference",
+          "description": "|V_cad - V_closed_form| / V_closed_form",
+          "kind": "numerical",
+          "value": 5.158874910530985e-16,
+          "tolerance": 1e-09,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "bounding_box",
+          "description": "max |bbox - (L, W, t)| in mm",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "hole_count",
+          "description": "|holes found - holes intended|",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "hole_positions",
+          "description": "max distance from intended centre to measured hole (mm)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "hole_diameters",
+          "description": "max |measured - nominal diameter| (mm)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "step_roundtrip_volume",
+          "description": "|V_step - V_cad| / V_cad after STEP re-import",
+          "kind": "numerical",
+          "value": 4.127099928424786e-15,
+          "tolerance": 1e-09,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "step_roundtrip_holes",
+          "description": "|holes in STEP - holes in model|",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-P1",
+          "text": "Plate mass shall not exceed 150 g.",
+          "metric": "mass_g",
+          "operator": "<=",
+          "limit": 150.0,
+          "units": "g",
+          "value": 152.32069704340446,
+          "margin": -2.320697043404465,
+          "verdict": "FAIL"
+        },
+        {
+          "id": "REQ-P2",
+          "text": "Hole centre to plate edge distance shall be at least 2 x hole diameter.",
+          "metric": "edge_distance_ratio",
+          "operator": ">=",
+          "limit": 2.0,
+          "units": "x d",
+          "value": 3.6363636363636362,
+          "margin": 1.6363636363636362,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-P3",
+          "text": "The web between adjacent holes shall be at least 9 mm (1.5 x thickness).",
+          "metric": "ligament_mm",
+          "operator": ">=",
+          "limit": 9.0,
+          "units": "mm",
+          "value": 34.5,
+          "margin": 25.5,
+          "verdict": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p01_hole_diameter_mm-6.6",
+      "parameters": {
+        "length_mm": 120.0,
+        "width_mm": 80.0,
+        "thickness_mm": 6.0,
+        "corner_radius_mm": 8.0,
+        "hole_diameter_mm": 6.6,
+        "holes_x": 3,
+        "holes_y": 2,
+        "hole_pitch_x_mm": 40.0,
+        "hole_pitch_y_mm": 40.0,
+        "density_g_per_mm3": 0.0027
+      },
+      "derived": {
+        "volume_closed_form_mm3": 56038.741595065134,
+        "mass_closed_form_g": 151.30460230667586,
+        "edge_distance_design_mm": 20.0,
+        "ligament_design_mm": 33.4
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "valid_solid",
+          "description": "B-rep validity (0 = valid, 1 = invalid)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "volume_reference",
+          "description": "|V_cad - V_closed_form| / V_closed_form",
+          "kind": "numerical",
+          "value": 3.895139723207574e-16,
+          "tolerance": 1e-09,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "bounding_box",
+          "description": "max |bbox - (L, W, t)| in mm",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "hole_count",
+          "description": "|holes found - holes intended|",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "hole_positions",
+          "description": "max distance from intended centre to measured hole (mm)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "hole_diameters",
+          "description": "max |measured - nominal diameter| (mm)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "step_roundtrip_volume",
+          "description": "|V_step - V_cad| / V_cad after STEP re-import",
+          "kind": "numerical",
+          "value": 3.895139723207573e-15,
+          "tolerance": 1e-09,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "step_roundtrip_holes",
+          "description": "|holes in STEP - holes in model|",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-P1",
+          "text": "Plate mass shall not exceed 150 g.",
+          "metric": "mass_g",
+          "operator": "<=",
+          "limit": 150.0,
+          "units": "g",
+          "value": 151.30460230667592,
+          "margin": -1.3046023066759176,
+          "verdict": "FAIL"
+        },
+        {
+          "id": "REQ-P2",
+          "text": "Hole centre to plate edge distance shall be at least 2 x hole diameter.",
+          "metric": "edge_distance_ratio",
+          "operator": ">=",
+          "limit": 2.0,
+          "units": "x d",
+          "value": 3.0303030303030303,
+          "margin": 1.0303030303030303,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-P3",
+          "text": "The web between adjacent holes shall be at least 9 mm (1.5 x thickness).",
+          "metric": "ligament_mm",
+          "operator": ">=",
+          "limit": 9.0,
+          "units": "mm",
+          "value": 33.4,
+          "margin": 24.4,
+          "verdict": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p02_hole_diameter_mm-9",
+      "parameters": {
+        "length_mm": 120.0,
+        "width_mm": 80.0,
+        "thickness_mm": 6.0,
+        "corner_radius_mm": 8.0,
+        "hole_diameter_mm": 9.0,
+        "holes_x": 3,
+        "holes_y": 2,
+        "hole_pitch_x_mm": 40.0,
+        "hole_pitch_y_mm": 40.0,
+        "density_g_per_mm3": 0.0027
+      },
+      "derived": {
+        "volume_closed_form_mm3": 54980.15053451152,
+        "mass_closed_form_g": 148.4464064431811,
+        "edge_distance_design_mm": 20.0,
+        "ligament_design_mm": 31.0
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "valid_solid",
+          "description": "B-rep validity (0 = valid, 1 = invalid)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "volume_reference",
+          "description": "|V_cad - V_closed_form| / V_closed_form",
+          "kind": "numerical",
+          "value": 1.3233789910444576e-16,
+          "tolerance": 1e-09,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "bounding_box",
+          "description": "max |bbox - (L, W, t)| in mm",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "hole_count",
+          "description": "|holes found - holes intended|",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "hole_positions",
+          "description": "max distance from intended centre to measured hole (mm)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "hole_diameters",
+          "description": "max |measured - nominal diameter| (mm)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "step_roundtrip_volume",
+          "description": "|V_step - V_cad| / V_cad after STEP re-import",
+          "kind": "numerical",
+          "value": 3.7054611749244814e-15,
+          "tolerance": 1e-09,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "step_roundtrip_holes",
+          "description": "|holes in STEP - holes in model|",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-P1",
+          "text": "Plate mass shall not exceed 150 g.",
+          "metric": "mass_g",
+          "operator": "<=",
+          "limit": 150.0,
+          "units": "g",
+          "value": 148.44640644318113,
+          "margin": 1.5535935568188677,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-P2",
+          "text": "Hole centre to plate edge distance shall be at least 2 x hole diameter.",
+          "metric": "edge_distance_ratio",
+          "operator": ">=",
+          "limit": 2.0,
+          "units": "x d",
+          "value": 2.2222222222222223,
+          "margin": 0.22222222222222232,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-P3",
+          "text": "The web between adjacent holes shall be at least 9 mm (1.5 x thickness).",
+          "metric": "ligament_mm",
+          "operator": ">=",
+          "limit": 9.0,
+          "units": "mm",
+          "value": 31.0,
+          "margin": 22.0,
+          "verdict": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p03_hole_diameter_mm-11",
+      "parameters": {
+        "length_mm": 120.0,
+        "width_mm": 80.0,
+        "thickness_mm": 6.0,
+        "corner_radius_mm": 8.0,
+        "hole_diameter_mm": 11.0,
+        "holes_x": 3,
+        "holes_y": 2,
+        "hole_pitch_x_mm": 40.0,
+        "hole_pitch_y_mm": 40.0,
+        "density_g_per_mm3": 0.0027
+      },
+      "derived": {
+        "volume_closed_form_mm3": 53849.17717921919,
+        "mass_closed_form_g": 145.39277838389182,
+        "edge_distance_design_mm": 20.0,
+        "ligament_design_mm": 29.0
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "valid_solid",
+          "description": "B-rep validity (0 = valid, 1 = invalid)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "volume_reference",
+          "description": "|V_cad - V_closed_form| / V_closed_form",
+          "kind": "numerical",
+          "value": 4.0535202181276455e-16,
+          "tolerance": 1e-09,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "bounding_box",
+          "description": "max |bbox - (L, W, t)| in mm",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "hole_count",
+          "description": "|holes found - holes intended|",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "hole_positions",
+          "description": "max distance from intended centre to measured hole (mm)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "hole_diameters",
+          "description": "max |measured - nominal diameter| (mm)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "step_roundtrip_volume",
+          "description": "|V_step - V_cad| / V_cad after STEP re-import",
+          "kind": "numerical",
+          "value": 3.37793351510637e-15,
+          "tolerance": 1e-09,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "step_roundtrip_holes",
+          "description": "|holes in STEP - holes in model|",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-P1",
+          "text": "Plate mass shall not exceed 150 g.",
+          "metric": "mass_g",
+          "operator": "<=",
+          "limit": 150.0,
+          "units": "g",
+          "value": 145.39277838389188,
+          "margin": 4.60722161610812,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-P2",
+          "text": "Hole centre to plate edge distance shall be at least 2 x hole diameter.",
+          "metric": "edge_distance_ratio",
+          "operator": ">=",
+          "limit": 2.0,
+          "units": "x d",
+          "value": 1.8181818181818181,
+          "margin": -0.18181818181818188,
+          "verdict": "FAIL"
+        },
+        {
+          "id": "REQ-P3",
+          "text": "The web between adjacent holes shall be at least 9 mm (1.5 x thickness).",
+          "metric": "ligament_mm",
+          "operator": ">=",
+          "limit": 9.0,
+          "units": "mm",
+          "value": 29.0,
+          "margin": 20.0,
+          "verdict": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p04_hole_diameter_mm-13.5",
+      "parameters": {
+        "length_mm": 120.0,
+        "width_mm": 80.0,
+        "thickness_mm": 6.0,
+        "corner_radius_mm": 8.0,
+        "hole_diameter_mm": 13.5,
+        "holes_x": 3,
+        "holes_y": 2,
+        "hole_pitch_x_mm": 40.0,
+        "hole_pitch_y_mm": 40.0,
+        "density_g_per_mm3": 0.0027
+      },
+      "derived": {
+        "volume_closed_form_mm3": 52117.37422892782,
+        "mass_closed_form_g": 140.71691041810513,
+        "edge_distance_design_mm": 20.0,
+        "ligament_design_mm": 26.5
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "valid_solid",
+          "description": "B-rep validity (0 = valid, 1 = invalid)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "volume_reference",
+          "description": "|V_cad - V_closed_form| / V_closed_form",
+          "kind": "numerical",
+          "value": 5.584285641270772e-16,
+          "tolerance": 1e-09,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "bounding_box",
+          "description": "max |bbox - (L, W, t)| in mm",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "hole_count",
+          "description": "|holes found - holes intended|",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "hole_positions",
+          "description": "max distance from intended centre to measured hole (mm)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "hole_diameters",
+          "description": "max |measured - nominal diameter| (mm)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "step_roundtrip_volume",
+          "description": "|V_step - V_cad| / V_cad after STEP re-import",
+          "kind": "numerical",
+          "value": 2.2337142565083078e-15,
+          "tolerance": 1e-09,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "step_roundtrip_holes",
+          "description": "|holes in STEP - holes in model|",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-P1",
+          "text": "Plate mass shall not exceed 150 g.",
+          "metric": "mass_g",
+          "operator": "<=",
+          "limit": 150.0,
+          "units": "g",
+          "value": 140.71691041810521,
+          "margin": 9.283089581894785,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-P2",
+          "text": "Hole centre to plate edge distance shall be at least 2 x hole diameter.",
+          "metric": "edge_distance_ratio",
+          "operator": ">=",
+          "limit": 2.0,
+          "units": "x d",
+          "value": 1.4814814814814814,
+          "margin": -0.5185185185185186,
+          "verdict": "FAIL"
+        },
+        {
+          "id": "REQ-P3",
+          "text": "The web between adjacent holes shall be at least 9 mm (1.5 x thickness).",
+          "metric": "ligament_mm",
+          "operator": ">=",
+          "limit": 9.0,
+          "units": "mm",
+          "value": 26.5,
+          "margin": 17.5,
+          "verdict": "PASS"
+        }
+      ]
+    }
+  ],
+  "run_id": "20261119-090540_mounting_plate",
+  "generated_utc": "2026-11-19T14:05:42+00:00",
+  "verification_status": "PASS"
+}

@@ -103,7 +103,8 @@ def run_case(case_path: str | Path, runs_root: str | Path = "runs", rerun_of: st
                 log.error("%s: solver failed: %s", label, res["message"])
             else:
                 write_series(pdir / study.series_file, res["series"])
-                entry["metrics"] = study.compute_metrics(res["series"], params, case)
+                entry["metrics"] = study.compute_metrics(res["series"], params, case,
+                                                         res.get("outputs") or {})
                 entry["status"] = "completed"
                 log.info("%s: %s", label, _fmt_metrics(entry["metrics"]))
         except Exception as e:  # keep going; the failure is evidence

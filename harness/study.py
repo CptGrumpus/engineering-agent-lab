@@ -26,7 +26,9 @@ class Study:
         """Validate parameters (raise ValueError) and return derived quantities."""
         return {}
 
-    def compute_metrics(self, series: dict, params: dict, case: dict) -> dict:
+    def compute_metrics(self, series: dict, params: dict, case: dict,
+                        outputs: dict | None = None) -> dict:
+        """outputs: scalar solver outputs (backend result 'outputs'), if any."""
         raise NotImplementedError
 
     def verify_point(self, case: dict, point: dict, pdir: Path, series: dict,

@@ -1,0 +1,78 @@
+{
+  "label": "p04_hole_diameter_mm-13.5",
+  "status": "PASS",
+  "checks": [
+    {
+      "id": "valid_solid",
+      "description": "B-rep validity (0 = valid, 1 = invalid)",
+      "kind": "numerical",
+      "value": 0.0,
+      "tolerance": 0.0,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "volume_reference",
+      "description": "|V_cad - V_closed_form| / V_closed_form",
+      "kind": "numerical",
+      "value": 5.584285641270772e-16,
+      "tolerance": 1e-09,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "bounding_box",
+      "description": "max |bbox - (L, W, t)| in mm",
+      "kind": "numerical",
+      "value": 0.0,
+      "tolerance": 1e-06,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "hole_count",
+      "description": "|holes found - holes intended|",
+      "kind": "numerical",
+      "value": 0.0,
+      "tolerance": 0.0,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "hole_positions",
+      "description": "max distance from intended centre to measured hole (mm)",
+      "kind": "numerical",
+      "value": 0.0,
+      "tolerance": 1e-06,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "hole_diameters",
+      "description": "max |measured - nominal diameter| (mm)",
+      "kind": "numerical",
+      "value": 0.0,
+      "tolerance": 1e-06,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "step_roundtrip_volume",
+      "description": "|V_step - V_cad| / V_cad after STEP re-import",
+      "kind": "numerical",
+      "value": 2.2337142565083078e-15,
+      "tolerance": 1e-09,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "step_roundtrip_holes",
+      "description": "|holes in STEP - holes in model|",
+      "kind": "numerical",
+      "value": 0.0,
+      "tolerance": 0.0,
+      "comparison": "<=",
+      "status": "PASS"
+    }
+  ]
+}

@@ -143,7 +143,7 @@ class CantileverStudy(Study):
             "root_bending_stress_beam_theory_MPa": beam.bending_stress(F, L, b, h),
         }
 
-    def compute_metrics(self, series, params, case):
+    def compute_metrics(self, series, params, case, outputs=None):
         L, h = _f(params, "length_mm"), _f(params, "height_mm")
         x, z = series["x_mm"], series["z_mm"]
         tip = np.isclose(x, L, atol=1e-6)

@@ -63,7 +63,7 @@ class MSDStudy(Study):
     def derive(self, params):
         return MSDParameters.from_dict(params).derived()
 
-    def compute_metrics(self, series, params, case):
+    def compute_metrics(self, series, params, case, outputs=None):
         return step_metrics(series["t_s"], series["x_m"],
                             float(case["metrics"]["settling_band_fraction"]))
 

@@ -14,7 +14,7 @@ import numpy as np
 
 def environment() -> dict:
     pkgs = {}
-    for name in ("numpy", "scipy", "matplotlib"):
+    for name in ("numpy", "scipy", "matplotlib", "cadquery"):
         try:
             pkgs[name] = importlib.metadata.version(name)
         except importlib.metadata.PackageNotFoundError:
