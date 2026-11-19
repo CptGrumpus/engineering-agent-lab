@@ -1,0 +1,75 @@
+# Quarter car crossing a bump: damper-rate sweep against comfort, travel,
+# and road-holding requirements.
+#
+# Synthetic, representative C-segment front corner (wheel-rate values).
+# Requirements and tolerances were fixed BEFORE the first run.
+
+[case]
+name = "qc_bump"
+model = "quarter_car"
+description = "Linear 2-DOF quarter car crossing a 40 mm x 1.0 m (1 - cos) bump at 10 m/s (36 km/h); wheel-rate damping swept from 600 to 3500 N.s/m against peak body acceleration, suspension travel, and dynamic tire load requirements."
+assumptions = [
+  "Linear spring, damper, and tire; parameters are wheel rates (motion ratio already applied).",
+  "Point-contact tire with no tire damping; the tire never leaves the road (checked: no_wheel_lift).",
+  "Coordinates from static equilibrium; gravity cancels in the linear model.",
+  "Rigid body above one corner (no pitch/roll coupling, no seat or occupant dynamics).",
+  "Suspension travel stays inside the linear range (no bump-stop contact); REQ-QB2 bounds it.",
+]
+limitations = [
+  "Synthetic parameters; not calibrated to any vehicle.",
+  "Peak acceleration is unweighted; ISO 2631 frequency weighting is not applied.",
+  "Checks establish numerical verification and model-validity limits only; no test data.",
+]
+
+[parameters]
+sprung_mass_kg = 350.0
+unsprung_mass_kg = 45.0
+suspension_stiffness_N_per_m = 22000.0
+damping_N_s_per_m = 1500.0
+tire_stiffness_N_per_m = 220000.0
+road = "bump"
+speed_m_per_s = 10.0
+bump_height_m = 0.04
+bump_length_m = 1.0
+
+[sweep]
+parameter = "damping_N_s_per_m"
+values = [600.0, 1000.0, 1500.0, 2200.0, 3500.0]
+
+[numerics]
+method = "DOP853"
+rtol = 1e-9
+atol = 1e-12          # m; 2.5e-11 of the bump height
+t_end_s = 10.0        # lightest damping decays to ~2e-4 of peak (sigma ~0.86 1/s)
+n_points = 20001      # 0.5 ms output grid (>150 samples per wheel-hop period)
+
+[verification]
+reference_max_rel_error = 1e-5   # |z_num - z_ref| / bump height, matrix-exponential reference
+peak_metric_rel_tol = 1e-4       # peak body accel vs reference
+rest_rel_tol = 1e-3              # displacement left at t_end / bump height
+energy_residual_rel_tol = 1e-4   # road work = stored + dissipated (Simpson's rule)
+convergence_max_rel_change = 1e-6
+
+[[requirements]]
+id = "REQ-QB1"
+text = "Peak vertical body acceleration over the bump shall not exceed 4.0 m/s^2 (comfort)."
+metric = "peak_body_accel_m_per_s2"
+operator = "<="
+limit = 4.0
+units = "m/s^2"
+
+[[requirements]]
+id = "REQ-QB2"
+text = "Suspension travel shall stay within +/-40 mm of static (no bump-stop contact)."
+metric = "max_suspension_travel_mm"
+operator = "<="
+limit = 40.0
+units = "mm"
+
+[[requirements]]
+id = "REQ-QB3"
+text = "Dynamic tire load shall stay within +/-70 % of static load (road holding)."
+metric = "max_tire_load_ratio"
+operator = "<="
+limit = 0.7
+units = "-"

@@ -1,0 +1,314 @@
+{
+  "run_id": "20261119-085040_qc_speed_bump_modelica",
+  "verified_utc": "2026-11-19T13:51:08+00:00",
+  "tolerances": {
+    "reference_max_rel_error": 0.0001,
+    "peak_metric_rel_tol": 0.001,
+    "rest_rel_tol": 0.001,
+    "energy_residual_rel_tol": 0.0001,
+    "convergence_max_rel_change": 0.0001
+  },
+  "points": [
+    {
+      "label": "p00_damping_N_s_per_m-600",
+      "status": "PASS",
+      "checks": [
+        {
+          "id": "energy_balance",
+          "description": "|W_road - (dE + E_dissipated)| / integral |P_road| dt",
+          "kind": "numerical",
+          "value": 4.031098815149257e-07,
+          "tolerance": 0.0001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "solver_convergence",
+          "description": "max |z(tol) - z(tol/100)| / max |z| (body and wheel)",
+          "kind": "numerical",
+          "value": 6.05567835348048e-07,
+          "tolerance": 0.0001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "no_wheel_lift",
+          "description": "max dynamic tire load / static load (linear tire valid only < 1)",
+          "kind": "validity",
+          "value": 0.3280401936698002,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "reference_agreement",
+          "description": "max |z_num - z_ref| / bump height (body and wheel; matrix-exponential ref)",
+          "kind": "numerical",
+          "value": 6.520322762509738e-07,
+          "tolerance": 0.0001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "peak_accel_reference",
+          "description": "|peak accel num - peak accel ref| / peak accel ref",
+          "kind": "numerical",
+          "value": 2.8338346163038572e-08,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "return_to_rest",
+          "description": "max(|zs(t_end)|, |zu(t_end)|) / bump height",
+          "kind": "numerical",
+          "value": 0.00038425033704332423,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p01_damping_N_s_per_m-1000",
+      "status": "PASS",
+      "checks": [
+        {
+          "id": "energy_balance",
+          "description": "|W_road - (dE + E_dissipated)| / integral |P_road| dt",
+          "kind": "numerical",
+          "value": 3.6984458014094096e-07,
+          "tolerance": 0.0001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "solver_convergence",
+          "description": "max |z(tol) - z(tol/100)| / max |z| (body and wheel)",
+          "kind": "numerical",
+          "value": 1.1364775234088483e-06,
+          "tolerance": 0.0001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "no_wheel_lift",
+          "description": "max dynamic tire load / static load (linear tire valid only < 1)",
+          "kind": "validity",
+          "value": 0.2677403267096833,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "reference_agreement",
+          "description": "max |z_num - z_ref| / bump height (body and wheel; matrix-exponential ref)",
+          "kind": "numerical",
+          "value": 1.2337896965967498e-06,
+          "tolerance": 0.0001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "peak_accel_reference",
+          "description": "|peak accel num - peak accel ref| / peak accel ref",
+          "kind": "numerical",
+          "value": 2.4495631025247853e-08,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "return_to_rest",
+          "description": "max(|zs(t_end)|, |zu(t_end)|) / bump height",
+          "kind": "numerical",
+          "value": 4.562733646443355e-06,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p02_damping_N_s_per_m-1500",
+      "status": "PASS",
+      "checks": [
+        {
+          "id": "energy_balance",
+          "description": "|W_road - (dE + E_dissipated)| / integral |P_road| dt",
+          "kind": "numerical",
+          "value": 5.239181937655933e-08,
+          "tolerance": 0.0001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "solver_convergence",
+          "description": "max |z(tol) - z(tol/100)| / max |z| (body and wheel)",
+          "kind": "numerical",
+          "value": 4.383964957741805e-07,
+          "tolerance": 0.0001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "no_wheel_lift",
+          "description": "max dynamic tire load / static load (linear tire valid only < 1)",
+          "kind": "validity",
+          "value": 0.34483499223869624,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "reference_agreement",
+          "description": "max |z_num - z_ref| / bump height (body and wheel; matrix-exponential ref)",
+          "kind": "numerical",
+          "value": 4.841097130839318e-07,
+          "tolerance": 0.0001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "peak_accel_reference",
+          "description": "|peak accel num - peak accel ref| / peak accel ref",
+          "kind": "numerical",
+          "value": 1.917220949702432e-07,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "return_to_rest",
+          "description": "max(|zs(t_end)|, |zu(t_end)|) / bump height",
+          "kind": "numerical",
+          "value": 2.1042905960192063e-09,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p03_damping_N_s_per_m-2200",
+      "status": "PASS",
+      "checks": [
+        {
+          "id": "energy_balance",
+          "description": "|W_road - (dE + E_dissipated)| / integral |P_road| dt",
+          "kind": "numerical",
+          "value": 9.438158892541366e-08,
+          "tolerance": 0.0001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "solver_convergence",
+          "description": "max |z(tol) - z(tol/100)| / max |z| (body and wheel)",
+          "kind": "numerical",
+          "value": 3.4156014303239015e-07,
+          "tolerance": 0.0001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "no_wheel_lift",
+          "description": "max dynamic tire load / static load (linear tire valid only < 1)",
+          "kind": "validity",
+          "value": 0.5287774448142264,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "reference_agreement",
+          "description": "max |z_num - z_ref| / bump height (body and wheel; matrix-exponential ref)",
+          "kind": "numerical",
+          "value": 3.701581864726808e-07,
+          "tolerance": 0.0001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "peak_accel_reference",
+          "description": "|peak accel num - peak accel ref| / peak accel ref",
+          "kind": "numerical",
+          "value": 1.654199658517891e-07,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "return_to_rest",
+          "description": "max(|zs(t_end)|, |zu(t_end)|) / bump height",
+          "kind": "numerical",
+          "value": 1.317179632929777e-11,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p04_damping_N_s_per_m-3500",
+      "status": "PASS",
+      "checks": [
+        {
+          "id": "energy_balance",
+          "description": "|W_road - (dE + E_dissipated)| / integral |P_road| dt",
+          "kind": "numerical",
+          "value": 2.809277747938261e-07,
+          "tolerance": 0.0001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "solver_convergence",
+          "description": "max |z(tol) - z(tol/100)| / max |z| (body and wheel)",
+          "kind": "numerical",
+          "value": 3.105808140433619e-07,
+          "tolerance": 0.0001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "no_wheel_lift",
+          "description": "max dynamic tire load / static load (linear tire valid only < 1)",
+          "kind": "validity",
+          "value": 0.8203633740590943,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "reference_agreement",
+          "description": "max |z_num - z_ref| / bump height (body and wheel; matrix-exponential ref)",
+          "kind": "numerical",
+          "value": 3.504176494329228e-07,
+          "tolerance": 0.0001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "peak_accel_reference",
+          "description": "|peak accel num - peak accel ref| / peak accel ref",
+          "kind": "numerical",
+          "value": 2.0903060868497213e-09,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "return_to_rest",
+          "description": "max(|zs(t_end)|, |zu(t_end)|) / bump height",
+          "kind": "numerical",
+          "value": 5.386007765121628e-13,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ]
+    }
+  ],
+  "status": "PASS"
+}

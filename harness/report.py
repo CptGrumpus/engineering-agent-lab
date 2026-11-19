@@ -125,6 +125,15 @@ def build_report(run_dir: str | Path) -> Path:
         L.append("| " + " | ".join(row) + " |")
     L.append("")
 
+    rows = [(pt["parameters"][sweep], {rq["metric"]: rq["value"] for rq in pt["requirements"]})
+            for pt in result["points"] if sweep and pt["simulation_status"] == "completed"]
+    if len(rows) >= 2 and all(isinstance(r[0], (int, float)) for r in rows):
+        from harness.plotting import sweep_figure
+        sweep_figure(run_dir / "sweep.png", sweep, rows, reqs,
+                     f"{case['case']['name']}: requirement metrics vs {sweep}")
+        L.append("![Requirement metrics across the sweep](sweep.png)")
+        L.append("")
+
     L.append("## Point details")
     for pt in result["points"]:
         rel = f"points/{pt['label']}"

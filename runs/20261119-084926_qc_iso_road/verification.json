@@ -1,0 +1,358 @@
+{
+  "run_id": "20261119-084926_qc_iso_road",
+  "verified_utc": "2026-11-19T13:51:33+00:00",
+  "tolerances": {
+    "rms_rel_tol": 0.001,
+    "transient_max_fraction": 0.0001,
+    "energy_residual_rel_tol": 0.0001,
+    "convergence_max_rel_change": 1e-06
+  },
+  "points": [
+    {
+      "label": "p00_damping_N_s_per_m-600",
+      "status": "FAIL",
+      "checks": [
+        {
+          "id": "energy_balance",
+          "description": "|W_road - (dE + E_dissipated)| / integral |P_road| dt",
+          "kind": "numerical",
+          "value": 9.152995548503164e-10,
+          "tolerance": 0.0001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "solver_convergence",
+          "description": "max |z(tol) - z(tol/100)| / max |z| (body and wheel)",
+          "kind": "numerical",
+          "value": 2.2014736165705655e-08,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "no_wheel_lift",
+          "description": "max dynamic tire load / static load (linear tire valid only < 1)",
+          "kind": "validity",
+          "value": 1.0981012133538886,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "FAIL"
+        },
+        {
+          "id": "body_accel_rms_m_per_s2_reference",
+          "description": "|body_accel_rms_m_per_s2 num - closed-form| / closed-form",
+          "kind": "numerical",
+          "value": 1.5379889028665593e-06,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "suspension_travel_rms_mm_reference",
+          "description": "|suspension_travel_rms_mm num - closed-form| / closed-form",
+          "kind": "numerical",
+          "value": 1.9862663701025017e-06,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "tire_load_rms_ratio_reference",
+          "description": "|tire_load_rms_ratio num - closed-form| / closed-form",
+          "kind": "numerical",
+          "value": 2.206705203877241e-07,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "transient_decayed",
+          "description": "exp(-sigma_min * settle time): start-up transient left in window",
+          "kind": "numerical",
+          "value": 2.426656582756404e-05,
+          "tolerance": 0.0001,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p01_damping_N_s_per_m-1000",
+      "status": "PASS",
+      "checks": [
+        {
+          "id": "energy_balance",
+          "description": "|W_road - (dE + E_dissipated)| / integral |P_road| dt",
+          "kind": "numerical",
+          "value": 4.189350900539839e-09,
+          "tolerance": 0.0001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "solver_convergence",
+          "description": "max |z(tol) - z(tol/100)| / max |z| (body and wheel)",
+          "kind": "numerical",
+          "value": 8.537492132855429e-09,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "no_wheel_lift",
+          "description": "max dynamic tire load / static load (linear tire valid only < 1)",
+          "kind": "validity",
+          "value": 0.8266653676579475,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "body_accel_rms_m_per_s2_reference",
+          "description": "|body_accel_rms_m_per_s2 num - closed-form| / closed-form",
+          "kind": "numerical",
+          "value": 2.2672382182037968e-10,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "suspension_travel_rms_mm_reference",
+          "description": "|suspension_travel_rms_mm num - closed-form| / closed-form",
+          "kind": "numerical",
+          "value": 2.9462780250056923e-10,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "tire_load_rms_ratio_reference",
+          "description": "|tire_load_rms_ratio num - closed-form| / closed-form",
+          "kind": "numerical",
+          "value": 1.4829334286629182e-10,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "transient_decayed",
+          "description": "exp(-sigma_min * settle time): start-up transient left in window",
+          "kind": "numerical",
+          "value": 1.8304775307945394e-08,
+          "tolerance": 0.0001,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p02_damping_N_s_per_m-1500",
+      "status": "PASS",
+      "checks": [
+        {
+          "id": "energy_balance",
+          "description": "|W_road - (dE + E_dissipated)| / integral |P_road| dt",
+          "kind": "numerical",
+          "value": 1.0124967248784549e-08,
+          "tolerance": 0.0001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "solver_convergence",
+          "description": "max |z(tol) - z(tol/100)| / max |z| (body and wheel)",
+          "kind": "numerical",
+          "value": 9.498682590391236e-09,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "no_wheel_lift",
+          "description": "max dynamic tire load / static load (linear tire valid only < 1)",
+          "kind": "validity",
+          "value": 0.7524973200305055,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "body_accel_rms_m_per_s2_reference",
+          "description": "|body_accel_rms_m_per_s2 num - closed-form| / closed-form",
+          "kind": "numerical",
+          "value": 1.037803802830429e-10,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "suspension_travel_rms_mm_reference",
+          "description": "|suspension_travel_rms_mm num - closed-form| / closed-form",
+          "kind": "numerical",
+          "value": 2.9554064993156214e-12,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "tire_load_rms_ratio_reference",
+          "description": "|tire_load_rms_ratio num - closed-form| / closed-form",
+          "kind": "numerical",
+          "value": 1.8954752202660814e-10,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "transient_decayed",
+          "description": "exp(-sigma_min * settle time): start-up transient left in window",
+          "kind": "numerical",
+          "value": 1.7991242711720393e-12,
+          "tolerance": 0.0001,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p03_damping_N_s_per_m-2200",
+      "status": "PASS",
+      "checks": [
+        {
+          "id": "energy_balance",
+          "description": "|W_road - (dE + E_dissipated)| / integral |P_road| dt",
+          "kind": "numerical",
+          "value": 2.2310596014026486e-08,
+          "tolerance": 0.0001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "solver_convergence",
+          "description": "max |z(tol) - z(tol/100)| / max |z| (body and wheel)",
+          "kind": "numerical",
+          "value": 4.386115529426486e-09,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "no_wheel_lift",
+          "description": "max dynamic tire load / static load (linear tire valid only < 1)",
+          "kind": "validity",
+          "value": 0.7119118324336717,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "body_accel_rms_m_per_s2_reference",
+          "description": "|body_accel_rms_m_per_s2 num - closed-form| / closed-form",
+          "kind": "numerical",
+          "value": 1.3533866815557117e-10,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "suspension_travel_rms_mm_reference",
+          "description": "|suspension_travel_rms_mm num - closed-form| / closed-form",
+          "kind": "numerical",
+          "value": 2.50641914584699e-12,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "tire_load_rms_ratio_reference",
+          "description": "|tire_load_rms_ratio num - closed-form| / closed-form",
+          "kind": "numerical",
+          "value": 1.9109155624696884e-10,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "transient_decayed",
+          "description": "exp(-sigma_min * settle time): start-up transient left in window",
+          "kind": "numerical",
+          "value": 2.091486302992105e-18,
+          "tolerance": 0.0001,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p04_damping_N_s_per_m-3500",
+      "status": "PASS",
+      "checks": [
+        {
+          "id": "energy_balance",
+          "description": "|W_road - (dE + E_dissipated)| / integral |P_road| dt",
+          "kind": "numerical",
+          "value": 5.523262735921741e-08,
+          "tolerance": 0.0001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "solver_convergence",
+          "description": "max |z(tol) - z(tol/100)| / max |z| (body and wheel)",
+          "kind": "numerical",
+          "value": 9.868587655173921e-09,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "no_wheel_lift",
+          "description": "max dynamic tire load / static load (linear tire valid only < 1)",
+          "kind": "validity",
+          "value": 0.6890998560342034,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "body_accel_rms_m_per_s2_reference",
+          "description": "|body_accel_rms_m_per_s2 num - closed-form| / closed-form",
+          "kind": "numerical",
+          "value": 1.0404947797036468e-10,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "suspension_travel_rms_mm_reference",
+          "description": "|suspension_travel_rms_mm num - closed-form| / closed-form",
+          "kind": "numerical",
+          "value": 2.5331889437043568e-11,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "tire_load_rms_ratio_reference",
+          "description": "|tire_load_rms_ratio num - closed-form| / closed-form",
+          "kind": "numerical",
+          "value": 1.341990354582598e-10,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "transient_decayed",
+          "description": "exp(-sigma_min * settle time): start-up transient left in window",
+          "kind": "numerical",
+          "value": 1.99161727479181e-31,
+          "tolerance": 0.0001,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ]
+    }
+  ],
+  "status": "FAIL"
+}

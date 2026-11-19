@@ -1,0 +1,582 @@
+{
+  "points": [
+    {
+      "label": "p00_damping_N_s_per_m-600",
+      "parameters": {
+        "sprung_mass_kg": 350.0,
+        "unsprung_mass_kg": 45.0,
+        "suspension_stiffness_N_per_m": 22000.0,
+        "damping_N_s_per_m": 600.0,
+        "tire_stiffness_N_per_m": 220000.0,
+        "road": "bump",
+        "speed_m_per_s": 5.0,
+        "bump_height_m": 0.04,
+        "bump_length_m": 1.0
+      },
+      "derived": {
+        "ride_rate_N_per_m": 20000.0,
+        "body_frequency_Hz_approx": 1.2030982838508355,
+        "wheel_hop_frequency_Hz_approx": 11.671362493405658,
+        "body_damping_ratio_approx": 0.11338934190276817,
+        "static_tire_load_N": 3873.62675,
+        "slowest_decay_rate_per_s": 0.7084274031263935
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "energy_balance",
+          "description": "|W_road - (dE + E_dissipated)| / integral |P_road| dt",
+          "kind": "numerical",
+          "value": 4.031098815149257e-07,
+          "tolerance": 0.0001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "solver_convergence",
+          "description": "max |z(tol) - z(tol/100)| / max |z| (body and wheel)",
+          "kind": "numerical",
+          "value": 6.05567835348048e-07,
+          "tolerance": 0.0001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "no_wheel_lift",
+          "description": "max dynamic tire load / static load (linear tire valid only < 1)",
+          "kind": "validity",
+          "value": 0.3280401936698002,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "reference_agreement",
+          "description": "max |z_num - z_ref| / bump height (body and wheel; matrix-exponential ref)",
+          "kind": "numerical",
+          "value": 6.520322762509738e-07,
+          "tolerance": 0.0001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "peak_accel_reference",
+          "description": "|peak accel num - peak accel ref| / peak accel ref",
+          "kind": "numerical",
+          "value": 2.8338346163038572e-08,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "return_to_rest",
+          "description": "max(|zs(t_end)|, |zu(t_end)|) / bump height",
+          "kind": "numerical",
+          "value": 0.00038425033704332423,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-QB1",
+          "text": "Peak vertical body acceleration over the bump shall not exceed 4.0 m/s^2 (comfort).",
+          "metric": "peak_body_accel_m_per_s2",
+          "operator": "<=",
+          "limit": 4.0,
+          "units": "m/s^2",
+          "value": 3.0397502105064897,
+          "margin": 0.9602497894935103,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-QB2",
+          "text": "Suspension travel shall stay within +/-40 mm of static (no bump-stop contact).",
+          "metric": "max_suspension_travel_mm",
+          "operator": "<=",
+          "limit": 40.0,
+          "units": "mm",
+          "value": 37.884874896440195,
+          "margin": 2.115125103559805,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-QB3",
+          "text": "Dynamic tire load shall stay within +/-70 % of static load (road holding).",
+          "metric": "max_tire_load_ratio",
+          "operator": "<=",
+          "limit": 0.7,
+          "units": "-",
+          "value": 0.41021559258771173,
+          "margin": 0.2897844074122882,
+          "verdict": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p01_damping_N_s_per_m-1000",
+      "parameters": {
+        "sprung_mass_kg": 350.0,
+        "unsprung_mass_kg": 45.0,
+        "suspension_stiffness_N_per_m": 22000.0,
+        "damping_N_s_per_m": 1000.0,
+        "tire_stiffness_N_per_m": 220000.0,
+        "road": "bump",
+        "speed_m_per_s": 5.0,
+        "bump_height_m": 0.04,
+        "bump_length_m": 1.0
+      },
+      "derived": {
+        "ride_rate_N_per_m": 20000.0,
+        "body_frequency_Hz_approx": 1.2030982838508355,
+        "wheel_hop_frequency_Hz_approx": 11.671362493405658,
+        "body_damping_ratio_approx": 0.18898223650461363,
+        "static_tire_load_N": 3873.62675,
+        "slowest_decay_rate_per_s": 1.1877402576900067
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "energy_balance",
+          "description": "|W_road - (dE + E_dissipated)| / integral |P_road| dt",
+          "kind": "numerical",
+          "value": 3.6984458014094096e-07,
+          "tolerance": 0.0001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "solver_convergence",
+          "description": "max |z(tol) - z(tol/100)| / max |z| (body and wheel)",
+          "kind": "numerical",
+          "value": 1.1364775234088483e-06,
+          "tolerance": 0.0001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "no_wheel_lift",
+          "description": "max dynamic tire load / static load (linear tire valid only < 1)",
+          "kind": "validity",
+          "value": 0.2677403267096833,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "reference_agreement",
+          "description": "max |z_num - z_ref| / bump height (body and wheel; matrix-exponential ref)",
+          "kind": "numerical",
+          "value": 1.2337896965967498e-06,
+          "tolerance": 0.0001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "peak_accel_reference",
+          "description": "|peak accel num - peak accel ref| / peak accel ref",
+          "kind": "numerical",
+          "value": 2.4495631025247853e-08,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "return_to_rest",
+          "description": "max(|zs(t_end)|, |zu(t_end)|) / bump height",
+          "kind": "numerical",
+          "value": 4.562733646443355e-06,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-QB1",
+          "text": "Peak vertical body acceleration over the bump shall not exceed 4.0 m/s^2 (comfort).",
+          "metric": "peak_body_accel_m_per_s2",
+          "operator": "<=",
+          "limit": 4.0,
+          "units": "m/s^2",
+          "value": 3.5601124116278693,
+          "margin": 0.4398875883721307,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-QB2",
+          "text": "Suspension travel shall stay within +/-40 mm of static (no bump-stop contact).",
+          "metric": "max_suspension_travel_mm",
+          "operator": "<=",
+          "limit": 40.0,
+          "units": "mm",
+          "value": 35.950495070499265,
+          "margin": 4.049504929500735,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-QB3",
+          "text": "Dynamic tire load shall stay within +/-70 % of static load (road holding).",
+          "metric": "max_tire_load_ratio",
+          "operator": "<=",
+          "limit": 0.7,
+          "units": "-",
+          "value": 0.4390236380991213,
+          "margin": 0.26097636190087864,
+          "verdict": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p02_damping_N_s_per_m-1500",
+      "parameters": {
+        "sprung_mass_kg": 350.0,
+        "unsprung_mass_kg": 45.0,
+        "suspension_stiffness_N_per_m": 22000.0,
+        "damping_N_s_per_m": 1500.0,
+        "tire_stiffness_N_per_m": 220000.0,
+        "road": "bump",
+        "speed_m_per_s": 5.0,
+        "bump_height_m": 0.04,
+        "bump_length_m": 1.0
+      },
+      "derived": {
+        "ride_rate_N_per_m": 20000.0,
+        "body_frequency_Hz_approx": 1.2030982838508355,
+        "wheel_hop_frequency_Hz_approx": 11.671362493405658,
+        "body_damping_ratio_approx": 0.2834733547569204,
+        "static_tire_load_N": 3873.62675,
+        "slowest_decay_rate_per_s": 1.8029147390286187
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "energy_balance",
+          "description": "|W_road - (dE + E_dissipated)| / integral |P_road| dt",
+          "kind": "numerical",
+          "value": 5.239181937655933e-08,
+          "tolerance": 0.0001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "solver_convergence",
+          "description": "max |z(tol) - z(tol/100)| / max |z| (body and wheel)",
+          "kind": "numerical",
+          "value": 4.383964957741805e-07,
+          "tolerance": 0.0001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "no_wheel_lift",
+          "description": "max dynamic tire load / static load (linear tire valid only < 1)",
+          "kind": "validity",
+          "value": 0.34483499223869624,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "reference_agreement",
+          "description": "max |z_num - z_ref| / bump height (body and wheel; matrix-exponential ref)",
+          "kind": "numerical",
+          "value": 4.841097130839318e-07,
+          "tolerance": 0.0001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "peak_accel_reference",
+          "description": "|peak accel num - peak accel ref| / peak accel ref",
+          "kind": "numerical",
+          "value": 1.917220949702432e-07,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "return_to_rest",
+          "description": "max(|zs(t_end)|, |zu(t_end)|) / bump height",
+          "kind": "numerical",
+          "value": 2.1042905960192063e-09,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-QB1",
+          "text": "Peak vertical body acceleration over the bump shall not exceed 4.0 m/s^2 (comfort).",
+          "metric": "peak_body_accel_m_per_s2",
+          "operator": "<=",
+          "limit": 4.0,
+          "units": "m/s^2",
+          "value": 4.17584116970606,
+          "margin": -0.17584116970606,
+          "verdict": "FAIL"
+        },
+        {
+          "id": "REQ-QB2",
+          "text": "Suspension travel shall stay within +/-40 mm of static (no bump-stop contact).",
+          "metric": "max_suspension_travel_mm",
+          "operator": "<=",
+          "limit": 40.0,
+          "units": "mm",
+          "value": 33.87143881446471,
+          "margin": 6.12856118553529,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-QB3",
+          "text": "Dynamic tire load shall stay within +/-70 % of static load (road holding).",
+          "metric": "max_tire_load_ratio",
+          "operator": "<=",
+          "limit": 0.7,
+          "units": "-",
+          "value": 0.4768002355918033,
+          "margin": 0.22319976440819667,
+          "verdict": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p03_damping_N_s_per_m-2200",
+      "parameters": {
+        "sprung_mass_kg": 350.0,
+        "unsprung_mass_kg": 45.0,
+        "suspension_stiffness_N_per_m": 22000.0,
+        "damping_N_s_per_m": 2200.0,
+        "tire_stiffness_N_per_m": 220000.0,
+        "road": "bump",
+        "speed_m_per_s": 5.0,
+        "bump_height_m": 0.04,
+        "bump_length_m": 1.0
+      },
+      "derived": {
+        "ride_rate_N_per_m": 20000.0,
+        "body_frequency_Hz_approx": 1.2030982838508355,
+        "wheel_hop_frequency_Hz_approx": 11.671362493405658,
+        "body_damping_ratio_approx": 0.41576092031014994,
+        "static_tire_load_N": 3873.62675,
+        "slowest_decay_rate_per_s": 2.713910447393752
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "energy_balance",
+          "description": "|W_road - (dE + E_dissipated)| / integral |P_road| dt",
+          "kind": "numerical",
+          "value": 9.438158892541366e-08,
+          "tolerance": 0.0001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "solver_convergence",
+          "description": "max |z(tol) - z(tol/100)| / max |z| (body and wheel)",
+          "kind": "numerical",
+          "value": 3.4156014303239015e-07,
+          "tolerance": 0.0001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "no_wheel_lift",
+          "description": "max dynamic tire load / static load (linear tire valid only < 1)",
+          "kind": "validity",
+          "value": 0.5287774448142264,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "reference_agreement",
+          "description": "max |z_num - z_ref| / bump height (body and wheel; matrix-exponential ref)",
+          "kind": "numerical",
+          "value": 3.701581864726808e-07,
+          "tolerance": 0.0001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "peak_accel_reference",
+          "description": "|peak accel num - peak accel ref| / peak accel ref",
+          "kind": "numerical",
+          "value": 1.654199658517891e-07,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "return_to_rest",
+          "description": "max(|zs(t_end)|, |zu(t_end)|) / bump height",
+          "kind": "numerical",
+          "value": 1.317179632929777e-11,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-QB1",
+          "text": "Peak vertical body acceleration over the bump shall not exceed 4.0 m/s^2 (comfort).",
+          "metric": "peak_body_accel_m_per_s2",
+          "operator": "<=",
+          "limit": 4.0,
+          "units": "m/s^2",
+          "value": 5.412662372799135,
+          "margin": -1.4126623727991348,
+          "verdict": "FAIL"
+        },
+        {
+          "id": "REQ-QB2",
+          "text": "Suspension travel shall stay within +/-40 mm of static (no bump-stop contact).",
+          "metric": "max_suspension_travel_mm",
+          "operator": "<=",
+          "limit": 40.0,
+          "units": "mm",
+          "value": 31.37847992158879,
+          "margin": 8.621520078411208,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-QB3",
+          "text": "Dynamic tire load shall stay within +/-70 % of static load (road holding).",
+          "metric": "max_tire_load_ratio",
+          "operator": "<=",
+          "limit": 0.7,
+          "units": "-",
+          "value": 0.5308562630237955,
+          "margin": 0.16914373697620444,
+          "verdict": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p04_damping_N_s_per_m-3500",
+      "parameters": {
+        "sprung_mass_kg": 350.0,
+        "unsprung_mass_kg": 45.0,
+        "suspension_stiffness_N_per_m": 22000.0,
+        "damping_N_s_per_m": 3500.0,
+        "tire_stiffness_N_per_m": 220000.0,
+        "road": "bump",
+        "speed_m_per_s": 5.0,
+        "bump_height_m": 0.04,
+        "bump_length_m": 1.0
+      },
+      "derived": {
+        "ride_rate_N_per_m": 20000.0,
+        "body_frequency_Hz_approx": 1.2030982838508355,
+        "wheel_hop_frequency_Hz_approx": 11.671362493405658,
+        "body_damping_ratio_approx": 0.6614378277661477,
+        "static_tire_load_N": 3873.62675,
+        "slowest_decay_rate_per_s": 4.712746058216078
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "energy_balance",
+          "description": "|W_road - (dE + E_dissipated)| / integral |P_road| dt",
+          "kind": "numerical",
+          "value": 2.809277747938261e-07,
+          "tolerance": 0.0001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "solver_convergence",
+          "description": "max |z(tol) - z(tol/100)| / max |z| (body and wheel)",
+          "kind": "numerical",
+          "value": 3.105808140433619e-07,
+          "tolerance": 0.0001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "no_wheel_lift",
+          "description": "max dynamic tire load / static load (linear tire valid only < 1)",
+          "kind": "validity",
+          "value": 0.8203633740590943,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "reference_agreement",
+          "description": "max |z_num - z_ref| / bump height (body and wheel; matrix-exponential ref)",
+          "kind": "numerical",
+          "value": 3.504176494329228e-07,
+          "tolerance": 0.0001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "peak_accel_reference",
+          "description": "|peak accel num - peak accel ref| / peak accel ref",
+          "kind": "numerical",
+          "value": 2.0903060868497213e-09,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "return_to_rest",
+          "description": "max(|zs(t_end)|, |zu(t_end)|) / bump height",
+          "kind": "numerical",
+          "value": 5.386007765121628e-13,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-QB1",
+          "text": "Peak vertical body acceleration over the bump shall not exceed 4.0 m/s^2 (comfort).",
+          "metric": "peak_body_accel_m_per_s2",
+          "operator": "<=",
+          "limit": 4.0,
+          "units": "m/s^2",
+          "value": 8.159933946170888,
+          "margin": -4.159933946170888,
+          "verdict": "FAIL"
+        },
+        {
+          "id": "REQ-QB2",
+          "text": "Suspension travel shall stay within +/-40 mm of static (no bump-stop contact).",
+          "metric": "max_suspension_travel_mm",
+          "operator": "<=",
+          "limit": 40.0,
+          "units": "mm",
+          "value": 27.602283295520206,
+          "margin": 12.397716704479794,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-QB3",
+          "text": "Dynamic tire load shall stay within +/-70 % of static load (road holding).",
+          "metric": "max_tire_load_ratio",
+          "operator": "<=",
+          "limit": 0.7,
+          "units": "-",
+          "value": 0.8203633740590943,
+          "margin": -0.12036337405909436,
+          "verdict": "FAIL"
+        }
+      ]
+    }
+  ],
+  "run_id": "20261119-085040_qc_speed_bump_modelica",
+  "generated_utc": "2026-11-19T13:51:21+00:00",
+  "verification_status": "PASS"
+}
