@@ -1,7 +1,7 @@
 # Engineering review report: qc_iso_road
 
 - **Run:** `20261119-084926_qc_iso_road`
-- **Generated:** 2026-11-19T13:51:47+00:00
+- **Generated:** 2026-11-19T14:01:06+00:00
 - **Case file SHA-256:** `816326c35beba5d81e86dabf77929a9c5c340deb2b78f349260fe958da46a644`
 - **Environment:** Python 3.14.10, numpy 2.5.5, scipy 1.18.1, matplotlib 3.11.2; Windows-11-10.0.26100-SP0
 - **Tools:** scipy 1.18.1
@@ -61,7 +61,7 @@ Derived: ride_rate_N_per_m = 2e+04, body_frequency_Hz_approx = 1.203, wheel_hop_
 |---|---|---|---|---|
 | energy_balance | |W_road - (dE + E_dissipated)| / integral |P_road| dt | 9.15e-10 | 1e-04 | PASS |
 | solver_convergence | max |z(tol) - z(tol/100)| / max |z| (body and wheel) | 2.20e-08 | 1e-06 | PASS |
-| no_wheel_lift | max dynamic tire load / static load (linear tire valid only < 1) | 1.10e+00 | 1e+00 | FAIL |
+| no_wheel_lift (validity) | max dynamic tire load / static load (linear tire valid only < 1) | 1.10e+00 | 1e+00 | FAIL |
 | body_accel_rms_m_per_s2_reference | |body_accel_rms_m_per_s2 num - closed-form| / closed-form | 1.54e-06 | 1e-03 | PASS |
 | suspension_travel_rms_mm_reference | |suspension_travel_rms_mm num - closed-form| / closed-form | 1.99e-06 | 1e-03 | PASS |
 | tire_load_rms_ratio_reference | |tire_load_rms_ratio num - closed-form| / closed-form | 2.21e-07 | 1e-03 | PASS |
@@ -85,7 +85,7 @@ Derived: ride_rate_N_per_m = 2e+04, body_frequency_Hz_approx = 1.203, wheel_hop_
 |---|---|---|---|---|
 | energy_balance | |W_road - (dE + E_dissipated)| / integral |P_road| dt | 4.19e-09 | 1e-04 | PASS |
 | solver_convergence | max |z(tol) - z(tol/100)| / max |z| (body and wheel) | 8.54e-09 | 1e-06 | PASS |
-| no_wheel_lift | max dynamic tire load / static load (linear tire valid only < 1) | 8.27e-01 | 1e+00 | PASS |
+| no_wheel_lift (validity) | max dynamic tire load / static load (linear tire valid only < 1) | 8.27e-01 | 1e+00 | PASS |
 | body_accel_rms_m_per_s2_reference | |body_accel_rms_m_per_s2 num - closed-form| / closed-form | 2.27e-10 | 1e-03 | PASS |
 | suspension_travel_rms_mm_reference | |suspension_travel_rms_mm num - closed-form| / closed-form | 2.95e-10 | 1e-03 | PASS |
 | tire_load_rms_ratio_reference | |tire_load_rms_ratio num - closed-form| / closed-form | 1.48e-10 | 1e-03 | PASS |
@@ -109,7 +109,7 @@ Derived: ride_rate_N_per_m = 2e+04, body_frequency_Hz_approx = 1.203, wheel_hop_
 |---|---|---|---|---|
 | energy_balance | |W_road - (dE + E_dissipated)| / integral |P_road| dt | 1.01e-08 | 1e-04 | PASS |
 | solver_convergence | max |z(tol) - z(tol/100)| / max |z| (body and wheel) | 9.50e-09 | 1e-06 | PASS |
-| no_wheel_lift | max dynamic tire load / static load (linear tire valid only < 1) | 7.52e-01 | 1e+00 | PASS |
+| no_wheel_lift (validity) | max dynamic tire load / static load (linear tire valid only < 1) | 7.52e-01 | 1e+00 | PASS |
 | body_accel_rms_m_per_s2_reference | |body_accel_rms_m_per_s2 num - closed-form| / closed-form | 1.04e-10 | 1e-03 | PASS |
 | suspension_travel_rms_mm_reference | |suspension_travel_rms_mm num - closed-form| / closed-form | 2.96e-12 | 1e-03 | PASS |
 | tire_load_rms_ratio_reference | |tire_load_rms_ratio num - closed-form| / closed-form | 1.90e-10 | 1e-03 | PASS |
@@ -133,7 +133,7 @@ Derived: ride_rate_N_per_m = 2e+04, body_frequency_Hz_approx = 1.203, wheel_hop_
 |---|---|---|---|---|
 | energy_balance | |W_road - (dE + E_dissipated)| / integral |P_road| dt | 2.23e-08 | 1e-04 | PASS |
 | solver_convergence | max |z(tol) - z(tol/100)| / max |z| (body and wheel) | 4.39e-09 | 1e-06 | PASS |
-| no_wheel_lift | max dynamic tire load / static load (linear tire valid only < 1) | 7.12e-01 | 1e+00 | PASS |
+| no_wheel_lift (validity) | max dynamic tire load / static load (linear tire valid only < 1) | 7.12e-01 | 1e+00 | PASS |
 | body_accel_rms_m_per_s2_reference | |body_accel_rms_m_per_s2 num - closed-form| / closed-form | 1.35e-10 | 1e-03 | PASS |
 | suspension_travel_rms_mm_reference | |suspension_travel_rms_mm num - closed-form| / closed-form | 2.51e-12 | 1e-03 | PASS |
 | tire_load_rms_ratio_reference | |tire_load_rms_ratio num - closed-form| / closed-form | 1.91e-10 | 1e-03 | PASS |
@@ -157,7 +157,7 @@ Derived: ride_rate_N_per_m = 2e+04, body_frequency_Hz_approx = 1.203, wheel_hop_
 |---|---|---|---|---|
 | energy_balance | |W_road - (dE + E_dissipated)| / integral |P_road| dt | 5.52e-08 | 1e-04 | PASS |
 | solver_convergence | max |z(tol) - z(tol/100)| / max |z| (body and wheel) | 9.87e-09 | 1e-06 | PASS |
-| no_wheel_lift | max dynamic tire load / static load (linear tire valid only < 1) | 6.89e-01 | 1e+00 | PASS |
+| no_wheel_lift (validity) | max dynamic tire load / static load (linear tire valid only < 1) | 6.89e-01 | 1e+00 | PASS |
 | body_accel_rms_m_per_s2_reference | |body_accel_rms_m_per_s2 num - closed-form| / closed-form | 1.04e-10 | 1e-03 | PASS |
 | suspension_travel_rms_mm_reference | |suspension_travel_rms_mm num - closed-form| / closed-form | 2.53e-11 | 1e-03 | PASS |
 | tire_load_rms_ratio_reference | |tire_load_rms_ratio num - closed-form| / closed-form | 1.34e-10 | 1e-03 | PASS |

@@ -1,7 +1,7 @@
 # Engineering review report: msd_step
 
 - **Run:** `20261118-200205_msd_step`
-- **Generated:** 2026-11-19T01:02:09+00:00
+- **Generated:** 2026-11-19T14:00:58+00:00
 - **Case file SHA-256:** `01e4ff45c2d7b40e058a6106890a8d7ede89937a129b0bf3d94c4835431804fd`
 - **Environment:** Python 3.14.10, numpy 2.5.5, scipy 1.18.1, matplotlib 3.11.2; Windows-11-10.0.26100-SP0
 - **Code version:** git `none`
@@ -38,12 +38,15 @@
 | p04_damping_ratio-1 | 1 | 1.915e-08 %: **PASS** | 0.1845 s: **PASS** | 10 mm: **PASS** | 6/6 PASS |
 | p05_damping_ratio-2 | 2 | 2.301e-09 %: **PASS** | 0.4705 s: **PASS** | 10 mm: **PASS** | 6/6 PASS |
 
+![Requirement metrics across the sweep](sweep.png)
+
 ## Point details
 
 ### p00_damping_ratio-0.1
 
 Parameters: mass_kg = 1, stiffness_N_per_m = 1000, damping_ratio = 0.1, step_force_N = 10
-  (derived: c = 6.325 N·s/m, f_n = 5.033 Hz)
+
+Derived: damping_N_s_per_m = 6.325, natural_frequency_rad_per_s = 31.62, natural_frequency_Hz = 5.033
 
 | Requirement | Result | Limit | Margin | Verdict | Evidence |
 |---|---|---|---|---|---|
@@ -65,7 +68,8 @@ Parameters: mass_kg = 1, stiffness_N_per_m = 1000, damping_ratio = 0.1, step_for
 ### p01_damping_ratio-0.3
 
 Parameters: mass_kg = 1, stiffness_N_per_m = 1000, damping_ratio = 0.3, step_force_N = 10
-  (derived: c = 18.97 N·s/m, f_n = 5.033 Hz)
+
+Derived: damping_N_s_per_m = 18.97, natural_frequency_rad_per_s = 31.62, natural_frequency_Hz = 5.033
 
 | Requirement | Result | Limit | Margin | Verdict | Evidence |
 |---|---|---|---|---|---|
@@ -87,7 +91,8 @@ Parameters: mass_kg = 1, stiffness_N_per_m = 1000, damping_ratio = 0.3, step_for
 ### p02_damping_ratio-0.5
 
 Parameters: mass_kg = 1, stiffness_N_per_m = 1000, damping_ratio = 0.5, step_force_N = 10
-  (derived: c = 31.62 N·s/m, f_n = 5.033 Hz)
+
+Derived: damping_N_s_per_m = 31.62, natural_frequency_rad_per_s = 31.62, natural_frequency_Hz = 5.033
 
 | Requirement | Result | Limit | Margin | Verdict | Evidence |
 |---|---|---|---|---|---|
@@ -109,7 +114,8 @@ Parameters: mass_kg = 1, stiffness_N_per_m = 1000, damping_ratio = 0.5, step_for
 ### p03_damping_ratio-0.7
 
 Parameters: mass_kg = 1, stiffness_N_per_m = 1000, damping_ratio = 0.7, step_force_N = 10
-  (derived: c = 44.27 N·s/m, f_n = 5.033 Hz)
+
+Derived: damping_N_s_per_m = 44.27, natural_frequency_rad_per_s = 31.62, natural_frequency_Hz = 5.033
 
 | Requirement | Result | Limit | Margin | Verdict | Evidence |
 |---|---|---|---|---|---|
@@ -131,7 +137,8 @@ Parameters: mass_kg = 1, stiffness_N_per_m = 1000, damping_ratio = 0.7, step_for
 ### p04_damping_ratio-1
 
 Parameters: mass_kg = 1, stiffness_N_per_m = 1000, damping_ratio = 1, step_force_N = 10
-  (derived: c = 63.25 N·s/m, f_n = 5.033 Hz)
+
+Derived: damping_N_s_per_m = 63.25, natural_frequency_rad_per_s = 31.62, natural_frequency_Hz = 5.033
 
 | Requirement | Result | Limit | Margin | Verdict | Evidence |
 |---|---|---|---|---|---|
@@ -153,7 +160,8 @@ Parameters: mass_kg = 1, stiffness_N_per_m = 1000, damping_ratio = 1, step_force
 ### p05_damping_ratio-2
 
 Parameters: mass_kg = 1, stiffness_N_per_m = 1000, damping_ratio = 2, step_force_N = 10
-  (derived: c = 126.5 N·s/m, f_n = 5.033 Hz)
+
+Derived: damping_N_s_per_m = 126.5, natural_frequency_rad_per_s = 31.62, natural_frequency_Hz = 5.033
 
 | Requirement | Result | Limit | Margin | Verdict | Evidence |
 |---|---|---|---|---|---|

@@ -1,0 +1,51 @@
+{
+  "label": "p00_mesh_size_mm-8",
+  "status": "FAIL",
+  "checks": [
+    {
+      "id": "equilibrium",
+      "description": "|R_fixed - (0, 0, F)| / F (sum of reactions)",
+      "kind": "numerical",
+      "value": 1.022954498077055e-12,
+      "tolerance": 1e-06,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "tip_deflection_reference",
+      "description": "|tip deflection FE - Timoshenko| / Timoshenko",
+      "kind": "numerical",
+      "value": 0.32581104550191026,
+      "tolerance": 0.02,
+      "comparison": "<=",
+      "status": "FAIL"
+    },
+    {
+      "id": "root_stress_reference",
+      "description": "|extrapolated root stress FE - 6FL/(bh^2)| / beam theory",
+      "kind": "numerical",
+      "value": 0.4518859543650792,
+      "tolerance": 0.02,
+      "comparison": "<=",
+      "status": "FAIL"
+    },
+    {
+      "id": "linear_material",
+      "description": "root bending stress / yield strength (linear elastic only below 1)",
+      "kind": "validity",
+      "value": 0.2315974840710933,
+      "tolerance": 1.0,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "small_deflection",
+      "description": "tip deflection / length (geometrically linear analysis)",
+      "kind": "validity",
+      "value": 0.003234983333333334,
+      "tolerance": 0.01,
+      "comparison": "<=",
+      "status": "PASS"
+    }
+  ]
+}

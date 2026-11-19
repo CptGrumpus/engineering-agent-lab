@@ -174,7 +174,9 @@ def quarter_car_road_figure(path, t_win, acc_win, freq_hz, amp_expected, *, titl
 def sweep_figure(path, sweep_name, rows, requirements, title):
     """One panel per requirement: metric vs sweep value, limit line, pass/fail markers.
 
-    rows: [(sweep_value, {metric: value}), ...] for completed points.
+    rows: [(sweep_value, {metric: value}, {metric: verdict}), ...] for completed points.
+    Verdicts containing "unverified" are drawn as grey crosses: their pass/fail
+    status is not supported by the verification checks.
     """
     n = len(requirements)
     fig, axes = plt.subplots(1, n, figsize=(3.6 * n, 3.4), facecolor=SURFACE, squeeze=False)
@@ -182,12 +184,19 @@ def sweep_figure(path, sweep_name, rows, requirements, title):
     order = np.argsort(xs)
     for ax, req in zip(axes[0], requirements):
         ys = np.array([r[1].get(req["metric"], np.nan) for r in rows], float)
+        verdicts = np.array([r[2].get(req["metric"], "") for r in rows])
         ax.plot(xs[order], ys[order], color=SERIES_1, linewidth=2)
-        ok = {"<=": ys <= req["limit"], "<": ys < req["limit"],
-              ">=": ys >= req["limit"], ">": ys > req["limit"]}[req["operator"]]
-        ax.plot(xs[ok], ys[ok], "o", color=SERIES_1, markersize=8, label="meets")
-        ax.plot(xs[~ok], ys[~ok], "o", markerfacecolor=SURFACE, markeredgecolor=SERIES_1,
-                markeredgewidth=2, markersize=8, label="violates")
+        unver = np.char.find(verdicts.astype(str), "unverified") >= 0
+        ok = (verdicts == "PASS") & ~unver
+        bad = (verdicts == "FAIL") & ~unver
+        if ok.any():
+            ax.plot(xs[ok], ys[ok], "o", color=SERIES_1, markersize=8, label="meets")
+        if bad.any():
+            ax.plot(xs[bad], ys[bad], "o", markerfacecolor=SURFACE, markeredgecolor=SERIES_1,
+                    markeredgewidth=2, markersize=8, label="violates")
+        if unver.any():
+            ax.plot(xs[unver], ys[unver], "X", color=TEXT_2, markersize=9,
+                    markeredgecolor=SURFACE, label="unverified (checks failed)")
         ax.axhline(req["limit"], color=TEXT_2, linewidth=1, linestyle=(0, (2, 2)))
         ax.annotate(f"limit {req['operator']} {req['limit']:g}", (1.0, req["limit"]),
                     xycoords=("axes fraction", "data"), xytext=(-2, 3),
@@ -197,8 +206,54 @@ def sweep_figure(path, sweep_name, rows, requirements, title):
         ax.set_xlabel(sweep_name)
         ax.set_ylabel(req["units"] if req["units"] != "-" else "ratio")
         _style(ax)
-    _legend(axes[0][0], loc="best")
+    seen = {}
+    for ax in axes[0]:
+        for hnd, lab in zip(*ax.get_legend_handles_labels()):
+            seen.setdefault(lab, hnd)
     fig.suptitle(title, color=TEXT, fontsize=11, x=0.01, ha="left")
+    fig.tight_layout(rect=(0, 0, 1, 0.9))
+    leg = fig.legend(seen.values(), seen.keys(), loc="upper right", ncol=len(seen),
+                     frameon=False, fontsize=8.5)
+    for txt in leg.get_texts():
+        txt.set_color(TEXT)
+    fig.savefig(path, dpi=130, facecolor=SURFACE)
+    plt.close(fig)
+
+
+def cantilever_figure(path, s, p, d, m, *, title):
+    from validation import beam_theory as beam
+
+    L, b, h = float(p["length_mm"]), float(p["width_mm"]), float(p["height_mm"])
+    E, nu, F = float(p["youngs_modulus_MPa"]), float(p["poisson_ratio"]), float(p["tip_load_N"])
+    x, y, z = s["x_mm"], s["y_mm"], s["z_mm"]
+    xs = np.linspace(0, L, 200)
+    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(8, 6.8), sharex=True, facecolor=SURFACE)
+
+    axis = np.isclose(z, h / 2, atol=1e-6) | np.isclose(z, h, atol=1e-6)
+    order = np.argsort(x[axis])
+    ax1.plot(x[axis][order], -s["uz_mm"][axis][order], "o", color=SERIES_1, markersize=3,
+             label="FE nodes (top and mid-height)")
+    ax1.plot(xs, beam.timoshenko_deflection(xs, F, L, E, nu, b, h), color=SERIES_2, linewidth=2,
+             label="Timoshenko beam theory")
+    ax1.set_ylabel("Downward deflection (mm)")
+    ax1.set_title(title, color=TEXT, fontsize=11, loc="left")
+    _legend(ax1, loc="upper left")
+
+    top = np.isclose(z, h, atol=1e-6)
+    ax2.plot(x[top], s["sxx_MPa"][top], "o", color=SERIES_1, markersize=3, label="FE nodes, top fibre")
+    ax2.plot(xs, beam.bending_stress(F, L, b, h, xs), color=SERIES_2, linewidth=2,
+             label="6F(L\u2212x)/(bh\u00b2)")
+    ax2.axvspan(0.25 * L, 0.75 * L, color=TEXT_2, alpha=0.08, linewidth=0,
+                label="fit region (extrapolated to x = 0)")
+    ax2.plot([0], [m["root_bending_stress_MPa"]], "D", color=TEXT, markersize=6,
+             label=f"extrapolated root stress {m['root_bending_stress_MPa']:.1f} MPa")
+    ax2.set_ylabel("\u03c3xx (MPa)")
+    ax2.set_xlabel("x from clamped end (mm)")
+    ax2.set_title("Bending stress on the top fibre (clamp corners are singular)", color=TEXT,
+                  fontsize=10, loc="left")
+    _legend(ax2, loc="upper right")
+    for ax in (ax1, ax2):
+        _style(ax)
     fig.tight_layout()
     fig.savefig(path, dpi=130, facecolor=SURFACE)
     plt.close(fig)

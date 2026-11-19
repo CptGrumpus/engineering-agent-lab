@@ -34,6 +34,14 @@ class Study:
         """Run independent checks; may write evidence files/figures into pdir."""
         raise NotImplementedError
 
+    def verify_run_level(self, case: dict, manifest: dict, points: list[dict]
+                         ) -> tuple[list[dict], dict]:
+        """Checks that need several points together (e.g. mesh convergence).
+
+        Returns (checks, detail). Default: none.
+        """
+        return [], {}
+
     def compare_point(self, case: dict, params: dict, a: dict, b: dict) -> float:
         """Max relative difference between two runs' series for the same point.
 

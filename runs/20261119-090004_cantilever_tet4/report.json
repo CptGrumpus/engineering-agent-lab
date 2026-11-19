@@ -1,0 +1,379 @@
+{
+  "points": [
+    {
+      "label": "p00_mesh_size_mm-8",
+      "parameters": {
+        "length_mm": 200.0,
+        "width_mm": 20.0,
+        "height_mm": 20.0,
+        "youngs_modulus_MPa": 210000.0,
+        "poisson_ratio": 0.3,
+        "yield_strength_MPa": 355.0,
+        "tip_load_N": 1000.0,
+        "mesh_size_mm": 8.0,
+        "element_order": "1st"
+      },
+      "derived": {
+        "slenderness_L_over_h": 10.0,
+        "tip_deflection_euler_bernoulli_mm": 0.9523809523809523,
+        "tip_deflection_timoshenko_mm": 0.9596666666666667,
+        "root_bending_stress_beam_theory_MPa": 150.0
+      },
+      "simulation_status": "completed",
+      "verification_status": "FAIL",
+      "checks": [
+        {
+          "id": "equilibrium",
+          "description": "|R_fixed - (0, 0, F)| / F (sum of reactions)",
+          "kind": "numerical",
+          "value": 1.022954498077055e-12,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "tip_deflection_reference",
+          "description": "|tip deflection FE - Timoshenko| / Timoshenko",
+          "kind": "numerical",
+          "value": 0.32581104550191026,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "FAIL"
+        },
+        {
+          "id": "root_stress_reference",
+          "description": "|extrapolated root stress FE - 6FL/(bh^2)| / beam theory",
+          "kind": "numerical",
+          "value": 0.4518859543650792,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "FAIL"
+        },
+        {
+          "id": "linear_material",
+          "description": "root bending stress / yield strength (linear elastic only below 1)",
+          "kind": "validity",
+          "value": 0.2315974840710933,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "small_deflection",
+          "description": "tip deflection / length (geometrically linear analysis)",
+          "kind": "validity",
+          "value": 0.003234983333333334,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-C1",
+          "text": "Tip deflection under the 1000 N service load shall not exceed 1.0 mm.",
+          "metric": "tip_deflection_mm",
+          "operator": "<=",
+          "limit": 1.0,
+          "units": "mm",
+          "value": 0.6469966666666668,
+          "margin": 0.3530033333333332,
+          "verdict": "PASS (unverified)"
+        },
+        {
+          "id": "REQ-C2",
+          "text": "Root bending stress shall not exceed 213 MPa (S355 yield / 1.67).",
+          "metric": "root_bending_stress_MPa",
+          "operator": "<=",
+          "limit": 213.0,
+          "units": "MPa",
+          "value": 82.21710684523812,
+          "margin": 130.7828931547619,
+          "verdict": "PASS (unverified)"
+        }
+      ]
+    },
+    {
+      "label": "p01_mesh_size_mm-5",
+      "parameters": {
+        "length_mm": 200.0,
+        "width_mm": 20.0,
+        "height_mm": 20.0,
+        "youngs_modulus_MPa": 210000.0,
+        "poisson_ratio": 0.3,
+        "yield_strength_MPa": 355.0,
+        "tip_load_N": 1000.0,
+        "mesh_size_mm": 5.0,
+        "element_order": "1st"
+      },
+      "derived": {
+        "slenderness_L_over_h": 10.0,
+        "tip_deflection_euler_bernoulli_mm": 0.9523809523809523,
+        "tip_deflection_timoshenko_mm": 0.9596666666666667,
+        "root_bending_stress_beam_theory_MPa": 150.0
+      },
+      "simulation_status": "completed",
+      "verification_status": "FAIL",
+      "checks": [
+        {
+          "id": "equilibrium",
+          "description": "|R_fixed - (0, 0, F)| / F (sum of reactions)",
+          "kind": "numerical",
+          "value": 4.1971704588755985e-12,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "tip_deflection_reference",
+          "description": "|tip deflection FE - Timoshenko| / Timoshenko",
+          "kind": "numerical",
+          "value": 0.17849226862775627,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "FAIL"
+        },
+        {
+          "id": "root_stress_reference",
+          "description": "|extrapolated root stress FE - 6FL/(bh^2)| / beam theory",
+          "kind": "numerical",
+          "value": 0.26103548508315594,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "FAIL"
+        },
+        {
+          "id": "linear_material",
+          "description": "root bending stress / yield strength (linear elastic only below 1)",
+          "kind": "validity",
+          "value": 0.3122385274296524,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "small_deflection",
+          "description": "tip deflection / length (geometrically linear analysis)",
+          "kind": "validity",
+          "value": 0.003941867931034483,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-C1",
+          "text": "Tip deflection under the 1000 N service load shall not exceed 1.0 mm.",
+          "metric": "tip_deflection_mm",
+          "operator": "<=",
+          "limit": 1.0,
+          "units": "mm",
+          "value": 0.7883735862068966,
+          "margin": 0.21162641379310343,
+          "verdict": "PASS (unverified)"
+        },
+        {
+          "id": "REQ-C2",
+          "text": "Root bending stress shall not exceed 213 MPa (S355 yield / 1.67).",
+          "metric": "root_bending_stress_MPa",
+          "operator": "<=",
+          "limit": 213.0,
+          "units": "MPa",
+          "value": 110.84467723752661,
+          "margin": 102.15532276247339,
+          "verdict": "PASS (unverified)"
+        }
+      ]
+    },
+    {
+      "label": "p02_mesh_size_mm-3.125",
+      "parameters": {
+        "length_mm": 200.0,
+        "width_mm": 20.0,
+        "height_mm": 20.0,
+        "youngs_modulus_MPa": 210000.0,
+        "poisson_ratio": 0.3,
+        "yield_strength_MPa": 355.0,
+        "tip_load_N": 1000.0,
+        "mesh_size_mm": 3.125,
+        "element_order": "1st"
+      },
+      "derived": {
+        "slenderness_L_over_h": 10.0,
+        "tip_deflection_euler_bernoulli_mm": 0.9523809523809523,
+        "tip_deflection_timoshenko_mm": 0.9596666666666667,
+        "root_bending_stress_beam_theory_MPa": 150.0
+      },
+      "simulation_status": "completed",
+      "verification_status": "FAIL",
+      "checks": [
+        {
+          "id": "equilibrium",
+          "description": "|R_fixed - (0, 0, F)| / F (sum of reactions)",
+          "kind": "numerical",
+          "value": 3.151724010661467e-12,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "tip_deflection_reference",
+          "description": "|tip deflection FE - Timoshenko| / Timoshenko",
+          "kind": "numerical",
+          "value": 0.08045218171894113,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "FAIL"
+        },
+        {
+          "id": "root_stress_reference",
+          "description": "|extrapolated root stress FE - 6FL/(bh^2)| / beam theory",
+          "kind": "numerical",
+          "value": 0.13473540813744572,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "FAIL"
+        },
+        {
+          "id": "linear_material",
+          "description": "root bending stress / yield strength (linear elastic only below 1)",
+          "kind": "validity",
+          "value": 0.36560475712502294,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "small_deflection",
+          "description": "tip deflection / length (geometrically linear analysis)",
+          "kind": "validity",
+          "value": 0.004412296948051947,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-C1",
+          "text": "Tip deflection under the 1000 N service load shall not exceed 1.0 mm.",
+          "metric": "tip_deflection_mm",
+          "operator": "<=",
+          "limit": 1.0,
+          "units": "mm",
+          "value": 0.8824593896103895,
+          "margin": 0.1175406103896105,
+          "verdict": "PASS (unverified)"
+        },
+        {
+          "id": "REQ-C2",
+          "text": "Root bending stress shall not exceed 213 MPa (S355 yield / 1.67).",
+          "metric": "root_bending_stress_MPa",
+          "operator": "<=",
+          "limit": 213.0,
+          "units": "MPa",
+          "value": 129.78968877938314,
+          "margin": 83.21031122061686,
+          "verdict": "PASS (unverified)"
+        }
+      ]
+    },
+    {
+      "label": "p03_mesh_size_mm-1.95312",
+      "parameters": {
+        "length_mm": 200.0,
+        "width_mm": 20.0,
+        "height_mm": 20.0,
+        "youngs_modulus_MPa": 210000.0,
+        "poisson_ratio": 0.3,
+        "yield_strength_MPa": 355.0,
+        "tip_load_N": 1000.0,
+        "mesh_size_mm": 1.953125,
+        "element_order": "1st"
+      },
+      "derived": {
+        "slenderness_L_over_h": 10.0,
+        "tip_deflection_euler_bernoulli_mm": 0.9523809523809523,
+        "tip_deflection_timoshenko_mm": 0.9596666666666667,
+        "root_bending_stress_beam_theory_MPa": 150.0
+      },
+      "simulation_status": "completed",
+      "verification_status": "FAIL",
+      "checks": [
+        {
+          "id": "equilibrium",
+          "description": "|R_fixed - (0, 0, F)| / F (sum of reactions)",
+          "kind": "numerical",
+          "value": 3.6191965039163045e-12,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "tip_deflection_reference",
+          "description": "|tip deflection FE - Timoshenko| / Timoshenko",
+          "kind": "numerical",
+          "value": 0.037629323177690625,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "FAIL"
+        },
+        {
+          "id": "root_stress_reference",
+          "description": "|extrapolated root stress FE - 6FL/(bh^2)| / beam theory",
+          "kind": "numerical",
+          "value": 0.06968753726787971,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "FAIL"
+        },
+        {
+          "id": "linear_material",
+          "description": "root bending stress / yield strength (linear elastic only below 1)",
+          "kind": "validity",
+          "value": 0.39308977298540293,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "small_deflection",
+          "description": "tip deflection / length (geometrically linear analysis)",
+          "kind": "validity",
+          "value": 0.004617775297619048,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-C1",
+          "text": "Tip deflection under the 1000 N service load shall not exceed 1.0 mm.",
+          "metric": "tip_deflection_mm",
+          "operator": "<=",
+          "limit": 1.0,
+          "units": "mm",
+          "value": 0.9235550595238096,
+          "margin": 0.07644494047619044,
+          "verdict": "PASS (unverified)"
+        },
+        {
+          "id": "REQ-C2",
+          "text": "Root bending stress shall not exceed 213 MPa (S355 yield / 1.67).",
+          "metric": "root_bending_stress_MPa",
+          "operator": "<=",
+          "limit": 213.0,
+          "units": "MPa",
+          "value": 139.54686940981804,
+          "margin": 73.45313059018196,
+          "verdict": "PASS (unverified)"
+        }
+      ]
+    }
+  ],
+  "run_id": "20261119-090004_cantilever_tet4",
+  "generated_utc": "2026-11-19T14:01:14+00:00",
+  "verification_status": "FAIL"
+}

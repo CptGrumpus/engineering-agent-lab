@@ -1,7 +1,7 @@
 # Engineering review report: qc_bump
 
 - **Run:** `20261119-084857_qc_bump`
-- **Generated:** 2026-11-19T13:51:57+00:00
+- **Generated:** 2026-11-19T14:01:04+00:00
 - **Case file SHA-256:** `07e472a5cb25cb9bb79c40559fb0a0394f0a2d3ba52dfb352980317f7ae500d2`
 - **Environment:** Python 3.14.10, numpy 2.5.5, scipy 1.18.1, matplotlib 3.11.2; Windows-11-10.0.26100-SP0
 - **Tools:** scipy 1.18.1
@@ -61,7 +61,7 @@ Derived: ride_rate_N_per_m = 2e+04, body_frequency_Hz_approx = 1.203, wheel_hop_
 |---|---|---|---|---|
 | energy_balance | |W_road - (dE + E_dissipated)| / integral |P_road| dt | 5.16e-09 | 1e-04 | PASS |
 | solver_convergence | max |z(tol) - z(tol/100)| / max |z| (body and wheel) | 1.33e-09 | 1e-06 | PASS |
-| no_wheel_lift | max dynamic tire load / static load (linear tire valid only < 1) | 1.70e+00 | 1e+00 | FAIL |
+| no_wheel_lift (validity) | max dynamic tire load / static load (linear tire valid only < 1) | 1.70e+00 | 1e+00 | FAIL |
 | reference_agreement | max |z_num - z_ref| / bump height (body and wheel; matrix-exponential ref) | 9.36e-07 | 1e-05 | PASS |
 | peak_accel_reference | |peak accel num - peak accel ref| / peak accel ref | 9.99e-07 | 1e-04 | PASS |
 | return_to_rest | max(|zs(t_end)|, |zu(t_end)|) / bump height | 7.57e-05 | 1e-03 | PASS |
@@ -84,7 +84,7 @@ Derived: ride_rate_N_per_m = 2e+04, body_frequency_Hz_approx = 1.203, wheel_hop_
 |---|---|---|---|---|
 | energy_balance | |W_road - (dE + E_dissipated)| / integral |P_road| dt | 2.67e-09 | 1e-04 | PASS |
 | solver_convergence | max |z(tol) - z(tol/100)| / max |z| (body and wheel) | 7.12e-10 | 1e-06 | PASS |
-| no_wheel_lift | max dynamic tire load / static load (linear tire valid only < 1) | 1.61e+00 | 1e+00 | FAIL |
+| no_wheel_lift (validity) | max dynamic tire load / static load (linear tire valid only < 1) | 1.61e+00 | 1e+00 | FAIL |
 | reference_agreement | max |z_num - z_ref| / bump height (body and wheel; matrix-exponential ref) | 7.34e-07 | 1e-05 | PASS |
 | peak_accel_reference | |peak accel num - peak accel ref| / peak accel ref | 9.30e-07 | 1e-04 | PASS |
 | return_to_rest | max(|zs(t_end)|, |zu(t_end)|) / bump height | 1.26e-06 | 1e-03 | PASS |
@@ -107,7 +107,7 @@ Derived: ride_rate_N_per_m = 2e+04, body_frequency_Hz_approx = 1.203, wheel_hop_
 |---|---|---|---|---|
 | energy_balance | |W_road - (dE + E_dissipated)| / integral |P_road| dt | 2.29e-10 | 1e-04 | PASS |
 | solver_convergence | max |z(tol) - z(tol/100)| / max |z| (body and wheel) | 5.44e-10 | 1e-06 | PASS |
-| no_wheel_lift | max dynamic tire load / static load (linear tire valid only < 1) | 1.54e+00 | 1e+00 | FAIL |
+| no_wheel_lift (validity) | max dynamic tire load / static load (linear tire valid only < 1) | 1.54e+00 | 1e+00 | FAIL |
 | reference_agreement | max |z_num - z_ref| / bump height (body and wheel; matrix-exponential ref) | 6.01e-07 | 1e-05 | PASS |
 | peak_accel_reference | |peak accel num - peak accel ref| / peak accel ref | 8.71e-07 | 1e-04 | PASS |
 | return_to_rest | max(|zs(t_end)|, |zu(t_end)|) / bump height | 5.54e-09 | 1e-03 | PASS |
@@ -130,7 +130,7 @@ Derived: ride_rate_N_per_m = 2e+04, body_frequency_Hz_approx = 1.203, wheel_hop_
 |---|---|---|---|---|
 | energy_balance | |W_road - (dE + E_dissipated)| / integral |P_road| dt | 2.27e-09 | 1e-04 | PASS |
 | solver_convergence | max |z(tol) - z(tol/100)| / max |z| (body and wheel) | 4.56e-10 | 1e-06 | PASS |
-| no_wheel_lift | max dynamic tire load / static load (linear tire valid only < 1) | 1.51e+00 | 1e+00 | FAIL |
+| no_wheel_lift (validity) | max dynamic tire load / static load (linear tire valid only < 1) | 1.51e+00 | 1e+00 | FAIL |
 | reference_agreement | max |z_num - z_ref| / bump height (body and wheel; matrix-exponential ref) | 5.00e-07 | 1e-05 | PASS |
 | peak_accel_reference | |peak accel num - peak accel ref| / peak accel ref | 8.12e-07 | 1e-04 | PASS |
 | return_to_rest | max(|zs(t_end)|, |zu(t_end)|) / bump height | 5.50e-13 | 1e-03 | PASS |
@@ -153,7 +153,7 @@ Derived: ride_rate_N_per_m = 2e+04, body_frequency_Hz_approx = 1.203, wheel_hop_
 |---|---|---|---|---|
 | energy_balance | |W_road - (dE + E_dissipated)| / integral |P_road| dt | 5.24e-09 | 1e-04 | PASS |
 | solver_convergence | max |z(tol) - z(tol/100)| / max |z| (body and wheel) | 2.24e-09 | 1e-06 | PASS |
-| no_wheel_lift | max dynamic tire load / static load (linear tire valid only < 1) | 1.56e+00 | 1e+00 | FAIL |
+| no_wheel_lift (validity) | max dynamic tire load / static load (linear tire valid only < 1) | 1.56e+00 | 1e+00 | FAIL |
 | reference_agreement | max |z_num - z_ref| / bump height (body and wheel; matrix-exponential ref) | 3.82e-07 | 1e-05 | PASS |
 | peak_accel_reference | |peak accel num - peak accel ref| / peak accel ref | 7.44e-07 | 1e-04 | PASS |
 | return_to_rest | max(|zs(t_end)|, |zu(t_end)|) / bump height | 6.67e-15 | 1e-03 | PASS |

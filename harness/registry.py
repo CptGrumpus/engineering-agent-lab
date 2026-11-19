@@ -7,9 +7,9 @@ from harness.study import Study
 
 
 def _studies() -> list[Study]:
-    from studies import msd, quarter_car  # imported lazily to avoid import cycles
+    from studies import cantilever, msd, quarter_car  # lazy: avoids import cycles
 
-    return [msd.STUDY, quarter_car.STUDY]
+    return [msd.STUDY, quarter_car.STUDY, cantilever.STUDY]
 
 
 def models() -> dict[str, tuple[Study, type[Backend]]]:

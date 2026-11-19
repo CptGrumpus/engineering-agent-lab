@@ -125,7 +125,21 @@ def build_report(run_dir: str | Path) -> Path:
         L.append("| " + " | ".join(row) + " |")
     L.append("")
 
-    rows = [(pt["parameters"][sweep], {rq["metric"]: rq["value"] for rq in pt["requirements"]})
+    run_checks = (verification or {}).get("run_checks", [])
+    if run_checks:
+        L.append("## Run-level checks")
+        L.append("")
+        L.append("Checks that use several points together (for example mesh convergence).")
+        L.append("")
+        L.append("| Check | Description | Value | Tolerance | Status |")
+        L.append("|---|---|---|---|---|")
+        for c in run_checks:
+            L.append(f"| {c['id']} | {c['description']} | {c['value']:.3g} | "
+                     f"{c['tolerance']:.3g} | {c['status']} |")
+        L.append("")
+
+    rows = [(pt["parameters"][sweep], {rq["metric"]: rq["value"] for rq in pt["requirements"]},
+             {rq["metric"]: rq["verdict"] for rq in pt["requirements"]})
             for pt in result["points"] if sweep and pt["simulation_status"] == "completed"]
     if len(rows) >= 2 and all(isinstance(r[0], (int, float)) for r in rows):
         from harness.plotting import sweep_figure
@@ -158,7 +172,8 @@ def build_report(run_dir: str | Path) -> Path:
             L.append("| Check | Description | Value | Tolerance | Status |")
             L.append("|---|---|---|---|---|")
             for c in pt["checks"]:
-                L.append(f"| {c['id']} | {c['description']} | {c['value']:.2e} | "
+                kind = " (validity)" if c.get("kind") == "validity" else ""
+                L.append(f"| {c['id']}{kind} | {c['description']} | {c['value']:.2e} | "
                          f"{c['tolerance']:.0e} | {c['status']} |")
             for fig in sorted((run_dir / "points" / pt["label"]).glob("*.png")):
                 L.append("")

@@ -1,7 +1,7 @@
 # Engineering review report: msd_step_modelica
 
 - **Run:** `20261118-213145_msd_step_modelica`
-- **Generated:** 2026-11-19T02:33:12+00:00
+- **Generated:** 2026-11-19T14:01:02+00:00
 - **Case file SHA-256:** `73ed4ffbf0aab71ed5c59e87a6db90c0692bb018a4665405aef2429694edee1d`
 - **Environment:** Python 3.14.10, numpy 2.5.5, scipy 1.18.1, matplotlib 3.11.2; Windows-11-10.0.26100-SP0
 - **Tools:** omc OpenModelica v1.26.3 (64-bit); Modelica Standard Library 4.1.0
@@ -39,12 +39,15 @@
 | p04_damping_ratio-1 | 1 | 9.407e-08 %: **PASS** | 0.1845 s: **PASS** | 10 mm: **PASS** | 6/6 PASS |
 | p05_damping_ratio-2 | 2 | 4.554e-07 %: **PASS** | 0.4705 s: **PASS** | 10 mm: **PASS** | 6/6 PASS |
 
+![Requirement metrics across the sweep](sweep.png)
+
 ## Point details
 
 ### p00_damping_ratio-0.1
 
 Parameters: mass_kg = 1, stiffness_N_per_m = 1000, damping_ratio = 0.1, step_force_N = 10
-  (derived: c = 6.325 N·s/m, f_n = 5.033 Hz)
+
+Derived: damping_N_s_per_m = 6.325, natural_frequency_rad_per_s = 31.62, natural_frequency_Hz = 5.033
 
 | Requirement | Result | Limit | Margin | Verdict | Evidence |
 |---|---|---|---|---|---|
@@ -66,7 +69,8 @@ Parameters: mass_kg = 1, stiffness_N_per_m = 1000, damping_ratio = 0.1, step_for
 ### p01_damping_ratio-0.3
 
 Parameters: mass_kg = 1, stiffness_N_per_m = 1000, damping_ratio = 0.3, step_force_N = 10
-  (derived: c = 18.97 N·s/m, f_n = 5.033 Hz)
+
+Derived: damping_N_s_per_m = 18.97, natural_frequency_rad_per_s = 31.62, natural_frequency_Hz = 5.033
 
 | Requirement | Result | Limit | Margin | Verdict | Evidence |
 |---|---|---|---|---|---|
@@ -88,7 +92,8 @@ Parameters: mass_kg = 1, stiffness_N_per_m = 1000, damping_ratio = 0.3, step_for
 ### p02_damping_ratio-0.5
 
 Parameters: mass_kg = 1, stiffness_N_per_m = 1000, damping_ratio = 0.5, step_force_N = 10
-  (derived: c = 31.62 N·s/m, f_n = 5.033 Hz)
+
+Derived: damping_N_s_per_m = 31.62, natural_frequency_rad_per_s = 31.62, natural_frequency_Hz = 5.033
 
 | Requirement | Result | Limit | Margin | Verdict | Evidence |
 |---|---|---|---|---|---|
@@ -110,7 +115,8 @@ Parameters: mass_kg = 1, stiffness_N_per_m = 1000, damping_ratio = 0.5, step_for
 ### p03_damping_ratio-0.7
 
 Parameters: mass_kg = 1, stiffness_N_per_m = 1000, damping_ratio = 0.7, step_force_N = 10
-  (derived: c = 44.27 N·s/m, f_n = 5.033 Hz)
+
+Derived: damping_N_s_per_m = 44.27, natural_frequency_rad_per_s = 31.62, natural_frequency_Hz = 5.033
 
 | Requirement | Result | Limit | Margin | Verdict | Evidence |
 |---|---|---|---|---|---|
@@ -132,7 +138,8 @@ Parameters: mass_kg = 1, stiffness_N_per_m = 1000, damping_ratio = 0.7, step_for
 ### p04_damping_ratio-1
 
 Parameters: mass_kg = 1, stiffness_N_per_m = 1000, damping_ratio = 1, step_force_N = 10
-  (derived: c = 63.25 N·s/m, f_n = 5.033 Hz)
+
+Derived: damping_N_s_per_m = 63.25, natural_frequency_rad_per_s = 31.62, natural_frequency_Hz = 5.033
 
 | Requirement | Result | Limit | Margin | Verdict | Evidence |
 |---|---|---|---|---|---|
@@ -154,7 +161,8 @@ Parameters: mass_kg = 1, stiffness_N_per_m = 1000, damping_ratio = 1, step_force
 ### p05_damping_ratio-2
 
 Parameters: mass_kg = 1, stiffness_N_per_m = 1000, damping_ratio = 2, step_force_N = 10
-  (derived: c = 126.5 N·s/m, f_n = 5.033 Hz)
+
+Derived: damping_N_s_per_m = 126.5, natural_frequency_rad_per_s = 31.62, natural_frequency_Hz = 5.033
 
 | Requirement | Result | Limit | Margin | Verdict | Evidence |
 |---|---|---|---|---|---|
@@ -177,14 +185,14 @@ Parameters: mass_kg = 1, stiffness_N_per_m = 1000, damping_ratio = 2, step_force
 
 Status: **PASS** (tolerance: max |x - x_other| / (F/k) <= 0.0001). Evidence: [cross_check_20261118-200205_msd_step.json](cross_check_20261118-200205_msd_step.json)
 
-| Point | Max rel. diff | Overshoot diff (pct pts) | Settling diff (s) | Status |
-|---|---|---|---|---|
-| p00_damping_ratio-0.1 | 2.22e-06 | -1.79e-04 | 0.00e+00 | PASS |
-| p01_damping_ratio-0.3 | 7.76e-07 | -1.53e-05 | 0.00e+00 | PASS |
-| p02_damping_ratio-0.5 | 2.51e-06 | 6.63e-05 | 0.00e+00 | PASS |
-| p03_damping_ratio-0.7 | 1.97e-06 | 2.66e-05 | 0.00e+00 | PASS |
-| p04_damping_ratio-1 | 2.79e-07 | 7.49e-08 | 0.00e+00 | PASS |
-| p05_damping_ratio-2 | 3.92e-07 | 4.53e-07 | 0.00e+00 | PASS |
+| Point | Max rel. diff | overshoot_pct diff | settling_time_s diff | static_deflection_mm diff | Status |
+|---|---|---|---|---|---|
+| p00_damping_ratio-0.1 | 2.22e-06 | -1.79e-04 | 0.00e+00 | 3.85e-06 | PASS |
+| p01_damping_ratio-0.3 | 7.76e-07 | -1.53e-05 | 0.00e+00 | 3.32e-12 | PASS |
+| p02_damping_ratio-0.5 | 2.51e-06 | 6.63e-05 | 0.00e+00 | -8.12e-11 | PASS |
+| p03_damping_ratio-0.7 | 1.97e-06 | 2.66e-05 | 0.00e+00 | 1.53e-11 | PASS |
+| p04_damping_ratio-1 | 2.79e-07 | 7.49e-08 | 0.00e+00 | -6.34e-12 | PASS |
+| p05_damping_ratio-2 | 3.92e-07 | 4.53e-07 | 0.00e+00 | 1.71e-08 | PASS |
 
 ## Limitations
 

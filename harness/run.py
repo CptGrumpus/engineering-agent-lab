@@ -91,6 +91,14 @@ def run_case(case_path: str | Path, runs_root: str | Path = "runs", rerun_of: st
             entry["derived"] = study.derive(params)
             res = backend.solve(params, case["numerics"])
             entry["solver"] = {k: res[k] for k in ("success", "message", "nfev")}
+            if res.get("outputs"):
+                entry["solver_outputs"] = res["outputs"]
+            if res.get("files"):  # solver decks, logs, native model files
+                (pdir / "solver").mkdir()
+                for name, src in res["files"].items():
+                    shutil.copyfile(src, pdir / "solver" / name)
+            if res.get("cleanup"):
+                shutil.rmtree(res["cleanup"], ignore_errors=True)
             if not res["success"]:
                 log.error("%s: solver failed: %s", label, res["message"])
             else:

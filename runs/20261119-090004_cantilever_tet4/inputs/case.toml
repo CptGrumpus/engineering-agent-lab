@@ -1,0 +1,67 @@
+# Cantilever beam, 3D solid FEA (FreeCAD + Gmsh + CalculiX): mesh-refinement
+# study with LINEAR tetrahedra (TET4). Same physics as cantilever_tet10.toml; kept
+# to demonstrate that constant-strain tets are too stiff in bending at practical
+# mesh sizes. Verified against Timoshenko beam theory and
+# by the Grid Convergence Index.
+#
+# Requirements and tolerances were fixed BEFORE the first run.
+
+[case]
+name = "cantilever_tet4"
+model = "cantilever_freecad"
+description = "Steel cantilever, 200 x 20 x 20 mm, clamped at x = 0, 1000 N downward tip load distributed over the free end face. Mesh refinement (characteristic length 8 -> 1.95 mm, ratio 1.6) with LINEAR (4-node) tetrahedra; checks tip stiffness and root bending stress requirements."
+assumptions = [
+  "Linear elastic, isotropic, homogeneous steel (E = 210 GPa, nu = 0.3); checked against yield.",
+  "Small deflections and strains (geometrically linear); checked: tip deflection / L.",
+  "Ideal clamp: all displacements fixed on the x = 0 face (stiffer than a real bolted joint).",
+  "Tip load applied as a uniform traction over the x = L face.",
+  "Root bending stress is evaluated by extrapolating the top-fibre stress from 0.25L-0.75L to x = 0, because the clamp corners are stress singularities (peak FE stress there grows with mesh refinement).",
+]
+limitations = [
+  "Synthetic geometry and load; not a specific part.",
+  "Beam theory is an approximate reference for a 3D clamped solid (L/h = 10): agreement within ~1 % is expected, not exact.",
+  "The max von Mises value is reported for information only; it sits at a singular clamp corner and is mesh-dependent.",
+  "No physical test data.",
+]
+
+[parameters]
+length_mm = 200.0
+width_mm = 20.0
+height_mm = 20.0
+youngs_modulus_MPa = 210000.0
+poisson_ratio = 0.3
+yield_strength_MPa = 355.0      # S355
+tip_load_N = 1000.0
+mesh_size_mm = 5.0
+element_order = "1st"
+
+[sweep]
+parameter = "mesh_size_mm"
+values = [8.0, 5.0, 3.125, 1.953125]
+
+[numerics]
+solver = "CalculiX static, SPOOLES direct solver (via FreeCAD ccxtools)"
+
+[verification]
+equilibrium_rel_tol = 1e-6       # sum of reactions vs applied load
+deflection_rel_tol = 0.02        # tip deflection vs Timoshenko (model-form + discretization)
+stress_rel_tol = 0.02            # extrapolated root stress vs 6FL/(bh^2)
+small_deflection_max = 0.01      # tip deflection / L for a linear analysis
+gci_deflection_max = 0.01        # GCI_fine on tip deflection
+gci_stress_max = 0.02            # GCI_fine on root bending stress
+
+[[requirements]]
+id = "REQ-C1"
+text = "Tip deflection under the 1000 N service load shall not exceed 1.0 mm."
+metric = "tip_deflection_mm"
+operator = "<="
+limit = 1.0
+units = "mm"
+
+[[requirements]]
+id = "REQ-C2"
+text = "Root bending stress shall not exceed 213 MPa (S355 yield / 1.67)."
+metric = "root_bending_stress_MPa"
+operator = "<="
+limit = 213.0
+units = "MPa"

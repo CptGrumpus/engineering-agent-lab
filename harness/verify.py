@@ -71,7 +71,21 @@ def verify_run(run_dir: str | Path) -> dict:
         summary["points"].append(entry)
 
     backend.close()
+    try:
+        run_checks, detail = study.verify_run_level(case, manifest, summary["points"])
+    except Exception as e:
+        log.exception("run-level verification error")
+        run_checks, detail = [{"id": "run_level_error", "description": f"{type(e).__name__}: {e}",
+                               "kind": "numerical", "value": float("inf"), "tolerance": 0.0,
+                               "comparison": "<=", "status": "FAIL"}], {}
+    if run_checks:
+        summary["run_checks"] = run_checks
+        summary["run_check_detail"] = detail
+        for c in run_checks:
+            log.info("run-level: %-28s %s  value %.3e  tol %.1e", c["id"], c["status"],
+                     c["value"], c["tolerance"])
     statuses = {p["status"] for p in summary["points"]}
+    statuses |= {c["status"] for c in run_checks}
     summary["status"] = "PASS" if statuses == {"PASS"} else "FAIL"
     write_json(run_dir / "verification.json", summary)
     log.info("verification %s: %s", run_dir.name, summary["status"])
