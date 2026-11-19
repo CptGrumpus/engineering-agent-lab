@@ -1,26 +1,30 @@
 ---
 name: verify-against-reference
-description: Verify a completed simulation run against independent checks (analytical reference, energy balance, steady state, solver convergence) using tolerances fixed in the case file. Use when the user asks to verify, check, validate numerically, or sanity-check a run in runs/.
+description: Verify a completed simulation or CAD run against independent checks (analytical references, conservation, convergence, mesh GCI, model-validity limits, cross-tool comparison) using tolerances fixed in the case file. Use when the user asks to verify, check, validate numerically, or sanity-check a run in runs/.
 ---
 
 # Verify a run against independent references
 
 ## Supported
 
-Runs produced by the `run-case` skill for model `msd`. The reference is the closed-form
-step response in `validation/msd_analytical.py`. That module does not import the model code;
-keep it that way.
+Any run produced by the `run-case` skill. Checks are defined per study in
+`studies/<name>.py` (`verify_point`, and `verify_run_level` for checks that need several
+points). References live in `validation/` and must not import from `models/`; keep it that way.
 
-## Checks (per sweep point)
+| Study | Per-point checks | Run-level checks |
+|---|---|---|
+| mass-spring-damper | closed-form step response, overshoot, settling, steady state, energy balance, solver convergence | - |
+| quarter car (bump) | matrix-exponential reference, peak accel, return to rest, energy balance (Simpson), solver convergence, **no_wheel_lift (validity)** | - |
+| quarter car (iso8608) | window RMS vs closed-form transfer functions, transient decayed, energy balance, solver convergence, **no_wheel_lift (validity)** | - |
+| cantilever FEA | reaction equilibrium, tip deflection vs Timoshenko, extrapolated root stress vs beam theory, **linear_material, small_deflection (validity)** | discretization uncertainty (GCI or oscillatory half-range) over the 3 finest meshes |
+| mounting plate | valid solid, volume vs closed form, bounding box, hole count/positions/diameters, STEP round trip | - |
 
-| Check | What it shows |
-|---|---|
-| `reference_agreement` | Numerical x(t) matches the closed-form solution over the full time history |
-| `overshoot_reference` | The overshoot metric matches the closed-form formula |
-| `settling_reference` | The settling-time metric matches the analytical curve |
-| `steady_state` | x(t_end) is close to F/k, so the simulation ran long enough for "final value" to mean something |
-| `energy_balance` | Work in = kinetic + potential + dissipated energy (a conservation check) |
-| `solver_convergence` | Tightening rtol/atol 100x does not change the answer |
+Two kinds of check, both gating verification:
+- **numerical**: were the equations solved correctly?
+- **validity**: does an assumption of the model hold for this result? A validity FAIL
+  means the model is the wrong tool for that point. Say so plainly. Do not suggest
+  loosening the limit. The fix is a different scenario or a better model, and that is
+  the user's call.
 
 Tolerances come from `[verification]` in the run's saved `inputs/case.toml`.
 
@@ -41,8 +45,12 @@ Tolerances come from `[verification]` in the run's saved `inputs/case.toml`.
      (units, sign, parameter mapping).
    - `steady_state` fails: `t_end_s` is too short; metrics that use the final value are
      unreliable.
-   - `energy_balance` fails: the output grid is too coarse for the trapezoid integral, or the
+   - `energy_balance` fails: the output grid is too coarse for the integral, or the
      model dissipates energy wrongly.
+   - FEA `tip_deflection_reference` fails while the discretization check fails too: the mesh is
+     too coarse or the element type is too stiff (for example linear tets in bending).
+   - `discretization_*` reports regime `divergent`: the refinement study is not converging.
+     Check the mesh sizes and element order before reading any result.
 
 ## Cross-tool check
 

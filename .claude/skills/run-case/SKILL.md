@@ -11,13 +11,24 @@ is the `verify-against-reference` skill.
 
 ## Supported
 
-| `model` in case file | Tool | Source |
-|---|---|---|
-| `msd` | SciPy `solve_ivp` | `models/msd.py` |
-| `msd_modelica` | OpenModelica 1.26.3 (omc, DASSL) + Modelica Standard Library 4.1.0 | `models/modelica/EngLab.mo` (`EngLab.MSDStep`) |
+| `model` in case file | Study | Tool | Source |
+|---|---|---|---|
+| `msd` | mass-spring-damper | SciPy `solve_ivp` | `models/msd.py` |
+| `msd_modelica` | mass-spring-damper | OpenModelica 1.26.3 + MSL 4.1.0 | `models/modelica/EngLab.mo` (`EngLab.MSDStep`) |
+| `quarter_car` | quarter car | SciPy `solve_ivp` (road `bump` or `iso8608`) | `models/quarter_car.py`, `excitation/road.py` |
+| `quarter_car_modelica` | quarter car | OpenModelica + MSL (road `bump` only) | `EngLab.mo` (`EngLab.QuarterCarBump`) |
+| `cantilever_freecad` | cantilever FEA | FreeCAD 1.1.4 (`freecadcmd`) + Gmsh + CalculiX 2.22 | `models/fea/cantilever_freecad.py` |
+| `cadquery_plate` | mounting plate | CadQuery 2.8 (OpenCASCADE) | `models/cad/mounting_plate.py` |
 
-- Python 3.14 in `.venv` (numpy, scipy, matplotlib pinned in `requirements-lock.txt`).
-- For `msd_modelica`, the harness finds `omc` via `OPENMODELICAHOME` or
+The registry is `harness/registry.py`; each study lives in `studies/<name>.py`.
+
+- Python 3.14 in `.venv` (numpy, scipy, matplotlib, cadquery pinned in `requirements-lock.txt`).
+- For `cantilever_freecad`, the harness finds `freecadcmd` via `FREECADCMD` or the FreeCAD
+  install folder. Each point runs a fresh FreeCAD session (about 4 s at 8 mm mesh, 30 s at
+  2 mm). The CalculiX deck, `.dat`, and native `cantilever.FCStd` are kept in
+  `points/<label>/solver/`. Nodal results are parsed from the `.frd` file by
+  `harness/calculix.py`, not by FreeCAD.
+- For the Modelica models, the harness finds `omc` via `OPENMODELICAHOME` or
   `C:/Program Files/OpenModelica*/bin`. It compiles the model once per run, then runs
   the executable for each point. Model parameters are passed with `-override`; stop
   time, step size, tolerance, and solver are passed as their own flags
@@ -63,7 +74,7 @@ Run every command from the repository root.
 `build/{build.mos, omc_build.log}`. See `runs/README.md`.
 
 If a point fails with `output grid mismatch`, the executable ignored the requested time
-settings. Check the flags in `harness/backends.py` against `<exe> -help`. Do not relax
+settings. Check the flags in `harness/backend_base.py` against `<exe> -help`. Do not relax
 the grid check.
 
 ## Failure handling

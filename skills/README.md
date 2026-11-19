@@ -8,12 +8,12 @@ automatically. This file tracks the skill plan and the standard each skill must 
 | Skill | Status | Location |
 |---|---|---|
 | Requirements and assumptions | Partial: captured in the case file (`assumptions`, `[[requirements]]`, `[verification]`). No interactive elicitation skill yet. | `cases/*.toml` |
-| Model preparation | Not built. Only a hand-written model exists (`models/msd.py`). | - |
+| Model preparation | Not built. Models for the four studies are hand-written (`models/`). | - |
 | Simulation execution | **Built** | [run-case](../.claude/skills/run-case/SKILL.md) |
 | Verification and evidence | **Built** | [verify-against-reference](../.claude/skills/verify-against-reference/SKILL.md) |
 | Engineering review report | **Built** | [requirements-report](../.claude/skills/requirements-report/SKILL.md) |
 
-The built skills support two models: `msd` (Python + SciPy) and `msd_modelica` (OpenModelica + MSL). `verify-against-reference` also covers the cross-tool comparison between them.
+The built skills are study-agnostic: they drive `python -m harness`, which supports every model registered in `harness/registry.py` (mass-spring-damper, quarter car, cantilever FEA, mounting plate). `verify-against-reference` also covers cross-tool comparisons and run-level checks such as mesh convergence.
 
 ## Requirements and assumptions
 

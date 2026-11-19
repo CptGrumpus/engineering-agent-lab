@@ -8,46 +8,50 @@ The intended user is an automotive engineer with a master's degree in mechanical
 
 ## Start here
 
-Read [CAD-TOOLS.md](CAD-TOOLS.md) for the software shortlist, official documentation, hardware context, and recommended starting paths.
+- **[PORTFOLIO.md](PORTFOLIO.md)**: the worked examples, results, and evidence links (for reviewers).
+- [CAD-TOOLS.md](CAD-TOOLS.md): software shortlist, documentation links, hardware context.
+- [skills/README.md](skills/README.md): agent skills and their status.
 
-The first milestone is one reproducible engineering example with independent checks. Choose the tool path after deciding whether that example concerns systems modeling, structural analysis, or geometry automation.
+## Studies
+
+| Study | Model names (case `model`) | Tools | Cases |
+|---|---|---|---|
+| Mass-spring-damper step response | `msd`, `msd_modelica` | SciPy; OpenModelica + MSL | `msd_step`, `msd_step_modelica` |
+| Quarter-car ride / road holding | `quarter_car`, `quarter_car_modelica` | SciPy; OpenModelica + MSL | `qc_speed_bump`, `qc_speed_bump_modelica`, `qc_iso_road`, `qc_bump` |
+| Cantilever, 3D solid FEA | `cantilever_freecad` | FreeCAD + Gmsh + CalculiX | `cantilever_tet10`, `cantilever_tet4` |
+| Parametric mounting plate | `cadquery_plate` | CadQuery | `mounting_plate` |
 
 ## Project folders
 
-- `cases/`: case files (TOML) with parameters, numerics, verification tolerances, and requirements.
-- `models/`: source models under test.
-- `validation/`: independent reference solutions; these must not import from `models/`.
-- `harness/`: run, verify, report, and rerun tooling (`python -m harness`).
-- `runs/`: generated evidence from individual executions (git-ignored); see [runs/README.md](runs/README.md).
-- `.claude/skills/`: executable Claude Code skills; see [skills/README.md](skills/README.md).
-- `tests/`: pytest suite, including negative tests showing that the checks catch a wrong model.
+- `cases/`: case files (TOML) with parameters, sweep, numerics, verification tolerances, and requirements.
+- `models/`: models under test (Python, Modelica `.mo`, FreeCAD script, CadQuery).
+- `validation/`: independent references (closed form, state space, beam theory); these must not import from `models/`.
+- `excitation/`: load definitions shared by models and references (road profiles).
+- `studies/`: one module per study: backends, metrics, checks, plots.
+- `harness/`: generic run, verify, report, compare, and rerun tooling (`python -m harness`).
+- `runs/`: evidence from individual executions; see [runs/README.md](runs/README.md). Git-ignored except curated example runs (without bulky result CSVs).
+- `.claude/skills/`: executable Claude Code skills.
+- `tests/`: pytest suite (43 tests), including negative tests showing that the checks catch wrong models and invalid assumptions.
 
-## Current status
-
-Working baseline: **Python + SciPy, mass-spring-damper step response** ([cases/msd_step.toml](cases/msd_step.toml)). A damping-ratio sweep is checked against overshoot, settling-time, and deflection requirements. Every point is verified against a closed-form solution, an energy balance, a steady-state check, and a solver-convergence check. Reruns from the saved inputs are bit-identical.
-
-The same case is also built from **Modelica Standard Library components** ([models/modelica/EngLab.mo](models/modelica/EngLab.mo), [cases/msd_step_modelica.toml](cases/msd_step_modelica.toml)) and solved by OpenModelica. It passes the same checks and agrees with the SciPy implementation to within 2.5e-6 of the static deflection (cross-tool check).
-
-Environment: Python 3.14 in `.venv`, with package versions pinned in [requirements-lock.txt](requirements-lock.txt); OpenModelica 1.26.3 with Modelica Standard Library 4.1.0.
+## Setup and commands
 
 ```powershell
-# one-time setup
-py -3.14 -m venv .venv   # or the full path to python 3.14
+py -3.14 -m venv .venv
 .venv\Scripts\python.exe -m pip install -r requirements-lock.txt
-winget install --id OpenModelica.OpenModelica.Official        # optional: Modelica path
-# then run an omc script containing: installPackage(Modelica);
+# optional tool paths
+winget install --id OpenModelica.OpenModelica.Official   # then an omc script: installPackage(Modelica);
+winget install --id FreeCAD.FreeCAD                       # bundles CalculiX and Gmsh
 
-.venv\Scripts\python.exe -m harness pipeline cases\msd_step.toml            # run + verify + report
-.venv\Scripts\python.exe -m harness pipeline cases\msd_step_modelica.toml
-.venv\Scripts\python.exe -m harness compare runs\<modelica_run> runs\<scipy_run>
-.venv\Scripts\python.exe -m harness report runs\<modelica_run>              # adds cross-check table
-.venv\Scripts\python.exe -m harness rerun runs\<run_id>                     # reproduce
-.venv\Scripts\python.exe -m pytest -q        # tests (Modelica tests skip if omc is absent)
+.venv\Scripts\python.exe -m harness pipeline cases\qc_speed_bump.toml      # run + verify + report
+.venv\Scripts\python.exe -m harness compare runs\<run> runs\<other_run>      # cross-tool check
+.venv\Scripts\python.exe -m harness report runs\<run>                        # regenerate the report
+.venv\Scripts\python.exe -m harness rerun runs\<run_id>                      # reproduce
+.venv\Scripts\python.exe -m pytest -q        # Modelica/FreeCAD tests skip if the tool is absent
 ```
 
-Not yet done: structural (FreeCAD/CalculiX) path, a less trivial systems model (e.g. quarter-car or thermal network), any physical validation data.
+Not yet done: OpenFOAM (CFD) path, nonlinear models (tire lift-off, bump stops, contact), any physical validation data.
 
-## First implementation milestone
+## First implementation milestone (done)
 
 1. Select one public benchmark and one tool path.
 2. Inspect which required tools are already installed and record their versions.
