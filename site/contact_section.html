@@ -1,0 +1,27 @@
+  <section class="study" id="contact">
+    <div class="study-head">
+      <span class="label">Example 10 · Nonlinear contact in Gmsh and CalculiX</span>
+      <h2>Roller-on-plate contact</h2>
+    </div>
+    <figure><div class="plate"><img src="v2/contact_response.webp" alt="Contact pressure and subsurface shear from CalculiX against the exact Hertz solution" loading="lazy"></div><figcaption>CalculiX's contact pressure across the patch and the shear stress below its centre, both on the exact Hertz curves.</figcaption></figure>
+    <p><strong>The question.</strong> A hardened steel track roller, 100 mm in diameter, runs on a steel rail plate and carries 500 N per mm of its width. Does the peak contact pressure stay at or under 650 MPa, and does the maximum shear stress below the surface, where rolling-contact fatigue cracks start, stay at or under 200 MPa?</p>
+    <div class="answer">
+      <div class="chips"><span class="chip pass">Peak pressure 609 MPa</span><span class="chip pass">Subsurface shear 184 MPa</span><span class="chip pass">Matches Hertz to 0.4 %</span></div>
+      <p><strong>Yes, on both.</strong> The peak contact pressure is 609 MPa and the maximum shear below the surface is 184 MPa, about 0.4 mm down: margins of 6 % and 8 %. The contact patch is 1.05 mm wide.</p>
+    </div>
+    <h3>How I know it's right</h3>
+    <ul class="proof">
+      <li><b>The model.</b> The roller and the plate are separate bodies that only touch. CalculiX finds where they're in contact as part of the solution. I push the roller down a set distance and read the force from the reactions, which is more robust than pushing with a force before the bodies have engaged.</li>
+      <li><b>Against the exact solution.</b> Hertz's theory gives the exact contact pressure and the stress field underneath. Compared at the load the model actually carries, 501.1 N/mm, the contact half-width matches to 0.005 %, the peak pressure to 0.4 %, and the depth of the maximum shear to within 2 % of one element.</li>
+      <li><b>Equilibrium and contact.</b> The force on the roller and the reaction under the plate balance exactly, the pressure integrated across the patch accounts for the load to within 2.2 %, and the largest overlap of the penalty contact is less than a ten-thousandth of the imposed approach.</li>
+      <li><b>Mesh refinement.</b> Contact elements of 0.08, 0.04 and 0.02 mm. The two coarser meshes fail some Hertz checks, as they should, so only the finest gives the verdict. Mesh uncertainty is 1.2 % on the pressure and 0.15 % on the shear.</li>
+    </ul>
+    <div class="caught">
+      <h3>What the checks caught</h3>
+      <ul>
+        <li><b>Reading the wrong output overstates the pressure.</b> The pressure taken from element stresses at the surface read 3.5 to 6.5 % high and added up to more than the load. CalculiX's own contact pressure was within 0.2 % of Hertz on the same mesh, so the study reads that.</li>
+        <li><b>A converged answer the convergence check called divergent.</b> The maximum shear agreed across meshes to 0.06 %, but it was the largest value at any node, and which node sits nearest the true peak changes with the mesh. I kept the tolerance, changed the metric to locate the peak between nodes, wrote down the expected result first, and kept the failed run as evidence. The check now passes at 0.15 %.</li>
+        <li><b>A mesh nearly eight times bigger than it needed to be.</b> The first refinement zone spread across the whole model: 70,820 nodes and 3.5 minutes per solve. Keeping it near the contact gave 9,334 nodes, 20 seconds, and the same answer to 0.2 %.</li>
+      </ul>
+    </div>
+  </section>
