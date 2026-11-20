@@ -1,6 +1,6 @@
 # Engineering Modeling Portfolio
 
-These five worked examples show how I approach a modeling job. Each one starts from a written question and measurable requirements, builds a model to answer it, and then checks the result against something independent: an exact solution, a conservation law, a second tool, or a mesh-convergence study. Every example ends with a clear answer and a statement of how sure that answer is.
+These six worked examples show how I approach a modeling job. Each one starts from a written question and measurable requirements, builds a model to answer it, and then checks the result against something independent: an exact solution, a conservation law, a second tool, or a mesh-convergence study. Every example ends with a clear answer and a statement of how sure that answer is.
 
 I also show what the checks caught along the way. In several examples the first version of the model gave an answer that looked reasonable and was wrong, and the checks are what exposed it. I think that matters more than a clean result.
 
@@ -11,10 +11,11 @@ All of the problems are synthetic, so no client data is involved. Every number o
 | Example | The question | The answer | Tools |
 |---|---|---|---|
 | [1. Coolant channel pressure budget](#1-coolant-channel-pressure-budget) | Does a cold-plate passage stay within its pump budget across manufacturing tolerance and coolant temperature? | No. It needs 33.4 Pa against a 30 Pa budget, and no gap size satisfies both requirements. | OpenFOAM (computational fluid dynamics) |
-| [2. Quarter-car ride and road holding](#2-quarter-car-ride-and-road-holding) | Which damper rates meet comfort, suspension travel, and tire-load targets? | 600 to 1000 N·s/m over a speed bump. On a rough road, the spring rate has to change too. | Python (SciPy) and OpenModelica |
-| [3. Cantilever bracket, 3D finite elements](#3-cantilever-bracket-3d-finite-elements) | Does a steel cantilever meet its stiffness and stress limits, and how accurate is the model? | Yes: 0.953 mm deflection and 150 MPa root stress, with mesh uncertainty of 0.02 %. | FreeCAD, Gmsh, CalculiX |
-| [4. Parametric mounting plate](#4-parametric-mounting-plate) | Which hole size keeps an aluminium plate light enough while keeping enough material around each hole? | Only the 9 mm (M8 clearance) hole meets both rules. | CadQuery |
-| [5. Mass-spring-damper baseline](#5-mass-spring-damper-baseline) | Can the workflow reproduce a textbook result exactly, in two different tools? | Yes. All 72 checks pass, and the two tools agree to a few parts per million. | Python (SciPy) and OpenModelica |
+| [2. Heat-sink fin temperature](#2-heat-sink-fin-temperature) | Does the tip of an aluminium heat-sink fin stay above 60 °C, and what would make it fail? | Yes, at 73.2 °C. Even with every input at its worst it stays at 65.9 °C. | CalculiX (heat transfer) |
+| [3. Quarter-car ride and road holding](#3-quarter-car-ride-and-road-holding) | Which damper rates meet comfort, suspension travel, and tire-load targets? | 600 to 1000 N·s/m over a speed bump. On a rough road, the spring rate has to change too. | Python (SciPy) and OpenModelica |
+| [4. Cantilever bracket, 3D finite elements](#4-cantilever-bracket-3d-finite-elements) | Does a steel cantilever meet its stiffness and stress limits, and how accurate is the model? | Yes: 0.953 mm deflection and 150 MPa root stress, with mesh uncertainty of 0.02 %. | FreeCAD, Gmsh, CalculiX |
+| [5. Parametric mounting plate](#5-parametric-mounting-plate) | Which hole size keeps an aluminium plate light enough while keeping enough material around each hole? | Only the 9 mm (M8 clearance) hole meets both rules. | CadQuery |
+| [6. Mass-spring-damper baseline](#6-mass-spring-damper-baseline) | Can the workflow reproduce a textbook result exactly, in two different tools? | Yes. All 72 checks pass, and the two tools agree to a few parts per million. | Python (SciPy) and OpenModelica |
 
 ## How I work
 
@@ -70,7 +71,38 @@ So this is a design decision rather than a modeling one. The options are to narr
 
 ---
 
-## 2. Quarter-car ride and road holding
+## 2. Heat-sink fin temperature
+
+**The question.** One fin of a heat sink is 6061 aluminium, 40 mm tall, 20 mm wide and 2 mm thick. Its base sits at 80 °C, and the surrounding air is at 25 °C with a heat-transfer coefficient of about 25 W/m²K. Does the tip of the fin stay above 60 °C, and how sure can we be?
+
+**The answer: yes, comfortably.** The coldest point on the tip is 73.2 °C, a margin of 13 degrees. With every input pushed to its unfavourable end at once, the tip still sits at 65.9 °C: the air-side coefficient doubled, the lowest likely conductivity for this alloy, and every dimension at the cold end of its tolerance.
+
+The input that matters most is the air-side heat-transfer coefficient. The tip only reaches 60 °C once that coefficient climbs to about 95 W/m²K, almost four times the estimate. The other realistic way to fail is a poor joint where the fin meets the base: the tip drops to 60 °C if the fin root runs at about 65 °C instead of 80. That's the thing I'd check on the real part.
+
+**How I know it's right.**
+
+- **The model.** A full 3D heat-conduction model solved in CalculiX, with heat lost to the air from every exposed face. The mesh is generated directly in code.
+- **Against theory.** The textbook one-dimensional fin solution agrees with the 3D result to within half a thousandth of a degree along the whole fin. I wrote down the expected values before running anything, and every result landed within a tenth of a degree of them.
+- **Energy balance.** The heat entering at the base matches the heat leaving through all the surfaces.
+- **Mesh dependence.** Refining the elements from 2 mm down to 0.25 mm converges at exactly the rate the elements are designed for. The remaining numerical uncertainty is less than a thousandth of a degree.
+- **Is a one-dimensional view valid?** The temperature across the fin's thickness is uniform to within a few hundredths of a degree, which confirms the textbook comparison is a fair one.
+
+![Temperature along the fin: 3D model against fin theory](runs/20261119-221454_fin_mesh/points/p03_element_size_mm-0.25/response.png)
+
+![Tip temperature as the air-side heat-transfer coefficient rises](runs/20261119-221655_fin_h_sweep/sweep.png)
+
+**What the checks caught.**
+
+- **The solver's own heat total was 1.3 % short.** In the first trial run, the heat flow CalculiX reported at the base didn't match the heat leaving the surfaces. The cause was that the solver leaves out the convection assigned to the base nodes themselves. I add that share back in, and the energy balance now closes exactly.
+- **The printed temperatures were too coarse to judge convergence.** On the two finest meshes, the change in tip temperature was about the same size as the rounding in the solver's standard output. I now read a higher-precision output, so the mesh-convergence estimate can't be decided by rounding.
+
+This example was built by an AI agent working only from my written modeling procedures, as a test of whether those procedures produce verified work on a problem they hadn't seen. The checks above are the same ones every other example uses.
+
+**Evidence:** [mesh study](runs/20261119-221454_fin_mesh/report.md), [tolerance cases](runs/20261119-221517_fin_tolerance/report.md), [heat-transfer coefficient sweep](runs/20261119-221655_fin_h_sweep/report.md).
+
+---
+
+## 3. Quarter-car ride and road holding
 
 **The question.** For a compact-car front corner, which damper rates between 600 and 3500 N·s/m meet the targets for ride comfort, suspension travel, and tire load? I tested it over a speed bump and over a rough road.
 
@@ -94,7 +126,7 @@ So this is a design decision rather than a modeling one. The options are to narr
 
 ---
 
-## 3. Cantilever bracket, 3D finite elements
+## 4. Cantilever bracket, 3D finite elements
 
 **The question.** A steel bracket, 200 mm long with a 20 by 20 mm section, carries a 1 kN load at its tip. Does it stay within a 1.0 mm deflection limit and a 213 MPa stress limit? And how accurate is the model?
 
@@ -118,7 +150,7 @@ So this is a design decision rather than a modeling one. The options are to narr
 
 ---
 
-## 4. Parametric mounting plate
+## 5. Parametric mounting plate
 
 **The question.** An aluminium plate, 120 by 80 by 6 mm, has a grid of six holes. Which clearance-hole size, from M5 up to M12, keeps the plate at or under 150 g while leaving at least twice the hole diameter between each hole and the edge?
 
@@ -132,7 +164,7 @@ So this is a design decision rather than a modeling one. The options are to narr
 
 ---
 
-## 5. Mass-spring-damper baseline
+## 6. Mass-spring-damper baseline
 
 This was the first example, used to prove the workflow on a problem with a known answer. It's a single mass on a spring and damper, pushed by a step force, at six different damping levels. The results are checked against the exact textbook solution, an energy balance, the final resting position, and the solver's own convergence. All 72 checks pass. The same system built in OpenModelica agrees with the Python version to a few parts per million.
 
@@ -147,9 +179,9 @@ This was the first example, used to prove the workflow on a problem with a known
 - The parameters and requirement limits are synthetic. Nothing here is calibrated to a real product.
 - The checks show the equations were solved correctly and the models were used within their valid range. Showing that a model matches real hardware needs test data, which these examples don't have.
 - The ride-comfort figures are unweighted. A production study would apply the ISO 2631 human-sensitivity weighting.
-- The coolant-channel model covers flow and pressure, not heat transfer.
+- The coolant-channel model covers flow and pressure, not heat transfer. The fin model takes the air-side heat-transfer coefficient as an input rather than computing the airflow.
 - Every report ends with "pending human review". Accepting a design is an engineering decision, and it stays with a person.
 
 ## Reproducing the work
 
-Each run records its exact inputs, tool versions, and code version, and can be repeated with one command. The commands and setup are in the [README](README.md). Tool versions used: Python 3.14 with NumPy and SciPy, OpenModelica 1.26.3, FreeCAD 1.1.4 with CalculiX 2.22 and Gmsh, CadQuery 2.8, and OpenFOAM 14 running under Linux on Windows.
+Each run records its exact inputs, tool versions, and code version, and can be repeated with one command. The commands and setup are in the [README](README.md). Tool versions used: Python 3.14 with NumPy and SciPy, OpenModelica 1.26.3, FreeCAD 1.1.4 with CalculiX 2.22 and Gmsh, CalculiX on its own for heat transfer, CadQuery 2.8, and OpenFOAM 14 running under Linux on Windows.

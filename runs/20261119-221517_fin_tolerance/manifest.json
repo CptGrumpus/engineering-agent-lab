@@ -1,0 +1,315 @@
+{
+  "run_id": "20261119-221517_fin_tolerance",
+  "case_name": "fin_tolerance",
+  "model": "ccx_fin",
+  "case_source": "cases/fin_tolerance.toml",
+  "case_sha256": "59840c51d3d26875e3eeaf53a631bdae7fb4d5595e05eb59be13e809ae5873e5",
+  "model_sources_sha256": {
+    "models/thermal/fin_ccx.py": "876db0ee5044c911816868cc72652288608ddff982b0933ed1901a0f50d7ded8"
+  },
+  "rerun_of": null,
+  "started_utc": "2026-11-20T03:15:17+00:00",
+  "environment": {
+    "python": "3.14.10",
+    "python_executable": "C:\\Users\\mrstego\\projects\\engineering-agent-lab\\.venv\\Scripts\\python.exe",
+    "platform": "Windows-11-10.0.26100-SP0",
+    "machine": "AMD64",
+    "packages": {
+      "numpy": "2.5.5",
+      "scipy": "1.18.1",
+      "matplotlib": "3.11.2",
+      "cadquery": "2.8.0"
+    },
+    "git": {
+      "commit": "95e5f565433fe25df4c28f3d79686e00366c7f7d",
+      "dirty": false
+    },
+    "tools": {
+      "CalculiX": "This is Version 2.22",
+      "ccx": "C:\\Users\\mrstego\\AppData\\Local\\Programs\\FreeCAD 1.1\\bin\\ccx.exe"
+    }
+  },
+  "numerics": {
+    "solver": "CalculiX 2.22, *HEAT TRANSFER, STEADY STATE, C3D8 structured hex mesh, SPOOLES direct solver"
+  },
+  "points": [
+    {
+      "label": "p00_nominal",
+      "parameters": {
+        "thickness_mm": 2.0,
+        "width_mm": 20.0,
+        "length_mm": 40.0,
+        "conductivity_W_per_mK": 167.0,
+        "htc_W_per_m2K": 25.0,
+        "base_temperature_C": 80.0,
+        "air_temperature_C": 25.0,
+        "element_size_mm": 0.25,
+        "scenario": "nominal"
+      },
+      "status": "completed",
+      "derived": {
+        "biot_half_thickness": 0.0001497005988023952,
+        "mL": 0.5132962632751338,
+        "tip_temperature_1d_C": 73.20717832733035,
+        "heat_flow_1d_W": 2.2701919049601504,
+        "fin_efficiency_1d": 0.9172492545293537,
+        "breakeven_htc_1d_W_per_m2K": 95.13773059552065
+      },
+      "solver": {
+        "success": true,
+        "message": "CalculiX: [8, 80, 160] hex elements",
+        "nfev": null
+      },
+      "solver_outputs": {
+        "nodes": 117369,
+        "divisions": [
+          8,
+          80,
+          160
+        ],
+        "extent_mm": [
+          2.0000000000000004,
+          19.999999999999996,
+          39.99999999999999
+        ],
+        "tip_min_C": 73.18129,
+        "tip_min_frd_C": 73.1813,
+        "tip_mean_C": 73.20769093750002,
+        "global_min_C": 73.1813,
+        "global_max_C": 80.0,
+        "base_reaction_rfl_W": 2.262458,
+        "base_node_film_W": 0.007558521093750001,
+        "convective_loss_W": 2.2700167392187494
+      },
+      "metrics": {
+        "tip_temperature_min_C": 73.18129,
+        "tip_temperature_mean_C": 73.20769093750002,
+        "tip_excess_min_K": 48.181290000000004,
+        "base_heat_flow_W": 2.27001652109375
+      }
+    },
+    {
+      "label": "p01_cold_tip_corner",
+      "parameters": {
+        "thickness_mm": 1.9,
+        "width_mm": 19.8,
+        "length_mm": 40.2,
+        "conductivity_W_per_mK": 150.0,
+        "htc_W_per_m2K": 50.0,
+        "base_temperature_C": 80.0,
+        "air_temperature_C": 25.0,
+        "element_size_mm": 0.25,
+        "scenario": "cold_tip_corner"
+      },
+      "status": "completed",
+      "derived": {
+        "biot_half_thickness": 0.00031666666666666665,
+        "mL": 0.7883170048651049,
+        "tip_temperature_1d_C": 65.98415909123844,
+        "heat_flow_1d_W": 4.0595003044221505,
+        "fin_efficiency_1d": 0.8282454855415933,
+        "breakeven_htc_1d_W_per_m2K": 80.84988920638634
+      },
+      "solver": {
+        "success": true,
+        "message": "CalculiX: [8, 79, 161] hex elements",
+        "nfev": null
+      },
+      "solver_outputs": {
+        "nodes": 116640,
+        "divisions": [
+          8,
+          79,
+          161
+        ],
+        "extent_mm": [
+          1.8999999999999995,
+          19.800000000000004,
+          40.20000000000001
+        ],
+        "tip_min_C": 65.93685,
+        "tip_min_frd_C": 65.9369,
+        "tip_mean_C": 65.98614333828252,
+        "global_min_C": 65.9369,
+        "global_max_C": 80.0,
+        "base_reaction_rfl_W": 4.044015,
+        "base_node_film_W": 0.014883613866745558,
+        "convective_loss_W": 4.058898670936787
+      },
+      "metrics": {
+        "tip_temperature_min_C": 65.93685,
+        "tip_temperature_mean_C": 65.98614333828252,
+        "tip_excess_min_K": 40.93685000000001,
+        "base_heat_flow_W": 4.058898613866745
+      }
+    },
+    {
+      "label": "p02_warm_tip_corner",
+      "parameters": {
+        "thickness_mm": 2.1,
+        "width_mm": 20.2,
+        "length_mm": 39.8,
+        "conductivity_W_per_mK": 180.0,
+        "htc_W_per_m2K": 12.5,
+        "base_temperature_C": 80.0,
+        "air_temperature_C": 25.0,
+        "element_size_mm": 0.25,
+        "scenario": "warm_tip_corner"
+      },
+      "status": "completed",
+      "derived": {
+        "biot_half_thickness": 7.291666666666667e-05,
+        "mL": 0.34008221711957226,
+        "tip_temperature_1d_C": 76.82787832135324,
+        "heat_flow_1d_W": 1.2013647937068992,
+        "fin_efficiency_1d": 0.9614523796078723,
+        "breakeven_htc_1d_W_per_m2K": 108.12514585627753
+      },
+      "solver": {
+        "success": true,
+        "message": "CalculiX: [8, 81, 159] hex elements",
+        "nfev": null
+      },
+      "solver_outputs": {
+        "nodes": 118080,
+        "divisions": [
+          8,
+          81,
+          159
+        ],
+        "extent_mm": [
+          2.1,
+          20.2,
+          39.800000000000004
+        ],
+        "tip_min_C": 76.81465,
+        "tip_min_frd_C": 76.8147,
+        "tip_mean_C": 76.8280003088713,
+        "global_min_C": 76.8147,
+        "global_max_C": 80.0,
+        "base_reaction_rfl_W": 1.197481,
+        "base_node_film_W": 0.0038366898584619785,
+        "convective_loss_W": 1.2013176410847688
+      },
+      "metrics": {
+        "tip_temperature_min_C": 76.81465,
+        "tip_temperature_mean_C": 76.8280003088713,
+        "tip_excess_min_K": 51.81465,
+        "base_heat_flow_W": 1.201317689858462
+      }
+    },
+    {
+      "label": "p03_cold_build_nominal_h",
+      "parameters": {
+        "thickness_mm": 1.9,
+        "width_mm": 19.8,
+        "length_mm": 40.2,
+        "conductivity_W_per_mK": 150.0,
+        "htc_W_per_m2K": 25.0,
+        "base_temperature_C": 80.0,
+        "air_temperature_C": 25.0,
+        "element_size_mm": 0.25,
+        "scenario": "cold_build_nominal_h"
+      },
+      "status": "completed",
+      "derived": {
+        "biot_half_thickness": 0.00015833333333333332,
+        "mL": 0.5574242998647841,
+        "tip_temperature_1d_C": 72.15047951539516,
+        "heat_flow_1d_W": 2.216147312031138,
+        "fin_efficiency_1d": 0.90430539171801,
+        "breakeven_htc_1d_W_per_m2K": 80.84988920638634
+      },
+      "solver": {
+        "success": true,
+        "message": "CalculiX: [8, 79, 161] hex elements",
+        "nfev": null
+      },
+      "solver_outputs": {
+        "nodes": 116640,
+        "divisions": [
+          8,
+          79,
+          161
+        ],
+        "extent_mm": [
+          1.8999999999999995,
+          19.800000000000004,
+          40.20000000000001
+        ],
+        "tip_min_C": 72.12274,
+        "tip_min_frd_C": 72.1227,
+        "tip_mean_C": 72.15110505409186,
+        "global_min_C": 72.1227,
+        "global_max_C": 80.0,
+        "base_reaction_rfl_W": 2.208523,
+        "base_node_film_W": 0.0074455784067116015,
+        "convective_loss_W": 2.215968233399788
+      },
+      "metrics": {
+        "tip_temperature_min_C": 72.12274,
+        "tip_temperature_mean_C": 72.15110505409186,
+        "tip_excess_min_K": 47.12273999999999,
+        "base_heat_flow_W": 2.2159685784067116
+      }
+    },
+    {
+      "label": "p04_high_h_nominal_build",
+      "parameters": {
+        "thickness_mm": 2.0,
+        "width_mm": 20.0,
+        "length_mm": 40.0,
+        "conductivity_W_per_mK": 167.0,
+        "htc_W_per_m2K": 50.0,
+        "base_temperature_C": 80.0,
+        "air_temperature_C": 25.0,
+        "element_size_mm": 0.25,
+        "scenario": "high_h_nominal_build"
+      },
+      "status": "completed",
+      "derived": {
+        "biot_half_thickness": 0.0002994011976047904,
+        "mL": 0.7259105370391251,
+        "tip_temperature_1d_C": 67.69179462617443,
+        "heat_flow_1d_W": 4.204511575331483,
+        "fin_efficiency_1d": 0.849396277844744,
+        "breakeven_htc_1d_W_per_m2K": 95.13773059552065
+      },
+      "solver": {
+        "success": true,
+        "message": "CalculiX: [8, 80, 160] hex elements",
+        "nfev": null
+      },
+      "solver_outputs": {
+        "nodes": 117369,
+        "divisions": [
+          8,
+          80,
+          160
+        ],
+        "extent_mm": [
+          2.0000000000000004,
+          19.999999999999996,
+          39.99999999999999
+        ],
+        "tip_min_C": 67.64673,
+        "tip_min_frd_C": 67.6467,
+        "tip_mean_C": 67.693488125,
+        "global_min_C": 67.6467,
+        "global_max_C": 80.0,
+        "base_reaction_rfl_W": 4.1888,
+        "base_node_film_W": 0.015110238020833335,
+        "convective_loss_W": 4.203910515312499
+      },
+      "metrics": {
+        "tip_temperature_min_C": 67.64673,
+        "tip_temperature_mean_C": 67.693488125,
+        "tip_excess_min_K": 42.646730000000005,
+        "base_heat_flow_W": 4.203910238020833
+      }
+    }
+  ],
+  "study": "fin",
+  "status": "completed",
+  "finished_utc": "2026-11-20T03:16:49+00:00"
+}

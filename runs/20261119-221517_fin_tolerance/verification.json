@@ -1,0 +1,317 @@
+{
+  "run_id": "20261119-221517_fin_tolerance",
+  "verified_utc": "2026-11-20T03:16:49+00:00",
+  "tolerances": {
+    "energy_balance_rel_tol": 0.0001,
+    "tip_reference_rel_tol": 0.01,
+    "heat_flow_reference_rel_tol": 0.01,
+    "profile_reference_rel_tol": 0.01,
+    "biot_max": 0.1,
+    "tip_is_coldest_abs_tol_K": 0.0,
+    "gci_tip_excess_max": 0.002,
+    "gci_heat_flow_max": 0.01
+  },
+  "points": [
+    {
+      "label": "p00_nominal",
+      "status": "PASS",
+      "checks": [
+        {
+          "id": "energy_balance",
+          "description": "|Q_base (RFL + film share at base nodes) - integral h(T - T_air) dA| / Q_conv",
+          "kind": "numerical",
+          "value": 9.608959952915003e-08,
+          "tolerance": 0.0001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "tip_reference",
+          "description": "|tip-face mean excess T (3D) - 1D fin theory| / 1D (model form)",
+          "kind": "numerical",
+          "value": 1.063348213795005e-05,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "heat_flow_reference",
+          "description": "|base heat flow (3D) - 1D fin heat rate| / 1D (model form)",
+          "kind": "numerical",
+          "value": 7.725508403817469e-05,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "profile_reference",
+          "description": "max over z of |cross-section mean T - T_1D(z)| / (T_base - T_air)",
+          "kind": "numerical",
+          "value": 9.429202435223323e-06,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "tip_is_coldest",
+          "description": "tip-face minimum - global minimum temperature (K); metric must find the coldest point",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "one_d_reference_valid",
+          "description": "Biot number h (t/2) / k (1D fin theory valid well below 0.1)",
+          "kind": "validity",
+          "value": 0.0001497005988023952,
+          "tolerance": 0.1,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p01_cold_tip_corner",
+      "status": "PASS",
+      "checks": [
+        {
+          "id": "energy_balance",
+          "description": "|Q_base (RFL + film share at base nodes) - integral h(T - T_air) dA| / Q_conv",
+          "kind": "numerical",
+          "value": 1.4060474688399878e-08,
+          "tolerance": 0.0001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "tip_reference",
+          "description": "|tip-face mean excess T (3D) - 1D fin theory| / 1D (model form)",
+          "kind": "numerical",
+          "value": 4.8414975153218104e-05,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "heat_flow_reference",
+          "description": "|base heat flow (3D) - 1D fin heat rate| / 1D (model form)",
+          "kind": "numerical",
+          "value": 0.0001482178865093161,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "profile_reference",
+          "description": "max over z of |cross-section mean T - T_1D(z)| / (T_base - T_air)",
+          "kind": "numerical",
+          "value": 3.608187044454264e-05,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "tip_is_coldest",
+          "description": "tip-face minimum - global minimum temperature (K); metric must find the coldest point",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "one_d_reference_valid",
+          "description": "Biot number h (t/2) / k (1D fin theory valid well below 0.1)",
+          "kind": "validity",
+          "value": 0.00031666666666666665,
+          "tolerance": 0.1,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p02_warm_tip_corner",
+      "status": "PASS",
+      "checks": [
+        {
+          "id": "energy_balance",
+          "description": "|Q_base (RFL + film share at base nodes) - integral h(T - T_air) dA| / Q_conv",
+          "kind": "numerical",
+          "value": 4.0600164051796434e-08,
+          "tolerance": 0.0001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "tip_reference",
+          "description": "|tip-face mean excess T (3D) - 1D fin theory| / 1D (model form)",
+          "kind": "numerical",
+          "value": 2.3537046471462348e-06,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "heat_flow_reference",
+          "description": "|base heat flow (3D) - 1D fin heat rate| / 1D (model form)",
+          "kind": "numerical",
+          "value": 3.9208613972903905e-05,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "profile_reference",
+          "description": "max over z of |cross-section mean T - T_1D(z)| / (T_base - T_air)",
+          "kind": "numerical",
+          "value": 2.3100769833593984e-06,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "tip_is_coldest",
+          "description": "tip-face minimum - global minimum temperature (K); metric must find the coldest point",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "one_d_reference_valid",
+          "description": "Biot number h (t/2) / k (1D fin theory valid well below 0.1)",
+          "kind": "validity",
+          "value": 7.291666666666667e-05,
+          "tolerance": 0.1,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p03_cold_build_nominal_h",
+      "status": "PASS",
+      "checks": [
+        {
+          "id": "energy_balance",
+          "description": "|Q_base (RFL + film share at base nodes) - integral h(T - T_air) dA| / Q_conv",
+          "kind": "numerical",
+          "value": 1.5569127674054368e-07,
+          "tolerance": 0.0001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "tip_reference",
+          "description": "|tip-face mean excess T (3D) - 1D fin theory| / 1D (model form)",
+          "kind": "numerical",
+          "value": 1.3266857582886845e-05,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "heat_flow_reference",
+          "description": "|base heat flow (3D) - 1D fin heat rate| / 1D (model form)",
+          "kind": "numerical",
+          "value": 8.065060632758206e-05,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "profile_reference",
+          "description": "max over z of |cross-section mean T - T_1D(z)| / (T_base - T_air)",
+          "kind": "numerical",
+          "value": 1.1377400294711813e-05,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "tip_is_coldest",
+          "description": "tip-face minimum - global minimum temperature (K); metric must find the coldest point",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "one_d_reference_valid",
+          "description": "Biot number h (t/2) / k (1D fin theory valid well below 0.1)",
+          "kind": "validity",
+          "value": 0.00015833333333333332,
+          "tolerance": 0.1,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p04_high_h_nominal_build",
+      "status": "PASS",
+      "checks": [
+        {
+          "id": "energy_balance",
+          "description": "|Q_base (RFL + film share at base nodes) - integral h(T - T_air) dA| / Q_conv",
+          "kind": "numerical",
+          "value": 6.596041116078355e-08,
+          "tolerance": 0.0001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "tip_reference",
+          "description": "|tip-face mean excess T (3D) - 1D fin theory| / 1D (model form)",
+          "kind": "numerical",
+          "value": 3.9668016779407935e-05,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "heat_flow_reference",
+          "description": "|base heat flow (3D) - 1D fin heat rate| / 1D (model form)",
+          "kind": "numerical",
+          "value": 0.00014302191821240082,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "profile_reference",
+          "description": "max over z of |cross-section mean T - T_1D(z)| / (T_base - T_air)",
+          "kind": "numerical",
+          "value": 3.092314299728762e-05,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "tip_is_coldest",
+          "description": "tip-face minimum - global minimum temperature (K); metric must find the coldest point",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "one_d_reference_valid",
+          "description": "Biot number h (t/2) / k (1D fin theory valid well below 0.1)",
+          "kind": "validity",
+          "value": 0.0002994011976047904,
+          "tolerance": 0.1,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ]
+    }
+  ],
+  "status": "PASS"
+}

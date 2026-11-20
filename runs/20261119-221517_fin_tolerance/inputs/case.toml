@@ -1,0 +1,117 @@
+# Input-uncertainty study for the heat-sink fin (fin_mesh): the corners of the
+# heat-transfer coefficient, conductivity, and dimensional tolerance ranges, on
+# the finest mesh of the mesh study (0.25 mm elements).
+#
+# Decision: does the coldest point of the fin tip stay at or above 60 C across
+# the plausible range of inputs, and by how much?
+#
+# Input ranges (synthetic unless stated; the user gave nominal values only):
+#   h        12.5-50 W/m^2K  user said "about 25"; flow condition not given.
+#                            Factor 2 either way covers correlation scatter
+#                            (+-25 %), an unknown flow regime, and radiation
+#                            from an anodised surface (linearised, about
+#                            6 W/m^2K at emissivity 0.8). Higher h = colder tip.
+#   k        150-180 W/mK    6061 temper not given: T6 167, T4 154, O 180
+#                            (ASM / MatWeb); 150 allows for alloy scatter.
+#   t        2.0 +- 0.1 mm   extrusion / machining tolerance
+#   w        20.0 +- 0.2 mm
+#   L        40.0 +- 0.2 mm
+#   Base 80 C and air 25 C are user values, held fixed. The tip excess
+#   temperature scales linearly with (T_base - T_air), so the result for other
+#   values follows by scaling (see the answer to the user).
+# The tip temperature falls monotonically with h, L and 1/k, 1/t, 1/w in 1D fin
+# theory, so the two corners bound it.
+#
+# Predictions (written BEFORE the first run, 1D closed form, convective tip):
+#   nominal                     73.2 C
+#   cold_tip_corner             66.0 C  (h 50, k 150, t 1.9, w 19.8, L 40.2)
+#   warm_tip_corner             76.8 C  (h 12.5, k 180, t 2.1, w 20.2, L 39.8)
+#   cold_build_nominal_h        72.2 C  (h 25, k/t/w/L at the cold corner)
+#   high_h_nominal_build        67.7 C  (h 50, rest nominal)
+# i.e. h dominates; material and dimensional tolerances move the tip by ~1 K.
+#
+# Requirements and tolerances are those of fin_mesh, fixed BEFORE the first
+# run of either case.
+
+[case]
+name = "fin_tolerance"
+model = "ccx_fin"
+description = "Straight rectangular 6061 aluminium fin (nominal 40 x 20 x 2 mm, base 80 C, air 25 C, h 25 W/m^2K) evaluated at the corners of the heat-transfer coefficient range (12.5-50 W/m^2K), conductivity range (150-180 W/mK) and dimensional tolerances, with 3D CalculiX conduction on 0.25 mm hex elements. Finds whether the minimum tip temperature stays at or above 60 C across the ranges."
+assumptions = [
+  "As fin_mesh, except the inputs varied below.",
+  "h is an effective coefficient (convection plus linearised radiation), uniform over all exposed faces; range 12.5-50 W/m^2K is synthetic (factor 2 on the user's 'about 25').",
+  "Conductivity range 150-180 W/mK covers the 6061 tempers (T6 167, T4 154, O 180); constant within each scenario.",
+  "Dimensional tolerances t +- 0.1 mm, w +- 0.2 mm, L +- 0.2 mm are synthetic.",
+  "Base 80 C and air 25 C are fixed user values.",
+  "1D fin theory is a valid independent reference; checked: Biot number below 0.1.",
+  "Requirement metric is the minimum tip-face temperature; checked: it is the global minimum of the fin.",
+]
+limitations = [
+  "Synthetic input ranges; not from a drawing, a material certificate, or a measured h.",
+  "Corners only: no statistical (e.g. Monte Carlo) combination of the ranges.",
+  "Numerical uncertainty is taken from fin_mesh (same element size).",
+  "Single isolated fin with uniform h: neighbouring fins, air preheating, and the variation of h along the fin are not modelled.",
+  "No physical test data.",
+]
+
+[parameters]
+thickness_mm = 2.0
+width_mm = 20.0
+length_mm = 40.0
+conductivity_W_per_mK = 167.0
+htc_W_per_m2K = 25.0
+base_temperature_C = 80.0
+air_temperature_C = 25.0
+element_size_mm = 0.25
+
+[[sweep.scenarios]]
+name = "nominal"
+
+[[sweep.scenarios]]
+name = "cold_tip_corner"
+htc_W_per_m2K = 50.0
+conductivity_W_per_mK = 150.0
+thickness_mm = 1.9
+width_mm = 19.8
+length_mm = 40.2
+
+[[sweep.scenarios]]
+name = "warm_tip_corner"
+htc_W_per_m2K = 12.5
+conductivity_W_per_mK = 180.0
+thickness_mm = 2.1
+width_mm = 20.2
+length_mm = 39.8
+
+[[sweep.scenarios]]
+name = "cold_build_nominal_h"
+conductivity_W_per_mK = 150.0
+thickness_mm = 1.9
+width_mm = 19.8
+length_mm = 40.2
+
+[[sweep.scenarios]]
+name = "high_h_nominal_build"
+htc_W_per_m2K = 50.0
+
+[numerics]
+solver = "CalculiX 2.22, *HEAT TRANSFER, STEADY STATE, C3D8 structured hex mesh, SPOOLES direct solver"
+
+[verification]
+# Same values and reasons as fin_mesh.
+energy_balance_rel_tol = 1e-4
+tip_reference_rel_tol = 0.01
+heat_flow_reference_rel_tol = 0.01
+profile_reference_rel_tol = 0.01
+biot_max = 0.1
+tip_is_coldest_abs_tol_K = 0.0
+gci_tip_excess_max = 0.002
+gci_heat_flow_max = 0.01
+
+[[requirements]]
+id = "REQ-T1"
+text = "The minimum temperature on the fin tip face shall be at least 60 C (user requirement; the coldest corner of the tip, not the face average)."
+metric = "tip_temperature_min_C"
+operator = ">="
+limit = 60.0
+units = "C"

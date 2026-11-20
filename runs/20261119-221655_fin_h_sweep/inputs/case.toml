@@ -1,0 +1,71 @@
+# How far can the heat-transfer coefficient rise before the fin tip drops below
+# 60 C? Nominal fin (fin_mesh) at h = 25-125 W/m^2K, finest mesh (0.25 mm).
+#
+# Decision: h is the least certain input ("about 25", flow condition not
+# given). This sweep locates the h at which REQ-T1 stops holding, so the user
+# can compare it with whatever h their air flow actually gives. Points above
+# the break-even are EXPECTED to fail REQ-T1; that is the purpose of the sweep,
+# not a defect.
+#
+# Predictions (written BEFORE the first run, 1D closed form, convective tip,
+# nominal k 167 W/mK and dimensions):
+#   h  25 -> 73.2 C     h  50 -> 67.7 C     h  75 -> 63.1 C
+#   h 100 -> 59.3 C     h 125 -> 56.1 C
+#   Break-even (tip = 60 C): h = 95 W/m^2K at nominal build, 81 W/m^2K at the
+#   cold build corner of fin_tolerance (k 150, t 1.9, w 19.8, L 40.2).
+#   Biot number at h = 125: 7.5e-4, so 1D theory stays a valid reference.
+#
+# Requirements and tolerances are those of fin_mesh, fixed BEFORE the first
+# run of any fin case.
+
+[case]
+name = "fin_h_sweep"
+model = "ccx_fin"
+description = "Nominal 6061 aluminium fin (40 x 20 x 2 mm, k 167 W/mK, base 80 C, air 25 C) with the effective heat-transfer coefficient swept from 25 to 125 W/m^2K, 3D CalculiX conduction on 0.25 mm hex elements. Locates the h at which the minimum tip temperature reaches 60 C."
+assumptions = [
+  "As fin_mesh, except h, which is swept.",
+  "h is an effective coefficient (convection plus linearised radiation), uniform over all exposed faces.",
+  "1D fin theory is a valid independent reference; checked: Biot number below 0.1.",
+  "Requirement metric is the minimum tip-face temperature; checked: it is the global minimum of the fin.",
+]
+limitations = [
+  "h values above about 50 W/m^2K imply forced air; at those speeds the variation of h along the fin and between fins matters more than here.",
+  "Numerical uncertainty is taken from fin_mesh (same element size).",
+  "No physical test data.",
+]
+
+[parameters]
+thickness_mm = 2.0
+width_mm = 20.0
+length_mm = 40.0
+conductivity_W_per_mK = 167.0
+htc_W_per_m2K = 25.0
+base_temperature_C = 80.0
+air_temperature_C = 25.0
+element_size_mm = 0.25
+
+[sweep]
+parameter = "htc_W_per_m2K"
+values = [25.0, 50.0, 75.0, 100.0, 125.0]
+
+[numerics]
+solver = "CalculiX 2.22, *HEAT TRANSFER, STEADY STATE, C3D8 structured hex mesh, SPOOLES direct solver"
+
+[verification]
+# Same values and reasons as fin_mesh.
+energy_balance_rel_tol = 1e-4
+tip_reference_rel_tol = 0.01
+heat_flow_reference_rel_tol = 0.01
+profile_reference_rel_tol = 0.01
+biot_max = 0.1
+tip_is_coldest_abs_tol_K = 0.0
+gci_tip_excess_max = 0.002
+gci_heat_flow_max = 0.01
+
+[[requirements]]
+id = "REQ-T1"
+text = "The minimum temperature on the fin tip face shall be at least 60 C (user requirement; the coldest corner of the tip, not the face average)."
+metric = "tip_temperature_min_C"
+operator = ">="
+limit = 60.0
+units = "C"

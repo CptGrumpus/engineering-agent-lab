@@ -180,7 +180,7 @@ def sweep_figure(path, sweep_name, rows, requirements, title):
     """
     n = len(requirements)
     categorical = not all(isinstance(r[0], (int, float)) for r in rows)
-    fig, axes = plt.subplots(1, n, figsize=(3.6 * n, 3.4 + 0.6 * categorical), facecolor=SURFACE,
+    fig, axes = plt.subplots(1, n, figsize=(max(3.6 * n, 7.0), 3.4 + 0.6 * categorical), facecolor=SURFACE,
                              squeeze=False)
     xs = np.arange(len(rows), dtype=float) if categorical else np.array([r[0] for r in rows], float)
     order = np.argsort(xs)

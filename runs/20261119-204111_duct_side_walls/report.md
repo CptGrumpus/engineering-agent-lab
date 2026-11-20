@@ -1,7 +1,7 @@
 # Engineering review report: duct_side_walls
 
 - **Run:** `20261119-204111_duct_side_walls`
-- **Generated:** 2026-11-20T01:59:06+00:00
+- **Generated:** 2026-11-20T03:18:55+00:00
 - **Case file SHA-256:** `3c862c7118d7dcc738d5079bd2277a1168deeee1ae499462bec378828eed63a8`
 - **Environment:** Python 3.14.10, numpy 2.5.5, scipy 1.18.1, matplotlib 3.11.2, cadquery 2.8.0; Windows-11-10.0.26100-SP0
 - **Tools:** openfoam_bashrc /opt/openfoam14/etc/bashrc; openfoam_version 14; openfoam_package openfoam14 20261008; linux Ubuntu 22.04.5 LTS
