@@ -1,122 +1,155 @@
-# Engineering modeling portfolio
+# Engineering Modeling Portfolio
 
-Requirements-driven simulation with independent verification, built on open-source tools and driven by an AI coding agent. Each example turns written requirements into a model, runs a parameter sweep, checks every result against an independent reference, and produces a traceable review report. Model failures and invalid assumptions are reported, not hidden.
+These five worked examples show how I approach a modeling job. Each one starts from a written question and measurable requirements, builds a model to answer it, and then checks the result against something independent: an exact solution, a conservation law, a second tool, or a mesh-convergence study. Every example ends with a clear answer and a statement of how sure that answer is.
 
-All examples use synthetic, public-domain problems. Every number below links to a committed evidence run that can be reproduced from its saved inputs.
+I also show what the checks caught along the way. In several examples the first version of the model gave an answer that looked reasonable and was wrong, and the checks are what exposed it. I think that matters more than a clean result.
 
-## Examples
+All of the problems are synthetic, so no client data is involved. Every number on this page comes from a saved run that can be reproduced from its recorded inputs, and the reports are linked in each section.
 
-| # | Problem | Tools | Independent verification | Result |
-|---|---|---|---|---|
-| 1 | [Quarter-car ride and road holding](#1-quarter-car-ride-and-road-holding) | SciPy, OpenModelica (MSL) | Matrix-exponential solution; closed-form transfer-function RMS; energy balance; SciPy vs Modelica cross-check | Damper window found; validity check caught wheel lift-off |
-| 2 | [Coolant channel pressure budget, CFD](#2-coolant-channel-pressure-budget-cfd) | OpenFOAM (in WSL) | Exact Poiseuille solution; force balance; mass conservation; header + Shah & London estimate; Grid Convergence Index; tolerance corners | Design fails its pressure budget; requirements conflict across the tolerance band |
-| 3 | [Cantilever, 3D solid FEA](#3-cantilever-3d-solid-fea-mesh-convergence) | FreeCAD, Gmsh, CalculiX | Timoshenko beam theory; reaction equilibrium; Grid Convergence Index | Converged to 0.02 % discretization uncertainty; linear-tet stiffness error exposed |
-| 4 | [Parametric mounting plate](#4-parametric-mounting-plate-geometry-automation) | CadQuery (OpenCASCADE) | Closed-form volume; geometry measured back from the B-rep; STEP round trip | One hole size meets all design rules |
-| 5 | [Mass-spring-damper baseline](#5-mass-spring-damper-baseline) | SciPy, OpenModelica | Closed-form step response; energy balance; cross-tool check | 72 / 72 checks pass; tools agree to 2.5e-6 |
+## At a glance
 
-## Workflow
+| Example | The question | The answer | Tools |
+|---|---|---|---|
+| [1. Coolant channel pressure budget](#1-coolant-channel-pressure-budget) | Does a cold-plate passage stay within its pump budget across manufacturing tolerance and coolant temperature? | No. It needs 33.4 Pa against a 30 Pa budget, and no gap size satisfies both requirements. | OpenFOAM (computational fluid dynamics) |
+| [2. Quarter-car ride and road holding](#2-quarter-car-ride-and-road-holding) | Which damper rates meet comfort, suspension travel, and tire-load targets? | 600 to 1000 N·s/m over a speed bump. On a rough road, the spring rate has to change too. | Python (SciPy) and OpenModelica |
+| [3. Cantilever bracket, 3D finite elements](#3-cantilever-bracket-3d-finite-elements) | Does a steel cantilever meet its stiffness and stress limits, and how accurate is the model? | Yes: 0.953 mm deflection and 150 MPa root stress, with mesh uncertainty of 0.02 %. | FreeCAD, Gmsh, CalculiX |
+| [4. Parametric mounting plate](#4-parametric-mounting-plate) | Which hole size keeps an aluminium plate light enough while keeping enough material around each hole? | Only the 9 mm (M8 clearance) hole meets both rules. | CadQuery |
+| [5. Mass-spring-damper baseline](#5-mass-spring-damper-baseline) | Can the workflow reproduce a textbook result exactly, in two different tools? | Yes. All 72 checks pass, and the two tools agree to a few parts per million. | Python (SciPy) and OpenModelica |
 
-```
-case file (TOML)          model under test           independent reference
-requirements, units,  ->  SciPy / Modelica /    vs   closed form, state space,
-tolerances (fixed         FreeCAD+CalculiX /         beam theory, conservation,
-before the first run)     CadQuery / OpenFOAM        convergence, second tool
-        |                         |                           |
-        +----------> runs/<id>/  inputs (hashed), environment, logs, results,
-                     checks, figures, requirement -> result -> check -> evidence report
-```
+## How I work
 
-- **Tolerances are written before the first run.** Changing one needs a written reason and a new run.
-- **Two kinds of check.** *Numerical* checks ask whether the equations were solved correctly. *Validity* checks ask whether the model's assumptions hold for the result (wheel stays on the road, stress below yield, small deflection). Either kind failing marks the requirement verdicts *unverified*.
-- **Reproducible.** Saved inputs and model sources are hashed; `python -m harness rerun` reproduces a run and compares every result column (bit-identical on the same machine).
-- **Agent skills.** `run-case`, `verify-against-reference`, and `requirements-report` ([.claude/skills/](.claude/skills/)) let Claude Code drive the workflow without improvising: they never loosen tolerances or accept a design.
+1. **I write the requirements and the acceptance tolerances before running anything.** That way a passing result can't be the product of moving the goalposts. If a tolerance or a requirement has to change later, the reason is written down and the earlier run is kept.
+2. **I check every reported number against an independent reference.** That might be an exact solution, a conservation law, a published correlation, or the same model built in a second tool.
+3. **I check that the model is valid for each case, not just that it solved.** For example: does the wheel stay on the road, is the stress below yield, is the flow still laminar? If an assumption breaks, the result is marked unverified rather than reported as a pass or fail.
+4. **I measure how much the answer depends on the mesh or time step,** and I report that uncertainty next to the answer.
+5. **I keep the evidence.** Inputs, tool versions, logs, results, figures, and a report that traces each requirement to its result and its checks. Any run can be repeated, and it reproduces exactly on the same machine.
 
-## 1. Quarter-car ride and road holding
+The workflow is driven by an AI coding agent working through fixed, documented procedures. Those procedures are written as reusable skills, and they never loosen a tolerance or accept a design on their own. Engineering acceptance is always left to a person.
 
-Linear 2-DOF quarter car (C-segment front-corner wheel rates). The damper rate is swept from 600 to 3500 N·s/m against comfort, suspension-travel, and dynamic-tire-load requirements.
+---
 
-**Speed bump, 40 mm × 1 m at 18 km/h** ([report](runs/20261119-085019_qc_speed_bump/report.md), 30 / 30 checks pass). Damper rates of 600–1000 N·s/m meet all three requirements; 1500 just misses the comfort limit (4.18 vs 4.0 m/s²); 3500 fails tire load. The same case built from Modelica Standard Library components and solved in OpenModelica agrees with SciPy to 1.2e-6 of peak displacement ([report](runs/20261119-085040_qc_speed_bump_modelica/report.md)).
+## 1. Coolant channel pressure budget
 
-![Speed bump sweep](runs/20261119-085019_qc_speed_bump/sweep.png)
+**The question.** A cold-plate passage is a 1 mm gap between two plates, 20 mm long, carrying water at about 0.1 m/s. It has to stay within a 30 Pa share of the pump's pressure budget. It also needs at least 0.5 Pa of shear stress on the walls, a common guideline for limiting fouling. Does it meet both, when the gap can vary by plus or minus 0.05 mm and the coolant runs anywhere from 15 to 40 °C?
 
-**ISO 8608 class C road at 72 km/h** ([report](runs/20261119-084926_qc_iso_road/report.md)). Simulated RMS values match the closed-form transfer-function prediction to 1e-10. No damper rate meets the 1.0 m/s² comfort target, and travel and tire load need at least ~1500 N·s/m: the conflict calls for a spring-rate change, not a damper change. At 600 N·s/m the wheel briefly lifts off, so that point is marked unverified.
+**The answer: no.** At nominal conditions the passage needs 33.4 Pa, which is 11 % over budget. Across the tolerance range it needs anywhere from 28 to 42 Pa, and warm coolant drops the wall shear to 0.43 Pa.
 
-![ISO road spectrum: simulation vs transfer function](runs/20261119-084926_qc_iso_road/points/p02_damping_N_s_per_m-1500/response.png)
+The two requirements pull in opposite directions. To stay within the pressure budget with cold coolant, the gap has to be at least 1.078 mm. To keep enough wall shear with warm coolant, it can be at most 0.885 mm. No gap does both. I predicted those two limits before running them, and the confirmation runs came back at 30.02 Pa and 0.500 Pa, right on target.
 
-**What the checks caught.** The first bump case (same bump at 36 km/h, [report](runs/20261119-084857_qc_bump/report.md)) passed every numerical check, but the `no_wheel_lift` validity check failed at every damper rate: dynamic tire load reached 1.5–1.7× static. A linear tire model cannot represent lift-off, so every requirement verdict was withheld. The case was kept as evidence and a documented revision at 18 km/h was added.
+So this is a design decision rather than a modeling one. The options are to narrow the coolant temperature range, raise the pressure budget, change how the flow is split between channels, or revisit the shear guideline.
 
-## 2. Coolant channel pressure budget, CFD
+**How I know it's right.**
 
-**Question.** A cold-plate passage (1 mm gap between parallel plates, 20 mm long, water at 1.0e-4 m²/s per unit width, about 0.1 m/s) must stay within a 30 Pa share of the pump budget and keep at least 0.5 Pa wall shear stress (a fouling criterion). Does it, across the gap tolerance (±0.05 mm) and coolant temperature range (15-40 °C)?
+- **The model.** It's a steady, two-dimensional flow simulation in OpenFOAM. It includes a supply header feeding the channel through a smooth contraction, because a simpler model with flow forced straight into the channel turned out to be unreliable (see below). The pressure the pump has to supply counts the flow's kinetic energy at the exit as lost, which is the conservative and usual assumption. That exit loss is 7.7 Pa of the 33.4 Pa.
+- **Against exact solutions.** Where the flow has settled into its final shape, the velocity profile, pressure gradient, and wall shear all match the textbook exact solution to within 0.02 %.
+- **Conservation.** Mass is conserved to about one part in a hundred million. The wall friction balances the pressure force to within a few parts in a hundred thousand.
+- **Mesh dependence.** Refining the mesh from 20 to 80 cells across the gap changes the answer in a way that converges at exactly the rate the method is designed for. The remaining mesh uncertainty is 0.04 %.
+- **Against an independent estimate.** A hand calculation combining lubrication theory for the header with the Shah and London correlation for the channel agrees with the simulation to within 0.3 % in every case.
+- **The two-dimensional assumption.** I checked it with a separate 3D model that includes the channel's side walls, assuming a 20 mm wide channel. The side walls raise the friction by 3.2 %; the exact solution for a rectangular duct says 3.25 %. That adds about 0.8 Pa, which makes the nominal case about 34.2 Pa, so the conclusion only gets firmer.
 
-**Answer.** No. At nominal conditions the passage needs **33.4 Pa** of supply pressure (numerical uncertainty ±0.01 Pa), so it misses the budget by 11 %. Across the tolerance band the required pressure spans 28-42 Pa, and warm coolant pushes wall shear down to 0.43 Pa. No gap satisfies both requirements at this flow rate. Confirmation runs at the two limits, predicted before running ([report](runs/20261119-201615_channel_header_gap_limits/report.md)), show it directly: the 30 Pa budget at 15 °C needs a gap of at least 1.078 mm (30.02 Pa), while 0.5 Pa wall shear at 40 °C allows at most 0.885 mm (0.500 Pa). Resolving it is a design decision: limit the coolant temperature range, raise the pressure budget, change the flow split, or revisit the shear criterion.
+| Where the uncertainty comes from | How big it is |
+|---|---|
+| The mesh | 0.04 % |
+| Iteration and conservation | Negligible: well under one part in ten thousand |
+| The model's simplifications | 0.3 % or less against the independent estimate. The side walls add about 3 %. |
+| Manufacturing tolerance and coolant temperature | 16 % lower to 27 % higher than nominal. This dominates everything else. |
 
-**2D assumption, checked in 3D.** A 3D OpenFOAM model of the same gap with side walls 20 mm apart ([report](runs/20261119-204111_duct_side_walls/report.md)) raises the fully developed pressure gradient by 3.22 % (exact series solution: 3.25 %), within the 5 % accepted for the 2D model. It converges at order 1.99 to within 1e-5 of the exact rectangular-duct solution. Applied to the channel's fully developed friction (24 Pa), the side walls add about 0.8 Pa: the nominal estimate becomes about 34.2 Pa, so the conclusion stands.
+![Velocity through the supply header, contraction, and channel](runs/20261119-200042_channel_header_mesh/points/p03_cells_across_gap-80/field.png)
 
-**Model.** Steady laminar 2D flow in OpenFOAM 14: a supply header with a fully developed inlet profile at the exact flow rate, a smooth contraction, and the channel. A Python writer generates every OpenFOAM dictionary, and results are read straight from OpenFOAM's field files. Required supply pressure is the flux-weighted total pressure at the inlet minus the outlet static pressure. That counts the outlet dynamic head as lost in the outlet header (exit-loss coefficient 1, conservative); the dynamic head is 7.7 Pa of the 33.4 Pa.
+![Velocity profile, pressure, and centreline velocity compared with the exact solution](runs/20261119-200042_channel_header_mesh/points/p03_cells_across_gap-80/response.png)
 
-| Uncertainty source (nominal required pressure, 33.4 Pa) | Size | Evidence |
-|---|---|---|
-| Numerical: mesh | ±0.04 % | GCI over 20/40/80 cells across the gap; observed order 1.95 (design order 2) |
-| Numerical: iterative, conservation | residuals < 1e-6; mass conserved to 1e-8; force balance to 2e-5 | per-point checks |
-| Model form | CFD vs independent estimate (lubrication theory in the header + Shah & London channel correlation): 0.04 %, at most 0.3 % across the tolerance corners. 2D assumption: +3.2 % on the friction gradient for a 20 mm wide channel (about +0.8 Pa) | per-point check; 3D duct study. Assumption: no recovery in the outlet header (conservative) |
-| Inputs: gap ±0.05 mm, 15-40 °C | −16 % / +27 % | verified tolerance corners at 80 cells across the gap |
-
-Reports: [mesh study](runs/20261119-200042_channel_header_mesh/report.md) (fully developed velocity profile, pressure gradient, and wall shear match the exact Poiseuille solution to 0.02 %), [tolerance study](runs/20261119-200202_channel_header_tolerance/report.md).
-
-![Header-fed channel: velocity field](runs/20261119-200042_channel_header_mesh/points/p03_cells_across_gap-80/field.png)
-
-![Profile, pressure, and centreline velocity vs exact solution](runs/20261119-200042_channel_header_mesh/points/p03_cells_across_gap-80/response.png)
-
-![Requirements across the tolerance band](runs/20261119-200202_channel_header_tolerance/sweep.png)
+![Both requirements across the tolerance cases](runs/20261119-200202_channel_header_tolerance/sweep.png)
 
 **What the checks caught.**
-- The first model imposed a uniform velocity at the channel entry, a common simplification ([report](runs/20261119-191916_channel_mesh/report.md)). Its fully developed results were exact, but the pressure drop kept rising with mesh refinement: it converged at order 0.5, the signature of a singular corner where the uniform inlet meets the no-slip wall. The mesh-convergence check failed (3.5 % against 2 %) and the pressure requirement was marked unverified. That idealized model also said the channel passed (28.6 Pa). Modelling the supply header fixed the convergence (order 1.95, 0.04 %) and, with the exit loss included, reversed the verdict.
-- In the warm, wide-gap corner (Re ≈ 300) the flow is still developing slightly where the fully developed quantities are measured (0.13 % change against a 0.1 % limit). That point is marked unverified rather than used; the conclusion rests on the verified corners.
-- The first 3D run had the side-wall mesh grading inverted, so the cells were coarsest exactly where the side-wall layer needs them ([report](runs/20261119-202956_duct_side_walls/report.md)). The pressure gradient still passed its reference check on the finer meshes, but the full velocity-field check failed at every mesh, with the worst cell always next to the side wall. The integral quantity hid a meshing error that the field comparison exposed.
 
-## 3. Cantilever, 3D solid FEA, mesh convergence
+- **The simple inlet hid a problem, and gave the wrong verdict.** My first model forced a perfectly uniform flow straight into the channel, a common shortcut. It said the channel passed, at 28.6 Pa. But the pressure kept creeping up as the mesh got finer and never settled. That is the signature of a sharp corner the solver can't resolve, here where the uniform inflow meets the wall. The mesh-convergence check failed, so that answer was never reported as verified. Modeling the supply header fixed the convergence. Counting the exit loss then turned the verdict from pass to fail.
+- **One tolerance case wasn't fully developed.** With warm water and the widest gap, the flow was still settling slightly where the measurements are taken. That case is marked unverified, and the conclusion rests on the other four.
+- **A meshing mistake in the 3D check.** In my first 3D run the mesh was coarsest exactly where it needed to be finest, next to the side walls. The overall friction still looked fine on the finer meshes, but a point-by-point comparison of the whole velocity field against the exact solution failed every time, always next to the side wall. An average result can hide a local error, so I check the full field as well.
 
-Steel cantilever 200 × 20 × 20 mm, 1 kN tip load. FreeCAD builds geometry, material, constraints, and a Gmsh tetrahedral mesh; CalculiX solves; results are parsed directly from the CalculiX output files. The sweep is a mesh-refinement study (8 → 1.95 mm, ratio 1.6). The native `.FCStd` model and CalculiX deck are kept with each run.
+**Evidence:** [mesh study](runs/20261119-200042_channel_header_mesh/report.md), [tolerance study](runs/20261119-200202_channel_header_tolerance/report.md), [gap-limit confirmation](runs/20261119-201615_channel_header_gap_limits/report.md), [3D side-wall check](runs/20261119-204111_duct_side_walls/report.md), [first model, uniform inlet](runs/20261119-191916_channel_mesh/report.md), [first 3D run, meshing error](runs/20261119-202956_duct_side_walls/report.md).
 
-**Quadratic tets, TET10** ([report](runs/20261119-085818_cantilever_tet10/report.md), 22 / 22 checks pass). Tip deflection converges monotonically (observed order 2.04) to 0.953 mm, between Euler-Bernoulli (0.952) and Timoshenko (0.960) as expected for a fully clamped 3D solid. Discretization uncertainty (GCI, Celik 2008 / ASME V&V 20): 0.02 %. Reactions balance the load to 1e-11. Root bending stress, extrapolated from the top fibre away from the singular clamp corners, is 150.0 MPa against 150 MPa from beam theory; the raw peak von Mises stress at the corner grows from 150 to 217 MPa with refinement, which is why it is not used for the requirement.
+---
 
-![Cantilever deflection and stress vs beam theory](runs/20261119-085818_cantilever_tet10/points/p03_mesh_size_mm-1.95312/response.png)
+## 2. Quarter-car ride and road holding
 
-**What the checks caught.** The same study with linear tets (TET4, [report](runs/20261119-090004_cantilever_tet4/report.md)) under-predicts deflection by 4–33 % and root stress by 7–45 %. That would make the stiffness requirement look comfortably met; the beam-theory and GCI checks fail instead and the verdicts are marked unverified.
+**The question.** For a compact-car front corner, which damper rates between 600 and 3500 N·s/m meet the targets for ride comfort, suspension travel, and tire load? I tested it over a speed bump and over a rough road.
 
-![TET4 sweep with unverified points](runs/20261119-090004_cantilever_tet4/sweep.png)
+**The answer.**
 
-## 4. Parametric mounting plate, geometry automation
+- **Over a 40 mm speed bump at 18 km/h,** damper rates from 600 to 1000 N·s/m meet all three targets. At 1500 the car just misses the comfort limit, 4.18 against 4.0 m/s². At 3500 the tire load goes over its limit.
+- **On a rough road at 72 km/h** (class C in the ISO 8608 road-roughness standard), no damper rate meets the comfort target. Meanwhile travel and tire load need at least about 1500. Those two demands conflict, so the fix is a spring-rate change, not a different damper.
 
-CadQuery builds a 120 × 80 × 6 mm aluminium plate with R8 corners and a 3 × 2 hole grid; the hole diameter is swept over M5–M12 clearance sizes. Every metric is measured back from the B-rep rather than taken from the design intent: volume, bounding box, and each hole's centre and diameter. The STEP export is re-imported and compared ([report](runs/20261119-090540_mounting_plate/report.md), 40 / 40 checks pass; volume matches the closed form to 1e-16).
+**How I know it's right.**
 
-Mass (≤ 150 g) needs large holes; edge distance (≥ 2 d) needs small ones. Only the 9 mm (M8) hole meets both.
+- **Speed bump.** The simulation matches an independent exact solution of the same equations. Energy into the system balances the energy stored and dissipated. All 30 checks pass. I also built the same car from standard library components in a second tool, OpenModelica, and it agrees with the Python model to about one part in a million.
+- **Rough road.** The simulated vibration levels match the prediction from the system's frequency response to within one part in ten billion.
 
-![Mounting plate sweep](runs/20261119-090540_mounting_plate/sweep.png)
+![Requirement metrics against damper rate over the speed bump](runs/20261119-085019_qc_speed_bump/sweep.png)
+
+![Rough-road response compared with the frequency-response prediction](runs/20261119-084926_qc_iso_road/points/p02_damping_N_s_per_m-1500/response.png)
+
+**What the checks caught.** I first ran the bump at 36 km/h. Every numerical check passed, but the check on whether the wheel stays on the road failed at every damper rate: the tire load swung to as much as 1.7 times its static value. A linear tire model can't represent a wheel leaving the ground, so none of those results could be trusted, and none were reported as pass or fail. I kept that run as evidence and added a documented case at 18 km/h. Also, at 600 N·s/m on the rough road the wheel briefly lifts off, so that one point is marked unverified.
+
+**Evidence:** [speed bump](runs/20261119-085019_qc_speed_bump/report.md), [same case in OpenModelica](runs/20261119-085040_qc_speed_bump_modelica/report.md), [rough road](runs/20261119-084926_qc_iso_road/report.md), [first bump case, wheel lift-off](runs/20261119-084857_qc_bump/report.md).
+
+---
+
+## 3. Cantilever bracket, 3D finite elements
+
+**The question.** A steel bracket, 200 mm long with a 20 by 20 mm section, carries a 1 kN load at its tip. Does it stay within a 1.0 mm deflection limit and a 213 MPa stress limit? And how accurate is the model?
+
+**The answer: yes, with margin.** The tip deflects 0.953 mm and the bending stress at the root is 150 MPa. The mesh uncertainty is 0.02 %.
+
+**How I know it's right.**
+
+- **The model.** FreeCAD builds the geometry, material, supports, and mesh; CalculiX solves it; and I read the results straight from the solver's output files. The original FreeCAD model is kept with every run.
+- **Against beam theory.** The deflection lands between the two standard beam-theory results, 0.952 and 0.960 mm, which is where a fully clamped solid block should be.
+- **Equilibrium.** The support reactions balance the applied load to within rounding error.
+- **Mesh refinement.** As the mesh gets finer, the result converges at the rate the elements are designed for, which gives the 0.02 % uncertainty.
+- **The stress I report.** The peak stress right at the clamped corner keeps growing as the mesh is refined, from 150 to 217 MPa. That's a known artifact of a perfectly sharp corner, so I don't use it. The stress I report is extrapolated from the smooth part of the beam, and it matches beam theory at 150 MPa.
+
+![Deflection and stress along the beam compared with beam theory](runs/20261119-085818_cantilever_tet10/points/p03_mesh_size_mm-1.95312/response.png)
+
+**What the checks caught.** I ran the same study with the simplest element type, linear tetrahedra. It made the bracket look 4 to 33 % stiffer than it is, and understated the stress by 7 to 45 %. Taken at face value, the bracket would have looked comfortably within its limits. The beam-theory and mesh checks failed instead, and every one of those results was marked unverified.
+
+![Linear-element results, all withheld by the checks](runs/20261119-090004_cantilever_tet4/sweep.png)
+
+**Evidence:** [quadratic elements](runs/20261119-085818_cantilever_tet10/report.md), [linear elements](runs/20261119-090004_cantilever_tet4/report.md).
+
+---
+
+## 4. Parametric mounting plate
+
+**The question.** An aluminium plate, 120 by 80 by 6 mm, has a grid of six holes. Which clearance-hole size, from M5 up to M12, keeps the plate at or under 150 g while leaving at least twice the hole diameter between each hole and the edge?
+
+**The answer.** Only the 9 mm hole, the M8 clearance size, meets both. Bigger holes save weight but eat into the edge distance; smaller holes do the opposite.
+
+**How I know it's right.** The plate is generated in code with CadQuery, and every number is measured back from the finished solid rather than taken from the design inputs: the volume, the overall size, and the position and diameter of each hole. The volume matches a hand calculation to the limit of the computer's arithmetic. I also export each plate as a STEP file, read it back in, and confirm nothing changed. All 40 checks pass.
+
+![Mass and edge distance against hole size](runs/20261119-090540_mounting_plate/sweep.png)
+
+**Evidence:** [report](runs/20261119-090540_mounting_plate/report.md).
+
+---
 
 ## 5. Mass-spring-damper baseline
 
-The first harness example: a 1-DOF step response with a damping-ratio sweep, checked against the closed-form solution, an energy balance, steady state, and solver convergence ([SciPy report](runs/20261118-200205_msd_step/report.md)). The same system built from MSL components in OpenModelica agrees with SciPy to 2.5e-6 of the static deflection ([Modelica report](runs/20261118-213145_msd_step_modelica/report.md)).
+This was the first example, used to prove the workflow on a problem with a known answer. It's a single mass on a spring and damper, pushed by a step force, at six different damping levels. The results are checked against the exact textbook solution, an energy balance, the final resting position, and the solver's own convergence. All 72 checks pass. The same system built in OpenModelica agrees with the Python version to a few parts per million.
 
-While integrating OpenModelica, the harness's output-grid check revealed that OpenModelica 1.26 silently ignores experiment settings passed through `-override`; the backend now uses the dedicated flags.
+**What the checks caught.** While I was connecting OpenModelica, the check that results land on the requested time points failed. It turned out OpenModelica was silently ignoring some of the simulation settings I was passing it. I changed how the settings are passed, and the check has guarded against it since.
 
-## Reproduce
+**Evidence:** [Python version](runs/20261118-200205_msd_step/report.md), [OpenModelica version](runs/20261118-213145_msd_step_modelica/report.md).
 
-```powershell
-py -3.14 -m venv .venv
-.venv\Scripts\python.exe -m pip install -r requirements-lock.txt
-.venv\Scripts\python.exe -m harness pipeline cases\qc_speed_bump.toml   # run + verify + report
-.venv\Scripts\python.exe -m harness rerun runs\<run_id>                 # reproduce a run
-.venv\Scripts\python.exe -m pytest -q                                   # 53 tests
-```
+---
 
-Tool versions: Python 3.14.10, NumPy 2.5.5, SciPy 1.18.1, OpenModelica 1.26.3 with MSL 4.1.0, FreeCAD 1.1.4 with CalculiX 2.22 and Gmsh, CadQuery 2.8.0, OpenFOAM 14 (openfoam.org package 20261008) in WSL Ubuntu 22.04. Every run records the exact versions, platform, and git commit in its manifest.
+## Limits of these examples
 
-## Limitations
+- The parameters and requirement limits are synthetic. Nothing here is calibrated to a real product.
+- The checks show the equations were solved correctly and the models were used within their valid range. Showing that a model matches real hardware needs test data, which these examples don't have.
+- The ride-comfort figures are unweighted. A production study would apply the ISO 2631 human-sensitivity weighting.
+- The coolant-channel model covers flow and pressure, not heat transfer.
+- Every report ends with "pending human review". Accepting a design is an engineering decision, and it stays with a person.
 
-- Synthetic parameters throughout; nothing is calibrated to a real product.
-- The checks establish numerical verification and model-validity limits. Physical validation needs test data, which these examples do not have.
-- Comfort metrics are unweighted (no ISO 2631 frequency weighting).
-- The CFD example is isothermal and laminar (2D, with a 3D check of the side-wall effect); heat transfer is not modelled.
-- Engineering acceptance is left to human review; reports end with "Pending human review" by design.
+## Reproducing the work
+
+Each run records its exact inputs, tool versions, and code version, and can be repeated with one command. The commands and setup are in the [README](README.md). Tool versions used: Python 3.14 with NumPy and SciPy, OpenModelica 1.26.3, FreeCAD 1.1.4 with CalculiX 2.22 and Gmsh, CadQuery 2.8, and OpenFOAM 14 running under Linux on Windows.
