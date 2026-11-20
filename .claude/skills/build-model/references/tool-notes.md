@@ -34,6 +34,20 @@ Traps found while building the studies in this repo, by tool.
   reaction totals from the `.dat` file.
 - Keep the `.FCStd`, `.inp`, `.dat` files with each point.
 
+## CalculiX heat transfer (ccx run directly)
+
+- A structured hex deck written in Python avoids a FreeCAD session for box-like
+  parts; run `ccx -i <job>` in the work folder.
+- `NALL` exists only if the `*NODE` card says `NSET=NALL`; `*INITIAL
+  CONDITIONS` on it fails otherwise.
+- The `*NODE PRINT ... RFL, TOTALS=ONLY` total for fixed-temperature nodes is
+  the conduction part only: the film load lumped on those same nodes is not in
+  it (1.3 % of the fin heat flow at 1 mm elements). Add it back before an
+  energy balance.
+- The `.frd` prints temperatures with 6 significant digits; a `*NODE PRINT`
+  of the nodes that matter gives 7 in the `.dat`. Check this is enough for the
+  differences a GCI must resolve.
+
 ## CadQuery (OpenCASCADE)
 
 - Measure every reported quantity back from the B-rep (faces, closed circular
