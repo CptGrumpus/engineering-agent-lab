@@ -7,7 +7,7 @@
 | **Answer** | 600 to 1000 N·s/m over a speed bump at 18 km/h. At 36 km/h no damper rate works, because the wheel leaves the road. On a rough road, the spring rate has to change too. |
 | **Discipline** | Vehicle and system dynamics |
 | **Tools** | Python (SciPy), OpenModelica 1.26 with the Modelica Standard Library |
-| **Methods** | Two-degree-of-freedom ride model, a tire that can leave the road with exact event location, exact piecewise state-space solution, frequency-response prediction, energy balance, a second tool as cross-check |
+| **Methods** | Two-degree-of-freedom ride model, a tire that can leave the road and a bump stop, both with exact event location, exact piecewise state-space solution, frequency-response prediction, energy balance, a second tool as cross-check |
 
 ![Animation from the simulation: the wheel leaves the road twice crossing the bump at 36 km/h](img/anim_quarter_car.gif)
 
@@ -19,6 +19,7 @@ For a compact-car front corner, which damper rates between 600 and 3500 N·s/m m
 
 - **Over a 40 mm speed bump at 18 km/h,** damper rates from 600 to 1000 N·s/m meet all three targets. At 1500 the car just misses the comfort limit, 4.18 against 4.0 m/s². At 3500 the tire load goes over its limit.
 - **Over the same bump at 36 km/h, no damper rate works.** The wheel leaves the road at every setting, for 32 to 59 ms, and the comfort and road-holding targets fail everywhere. That's not something a damper change can fix; it needs a lower speed, a softer tire, or a gentler bump.
+- **With a bump stop, light damping gets worse, not better.** At 36 km/h and 600 N·s/m the suspension compresses past the 40 mm bump-stop gap. Adding the stop to the model more than doubles the peak body acceleration, from 5.2 to 11.3 m/s², and the stop still runs past its 8 mm of usable stroke at 2.8 kN against a 2.5 kN rating. From 1000 N·s/m upwards the stop stays within its rating.
 - **On a rough road at 72 km/h** (class C in the ISO 8608 road-roughness standard), no damper rate meets the comfort target. Meanwhile travel and tire load need at least about 1500. Those two demands conflict, so the fix is a spring-rate change, not a different damper.
 
 ## How I know it's right
@@ -46,7 +47,7 @@ The verdict the linear model had to withhold is now a clear fail, and it's backe
 
 ## Limits
 
-- Point-contact tire: it follows the road profile exactly, while a real tire's footprint smooths a short bump, so the lift-off here is probably overstated. No bump stops are modelled; the travel requirement keeps the suspension inside its linear range.
+- Point-contact tire: it follows the road profile exactly, while a real tire's footprint smooths a short bump, so the lift-off here is probably overstated. The bump stop is linear and undamped; real elastomer stops are progressive and damped.
 - Comfort is unweighted; a production study would apply ISO 2631 weighting.
 - Synthetic vehicle parameters.
 
@@ -59,3 +60,4 @@ Each report traces every requirement to its result, the checks behind it, and th
 - [rough road](../runs/20261119-084926_qc_iso_road/report.md)
 - [first bump case, wheel lift-off](../runs/20261119-084857_qc_bump/report.md)
 - [36 km/h with the lift-off tire](../runs/20261120-105126_qc_bump_liftoff/report.md)
+- [36 km/h with lift-off and a bump stop](../runs/20261120-123312_qc_bump_stop/report.md)

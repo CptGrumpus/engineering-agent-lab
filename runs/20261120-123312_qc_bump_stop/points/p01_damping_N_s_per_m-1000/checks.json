@@ -1,0 +1,60 @@
+{
+  "label": "p01_damping_N_s_per_m-1000",
+  "status": "PASS",
+  "checks": [
+    {
+      "id": "energy_balance",
+      "description": "|W_road - (dE + E_dissipated)| / integral |P_road| dt",
+      "kind": "numerical",
+      "value": 9.925577606152993e-06,
+      "tolerance": 0.0001,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "solver_convergence",
+      "description": "max |z(tol) - z(tol/100)| / max |z| (body and wheel)",
+      "kind": "numerical",
+      "value": 5.59388218056315e-10,
+      "tolerance": 1e-06,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "contact_event_times",
+      "description": "max |t_event model - t_event exact| [s] over tire and bump-stop switches (4 events; sequence must match)",
+      "kind": "numerical",
+      "value": 1.6877721442654092e-11,
+      "tolerance": 1e-06,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "reference_agreement",
+      "description": "max |z_num - z_ref| / bump height (body and wheel; matrix-exponential ref)",
+      "kind": "numerical",
+      "value": 7.050350320919607e-10,
+      "tolerance": 1e-05,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "peak_accel_reference",
+      "description": "|peak accel num - peak accel ref| / peak accel ref",
+      "kind": "numerical",
+      "value": 4.069329623236118e-10,
+      "tolerance": 0.0001,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "return_to_rest",
+      "description": "max(|zs(t_end)|, |zu(t_end)|) / bump height",
+      "kind": "numerical",
+      "value": 2.5777662635061376e-06,
+      "tolerance": 0.001,
+      "comparison": "<=",
+      "status": "PASS"
+    }
+  ]
+}

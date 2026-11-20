@@ -143,3 +143,26 @@ def test_liftoff_case_gives_the_verdict_the_linear_model_withheld(tmp_path):
     m = read_json(run_dir / "manifest.json")["points"][0]["metrics"]
     assert m["airborne_time_ms"] == pytest.approx(59.0, abs=0.6)
     assert m["max_tire_load_ratio"] == pytest.approx(1.59, abs=0.01)
+
+
+def test_bump_stop_switches_match_the_exact_piecewise_solution():
+    from models import quarter_car as qc
+
+    p = _bump_params(10.0, c=600.0) | {"bump_stop_gap_mm": 40.0, "bump_stop_stiffness_N_per_m": 300000.0}
+    r = qc.simulate(p, t_end_s=2.0, n_points=4001, method="DOP853", rtol=1e-9, atol=1e-12)
+    exact = ref.time_response_liftoff(p, r["series"]["t_s"])
+    got = sorted(r["outputs"]["tire_events"] + r["outputs"]["stop_events"])
+    assert [k for _, k in got] == [k for _, k in exact["events"]]
+    assert "stop_on" in [k for _, k in got]
+    assert max(abs(a - b) for (a, _), (b, _) in zip(got, exact["events"])) < 1e-8
+    assert np.abs(r["series"]["zu_m"] - exact["zu_m"]).max() / 0.04 < 1e-6
+
+
+def test_bump_stop_that_never_engages_changes_nothing():
+    from models import quarter_car as qc
+
+    base = _bump_params(10.0, c=3500.0)
+    stop = base | {"bump_stop_gap_mm": 40.0, "bump_stop_stiffness_N_per_m": 300000.0}
+    kw = dict(t_end_s=2.0, n_points=4001, method="DOP853", rtol=1e-9, atol=1e-12)
+    a, b = qc.simulate(base, **kw)["series"], qc.simulate(stop, **kw)["series"]
+    assert np.abs(a["zs_m"] - b["zs_m"]).max() < 1e-12

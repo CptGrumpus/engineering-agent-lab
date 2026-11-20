@@ -32,14 +32,25 @@ BUMP_METRICS = {"peak_body_accel_m_per_s2", "max_suspension_travel_mm", "max_tir
 ROAD_METRICS = {"body_accel_rms_m_per_s2", "suspension_travel_rms_mm", "tire_load_rms_ratio"}
 
 
+def stop_force(series: dict, params: dict) -> np.ndarray:
+    """Bump-stop force [N] (zero without a stop or while it is not engaged)."""
+    gap, kb = qc.bump_stop(params)
+    return kb * np.maximum(series["zu_m"] - series["zs_m"] - gap, 0.0)
+
+
 def body_accel(series: dict, params: dict) -> np.ndarray:
     ms, _, ks, cs, _ = qc.unpack(params)
-    return -(ks * (series["zs_m"] - series["zu_m"])
-             + cs * (series["vs_m_per_s"] - series["vu_m_per_s"])) / ms
+    return (-(ks * (series["zs_m"] - series["zu_m"])
+              + cs * (series["vs_m_per_s"] - series["vu_m_per_s"])) + stop_force(series, params)) / ms
 
 
 def liftoff(params: dict) -> bool:
     return params.get("tire_model", "linear") == "liftoff"
+
+
+def piecewise(params: dict) -> bool:
+    """Phases with switches (tire lift-off and/or a bump stop): exact piecewise reference."""
+    return liftoff(params) or qc.bump_stop(params)[1] > 0
 
 
 def tire_load_ratio(series: dict, params: dict) -> np.ndarray:
@@ -102,7 +113,8 @@ class ModelicaQuarterCarBump(ModelicaBackend):
 class QuarterCarStudy(Study):
     name = "quarter_car"
     models = {"quarter_car": ScipyQuarterCar, "quarter_car_modelica": ModelicaQuarterCarBump}
-    metrics = frozenset(BUMP_METRICS | ROAD_METRICS | {"max_tire_lift_ratio", "airborne_time_ms"})
+    metrics = frozenset(BUMP_METRICS | ROAD_METRICS | {"max_tire_lift_ratio", "airborne_time_ms",
+                                                       "max_bump_stop_force_N", "max_compression_mm"})
     param_names = qc.PARAMS
     compare_description = "max |z - z_other| / max |z| over body and wheel displacement"
 
@@ -119,6 +131,9 @@ class QuarterCarStudy(Study):
         m = {"max_tire_lift_ratio": float(np.max(load))}
         if liftoff(params):
             m["airborne_time_ms"] = 1e3 * airborne_time(series, params)
+        if qc.bump_stop(params)[1] > 0:
+            m["max_bump_stop_force_N"] = float(np.max(stop_force(series, params)))
+            m["max_compression_mm"] = 1e3 * float(np.max(series["zu_m"] - series["zs_m"]))
         if params["road"] == "bump":
             m.update(peak_body_accel_m_per_s2=float(np.max(np.abs(acc))),
                      max_suspension_travel_mm=1e3 * float(np.max(np.abs(travel))),
@@ -148,15 +163,18 @@ class QuarterCarStudy(Study):
         # Energy: E(T) - E(0) + dissipated = road work, with E(0) = 0 (start from rest)
         zs, vs, zu, vu, zr = (series[k] for k in ("zs_m", "vs_m_per_s", "zu_m", "vu_m_per_s",
                                                    "zr_m"))
-        if liftoff(params):
+        if piecewise(params):
             # absolute energies (gravity, preloaded springs), valid in contact and in the air:
             # the tire stores energy and transmits road work only while compressed
             W, s0 = (ms + mu) * qc.G, ms * qc.G / ks
-            delta = np.maximum(W / kt + zr - zu, 0.0)
+            delta = np.maximum(W / kt + zr - zu, 0.0) if liftoff(params) else W / kt + zr - zu
+            gap, kb = qc.bump_stop(params)
+            over = np.maximum(zu - zs - gap, 0.0)
 
             def energy(i):
                 return (0.5 * ms * vs[i] ** 2 + 0.5 * mu * vu[i] ** 2
                         + 0.5 * ks * (s0 - (zs[i] - zu[i])) ** 2 + 0.5 * kt * delta[i] ** 2
+                        + 0.5 * kb * over[i] ** 2
                         + qc.G * (ms * zs[i] + mu * zu[i]))
             energy_end, energy_0 = energy(-1), energy(0)
             p_road = kt * delta * np.asarray(road.vr(t), float)
@@ -197,7 +215,7 @@ class QuarterCarStudy(Study):
         tol = case["verification"]
         t = series["t_s"]
         h = float(params["bump_height_m"])
-        r = ref.time_response_liftoff(params, t) if liftoff(params) else ref.time_response(params, t)
+        r = ref.time_response_liftoff(params, t) if piecewise(params) else ref.time_response(params, t)
         err = max(np.max(np.abs(series["zs_m"] - r["zs_m"])),
                   np.max(np.abs(series["zu_m"] - r["zu_m"]))) / h
         np.savetxt(pdir / "reference.csv",
@@ -219,13 +237,14 @@ class QuarterCarStudy(Study):
             load_limit=reqs.get("max_tire_load_ratio"),
             title=f"{point['label']}  (c = {params['damping_N_s_per_m']:g} N·s/m)")
         extra = []
-        if liftoff(params):
-            got = (point.get("solver_outputs") or {}).get("tire_events", [])
+        if piecewise(params):
+            so = point.get("solver_outputs") or {}
+            got = sorted(so.get("tire_events", []) + so.get("stop_events", []))
             want = r["events"]
             same = len(got) == len(want) and all(a[1] == b[1] for a, b in zip(got, want))
             dt_ev = max((abs(a[0] - b[0]) for a, b in zip(got, want)), default=0.0) if same else float("inf")
             extra.append(check("contact_event_times",
-                               "max |t_event model - t_event exact| [s] over lift-offs and touchdowns "
+                               "max |t_event model - t_event exact| [s] over tire and bump-stop switches "
                                f"({len(want)} events; sequence must match)",
                                dt_ev, tol["event_time_tol_s"]))
         return extra + [

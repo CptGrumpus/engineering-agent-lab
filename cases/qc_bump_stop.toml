@@ -1,0 +1,115 @@
+# Quarter car at 36 km/h with a tire that can lift off and a jounce bump stop.
+#
+# Why this case exists (2026-11-20): qc_bump_liftoff showed suspension
+# compression of 51.9 / 47.4 / 43.0 mm at 600 / 1000 / 1500 N.s/m, past a 40 mm
+# bump-stop gap that model did not have. The travel requirement (REQ-QB2) kept
+# the linear suspension honest, but a real corner hits its bump stop. This case
+# adds a linear elastomer stop (300 kN/m beyond 40 mm of compression) and asks
+# what it does to comfort and what load it puts into the stop and its mount.
+#
+# Vehicle, bump, speed, tire model, damper sweep and tolerances are those of
+# qc_bump_liftoff. New: bump_stop_gap_mm, bump_stop_stiffness_N_per_m, the
+# stop-force and compression metrics, and stop engage/release events in
+# contact_event_times (exact piecewise reference: one more switching function).
+#
+# Prototype (scratch, 150 kN/m stop, 600 N.s/m only): model and exact reference
+# agree on all six switch times to 3e-11 s and on the motion to 4e-9 of the
+# bump height; the stop engaged once. This case uses a stiffer 300 kN/m stop.
+#
+# Predictions, written BEFORE the first run of this case:
+#   P1 The stop engages at 600, 1000 and 1500 N.s/m and not at 2200 or 3500
+#      (compression 38.1 and 31.6 mm there without a stop).
+#   P2 At 2200 and 3500 N.s/m every metric equals qc_bump_liftoff to 1e-9.
+#   P3 Maximum compression drops to 42-46 mm at 600 N.s/m and stays under
+#      45 mm at 1000 and 1500 N.s/m.
+#   P4 Peak stop force 1.5-3.5 kN at 600 N.s/m, smaller at 1000 and 1500.
+#   P5 Peak body acceleration rises where the stop engages, by 2-6 m/s^2 at
+#      600 N.s/m (stop force / body mass), so REQ-QB1 still fails everywhere.
+#
+# Results against the predictions (first run 20261120-123312; every check passes):
+#   P1 Held: the stop engages once at 600, 1000 and 1500 N.s/m, never at 2200 or 3500.
+#   P2 Held: 2200 and 3500 N.s/m match qc_bump_liftoff.
+#   P3 Missed: the stop limits compression far less than predicted: 49.2 / 46.2 /
+#      42.8 mm (51.9 / 47.4 / 43.0 without it). A 300 kN/m stop cannot absorb the
+#      wheel's energy in 8 mm; at 600 N.s/m it runs past its usable stroke.
+#   P4 Held: 2.77 kN at 600 N.s/m, 1.87 kN at 1000, 0.83 kN at 1500.
+#   P5 Held in direction, missed in size at 600 N.s/m: peak body acceleration
+#      rises from 5.19 to 11.29 m/s^2 (+6.1), more than double; at 1500 the peak
+#      comes from elsewhere and is unchanged. Side effect: the stop shortens the
+#      airborne time (59.0 to 45.5 ms at 600 N.s/m) and the tire load swing.
+#   Verdicts: REQ-QB1 fails everywhere; REQ-QS1 and REQ-QS2 fail only at
+#   600 N.s/m. From 1000 N.s/m the stop stays inside its stroke and rating.
+
+[case]
+name = "qc_bump_stop"
+model = "quarter_car"
+description = "2-DOF quarter car with a tire that can leave the road and a linear jounce bump stop (300 kN/m beyond 40 mm), crossing a 40 mm x 1.0 m (1 - cos) bump at 10 m/s (36 km/h); wheel-rate damping swept from 600 to 3500 N.s/m."
+assumptions = [
+  "Linear spring and damper; parameters are wheel rates (motion ratio already applied).",
+  "Point-contact tire that pushes but never pulls: load = max(0, W + kt (zr - zu)); no tire damping.",
+  "Linear bump stop: force = kb (compression - gap) when the suspension compresses beyond the gap; no stop damping, no rebound stop.",
+  "Coordinates from static equilibrium; gravity acts explicitly while the wheel is airborne.",
+  "Rigid body above one corner (no pitch/roll coupling, no seat or occupant dynamics).",
+]
+limitations = [
+  "Synthetic parameters; not calibrated to any vehicle. Real elastomer stops are progressive and damped.",
+  "Peak acceleration is unweighted; ISO 2631 frequency weighting is not applied.",
+  "Checks establish numerical verification only; no test data.",
+]
+
+[parameters]
+sprung_mass_kg = 350.0
+unsprung_mass_kg = 45.0
+suspension_stiffness_N_per_m = 22000.0
+damping_N_s_per_m = 1500.0
+tire_stiffness_N_per_m = 220000.0
+road = "bump"
+speed_m_per_s = 10.0
+bump_height_m = 0.04
+bump_length_m = 1.0
+tire_model = "liftoff"
+bump_stop_gap_mm = 40.0
+bump_stop_stiffness_N_per_m = 300000.0
+
+[sweep]
+parameter = "damping_N_s_per_m"
+values = [600.0, 1000.0, 1500.0, 2200.0, 3500.0]
+
+[numerics]
+method = "DOP853"
+rtol = 1e-9
+atol = 1e-12
+t_end_s = 10.0
+n_points = 20001
+
+[verification]
+reference_max_rel_error = 1e-5
+peak_metric_rel_tol = 1e-4
+rest_rel_tol = 1e-3
+energy_residual_rel_tol = 1e-4
+convergence_max_rel_change = 1e-6
+event_time_tol_s = 1e-6
+
+[[requirements]]
+id = "REQ-QB1"
+text = "Peak vertical body acceleration over the bump shall not exceed 4.0 m/s^2 (comfort)."
+metric = "peak_body_accel_m_per_s2"
+operator = "<="
+limit = 4.0
+units = "m/s^2"
+
+[[requirements]]
+id = "REQ-QS1"
+text = "Suspension compression shall not exceed 48 mm (40 mm gap plus 8 mm of usable bump-stop stroke)."
+metric = "max_compression_mm"
+operator = "<="
+limit = 48.0
+units = "mm"
+
+[[requirements]]
+id = "REQ-QS2"
+text = "Peak bump-stop force shall not exceed 2.5 kN (stop and mount rating)."
+metric = "max_bump_stop_force_N"
+operator = "<="
+limit = 2500.0
+units = "N"

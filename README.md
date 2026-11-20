@@ -19,7 +19,7 @@ The intended user is an automotive engineer with a master's degree in mechanical
 | Study | Model names (case `model`) | Tools | Cases |
 |---|---|---|---|
 | Mass-spring-damper step response | `msd`, `msd_modelica` | SciPy; OpenModelica + MSL | `msd_step`, `msd_step_modelica` |
-| Quarter-car ride / road holding | `quarter_car`, `quarter_car_modelica` | SciPy; OpenModelica + MSL | `qc_speed_bump`, `qc_speed_bump_modelica`, `qc_iso_road`, `qc_bump` |
+| Quarter-car ride / road holding | `quarter_car`, `quarter_car_modelica` | SciPy; OpenModelica + MSL | `qc_speed_bump`, `qc_speed_bump_modelica`, `qc_iso_road`, `qc_bump`, `qc_bump_liftoff`, `qc_bump_stop` |
 | Cantilever, 3D solid FEA | `cantilever_freecad` | FreeCAD + Gmsh + CalculiX | `cantilever_tet10`, `cantilever_tet4` |
 | Parametric mounting plate | `cadquery_plate` | CadQuery | `mounting_plate` |
 | Strap with a cable hole, CAD to FEA | `cadquery_ccx_strap` | CadQuery -> Gmsh -> CalculiX | `strap_hole_mesh`, `strap_hole_size` |
@@ -61,7 +61,7 @@ winget install --id FreeCAD.FreeCAD                       # bundles CalculiX and
 .venv\Scripts\python.exe -m pytest -q        # Modelica/FreeCAD/OpenFOAM tests skip if the tool is absent
 ```
 
-Not yet done: heat transfer in the CFD path, 3D developing flow, nonlinear models beyond tire lift-off (bump stops, structural contact), any physical validation data.
+Not yet done: heat transfer in the CFD path, 3D developing flow, structural contact with friction or plasticity, any physical validation data.
 
 ## First implementation milestone (done)
 

@@ -1,0 +1,597 @@
+{
+  "points": [
+    {
+      "label": "p00_damping_N_s_per_m-600",
+      "parameters": {
+        "sprung_mass_kg": 350.0,
+        "unsprung_mass_kg": 45.0,
+        "suspension_stiffness_N_per_m": 22000.0,
+        "damping_N_s_per_m": 600.0,
+        "tire_stiffness_N_per_m": 220000.0,
+        "road": "bump",
+        "speed_m_per_s": 10.0,
+        "bump_height_m": 0.04,
+        "bump_length_m": 1.0,
+        "tire_model": "liftoff",
+        "bump_stop_gap_mm": 40.0,
+        "bump_stop_stiffness_N_per_m": 300000.0
+      },
+      "derived": {
+        "ride_rate_N_per_m": 20000.0,
+        "body_frequency_Hz_approx": 1.2030982838508355,
+        "wheel_hop_frequency_Hz_approx": 11.671362493405658,
+        "body_damping_ratio_approx": 0.11338934190276817,
+        "static_tire_load_N": 3873.62675,
+        "slowest_decay_rate_per_s": 0.7084274031263935
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "energy_balance",
+          "description": "|W_road - (dE + E_dissipated)| / integral |P_road| dt",
+          "kind": "numerical",
+          "value": 2.456569088850251e-06,
+          "tolerance": 0.0001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "solver_convergence",
+          "description": "max |z(tol) - z(tol/100)| / max |z| (body and wheel)",
+          "kind": "numerical",
+          "value": 1.6094335932343514e-09,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "contact_event_times",
+          "description": "max |t_event model - t_event exact| [s] over tire and bump-stop switches (6 events; sequence must match)",
+          "kind": "numerical",
+          "value": 2.7245122824481882e-11,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "reference_agreement",
+          "description": "max |z_num - z_ref| / bump height (body and wheel; matrix-exponential ref)",
+          "kind": "numerical",
+          "value": 2.0967909700186915e-09,
+          "tolerance": 1e-05,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "peak_accel_reference",
+          "description": "|peak accel num - peak accel ref| / peak accel ref",
+          "kind": "numerical",
+          "value": 1.686164985389337e-09,
+          "tolerance": 0.0001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "return_to_rest",
+          "description": "max(|zs(t_end)|, |zu(t_end)|) / bump height",
+          "kind": "numerical",
+          "value": 0.00024386146450249712,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-QB1",
+          "text": "Peak vertical body acceleration over the bump shall not exceed 4.0 m/s^2 (comfort).",
+          "metric": "peak_body_accel_m_per_s2",
+          "operator": "<=",
+          "limit": 4.0,
+          "units": "m/s^2",
+          "value": 11.28686569351787,
+          "margin": -7.2868656935178695,
+          "verdict": "FAIL"
+        },
+        {
+          "id": "REQ-QS1",
+          "text": "Suspension compression shall not exceed 48 mm (40 mm gap plus 8 mm of usable bump-stop stroke).",
+          "metric": "max_compression_mm",
+          "operator": "<=",
+          "limit": 48.0,
+          "units": "mm",
+          "value": 49.226471644616254,
+          "margin": -1.2264716446162538,
+          "verdict": "FAIL"
+        },
+        {
+          "id": "REQ-QS2",
+          "text": "Peak bump-stop force shall not exceed 2.5 kN (stop and mount rating).",
+          "metric": "max_bump_stop_force_N",
+          "operator": "<=",
+          "limit": 2500.0,
+          "units": "N",
+          "value": 2767.941493384877,
+          "margin": -267.94149338487705,
+          "verdict": "FAIL"
+        }
+      ]
+    },
+    {
+      "label": "p01_damping_N_s_per_m-1000",
+      "parameters": {
+        "sprung_mass_kg": 350.0,
+        "unsprung_mass_kg": 45.0,
+        "suspension_stiffness_N_per_m": 22000.0,
+        "damping_N_s_per_m": 1000.0,
+        "tire_stiffness_N_per_m": 220000.0,
+        "road": "bump",
+        "speed_m_per_s": 10.0,
+        "bump_height_m": 0.04,
+        "bump_length_m": 1.0,
+        "tire_model": "liftoff",
+        "bump_stop_gap_mm": 40.0,
+        "bump_stop_stiffness_N_per_m": 300000.0
+      },
+      "derived": {
+        "ride_rate_N_per_m": 20000.0,
+        "body_frequency_Hz_approx": 1.2030982838508355,
+        "wheel_hop_frequency_Hz_approx": 11.671362493405658,
+        "body_damping_ratio_approx": 0.18898223650461363,
+        "static_tire_load_N": 3873.62675,
+        "slowest_decay_rate_per_s": 1.1877402576900067
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "energy_balance",
+          "description": "|W_road - (dE + E_dissipated)| / integral |P_road| dt",
+          "kind": "numerical",
+          "value": 9.925577606152993e-06,
+          "tolerance": 0.0001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "solver_convergence",
+          "description": "max |z(tol) - z(tol/100)| / max |z| (body and wheel)",
+          "kind": "numerical",
+          "value": 5.59388218056315e-10,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "contact_event_times",
+          "description": "max |t_event model - t_event exact| [s] over tire and bump-stop switches (4 events; sequence must match)",
+          "kind": "numerical",
+          "value": 1.6877721442654092e-11,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "reference_agreement",
+          "description": "max |z_num - z_ref| / bump height (body and wheel; matrix-exponential ref)",
+          "kind": "numerical",
+          "value": 7.050350320919607e-10,
+          "tolerance": 1e-05,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "peak_accel_reference",
+          "description": "|peak accel num - peak accel ref| / peak accel ref",
+          "kind": "numerical",
+          "value": 4.069329623236118e-10,
+          "tolerance": 0.0001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "return_to_rest",
+          "description": "max(|zs(t_end)|, |zu(t_end)|) / bump height",
+          "kind": "numerical",
+          "value": 2.5777662635061376e-06,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-QB1",
+          "text": "Peak vertical body acceleration over the bump shall not exceed 4.0 m/s^2 (comfort).",
+          "metric": "peak_body_accel_m_per_s2",
+          "operator": "<=",
+          "limit": 4.0,
+          "units": "m/s^2",
+          "value": 8.903379819025902,
+          "margin": -4.903379819025902,
+          "verdict": "FAIL"
+        },
+        {
+          "id": "REQ-QS1",
+          "text": "Suspension compression shall not exceed 48 mm (40 mm gap plus 8 mm of usable bump-stop stroke).",
+          "metric": "max_compression_mm",
+          "operator": "<=",
+          "limit": 48.0,
+          "units": "mm",
+          "value": 46.22882848638134,
+          "margin": 1.7711715136186612,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-QS2",
+          "text": "Peak bump-stop force shall not exceed 2.5 kN (stop and mount rating).",
+          "metric": "max_bump_stop_force_N",
+          "operator": "<=",
+          "limit": 2500.0,
+          "units": "N",
+          "value": 1868.648545914401,
+          "margin": 631.351454085599,
+          "verdict": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p02_damping_N_s_per_m-1500",
+      "parameters": {
+        "sprung_mass_kg": 350.0,
+        "unsprung_mass_kg": 45.0,
+        "suspension_stiffness_N_per_m": 22000.0,
+        "damping_N_s_per_m": 1500.0,
+        "tire_stiffness_N_per_m": 220000.0,
+        "road": "bump",
+        "speed_m_per_s": 10.0,
+        "bump_height_m": 0.04,
+        "bump_length_m": 1.0,
+        "tire_model": "liftoff",
+        "bump_stop_gap_mm": 40.0,
+        "bump_stop_stiffness_N_per_m": 300000.0
+      },
+      "derived": {
+        "ride_rate_N_per_m": 20000.0,
+        "body_frequency_Hz_approx": 1.2030982838508355,
+        "wheel_hop_frequency_Hz_approx": 11.671362493405658,
+        "body_damping_ratio_approx": 0.2834733547569204,
+        "static_tire_load_N": 3873.62675,
+        "slowest_decay_rate_per_s": 1.8029147390286187
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "energy_balance",
+          "description": "|W_road - (dE + E_dissipated)| / integral |P_road| dt",
+          "kind": "numerical",
+          "value": 7.53999922023326e-07,
+          "tolerance": 0.0001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "solver_convergence",
+          "description": "max |z(tol) - z(tol/100)| / max |z| (body and wheel)",
+          "kind": "numerical",
+          "value": 2.1202722700025454e-09,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "contact_event_times",
+          "description": "max |t_event model - t_event exact| [s] over tire and bump-stop switches (4 events; sequence must match)",
+          "kind": "numerical",
+          "value": 7.242423327724623e-11,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "reference_agreement",
+          "description": "max |z_num - z_ref| / bump height (body and wheel; matrix-exponential ref)",
+          "kind": "numerical",
+          "value": 2.5608837099511117e-09,
+          "tolerance": 1e-05,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "peak_accel_reference",
+          "description": "|peak accel num - peak accel ref| / peak accel ref",
+          "kind": "numerical",
+          "value": 2.4396918935766142e-09,
+          "tolerance": 0.0001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "return_to_rest",
+          "description": "max(|zs(t_end)|, |zu(t_end)|) / bump height",
+          "kind": "numerical",
+          "value": 7.325585446822892e-09,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-QB1",
+          "text": "Peak vertical body acceleration over the bump shall not exceed 4.0 m/s^2 (comfort).",
+          "metric": "peak_body_accel_m_per_s2",
+          "operator": "<=",
+          "limit": 4.0,
+          "units": "m/s^2",
+          "value": 8.184716000948436,
+          "margin": -4.184716000948436,
+          "verdict": "FAIL"
+        },
+        {
+          "id": "REQ-QS1",
+          "text": "Suspension compression shall not exceed 48 mm (40 mm gap plus 8 mm of usable bump-stop stroke).",
+          "metric": "max_compression_mm",
+          "operator": "<=",
+          "limit": 48.0,
+          "units": "mm",
+          "value": 42.76030011509157,
+          "margin": 5.239699884908433,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-QS2",
+          "text": "Peak bump-stop force shall not exceed 2.5 kN (stop and mount rating).",
+          "metric": "max_bump_stop_force_N",
+          "operator": "<=",
+          "limit": 2500.0,
+          "units": "N",
+          "value": 828.0900345274705,
+          "margin": 1671.9099654725296,
+          "verdict": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p03_damping_N_s_per_m-2200",
+      "parameters": {
+        "sprung_mass_kg": 350.0,
+        "unsprung_mass_kg": 45.0,
+        "suspension_stiffness_N_per_m": 22000.0,
+        "damping_N_s_per_m": 2200.0,
+        "tire_stiffness_N_per_m": 220000.0,
+        "road": "bump",
+        "speed_m_per_s": 10.0,
+        "bump_height_m": 0.04,
+        "bump_length_m": 1.0,
+        "tire_model": "liftoff",
+        "bump_stop_gap_mm": 40.0,
+        "bump_stop_stiffness_N_per_m": 300000.0
+      },
+      "derived": {
+        "ride_rate_N_per_m": 20000.0,
+        "body_frequency_Hz_approx": 1.2030982838508355,
+        "wheel_hop_frequency_Hz_approx": 11.671362493405658,
+        "body_damping_ratio_approx": 0.41576092031014994,
+        "static_tire_load_N": 3873.62675,
+        "slowest_decay_rate_per_s": 2.713910447393752
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "energy_balance",
+          "description": "|W_road - (dE + E_dissipated)| / integral |P_road| dt",
+          "kind": "numerical",
+          "value": 2.8333594935711367e-05,
+          "tolerance": 0.0001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "solver_convergence",
+          "description": "max |z(tol) - z(tol/100)| / max |z| (body and wheel)",
+          "kind": "numerical",
+          "value": 5.478217845079465e-10,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "contact_event_times",
+          "description": "max |t_event model - t_event exact| [s] over tire and bump-stop switches (2 events; sequence must match)",
+          "kind": "numerical",
+          "value": 3.3394120801943927e-12,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "reference_agreement",
+          "description": "max |z_num - z_ref| / bump height (body and wheel; matrix-exponential ref)",
+          "kind": "numerical",
+          "value": 6.324319540285117e-10,
+          "tolerance": 1e-05,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "peak_accel_reference",
+          "description": "|peak accel num - peak accel ref| / peak accel ref",
+          "kind": "numerical",
+          "value": 5.326117345076719e-10,
+          "tolerance": 0.0001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "return_to_rest",
+          "description": "max(|zs(t_end)|, |zu(t_end)|) / bump height",
+          "kind": "numerical",
+          "value": 6.075076162652072e-13,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-QB1",
+          "text": "Peak vertical body acceleration over the bump shall not exceed 4.0 m/s^2 (comfort).",
+          "metric": "peak_body_accel_m_per_s2",
+          "operator": "<=",
+          "limit": 4.0,
+          "units": "m/s^2",
+          "value": 9.40027594575585,
+          "margin": -5.400275945755849,
+          "verdict": "FAIL"
+        },
+        {
+          "id": "REQ-QS1",
+          "text": "Suspension compression shall not exceed 48 mm (40 mm gap plus 8 mm of usable bump-stop stroke).",
+          "metric": "max_compression_mm",
+          "operator": "<=",
+          "limit": 48.0,
+          "units": "mm",
+          "value": 38.125876399177734,
+          "margin": 9.874123600822266,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-QS2",
+          "text": "Peak bump-stop force shall not exceed 2.5 kN (stop and mount rating).",
+          "metric": "max_bump_stop_force_N",
+          "operator": "<=",
+          "limit": 2500.0,
+          "units": "N",
+          "value": 0.0,
+          "margin": 2500.0,
+          "verdict": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p04_damping_N_s_per_m-3500",
+      "parameters": {
+        "sprung_mass_kg": 350.0,
+        "unsprung_mass_kg": 45.0,
+        "suspension_stiffness_N_per_m": 22000.0,
+        "damping_N_s_per_m": 3500.0,
+        "tire_stiffness_N_per_m": 220000.0,
+        "road": "bump",
+        "speed_m_per_s": 10.0,
+        "bump_height_m": 0.04,
+        "bump_length_m": 1.0,
+        "tire_model": "liftoff",
+        "bump_stop_gap_mm": 40.0,
+        "bump_stop_stiffness_N_per_m": 300000.0
+      },
+      "derived": {
+        "ride_rate_N_per_m": 20000.0,
+        "body_frequency_Hz_approx": 1.2030982838508355,
+        "wheel_hop_frequency_Hz_approx": 11.671362493405658,
+        "body_damping_ratio_approx": 0.6614378277661477,
+        "static_tire_load_N": 3873.62675,
+        "slowest_decay_rate_per_s": 4.712746058216078
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "energy_balance",
+          "description": "|W_road - (dE + E_dissipated)| / integral |P_road| dt",
+          "kind": "numerical",
+          "value": 1.4660710854990284e-05,
+          "tolerance": 0.0001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "solver_convergence",
+          "description": "max |z(tol) - z(tol/100)| / max |z| (body and wheel)",
+          "kind": "numerical",
+          "value": 9.914006994151787e-10,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "contact_event_times",
+          "description": "max |t_event model - t_event exact| [s] over tire and bump-stop switches (2 events; sequence must match)",
+          "kind": "numerical",
+          "value": 1.0337564138040989e-12,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "reference_agreement",
+          "description": "max |z_num - z_ref| / bump height (body and wheel; matrix-exponential ref)",
+          "kind": "numerical",
+          "value": 1.0285228682735577e-09,
+          "tolerance": 1e-05,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "peak_accel_reference",
+          "description": "|peak accel num - peak accel ref| / peak accel ref",
+          "kind": "numerical",
+          "value": 1.3035357361638145e-11,
+          "tolerance": 0.0001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "return_to_rest",
+          "description": "max(|zs(t_end)|, |zu(t_end)|) / bump height",
+          "kind": "numerical",
+          "value": 3.717717954964152e-15,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-QB1",
+          "text": "Peak vertical body acceleration over the bump shall not exceed 4.0 m/s^2 (comfort).",
+          "metric": "peak_body_accel_m_per_s2",
+          "operator": "<=",
+          "limit": 4.0,
+          "units": "m/s^2",
+          "value": 10.419917582727626,
+          "margin": -6.419917582727626,
+          "verdict": "FAIL"
+        },
+        {
+          "id": "REQ-QS1",
+          "text": "Suspension compression shall not exceed 48 mm (40 mm gap plus 8 mm of usable bump-stop stroke).",
+          "metric": "max_compression_mm",
+          "operator": "<=",
+          "limit": 48.0,
+          "units": "mm",
+          "value": 31.611800196013213,
+          "margin": 16.388199803986787,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-QS2",
+          "text": "Peak bump-stop force shall not exceed 2.5 kN (stop and mount rating).",
+          "metric": "max_bump_stop_force_N",
+          "operator": "<=",
+          "limit": 2500.0,
+          "units": "N",
+          "value": 0.0,
+          "margin": 2500.0,
+          "verdict": "PASS"
+        }
+      ]
+    }
+  ],
+  "run_id": "20261120-123312_qc_bump_stop",
+  "generated_utc": "2026-11-20T17:33:27+00:00",
+  "verification_status": "PASS"
+}
