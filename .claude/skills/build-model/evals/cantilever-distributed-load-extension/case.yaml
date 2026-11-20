@@ -1,0 +1,10 @@
+schema_version: "1.1"
+name: cantilever-distributed-load-extension
+expected_outcome: |
+  An extension of the existing cantilever FEA study (FreeCAD + CalculiX) to a
+  uniformly distributed load, without breaking the existing tip-load cases. The
+  cross-section and load magnitude are not given: the run identifies them as
+  missing, chooses values, and labels them as assumptions in the case file and
+  the answer. The reference is the distributed-load beam solution (wL^4/8EI,
+  optionally with a shear correction). Requirements and tolerances are fixed
+  before the evidence run; mesh convergence is checked; existing tests still pass.
