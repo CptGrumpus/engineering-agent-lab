@@ -97,6 +97,16 @@ Fatigue life is extremely sensitive to stress (here a 10 % stress change moves l
 | Exchange-file round trip (STEP re-import: volume, hole count) | numerical | `step_roundtrip_*` |
 | Valid solid | numerical | `shape.isValid()` |
 
+## Heat transfer in a flow (CFD + scalar temperature)
+
+| Check | Kind | Example |
+|---|---|---|
+| Energy balance: outlet bulk rise = 2 q L / (rho cp U H) | numerical | heated channel `energy_balance` |
+| Wall temperature vs the Graetz thermal-entry solution at stations away from the heating ends | numerical | heated channel `wall_temperature_reference` |
+| Peak vs the reference, labelled model form (the reference has no axial conduction) | model form | heated channel `peak_vs_reference` |
+| Temperature field converged: max change over the last write interval / rise | numerical | heated channel `temperature_converged` |
+| Laminar (Re), and Pe >> 1 for a reference that neglects axial conduction | validity | heated channel `laminar`, `reference_assumption` |
+
 ## CFD (incompressible, laminar)
 
 | Check | Kind | Example |

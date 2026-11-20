@@ -1,0 +1,19 @@
+  <section class="study" id="heat">
+    <div class="study-head">
+      <span class="label">Example 11 · In progress · Heat transfer in OpenFOAM</span>
+      <h2>Cold-plate channel heat transfer</h2>
+    </div>
+    <figure><div class="plate"><img src="v2/heat_response.webp" alt="Wall and bulk temperature along the heated channel, OpenFOAM against the Graetz reference" loading="lazy"></div><figcaption>Wall and bulk temperature along the heated channel, and the local Nusselt number, against the independent Graetz thermal-entry solution.</figcaption></figure>
+    <p><strong>The question.</strong> A cold-plate passage, 1 mm deep, carries water at 25 °C and 0.1 m/s. Electronics heat both walls at 30 kW/m² over 50 mm. Does the wall stay at or under 45 °C, and does the coolant warm by no more than 10 K?</p>
+    <div class="answer">
+      <div class="chips"><span class="chip warn">Verdict withheld: convergence check open</span><span class="chip pass">Matches Graetz to 0.03–0.6 %</span><span class="chip pass">Peak wall about 44.0 °C</span></div>
+      <p><strong>Not yet answered.</strong> The wall peaks at about 44.0 °C against the 45 °C limit and the coolant warms by 7.2 K, and the wall temperature matches an independent thermal-entry solution closely. But the finest mesh's temperature field was still changing when the run stopped, and the energy balance doesn't yet close to the tolerance I set. So under this portfolio's rules there is no pass or fail yet. Next: solve the temperature on the converged flow for a few thousand cheap iterations and rerun with the same tolerances.</p>
+    </div>
+    <div class="caught">
+      <h3>What the checks caught</h3>
+      <ul>
+        <li><b>An overshoot exactly where the answer is.</b> The usual second-order scheme overshot by 0.06 to 0.11 K at the last heated cell, where the peak wall temperature sits. A bounded scheme removed it.</li>
+        <li><b>A field that never settled.</b> The bounded scheme's limiter then flipped part of the field by up to 0.1 K every iteration, while the peak barely moved. The convergence check failed, correctly; that's what is holding the verdict.</li>
+      </ul>
+    </div>
+  </section>

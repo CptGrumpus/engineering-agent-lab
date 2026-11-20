@@ -1,0 +1,19 @@
+FoamFile
+{
+    format      ascii;
+    class       dictionary;
+    object      fvSchemes;
+}
+
+ddtSchemes      { default steadyState; }
+gradSchemes     { default Gauss linear; }
+divSchemes
+{
+    default         none;
+    div(phi,U)      bounded Gauss linearUpwind grad(U);
+    div(phi,T)      bounded Gauss limitedLinear 1;    // TVD: linearUpwind overshoots at the end of heating
+    div((nuEff*dev2(T(grad(U))))) Gauss linear;
+}
+laplacianSchemes     { default Gauss linear corrected; }
+interpolationSchemes { default linear; }
+snGradSchemes        { default corrected; }

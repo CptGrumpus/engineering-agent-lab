@@ -1,0 +1,105 @@
+# Heated coolant channel: mesh study. OpenFOAM (laminar flow + scalar temperature)
+# verified against the Graetz thermal-entry solution and the exact energy balance.
+#
+# Design question (synthetic): a cold-plate passage, 1 mm gap, water at 25 C and
+# 0.1 m/s mean (Re_Dh 224, laminar), is heated on both walls by electronics at
+# 30 kW/m2 over 50 mm. Does the wall stay at or under 45 C, and is the coolant
+# temperature rise within its 10 K budget?
+#
+# Why the reference matters: the thermal entry length (about 0.05 Dh Pe = 137 mm)
+# is longer than the heated length, so the flow is still thermally developing at
+# the end of heating (Nu 8.34, not the fully developed 8.24). A fully developed
+# hand estimate would get the wall temperature wrong.
+#
+# Prototype findings (scratch runs, before this case was written):
+# - OpenFOAM writes no wall value for a fixedGradient patch; the study evaluates it
+#   the way the boundary condition does (wall cell + gradient x half a cell).
+# - With linearUpwind for temperature the last heated cell overshot by 0.06-0.11 K
+#   (unbounded second-order upwinding at the step from a heated to an adiabatic
+#   wall), exactly where the peak is. A bounded TVD scheme (limitedLinear 1) removed
+#   it; the case writer uses that.
+# - With limitedLinear the CFD sits 0.05 K under the reference at the last heated
+#   cell: axial conduction into the unheated exit, which the reference omits.
+#
+# Predictions, written BEFORE the first evidence run (reference values):
+#   P1 Energy balance closes to 1e-9 at every mesh; outlet rise 7.199 K.
+#   P2 Wall temperature at 20/50/90 % of the heated length within 0.1 % of the
+#      reference rise at 40 and 80 cells, within 0.5 % at 20.
+#   P3 Peak wall temperature 44.0 C (reference 44.047 C at the end of heating),
+#      0.05-0.1 K lower because of axial conduction; REQ-T1 passes by about 1 K.
+#   P4 GCI on the peak wall temperature rise under 0.5 %.
+
+# Revision 1 (after runs 20261120-124736 and 20261120-130606, kept as evidence):
+#   Every point failed temperature_converged: each iteration solved T to 1e-15, but the
+#   next started again from a 0.22 initial residual. The TVD limiter was cycling: a field
+#   value flipped by up to 0.1 K per iteration, though the peak wall temperature moved
+#   only 3e-5 K. Fix, decided before the rerun: relaxation_T = 0.8 (the limiter flip-flop
+#   drops to 1.3e-5 K per 100 iterations in a scratch test), and convergence judged on the
+#   field itself: max |T change| over the last write interval / outlet rise <= 1e-5
+#   (0.2 mK at 30 kW/m2), replacing the residual tolerance, which the limiter cannot reach
+#   (it plateaus at 8e-6). All other tolerances unchanged.
+
+[case]
+name = "heated_channel_mesh"
+model = "openfoam_heated_channel"
+description = "2D laminar water channel (1 mm gap, 0.1 m/s) with both walls heated at 30 kW/m2 over 50 mm; OpenFOAM incompressibleFluid + scalarTransport; cells across the gap 20 / 40 / 80, verified against the Graetz thermal-entry solution."
+assumptions = [
+  "Constant water properties at 25 C (temperature rise under 20 K), so temperature is a passive scalar.",
+  "Hydrodynamically developed inflow: parabolic profile at an exact flow rate, 5 mm unheated entry.",
+  "Uniform heat flux into the water on both walls; the plate's conduction is not modelled (no conjugate heat transfer).",
+  "2D: the passage is much wider than the gap (side walls neglected; the 3D duct study shows a 3 % effect on flow).",
+]
+limitations = [
+  "Synthetic geometry and loads; not calibrated to a product.",
+  "No conjugate conduction in the plate, so real wall temperatures would be smoothed along the length.",
+  "Checks establish numerical verification against the Graetz solution and the energy balance only; no test data.",
+]
+
+[parameters]
+gap_mm = 1.0
+heated_length_mm = 50.0
+entry_length_mm = 5.0
+exit_length_mm = 5.0
+mean_velocity_m_per_s = 0.1
+density_kg_per_m3 = 997.0
+dynamic_viscosity_Pa_s = 0.00089
+specific_heat_J_per_kgK = 4180.0
+conductivity_W_per_mK = 0.607
+inlet_temperature_C = 25.0
+wall_heat_flux_W_per_m2 = 30000.0
+cells_across_gap = 40
+cell_aspect_ratio = 5.0
+
+[sweep]
+parameter = "cells_across_gap"
+values = [20, 40, 80]
+
+[numerics]
+iterations = 1500
+write_interval = 100
+relaxation_T = 0.8
+
+[verification]
+temperature_change_rel_max = 1e-5
+flow_rel_tol = 1e-6
+profile_rel_tol = 0.01
+energy_rel_tol = 1e-6
+wall_rel_tol = 0.01
+peak_rel_tol = 0.01
+gci_max = 0.01
+
+[[requirements]]
+id = "REQ-T1"
+text = "Peak wall temperature over the heated length shall not exceed 45 C."
+metric = "max_wall_temperature_C"
+operator = "<="
+limit = 45.0
+units = "C"
+
+[[requirements]]
+id = "REQ-T2"
+text = "Coolant temperature rise from inlet to outlet shall not exceed 10 K."
+metric = "outlet_bulk_rise_K"
+operator = "<="
+limit = 10.0
+units = "K"

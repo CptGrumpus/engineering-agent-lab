@@ -158,3 +158,21 @@ Traps found while building the studies in this repo, by tool.
   convergence-diagnosis.md.
 - Write ASCII fields with `writePrecision 12` so mesh-convergence differences
   are resolved.
+
+
+### OpenFOAM heat transfer (temperature as a passive scalar)
+
+- Constant properties make temperature a passive scalar: keep `incompressibleFluid` and add
+  the `scalarTransport` function object (`diffusivity viscosity; alphal 1/Pr`), with
+  `div(phi,T)` in fvSchemes and a `T` solver in fvSolution.
+- A `fixedGradient` wall (heat flux q/k) writes no wall value. Evaluate it as the BC does:
+  wall-cell value + gradient x centre-to-wall distance.
+- `linearUpwind` overshoots at a step in the wall condition (heated to adiabatic): +0.06 to
+  +0.11 K at the last heated cell, exactly where the peak wall temperature is. Use a bounded
+  TVD scheme (`limitedLinear 1`).
+- A TVD limiter can cycle from one iteration to the next: each linear solve converged to
+  1e-15 while the next started from a 0.22 residual, and a cell flipped 0.1 K per iteration.
+  Under-relax the scalar (0.8), and judge convergence on the field itself (keep two writes
+  with `purgeWrite 2`, compare them); the normalised residual plateaus near 1e-5.
+- Validate a thermal-entry model against the Graetz solution (validation/graetz.py), not the
+  fully developed Nusselt number: at Pe ~ 1400 a 50 mm channel never reaches it.

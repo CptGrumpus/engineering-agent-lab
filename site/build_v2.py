@@ -8,6 +8,7 @@ HERE = Path(__file__).parent
 REPO = Path(r"c:\Users\mrstego\projects\engineering-agent-lab")
 old = (HERE / "index_v1.html").read_text(encoding="utf-8")
 CONTACT = (HERE / "contact_section.html").read_text(encoding="utf-8")
+HEAT = (HERE / "heat_section.html").read_text(encoding="utf-8")
 studies = old[old.index('  <h2 class="discipline">Structures and vibration</h2>'):old.index("  <footer>")]
 i0 = old.index('<section class="caps" aria-labelledby="caps-title">')
 caps = old[old.index('<div class="table-wrap">', i0):old.index("</section>", i0)]
@@ -114,6 +115,10 @@ def after_head(text, sid, html):
     return text[:m.end()] + html + text[m.end():]
 
 
+studies = after_head(studies, "fea", fig("img/turntable_cantilever.webp", "The cantilever result turning, rendered in Blender",
+    "The same result turning: the clamped end shows the bending stress across the section, highest at the top and bottom faces."))
+_i = studies.index('  <h2 class="discipline">Vehicle and system dynamics</h2>')
+studies = studies[:_i] + HEAT + chr(10) + studies[_i:]
 studies = after_head(studies, "fatigue", fig("img/render_fatigue.png", "Cyclic stress amplitude on the strap",
     "The cyclic stress amplitude for the 0 to 5 kN service cycle, highest at the sides of the hole where a crack would start."))
 studies = after_head(studies, "cfd", fig("img/render_duct.png", "Velocity over the passage cross-section",

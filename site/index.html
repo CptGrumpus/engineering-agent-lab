@@ -321,8 +321,8 @@ td.num { font-family: var(--font-data); font-variant-numeric: tabular-nums; whit
     <p class="lede">Ten worked studies across <b>structures, contact, vibration, fatigue, fluids, heat transfer and vehicle dynamics</b>. Each one turns written requirements into a model, runs a real solver, and checks the result against something independent before it gives a verdict. Everything runs on open-source tools, driven by a coding agent through written procedures.</p>
     </div>
     <dl class="stats">
-      <div><dt>automated checks</dt><dd>880</dd></div>
-      <div><dt>saved evidence runs</dt><dd>26</dd></div>
+      <div><dt>automated checks</dt><dd>1065</dd></div>
+      <div><dt>saved evidence runs</dt><dd>32</dd></div>
       <div><dt>open-source solvers and tools</dt><dd>8</dd></div>
       <div><dt>paid licences</dt><dd>0</dd></div>
     </dl>
@@ -384,7 +384,7 @@ td.num { font-family: var(--font-data); font-variant-numeric: tabular-nums; whit
   <section class="band wrap" id="studies" aria-labelledby="studies-title">
     <div class="band-head">
       <p class="eyebrow">Case studies</p>
-      <h2 id="studies-title">Ten studies, each ending in a clear answer</h2>
+      <h2 id="studies-title">Ten studies with a clear answer, and one in progress</h2>
       <p>The problems are synthetic, so no client data is involved. Every number comes from a saved run that reproduces from its recorded inputs with one command.</p>
     </div>
     <div class="filters" role="group" aria-label="Filter by discipline">
@@ -566,6 +566,7 @@ td.num { font-family: var(--font-data); font-variant-numeric: tabular-nums; whit
       <span class="label">Example 1 · Finite elements in FreeCAD and CalculiX</span>
       <h2>Cantilever bracket, 3D finite elements</h2>
     </div>
+    <figure><div class="plate"><img src="img/turntable_cantilever.webp" alt="The cantilever result turning, rendered in Blender" loading="lazy"></div><figcaption>The same result turning: the clamped end shows the bending stress across the section, highest at the top and bottom faces.</figcaption></figure>
     <figure><div class="plate"><img src="img/render_cantilever.png" alt="Von Mises stress on the deformed cantilever, rendered in Blender" loading="lazy"></div><figcaption>Von Mises stress on the deformed bracket, rendered in Blender from the CalculiX result: highest at the clamped root, zero along the neutral axis.</figcaption></figure>
     <p><strong>The question.</strong> A steel bracket, 200 mm long with a 20 by 20 mm section, carries a 1 kN load at its tip. Does it stay within a 1.0 mm deflection limit and a 213 MPa stress limit, and how accurate is the model?</p>
     <div class="answer">
@@ -824,6 +825,26 @@ td.num { font-family: var(--font-data); font-variant-numeric: tabular-nums; whit
       </ul>
     </div>
     <p class="note">This example was built by an AI agent working only from my written modeling procedures, as a test of whether they produce verified work on a problem they hadn't seen.</p>
+  </section>
+
+  <section class="study" id="heat">
+    <div class="study-head">
+      <span class="label">Example 11 · In progress · Heat transfer in OpenFOAM</span>
+      <h2>Cold-plate channel heat transfer</h2>
+    </div>
+    <figure><div class="plate"><img src="v2/heat_response.webp" alt="Wall and bulk temperature along the heated channel, OpenFOAM against the Graetz reference" loading="lazy"></div><figcaption>Wall and bulk temperature along the heated channel, and the local Nusselt number, against the independent Graetz thermal-entry solution.</figcaption></figure>
+    <p><strong>The question.</strong> A cold-plate passage, 1 mm deep, carries water at 25 °C and 0.1 m/s. Electronics heat both walls at 30 kW/m² over 50 mm. Does the wall stay at or under 45 °C, and does the coolant warm by no more than 10 K?</p>
+    <div class="answer">
+      <div class="chips"><span class="chip warn">Verdict withheld: convergence check open</span><span class="chip pass">Matches Graetz to 0.03–0.6 %</span><span class="chip pass">Peak wall about 44.0 °C</span></div>
+      <p><strong>Not yet answered.</strong> The wall peaks at about 44.0 °C against the 45 °C limit and the coolant warms by 7.2 K, and the wall temperature matches an independent thermal-entry solution closely. But the finest mesh's temperature field was still changing when the run stopped, and the energy balance doesn't yet close to the tolerance I set. So under this portfolio's rules there is no pass or fail yet. Next: solve the temperature on the converged flow for a few thousand cheap iterations and rerun with the same tolerances.</p>
+    </div>
+    <div class="caught">
+      <h3>What the checks caught</h3>
+      <ul>
+        <li><b>An overshoot exactly where the answer is.</b> The usual second-order scheme overshot by 0.06 to 0.11 K at the last heated cell, where the peak wall temperature sits. A bounded scheme removed it.</li>
+        <li><b>A field that never settled.</b> The bounded scheme's limiter then flipped part of the field by up to 0.1 K every iteration, while the peak barely moved. The convergence check failed, correctly; that's what is holding the verdict.</li>
+      </ul>
+    </div>
   </section>
 
   <h2 class="discipline">Vehicle and system dynamics</h2>
