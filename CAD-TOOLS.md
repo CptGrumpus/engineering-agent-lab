@@ -133,9 +133,9 @@ All five tool paths are installed on this PC and proven by verified evidence run
 | Python, NumPy, SciPy | 3.14.10, 2.5.5, 1.18.1 | In process | Mass-spring-damper, quarter car; every independent reference |
 | OpenModelica + Modelica Standard Library | 1.26.3, MSL 4.1.0 | `omc` compiles the model once per run; the executable runs per point with `-overrideFile` and dedicated experiment flags | Mass-spring-damper, quarter car (cross-checks against SciPy) |
 | FreeCAD (headless `freecadcmd`) | 1.1.4 | A Python script builds geometry, material, constraints and a Gmsh mesh, then runs CalculiX through ccxtools | Cantilever bracket |
-| CalculiX | 2.22 (bundled with FreeCAD) | Through FreeCAD, or directly from input decks written in Python | Cantilever, heat-sink fin, strap with a hole |
-| Gmsh | 4.15 (bundled with FreeCAD) | Through FreeCAD, or the command line with a `.geo` script on a STEP file | Cantilever, strap with a hole |
-| CadQuery (OpenCASCADE) | 2.8.0 | In process; exports STEP for meshing | Mounting plate, strap with a hole |
+| CalculiX | 2.22 (bundled with FreeCAD) | Through FreeCAD, or directly from input decks written in Python | Cantilever, heat-sink fin, strap with a hole, strap fatigue, bracket modal analysis |
+| Gmsh | 4.15 (bundled with FreeCAD) | Through FreeCAD, or the command line with a `.geo` script on a STEP file | Cantilever, strap with a hole, bracket modal analysis |
+| CadQuery (OpenCASCADE) | 2.8.0 | In process; exports STEP for meshing | Mounting plate, strap with a hole, bracket modal analysis |
 | OpenFOAM | 14 (openfoam.org), in WSL Ubuntu 22.04 | A Python writer generates the case; a bash script runs blockMesh, checkMesh and foamRun inside WSL | Coolant channel, 3D duct check |
 
 **OMPython is not used.** The harness calls `omc` directly instead. That compiles each model once per run, passes every setting through explicit command-line flags (OpenModelica 1.26 silently ignores experiment settings passed through `-override`, which the harness's output-grid check caught), and needs no background OpenModelica session. OMPython remains a reasonable choice for interactive work.

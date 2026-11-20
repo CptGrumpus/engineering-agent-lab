@@ -10,7 +10,7 @@ The intended user is an automotive engineer with a master's degree in mechanical
 
 ## Start here
 
-- **[PORTFOLIO.md](PORTFOLIO.md)**: capabilities and the seven case studies, grouped by discipline (for reviewers). Each case study has its own page in [portfolio/](portfolio/).
+- **[PORTFOLIO.md](PORTFOLIO.md)**: capabilities and the nine case studies, grouped by discipline (for reviewers). Each case study has its own page in [portfolio/](portfolio/), and [a sample client memo](portfolio/deliverables/coolant-channel-memo.md) shows the deliverable format.
 - [CAD-TOOLS.md](CAD-TOOLS.md): the tool stack, installed versions, how the harness drives each tool, and hardware context.
 - [skills/README.md](skills/README.md): agent skills and their status.
 
@@ -31,7 +31,7 @@ The intended user is an automotive engineer with a master's degree in mechanical
 
 ## Project folders
 
-- `portfolio/`: one page per case study, linked from PORTFOLIO.md.
+- `portfolio/`: one page per case study, linked from PORTFOLIO.md; `portfolio/img/` headline figures (made by `scripts/make_portfolio_figures.py`); `portfolio/deliverables/` sample client memo.
 - `cases/`: case files (TOML) with parameters, sweep, numerics, verification tolerances, and requirements.
 - `models/`: models under test (Python, Modelica `.mo`, FreeCAD script, CadQuery, OpenFOAM case writer).
 - `validation/`: independent references (closed form, state space, beam theory); these must not import from `models/`.

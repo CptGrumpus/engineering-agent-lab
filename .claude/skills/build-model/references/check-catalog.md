@@ -63,7 +63,7 @@ comparison, and one validity check per assumption that can fail.
 | Notch stays elastic, or a plasticity correction (Neuber) is needed | validity | strap fatigue `elastic_notch` |
 | Life by each data set separately, reported as the material-data spread | sensitivity | strap fatigue `life_by_data_set` |
 
-Fatigue life is extremely sensitive to stress (here a 10 % stress change moves life about 3.5x), so report the spread from the material data and the notch model, not one number.
+Fatigue life is extremely sensitive to stress (here a 10 % stress change moves life about 3.4x), so report the spread from the material data and the notch model, not one number.
 
 ## Heat conduction (CalculiX)
 

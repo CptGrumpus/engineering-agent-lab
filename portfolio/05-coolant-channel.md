@@ -58,6 +58,9 @@ So this is a design decision rather than a modeling one. The options are to narr
 
 ## Evidence
 
+A client-style technical memo for this study is in [deliverables/coolant-channel-memo.md](deliverables/coolant-channel-memo.md).
+
+
 Each report traces every requirement to its result, the checks behind it, and the saved inputs that reproduce it.
 
 - [mesh study](../runs/20261119-200042_channel_header_mesh/report.md)

@@ -1,13 +1,15 @@
 # Cable hole in a strap, CAD to FEA
 
-[Portfolio index](../PORTFOLIO.md) · Structures
+[Portfolio index](../PORTFOLIO.md) · Structures and vibration
 
 | | |
 |---|---|
 | **Answer** | About 16.7 mm. A 16 mm hole passes at 117 MPa; 18 mm fails at 125 MPa. |
-| **Discipline** | Structures |
+| **Discipline** | Structures and vibration |
 | **Tools** | CadQuery 2.8, Gmsh 4.15, CalculiX 2.22 |
 | **Methods** | Scripted CAD-to-mesh-to-solver pipeline, plane-stress FEA, Peterson stress concentration factors, an exact limiting case, mesh refinement |
+
+![Strap with a 16 mm cable hole, CadQuery geometry](img/strap_render.png)
 
 ## The question
 
@@ -27,6 +29,8 @@ This example also makes a point the cantilever's stress trap couldn't: the peak 
 - **Equilibrium.** The support reactions balance the load exactly, and the stress integrated across the section beside the hole carries the full load to within 0.2 %.
 - **Mesh dependence.** Refining the hole-edge elements from 1 mm to 0.125 mm converges at the designed rate, with 0.08 % uncertainty left.
 
+![Gmsh mesh of the quarter model, refined at the hole edge](img/strap_mesh.png)
+
 ![Stress around the hole and along the section beside it](../runs/20261119-235201_strap_hole_mesh/points/p03_hole_element_size_mm-0.125/response.png)
 
 ![Peak hole-edge stress against hole size](../runs/20261119-235211_strap_hole_size/sweep.png)
@@ -43,6 +47,9 @@ This example also makes a point the cantilever's stress trap couldn't: the peak 
 - The 120 MPa allowable is synthetic.
 
 ## Evidence
+
+The fatigue life of this strap is worked out in [case study 3](03-strap-fatigue.md).
+
 
 Each report traces every requirement to its result, the checks behind it, and the saved inputs that reproduce it.
 

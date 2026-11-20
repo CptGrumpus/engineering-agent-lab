@@ -1,11 +1,11 @@
 # Cantilever bracket, 3D finite elements
 
-[Portfolio index](../PORTFOLIO.md) · Structures
+[Portfolio index](../PORTFOLIO.md) · Structures and vibration
 
 | | |
 |---|---|
 | **Answer** | Yes. 0.953 mm deflection and 150 MPa root stress, with 0.02 % mesh uncertainty. |
-| **Discipline** | Structures |
+| **Discipline** | Structures and vibration |
 | **Tools** | FreeCAD 1.1, Gmsh, CalculiX 2.22 |
 | **Methods** | 3D solid FEA (quadratic tetrahedra), mesh refinement with the Grid Convergence Index, beam theory, equilibrium |
 
