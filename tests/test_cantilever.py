@@ -112,3 +112,20 @@ def test_cantilever_pipeline_tet10(tmp_path):
     assert by_id["tip_deflection_reference"]["status"] == "PASS"
     assert {c["id"] for c in summary["run_checks"]} == {
         "discretization_tip_deflection_mm", "discretization_root_bending_stress_MPa"}
+
+
+def test_discretization_noise_floor_growing_oscillation_and_anomalous_order():
+    hs = (1.0, 2.0, 4.0)
+    # differences at the 1e-6 level are noise, not divergence
+    assert discretization_uncertainty(hs, (150.0, 150.0004, 149.9998))["regime"] == "converged"
+    # sign changes with growing amplitude are divergent, not oscillatory
+    assert discretization_uncertainty(hs, (1.0, 1.05, 1.03))["regime"].startswith("divergent")
+    # an observed order far above the design order is not evidence of convergence
+    f_exact, C, p = 200.0, -1.0, 3.7
+    f = tuple(f_exact + C * h**p for h in hs)
+    u = discretization_uncertainty(hs, f, design_order=2)
+    assert u["regime"] == "anomalous order" and u["uncertainty"] == float("inf")
+    assert discretization_uncertainty(hs, f)["regime"] == "monotone"  # without the test
+    # a healthy second-order sequence still gets a finite GCI
+    g = tuple(2.0 + 0.3 * h**2 for h in hs)
+    assert discretization_uncertainty(hs, g, design_order=2)["regime"] == "monotone"

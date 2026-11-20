@@ -325,7 +325,8 @@ class FinStudy(Study):
         # requirement metric tip_temperature_min_C (same quantity, offset by T_air)
         for metric, key, gate in (("tip_excess_min_K", "gci_tip_excess_max", "tip_temperature_min_C"),
                                   ("base_heat_flow_W", "gci_heat_flow_max", "base_heat_flow_W")):
-            u = discretization_uncertainty(hs, tuple(pt["metrics"][metric] for pt in fine))
+            u = discretization_uncertainty(hs, tuple(pt["metrics"][metric] for pt in fine),
+                                           design_order=2)  # second-order scheme / elements
             detail[metric] = u
             checks.append(check(f"discretization_{metric}",
                                 f"relative discretization uncertainty of {metric}, {describe(u)}",

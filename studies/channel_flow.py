@@ -330,7 +330,8 @@ class ChannelFlowStudy(Study):
         for metric, key in (("pressure_gradient_Pa_per_m", "gci_fully_developed_max"),
                             ("wall_shear_stress_Pa", "gci_fully_developed_max"),
                             *((dm, "gci_pressure_drop_max") for dm in drops)):
-            u = discretization_uncertainty(hs, tuple(pt["metrics"][metric] for pt in fine))
+            u = discretization_uncertainty(hs, tuple(pt["metrics"][metric] for pt in fine),
+                                           design_order=2)  # second-order scheme / elements
             detail[metric] = u
             how = describe(u)
             checks.append(check(f"discretization_{metric}",

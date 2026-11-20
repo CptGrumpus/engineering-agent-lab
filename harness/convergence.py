@@ -9,12 +9,24 @@ Inputs are three solutions on successively refined meshes with representative
 sizes h1 < h2 < h3 (1 = finest).
 
 Convergence regime from R = e21 / e32 (e21 = f2 - f1, e32 = f3 - f2):
-    0 < R < 1   monotone      -> GCI (Richardson extrapolation applies)
-    R < 0       oscillatory   -> uncertainty = Fs * half the range of the three
+    spread <= noise floor   converged   -> the three solutions agree to within
+                                           round-off or iterative noise; the
+                                           sign of R is meaningless there
+    0 < R < 1   monotone      -> GCI (Richardson extrapolation applies), unless
+                                 the observed order is far above the method's
+                                 design order (see below)
+    -1 < R < 0  oscillatory   -> uncertainty = Fs * half the range of the three
                                  solutions / |f1| (Stern et al., J. Fluids Eng.
                                  123 (2001) 793; Celik et al. 2008 note that GCI
                                  is not valid for oscillatory convergence)
+    R <= -1     divergent (oscillating with growing amplitude) -> no estimate
     R >= 1      divergent     -> no estimate (infinite uncertainty)
+
+An observed order well above the design order (more than 1.5 times it) means
+the solutions are not in the asymptotic range, typically because a singularity
+or a coincidence makes three values look converged. The GCI is then not
+evidence, so the result is classed "anomalous order" with no estimate. Pass
+design_order to enable this test.
 """
 
 from __future__ import annotations
@@ -58,20 +70,34 @@ def gci(h: tuple[float, float, float], f: tuple[float, float, float], safety: fl
     }
 
 
-def discretization_uncertainty(h, f, safety: float = 1.25) -> dict:
-    """Relative discretization uncertainty of the finest solution, by regime."""
+def discretization_uncertainty(h, f, safety: float = 1.25, noise_floor: float = 1e-5,
+                               design_order: float | None = None) -> dict:
+    """Relative discretization uncertainty of the finest solution, by regime.
+
+    noise_floor: relative spread of the three solutions below which they are
+    treated as converged (the differences are round-off or iterative noise).
+    design_order: formal order of the method; enables the anomalous-order test.
+    """
     f1, f2, f3 = f
     e21, e32 = f2 - f1, f3 - f2
-    if e21 == 0 and e32 == 0:
-        return {"regime": "converged", "uncertainty": 0.0}
+    spread = (max(f) - min(f)) / abs(f1) if f1 != 0 else float("inf")
+    if spread <= noise_floor:
+        return {"regime": "converged", "uncertainty": safety * 0.5 * spread,
+                "relative_spread": spread, "noise_floor": noise_floor}
     if e32 == 0 or e21 / e32 >= 1:
         return {"regime": "divergent", "uncertainty": float("inf"),
                 "convergence_ratio": float("inf") if e32 == 0 else e21 / e32}
     ratio = e21 / e32
+    if ratio <= -1:
+        return {"regime": "divergent (oscillating, growing)", "uncertainty": float("inf"),
+                "convergence_ratio": ratio}
     if ratio < 0:
         return {"regime": "oscillatory", "convergence_ratio": ratio,
                 "uncertainty": safety * 0.5 * (max(f) - min(f)) / abs(f1)}
     g = gci(h, f, safety)
+    if design_order is not None and g["order"] > 1.5 * design_order:
+        return {**g, "regime": "anomalous order", "uncertainty": float("inf"),
+                "design_order": design_order}
     return {"regime": "monotone", "uncertainty": g["gci_fine"], **g}
 
 
@@ -83,4 +109,13 @@ def describe(u: dict) -> str:
     if u["regime"] == "oscillatory":
         return (f"oscillatory (R = {u['convergence_ratio']:.3f}): 1.25 x half-range of "
                 f"the 3 finest solutions")
+    if u["regime"] == "converged":
+        return (f"converged to within the noise floor (spread {u['relative_spread']:.1e} "
+                f"<= {u['noise_floor']:.0e})")
+    if u["regime"] == "anomalous order":
+        return (f"anomalous: observed order {u['order']:.2f} is far above the design order "
+                f"{u['design_order']:g}, so the solutions are not in the asymptotic range "
+                f"(singularity or coincidence); no estimate")
+    if "convergence_ratio" in u:
+        return f"{u['regime']} (R = {u['convergence_ratio']:.3f}): no estimate"
     return u["regime"]

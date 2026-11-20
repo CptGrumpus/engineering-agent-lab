@@ -210,9 +210,21 @@ class CantileverStudy(Study):
         fine = done[:3]
         hs = tuple(float(pt["parameters"]["mesh_size_mm"]) for pt in fine)
         checks, detail = [], {"meshes_used": [pt["label"] for pt in fine]}
-        for metric, key in (("tip_deflection_mm", "gci_deflection_max"),
-                            ("root_bending_stress_MPa", "gci_stress_max")):
-            u = discretization_uncertainty(hs, tuple(pt["metrics"][metric] for pt in fine))
+        pairs = [("tip_deflection_mm", "gci_deflection_max"),
+                 ("root_bending_stress_MPa", "gci_stress_max")]
+        # every requirement metric gets a convergence check too: a requirement on a
+        # metric that is never checked for mesh convergence (e.g. the peak von Mises
+        # at the singular clamp corner) must not get a clean PASS
+        for r in case["requirements"]:
+            if r["metric"] not in {m for m, _ in pairs}:
+                pairs.append((r["metric"], f"gci_{r['metric']}_max" if f"gci_{r['metric']}_max" in tol
+                              else "gci_stress_max"))
+        for metric, key in pairs:
+            # design order 2: nodal displacement and smooth-region stress of these
+            # tetrahedra; a much higher observed order means the three values only
+            # look converged (singularity or coincidence)
+            u = discretization_uncertainty(hs, tuple(pt["metrics"][metric] for pt in fine),
+                                           design_order=2)
             detail[metric] = u
             how = describe(u)
             checks.append(check(f"discretization_{metric}",

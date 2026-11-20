@@ -202,7 +202,8 @@ class DuctFlowStudy(Study):
         fine = done[:3]
         hs = tuple(1.0 / int(pt["parameters"]["cells_across_gap"]) for pt in fine)
         metric = "pressure_gradient_Pa_per_m"
-        u = discretization_uncertainty(hs, tuple(pt["metrics"][metric] for pt in fine))
+        u = discretization_uncertainty(hs, tuple(pt["metrics"][metric] for pt in fine),
+                                           design_order=2)  # second-order scheme / elements
         detail = {"meshes_used": [pt["label"] for pt in fine], metric: u}
         return [check(f"discretization_{metric}",
                       f"relative discretization uncertainty of {metric}, {describe(u)}",
