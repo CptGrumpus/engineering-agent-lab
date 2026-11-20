@@ -39,7 +39,8 @@ def fit(im, w, h, bg=None):
 meta = {}
 checks = json.loads((REPO / "portfolio/img/renders.json").read_text(encoding="utf-8"))
 flat = {e["scene"]: e for v in checks.values() for e in v}
-for scene in ("cantilever", "strap_detail", "fin", "mode1", "mode4", "strap", "mode3", "cad_plate"):
+for scene in ("cantilever", "strap_detail", "fin", "mode1", "mode4", "strap", "mode3", "cad_plate",
+              "contact_detail", "duct", "fatigue"):
     im = rgba(scene)
     im = crop_alpha(im, thr=60, pad=0.10)
     im.thumbnail((1400, 900), Image.LANCZOS)
@@ -57,14 +58,17 @@ for scene in ("cantilever", "strap_detail", "fin", "mode1", "mode4", "strap", "m
 thumbs = {
     "fea": ("render", "cantilever"), "strap": ("render", "strap_detail"), "modal": ("render", "mode3"),
     "thermal": ("render", "fin"), "cad": ("render", "cad_plate"),
-    "fatigue": ("png", REPO / "runs/20261120-011347_strap_fatigue_load/sweep.png"),
-    "cfd": ("png", REPO / "runs/20261119-200042_channel_header_mesh/points/p03_cells_across_gap-80/field.png"), "suspension": ("png", REPO / "runs/20261120-105126_qc_bump_liftoff/points/p00_damping_N_s_per_m-600/response.png"),
-    "baseline": ("png", REPO / "runs/20261118-200205_msd_step/points/p01_damping_ratio-0.3/response.png"),
+    "fatigue": ("render", "fatigue"), "contact": ("render", "contact_detail"), "cfd": ("render", "duct"),
+    "suspension": ("gif", REPO / "portfolio/img/anim_quarter_car.gif"),
+    "baseline": ("gif", REPO / "portfolio/img/anim_msd.gif"),
 }
 for key, (kind, src) in thumbs.items():
     if kind == "render":
         im = crop_alpha(rgba(src), thr=60, pad=0.06)
         fit(im, 800, 500).save(OUT / f"th_{key}.webp", quality=88, method=6)
+    elif kind == "gif":
+        im = Image.open(src); im.seek(22 if "quarter" in str(src) else 12)
+        fit(im.convert("RGBA"), 800, 500, bg=(252, 252, 251, 255)).save(OUT / f"th_{key}.webp", quality=88, method=6)
     elif src is not None and Path(src).exists():
         im = Image.open(src).convert("RGBA")
         a = np.asarray(im.convert("L")); ys, xs = np.nonzero(a < 235)

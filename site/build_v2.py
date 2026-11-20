@@ -29,16 +29,27 @@ VP = [
      "lines": ["Solver: CalculiX 2.22 · C3D10 · 5 758 surface nodes",
                "Deformation scale factor: +2.500e+01",
                "Range capped at the 150 MPa beam-theory stress; the clamp corners are singular"]},
-    {"id": "strap_detail", "tab": "Notch", "legend": "S11", "unit": "MPa",
-     "model": "Strap with a 10 mm hole · 160 × 40 × 4 mm, 5 kN pull",
-     "lines": ["Solver: CalculiX 2.22 · quarter model, mirrored",
-               "Peak +1.015e+02 at the hole edge · 3.25 × the far-field stress",
-               "Net-section factor 2.436, within 0.6 % of Peterson's handbook value"]},
+    {"id": "contact_detail", "tab": "Contact", "legend": "S, Mises", "unit": "MPa",
+     "model": "Roller on plate · steel, R = 50 mm, 501 N/mm · section through the contact",
+     "lines": ["Solver: CalculiX 2.22 · surface-to-surface penalty contact",
+               "Peak contact pressure +6.092e+02 · Hertz exact +6.067e+02",
+               "Highest stress 0.41 mm below the surface, where Hertz puts it"]},
+    {"id": "fatigue", "tab": "Fatigue", "legend": "S11 amplitude", "unit": "MPa",
+     "model": "Strap with a 16 mm hole · 160 × 40 × 4 mm, 0 → 5 kN cyclic",
+     "lines": ["Solver: CalculiX 2.22 · plane stress, quarter model mirrored",
+               "Peak amplitude +5.85e+01 at the sides of the hole",
+               "Life about 8 × 10⁹ cycles against 3 × 10⁷ required"]},
     {"id": "fin", "tab": "Thermal", "legend": "NT11", "unit": "°C",
      "model": "Heat-sink fin · 6061-T6, 40 × 20 × 2 mm, h = 25 W/m²K",
      "lines": ["Solver: CalculiX 2.22 · steady heat transfer",
                "Tip 73.2 °C against a 60 °C minimum",
                "Energy balance: base heat in equals convection out"]},
+    {"id": "duct", "tab": "Flow", "legend": "U, axial", "unit": "m/s",
+     "model": "Coolant passage · 20 × 1 mm, water at 0.1 m/s mean, Re 199",
+     "lines": ["Solver: OpenFOAM 14 · 3D laminar, quarter section mirrored",
+               "Height = velocity; gap direction drawn 5× wider",
+               "Pressure gradient within 0.03 % of the exact rectangular-duct solution"],
+     "check_text": "Render check: the volume under the surface equals the imposed flow rate to {err} · {col} of pixels on the legend"},
     {"id": "mode1", "tab": "Modal", "legend": "U, Magnitude", "unit": "normalised",
      "model": "Bracket arm · steel, 150 × 25 × 7 mm, clamped",
      "lines": ["Solver: CalculiX 2.22 · *FREQUENCY, mode 1 of 4",
@@ -53,6 +64,9 @@ for v in VP:
     v["check"] = (f"Render check: encloses {vol['enclosed_mm3']:,.1f} mm³ of {vol['design_mm3']:,.1f} design · "
                   f"{100 * col['fraction_on_legend']:.1f} % of pixels on the legend").replace(",", " ")
     v["img"] = f"v2/vp_{v['id']}.webp"
+    if "check_text" in v:
+        v["check"] = v["check_text"].format(err=f"{100 * abs(vol['rel_error']):.2f} %",
+                                            col=f"{100 * col['fraction_on_legend']:.1f} %")
 
 # --- case gallery ---------------------------------------------------------------
 CARDS = [
@@ -88,6 +102,26 @@ term_html = "".join(
     f'<span class="t-row"><span class="t-id">{cid}</span><span class="t-{st.lower()}">{st}</span><span class="t-num">{val}</span><span class="t-tol">tol {tol}</span></span>'
     for cid, st, val, tol in term_lines)
 
+def fig(src, alt, cap):
+    return ("\n    " + f'<figure><div class="plate"><img src="{src}" alt="{alt}" loading="lazy"></div>'
+            f'<figcaption>{cap}</figcaption></figure>')
+
+
+def after_head(text, sid, html):
+    import re as _re
+    m = _re.search(rf'(<section class="study" id="{sid}">\s*<div class="study-head">.*?</div>)', text, flags=_re.S)
+    assert m, sid
+    return text[:m.end()] + html + text[m.end():]
+
+
+studies = after_head(studies, "fatigue", fig("img/render_fatigue.png", "Cyclic stress amplitude on the strap",
+    "The cyclic stress amplitude for the 0 to 5 kN service cycle, highest at the sides of the hole where a crack would start."))
+studies = after_head(studies, "cfd", fig("img/render_duct.png", "Velocity over the passage cross-section",
+    "Velocity over the passage cross-section from the 3D check: flat across most of the width, falling to zero at the side walls. The volume under this surface equals the flow rate, which the render check confirms."))
+studies = after_head(studies, "suspension", fig("img/anim_quarter_car.gif", "Animation of the quarter car crossing the bump",
+    "Drawn from the simulation at 36 km/h and 600 N·s/m: the wheel leaves the road twice, and the tire load and body acceleration trace beside it."))
+studies = after_head(studies, "baseline", fig("img/anim_msd.gif", "Animation of the mass-spring-damper at three damping ratios",
+    "The same step force at three damping ratios, drawn from the runs, with the exact solution dotted underneath."))
 page = (HERE / "v2_template.html").read_text(encoding="utf-8")
 page = (page.replace("{{VP_JSON}}", json.dumps(VP, ensure_ascii=False))
             .replace("{{TABS}}", tabs_html)
