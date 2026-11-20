@@ -116,7 +116,7 @@ def scene_fin():
                        bands=14, band_colors=bands(14), elev=22, azim=-125, distance_factor=4.5,
                        expected_volume_mm3=2 * 20 * 40,
                        title=f"Heat-sink fin: temperature, {T.max():.1f} °C at the base to {T.min():.1f} °C at the tip",
-                       caption="Steady conduction with convection from every face (CalculiX heat transfer, 3D mesh).")
+                       caption="Steady conduction (CalculiX, 3D mesh): base held at 80 °C, convection to 25 °C air from the other five faces.")
 
 
 def scene_strap():

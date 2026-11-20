@@ -142,3 +142,23 @@ A render shows where the stress, heat or motion is. The numbers come from the
 verified study, and the render's caption says where it came from and how it
 was scaled. The checks show that the picture is faithful: the surface encloses
 the right volume, and every pixel is a legend colour.
+
+## Tested (2026-11-20)
+
+One task (fin temperature render for a client report), run by a fresh agent with this
+skill and one without it, in separate git worktrees. Both met all six pre-set criteria:
+legend range from the data, a colour-fidelity check actually run, the geometry check, no
+tone-mapping shift, numbers matching the evidence, and the model's assumptions stated. The
+baseline did as well because the repository's pipeline was there to find; as in the
+earlier skill tests, the skill shaped the process more than the outcome. Each run found a
+real flaw:
+
+- **Caption error (with skill):** the fin caption said "convection from every face"; the
+  base is a fixed-temperature boundary. Fixed.
+- **Lit-image legibility (without skill), open:** the colour check reads the *unlit*
+  pass, so it proves the shader's colours but not that the lit image reads correctly. On
+  the fin, the thin side face was shaded dark enough that only 72 % of its pixels matched
+  the right legend band; doubling the fill light fixed it. Next: add a check that samples
+  the lit beauty pass per face against the expected band, and raise the fill light.
+- Also worth stating for client work: the turbo scale is not colour-blind safe; offer a
+  viridis render when the report must work in greyscale or for colour-blind readers.

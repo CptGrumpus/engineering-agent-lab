@@ -12,7 +12,7 @@ automatically. This file tracks the skill plan and the standard each skill must 
 | Simulation execution | **Built** | [run-case](../.claude/skills/run-case/SKILL.md) |
 | Verification and evidence | **Built** | [verify-against-reference](../.claude/skills/verify-against-reference/SKILL.md) |
 | Engineering review report | **Built** | [requirements-report](../.claude/skills/requirements-report/SKILL.md) |
-| Result presentation | **Built**: Blender renders of FE results and CAD parts, with geometry (enclosed volume) and colour-fidelity checks gating publication | [render-results](../.claude/skills/render-results/SKILL.md) |
+| Result presentation | **Built**: Blender renders of FE results and CAD parts, with geometry (enclosed volume) and colour-fidelity checks gating publication; tested 2026-11-20 with and without the skill (both runs met all criteria, each found a real flaw) | [render-results](../.claude/skills/render-results/SKILL.md) |
 
 The built skills are study-agnostic: they drive `python -m harness`, which supports every model registered in `harness/registry.py` (mass-spring-damper, quarter car, cantilever FEA, mounting plate, OpenFOAM channel and duct flow, heat-sink fin, strap with a hole, strap fatigue, bracket modal analysis). `verify-against-reference` also covers cross-tool comparisons and run-level checks such as mesh convergence.
 
