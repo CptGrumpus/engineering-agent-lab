@@ -436,3 +436,32 @@ def duct_figure(path, s, p, d, m, u_exact, *, title):
     fig.tight_layout()
     fig.savefig(path, dpi=130, facecolor=SURFACE)
     plt.close(fig)
+
+
+def fin_figure(path, s, t_ref, m, *, limit_C, title):
+    """Fin temperature along its length: 3D cross-section mean/min/max vs 1D theory."""
+    z = s["z_mm"]
+    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(8, 6.4), sharex=True,
+                                   gridspec_kw={"height_ratios": [3, 1.3]}, facecolor=SURFACE)
+    ax1.fill_between(z, s["T_min_C"], s["T_max_C"], color=SERIES_1, alpha=0.18, linewidth=0,
+                     label="3D range over the cross-section")
+    ax1.plot(z, s["T_mean_C"], color=SERIES_1, linewidth=2, label="3D cross-section mean (CalculiX)")
+    ax1.plot(z, t_ref, color=SERIES_2, linewidth=2, linestyle=(0, (4, 3)),
+             label="1D fin theory, convective tip")
+    ax1.plot([z[-1]], [m["tip_temperature_min_C"]], "D", color=TEXT, markersize=6,
+             label=f"tip minimum {m['tip_temperature_min_C']:.2f} \u00b0C")
+    if limit_C is not None:
+        _limit_lines(ax1, limit_C, symmetric=False, label=f"requirement \u2265 {limit_C:g} \u00b0C")
+    ax1.set_ylabel("Temperature (\u00b0C)")
+    ax1.set_title(title, color=TEXT, fontsize=11, loc="left")
+    _legend(ax1, loc="upper right")
+
+    ax2.plot(z, (s["T_mean_C"] - t_ref) * 1e3, color=SERIES_1, linewidth=1.6)
+    ax2.axhline(0, color=TEXT_2, linewidth=0.8)
+    ax2.set_ylabel("3D mean \u2212 1D (mK)")
+    ax2.set_xlabel("Distance from the base (mm)")
+    for ax in (ax1, ax2):
+        _style(ax)
+    fig.tight_layout()
+    fig.savefig(path, dpi=130, facecolor=SURFACE)
+    plt.close(fig)

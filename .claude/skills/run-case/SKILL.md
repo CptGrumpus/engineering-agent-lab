@@ -21,6 +21,7 @@ is the `verify-against-reference` skill.
 | `cadquery_plate` | mounting plate | CadQuery 2.8 (OpenCASCADE) | `models/cad/mounting_plate.py` |
 | `openfoam_channel` | laminar channel flow | OpenFOAM 14 in WSL (blockMesh, checkMesh, foamRun) | `models/cfd/channel_openfoam.py`, `models/cfd/run_channel.sh` |
 | `openfoam_duct` | rectangular duct (3D side-wall check) | OpenFOAM 14 in WSL, periodic quarter section | `models/cfd/duct_openfoam.py`, `models/cfd/run_channel.sh` |
+| `ccx_fin` | heat-sink fin, 3D steady conduction | CalculiX 2.22 (`ccx.exe` bundled with FreeCAD), structured C3D8 deck written in Python | `models/thermal/fin_ccx.py` |
 
 The registry is `harness/registry.py`; each study lives in `studies/<name>.py`.
 
@@ -30,6 +31,11 @@ The registry is `harness/registry.py`; each study lives in `studies/<name>.py`.
   2 mm). The CalculiX deck, `.dat`, and native `cantilever.FCStd` are kept in
   `points/<label>/solver/`. Nodal results are parsed from the `.frd` file by
   `harness/calculix.py`, not by FreeCAD.
+- For `ccx_fin`, the harness runs `ccx` directly (found via `CCX` or the FreeCAD install
+  folder); no FreeCAD session. The deck, `.dat`, `.sta`, `.frd` and log are kept in
+  `points/<label>/solver/`. About 15 s per point at 0.25 mm elements. The tip-face
+  temperatures are read from the `.dat` (7 digits; the `.frd` has 6). CalculiX's base
+  RFL total excludes the film load lumped on the base nodes; the study adds it back.
 - For `openfoam_channel`, OpenFOAM runs inside WSL. The harness finds the newest
   `/opt/openfoam*/etc/bashrc` (override with `OPENFOAM_BASHRC`; pick a distro with
   `OPENFOAM_WSL_DISTRO`). The Python writer generates the case dictionaries and

@@ -28,6 +28,17 @@ comparison, and one validity check per assumption that can fail.
 | Stress / yield < 1 | validity | `linear_material` |
 | Deflection / length below a limit | validity | `small_deflection` |
 
+## Heat conduction (CalculiX)
+
+| Check | Kind | Example |
+|---|---|---|
+| Energy balance: base reaction heat flow vs convective loss integrated from nodal temperatures | numerical | fin `energy_balance` |
+| 1D fin theory with convective tip (tip temperature, heat rate), labelled model form | model form | fin `tip_reference`, `heat_flow_reference` |
+| Cross-section-mean temperature profile vs 1D theory | numerical | fin `profile_reference` |
+| The requirement metric finds the coldest / hottest point of the whole part | numerical | fin `tip_is_coldest` |
+| GCI on the requirement metric | numerical | fin mesh study |
+| Biot number below 0.1 for the 1D reference | validity | `one_d_reference_valid` |
+
 ## Geometry automation (CAD)
 
 | Check | Kind | Example |
