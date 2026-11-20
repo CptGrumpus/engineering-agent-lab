@@ -26,10 +26,12 @@ from harness.checks import check
 from harness.plotting import quarter_car_bump_figure, quarter_car_road_figure
 from harness.study import Study
 from models import quarter_car as qc
+from validation import iso2631
 from validation import quarter_car_reference as ref
 
 BUMP_METRICS = {"peak_body_accel_m_per_s2", "max_suspension_travel_mm", "max_tire_load_ratio"}
-ROAD_METRICS = {"body_accel_rms_m_per_s2", "suspension_travel_rms_mm", "tire_load_rms_ratio"}
+ROAD_METRICS = {"body_accel_rms_m_per_s2", "suspension_travel_rms_mm", "tire_load_rms_ratio",
+                "body_accel_weighted_rms_m_per_s2"}
 
 
 def stop_force(series: dict, params: dict) -> np.ndarray:
@@ -141,7 +143,10 @@ class QuarterCarStudy(Study):
         else:
             w = window_slice(series["t_s"], params)
             rms = lambda a: float(np.sqrt(np.mean(a[w] ** 2)))  # noqa: E731
-            m.update(body_accel_rms_m_per_s2=rms(acc),
+            # ISO 2631-1 Wk weighting in the time domain, over the whole run (its start-up
+            # transient has decayed by the window: slowest pole 0.4 Hz, settle 15 s)
+            aw = iso2631.weighted_series(series["t_s"], acc)
+            m.update(body_accel_rms_m_per_s2=rms(acc), body_accel_weighted_rms_m_per_s2=rms(aw),
                      suspension_travel_rms_mm=1e3 * rms(travel),
                      tire_load_rms_ratio=rms(load))
         return m
@@ -281,7 +286,7 @@ class QuarterCarStudy(Study):
                         f"|{k} num - closed-form| / closed-form",
                         abs(m[k] - expected[k]) / expected[k], tol["rms_rel_tol"])
                   for k in ("body_accel_rms_m_per_s2", "suspension_travel_rms_mm",
-                            "tire_load_rms_ratio")]
+                            "tire_load_rms_ratio", "body_accel_weighted_rms_m_per_s2")]
         checks.append(check("transient_decayed",
                             "exp(-sigma_min * settle time): start-up transient left in window",
                             decay, tol["transient_max_fraction"]))

@@ -97,7 +97,6 @@ The workflow is driven by an AI coding agent working through fixed, documented p
 
 - The parameters and requirement limits are synthetic. Nothing here is calibrated to a real product.
 - The checks show the equations were solved correctly and the models were used within their valid range. Showing that a model matches real hardware needs test data, which these examples don't have.
-- The ride-comfort figures are unweighted. A production study would apply the ISO 2631 human-sensitivity weighting.
 - The coolant-channel model covers flow and pressure, not heat transfer. The fin model takes the air-side heat-transfer coefficient as an input rather than computing the airflow.
 - Every report ends with "pending human review". Accepting a design is an engineering decision, and it stays with a person.
 

@@ -20,12 +20,14 @@ For a compact-car front corner, which damper rates between 600 and 3500 N·s/m m
 - **Over a 40 mm speed bump at 18 km/h,** damper rates from 600 to 1000 N·s/m meet all three targets. At 1500 the car just misses the comfort limit, 4.18 against 4.0 m/s². At 3500 the tire load goes over its limit.
 - **Over the same bump at 36 km/h, no damper rate works.** The wheel leaves the road at every setting, for 32 to 59 ms, and the comfort and road-holding targets fail everywhere. That's not something a damper change can fix; it needs a lower speed, a softer tire, or a gentler bump.
 - **With a bump stop, light damping gets worse, not better.** At 36 km/h and 600 N·s/m the suspension compresses past the 40 mm bump-stop gap. Adding the stop to the model more than doubles the peak body acceleration, from 5.2 to 11.3 m/s², and the stop still runs past its 8 mm of usable stroke at 2.8 kN against a 2.5 kN rating. From 1000 N·s/m upwards the stop stays within its rating.
+- **Weighted for how people feel vibration (ISO 2631-1),** the rough-road ride is "uncomfortable" at 1000 N·s/m (1.01 m/s²), the lightest damping where the model is valid, and gets worse with damping, to "very uncomfortable" at 3500 (1.64 m/s²). The raw acceleration overstates it by 10 to 29 %.
 - **On a rough road at 72 km/h** (class C in the ISO 8608 road-roughness standard), no damper rate meets the comfort target. Meanwhile travel and tire load need at least about 1500. Those two demands conflict, so the fix is a spring-rate change, not a different damper.
 
 ## How I know it's right
 
 - **Speed bump.** The simulation matches an independent exact solution of the same equations. Energy into the system balances the energy stored and dissipated. All 30 checks pass. I also built the same car from standard library components in a second tool, OpenModelica, and it agrees with the Python model to about one part in a million.
 - **Wheel lift-off.** The tire model pushes but never pulls, and the solver stops exactly when the wheel leaves the road and again when it lands, so it never steps across the change. I checked it against an exact solution built independently: the matrix exponential within each phase, and root-finding for the switch times. Lift-off and touchdown times agree to within a tenth of a nanosecond, and the motion to about two parts per billion of the bump height. When the wheel stays down, that exact solution reproduces the original linear reference, so the two references check each other.
+- **Comfort weighting.** The ISO 2631-1 weighting filter matches the standard's own table to 0.1 %, and the weighted ride level from filtering the simulation in time agrees with the closed-form frequency-domain value to 0.03 %. My first version of the filter was exactly twice the table, a normalisation slip the table comparison caught.
 - **Rough road.** The simulated vibration levels match the prediction from the system's frequency response to within one part in ten billion.
 
 ![Requirement metrics against damper rate over the speed bump](../runs/20261119-085019_qc_speed_bump/sweep.png)
@@ -48,7 +50,6 @@ The verdict the linear model had to withhold is now a clear fail, and it's backe
 ## Limits
 
 - Point-contact tire: it follows the road profile exactly, while a real tire's footprint smooths a short bump, so the lift-off here is probably overstated. The bump stop is linear and undamped; real elastomer stops are progressive and damped.
-- Comfort is unweighted; a production study would apply ISO 2631 weighting.
 - Synthetic vehicle parameters.
 
 ## Evidence
@@ -58,6 +59,7 @@ Each report traces every requirement to its result, the checks behind it, and th
 - [speed bump](../runs/20261119-085019_qc_speed_bump/report.md)
 - [same case in OpenModelica](../runs/20261119-085040_qc_speed_bump_modelica/report.md)
 - [rough road](../runs/20261119-084926_qc_iso_road/report.md)
+- [rough road with ISO 2631 weighting](../runs/20261120-124907_qc_iso_road/report.md)
 - [first bump case, wheel lift-off](../runs/20261119-084857_qc_bump/report.md)
 - [36 km/h with the lift-off tire](../runs/20261120-105126_qc_bump_liftoff/report.md)
 - [36 km/h with lift-off and a bump stop](../runs/20261120-123312_qc_bump_stop/report.md)

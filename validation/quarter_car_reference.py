@@ -32,6 +32,7 @@ import numpy as np
 from scipy import signal
 
 from excitation.road import Road, iso8608_sinusoids
+from validation import iso2631
 
 
 def _p(params):
@@ -68,6 +69,9 @@ def steady_state_rms(params: dict) -> dict:
         "suspension_travel_rms_mm": 1e3 * float(np.sqrt(np.sum(np.abs(h["travel"]) ** 2 * a2))),
         "tire_load_rms_ratio": kt * float(np.sqrt(np.sum(np.abs(h["tire_deflection"]) ** 2 * a2)))
         / static,
+        # ISO 2631-1 Wk-weighted body acceleration: |H|^2 |Wk|^2 per sinusoid
+        "body_accel_weighted_rms_m_per_s2": float(np.sqrt(np.sum(
+            np.abs(h["body_accel"]) ** 2 * np.abs(iso2631.wk(road.freq_hz)) ** 2 * a2))),
     }
 
 

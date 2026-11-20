@@ -3,6 +3,14 @@
 #
 # Requirements and tolerances were fixed BEFORE the first run.
 
+# Revision (2026-11-20, run 20261120-124907): adds the ISO 2631-1 Wk-weighted body
+# acceleration (body_accel_weighted_rms_m_per_s2), computed by filtering the simulated
+# acceleration in the time domain and checked against the closed-form frequency-domain
+# value (|H|^2 |Wk|^2 per road sinusoid). The Wk filter itself is checked against the
+# standard's Table 3 (tests/test_iso2631.py); its first version was exactly 2x the table
+# (wrong normalisation of the upward-step stage). Requirements and tolerances unchanged;
+# the weighted value is reported alongside, with its ISO 2631 comfort class.
+
 [case]
 name = "qc_iso_road"
 model = "quarter_car"

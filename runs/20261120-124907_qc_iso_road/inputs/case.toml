@@ -1,0 +1,77 @@
+# Quarter car on an ISO 8608 class C random road: damper-rate sweep against
+# RMS comfort, travel, and road-holding requirements.
+#
+# Requirements and tolerances were fixed BEFORE the first run.
+
+[case]
+name = "qc_iso_road"
+model = "quarter_car"
+description = "Linear 2-DOF quarter car on an ISO 8608 class C road (Gd(n0) = 256e-6 m^3) at 20 m/s (72 km/h); wheel-rate damping swept from 600 to 3500 N.s/m against RMS body acceleration, suspension travel, and tire load requirements."
+assumptions = [
+  "Linear spring, damper, and tire; parameters are wheel rates (motion ratio already applied).",
+  "Point-contact tire with no tire damping and no enveloping; the tire never leaves the road (checked).",
+  "Road realised as 198 sinusoids (0.011-1.0 cycles/m, i.e. 0.22-20 Hz at 20 m/s) with fixed random phases (seed 8608); content above 20 Hz is excluded.",
+  "RMS values are taken over a 10 s window after a 15 s settling period.",
+  "Coordinates from static equilibrium; rigid body above one corner.",
+]
+limitations = [
+  "Synthetic parameters; not calibrated to any vehicle.",
+  "Body acceleration is unweighted; ISO 2631 frequency weighting is not applied.",
+  "One road realisation; RMS values from other seeds differ by sampling variability.",
+  "Checks establish numerical verification and model-validity limits only; no test data.",
+]
+
+[parameters]
+sprung_mass_kg = 350.0
+unsprung_mass_kg = 45.0
+suspension_stiffness_N_per_m = 22000.0
+damping_N_s_per_m = 1500.0
+tire_stiffness_N_per_m = 220000.0
+road = "iso8608"
+speed_m_per_s = 20.0
+road_Gd_n0_m3 = 256e-6      # ISO 8608 class C, geometric mean
+road_seed = 8608
+n_min_cyc_per_m = 0.011
+n_max_cyc_per_m = 1.0
+window_s = 10.0
+
+[sweep]
+parameter = "damping_N_s_per_m"
+values = [600.0, 1000.0, 1500.0, 2200.0, 3500.0]
+
+[numerics]
+method = "DOP853"
+rtol = 1e-8
+atol = 1e-11
+t_end_s = 25.0        # 15 s settling + 10 s analysis window
+n_points = 25001      # 1 ms grid (50 samples per period at 20 Hz)
+
+[verification]
+rms_rel_tol = 1e-3               # window RMS vs closed-form transfer-function RMS
+transient_max_fraction = 1e-4    # exp(-sigma_min * 15 s): start-up transient left in window
+energy_residual_rel_tol = 1e-4
+convergence_max_rel_change = 1e-6
+
+[[requirements]]
+id = "REQ-QR1"
+text = "RMS vertical body acceleration shall not exceed 1.0 m/s^2 (unweighted comfort target)."
+metric = "body_accel_rms_m_per_s2"
+operator = "<="
+limit = 1.0
+units = "m/s^2"
+
+[[requirements]]
+id = "REQ-QR2"
+text = "RMS suspension travel shall not exceed 12 mm (3-sigma within the 40 mm travel)."
+metric = "suspension_travel_rms_mm"
+operator = "<="
+limit = 12.0
+units = "mm"
+
+[[requirements]]
+id = "REQ-QR3"
+text = "RMS dynamic tire load shall not exceed 25 % of static load (3-sigma below lift-off)."
+metric = "tire_load_rms_ratio"
+operator = "<="
+limit = 0.25
+units = "-"

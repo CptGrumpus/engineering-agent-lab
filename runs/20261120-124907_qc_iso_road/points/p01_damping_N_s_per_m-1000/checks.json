@@ -1,0 +1,78 @@
+{
+  "label": "p01_damping_N_s_per_m-1000",
+  "status": "PASS",
+  "checks": [
+    {
+      "id": "energy_balance",
+      "description": "|W_road - (dE + E_dissipated)| / integral |P_road| dt",
+      "kind": "numerical",
+      "value": 4.189350900539839e-09,
+      "tolerance": 0.0001,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "solver_convergence",
+      "description": "max |z(tol) - z(tol/100)| / max |z| (body and wheel)",
+      "kind": "numerical",
+      "value": 8.537492132855429e-09,
+      "tolerance": 1e-06,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "no_wheel_lift",
+      "description": "max dynamic tire load / static load (linear tire valid only < 1)",
+      "kind": "validity",
+      "value": 0.8266653676579475,
+      "tolerance": 1.0,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "body_accel_rms_m_per_s2_reference",
+      "description": "|body_accel_rms_m_per_s2 num - closed-form| / closed-form",
+      "kind": "numerical",
+      "value": 2.2672382182037968e-10,
+      "tolerance": 0.001,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "suspension_travel_rms_mm_reference",
+      "description": "|suspension_travel_rms_mm num - closed-form| / closed-form",
+      "kind": "numerical",
+      "value": 2.9462780250056923e-10,
+      "tolerance": 0.001,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "tire_load_rms_ratio_reference",
+      "description": "|tire_load_rms_ratio num - closed-form| / closed-form",
+      "kind": "numerical",
+      "value": 1.4829334286629182e-10,
+      "tolerance": 0.001,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "body_accel_weighted_rms_m_per_s2_reference",
+      "description": "|body_accel_weighted_rms_m_per_s2 num - closed-form| / closed-form",
+      "kind": "numerical",
+      "value": 0.00028730972115292673,
+      "tolerance": 0.001,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "transient_decayed",
+      "description": "exp(-sigma_min * settle time): start-up transient left in window",
+      "kind": "numerical",
+      "value": 1.8304775307945394e-08,
+      "tolerance": 0.0001,
+      "comparison": "<=",
+      "status": "PASS"
+    }
+  ]
+}
