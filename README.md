@@ -20,6 +20,7 @@ The intended user is an automotive engineer with a master's degree in mechanical
 | Quarter-car ride / road holding | `quarter_car`, `quarter_car_modelica` | SciPy; OpenModelica + MSL | `qc_speed_bump`, `qc_speed_bump_modelica`, `qc_iso_road`, `qc_bump` |
 | Cantilever, 3D solid FEA | `cantilever_freecad` | FreeCAD + Gmsh + CalculiX | `cantilever_tet10`, `cantilever_tet4` |
 | Parametric mounting plate | `cadquery_plate` | CadQuery | `mounting_plate` |
+| Strap with a cable hole, CAD to FEA | `cadquery_ccx_strap` | CadQuery -> Gmsh -> CalculiX | `strap_hole_mesh`, `strap_hole_size` |
 | Laminar coolant channel, CFD | `openfoam_channel` | OpenFOAM 14 (in WSL) | `channel_header_mesh`, `channel_header_tolerance`, `channel_header_gap_limits`, `channel_mesh` |
 | Side-wall (3D) check of the channel | `openfoam_duct` | OpenFOAM 14 (in WSL) | `duct_side_walls` |
 | Heat-sink fin tip temperature, 3D conduction | `ccx_fin` | CalculiX (bundled with FreeCAD) | `fin_mesh`, `fin_tolerance`, `fin_h_sweep` |
@@ -34,7 +35,7 @@ The intended user is an automotive engineer with a master's degree in mechanical
 - `harness/`: generic run, verify, report, compare, and rerun tooling (`python -m harness`).
 - `runs/`: evidence from individual executions; see [runs/README.md](runs/README.md). Git-ignored except curated example runs (without bulky result CSVs).
 - `.claude/skills/`: executable Claude Code skills.
-- `tests/`: pytest suite (62 tests), including negative tests showing that the checks catch wrong models and invalid assumptions.
+- `tests/`: pytest suite (67 tests), including negative tests showing that the checks catch wrong models and invalid assumptions.
 
 ## Setup and commands
 

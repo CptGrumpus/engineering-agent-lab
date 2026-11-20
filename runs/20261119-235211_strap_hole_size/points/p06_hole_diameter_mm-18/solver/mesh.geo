@@ -1,0 +1,11 @@
+SetFactory("OpenCASCADE");
+Merge "quarter.step";
+hole() = Curve In BoundingBox{-0.001, -0.001, -1, 9.001, 9.001, 1};
+Field[1] = Distance; Field[1].CurvesList = {hole()}; Field[1].Sampling = 400;
+Field[2] = Threshold; Field[2].InField = 1;
+Field[2].SizeMin = 0.45; Field[2].SizeMax = 4.0;
+Field[2].DistMin = 4.5; Field[2].DistMax = 54.0;
+Background Field = 2;
+Mesh.MeshSizeExtendFromBoundary = 0; Mesh.MeshSizeFromPoints = 0; Mesh.MeshSizeFromCurvature = 0;
+Mesh.ElementOrder = 2; Mesh.SecondOrderLinear = 0;
+Physical Surface("PLATE") = Surface{:};

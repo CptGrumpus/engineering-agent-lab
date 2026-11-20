@@ -1,0 +1,249 @@
+{
+  "run_id": "20261119-235201_strap_hole_mesh",
+  "case_name": "strap_hole_mesh",
+  "model": "cadquery_ccx_strap",
+  "case_source": "cases/strap_hole_mesh.toml",
+  "case_sha256": "b57506f158e33c9a22a3443e002a4638a2f78484532a9b09bb0f67eed9bd0406",
+  "model_sources_sha256": {
+    "models/fea/strap_hole.py": "0384afaa4fee9c5cb2fddfb5a5f83e4438b36bed43454c36a2a686b97169eaa7"
+  },
+  "rerun_of": null,
+  "started_utc": "2026-11-20T04:52:01+00:00",
+  "environment": {
+    "python": "3.14.10",
+    "python_executable": "C:\\Users\\mrstego\\projects\\engineering-agent-lab\\.venv\\Scripts\\python.exe",
+    "platform": "Windows-11-10.0.26100-SP0",
+    "machine": "AMD64",
+    "packages": {
+      "numpy": "2.5.5",
+      "scipy": "1.18.1",
+      "matplotlib": "3.11.2",
+      "cadquery": "2.8.0"
+    },
+    "git": {
+      "commit": "653793470cdf750913428eada38657403760a23e",
+      "dirty": true
+    },
+    "tools": {
+      "cadquery": "2.8.0",
+      "gmsh": "4.15.0",
+      "CalculiX": "This is Version 2.22"
+    }
+  },
+  "numerics": {
+    "solver": "CalculiX 2.22 static, plane stress CPS6 (Gmsh 4.15 mesh from a CadQuery STEP)"
+  },
+  "points": [
+    {
+      "label": "p00_hole_element_size_mm-1",
+      "parameters": {
+        "length_mm": 160.0,
+        "width_mm": 40.0,
+        "thickness_mm": 4.0,
+        "hole_diameter_mm": 10.0,
+        "axial_load_N": 5000.0,
+        "youngs_modulus_MPa": 68900.0,
+        "poisson_ratio": 0.33,
+        "yield_strength_MPa": 276.0,
+        "hole_element_size_mm": 1.0,
+        "far_element_size_mm": 4.0
+      },
+      "status": "completed",
+      "derived": {
+        "d_over_W": 0.25,
+        "gross_stress_MPa": 31.25,
+        "net_stress_MPa": 41.666666666666664,
+        "kt_net_peterson": 2.42234375,
+        "peak_stress_peterson_MPa": 100.93098958333333,
+        "end_distance_over_width": 1.875,
+        "face_area_closed_form_mm2": 1580.3650459150638
+      },
+      "solver": {
+        "success": true,
+        "message": "CalculiX: 550 CPS6 elements",
+        "nfev": null
+      },
+      "solver_outputs": {
+        "nodes": 1175,
+        "loaded_edge_nodes": 11,
+        "applied_load_N": 2500.0,
+        "xsym_nodes": 23,
+        "analysis_thickness_mm": 0.1,
+        "force_scale": 0.025,
+        "elements": 550,
+        "face_area_mm2": 1580.3650459150635,
+        "hole_element_size_used_mm": 1.0,
+        "reaction_totals_N": {
+          "XSYM": [
+            -62.5,
+            1.49088e-12,
+            -4.55808e-15
+          ]
+        }
+      },
+      "metrics": {
+        "peak_hole_stress_MPa": 100.583,
+        "kt_net": 2.413992
+      }
+    },
+    {
+      "label": "p01_hole_element_size_mm-0.5",
+      "parameters": {
+        "length_mm": 160.0,
+        "width_mm": 40.0,
+        "thickness_mm": 4.0,
+        "hole_diameter_mm": 10.0,
+        "axial_load_N": 5000.0,
+        "youngs_modulus_MPa": 68900.0,
+        "poisson_ratio": 0.33,
+        "yield_strength_MPa": 276.0,
+        "hole_element_size_mm": 0.5,
+        "far_element_size_mm": 4.0
+      },
+      "status": "completed",
+      "derived": {
+        "d_over_W": 0.25,
+        "gross_stress_MPa": 31.25,
+        "net_stress_MPa": 41.666666666666664,
+        "kt_net_peterson": 2.42234375,
+        "peak_stress_peterson_MPa": 100.93098958333333,
+        "end_distance_over_width": 1.875,
+        "face_area_closed_form_mm2": 1580.3650459150638
+      },
+      "solver": {
+        "success": true,
+        "message": "CalculiX: 1023 CPS6 elements",
+        "nfev": null
+      },
+      "solver_outputs": {
+        "nodes": 2142,
+        "loaded_edge_nodes": 11,
+        "applied_load_N": 2500.0,
+        "xsym_nodes": 35,
+        "analysis_thickness_mm": 0.1,
+        "force_scale": 0.025,
+        "elements": 1023,
+        "face_area_mm2": 1580.3650459150635,
+        "hole_element_size_used_mm": 0.5,
+        "reaction_totals_N": {
+          "XSYM": [
+            -62.5,
+            -2.444467e-12,
+            -5.440975e-15
+          ]
+        }
+      },
+      "metrics": {
+        "peak_hole_stress_MPa": 101.267,
+        "kt_net": 2.430408
+      }
+    },
+    {
+      "label": "p02_hole_element_size_mm-0.25",
+      "parameters": {
+        "length_mm": 160.0,
+        "width_mm": 40.0,
+        "thickness_mm": 4.0,
+        "hole_diameter_mm": 10.0,
+        "axial_load_N": 5000.0,
+        "youngs_modulus_MPa": 68900.0,
+        "poisson_ratio": 0.33,
+        "yield_strength_MPa": 276.0,
+        "hole_element_size_mm": 0.25,
+        "far_element_size_mm": 4.0
+      },
+      "status": "completed",
+      "derived": {
+        "d_over_W": 0.25,
+        "gross_stress_MPa": 31.25,
+        "net_stress_MPa": 41.666666666666664,
+        "kt_net_peterson": 2.42234375,
+        "peak_stress_peterson_MPa": 100.93098958333333,
+        "end_distance_over_width": 1.875,
+        "face_area_closed_form_mm2": 1580.3650459150638
+      },
+      "solver": {
+        "success": true,
+        "message": "CalculiX: 2213 CPS6 elements",
+        "nfev": null
+      },
+      "solver_outputs": {
+        "nodes": 4556,
+        "loaded_edge_nodes": 11,
+        "applied_load_N": 2500.0,
+        "xsym_nodes": 53,
+        "analysis_thickness_mm": 0.1,
+        "force_scale": 0.025,
+        "elements": 2213,
+        "face_area_mm2": 1580.3650459150635,
+        "hole_element_size_used_mm": 0.25,
+        "reaction_totals_N": {
+          "XSYM": [
+            -62.5,
+            6.232435e-13,
+            1.057782e-13
+          ]
+        }
+      },
+      "metrics": {
+        "peak_hole_stress_MPa": 101.428,
+        "kt_net": 2.434272
+      }
+    },
+    {
+      "label": "p03_hole_element_size_mm-0.125",
+      "parameters": {
+        "length_mm": 160.0,
+        "width_mm": 40.0,
+        "thickness_mm": 4.0,
+        "hole_diameter_mm": 10.0,
+        "axial_load_N": 5000.0,
+        "youngs_modulus_MPa": 68900.0,
+        "poisson_ratio": 0.33,
+        "yield_strength_MPa": 276.0,
+        "hole_element_size_mm": 0.125,
+        "far_element_size_mm": 4.0
+      },
+      "status": "completed",
+      "derived": {
+        "d_over_W": 0.25,
+        "gross_stress_MPa": 31.25,
+        "net_stress_MPa": 41.666666666666664,
+        "kt_net_peterson": 2.42234375,
+        "peak_stress_peterson_MPa": 100.93098958333333,
+        "end_distance_over_width": 1.875,
+        "face_area_closed_form_mm2": 1580.3650459150638
+      },
+      "solver": {
+        "success": true,
+        "message": "CalculiX: 5923 CPS6 elements",
+        "nfev": null
+      },
+      "solver_outputs": {
+        "nodes": 12036,
+        "loaded_edge_nodes": 11,
+        "applied_load_N": 2500.0,
+        "xsym_nodes": 81,
+        "analysis_thickness_mm": 0.1,
+        "force_scale": 0.025,
+        "elements": 5923,
+        "face_area_mm2": 1580.3650459150635,
+        "hole_element_size_used_mm": 0.125,
+        "reaction_totals_N": {
+          "XSYM": [
+            -62.5,
+            1.507793e-15,
+            4.649881e-14
+          ]
+        }
+      },
+      "metrics": {
+        "peak_hole_stress_MPa": 101.504,
+        "kt_net": 2.436096
+      }
+    }
+  ],
+  "study": "strap_hole",
+  "status": "completed",
+  "finished_utc": "2026-11-20T04:52:05+00:00"
+}

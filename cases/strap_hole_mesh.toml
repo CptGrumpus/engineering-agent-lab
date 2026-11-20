@@ -1,0 +1,89 @@
+# Aluminium strap with a cable hole, CAD-to-FEA pipeline: CadQuery builds the
+# geometry and exports STEP, Gmsh meshes it (refined at the hole), CalculiX
+# solves it (plane stress, quadratic triangles). Mesh-refinement study at a
+# 10 mm hole. Independent checks: Peterson's stress concentration factor,
+# reaction equilibrium, force balance across the ligament, the uniform far
+# field, and the Grid Convergence Index.
+#
+# Decision (taken in strap_hole_size): the largest cable hole that keeps the
+# peak stress at the hole edge within the fatigue allowable.
+#
+# Why this peak can be a requirement: unlike a sharp corner, a smooth hole
+# edge has a finite, mesh-converging peak stress. The GCI check (with the
+# design order of the elements) is what shows it.
+#
+# Predictions (written BEFORE the first evidence run, from Peterson,
+# Kt_net = 3.00 - 3.13 b + 3.66 b^2 - 1.53 b^3 with b = d/W):
+#   d = 10 mm: Kt_net = 2.422, net stress 41.67 MPa, peak 100.9 MPa.
+#   Far-field stress = gross stress 31.25 MPa. Reaction on the symmetry edge
+#   = half the load, 2500 N. Peak converging at about second order.
+#
+# Hand run (scratchpad, 0.5 mm at the hole, before this case was run):
+#   peak 102.8 MPa, Kt_net 1.9 % above Peterson on that coarse mesh; far field
+#   31.25 MPa; reaction exact. Traps found and fixed in the writer: numpy
+#   float reprs in the deck, a face exported with a -z normal (negative
+#   Jacobians), and a deck built for a previous mesh's node numbers.
+#
+# Smoke test (scratchpad, before the evidence run): the hole-edge peak
+# converged cleanly (order 2.04) but to Kt_net 2.472, 2.07 % above Peterson.
+# Refining the far field changed it by < 0.01 %. A wide-plate check against
+# Kirsch's exact Kt = 3 gave 3.045 and did not converge to 3, while a thin
+# section gave 3.000: CalculiX expands plane-stress elements into one-layer 3D
+# wedges of the section thickness, so the 4 mm section was not plane stress.
+# Classified as a model bug (the model did not match its stated plane-stress
+# assumption). Fixed in the writer: a thin analysed layer with scaled forces;
+# Kirsch is now reproduced to 0.01 %, and that check is a regression test.
+# No tolerance or limit changed.
+#
+# Requirements and tolerances were fixed BEFORE the first evidence run.
+
+[case]
+name = "strap_hole_mesh"
+model = "cadquery_ccx_strap"
+description = "6061-T6 aluminium strap, 160 x 40 x 4 mm, with a 10 mm central cable hole, under a 5 kN axial service load. Quarter model by symmetry, plane stress. Mesh refined at the hole from 1.0 to 0.125 mm (ratio 2). Checks the peak hole-edge stress against Peterson and its mesh convergence."
+assumptions = [
+  "Linear elastic, isotropic 6061-T6 (E = 68.9 GPa, nu = 0.33); checked: peak stress below the 276 MPa yield strength.",
+  "Plane stress: the 4 mm plate is thin relative to its width; through-thickness stress variation at the hole is neglected (a few percent at t/d = 0.4).",
+  "Load applied as a uniform tensile traction on the strap end, 70 mm from the hole edge; checked: the stress there is uniform.",
+  "Hole drilled smooth and exactly central (quarter symmetry).",
+  "The 120 MPa allowable is a synthetic fatigue-based limit for the hole edge, not taken from a standard.",
+]
+limitations = [
+  "Synthetic geometry, load, and allowable.",
+  "Peterson's Kt is a curve fit to classical solutions, a model-form reference (expected within about 1-2 %), not exact.",
+  "No hole-edge surface finish, burrs, or residual stress; no physical test data.",
+]
+
+[parameters]
+length_mm = 160.0
+width_mm = 40.0
+thickness_mm = 4.0
+hole_diameter_mm = 10.0
+axial_load_N = 5000.0
+youngs_modulus_MPa = 68900.0
+poisson_ratio = 0.33
+yield_strength_MPa = 276.0     # 6061-T6
+hole_element_size_mm = 0.5
+far_element_size_mm = 4.0
+
+[sweep]
+parameter = "hole_element_size_mm"
+values = [1.0, 0.5, 0.25, 0.125]
+
+[numerics]
+solver = "CalculiX 2.22 static, plane stress CPS6 (Gmsh 4.15 mesh from a CadQuery STEP)"
+
+[verification]
+equilibrium_rel_tol = 1e-6        # symmetry-edge reaction vs half the applied load
+far_field_rel_tol = 1e-3          # stress at the loaded end vs gross stress (Saint-Venant)
+ligament_force_rel_tol = 0.01     # integral of sigma_xx across the ligament vs half the load
+kt_rel_tol = 0.02                 # hole-edge Kt_net vs Peterson (model form)
+gci_peak_max = 0.01               # GCI_fine on the peak hole-edge stress
+
+[[requirements]]
+id = "REQ-H1"
+text = "Peak stress at the hole edge under the 5 kN service load shall not exceed 120 MPa (synthetic fatigue allowable)."
+metric = "peak_hole_stress_MPa"
+operator = "<="
+limit = 120.0
+units = "MPa"

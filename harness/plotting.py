@@ -465,3 +465,49 @@ def fin_figure(path, s, t_ref, m, *, limit_C, title):
     fig.tight_layout()
     fig.savefig(path, dpi=130, facecolor=SURFACE)
     plt.close(fig)
+
+
+def strap_figure(path, s, p, d, m, *, title):
+    """Strap with a hole: sigma_xx map of the quarter model and the ligament profile."""
+    import matplotlib.tri as mtri
+
+    r = float(p["hole_diameter_mm"]) / 2
+    x, y, sxx = s["x_mm"], s["y_mm"], s["sxx_MPa"]
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(11, 4.4), facecolor=SURFACE,
+                                   gridspec_kw={"width_ratios": (1.5, 1)})
+    tri = mtri.Triangulation(x, y)
+    cx, cy = x[tri.triangles].mean(axis=1), y[tri.triangles].mean(axis=1)
+    tri.set_mask(np.hypot(cx, cy) < r)          # no triangles across the hole
+    view = 4 * r + 10
+    cs = ax1.tricontourf(tri, sxx, levels=24, cmap="Blues")
+    cb = fig.colorbar(cs, ax=ax1, pad=0.01)
+    cb.set_label("σxx (MPa)", color=TEXT_2)
+    cb.ax.tick_params(colors=TEXT_2, labelsize=8)
+    cb.outline.set_edgecolor(GRID)
+    ax1.set_xlim(0, view)
+    ax1.set_ylim(0, float(p["width_mm"]) / 2)
+    ax1.set_aspect("equal")
+    ax1.set_xlabel("x (mm), load along x")
+    ax1.set_ylabel("y (mm)")
+    ax1.set_title("σxx near the hole (quarter model)", color=TEXT, fontsize=10, loc="left")
+    fig.suptitle(title, color=TEXT, fontsize=11, x=0.01, ha="left")
+    _style(ax1)
+    ax1.grid(False)
+
+    lig = np.isclose(x, 0.0, atol=1e-6)
+    o = np.argsort(y[lig])
+    ax2.plot(y[lig][o], sxx[lig][o], "o-", color=SERIES_1, markersize=3, linewidth=1.5,
+             label="CalculiX, ligament x = 0")
+    ax2.plot([r], [d["peak_stress_peterson_MPa"]], "D", color=SERIES_2, markersize=7,
+             label=f"Peterson peak {d['peak_stress_peterson_MPa']:.1f} MPa")
+    ax2.axhline(d["net_stress_MPa"], color=TEXT_2, linewidth=1, linestyle=(0, (2, 2)),
+                label=f"net-section stress {d['net_stress_MPa']:.1f} MPa")
+    ax2.set_xlabel("y from the hole centre (mm)")
+    ax2.set_ylabel("σxx (MPa)")
+    ax2.set_title(f"FE peak {m['peak_hole_stress_MPa']:.1f} MPa, Kt_net {m['kt_net']:.3f}",
+                  color=TEXT, fontsize=10, loc="left")
+    _legend(ax2, loc="upper right")
+    _style(ax2)
+    fig.tight_layout(rect=(0, 0, 1, 0.94))
+    fig.savefig(path, dpi=130, facecolor=SURFACE)
+    plt.close(fig)

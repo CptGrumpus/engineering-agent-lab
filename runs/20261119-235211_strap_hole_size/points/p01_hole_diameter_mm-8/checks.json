@@ -1,0 +1,69 @@
+{
+  "label": "p01_hole_diameter_mm-8",
+  "status": "PASS",
+  "checks": [
+    {
+      "id": "cad_area",
+      "description": "|face area from CadQuery - closed form| / closed form",
+      "kind": "numerical",
+      "value": 0.0,
+      "tolerance": 1e-09,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "applied_load",
+      "description": "|load written to the deck - F/2| / (F/2)",
+      "kind": "numerical",
+      "value": 0.0,
+      "tolerance": 1e-06,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "equilibrium",
+      "description": "|reaction on the x = 0 symmetry edge + F/2| / (F/2)",
+      "kind": "numerical",
+      "value": 0.0,
+      "tolerance": 1e-06,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "ligament_force",
+      "description": "|t * integral of sigma_xx across the ligament - F/2| / (F/2)",
+      "kind": "numerical",
+      "value": 0.0003226558530723196,
+      "tolerance": 0.01,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "far_field_uniform",
+      "description": "max |sigma_xx at the loaded end - gross stress| / gross",
+      "kind": "numerical",
+      "value": 1.2799999999970169e-05,
+      "tolerance": 0.001,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "kt_reference",
+      "description": "|Kt_net FE - Peterson| / Peterson (model form)",
+      "kind": "numerical",
+      "value": 0.004696095942842471,
+      "tolerance": 0.02,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "linear_material",
+      "description": "peak hole-edge stress / yield strength",
+      "kind": "validity",
+      "value": 0.3566489130434783,
+      "tolerance": 1.0,
+      "comparison": "<=",
+      "status": "PASS"
+    }
+  ]
+}

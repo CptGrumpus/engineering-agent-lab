@@ -30,6 +30,17 @@ comparison, and one validity check per assumption that can fail.
 | Stress / yield < 1 | validity | `linear_material` |
 | Deflection / length below a limit | validity | `small_deflection` |
 
+## Stress concentration (CAD to FEA)
+
+| Check | Kind | Example |
+|---|---|---|
+| Exact limiting case through the whole pipeline (a hole in a very wide plate: Kirsch, Kt = 3) | numerical | strap `test_pipeline_reproduces_kirsch_in_a_wide_plate`; caught the plane-stress expansion error that a clean GCI hid |
+| Peterson (or Roark) stress concentration factor, labelled model form | model form | strap `kt_reference` |
+| Force across the net section (integral of stress over the ligament = load) | numerical | strap `ligament_force` |
+| Far field equals the nominal stress (load introduction far enough away) | numerical | strap `far_field_uniform` |
+| CAD area or volume vs closed form | numerical | strap `cad_area` |
+| GCI on the peak with the design-order test (a smooth peak converges; a sharp-corner peak does not) | numerical | strap mesh study |
+
 ## Heat conduction (CalculiX)
 
 | Check | Kind | Example |

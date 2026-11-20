@@ -56,6 +56,30 @@ Traps found while building the studies in this repo, by tool.
   of the nodes that matter gives 7 in the `.dat`. Check this is enough for the
   differences a GCI must resolve.
 
+## CAD to mesh to solver (CadQuery -> STEP -> Gmsh -> CalculiX)
+
+- Export a planar face with a +z normal. A face with a -z normal makes Gmsh
+  number the triangles clockwise, and CalculiX rejects every element
+  ("nonpositive jacobian").
+- Gmsh CLI: `gmsh mesh.geo -2 -format inp -o mesh.inp` with
+  `Mesh.ElementOrder = 2` writes 6-node `CPS6` triangles that CalculiX reads
+  with `*INCLUDE`. Refine at a feature with a Distance + Threshold field on
+  curves picked by `Curve In BoundingBox{...}`.
+- Build the deck from the node numbers of the mesh it includes. After a
+  remesh, a deck written for the previous mesh still runs and still balances
+  its reactions, so equilibrium alone will not catch it.
+- Apply a uniform edge traction on quadratic edges as consistent nodal forces:
+  1/6, 4/6, 1/6 of each segment's load on corner, mid-side, corner nodes.
+- **CalculiX plane-stress elements are not plane stress for a thick section.**
+  They are expanded into one-layer 3D wedges of the section thickness. At a
+  hole in a 4 mm plate (t/d = 0.4) that added part of the 3D thickness effect:
+  Kt 3.045 against Kirsch's exact 3.000, converging to the wrong value with a
+  clean observed order. For true plane stress, analyse a thin layer (about
+  1 % of the feature size) and scale the forces by the same factor; stresses
+  are unchanged, and reactions scale back.
+- Write `*NODE FILE, OUTPUT=2D` and `*EL FILE, OUTPUT=2D` to get results on the
+  2D nodes, which `harness/calculix.py` reads.
+
 ## CadQuery (OpenCASCADE)
 
 - Measure every reported quantity back from the B-rep (faces, closed circular
