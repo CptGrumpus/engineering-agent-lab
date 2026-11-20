@@ -52,6 +52,18 @@ comparison, and one validity check per assumption that can fail.
 | Mode shape along the part vs the reference, by modal assurance criterion (MAC) | numerical | bracket `first_mode_shape` |
 | GCI on the frequency with the design order (4 for quadratic elements) | numerical | bracket mesh study |
 
+## Contact (CalculiX surface-to-surface)
+
+| Check | Kind | Example |
+|---|---|---|
+| Reactions balance across the two bodies | numerical | contact `equilibrium` |
+| Contact pressure integrated over the patch equals the load | numerical | contact `contact_force_balance` |
+| Hertz peak pressure, half-width, subsurface max shear and its depth, at the load the model carries | numerical | contact `hertz_*` |
+| Penalty penetration small against the approach | numerical | contact `penalty_penetration` |
+| Elements across the contact half-width (resolution) | validity | contact `resolution` |
+| Stresses elastic (subsurface shear below Tresca yield) | validity | contact `elastic` |
+| GCI on peak pressure and subsurface shear | numerical | contact mesh study |
+
 ## Fatigue (chained from a verified stress model)
 
 | Check | Kind | Example |

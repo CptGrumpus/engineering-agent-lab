@@ -1,0 +1,111 @@
+# Roller-on-plate contact: mesh-refinement study, CalculiX surface-to-surface
+# contact verified against Hertz line contact.
+#
+# Design question (synthetic): a hardened steel track roller, 100 mm diameter,
+# runs on a steel rail plate and carries 500 N per mm of roller width. Does the
+# peak contact pressure stay at or under 650 MPa, and the maximum shear stress
+# below the surface (where rolling-contact fatigue starts) at or under 200 MPa?
+#
+# Loading is displacement-controlled (approach 0.015 mm). The prototype showed
+# this approach produces about 501 N/mm; every check compares with Hertz at
+# the line load the model actually carries, read from the reactions.
+#
+# Prototype findings, before this case was written (scratch runs, not evidence):
+# - Element stresses extrapolated to the block surface overstated the peak
+#   pressure by 6.5 % at 0.08 mm elements and 3.5 % at 0.04 mm, and their
+#   integral exceeded the applied load by the same margin. CalculiX's own
+#   contact pressure output (CPRESS) was within 0.2 % of Hertz at 0.04 mm.
+#   The study therefore reads CPRESS.
+# - The first size field graded over the whole 240 mm domain (70 820 nodes,
+#   214 s at 0.04 mm); grading within 8 far-element lengths of a fixed 1.6 mm
+#   fine zone (about 3 contact half-widths) gives 9 334 nodes, 20 s, and the
+#   same reaction to 0.2 %.
+#
+# Predictions, written BEFORE the first evidence run. Prototype runs at 0.04
+# and 0.02 mm informed P2 and P3; 0.08 mm has not been run with this mesh.
+#   P1 Line load 500 to 502 N/mm at every mesh; Hertz then gives a = 0.525 mm,
+#      p0 = 606 MPa, max shear 182 MPa at 0.413 mm depth.
+#   P2 Peak contact pressure within 0.5 % of Hertz at 0.04 and 0.02 mm, and
+#      within 2 % at 0.08 mm.
+#   P3 Fitted half-width: about +5 % at 0.04 mm (fails the 2 % tolerance) and
+#      within 0.1 % at 0.02 mm; 0.08 mm worse than 0.04 mm.
+#   P4 Subsurface shear within 2 % of 0.300 p0 at every mesh.
+#   P5 Both requirements pass at the finest mesh: about 607 MPa (7 % margin)
+#      and 182 MPa (9 % margin).
+# Requirements and tolerances were fixed BEFORE the first evidence run.
+#
+# Revision 1 (after run 20261120-120004, kept as evidence; tolerances unchanged):
+#   That run held P1, P3 and P4; P2 missed slightly at 0.08 mm (2.19 % against the
+#   2 % predicted). The run-level check on max_subsurface_shear_MPa failed as
+#   "divergent" although the three meshes agree to 0.06 % (184.3 / 184.2 /
+#   184.3 MPa): the metric was the largest nodal value, and which node sits
+#   nearest the true peak changes with the mesh, so it is not a smooth function
+#   of element size. The metric now locates the peak between nodes with a
+#   parabola through the largest nodal value and its neighbours
+#   (studies/hertz_contact.py: subsurface_peak). Prediction for the rerun: the
+#   shear GCI passes; the shear stays about 1.2 % above Hertz at every mesh, an
+#   offset that does not shrink with refinement, so it comes from the model form
+#   (finite bodies against Hertz's half-spaces), not the mesh.
+
+[case]
+name = "contact_roller_mesh"
+model = "gmsh_ccx_contact"
+description = "Steel roller (R = 50 mm) pressed onto a steel plate in plane strain with CalculiX surface-to-surface penalty contact; contact element size swept 0.08 / 0.04 / 0.02 mm and verified against Hertz line contact."
+assumptions = [
+  "Plane strain (long roller): one-layer hex slab with uz = 0 at every node.",
+  "Frictionless contact; linear elastic, isotropic steel in both bodies.",
+  "Half model about the vertical symmetry plane; the roller is a quarter disc loaded through its flat top face (far from the contact, a/R = 0.01).",
+  "Penalty contact stiffness 50 E / element size; penetration is checked against the approach.",
+  "Hertz assumes half-spaces; the block (60 x 50 mm half) and roller are about 100 contact widths across.",
+]
+limitations = [
+  "Synthetic geometry, load and allowables; not calibrated to a product.",
+  "No friction, surface roughness, residual stress or plasticity; rolling-contact fatigue life is not assessed.",
+  "Checks establish numerical verification against Hertz only; no test data.",
+]
+
+[parameters]
+roller_radius_mm = 50.0
+block_half_width_mm = 60.0
+block_depth_mm = 50.0
+slab_thickness_mm = 0.5
+approach_mm = 0.015
+youngs_modulus_MPa = 210000.0
+poisson_ratio = 0.3
+yield_strength_MPa = 1200.0
+contact_element_size_mm = 0.04
+far_element_size_mm = 4.0
+penalty_stiffness_factor = 50.0
+refined_zone_mm = 1.6
+
+[sweep]
+parameter = "contact_element_size_mm"
+values = [0.08, 0.04, 0.02]
+
+[numerics]
+
+[verification]
+equilibrium_rel_tol = 1e-6
+force_balance_rel_tol = 0.03
+hertz_rel_tol = 0.02
+subsurface_rel_tol = 0.02
+depth_elements_tol = 1.0
+min_elements_across_contact = 6
+penetration_max_fraction = 0.01
+gci_max = 0.02
+
+[[requirements]]
+id = "REQ-C1"
+text = "Peak contact pressure between roller and plate shall not exceed 650 MPa."
+metric = "peak_contact_pressure_MPa"
+operator = "<="
+limit = 650.0
+units = "MPa"
+
+[[requirements]]
+id = "REQ-C2"
+text = "Maximum shear stress below the contact surface shall not exceed 200 MPa (rolling-contact fatigue initiation)."
+metric = "max_subsurface_shear_MPa"
+operator = "<="
+limit = 200.0
+units = "MPa"

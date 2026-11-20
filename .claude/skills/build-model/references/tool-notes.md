@@ -98,6 +98,30 @@ Traps found while building the studies in this repo, by tool.
   order 1.8, not the textbook 4: the clamp corners are singular. A rate below
   the design order is fine for the GCI; only a rate far above it is suspect.
 
+## CalculiX contact (surface-to-surface, penalty)
+
+- Two bodies that touch at a point: in a Gmsh .geo on the built-in kernel set
+  `Geometry.AutoCoherence = 0`, or the coincident points merge and the bodies
+  are glued at one node.
+- Load by displacement, not force: before the contact closes, a force-loaded
+  body is unconstrained and the solve is singular. Read the load back from
+  `*NODE PRINT ... TOTALS=ONLY` RF and compare references at that load.
+- Surfaces: `*SURFACE` from element faces (C3D8 S1..S6 = 1234, 5876, 1562,
+  2673, 3784, 4851); build them from the mesh by testing face nodes against
+  the analytic boundary. Slave = convex/finer body.
+- `*SURFACE BEHAVIOR, PRESSURE-OVERCLOSURE=LINEAR` with K about 50 E / h;
+  check the penetration (COPEN in `*CONTACT FILE`) against the approach.
+- Read contact pressure from `*CONTACT FILE` CPRESS, not from element stresses
+  at the surface: on linear hexes the extrapolated surface stress read 3.5-6.5 %
+  high while CPRESS was within 0.2 % of Hertz. The .frd CONTACT block lists all
+  nodes (zeros away from the slave surface); filter to surface nodes.
+- `*NODE FILE, FREQUENCY=10000` keeps only the last increment; otherwise every
+  increment of the nonlinear step is written.
+- Grade the mesh only near the contact: a size field graded over the whole
+  model cost 7.6x the nodes for the same answer (0.2 %).
+- A sampled maximum (largest nodal value) is not smooth in h and can fail a
+  GCI while agreeing to 0.06 %; locate peaks between nodes (parabola) instead.
+
 ## CadQuery (OpenCASCADE)
 
 - Measure every reported quantity back from the B-rep (faces, closed circular

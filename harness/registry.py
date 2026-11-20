@@ -9,11 +9,11 @@ from harness.study import Study
 def _studies() -> list[Study]:
     from studies import (cantilever, channel_flow, duct_flow,  # lazy: avoids cycles
                          fin, mounting_plate, msd, quarter_car, strap_hole,
-                         bracket_modal, strap_fatigue)
+                         bracket_modal, strap_fatigue, hertz_contact)
 
     return [msd.STUDY, quarter_car.STUDY, cantilever.STUDY, mounting_plate.STUDY,
             channel_flow.STUDY, duct_flow.STUDY, fin.STUDY, strap_hole.STUDY, bracket_modal.STUDY,
-            strap_fatigue.STUDY]
+            strap_fatigue.STUDY, hertz_contact.STUDY]
 
 
 def models() -> dict[str, tuple[Study, type[Backend]]]:

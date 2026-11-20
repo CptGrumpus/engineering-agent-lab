@@ -1,0 +1,87 @@
+{
+  "label": "p01_contact_element_size_mm-0.04",
+  "status": "FAIL",
+  "checks": [
+    {
+      "id": "equilibrium",
+      "description": "|reaction at the roller top + reaction at the block base| / load",
+      "kind": "numerical",
+      "value": 0.0,
+      "tolerance": 1e-06,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "contact_force_balance",
+      "description": "|2 x integral of contact pressure dx - line load| / line load",
+      "kind": "numerical",
+      "value": 0.07557039698416809,
+      "tolerance": 0.03,
+      "comparison": "<=",
+      "status": "FAIL"
+    },
+    {
+      "id": "hertz_peak_pressure",
+      "description": "|peak contact pressure - Hertz p0 at this load| / p0",
+      "kind": "numerical",
+      "value": 0.0021040785551872184,
+      "tolerance": 0.02,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "hertz_half_width",
+      "description": "|fitted contact half-width - Hertz a| / a",
+      "kind": "numerical",
+      "value": 0.05270534700684632,
+      "tolerance": 0.02,
+      "comparison": "<=",
+      "status": "FAIL"
+    },
+    {
+      "id": "hertz_subsurface_shear",
+      "description": "|max shear below the contact - Hertz 0.300 p0| / (0.300 p0)",
+      "kind": "numerical",
+      "value": 0.010921830193103747,
+      "tolerance": 0.02,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "hertz_shear_depth",
+      "description": "|depth of max shear - Hertz 0.786 a| / element size (node-spacing limited)",
+      "kind": "numerical",
+      "value": 0.4186512346592508,
+      "tolerance": 1.0,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "resolution",
+      "description": "elements across the contact half-width (Hertz a / element size), inverted",
+      "kind": "validity",
+      "value": 0.07606740085420338,
+      "tolerance": 0.16666666666666666,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "penalty_penetration",
+      "description": "max penetration of the penalty contact / approach",
+      "kind": "numerical",
+      "value": 0.00015441933333333333,
+      "tolerance": 0.01,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "elastic",
+      "description": "max subsurface shear / shear yield (Tresca, yield / 2)",
+      "kind": "validity",
+      "value": 0.3069775,
+      "tolerance": 1.0,
+      "comparison": "<=",
+      "status": "PASS"
+    }
+  ]
+}

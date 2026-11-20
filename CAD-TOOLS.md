@@ -133,8 +133,8 @@ All five tool paths are installed on this PC and proven by verified evidence run
 | Python, NumPy, SciPy | 3.14.10, 2.5.5, 1.18.1 | In process | Mass-spring-damper, quarter car; every independent reference |
 | OpenModelica + Modelica Standard Library | 1.26.3, MSL 4.1.0 | `omc` compiles the model once per run; the executable runs per point with `-overrideFile` and dedicated experiment flags | Mass-spring-damper, quarter car (cross-checks against SciPy) |
 | FreeCAD (headless `freecadcmd`) | 1.1.4 | A Python script builds geometry, material, constraints and a Gmsh mesh, then runs CalculiX through ccxtools | Cantilever bracket |
-| CalculiX | 2.22 (bundled with FreeCAD) | Through FreeCAD, or directly from input decks written in Python | Cantilever, heat-sink fin, strap with a hole, strap fatigue, bracket modal analysis |
-| Gmsh | 4.15 (bundled with FreeCAD) | Through FreeCAD, or the command line with a `.geo` script on a STEP file | Cantilever, strap with a hole, bracket modal analysis |
+| CalculiX | 2.22 (bundled with FreeCAD) | Through FreeCAD, or directly from input decks written in Python | Cantilever, heat-sink fin, strap with a hole, strap fatigue, bracket modal analysis, roller contact |
+| Gmsh | 4.15 (bundled with FreeCAD) | Through FreeCAD, or the command line with a `.geo` script on a STEP file | Cantilever, strap with a hole, bracket modal analysis, roller contact |
 | CadQuery (OpenCASCADE) | 2.8.0 | In process; exports STEP for meshing | Mounting plate, strap with a hole, bracket modal analysis |
 | OpenFOAM | 14 (openfoam.org), in WSL Ubuntu 22.04 | A Python writer generates the case; a bash script runs blockMesh, checkMesh and foamRun inside WSL | Coolant channel, 3D duct check |
 | Blender (portable, no install) | 4.5.16 LTS | Background mode (`blender -b -P scripts/blender/render_scene.py`); scenes exported by `harness/femesh.py`; Cycles on the OptiX GPU | Result and CAD renders for the portfolio (`scripts/make_renders.py`, skill `render-results`) |

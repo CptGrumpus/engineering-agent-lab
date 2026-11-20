@@ -1,6 +1,6 @@
 # Engineering Modeling Portfolio
 
-Nine worked case studies in structural analysis, vibration, fatigue, fluids and heat transfer, vehicle dynamics, and CAD automation. Each one starts from a written question and measurable requirements, builds a model to answer it, and checks the result against something independent: an exact solution, a conservation law, a handbook value, a second tool, or a mesh-convergence study. Each ends with a clear answer and a statement of how sure that answer is.
+Ten worked case studies in structural analysis, contact, vibration, fatigue, fluids and heat transfer, vehicle dynamics, and CAD automation. Each one starts from a written question and measurable requirements, builds a model to answer it, and checks the result against something independent: an exact solution, a conservation law, a handbook value, a second tool, or a mesh-convergence study. Each ends with a clear answer and a statement of how sure that answer is.
 
 I also show what the checks caught along the way. In several studies the first version of the model gave an answer that looked reasonable and was wrong, and the checks are what exposed it.
 
@@ -13,6 +13,7 @@ All problems are synthetic, so no client data is involved. Every number comes fr
 | Capability | Tools | Shown in |
 |---|---|---|
 | Structural finite element analysis: 3D solids and plane stress, mesh convergence, stress-concentration and singularity judgement | FreeCAD, Gmsh, CalculiX | [1](portfolio/01-cantilever-bracket.md), [2](portfolio/02-strap-cable-hole.md) |
+| Contact: nonlinear surface-to-surface contact, contact pressure and subsurface stress, verified against Hertz | Gmsh, CalculiX | [10](portfolio/10-roller-contact.md) |
 | Vibration: modal analysis, mode identification, frequency targets against engine orders | CadQuery, Gmsh, CalculiX | [4](portfolio/04-bracket-modal.md) |
 | Fatigue: notch factors, mean-stress correction, S-N curves from published test data, life ratings | CalculiX, Python | [3](portfolio/03-strap-fatigue.md) |
 | Scripted CAD-to-analysis pipelines: parametric geometry, STEP exchange, meshing, solving | CadQuery, Gmsh, CalculiX | [2](portfolio/02-strap-cable-hole.md), [4](portfolio/04-bracket-modal.md), [8](portfolio/08-mounting-plate.md) |
@@ -36,6 +37,7 @@ All problems are synthetic, so no client data is involved. Every number comes fr
 | [2. Cable hole in a strap, CAD to FEA](portfolio/02-strap-cable-hole.md) | How large can a cable hole in an aluminium strap be before the stress at its edge exceeds the allowable? | About 16.7 mm. A 16 mm hole passes at 117 MPa; 18 mm fails at 125 MPa. |
 | [3. Strap fatigue life, chained analysis](portfolio/03-strap-fatigue.md) | Does the strap survive ten million service cycles, and what cyclic load can it be rated for? | Yes, by a wide margin; rated to about 7.8 kN cyclic for 3 × 10⁷ cycles. |
 | [4. Bracket arm vibration, modal analysis](portfolio/04-bracket-modal.md) | How thin can an engine-mounted bracket arm be and keep its first mode above 250 Hz within a mass budget? | 7 mm: 261.7 Hz at 206 g. |
+| [10. Roller-on-plate contact](portfolio/10-roller-contact.md) | Does a track roller's contact stay within its pressure and subsurface-shear limits at 500 N/mm? | Yes: 609 MPa against 650, and 184 MPa shear against 200. Matches Hertz to 0.4 %. |
 
 ### Thermal and fluids
 
@@ -67,6 +69,7 @@ All problems are synthetic, so no client data is involved. Every number comes fr
 - **A model that converged cleanly to the wrong answer** ([strap](portfolio/02-strap-cable-hole.md)). A textbook-perfect mesh study settled 2 % off the handbook. Running an exact case through the same pipeline exposed a solver formulation issue that no amount of mesh refinement would have shown.
 - **An idealized inlet that reversed the verdict** ([coolant channel](portfolio/05-coolant-channel.md)). The simple model said the channel passed. It never converged at the inlet corner, and the realistic model fails the budget.
 - **A wheel that left the road** ([quarter car](portfolio/07-quarter-car.md)). Every numerical check passed, but the model's assumptions didn't hold, so no verdict was reported. The model that check called for, a tire that can lift off, then showed that the linear model had overstated peak body acceleration by up to 29 %.
+- **Reading the wrong output** ([roller contact](portfolio/10-roller-contact.md)). Contact pressure taken from the element stresses read 3.5 to 6.5 % high; the solver's own contact output matched the exact Hertz solution to 0.2 % on the same mesh.
 - **Elements that made the bracket look too stiff** ([cantilever](portfolio/01-cantilever-bracket.md)). The simplest element type overstated stiffness by up to a third; the checks withheld every result.
 
 ## How I work

@@ -1,0 +1,397 @@
+{
+  "points": [
+    {
+      "label": "p00_contact_element_size_mm-0.08",
+      "parameters": {
+        "roller_radius_mm": 50.0,
+        "block_half_width_mm": 60.0,
+        "block_depth_mm": 50.0,
+        "slab_thickness_mm": 0.5,
+        "approach_mm": 0.015,
+        "youngs_modulus_MPa": 210000.0,
+        "poisson_ratio": 0.3,
+        "yield_strength_MPa": 1200.0,
+        "contact_element_size_mm": 0.08,
+        "far_element_size_mm": 4.0,
+        "penalty_stiffness_factor": 50.0,
+        "refined_zone_mm": 1.6
+      },
+      "derived": {
+        "E_star_MPa": 115384.61538461539,
+        "penalty_N_per_mm3": 131250000.0
+      },
+      "simulation_status": "completed",
+      "verification_status": "FAIL",
+      "checks": [
+        {
+          "id": "equilibrium",
+          "description": "|reaction at the roller top + reaction at the block base| / load",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "contact_force_balance",
+          "description": "|2 x integral of contact pressure dx - line load| / line load",
+          "kind": "numerical",
+          "value": 0.1628001497818623,
+          "tolerance": 0.03,
+          "comparison": "<=",
+          "status": "FAIL"
+        },
+        {
+          "id": "hertz_peak_pressure",
+          "description": "|peak contact pressure - Hertz p0 at this load| / p0",
+          "kind": "numerical",
+          "value": 0.02187405087466183,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "FAIL"
+        },
+        {
+          "id": "hertz_half_width",
+          "description": "|fitted contact half-width - Hertz a| / a",
+          "kind": "numerical",
+          "value": 0.07310843497558671,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "FAIL"
+        },
+        {
+          "id": "hertz_subsurface_shear",
+          "description": "|max shear below the contact - Hertz 0.300 p0| / (0.300 p0)",
+          "kind": "numerical",
+          "value": 0.014407088784544005,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "hertz_shear_depth",
+          "description": "|depth of max shear - Hertz 0.786 a| / element size (node-spacing limited)",
+          "kind": "numerical",
+          "value": 0.01688298385539716,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "resolution",
+          "description": "elements across the contact half-width (Hertz a / element size), inverted",
+          "kind": "validity",
+          "value": 0.15218473078444542,
+          "tolerance": 0.16666666666666666,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "penalty_penetration",
+          "description": "max penetration of the penalty contact / approach",
+          "kind": "numerical",
+          "value": 0.00031482799999999996,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "elastic",
+          "description": "max subsurface shear / shear yield (Tresca, yield / 2)",
+          "kind": "validity",
+          "value": 0.3079347759683524,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-C1",
+          "text": "Peak contact pressure between roller and plate shall not exceed 650 MPa.",
+          "metric": "peak_contact_pressure_MPa",
+          "operator": "<=",
+          "limit": 650.0,
+          "units": "MPa",
+          "value": 619.818,
+          "margin": 30.182000000000016,
+          "verdict": "PASS (unverified)"
+        },
+        {
+          "id": "REQ-C2",
+          "text": "Maximum shear stress below the contact surface shall not exceed 200 MPa (rolling-contact fatigue initiation).",
+          "metric": "max_subsurface_shear_MPa",
+          "operator": "<=",
+          "limit": 200.0,
+          "units": "MPa",
+          "value": 184.76086558101144,
+          "margin": 15.239134418988556,
+          "verdict": "PASS (unverified)"
+        }
+      ]
+    },
+    {
+      "label": "p01_contact_element_size_mm-0.04",
+      "parameters": {
+        "roller_radius_mm": 50.0,
+        "block_half_width_mm": 60.0,
+        "block_depth_mm": 50.0,
+        "slab_thickness_mm": 0.5,
+        "approach_mm": 0.015,
+        "youngs_modulus_MPa": 210000.0,
+        "poisson_ratio": 0.3,
+        "yield_strength_MPa": 1200.0,
+        "contact_element_size_mm": 0.04,
+        "far_element_size_mm": 4.0,
+        "penalty_stiffness_factor": 50.0,
+        "refined_zone_mm": 1.6
+      },
+      "derived": {
+        "E_star_MPa": 115384.61538461539,
+        "penalty_N_per_mm3": 262500000.0
+      },
+      "simulation_status": "completed",
+      "verification_status": "FAIL",
+      "checks": [
+        {
+          "id": "equilibrium",
+          "description": "|reaction at the roller top + reaction at the block base| / load",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "contact_force_balance",
+          "description": "|2 x integral of contact pressure dx - line load| / line load",
+          "kind": "numerical",
+          "value": 0.07557039698416809,
+          "tolerance": 0.03,
+          "comparison": "<=",
+          "status": "FAIL"
+        },
+        {
+          "id": "hertz_peak_pressure",
+          "description": "|peak contact pressure - Hertz p0 at this load| / p0",
+          "kind": "numerical",
+          "value": 0.0021040785551872184,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "hertz_half_width",
+          "description": "|fitted contact half-width - Hertz a| / a",
+          "kind": "numerical",
+          "value": 0.05270534700684632,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "FAIL"
+        },
+        {
+          "id": "hertz_subsurface_shear",
+          "description": "|max shear below the contact - Hertz 0.300 p0| / (0.300 p0)",
+          "kind": "numerical",
+          "value": 0.011687077241727814,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "hertz_shear_depth",
+          "description": "|depth of max shear - Hertz 0.786 a| / element size (node-spacing limited)",
+          "kind": "numerical",
+          "value": 0.005230803101211046,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "resolution",
+          "description": "elements across the contact half-width (Hertz a / element size), inverted",
+          "kind": "validity",
+          "value": 0.07606740085420338,
+          "tolerance": 0.16666666666666666,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "penalty_penetration",
+          "description": "max penetration of the penalty contact / approach",
+          "kind": "numerical",
+          "value": 0.00015441933333333333,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "elastic",
+          "description": "max subsurface shear / shear yield (Tresca, yield / 2)",
+          "kind": "validity",
+          "value": 0.3072098756583871,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-C1",
+          "text": "Peak contact pressure between roller and plate shall not exceed 650 MPa.",
+          "metric": "peak_contact_pressure_MPa",
+          "operator": "<=",
+          "limit": 650.0,
+          "units": "MPa",
+          "value": 608.026,
+          "margin": 41.974000000000046,
+          "verdict": "PASS (unverified)"
+        },
+        {
+          "id": "REQ-C2",
+          "text": "Maximum shear stress below the contact surface shall not exceed 200 MPa (rolling-contact fatigue initiation).",
+          "metric": "max_subsurface_shear_MPa",
+          "operator": "<=",
+          "limit": 200.0,
+          "units": "MPa",
+          "value": 184.32592539503224,
+          "margin": 15.674074604967757,
+          "verdict": "PASS (unverified)"
+        }
+      ]
+    },
+    {
+      "label": "p02_contact_element_size_mm-0.02",
+      "parameters": {
+        "roller_radius_mm": 50.0,
+        "block_half_width_mm": 60.0,
+        "block_depth_mm": 50.0,
+        "slab_thickness_mm": 0.5,
+        "approach_mm": 0.015,
+        "youngs_modulus_MPa": 210000.0,
+        "poisson_ratio": 0.3,
+        "yield_strength_MPa": 1200.0,
+        "contact_element_size_mm": 0.02,
+        "far_element_size_mm": 4.0,
+        "penalty_stiffness_factor": 50.0,
+        "refined_zone_mm": 1.6
+      },
+      "derived": {
+        "E_star_MPa": 115384.61538461539,
+        "penalty_N_per_mm3": 525000000.0
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "equilibrium",
+          "description": "|reaction at the roller top + reaction at the block base| / load",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "contact_force_balance",
+          "description": "|2 x integral of contact pressure dx - line load| / line load",
+          "kind": "numerical",
+          "value": 0.022473613266381337,
+          "tolerance": 0.03,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "hertz_peak_pressure",
+          "description": "|peak contact pressure - Hertz p0 at this load| / p0",
+          "kind": "numerical",
+          "value": 0.004012448504641753,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "hertz_half_width",
+          "description": "|fitted contact half-width - Hertz a| / a",
+          "kind": "numerical",
+          "value": 4.9247705162120303e-05,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "hertz_subsurface_shear",
+          "description": "|max shear below the contact - Hertz 0.300 p0| / (0.300 p0)",
+          "kind": "numerical",
+          "value": 0.011834760175286002,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "hertz_shear_depth",
+          "description": "|depth of max shear - Hertz 0.786 a| / element size (node-spacing limited)",
+          "kind": "numerical",
+          "value": 0.018271251113438636,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "resolution",
+          "description": "elements across the contact half-width (Hertz a / element size), inverted",
+          "kind": "validity",
+          "value": 0.03803556743026363,
+          "tolerance": 0.16666666666666666,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "penalty_penetration",
+          "description": "max penetration of the penalty contact / approach",
+          "kind": "numerical",
+          "value": 7.735266666666667e-05,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "elastic",
+          "description": "max subsurface shear / shear yield (Tresca, yield / 2)",
+          "kind": "validity",
+          "value": 0.3072396393819236,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-C1",
+          "text": "Peak contact pressure between roller and plate shall not exceed 650 MPa.",
+          "metric": "peak_contact_pressure_MPa",
+          "operator": "<=",
+          "limit": 650.0,
+          "units": "MPa",
+          "value": 609.154,
+          "margin": 40.846000000000004,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-C2",
+          "text": "Maximum shear stress below the contact surface shall not exceed 200 MPa (rolling-contact fatigue initiation).",
+          "metric": "max_subsurface_shear_MPa",
+          "operator": "<=",
+          "limit": 200.0,
+          "units": "MPa",
+          "value": 184.34378362915416,
+          "margin": 15.65621637084584,
+          "verdict": "PASS"
+        }
+      ]
+    }
+  ],
+  "run_id": "20261120-120243_contact_roller_mesh",
+  "generated_utc": "2026-11-20T17:04:38+00:00",
+  "verification_status": "FAIL"
+}
