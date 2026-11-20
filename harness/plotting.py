@@ -284,3 +284,85 @@ def plate_figure(path, outline_xy, holes, p, *, title, mass_g):
     fig.tight_layout()
     fig.savefig(path, dpi=130, facecolor=SURFACE)
     plt.close(fig)
+
+
+def channel_figure(path, s, p, d, m, *, st, title):
+    """Velocity profile vs Poiseuille, pressure and centreline velocity along the channel."""
+    from validation import channel_flow as ref
+
+    H, L = float(p["gap_mm"]), float(p["length_mm"])
+    U = float(p["mean_velocity_m_per_s"])
+    x0, x1 = float(p["window_start_mm"]), float(p["window_end_mm"])
+    fig = plt.figure(figsize=(9, 7.6), facecolor=SURFACE)
+    gs = fig.add_gridspec(2, 2, width_ratios=(1, 2.2), height_ratios=(1, 1))
+    ax1 = fig.add_subplot(gs[:, 0])
+    ax2 = fig.add_subplot(gs[0, 1])
+    ax3 = fig.add_subplot(gs[1, 1], sharex=ax2)
+
+    ys = np.linspace(0, H, 200)
+    ax1.plot(ref.velocity_profile(ys * 1e-3, U, H * 1e-3), ys, color=SERIES_2, linewidth=2,
+             label="Poiseuille (exact)")
+    ax1.plot(s["ux_m_per_s"][st], s["y_mm"][st], "o", color=SERIES_1, markersize=3.5,
+             label="OpenFOAM cells")
+    ax1.set_xlabel("u (m/s)")
+    ax1.set_ylabel("y (mm)")
+    ax1.set_title(f"Profile at x = {s['x_mm'][st][0]:.2f} mm", color=TEXT, fontsize=10,
+                  loc="left")
+    _legend(ax1, loc="lower left")
+
+    cl = np.abs(s["y_mm"] - H / 2)
+    cl = cl <= cl.min() + 1e-9 * H
+    order = np.argsort(s["x_mm"][cl])
+    xc = s["x_mm"][cl][order]
+    # two rows straddle the centreline when the cell count is even: average them
+    xu, inv = np.unique(np.round(xc, 9), return_inverse=True)
+    pc = np.bincount(inv, s["p_Pa"][cl][order]) / np.bincount(inv)
+    uc = np.bincount(inv, s["ux_m_per_s"][cl][order]) / np.bincount(inv)
+    G = d["pressure_gradient_exact_Pa_per_m"]
+    for ax in (ax2, ax3):
+        ax.axvspan(x0, x1, color=TEXT_2, alpha=0.08, linewidth=0)
+    ax2.plot(xu, pc, color=SERIES_1, linewidth=2, label="OpenFOAM, mid-gap cells")
+    ax2.plot([0, L], [G * L * 1e-3, 0], color=SERIES_2, linewidth=1.5, linestyle="--",
+             label=f"exact fully developed slope, {G:.0f} Pa/m")
+    ax2.set_ylabel("p (Pa)")
+    ax2.set_title(title, color=TEXT, fontsize=10, loc="left")
+    _legend(ax2, loc="upper right")
+
+    ax3.plot(xu, uc / U, color=SERIES_1, linewidth=2, label="OpenFOAM, mid-gap cells")
+    # mid-gap cells sit at H/2 +- dy/2 for an even cell count: compare like with like
+    rows = np.unique(np.round(s["y_mm"][cl], 9)) * 1e-3
+    u_fd = float(np.mean(ref.velocity_profile(rows, U, H * 1e-3)))
+    ax3.axhline(u_fd / U, color=SERIES_2, linewidth=1.5, linestyle="--",
+                label=f"Poiseuille at these cells ({u_fd / U:.3f})")
+    ax3.axvline(d["entrance_length_mm"], color=TEXT_2, linewidth=1, linestyle=":",
+                label=f"entrance length (Shah & London) {d['entrance_length_mm']:.1f} mm")
+    ax3.set_ylabel("u_centre / U_mean")
+    ax3.set_xlabel("x from inlet (mm)    shaded: measurement window")
+    _legend(ax3, loc="lower right")
+    for ax in (ax1, ax2, ax3):
+        _style(ax)
+    fig.tight_layout()
+    fig.savefig(path, dpi=130, facecolor=SURFACE)
+    plt.close(fig)
+
+
+def channel_field_figure(path, s, p, nx, ny, *, title):
+    """Axial velocity over the whole channel (structured mesh), y stretched for legibility."""
+    order = np.lexsort((s["x_mm"], s["y_mm"]))
+    u = s["ux_m_per_s"][order].reshape(ny, nx)
+    xe = np.linspace(0, float(p["length_mm"]), nx + 1)  # uniform structured mesh: cell edges
+    ye = np.linspace(0, float(p["gap_mm"]), ny + 1)
+    fig, ax = plt.subplots(figsize=(9, 2.4), facecolor=SURFACE)
+    mesh = ax.pcolormesh(xe, ye, u, cmap="Blues", shading="flat", rasterized=True)
+    cb = fig.colorbar(mesh, ax=ax, pad=0.01)
+    cb.set_label("u (m/s)", color=TEXT_2)
+    cb.ax.tick_params(colors=TEXT_2, labelsize=8)
+    cb.outline.set_edgecolor(GRID)
+    ax.set_xlabel("x (mm)")
+    ax.set_ylabel("y (mm)")
+    ax.set_title(f"{title} (y axis stretched)", color=TEXT, fontsize=10, loc="left")
+    _style(ax)
+    ax.grid(False)
+    fig.tight_layout()
+    fig.savefig(path, dpi=130, facecolor=SURFACE)
+    plt.close(fig)

@@ -95,7 +95,8 @@ def run_case(case_path: str | Path, runs_root: str | Path = "runs", rerun_of: st
                 entry["solver_outputs"] = res["outputs"]
             if res.get("files"):  # solver decks, logs, native model files
                 (pdir / "solver").mkdir()
-                for name, src in res["files"].items():
+                for name, src in res["files"].items():  # name may contain subfolders
+                    (pdir / "solver" / name).parent.mkdir(parents=True, exist_ok=True)
                     shutil.copyfile(src, pdir / "solver" / name)
             if res.get("cleanup"):
                 shutil.rmtree(res["cleanup"], ignore_errors=True)

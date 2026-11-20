@@ -1,0 +1,244 @@
+{
+  "run_id": "20261119-191916_channel_mesh",
+  "case_name": "channel_mesh",
+  "model": "openfoam_channel",
+  "case_source": "cases/channel_mesh.toml",
+  "case_sha256": "dd9b8695e2e0c56f9710bd44bba5b74380ae63e8aba16435c89ace15590eab8a",
+  "model_sources_sha256": {
+    "models/cfd/channel_openfoam.py": "8a96d8cbad1cb2538f8ddec4be23bdc732ab010607afe6274065a64ef6748b34",
+    "models/cfd/run_channel.sh": "bfae6c31ee7bb7c0207f3b70016c16843be529bc8371e99d2ddf533240a7627a"
+  },
+  "rerun_of": null,
+  "started_utc": "2026-11-20T00:19:16+00:00",
+  "environment": {
+    "python": "3.14.10",
+    "python_executable": "C:\\Users\\mrstego\\projects\\engineering-agent-lab\\.venv\\Scripts\\python.exe",
+    "platform": "Windows-11-10.0.26100-SP0",
+    "machine": "AMD64",
+    "packages": {
+      "numpy": "2.5.5",
+      "scipy": "1.18.1",
+      "matplotlib": "3.11.2",
+      "cadquery": "2.8.0"
+    },
+    "git": {
+      "commit": "14b90e1242a30bf66e619cfaf15cc201715f22c7",
+      "dirty": true
+    },
+    "tools": {
+      "openfoam_bashrc": "/opt/openfoam14/etc/bashrc",
+      "openfoam_version": "14",
+      "openfoam_package": "openfoam14 20261008",
+      "linux": "Ubuntu 22.04.5 LTS"
+    }
+  },
+  "numerics": {
+    "solver": "OpenFOAM incompressibleFluid, steady SIMPLEC, laminar",
+    "convection_scheme": "linearUpwind grad(U)",
+    "residual_p": 1e-06,
+    "residual_U": 1e-06,
+    "relaxation_U": 0.9,
+    "max_iterations": 20000
+  },
+  "points": [
+    {
+      "label": "p00_cells_across_gap-10",
+      "parameters": {
+        "gap_mm": 1.0,
+        "length_mm": 20.0,
+        "mean_velocity_m_per_s": 0.1,
+        "density_kg_per_m3": 998.2,
+        "dynamic_viscosity_Pa_s": 0.001002,
+        "cells_across_gap": 10,
+        "cell_aspect_ratio": 2.0,
+        "window_start_mm": 10.0,
+        "window_end_mm": 18.0
+      },
+      "status": "completed",
+      "derived": {
+        "reynolds_Dh": 199.24151696606785,
+        "entrance_length_mm": 4.523727546797102,
+        "pressure_gradient_exact_Pa_per_m": 1202.4000000000003,
+        "wall_shear_stress_exact_Pa": 0.6012000000000001,
+        "pressure_drop_shah_london_Pa": 27.275061022819152,
+        "pressure_drop_fully_developed_only_Pa": 24.048000000000005
+      },
+      "solver": {
+        "success": true,
+        "message": "foamRun: converged after 139 iterations, 1000 cells",
+        "nfev": 139
+      },
+      "solver_outputs": {
+        "cells": 1000,
+        "nx": 100,
+        "ny": 10,
+        "mesh_ok": true,
+        "iterations": 139,
+        "converged": true,
+        "final_initial_residuals": {
+          "Ux": 8.35370964604e-09,
+          "Uy": 9.84981716035e-07,
+          "p": 1.73376541644e-08
+        },
+        "inlet_flow_m2_per_s": 9.999999999999999e-05,
+        "outlet_flow_m2_per_s": 9.999999999675e-05,
+        "result_time": "139"
+      },
+      "metrics": {
+        "pressure_drop_Pa": 26.902735203272375,
+        "pressure_gradient_Pa_per_m": 1178.9965027949759,
+        "wall_shear_stress_Pa": 0.5894547786008127
+      }
+    },
+    {
+      "label": "p01_cells_across_gap-20",
+      "parameters": {
+        "gap_mm": 1.0,
+        "length_mm": 20.0,
+        "mean_velocity_m_per_s": 0.1,
+        "density_kg_per_m3": 998.2,
+        "dynamic_viscosity_Pa_s": 0.001002,
+        "cells_across_gap": 20,
+        "cell_aspect_ratio": 2.0,
+        "window_start_mm": 10.0,
+        "window_end_mm": 18.0
+      },
+      "status": "completed",
+      "derived": {
+        "reynolds_Dh": 199.24151696606785,
+        "entrance_length_mm": 4.523727546797102,
+        "pressure_gradient_exact_Pa_per_m": 1202.4000000000003,
+        "wall_shear_stress_exact_Pa": 0.6012000000000001,
+        "pressure_drop_shah_london_Pa": 27.275061022819152,
+        "pressure_drop_fully_developed_only_Pa": 24.048000000000005
+      },
+      "solver": {
+        "success": true,
+        "message": "foamRun: converged after 108 iterations, 4000 cells",
+        "nfev": 108
+      },
+      "solver_outputs": {
+        "cells": 4000,
+        "nx": 200,
+        "ny": 20,
+        "mesh_ok": true,
+        "iterations": 108,
+        "converged": true,
+        "final_initial_residuals": {
+          "Ux": 6.96128913094e-09,
+          "Uy": 9.93662087199e-07,
+          "p": 3.87141515032e-08
+        },
+        "inlet_flow_m2_per_s": 0.00010000000000000002,
+        "outlet_flow_m2_per_s": 0.00010000000000336702,
+        "result_time": "108"
+      },
+      "metrics": {
+        "pressure_drop_Pa": 27.786084564828663,
+        "pressure_gradient_Pa_per_m": 1196.5476722218903,
+        "wall_shear_stress_Pa": 0.598243341405514
+      }
+    },
+    {
+      "label": "p02_cells_across_gap-40",
+      "parameters": {
+        "gap_mm": 1.0,
+        "length_mm": 20.0,
+        "mean_velocity_m_per_s": 0.1,
+        "density_kg_per_m3": 998.2,
+        "dynamic_viscosity_Pa_s": 0.001002,
+        "cells_across_gap": 40,
+        "cell_aspect_ratio": 2.0,
+        "window_start_mm": 10.0,
+        "window_end_mm": 18.0
+      },
+      "status": "completed",
+      "derived": {
+        "reynolds_Dh": 199.24151696606785,
+        "entrance_length_mm": 4.523727546797102,
+        "pressure_gradient_exact_Pa_per_m": 1202.4000000000003,
+        "wall_shear_stress_exact_Pa": 0.6012000000000001,
+        "pressure_drop_shah_london_Pa": 27.275061022819152,
+        "pressure_drop_fully_developed_only_Pa": 24.048000000000005
+      },
+      "solver": {
+        "success": true,
+        "message": "foamRun: converged after 106 iterations, 16000 cells",
+        "nfev": 106
+      },
+      "solver_outputs": {
+        "cells": 16000,
+        "nx": 400,
+        "ny": 40,
+        "mesh_ok": true,
+        "iterations": 106,
+        "converged": true,
+        "final_initial_residuals": {
+          "Ux": 1.62532099955e-07,
+          "Uy": 9.76334302041e-07,
+          "p": 2.97037427197e-08
+        },
+        "inlet_flow_m2_per_s": 9.999999999999999e-05,
+        "outlet_flow_m2_per_s": 9.9999999996065e-05,
+        "result_time": "106"
+      },
+      "metrics": {
+        "pressure_drop_Pa": 28.25223923811209,
+        "pressure_gradient_Pa_per_m": 1201.0214162098036,
+        "wall_shear_stress_Pa": 0.600483732511613
+      }
+    },
+    {
+      "label": "p03_cells_across_gap-80",
+      "parameters": {
+        "gap_mm": 1.0,
+        "length_mm": 20.0,
+        "mean_velocity_m_per_s": 0.1,
+        "density_kg_per_m3": 998.2,
+        "dynamic_viscosity_Pa_s": 0.001002,
+        "cells_across_gap": 80,
+        "cell_aspect_ratio": 2.0,
+        "window_start_mm": 10.0,
+        "window_end_mm": 18.0
+      },
+      "status": "completed",
+      "derived": {
+        "reynolds_Dh": 199.24151696606785,
+        "entrance_length_mm": 4.523727546797102,
+        "pressure_gradient_exact_Pa_per_m": 1202.4000000000003,
+        "wall_shear_stress_exact_Pa": 0.6012000000000001,
+        "pressure_drop_shah_london_Pa": 27.275061022819152,
+        "pressure_drop_fully_developed_only_Pa": 24.048000000000005
+      },
+      "solver": {
+        "success": true,
+        "message": "foamRun: converged after 276 iterations, 64000 cells",
+        "nfev": 276
+      },
+      "solver_outputs": {
+        "cells": 64000,
+        "nx": 800,
+        "ny": 80,
+        "mesh_ok": true,
+        "iterations": 276,
+        "converged": true,
+        "final_initial_residuals": {
+          "Ux": 3.21473464221e-07,
+          "Uy": 9.77674939157e-07,
+          "p": 4.08085935098e-09
+        },
+        "inlet_flow_m2_per_s": 9.999999999999998e-05,
+        "outlet_flow_m2_per_s": 0.0001000000000192808,
+        "result_time": "276"
+      },
+      "metrics": {
+        "pressure_drop_Pa": 28.583309486672796,
+        "pressure_gradient_Pa_per_m": 1202.1657920542364,
+        "wall_shear_stress_Pa": 0.6010617467713955
+      }
+    }
+  ],
+  "study": "channel_flow",
+  "status": "completed",
+  "finished_utc": "2026-11-20T00:20:01+00:00"
+}

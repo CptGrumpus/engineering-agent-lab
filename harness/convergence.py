@@ -73,3 +73,14 @@ def discretization_uncertainty(h, f, safety: float = 1.25) -> dict:
                 "uncertainty": safety * 0.5 * (max(f) - min(f)) / abs(f1)}
     g = gci(h, f, safety)
     return {"regime": "monotone", "uncertainty": g["gci_fine"], **g}
+
+
+def describe(u: dict) -> str:
+    """One-line description of a discretization_uncertainty() result for reports."""
+    if u["regime"] == "monotone":
+        return (f"monotone (R = {u['convergence_ratio']:.3f}): GCI_fine, observed order "
+                f"{u['order']:.2f}, extrapolated {u['extrapolated']:.6g}")
+    if u["regime"] == "oscillatory":
+        return (f"oscillatory (R = {u['convergence_ratio']:.3f}): 1.25 x half-range of "
+                f"the 3 finest solutions")
+    return u["regime"]

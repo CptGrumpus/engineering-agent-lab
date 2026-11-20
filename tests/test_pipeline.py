@@ -102,3 +102,20 @@ def test_tampered_inputs_detected(tmp_path):
                      encoding="utf-8")
     with pytest.raises(RuntimeError, match="no longer matches"):
         verify_run(run_dir)
+
+
+def test_failed_run_level_check_withholds_verdicts():
+    from harness.report import evaluate
+
+    case = {"requirements": [
+        {"id": "R1", "text": "", "metric": "a", "operator": "<=", "limit": 1.0, "units": ""},
+        {"id": "R2", "text": "", "metric": "b", "operator": "<=", "limit": 1.0, "units": ""}]}
+    manifest = {"points": [{"label": "p0", "parameters": {}, "status": "completed",
+                            "metrics": {"a": 0.5, "b": 0.5}}]}
+    ver = {"points": [{"label": "p0", "status": "PASS", "checks": []}],
+           "run_checks": [{"id": "discretization_a", "status": "FAIL", "metric": "a"}]}
+    verdicts = {r["id"]: r["verdict"] for r in evaluate(case, manifest, ver)["points"][0]["requirements"]}
+    assert verdicts == {"R1": "PASS (unverified)", "R2": "PASS"}
+    ver["run_checks"] = [{"id": "run_level_error", "status": "FAIL"}]  # no metric: blanket
+    verdicts = {r["id"]: r["verdict"] for r in evaluate(case, manifest, ver)["points"][0]["requirements"]}
+    assert verdicts == {"R1": "PASS (unverified)", "R2": "PASS (unverified)"}

@@ -16,8 +16,21 @@ def _verdict(passed: bool | None, verification: str) -> str:
     return base if verification == "PASS" else f"{base} (unverified)"
 
 
+def _run_level_gate(verification: dict | None) -> tuple[bool, set[str]]:
+    """(all metrics unverified?, metrics unverified) from failed run-level checks.
+
+    A failed run-level check that names a `metric` (e.g. mesh convergence of that
+    metric) withholds verdicts on requirements using that metric at every point;
+    one without a metric withholds all verdicts.
+    """
+    failed = [c for c in (verification or {}).get("run_checks", []) if c["status"] != "PASS"]
+    return (any("metric" not in c for c in failed),
+            {c["metric"] for c in failed if "metric" in c})
+
+
 def evaluate(case: dict, manifest: dict, verification: dict | None) -> dict:
     ver_by_label = {p["label"]: p for p in (verification or {}).get("points", [])}
+    gate_all, gate_metrics = _run_level_gate(verification)
     points = []
     for pt in manifest["points"]:
         ver = ver_by_label.get(pt["label"], {"status": "NOT_RUN", "checks": []})
@@ -31,7 +44,8 @@ def evaluate(case: dict, manifest: dict, verification: dict | None) -> dict:
             reqs.append({
                 "id": r["id"], "text": r["text"], "metric": r["metric"], "operator": r["operator"],
                 "limit": r["limit"], "units": r["units"], "value": value, "margin": margin,
-                "verdict": _verdict(passed, ver["status"]),
+                "verdict": _verdict(passed, "FAIL" if gate_all or r["metric"] in gate_metrics
+                                    else ver["status"]),
             })
         points.append({
             "label": pt["label"], "parameters": pt["parameters"], "derived": pt.get("derived"),
@@ -137,6 +151,13 @@ def build_report(run_dir: str | Path) -> Path:
             L.append(f"| {c['id']} | {c['description']} | {c['value']:.3g} | "
                      f"{c['tolerance']:.3g} | {c['status']} |")
         L.append("")
+        gate_all, gate_metrics = _run_level_gate(verification)
+        if gate_all or gate_metrics:
+            scope = ("all requirements" if gate_all else "requirements on "
+                     + ", ".join(f"`{m}`" for m in sorted(gate_metrics)))
+            L.append(f"A failed run-level check withholds the verdicts of {scope} at every "
+                     "point: they are marked *(unverified)* in the table above.")
+            L.append("")
 
     rows = [(pt["parameters"][sweep], {rq["metric"]: rq["value"] for rq in pt["requirements"]},
              {rq["metric"]: rq["verdict"] for rq in pt["requirements"]})

@@ -1,0 +1,639 @@
+{
+  "points": [
+    {
+      "label": "p00_cells_across_gap-10",
+      "parameters": {
+        "gap_mm": 1.0,
+        "length_mm": 20.0,
+        "mean_velocity_m_per_s": 0.1,
+        "density_kg_per_m3": 998.2,
+        "dynamic_viscosity_Pa_s": 0.001002,
+        "cells_across_gap": 10,
+        "cell_aspect_ratio": 2.0,
+        "window_start_mm": 10.0,
+        "window_end_mm": 18.0
+      },
+      "derived": {
+        "reynolds_Dh": 199.24151696606785,
+        "entrance_length_mm": 4.523727546797102,
+        "pressure_gradient_exact_Pa_per_m": 1202.4000000000003,
+        "wall_shear_stress_exact_Pa": 0.6012000000000001,
+        "pressure_drop_shah_london_Pa": 27.275061022819152,
+        "pressure_drop_fully_developed_only_Pa": 24.048000000000005
+      },
+      "simulation_status": "completed",
+      "verification_status": "FAIL",
+      "checks": [
+        {
+          "id": "mesh_quality",
+          "description": "checkMesh result (0 = Mesh OK)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "iterative_convergence",
+          "description": "max final initial residual / target (inf if SIMPLE did not converge)",
+          "kind": "numerical",
+          "value": 0.9849817160350002,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "mass_conservation",
+          "description": "|Q_out - Q_in| / Q_in (face fluxes at inlet and outlet)",
+          "kind": "numerical",
+          "value": 3.249990879715392e-11,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "inlet_flow",
+          "description": "|Q_in - U H| / (U H): imposed flow rate",
+          "kind": "numerical",
+          "value": 1.3552527156068805e-16,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "momentum_balance",
+          "description": "|tau_w - (-dp/dx) H/2| / tau_w in the fully developed window",
+          "kind": "numerical",
+          "value": 7.37508596984325e-05,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "velocity_profile_reference",
+          "description": "max |u_CFD - u_Poiseuille| / u_max at mid-window station",
+          "kind": "numerical",
+          "value": 0.009622672880000292,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "pressure_gradient_reference",
+          "description": "|(-dp/dx)_CFD - 12 mu U/H^2| / exact",
+          "kind": "numerical",
+          "value": 0.01946398636479079,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "FAIL"
+        },
+        {
+          "id": "wall_shear_reference",
+          "description": "|tau_w,CFD - 6 mu U/H| / exact",
+          "kind": "numerical",
+          "value": 0.019536296405833868,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "FAIL"
+        },
+        {
+          "id": "pressure_drop_correlation",
+          "description": "|dp_CFD - dp_Shah&London| / dp_Shah&London (entrance included; correlation)",
+          "kind": "numerical",
+          "value": 0.013650778608168023,
+          "tolerance": 0.05,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "laminar",
+          "description": "Re_Dh / laminar limit",
+          "kind": "validity",
+          "value": 0.09962075848303392,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "entrance_before_window",
+          "description": "Shah & London entrance length / window start (window must be fully developed)",
+          "kind": "validity",
+          "value": 0.45237275467971017,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "fully_developed",
+          "description": "(max - min) / mean centreline velocity across the window",
+          "kind": "validity",
+          "value": 0.00022015257174415884,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-F1",
+          "text": "Pressure drop across the 20 mm channel shall not exceed 30 Pa (pump budget share).",
+          "metric": "pressure_drop_Pa",
+          "operator": "<=",
+          "limit": 30.0,
+          "units": "Pa",
+          "value": 26.902735203272375,
+          "margin": 3.0972647967276252,
+          "verdict": "PASS (unverified)"
+        },
+        {
+          "id": "REQ-F2",
+          "text": "Fully developed wall shear stress shall be at least 0.5 Pa (synthetic anti-fouling criterion).",
+          "metric": "wall_shear_stress_Pa",
+          "operator": ">=",
+          "limit": 0.5,
+          "units": "Pa",
+          "value": 0.5894547786008127,
+          "margin": 0.08945477860081275,
+          "verdict": "PASS (unverified)"
+        }
+      ]
+    },
+    {
+      "label": "p01_cells_across_gap-20",
+      "parameters": {
+        "gap_mm": 1.0,
+        "length_mm": 20.0,
+        "mean_velocity_m_per_s": 0.1,
+        "density_kg_per_m3": 998.2,
+        "dynamic_viscosity_Pa_s": 0.001002,
+        "cells_across_gap": 20,
+        "cell_aspect_ratio": 2.0,
+        "window_start_mm": 10.0,
+        "window_end_mm": 18.0
+      },
+      "derived": {
+        "reynolds_Dh": 199.24151696606785,
+        "entrance_length_mm": 4.523727546797102,
+        "pressure_gradient_exact_Pa_per_m": 1202.4000000000003,
+        "wall_shear_stress_exact_Pa": 0.6012000000000001,
+        "pressure_drop_shah_london_Pa": 27.275061022819152,
+        "pressure_drop_fully_developed_only_Pa": 24.048000000000005
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "mesh_quality",
+          "description": "checkMesh result (0 = Mesh OK)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "iterative_convergence",
+          "description": "max final initial residual / target (inf if SIMPLE did not converge)",
+          "kind": "numerical",
+          "value": 0.993662087199,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "mass_conservation",
+          "description": "|Q_out - Q_in| / Q_in (face fluxes at inlet and outlet)",
+          "kind": "numerical",
+          "value": 3.3670033991808894e-11,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "inlet_flow",
+          "description": "|Q_in - U H| / (U H): imposed flow rate",
+          "kind": "numerical",
+          "value": 1.3552527156068805e-16,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "momentum_balance",
+          "description": "|tau_w - (-dp/dx) H/2| / tau_w in the fully developed window",
+          "kind": "numerical",
+          "value": 5.097374817310063e-05,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "velocity_profile_reference",
+          "description": "max |u_CFD - u_Poiseuille| / u_max at mid-window station",
+          "kind": "numerical",
+          "value": 0.002485148886666732,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "pressure_gradient_reference",
+          "description": "|(-dp/dx)_CFD - 12 mu U/H^2| / exact",
+          "kind": "numerical",
+          "value": 0.004867205404283154,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "wall_shear_reference",
+          "description": "|tau_w,CFD - 6 mu U/H| / exact",
+          "kind": "numerical",
+          "value": 0.004917928467208943,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "pressure_drop_correlation",
+          "description": "|dp_CFD - dp_Shah&London| / dp_Shah&London (entrance included; correlation)",
+          "kind": "numerical",
+          "value": 0.01873592662476439,
+          "tolerance": 0.05,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "laminar",
+          "description": "Re_Dh / laminar limit",
+          "kind": "validity",
+          "value": 0.09962075848303392,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "entrance_before_window",
+          "description": "Shah & London entrance length / window start (window must be fully developed)",
+          "kind": "validity",
+          "value": 0.45237275467971017,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "fully_developed",
+          "description": "(max - min) / mean centreline velocity across the window",
+          "kind": "validity",
+          "value": 0.0001814538360476589,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-F1",
+          "text": "Pressure drop across the 20 mm channel shall not exceed 30 Pa (pump budget share).",
+          "metric": "pressure_drop_Pa",
+          "operator": "<=",
+          "limit": 30.0,
+          "units": "Pa",
+          "value": 27.786084564828663,
+          "margin": 2.2139154351713373,
+          "verdict": "PASS (unverified)"
+        },
+        {
+          "id": "REQ-F2",
+          "text": "Fully developed wall shear stress shall be at least 0.5 Pa (synthetic anti-fouling criterion).",
+          "metric": "wall_shear_stress_Pa",
+          "operator": ">=",
+          "limit": 0.5,
+          "units": "Pa",
+          "value": 0.598243341405514,
+          "margin": 0.09824334140551405,
+          "verdict": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p02_cells_across_gap-40",
+      "parameters": {
+        "gap_mm": 1.0,
+        "length_mm": 20.0,
+        "mean_velocity_m_per_s": 0.1,
+        "density_kg_per_m3": 998.2,
+        "dynamic_viscosity_Pa_s": 0.001002,
+        "cells_across_gap": 40,
+        "cell_aspect_ratio": 2.0,
+        "window_start_mm": 10.0,
+        "window_end_mm": 18.0
+      },
+      "derived": {
+        "reynolds_Dh": 199.24151696606785,
+        "entrance_length_mm": 4.523727546797102,
+        "pressure_gradient_exact_Pa_per_m": 1202.4000000000003,
+        "wall_shear_stress_exact_Pa": 0.6012000000000001,
+        "pressure_drop_shah_london_Pa": 27.275061022819152,
+        "pressure_drop_fully_developed_only_Pa": 24.048000000000005
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "mesh_quality",
+          "description": "checkMesh result (0 = Mesh OK)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "iterative_convergence",
+          "description": "max final initial residual / target (inf if SIMPLE did not converge)",
+          "kind": "numerical",
+          "value": 0.976334302041,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "mass_conservation",
+          "description": "|Q_out - Q_in| / Q_in (face fluxes at inlet and outlet)",
+          "kind": "numerical",
+          "value": 3.9349898122917344e-11,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "inlet_flow",
+          "description": "|Q_in - U H| / (U H): imposed flow rate",
+          "kind": "numerical",
+          "value": 1.3552527156068805e-16,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "momentum_balance",
+          "description": "|tau_w - (-dp/dx) H/2| / tau_w in the fully developed window",
+          "kind": "numerical",
+          "value": 4.4923104204608785e-05,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "velocity_profile_reference",
+          "description": "max |u_CFD - u_Poiseuille| / u_max at mid-window station",
+          "kind": "numerical",
+          "value": 0.0006339775933333901,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "pressure_gradient_reference",
+          "description": "|(-dp/dx)_CFD - 12 mu U/H^2| / exact",
+          "kind": "numerical",
+          "value": 0.0011465267716206514,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "wall_shear_reference",
+          "description": "|tau_w,CFD - 6 mu U/H| / exact",
+          "kind": "numerical",
+          "value": 0.0011913963546025376,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "pressure_drop_correlation",
+          "description": "|dp_CFD - dp_Shah&London| / dp_Shah&London (entrance included; correlation)",
+          "kind": "numerical",
+          "value": 0.03582680216463678,
+          "tolerance": 0.05,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "laminar",
+          "description": "Re_Dh / laminar limit",
+          "kind": "validity",
+          "value": 0.09962075848303392,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "entrance_before_window",
+          "description": "Shah & London entrance length / window start (window must be fully developed)",
+          "kind": "validity",
+          "value": 0.45237275467971017,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "fully_developed",
+          "description": "(max - min) / mean centreline velocity across the window",
+          "kind": "validity",
+          "value": 0.0001727225045088341,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-F1",
+          "text": "Pressure drop across the 20 mm channel shall not exceed 30 Pa (pump budget share).",
+          "metric": "pressure_drop_Pa",
+          "operator": "<=",
+          "limit": 30.0,
+          "units": "Pa",
+          "value": 28.25223923811209,
+          "margin": 1.7477607618879105,
+          "verdict": "PASS (unverified)"
+        },
+        {
+          "id": "REQ-F2",
+          "text": "Fully developed wall shear stress shall be at least 0.5 Pa (synthetic anti-fouling criterion).",
+          "metric": "wall_shear_stress_Pa",
+          "operator": ">=",
+          "limit": 0.5,
+          "units": "Pa",
+          "value": 0.600483732511613,
+          "margin": 0.10048373251161302,
+          "verdict": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p03_cells_across_gap-80",
+      "parameters": {
+        "gap_mm": 1.0,
+        "length_mm": 20.0,
+        "mean_velocity_m_per_s": 0.1,
+        "density_kg_per_m3": 998.2,
+        "dynamic_viscosity_Pa_s": 0.001002,
+        "cells_across_gap": 80,
+        "cell_aspect_ratio": 2.0,
+        "window_start_mm": 10.0,
+        "window_end_mm": 18.0
+      },
+      "derived": {
+        "reynolds_Dh": 199.24151696606785,
+        "entrance_length_mm": 4.523727546797102,
+        "pressure_gradient_exact_Pa_per_m": 1202.4000000000003,
+        "wall_shear_stress_exact_Pa": 0.6012000000000001,
+        "pressure_drop_shah_london_Pa": 27.275061022819152,
+        "pressure_drop_fully_developed_only_Pa": 24.048000000000005
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "mesh_quality",
+          "description": "checkMesh result (0 = Mesh OK)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "iterative_convergence",
+          "description": "max final initial residual / target (inf if SIMPLE did not converge)",
+          "kind": "numerical",
+          "value": 0.977674939157,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "mass_conservation",
+          "description": "|Q_out - Q_in| / Q_in (face fluxes at inlet and outlet)",
+          "kind": "numerical",
+          "value": 1.9280828019233037e-10,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "inlet_flow",
+          "description": "|Q_in - U H| / (U H): imposed flow rate",
+          "kind": "numerical",
+          "value": 2.710505431213761e-16,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "momentum_balance",
+          "description": "|tau_w - (-dp/dx) H/2| / tau_w in the fully developed window",
+          "kind": "numerical",
+          "value": 3.518649429334363e-05,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "velocity_profile_reference",
+          "description": "max |u_CFD - u_Poiseuille| / u_max at mid-window station",
+          "kind": "numerical",
+          "value": 0.00018564214000020096,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "pressure_gradient_reference",
+          "description": "|(-dp/dx)_CFD - 12 mu U/H^2| / exact",
+          "kind": "numerical",
+          "value": 0.00019478372069523919,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "wall_shear_reference",
+          "description": "|tau_w,CFD - 6 mu U/H| / exact",
+          "kind": "numerical",
+          "value": 0.00022996212342749883,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "pressure_drop_correlation",
+          "description": "|dp_CFD - dp_Shah&London| / dp_Shah&London (entrance included; correlation)",
+          "kind": "numerical",
+          "value": 0.04796500593560995,
+          "tolerance": 0.05,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "laminar",
+          "description": "Re_Dh / laminar limit",
+          "kind": "validity",
+          "value": 0.09962075848303392,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "entrance_before_window",
+          "description": "Shah & London entrance length / window start (window must be fully developed)",
+          "kind": "validity",
+          "value": 0.45237275467971017,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "fully_developed",
+          "description": "(max - min) / mean centreline velocity across the window",
+          "kind": "validity",
+          "value": 0.00014736248274940515,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-F1",
+          "text": "Pressure drop across the 20 mm channel shall not exceed 30 Pa (pump budget share).",
+          "metric": "pressure_drop_Pa",
+          "operator": "<=",
+          "limit": 30.0,
+          "units": "Pa",
+          "value": 28.583309486672796,
+          "margin": 1.4166905133272039,
+          "verdict": "PASS (unverified)"
+        },
+        {
+          "id": "REQ-F2",
+          "text": "Fully developed wall shear stress shall be at least 0.5 Pa (synthetic anti-fouling criterion).",
+          "metric": "wall_shear_stress_Pa",
+          "operator": ">=",
+          "limit": 0.5,
+          "units": "Pa",
+          "value": 0.6010617467713955,
+          "margin": 0.10106174677139546,
+          "verdict": "PASS"
+        }
+      ]
+    }
+  ],
+  "run_id": "20261119-191916_channel_mesh",
+  "generated_utc": "2026-11-20T00:22:06+00:00",
+  "verification_status": "FAIL"
+}

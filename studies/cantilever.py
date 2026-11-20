@@ -23,7 +23,7 @@ import numpy as np
 from harness.backend_base import Backend, failed
 from harness.calculix import read_dat_total_forces, read_frd
 from harness.checks import check
-from harness.convergence import discretization_uncertainty
+from harness.convergence import describe, discretization_uncertainty
 from harness.plotting import cantilever_figure
 from harness.study import Study
 from validation import beam_theory as beam
@@ -214,17 +214,10 @@ class CantileverStudy(Study):
                             ("root_bending_stress_MPa", "gci_stress_max")):
             u = discretization_uncertainty(hs, tuple(pt["metrics"][metric] for pt in fine))
             detail[metric] = u
-            if u["regime"] == "monotone":
-                how = (f"monotone (R = {u['convergence_ratio']:.3f}): GCI_fine, observed order "
-                       f"{u['order']:.2f}, extrapolated {u['extrapolated']:.6g}")
-            elif u["regime"] == "oscillatory":
-                how = (f"oscillatory (R = {u['convergence_ratio']:.3f}): 1.25 x half-range of "
-                       f"the 3 finest solutions")
-            else:
-                how = u["regime"]
+            how = describe(u)
             checks.append(check(f"discretization_{metric}",
                                 f"relative discretization uncertainty of {metric}, {how}",
-                                u["uncertainty"], tol[key]))
+                                u["uncertainty"], tol[key]) | {"metric": metric})
         return checks, detail
 
 

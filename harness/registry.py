@@ -7,9 +7,11 @@ from harness.study import Study
 
 
 def _studies() -> list[Study]:
-    from studies import cantilever, mounting_plate, msd, quarter_car  # lazy: avoids cycles
+    from studies import (cantilever, channel_flow, mounting_plate, msd,  # lazy: avoids cycles
+                         quarter_car)
 
-    return [msd.STUDY, quarter_car.STUDY, cantilever.STUDY, mounting_plate.STUDY]
+    return [msd.STUDY, quarter_car.STUDY, cantilever.STUDY, mounting_plate.STUDY,
+            channel_flow.STUDY]
 
 
 def models() -> dict[str, tuple[Study, type[Backend]]]:

@@ -1,0 +1,74 @@
+# Laminar coolant flow in a narrow parallel-plate channel (OpenFOAM, 2D):
+# mesh-refinement study verified against the exact Poiseuille solution, a
+# force balance, mass conservation, the Shah & London entrance-region
+# correlation, and the Grid Convergence Index.
+#
+# Requirements and tolerances were fixed BEFORE the first run.
+
+[case]
+name = "channel_mesh"
+model = "openfoam_channel"
+description = "Water at 20 C through a 1 mm gap between parallel plates, 20 mm long, mean velocity 0.1 m/s (Re_Dh about 200), uniform inlet velocity. Steady laminar 2D CFD with OpenFOAM; mesh refined from 10 to 80 cells across the gap (ratio 2). Checks the channel's pressure-drop budget and minimum wall shear stress."
+assumptions = [
+  "Incompressible, isothermal, Newtonian water (rho = 998.2 kg/m^3, mu = 1.002 mPa s).",
+  "Laminar flow; checked: Re_Dh below 2000.",
+  "2D: the channel is much wider than the gap (side walls ignored).",
+  "Uniform inlet velocity (no upstream plenum or header losses); outlet at p = 0 with zero-gradient velocity.",
+  "Fully developed metrics are measured in x = 10-18 mm; checked: the predicted entrance length ends before the window, and the centreline velocity is constant across it.",
+]
+limitations = [
+  "Synthetic geometry and requirement limits; not a specific cold plate.",
+  "The Shah & London pressure-drop correlation is a model-form reference (quoted to a few percent), not an exact solution.",
+  "Inlet and outlet losses (headers, contraction, expansion) are not modelled.",
+  "No physical test data.",
+]
+
+[parameters]
+gap_mm = 1.0
+length_mm = 20.0
+mean_velocity_m_per_s = 0.1
+density_kg_per_m3 = 998.2
+dynamic_viscosity_Pa_s = 1.002e-3
+cells_across_gap = 20
+cell_aspect_ratio = 2.0         # dx / dy
+window_start_mm = 10.0
+window_end_mm = 18.0
+
+[sweep]
+parameter = "cells_across_gap"
+values = [10, 20, 40, 80]
+
+[numerics]
+solver = "OpenFOAM incompressibleFluid, steady SIMPLEC, laminar"
+convection_scheme = "linearUpwind grad(U)"
+residual_p = 1e-6               # SIMPLE stops when every initial residual is below its target
+residual_U = 1e-6
+relaxation_U = 0.9
+max_iterations = 20000
+
+[verification]
+mass_rel_tol = 1e-6               # outlet vs inlet face flux; inlet flux vs U*H
+momentum_balance_rel_tol = 1e-3   # tau_w vs (-dp/dx) H/2 in the fully developed window
+profile_rel_tol = 0.01            # velocity profile vs Poiseuille, relative to u_max
+fully_developed_rel_tol = 0.01    # -dp/dx and tau_w vs exact
+correlation_rel_tol = 0.05        # total pressure drop vs Shah & London (model form)
+laminar_reynolds_max = 2000.0
+fully_developed_change_max = 1e-3 # centreline velocity variation across the window
+gci_fully_developed_max = 0.01    # GCI_fine on -dp/dx and tau_w
+gci_pressure_drop_max = 0.02      # GCI_fine on total pressure drop (inlet corner is singular)
+
+[[requirements]]
+id = "REQ-F1"
+text = "Pressure drop across the 20 mm channel shall not exceed 30 Pa (pump budget share)."
+metric = "pressure_drop_Pa"
+operator = "<="
+limit = 30.0
+units = "Pa"
+
+[[requirements]]
+id = "REQ-F2"
+text = "Fully developed wall shear stress shall be at least 0.5 Pa (synthetic anti-fouling criterion)."
+metric = "wall_shear_stress_Pa"
+operator = ">="
+limit = 0.5
+units = "Pa"
