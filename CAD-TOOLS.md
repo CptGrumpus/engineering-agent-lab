@@ -124,6 +124,20 @@ Before using a prepared workflow on a paid task, establish the required software
 
 Use public or synthetic practice problems. Keep employer and client models, data, credentials, and licensed environments outside this personal preparation project unless their use is explicitly authorized.
 
-## Current setup status
+## Current setup status (2026-11-20)
 
-This document is a researched shortlist. It does not establish that any listed software is installed, that an agent integration works, or that a future client accepts these tools.
+All five tool paths are installed on this PC and proven by verified evidence runs. The harness drives each one from Python through the interface below; the agent skills (`run-case`, `build-model`) carry the details and the traps found along the way.
+
+| Tool | Version | How the harness drives it | Used in |
+|---|---|---|---|
+| Python, NumPy, SciPy | 3.14.10, 2.5.5, 1.18.1 | In process | Mass-spring-damper, quarter car; every independent reference |
+| OpenModelica + Modelica Standard Library | 1.26.3, MSL 4.1.0 | `omc` compiles the model once per run; the executable runs per point with `-overrideFile` and dedicated experiment flags | Mass-spring-damper, quarter car (cross-checks against SciPy) |
+| FreeCAD (headless `freecadcmd`) | 1.1.4 | A Python script builds geometry, material, constraints and a Gmsh mesh, then runs CalculiX through ccxtools | Cantilever bracket |
+| CalculiX | 2.22 (bundled with FreeCAD) | Through FreeCAD, or directly from input decks written in Python | Cantilever, heat-sink fin, strap with a hole |
+| Gmsh | 4.15 (bundled with FreeCAD) | Through FreeCAD, or the command line with a `.geo` script on a STEP file | Cantilever, strap with a hole |
+| CadQuery (OpenCASCADE) | 2.8.0 | In process; exports STEP for meshing | Mounting plate, strap with a hole |
+| OpenFOAM | 14 (openfoam.org), in WSL Ubuntu 22.04 | A Python writer generates the case; a bash script runs blockMesh, checkMesh and foamRun inside WSL | Coolant channel, 3D duct check |
+
+**OMPython is not used.** The harness calls `omc` directly instead. That compiles each model once per run, passes every setting through explicit command-line flags (OpenModelica 1.26 silently ignores experiment settings passed through `-override`, which the harness's output-grid check caught), and needs no background OpenModelica session. OMPython remains a reasonable choice for interactive work.
+
+**Run times on this PC** (Ryzen 9 5900X, 64 GB): the largest runs so far take minutes, not hours. The 80-cell 2D CFD mesh solves in under a minute, the finest 3D duct mesh in about 7 minutes, and the finest cantilever FEA mesh in about 30 seconds. Nothing has needed cloud hardware.

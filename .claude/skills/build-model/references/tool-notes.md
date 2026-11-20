@@ -19,6 +19,9 @@ Traps found while building the studies in this repo, by tool.
   `-s`. `-tol` is not a valid flag.
 - Use absolute paths for `loadFile` and for the executable.
 - Compile once per run; run the executable per point with `-overrideFile`.
+- The harness calls `omc` directly rather than through OMPython: one compile per
+  run, every setting as an explicit flag, and no background session. Use the
+  same pattern for new Modelica models unless there is a reason not to.
 - Missing MSL shows as `Failed to load package Modelica` in the build log;
   install with an omc script `installPackage(Modelica);`.
 

@@ -1,22 +1,62 @@
 # Engineering Modeling Portfolio
 
-These seven worked examples show how I approach a modeling job. Each one starts from a written question and measurable requirements, builds a model to answer it, and then checks the result against something independent: an exact solution, a conservation law, a second tool, or a mesh-convergence study. Every example ends with a clear answer and a statement of how sure that answer is.
+Seven worked case studies in structural analysis, fluids and heat transfer, vehicle dynamics, and CAD automation. Each one starts from a written question and measurable requirements, builds a model to answer it, and checks the result against something independent: an exact solution, a conservation law, a handbook value, a second tool, or a mesh-convergence study. Each ends with a clear answer and a statement of how sure that answer is.
 
-I also show what the checks caught along the way. In several examples the first version of the model gave an answer that looked reasonable and was wrong, and the checks are what exposed it. I think that matters more than a clean result.
+I also show what the checks caught along the way. In several studies the first version of the model gave an answer that looked reasonable and was wrong, and the checks are what exposed it.
 
-All of the problems are synthetic, so no client data is involved. Every number on this page comes from a saved run that can be reproduced from its recorded inputs, and the reports are linked in each section.
+All problems are synthetic, so no client data is involved. Every number comes from a saved run that can be reproduced from its recorded inputs.
 
-## At a glance
+## Capabilities
 
-| Example | The question | The answer | Tools |
-|---|---|---|---|
-| [1. Coolant channel pressure budget](#1-coolant-channel-pressure-budget) | Does a cold-plate passage stay within its pump budget across manufacturing tolerance and coolant temperature? | No. It needs 33.4 Pa against a 30 Pa budget, and no gap size satisfies both requirements. | OpenFOAM (computational fluid dynamics) |
-| [2. Heat-sink fin temperature](#2-heat-sink-fin-temperature) | Does the tip of an aluminium heat-sink fin stay above 60 °C, and what would make it fail? | Yes, at 73.2 °C. Even with every input at its worst it stays at 65.9 °C. | CalculiX (heat transfer) |
-| [3. Quarter-car ride and road holding](#3-quarter-car-ride-and-road-holding) | Which damper rates meet comfort, suspension travel, and tire-load targets? | 600 to 1000 N·s/m over a speed bump. On a rough road, the spring rate has to change too. | Python (SciPy) and OpenModelica |
-| [4. Cantilever bracket, 3D finite elements](#4-cantilever-bracket-3d-finite-elements) | Does a steel cantilever meet its stiffness and stress limits, and how accurate is the model? | Yes: 0.953 mm deflection and 150 MPa root stress, with mesh uncertainty of 0.02 %. | FreeCAD, Gmsh, CalculiX |
-| [5. Cable hole in a strap, CAD to FEA](#5-cable-hole-in-a-strap-cad-to-fea) | How large can a cable hole in an aluminium strap be before the stress at its edge exceeds the allowable? | About 16.7 mm. A 16 mm hole passes at 117 MPa; 18 mm fails at 125 MPa. | CadQuery, Gmsh, CalculiX |
-| [6. Parametric mounting plate](#6-parametric-mounting-plate) | Which hole size keeps an aluminium plate light enough while keeping enough material around each hole? | Only the 9 mm (M8 clearance) hole meets both rules. | CadQuery |
-| [7. Mass-spring-damper baseline](#7-mass-spring-damper-baseline) | Can the workflow reproduce a textbook result exactly, in two different tools? | Yes. All 72 checks pass, and the two tools agree to a few parts per million. | Python (SciPy) and OpenModelica |
+| Capability | Tools | Shown in |
+|---|---|---|
+| Structural finite element analysis: 3D solids and plane stress, mesh convergence, stress-concentration and singularity judgement | FreeCAD, Gmsh, CalculiX | [1](portfolio/01-cantilever-bracket.md), [2](portfolio/02-strap-cable-hole.md) |
+| Scripted CAD-to-analysis pipelines: parametric geometry, STEP exchange, meshing, solving | CadQuery, Gmsh, CalculiX | [2](portfolio/02-strap-cable-hole.md), [6](portfolio/06-mounting-plate.md) |
+| Computational fluid dynamics: internal laminar flow, pressure budgets, 2D and 3D | OpenFOAM | [3](portfolio/03-coolant-channel.md) |
+| Heat transfer: conduction with surface convection | CalculiX | [4](portfolio/04-heat-sink-fin.md) |
+| Vehicle and system dynamics: ride, road holding, frequency response | Python (SciPy), OpenModelica | [5](portfolio/05-quarter-car.md), [7](portfolio/07-mass-spring-damper.md) |
+| Verification and uncertainty: exact and handbook references, Grid Convergence Index, tolerance and sensitivity studies | Python | All |
+
+## Case studies
+
+### Structures
+
+| | Question | Answer |
+|---|---|---|
+| [1. Cantilever bracket, 3D finite elements](portfolio/01-cantilever-bracket.md) | Does a steel cantilever meet its stiffness and stress limits, and how accurate is the model? | Yes: 0.953 mm deflection and 150 MPa root stress, with 0.02 % mesh uncertainty. |
+| [2. Cable hole in a strap, CAD to FEA](portfolio/02-strap-cable-hole.md) | How large can a cable hole in an aluminium strap be before the stress at its edge exceeds the allowable? | About 16.7 mm. A 16 mm hole passes at 117 MPa; 18 mm fails at 125 MPa. |
+
+### Thermal and fluids
+
+| | Question | Answer |
+|---|---|---|
+| [3. Coolant channel pressure budget](portfolio/03-coolant-channel.md) | Does a cold-plate passage stay within its pump budget across manufacturing tolerance and coolant temperature? | No. It needs 33.4 Pa against a 30 Pa budget, and no gap size satisfies both requirements. |
+| [4. Heat-sink fin temperature](portfolio/04-heat-sink-fin.md) | Does the tip of an aluminium heat-sink fin stay above 60 °C, and what would make it fail? | Yes, at 73.2 °C. Even with every input at its worst it stays at 65.9 °C. |
+
+### Vehicle and system dynamics
+
+| | Question | Answer |
+|---|---|---|
+| [5. Quarter-car ride and road holding](portfolio/05-quarter-car.md) | Which damper rates meet comfort, suspension travel, and tire-load targets? | 600 to 1000 N·s/m over a speed bump. On a rough road, the spring rate has to change too. |
+
+### Geometry automation
+
+| | Question | Answer |
+|---|---|---|
+| [6. Parametric mounting plate](portfolio/06-mounting-plate.md) | Which hole size keeps an aluminium plate light enough while keeping enough material around each hole? | Only the 9 mm (M8 clearance) hole meets both rules. |
+
+### Workflow validation
+
+| | Question | Answer |
+|---|---|---|
+| [7. Mass-spring-damper baseline](portfolio/07-mass-spring-damper.md) | Can the workflow reproduce a textbook result exactly, in two different tools? | Yes. All 72 checks pass, and the two tools agree to a few parts per million. |
+
+## Highlights: what the checks caught
+
+- **A model that converged cleanly to the wrong answer** ([strap](portfolio/02-strap-cable-hole.md)). A textbook-perfect mesh study settled 2 % off the handbook. Running an exact case through the same pipeline exposed a solver formulation issue that no amount of mesh refinement would have shown.
+- **An idealized inlet that reversed the verdict** ([coolant channel](portfolio/03-coolant-channel.md)). The simple model said the channel passed. It never converged at the inlet corner, and the realistic model fails the budget.
+- **A wheel that left the road** ([quarter car](portfolio/05-quarter-car.md)). Every numerical check passed, but the model's assumptions didn't hold, so no verdict was reported.
+- **Elements that made the bracket look too stiff** ([cantilever](portfolio/01-cantilever-bracket.md)). The simplest element type overstated stiffness by up to a third; the checks withheld every result.
 
 ## How I work
 
@@ -28,181 +68,13 @@ All of the problems are synthetic, so no client data is involved. Every number o
 
 The workflow is driven by an AI coding agent working through fixed, documented procedures. Those procedures are written as reusable skills, and they never loosen a tolerance or accept a design on their own. Engineering acceptance is always left to a person.
 
----
-
-## 1. Coolant channel pressure budget
-
-**The question.** A cold-plate passage is a 1 mm gap between two plates, 20 mm long, carrying water at about 0.1 m/s. It has to stay within a 30 Pa share of the pump's pressure budget. It also needs at least 0.5 Pa of shear stress on the walls, a common guideline for limiting fouling. Does it meet both, when the gap can vary by plus or minus 0.05 mm and the coolant runs anywhere from 15 to 40 °C?
-
-**The answer: no.** At nominal conditions the passage needs 33.4 Pa, which is 11 % over budget. Across the tolerance range it needs anywhere from 28 to 42 Pa, and warm coolant drops the wall shear to 0.43 Pa.
-
-The two requirements pull in opposite directions. To stay within the pressure budget with cold coolant, the gap has to be at least 1.078 mm. To keep enough wall shear with warm coolant, it can be at most 0.885 mm. No gap does both. I predicted those two limits before running them, and the confirmation runs came back at 30.02 Pa and 0.500 Pa, right on target.
-
-So this is a design decision rather than a modeling one. The options are to narrow the coolant temperature range, raise the pressure budget, change how the flow is split between channels, or revisit the shear guideline.
-
-**How I know it's right.**
-
-- **The model.** It's a steady, two-dimensional flow simulation in OpenFOAM. It includes a supply header feeding the channel through a smooth contraction, because a simpler model with flow forced straight into the channel turned out to be unreliable (see below). The pressure the pump has to supply counts the flow's kinetic energy at the exit as lost, which is the conservative and usual assumption. That exit loss is 7.7 Pa of the 33.4 Pa.
-- **Against exact solutions.** Where the flow has settled into its final shape, the velocity profile, pressure gradient, and wall shear all match the textbook exact solution to within 0.02 %.
-- **Conservation.** Mass is conserved to about one part in a hundred million. The wall friction balances the pressure force to within a few parts in a hundred thousand.
-- **Mesh dependence.** Refining the mesh from 20 to 80 cells across the gap changes the answer in a way that converges at exactly the rate the method is designed for. The remaining mesh uncertainty is 0.04 %.
-- **Against an independent estimate.** A hand calculation combining lubrication theory for the header with the Shah and London correlation for the channel agrees with the simulation to within 0.3 % in every case.
-- **The two-dimensional assumption.** I checked it with a separate 3D model that includes the channel's side walls, assuming a 20 mm wide channel. The side walls raise the friction by 3.2 %; the exact solution for a rectangular duct says 3.25 %. That adds about 0.8 Pa, which makes the nominal case about 34.2 Pa, so the conclusion only gets firmer.
-
-| Where the uncertainty comes from | How big it is |
-|---|---|
-| The mesh | 0.04 % |
-| Iteration and conservation | Negligible: well under one part in ten thousand |
-| The model's simplifications | 0.3 % or less against the independent estimate. The side walls add about 3 %. |
-| Manufacturing tolerance and coolant temperature | 16 % lower to 27 % higher than nominal. This dominates everything else. |
-
-![Velocity through the supply header, contraction, and channel](runs/20261119-200042_channel_header_mesh/points/p03_cells_across_gap-80/field.png)
-
-![Velocity profile, pressure, and centreline velocity compared with the exact solution](runs/20261119-200042_channel_header_mesh/points/p03_cells_across_gap-80/response.png)
-
-![Both requirements across the tolerance cases](runs/20261119-200202_channel_header_tolerance/sweep.png)
-
-**What the checks caught.**
-
-- **The simple inlet hid a problem, and gave the wrong verdict.** My first model forced a perfectly uniform flow straight into the channel, a common shortcut. It said the channel passed, at 28.6 Pa. But the pressure kept creeping up as the mesh got finer and never settled. That is the signature of a sharp corner the solver can't resolve, here where the uniform inflow meets the wall. The mesh-convergence check failed, so that answer was never reported as verified. Modeling the supply header fixed the convergence. Counting the exit loss then turned the verdict from pass to fail.
-- **One tolerance case wasn't fully developed.** With warm water and the widest gap, the flow was still settling slightly where the measurements are taken. That case is marked unverified, and the conclusion rests on the other four.
-- **A meshing mistake in the 3D check.** In my first 3D run the mesh was coarsest exactly where it needed to be finest, next to the side walls. The overall friction still looked fine on the finer meshes, but a point-by-point comparison of the whole velocity field against the exact solution failed every time, always next to the side wall. An average result can hide a local error, so I check the full field as well.
-
-**Evidence:** [mesh study](runs/20261119-200042_channel_header_mesh/report.md), [tolerance study](runs/20261119-200202_channel_header_tolerance/report.md), [gap-limit confirmation](runs/20261119-201615_channel_header_gap_limits/report.md), [3D side-wall check](runs/20261119-204111_duct_side_walls/report.md), [first model, uniform inlet](runs/20261119-191916_channel_mesh/report.md), [first 3D run, meshing error](runs/20261119-202956_duct_side_walls/report.md).
-
----
-
-## 2. Heat-sink fin temperature
-
-**The question.** One fin of a heat sink is 6061 aluminium, 40 mm tall, 20 mm wide and 2 mm thick. Its base sits at 80 °C, and the surrounding air is at 25 °C with a heat-transfer coefficient of about 25 W/m²K. Does the tip of the fin stay above 60 °C, and how sure can we be?
-
-**The answer: yes, comfortably.** The coldest point on the tip is 73.2 °C, a margin of 13 degrees. With every input pushed to its unfavourable end at once, the tip still sits at 65.9 °C: the air-side coefficient doubled, the lowest likely conductivity for this alloy, and every dimension at the cold end of its tolerance.
-
-The input that matters most is the air-side heat-transfer coefficient. The tip only reaches 60 °C once that coefficient climbs to about 95 W/m²K, almost four times the estimate. The other realistic way to fail is a poor joint where the fin meets the base: the tip drops to 60 °C if the fin root runs at about 65 °C instead of 80. That's the thing I'd check on the real part.
-
-**How I know it's right.**
-
-- **The model.** A full 3D heat-conduction model solved in CalculiX, with heat lost to the air from every exposed face. The mesh is generated directly in code.
-- **Against theory.** The textbook one-dimensional fin solution agrees with the 3D result to within half a thousandth of a degree along the whole fin. I wrote down the expected values before running anything, and every result landed within a tenth of a degree of them.
-- **Energy balance.** The heat entering at the base matches the heat leaving through all the surfaces.
-- **Mesh dependence.** Refining the elements from 2 mm down to 0.25 mm converges at exactly the rate the elements are designed for. The remaining numerical uncertainty is less than a thousandth of a degree.
-- **Is a one-dimensional view valid?** The temperature across the fin's thickness is uniform to within a few hundredths of a degree, which confirms the textbook comparison is a fair one.
-
-![Temperature along the fin: 3D model against fin theory](runs/20261119-221454_fin_mesh/points/p03_element_size_mm-0.25/response.png)
-
-![Tip temperature as the air-side heat-transfer coefficient rises](runs/20261119-221655_fin_h_sweep/sweep.png)
-
-**What the checks caught.**
-
-- **The solver's own heat total was 1.3 % short.** In the first trial run, the heat flow CalculiX reported at the base didn't match the heat leaving the surfaces. The cause was that the solver leaves out the convection assigned to the base nodes themselves. I add that share back in, and the energy balance now closes exactly.
-- **The printed temperatures were too coarse to judge convergence.** On the two finest meshes, the change in tip temperature was about the same size as the rounding in the solver's standard output. I now read a higher-precision output, so the mesh-convergence estimate can't be decided by rounding.
-
-This example was built by an AI agent working only from my written modeling procedures, as a test of whether those procedures produce verified work on a problem they hadn't seen. The checks above are the same ones every other example uses.
-
-**Evidence:** [mesh study](runs/20261119-221454_fin_mesh/report.md), [tolerance cases](runs/20261119-221517_fin_tolerance/report.md), [heat-transfer coefficient sweep](runs/20261119-221655_fin_h_sweep/report.md).
-
----
-
-## 3. Quarter-car ride and road holding
-
-**The question.** For a compact-car front corner, which damper rates between 600 and 3500 N·s/m meet the targets for ride comfort, suspension travel, and tire load? I tested it over a speed bump and over a rough road.
-
-**The answer.**
-
-- **Over a 40 mm speed bump at 18 km/h,** damper rates from 600 to 1000 N·s/m meet all three targets. At 1500 the car just misses the comfort limit, 4.18 against 4.0 m/s². At 3500 the tire load goes over its limit.
-- **On a rough road at 72 km/h** (class C in the ISO 8608 road-roughness standard), no damper rate meets the comfort target. Meanwhile travel and tire load need at least about 1500. Those two demands conflict, so the fix is a spring-rate change, not a different damper.
-
-**How I know it's right.**
-
-- **Speed bump.** The simulation matches an independent exact solution of the same equations. Energy into the system balances the energy stored and dissipated. All 30 checks pass. I also built the same car from standard library components in a second tool, OpenModelica, and it agrees with the Python model to about one part in a million.
-- **Rough road.** The simulated vibration levels match the prediction from the system's frequency response to within one part in ten billion.
-
-![Requirement metrics against damper rate over the speed bump](runs/20261119-085019_qc_speed_bump/sweep.png)
-
-![Rough-road response compared with the frequency-response prediction](runs/20261119-084926_qc_iso_road/points/p02_damping_N_s_per_m-1500/response.png)
-
-**What the checks caught.** I first ran the bump at 36 km/h. Every numerical check passed, but the check on whether the wheel stays on the road failed at every damper rate: the tire load swung to as much as 1.7 times its static value. A linear tire model can't represent a wheel leaving the ground, so none of those results could be trusted, and none were reported as pass or fail. I kept that run as evidence and added a documented case at 18 km/h. Also, at 600 N·s/m on the rough road the wheel briefly lifts off, so that one point is marked unverified.
-
-**Evidence:** [speed bump](runs/20261119-085019_qc_speed_bump/report.md), [same case in OpenModelica](runs/20261119-085040_qc_speed_bump_modelica/report.md), [rough road](runs/20261119-084926_qc_iso_road/report.md), [first bump case, wheel lift-off](runs/20261119-084857_qc_bump/report.md).
-
----
-
-## 4. Cantilever bracket, 3D finite elements
-
-**The question.** A steel bracket, 200 mm long with a 20 by 20 mm section, carries a 1 kN load at its tip. Does it stay within a 1.0 mm deflection limit and a 213 MPa stress limit? And how accurate is the model?
-
-**The answer: yes, with margin.** The tip deflects 0.953 mm and the bending stress at the root is 150 MPa. The mesh uncertainty is 0.02 %.
-
-**How I know it's right.**
-
-- **The model.** FreeCAD builds the geometry, material, supports, and mesh; CalculiX solves it; and I read the results straight from the solver's output files. The original FreeCAD model is kept with every run.
-- **Against beam theory.** The deflection lands between the two standard beam-theory results, 0.952 and 0.960 mm, which is where a fully clamped solid block should be.
-- **Equilibrium.** The support reactions balance the applied load to within rounding error.
-- **Mesh refinement.** As the mesh gets finer, the result converges at the rate the elements are designed for, which gives the 0.02 % uncertainty.
-- **The stress I report.** The peak stress right at the clamped corner keeps growing as the mesh is refined, from 150 to 217 MPa. That's a known artifact of a perfectly sharp corner, so I don't use it. The stress I report is extrapolated from the smooth part of the beam, and it matches beam theory at 150 MPa.
-
-![Deflection and stress along the beam compared with beam theory](runs/20261119-085818_cantilever_tet10/points/p03_mesh_size_mm-1.95312/response.png)
-
-**What the checks caught.** I ran the same study with the simplest element type, linear tetrahedra. It made the bracket look 4 to 33 % stiffer than it is, and understated the stress by 7 to 45 %. Taken at face value, the bracket would have looked comfortably within its limits. The beam-theory and mesh checks failed instead, and every one of those results was marked unverified.
-
-![Linear-element results, all withheld by the checks](runs/20261119-090004_cantilever_tet4/sweep.png)
-
-**Evidence:** [quadratic elements](runs/20261119-085818_cantilever_tet10/report.md), [linear elements](runs/20261119-090004_cantilever_tet4/report.md).
-
----
-
-## 5. Cable hole in a strap, CAD to FEA
-
-**The question.** A 6061 aluminium strap, 40 mm wide and 4 mm thick, carries a 5 kN pull. A cable has to pass through a hole drilled in the middle of it. How large can that hole be before the stress at its edge goes over a 120 MPa fatigue allowable?
-
-**The answer: about 16.7 mm.** A 16 mm hole passes at 117 MPa, and an 18 mm hole fails at 125 MPa. I'd specify 16 mm, or 14 mm if the allowable carries any doubt, since that gives 8 % margin.
-
-This example also makes a point the cantilever's stress trap couldn't: the peak stress at a smooth hole edge is a real, finite number that settles down as the mesh is refined. The peak at a sharp corner never does. Knowing which kind of peak you're looking at is most of the judgement in a stress check.
-
-**How I know it's right.**
-
-- **The tool chain.** CadQuery builds the geometry and exports it as a STEP file. Gmsh meshes it, with fine elements around the hole. CalculiX solves it. Each step is scripted, so a new hole size is a one-line change.
-- **Against the handbook.** The stress concentration factor converges to 2.436, within 0.6 % of the value from Peterson's Stress Concentration Factors. Across all seven hole sizes, the results landed within about 0.6 % of the values I wrote down before running.
-- **Against an exact solution.** The whole pipeline reproduces the exact textbook result for a hole in a very wide plate, a peak of exactly three times the remote stress, to within 0.1 %. That check now runs as an automatic test.
-- **Equilibrium.** The support reactions balance the load exactly, and the stress integrated across the section beside the hole carries the full load to within 0.2 %.
-- **Mesh dependence.** Refining the hole-edge elements from 1 mm to 0.125 mm converges at the designed rate, with 0.08 % uncertainty left.
-
-![Stress around the hole and along the section beside it](runs/20261119-235201_strap_hole_mesh/points/p03_hole_element_size_mm-0.125/response.png)
-
-![Peak hole-edge stress against hole size](runs/20261119-235211_strap_hole_size/sweep.png)
-
-**What the checks caught.**
-
-- **The model converged cleanly to the wrong answer.** My first version converged beautifully, at the textbook rate and with tiny mesh uncertainty, to a value 2 % above the handbook. Refining the mesh further changed nothing. So I ran the exact wide-plate case through the same pipeline, and it came out 1.5 % high when it should have been exact. The cause was the solver's "plane stress" elements: for a plate this thick, they behave partly as a 3D slab. Analysing a thin slice with the load scaled to match fixed it, and the exact case now comes out right. A clean convergence study only tells you the mesh is fine, not that the model is.
-- **Three pipeline traps in the first trial run.** The solver input had number formatting it couldn't read, the CAD face pointed the wrong way so the solver rejected every element, and a remeshed model still pointed at the old mesh's node numbers. That last one would have run and balanced its forces anyway, which is why the deck is now always rebuilt from the mesh it uses.
-
-**Evidence:** [mesh study](runs/20261119-235201_strap_hole_mesh/report.md), [hole-size sweep](runs/20261119-235211_strap_hole_size/report.md).
-
----
-
-## 6. Parametric mounting plate
-
-**The question.** An aluminium plate, 120 by 80 by 6 mm, has a grid of six holes. Which clearance-hole size, from M5 up to M12, keeps the plate at or under 150 g while leaving at least twice the hole diameter between each hole and the edge?
-
-**The answer.** Only the 9 mm hole, the M8 clearance size, meets both. Bigger holes save weight but eat into the edge distance; smaller holes do the opposite.
-
-**How I know it's right.** The plate is generated in code with CadQuery, and every number is measured back from the finished solid rather than taken from the design inputs: the volume, the overall size, and the position and diameter of each hole. The volume matches a hand calculation to the limit of the computer's arithmetic. I also export each plate as a STEP file, read it back in, and confirm nothing changed. All 40 checks pass.
-
-![Mass and edge distance against hole size](runs/20261119-090540_mounting_plate/sweep.png)
-
-**Evidence:** [report](runs/20261119-090540_mounting_plate/report.md).
-
----
-
-## 7. Mass-spring-damper baseline
-
-This was the first example, used to prove the workflow on a problem with a known answer. It's a single mass on a spring and damper, pushed by a step force, at six different damping levels. The results are checked against the exact textbook solution, an energy balance, the final resting position, and the solver's own convergence. All 72 checks pass. The same system built in OpenModelica agrees with the Python version to a few parts per million.
-
-**What the checks caught.** While I was connecting OpenModelica, the check that results land on the requested time points failed. It turned out OpenModelica was silently ignoring some of the simulation settings I was passing it. I changed how the settings are passed, and the check has guarded against it since.
-
-**Evidence:** [Python version](runs/20261118-200205_msd_step/report.md), [OpenModelica version](runs/20261118-213145_msd_step_modelica/report.md).
-
----
+## What every study delivers
+
+- A case file with the requirements, assumptions, and acceptance tolerances, written before the first run.
+- The model source, saved and hashed with each run, and the native solver files (CAD, mesh, solver input).
+- A report that traces each requirement to its result, the checks behind it, and the evidence files, ending with "pending human review".
+- Figures comparing the model with its references, and the mesh or time-step uncertainty.
+- One command to reproduce the run; it reproduces exactly on the same machine.
 
 ## Limits of these examples
 
@@ -214,4 +86,4 @@ This was the first example, used to prove the workflow on a problem with a known
 
 ## Reproducing the work
 
-Each run records its exact inputs, tool versions, and code version, and can be repeated with one command. The commands and setup are in the [README](README.md). Tool versions used: Python 3.14 with NumPy and SciPy, OpenModelica 1.26.3, FreeCAD 1.1.4 with CalculiX 2.22 and Gmsh, CalculiX on its own for heat transfer and the CAD-to-FEA pipeline, Gmsh 4.15, CadQuery 2.8, and OpenFOAM 14 running under Linux on Windows.
+Each run records its exact inputs, tool versions, and code version. Setup and commands are in the [README](README.md), and the tool stack and versions are in [CAD-TOOLS.md](CAD-TOOLS.md).
