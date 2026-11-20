@@ -41,7 +41,7 @@ from matplotlib.colors import BoundaryNorm, ListedColormap  # noqa: E402
 
 REPO = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO))
-from harness.femesh import (boundary_triangles, compact, enclosed_volume,  # noqa: E402
+from harness.femesh import (boundary_triangles, compact, enclosed_volume, solid_between,  # noqa: E402
                             extrude_planar, read_inp, von_mises, write_scene)
 from harness.plotting import SURFACE, TEXT, TEXT_2  # noqa: E402
 
@@ -212,8 +212,153 @@ def scene_cad():
     return paths
 
 
+def mirror_x(xy: np.ndarray, tris: np.ndarray, *fields):
+    """Mirror a half-model triangulation about x = 0 (nodes on x = 0 are shared)."""
+    off = np.abs(xy[:, 0]) > 1e-9
+    idx = np.nonzero(off)[0]
+    remap = np.arange(len(xy))
+    remap[idx] = len(xy) + np.arange(len(idx))
+    xy2 = np.vstack([xy, xy[idx] * [-1, 1]])
+    return (xy2, np.vstack([tris, remap[tris]]), *[np.concatenate([f, f[idx]]) for f in fields])
+
+
+def _contact_solution() -> Path:
+    """Re-solve the finest mesh of the contact evidence run (the harness keeps no .frd) and
+    confirm it is the same solution: node count and line load must match the evidence."""
+    import tomllib
+
+    from harness.calculix import read_dat_total_forces
+    from harness.runio import read_json
+    from models.fea import hertz_contact as hc
+    from studies.fin import find_ccx
+
+    work = BUILD / "contact_solve"
+    ev = read_json(REPO / "runs/20261120-120243_contact_roller_mesh/manifest.json")["points"][2]
+    params = dict(tomllib.loads((REPO / "cases/contact_roller_mesh.toml").read_text(encoding="utf-8"))["parameters"])
+    params["contact_element_size_mm"] = ev["parameters"]["contact_element_size_mm"]
+    if not (work / "job.frd").exists():
+        work.mkdir(parents=True, exist_ok=True)
+        ccx = find_ccx()
+        hc.write_geo(params, work / "mesh.geo")
+        subprocess.run([str(ccx.parent / "gmsh.exe"), "mesh.geo", "-3", "-format", "inp", "-o", "mesh.inp"],
+                       cwd=work, capture_output=True, check=True, timeout=1200)
+        hc.write_deck(params, work / "mesh.inp", work / "job.inp")
+        subprocess.run([str(ccx), "-i", "job"], cwd=work, capture_output=True, check=True, timeout=3600)
+    load = 2 * abs(read_dat_total_forces(work / "job.dat")["TOP"][1]) / params["slab_thickness_mm"]
+    nodes = len(hc.read_mesh(work / "mesh.inp")[0])
+    if nodes != ev["solver_outputs"]["nodes"] or abs(load / ev["metrics"]["line_load_N_per_mm"] - 1) > 1e-9:
+        raise RuntimeError(f"re-solved contact differs from the evidence run ({nodes} nodes, {load} N/mm)")
+    return work
+
+
+def scene_contact():
+    from harness.calculix import read_frd
+    from models.fea import hertz_contact as hc
+
+    work = _contact_solution()
+    ids, xyz, elems = hc.read_mesh(work / "mesh.inp")
+    S = read_frd(work / "job.frd")["STRESS"]
+    si = {int(n): k for k, n in enumerate(S["ids"])}
+    vm_all = np.sqrt(0.5 * ((S["SXX"] - S["SYY"]) ** 2 + (S["SYY"] - S["SZZ"]) ** 2 + (S["SZZ"] - S["SXX"]) ** 2)
+                     + 3 * (S["SXY"] ** 2 + S["SYZ"] ** 2 + S["SZX"] ** 2))
+    index = {int(n): k for k, n in enumerate(ids)}
+    parts_xy, parts_t, parts_v, base = [], [], [], 0
+    for body in ("BLOCK", "ROLLER"):
+        quads = []
+        for row in elems[body]:
+            front = [int(n) for n in row[1:9] if abs(xyz[index[int(n)], 2]) < 1e-9]
+            if len(front) == 4:
+                quads.append(front)
+        used = sorted({n for q in quads for n in q})
+        loc = {n: k for k, n in enumerate(used)}
+        xy = xyz[[index[n] for n in used]][:, :2]
+        t = np.array([[loc[q[0]], loc[q[1]], loc[q[2]]] for q in quads] + [[loc[q[0]], loc[q[2]], loc[q[3]]] for q in quads])
+        v = vm_all[[si[n] for n in used]]
+        xy, t, v = mirror_x(xy, t, v)
+        parts_xy.append(xy); parts_t.append(t + base); parts_v.append(v); base += len(xy)
+    tv = 6.0                                            # visual slice of the long roller, mm
+    pieces = [solid_between(xy, t - off, v, np.full(len(xy), tv / 2), np.full(len(xy), -tv / 2))
+              for xy, t, v, off in zip(parts_xy, parts_t, parts_v, (0, len(parts_xy[0])))]
+    pxyz = [p[0] for p in pieces]
+    faces = np.vstack([pieces[0][1], pieces[1][1] + len(pxyz[0])])
+    xyz3 = np.vstack(pxyz)
+    val = np.concatenate([p[2] for p in pieces])
+    xyz3 = np.column_stack([xyz3[:, 0], -xyz3[:, 2], xyz3[:, 1]])          # model y is up in Blender's z
+    common = dict(field="von Mises stress", units="MPa", vmin=0.0, vmax=350.0, bands=14,
+                  band_colors=bands(14), sharp_angle_deg=50, resolution=[1400, 900],
+                  expected_volume_mm3=(120 * 50 + np.pi * 50 ** 2 / 2) * tv)
+    whole = write_scene(BUILD / "contact", xyz3, faces, val, elev=18, azim=-62, distance_factor=3.0,
+                        title="Roller on plate (6 mm slice of a long roller)", **common)
+    detail = write_scene(BUILD / "contact_detail", xyz3, faces, val, elev=24, azim=-60,
+                         frame_box=[[-5.5, -3.2, -4.0], [5.5, 3.2, 3.6]], fill=0.9, distance_factor=2.4,
+                         title="Section through the contact, 11 mm across", **common)
+    return [whole, detail]
+
+
+def scene_fatigue():
+    import matplotlib.tri as mtri
+
+    from harness.runio import read_series
+
+    pt = REPO / "runs/20261120-011347_strap_fatigue_load/points/p00_axial_load_N-5000"
+    s = read_series(pt / "nodal_results.csv")
+    x, y, sa = s["x_mm"], s["y_mm"], s["sxx_MPa"] / 2           # 0 -> 5 kN: amplitude = half the peak
+    X = np.concatenate([x, -x, x, -x]); Y = np.concatenate([y, y, -y, -y]); A = np.tile(sa, 4)
+    keep = np.unique(np.round(np.column_stack([X, Y]), 6), axis=0, return_index=True)[1]
+    X, Y, A = X[keep], Y[keep], A[keep]
+    tri = mtri.Triangulation(X, Y)
+    c = np.column_stack([X[tri.triangles].mean(axis=1), Y[tri.triangles].mean(axis=1)])
+    t = tri.triangles[np.hypot(c[:, 0], c[:, 1]) >= 8.0]
+    xyz, faces, val = extrude_planar(np.column_stack([X, Y]), t, A, thickness=4.0)
+    return write_scene(BUILD / "fatigue", xyz, faces, val, field="stress amplitude σa", units="MPa",
+                       vmin=-6.0, vmax=66.0, bands=12, band_colors=bands(12), elev=36, azim=-64,
+                       sharp_angle_deg=60, distance_factor=3.0,
+                       expected_volume_mm3=160 * 40 * 4 - np.pi * 8 ** 2 * 4,
+                       title="Strap with a 16 mm hole, loaded 0 → 5 kN: cyclic stress amplitude",
+                       caption=f"Peak amplitude {A.max():.1f} MPa at the sides of the hole, where a fatigue crack would start; "
+                               "the life calculation adds notch sensitivity and the mean-stress correction.")
+
+
+def scene_duct():
+    from harness.runio import read_json
+
+    pdir = REPO / "runs/20261119-204111_duct_side_walls/points/p03_cells_across_gap-80"
+    prm = read_json(pdir / "point.json")["parameters"]
+    d = np.genfromtxt(pdir / "cells.csv", delimiter=",", names=True)
+    d = d[d["x_mm"] == d["x_mm"].min()]                         # one cross-section
+    zc, yc = np.unique(d["z_mm"]), np.unique(d["y_mm"])        # width, gap (quarter, cell centres)
+    W2, G2 = prm["width_mm"] / 2, prm["gap_mm"] / 2
+    U = np.zeros((len(zc), len(yc)))
+    U[np.searchsorted(zc, d["z_mm"]), np.searchsorted(yc, d["y_mm"])] = d["ux_m_per_s"]
+    # the quarter model's walls are at z = 0 and y = 0 and its centre planes at z = W/2, y = G/2:
+    # shift so the centre is at 0, mirror about the centre planes, add the no-slip walls.
+    # (First version mirrored about the walls; the flow-rate volume check caught it at -1.34 %.)
+    cz, cy = zc - W2, yc - G2                                   # ascending from the wall to the centre
+    zf = np.concatenate([[-W2], cz, -cz[::-1], [W2]])
+    yf = np.concatenate([[-G2], cy, -cy[::-1], [G2]])
+    Uf = np.zeros((len(zf), len(yf)))
+    Uf[1:-1, 1:-1] = np.block([[U, U[:, ::-1]], [U[::-1, :], U[::-1, ::-1]]])
+    sy, umax, hvis = 5.0, float(Uf.max()), 4.0                  # gap stretched 5x; peak drawn 4 mm high
+    Z, Y = np.meshgrid(zf, yf, indexing="ij")
+    xy = np.column_stack([Z.ravel(), sy * Y.ravel()])
+    nz, ny = len(zf), len(yf)
+    k = (np.arange(nz - 1)[:, None] * ny + np.arange(ny - 1)[None, :]).ravel()
+    tris = np.vstack([np.column_stack([k, k + ny, k + ny + 1]), np.column_stack([k, k + ny + 1, k + 1])])
+    u = Uf.ravel()
+    xyz, faces, val = solid_between(xy, tris, u, u * hvis / umax, np.zeros(len(u)))
+    Q = prm["mean_velocity_m_per_s"] * prm["width_mm"] * prm["gap_mm"]   # imposed flow, (m/s) mm^2
+    return write_scene(BUILD / "duct", xyz, faces, val, field="axial velocity", units="m/s",
+                       vmin=0.0, vmax=0.16, bands=8, band_colors=bands(8), elev=30, azim=-58,
+                       sharp_angle_deg=70, distance_factor=3.4, expected_volume_mm3=Q * sy * hvis / umax,
+                       title="Coolant passage, 20 × 1 mm: velocity over the cross-section (OpenFOAM, 3D)",
+                       solver="OpenFOAM",
+                       caption="Height and colour show the axial velocity; the gap direction is drawn 5 times wider. "
+                               "The volume under the surface equals the imposed flow rate (render check).")
+
+
 SCENES = {"cantilever": scene_cantilever, "fin": scene_fin, "strap": scene_strap,
-          "modes": scene_bracket_modes, "cad": scene_cad}
+          "modes": scene_bracket_modes, "cad": scene_cad, "contact": scene_contact,
+          "fatigue": scene_fatigue, "duct": scene_duct}
 
 
 # --------------------------------------------------------------------------- render, check, annotate
@@ -287,7 +432,8 @@ def annotate_single(scene: Path, out_png: Path):
     fig.text(0.015, 1 - 0.3 / fig.get_figheight(), meta["title"], color=TEXT, fontsize=12, weight="bold", va="center")
     if meta.get("caption"):
         fig.text(0.015, 1 - 0.58 / fig.get_figheight(), meta["caption"], color=TEXT_2, fontsize=9, va="center")
-    fig.text(0.015, 0.015, CREDIT, color=TEXT_2, fontsize=7.5, alpha=0.8)
+    fig.text(0.015, 0.015, CREDIT.replace("CalculiX", meta.get("solver", "CalculiX")), color=TEXT_2,
+             fontsize=7.5, alpha=0.8)
     fig.savefig(out_png, dpi=150, facecolor=SURFACE)
     plt.close(fig)
 
@@ -359,6 +505,11 @@ def main():
                           "Bracket arm, first four modes (CalculiX, 7 mm arm clamped at the left end)",
                           "Colour shows how far each point moves, relative to the largest motion in that mode; "
                           "undeformed shape outlined.")
+        elif name == "contact":
+            annotate_grid(paths, OUT / "render_contact.png",
+                          "Roller on plate, 501 N/mm: von Mises stress at the contact (CalculiX contact)",
+                          "The highest stress sits about 0.4 mm below the surface, in both bodies, where Hertz theory "
+                          "puts it. The contact patch is only 1.05 mm wide on a 100 mm roller.")
         elif name == "strap":
             annotate_grid(paths, OUT / "render_strap.png",
                           "Strap, 160 × 40 × 4 mm with a 10 mm hole, pulled with 5 kN: axial stress",

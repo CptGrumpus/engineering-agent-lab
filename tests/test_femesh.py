@@ -88,3 +88,18 @@ def test_write_scene_records_range_and_counts(tmp_path):
     assert (meta["vmin"], meta["vmax"], meta["data_max"]) == (1.0, 5.0, 5.0)
     assert (meta["n_vertices"], meta["n_triangles"]) == (3, 1)
     assert set(np.load(p).files) == {"xyz", "tris", "value"}
+
+
+def test_solid_under_a_height_field_encloses_its_integral():
+    from harness.femesh import solid_between
+
+    # u = 1 - x^2 over x in [-1, 1], y in [0, 2]: integral 4/3 * 2; a fine grid gets close
+    xs, ys = np.linspace(-1, 1, 201), np.linspace(0, 2, 5)
+    X, Y = np.meshgrid(xs, ys, indexing="ij")
+    xy = np.column_stack([X.ravel(), Y.ravel()])
+    ny = len(ys)
+    k = (np.arange(len(xs) - 1)[:, None] * ny + np.arange(ny - 1)[None, :]).ravel()
+    tris = np.vstack([np.column_stack([k, k + ny, k + ny + 1]), np.column_stack([k, k + ny + 1, k + 1])])
+    u = 1 - xy[:, 0] ** 2
+    xyz, faces, _ = solid_between(xy, tris, u, u, np.zeros(len(u)))
+    assert enclosed_volume(xyz, faces) == pytest.approx(8 / 3, rel=1e-4)

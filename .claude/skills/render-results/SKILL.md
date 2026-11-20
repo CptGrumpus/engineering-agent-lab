@@ -50,7 +50,7 @@ run, builds `xyz`, `tris`, `value` and calls `write_scene` with at least:
 | field | why |
 |---|---|
 | `field`, `units`, `vmin`, `vmax`, `bands`, `band_colors=bands(n)` | the legend; the shader and the legend read the same numbers |
-| `expected_volume_mm3` | design volume from the dimensions, for the geometry check |
+| `expected_volume_mm3` | design volume from the dimensions, for the geometry check (or, for a height field, the integral the field must have) |
 | `title`, `caption` | the caption states the deformation scale, the range capping and the model simplifications (e.g. "quarter model mirrored") |
 | `ghost_xyz` (deformed scenes) | the undeformed shape, drawn as a feature-edge outline |
 | `elev`, `azim` (optional `frame_box`, `distance_factor`, `fill`) | the view; `frame_box` frames a detail, such as the region around a hole |
@@ -96,6 +96,35 @@ several modes) go through `annotate_grid` with one shared legend.
 - **Plane-stress or thin-layer models** (the strap) have no real thickness:
   mirror the quarter-model field and extrude it to the actual plate thickness
   (`extrude_planar`). Say so in the caption.
+
+- **Mirror a quarter model about its symmetry planes, not its walls.** Check
+  which boundary is which from the field itself: velocity or displacement is
+  zero at a wall and largest at a symmetry plane. The duct render first
+  mirrored about the walls and drew a zero down the middle of the passage. Only
+  the flow-rate volume check caught it, at -1.34 %.
+- **Make the volume check physical where you can.** For a height-field surface
+  (velocity over a cross-section) build the solid under it (`solid_between`):
+  its volume is the field's integral, so it must equal the imposed flow rate.
+  The duct render matches it to 0.03 %.
+- **Aim a close-up camera at the framed region.** With `frame_box`, the camera
+  targets the box centre. Aiming at the whole model's centre and recovering the
+  framing with lens shift gives a long-lens, nearly orthographic picture.
+- **A small feature on a large part needs context.** The roller's contact patch
+  is 1 mm wide on a 100 mm roller, so a close-up alone reads as a flat 2D plot.
+  Pair a whole-part view with the close-up section (`annotate_grid`), as for
+  the strap.
+- **Re-solve rather than reuse when the evidence run kept no field file.** The
+  contact scene re-solves the finest mesh, then refuses to render unless the
+  node count and the line load match the evidence run exactly.
+
+## Animations
+
+`scripts/make_animations.py` draws time-domain results as GIFs from the saved
+time series (quarter car crossing the bump, mass-spring-damper step). The
+schematic is to scale in time. Motions are exaggerated by a stated factor, and
+the slow-motion factor is given. Traces beside the schematic carry the
+requirement limits and a moving cursor, so every frame can be read against
+the numbers.
 
 ## What to say about a render
 

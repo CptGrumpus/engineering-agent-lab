@@ -9,6 +9,8 @@
 | **Tools** | Python (SciPy), OpenModelica 1.26 with the Modelica Standard Library |
 | **Methods** | Two-degree-of-freedom ride model, a tire that can leave the road with exact event location, exact piecewise state-space solution, frequency-response prediction, energy balance, a second tool as cross-check |
 
+![Animation from the simulation: the wheel leaves the road twice crossing the bump at 36 km/h](img/anim_quarter_car.gif)
+
 ## The question
 
 For a compact-car front corner, which damper rates between 600 and 3500 N·s/m meet the targets for ride comfort, suspension travel, and tire load? I tested it over a speed bump and over a rough road.

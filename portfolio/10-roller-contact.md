@@ -9,6 +9,8 @@
 | **Tools** | Gmsh 4.15, CalculiX 2.22 (surface-to-surface contact) |
 | **Methods** | Nonlinear contact FEA (penalty, frictionless), plane strain, displacement control, Hertz line contact as the exact reference, mesh refinement |
 
+![Von Mises stress at the contact, whole roller and a section through the contact, rendered in Blender](img/render_contact.png)
+
 ![Contact pressure and the shear stress below the contact, CalculiX against the exact Hertz solution](../runs/20261120-120243_contact_roller_mesh/points/p02_contact_element_size_mm-0.02/response.png)
 
 ## The question

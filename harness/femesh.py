@@ -114,8 +114,17 @@ def extrude_planar(xy: np.ndarray, tris: np.ndarray, value: np.ndarray, thicknes
     """Turn a planar triangulated field into a closed slab of the given thickness: top and
     bottom faces carry the field, and the side walls are built from the boundary edges."""
     n = len(xy)
-    top = np.column_stack([xy, np.full(n, thickness / 2)])
-    bot = np.column_stack([xy, np.full(n, -thickness / 2)])
+    return solid_between(xy, tris, value, np.full(n, thickness / 2), np.full(n, -thickness / 2))
+
+
+def solid_between(xy: np.ndarray, tris: np.ndarray, value: np.ndarray, z_top: np.ndarray,
+                  z_bot: np.ndarray):
+    """Closed solid between two height fields over one planar triangulation (z_top >= z_bot).
+    With z_bot = 0 and z_top = a field value, the enclosed volume is the field's integral
+    over the area, which makes the render's volume check a physical check."""
+    n = len(xy)
+    top = np.column_stack([xy, z_top])
+    bot = np.column_stack([xy, z_bot])
     xyz = np.vstack([top, bot])
     t = np.asarray(tris, dtype=np.int64)
     # make the top triangles counter-clockwise seen from +z

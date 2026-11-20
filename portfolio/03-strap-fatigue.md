@@ -9,6 +9,8 @@
 | **Tools** | CadQuery 2.8, Gmsh 4.15, CalculiX 2.22, Python |
 | **Methods** | Verified FE stress at the hole, Peterson notch sensitivity, Smith-Watson-Topper mean-stress correction, a Basquin S-N curve fitted to published test data and cross-checked against an independent long-life value |
 
+![Cyclic stress amplitude on the strap with a 16 mm hole, rendered in Blender](img/render_fatigue.png)
+
 ## The question
 
 The strap from the [cable hole study](02-strap-cable-hole.md), with its 16 mm hole, is loaded from zero to 5 kN and back about ten million times over the product's life. With a scatter factor of 3 on life, does it last? And what is the highest cyclic load it can be rated for?

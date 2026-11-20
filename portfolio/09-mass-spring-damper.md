@@ -9,6 +9,8 @@
 | **Tools** | Python (SciPy), OpenModelica 1.26 |
 | **Methods** | Exact textbook solution, energy balance, solver convergence, a second tool as cross-check |
 
+![Animation from the simulation: the same step force at three damping ratios, with the exact solution](img/anim_msd.gif)
+
 ## What it is
 
 This was the first example, used to prove the workflow on a problem with a known answer. It's a single mass on a spring and damper, pushed by a step force, at six different damping levels. The results are checked against the exact textbook solution, an energy balance, the final resting position, and the solver's own convergence. All 72 checks pass. The same system built in OpenModelica agrees with the Python version to a few parts per million.

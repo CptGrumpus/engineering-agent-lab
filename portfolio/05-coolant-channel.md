@@ -9,6 +9,8 @@
 | **Tools** | OpenFOAM 14 (in WSL), Python |
 | **Methods** | Laminar CFD with a supply header, exact Poiseuille and rectangular-duct solutions, mesh refinement, tolerance corners, a 3D side-wall check |
 
+![Velocity over the coolant passage cross-section from the 3D OpenFOAM check, rendered in Blender](img/render_duct.png)
+
 ## The question
 
 A cold-plate passage is a 1 mm gap between two plates, 20 mm long, carrying water at about 0.1 m/s. It has to stay within a 30 Pa share of the pump's pressure budget. It also needs at least 0.5 Pa of shear stress on the walls, a common guideline for limiting fouling. Does it meet both, when the gap can vary by plus or minus 0.05 mm and the coolant runs anywhere from 15 to 40 °C?

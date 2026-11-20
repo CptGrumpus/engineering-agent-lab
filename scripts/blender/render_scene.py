@@ -228,6 +228,10 @@ P = (allpts - centre) * scale
 if "frame_box" in meta:              # frame a detail: only points inside the box set the framing
     lo_b, hi_b = np.asarray(meta["frame_box"], dtype=float)
     P = P[np.all((allpts >= lo_b) & (allpts <= hi_b), axis=1)]
+# aim at the framed region itself; aiming at the whole model's centre with lens shift turns a
+# close-up into a long-lens, near-orthographic view (found on the contact close-up)
+target = (P.min(axis=0) + P.max(axis=0)) / 2 if "frame_box" in meta else np.zeros(3)
+P = P - target
 radius = float(np.linalg.norm(P, axis=1).max())
 dist = meta.get("distance_factor", 4.0) * radius
 depth = dist - P @ d
@@ -243,7 +247,7 @@ cam_data.shift_x = f * float(u.min() + u.max()) / 2 / 36.0
 cam_data.shift_y = f * float(v.min() + v.max()) / 2 / 36.0
 cam_data.clip_start, cam_data.clip_end = 0.01, 100.0
 cam = bpy.data.objects.new("cam", cam_data)
-cam.location = Vector((d * dist).tolist())
+cam.location = Vector((target + d * dist).tolist())
 cam.rotation_euler = Vector((-d).tolist()).to_track_quat("-Z", "Y").to_euler()
 scene.collection.objects.link(cam)
 scene.camera = cam
