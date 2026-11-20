@@ -1,0 +1,1 @@
+"""Fatigue models (stress-life)."""

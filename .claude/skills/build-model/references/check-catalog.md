@@ -52,6 +52,19 @@ comparison, and one validity check per assumption that can fail.
 | Mode shape along the part vs the reference, by modal assurance criterion (MAC) | numerical | bracket `first_mode_shape` |
 | GCI on the frequency with the design order (4 for quadratic elements) | numerical | bracket mesh study |
 
+## Fatigue (chained from a verified stress model)
+
+| Check | Kind | Example |
+|---|---|---|
+| Upstream stress model's own checks carried into the chain (equilibrium, Kt vs handbook) | numerical | strap fatigue `equilibrium`, `kt_reference` |
+| S-N curve fitted to cited test data, with its scatter reported | numerical | strap fatigue `sn_fit_scatter` |
+| Extrapolated S-N curve vs an independent long-life value from a different source | model form | strap fatigue `sn_hcf_crosscheck` (ASM 96.5 MPa at 5e8) |
+| Life inverted back to the stress amplitude (exact round trip) | numerical | strap fatigue `life_round_trip` |
+| Notch stays elastic, or a plasticity correction (Neuber) is needed | validity | strap fatigue `elastic_notch` |
+| Life by each data set separately, reported as the material-data spread | sensitivity | strap fatigue `life_by_data_set` |
+
+Fatigue life is extremely sensitive to stress (here a 10 % stress change moves life about 3.5x), so report the spread from the material data and the notch model, not one number.
+
 ## Heat conduction (CalculiX)
 
 | Check | Kind | Example |

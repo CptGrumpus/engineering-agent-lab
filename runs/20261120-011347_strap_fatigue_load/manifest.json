@@ -1,0 +1,480 @@
+{
+  "run_id": "20261120-011347_strap_fatigue_load",
+  "case_name": "strap_fatigue_load",
+  "model": "strap_fatigue",
+  "case_source": "cases/strap_fatigue_load.toml",
+  "case_sha256": "509a0221a2e14274e071da2f8bf36d1d4719a0aef58205de2cc6c5c41e22a556",
+  "model_sources_sha256": {
+    "models/fea/strap_hole.py": "0384afaa4fee9c5cb2fddfb5a5f83e4438b36bed43454c36a2a686b97169eaa7",
+    "models/fatigue/sn_6061.py": "37fdadd784a1c951d28af68417c01e886a92f7a66b9e3177fd68684ac5e979bb"
+  },
+  "rerun_of": null,
+  "started_utc": "2026-11-20T06:13:47+00:00",
+  "environment": {
+    "python": "3.14.10",
+    "python_executable": "C:\\Users\\mrstego\\projects\\engineering-agent-lab\\.venv\\Scripts\\python.exe",
+    "platform": "Windows-11-10.0.26100-SP0",
+    "machine": "AMD64",
+    "packages": {
+      "numpy": "2.5.5",
+      "scipy": "1.18.1",
+      "matplotlib": "3.11.2",
+      "cadquery": "2.8.0"
+    },
+    "git": {
+      "commit": "15eae90df2c9bb7a8af9831f397723f68dd1bc54",
+      "dirty": true
+    },
+    "tools": {
+      "cadquery": "2.8.0",
+      "gmsh": "4.15.0",
+      "CalculiX": "This is Version 2.22"
+    }
+  },
+  "numerics": {
+    "solver": "Strap FE: CalculiX 2.22 plane stress CPS6 from Gmsh 4.15 and CadQuery; fatigue: closed-form Basquin + SWT"
+  },
+  "points": [
+    {
+      "label": "p00_axial_load_N-5000",
+      "parameters": {
+        "length_mm": 160.0,
+        "width_mm": 40.0,
+        "thickness_mm": 4.0,
+        "hole_diameter_mm": 16.0,
+        "axial_load_N": 5000.0,
+        "min_load_N": 0.0,
+        "youngs_modulus_MPa": 68900.0,
+        "poisson_ratio": 0.33,
+        "yield_strength_MPa": 276.0,
+        "hole_element_size_mm": 0.4,
+        "hole_element_ratio": 0.025,
+        "far_element_size_mm": 4.0,
+        "sn_data_set": "both"
+      },
+      "status": "completed",
+      "derived": {
+        "gross_stress_MPa": 31.25,
+        "net_stress_MPa": 52.083333333333336,
+        "kt_net_peterson": 2.23568
+      },
+      "solver": {
+        "success": true,
+        "message": "CalculiX: 2597 CPS6 elements; fatigue life 8.13e+09 cycles",
+        "nfev": null
+      },
+      "solver_outputs": {
+        "nodes": 5334,
+        "loaded_edge_nodes": 11,
+        "applied_load_N": 2500.0,
+        "xsym_nodes": 45,
+        "analysis_thickness_mm": 0.16,
+        "force_scale": 0.04,
+        "elements": 2597,
+        "face_area_mm2": 1549.734517542563,
+        "hole_element_size_used_mm": 0.4,
+        "reaction_totals_N": {
+          "XSYM": [
+            -100.0,
+            -1.982354e-13,
+            -5.32188e-14
+          ]
+        },
+        "kt_net_fe": 2.2461696,
+        "notch_sensitivity_q": 0.9264620729588883,
+        "kf": 2.1545288708743486,
+        "notch_max_stress_MPa": 112.21504535803899,
+        "notch_min_stress_MPa": 0.0,
+        "swt_amplitude_MPa": 79.34801952382539,
+        "sn_fit": {
+          "sigma_f_MPa": 503.644701305178,
+          "b": -0.07859827317237869,
+          "log_scatter_sd": 0.07394171035935757,
+          "n_points": 25,
+          "max_reversals_in_data": 41760.0
+        },
+        "fatigue_life_cycles": 8132795688.036061,
+        "life_by_data_set": {
+          "both": 8132795688.036061,
+          "chung_abel": 16102577361.241936,
+          "brodrick_spiering": 1560863653774.752
+        },
+        "sn_fit_at_hcf_anchor_MPa": 98.79610219103714,
+        "round_trip_amplitude_MPa": 79.34801952382539
+      },
+      "metrics": {
+        "fatigue_life_cycles": 8132795688.036061,
+        "notch_max_stress_MPa": 112.21504535803899,
+        "kt_net_fe": 2.2461696
+      }
+    },
+    {
+      "label": "p01_axial_load_N-6000",
+      "parameters": {
+        "length_mm": 160.0,
+        "width_mm": 40.0,
+        "thickness_mm": 4.0,
+        "hole_diameter_mm": 16.0,
+        "axial_load_N": 6000.0,
+        "min_load_N": 0.0,
+        "youngs_modulus_MPa": 68900.0,
+        "poisson_ratio": 0.33,
+        "yield_strength_MPa": 276.0,
+        "hole_element_size_mm": 0.4,
+        "hole_element_ratio": 0.025,
+        "far_element_size_mm": 4.0,
+        "sn_data_set": "both"
+      },
+      "status": "completed",
+      "derived": {
+        "gross_stress_MPa": 37.5,
+        "net_stress_MPa": 62.5,
+        "kt_net_peterson": 2.23568
+      },
+      "solver": {
+        "success": true,
+        "message": "CalculiX: 2597 CPS6 elements; fatigue life 7.99e+08 cycles",
+        "nfev": null
+      },
+      "solver_outputs": {
+        "nodes": 5334,
+        "loaded_edge_nodes": 11,
+        "applied_load_N": 3000.0,
+        "xsym_nodes": 45,
+        "analysis_thickness_mm": 0.16,
+        "force_scale": 0.04,
+        "elements": 2597,
+        "face_area_mm2": 1549.734517542563,
+        "hole_element_size_used_mm": 0.4,
+        "reaction_totals_N": {
+          "XSYM": [
+            -120.0,
+            -3.560769e-13,
+            -4.135968e-14
+          ]
+        },
+        "kt_net_fe": 2.2461759999999997,
+        "notch_sensitivity_q": 0.9264620729588883,
+        "kf": 2.154534800231615,
+        "notch_max_stress_MPa": 134.65842501447594,
+        "notch_min_stress_MPa": 0.0,
+        "swt_amplitude_MPa": 95.21788547163615,
+        "sn_fit": {
+          "sigma_f_MPa": 503.644701305178,
+          "b": -0.07859827317237869,
+          "log_scatter_sd": 0.07394171035935757,
+          "n_points": 25,
+          "max_reversals_in_data": 41760.0
+        },
+        "fatigue_life_cycles": 799479873.4673859,
+        "life_by_data_set": {
+          "both": 799479873.4673859,
+          "chung_abel": 1253110260.045482,
+          "brodrick_spiering": 85381998171.5372
+        },
+        "sn_fit_at_hcf_anchor_MPa": 98.79610219103714,
+        "round_trip_amplitude_MPa": 95.21788547163615
+      },
+      "metrics": {
+        "fatigue_life_cycles": 799479873.4673859,
+        "notch_max_stress_MPa": 134.65842501447594,
+        "kt_net_fe": 2.2461759999999997
+      }
+    },
+    {
+      "label": "p02_axial_load_N-7000",
+      "parameters": {
+        "length_mm": 160.0,
+        "width_mm": 40.0,
+        "thickness_mm": 4.0,
+        "hole_diameter_mm": 16.0,
+        "axial_load_N": 7000.0,
+        "min_load_N": 0.0,
+        "youngs_modulus_MPa": 68900.0,
+        "poisson_ratio": 0.33,
+        "yield_strength_MPa": 276.0,
+        "hole_element_size_mm": 0.4,
+        "hole_element_ratio": 0.025,
+        "far_element_size_mm": 4.0,
+        "sn_data_set": "both"
+      },
+      "status": "completed",
+      "derived": {
+        "gross_stress_MPa": 43.75,
+        "net_stress_MPa": 72.91666666666667,
+        "kt_net_peterson": 2.23568
+      },
+      "solver": {
+        "success": true,
+        "message": "CalculiX: 2597 CPS6 elements; fatigue life 1.12e+08 cycles",
+        "nfev": null
+      },
+      "solver_outputs": {
+        "nodes": 5334,
+        "loaded_edge_nodes": 11,
+        "applied_load_N": 3500.0,
+        "xsym_nodes": 45,
+        "analysis_thickness_mm": 0.16,
+        "force_scale": 0.04,
+        "elements": 2597,
+        "face_area_mm2": 1549.734517542563,
+        "hole_element_size_used_mm": 0.4,
+        "reaction_totals_N": {
+          "XSYM": [
+            -140.0,
+            -4.581053e-13,
+            -6.968241e-14
+          ]
+        },
+        "kt_net_fe": 2.246166857142857,
+        "notch_sensitivity_q": 0.9264620729588883,
+        "kf": 2.154526329721234,
+        "notch_max_stress_MPa": 157.10087820884,
+        "notch_min_stress_MPa": 0.0,
+        "swt_amplitude_MPa": 111.08709631183267,
+        "sn_fit": {
+          "sigma_f_MPa": 503.644701305178,
+          "b": -0.07859827317237869,
+          "log_scatter_sd": 0.07394171035935757,
+          "n_points": 25,
+          "max_reversals_in_data": 41760.0
+        },
+        "fatigue_life_cycles": 112478682.17113583,
+        "life_by_data_set": {
+          "both": 112478682.17113583,
+          "chung_abel": 144697355.3627205,
+          "brodrick_spiering": 7318211798.556018
+        },
+        "sn_fit_at_hcf_anchor_MPa": 98.79610219103714,
+        "round_trip_amplitude_MPa": 111.08709631183267
+      },
+      "metrics": {
+        "fatigue_life_cycles": 112478682.17113583,
+        "notch_max_stress_MPa": 157.10087820884,
+        "kt_net_fe": 2.246166857142857
+      }
+    },
+    {
+      "label": "p03_axial_load_N-8000",
+      "parameters": {
+        "length_mm": 160.0,
+        "width_mm": 40.0,
+        "thickness_mm": 4.0,
+        "hole_diameter_mm": 16.0,
+        "axial_load_N": 8000.0,
+        "min_load_N": 0.0,
+        "youngs_modulus_MPa": 68900.0,
+        "poisson_ratio": 0.33,
+        "yield_strength_MPa": 276.0,
+        "hole_element_size_mm": 0.4,
+        "hole_element_ratio": 0.025,
+        "far_element_size_mm": 4.0,
+        "sn_data_set": "both"
+      },
+      "status": "completed",
+      "derived": {
+        "gross_stress_MPa": 50.0,
+        "net_stress_MPa": 83.33333333333333,
+        "kt_net_peterson": 2.23568
+      },
+      "solver": {
+        "success": true,
+        "message": "CalculiX: 2597 CPS6 elements; fatigue life 2.06e+07 cycles",
+        "nfev": null
+      },
+      "solver_outputs": {
+        "nodes": 5334,
+        "loaded_edge_nodes": 11,
+        "applied_load_N": 4000.0,
+        "xsym_nodes": 45,
+        "analysis_thickness_mm": 0.16,
+        "force_scale": 0.04,
+        "elements": 2597,
+        "face_area_mm2": 1549.734517542563,
+        "hole_element_size_used_mm": 0.4,
+        "reaction_totals_N": {
+          "XSYM": [
+            -160.0,
+            -2.330011e-13,
+            -6.521821e-14
+          ]
+        },
+        "kt_net_fe": 2.246172,
+        "notch_sensitivity_q": 0.9264620729588883,
+        "kf": 2.154531094383324,
+        "notch_max_stress_MPa": 179.54425786527696,
+        "notch_min_stress_MPa": 0.0,
+        "swt_amplitude_MPa": 126.95696225964346,
+        "sn_fit": {
+          "sigma_f_MPa": 503.644701305178,
+          "b": -0.07859827317237869,
+          "log_scatter_sd": 0.07394171035935757,
+          "n_points": 25,
+          "max_reversals_in_data": 41760.0
+        },
+        "fatigue_life_cycles": 20569832.714731235,
+        "life_by_data_set": {
+          "both": 20569832.714731235,
+          "chung_abel": 22299860.025117964,
+          "brodrick_spiering": 871208576.5094889
+        },
+        "sn_fit_at_hcf_anchor_MPa": 98.79610219103714,
+        "round_trip_amplitude_MPa": 126.95696225964346
+      },
+      "metrics": {
+        "fatigue_life_cycles": 20569832.714731235,
+        "notch_max_stress_MPa": 179.54425786527696,
+        "kt_net_fe": 2.246172
+      }
+    },
+    {
+      "label": "p04_axial_load_N-9000",
+      "parameters": {
+        "length_mm": 160.0,
+        "width_mm": 40.0,
+        "thickness_mm": 4.0,
+        "hole_diameter_mm": 16.0,
+        "axial_load_N": 9000.0,
+        "min_load_N": 0.0,
+        "youngs_modulus_MPa": 68900.0,
+        "poisson_ratio": 0.33,
+        "yield_strength_MPa": 276.0,
+        "hole_element_size_mm": 0.4,
+        "hole_element_ratio": 0.025,
+        "far_element_size_mm": 4.0,
+        "sn_data_set": "both"
+      },
+      "status": "completed",
+      "derived": {
+        "gross_stress_MPa": 56.25,
+        "net_stress_MPa": 93.75,
+        "kt_net_peterson": 2.23568
+      },
+      "solver": {
+        "success": true,
+        "message": "CalculiX: 2597 CPS6 elements; fatigue life 4.6e+06 cycles",
+        "nfev": null
+      },
+      "solver_outputs": {
+        "nodes": 5334,
+        "loaded_edge_nodes": 11,
+        "applied_load_N": 4500.0,
+        "xsym_nodes": 45,
+        "analysis_thickness_mm": 0.16,
+        "force_scale": 0.04,
+        "elements": 2597,
+        "face_area_mm2": 1549.734517542563,
+        "hole_element_size_used_mm": 0.4,
+        "reaction_totals_N": {
+          "XSYM": [
+            -180.0,
+            -6.573058e-13,
+            -8.197513e-14
+          ]
+        },
+        "kt_net_fe": 2.246176,
+        "notch_sensitivity_q": 0.9264620729588883,
+        "kf": 2.154534800231616,
+        "notch_max_stress_MPa": 201.987637521714,
+        "notch_min_stress_MPa": 0.0,
+        "swt_amplitude_MPa": 142.8268282074543,
+        "sn_fit": {
+          "sigma_f_MPa": 503.644701305178,
+          "b": -0.07859827317237869,
+          "log_scatter_sd": 0.07394171035935757,
+          "n_points": 25,
+          "max_reversals_in_data": 41760.0
+        },
+        "fatigue_life_cycles": 4596333.225018635,
+        "life_by_data_set": {
+          "both": 4596333.225018635,
+          "chung_abel": 4284784.764120624,
+          "brodrick_spiering": 133305632.95235093
+        },
+        "sn_fit_at_hcf_anchor_MPa": 98.79610219103714,
+        "round_trip_amplitude_MPa": 142.8268282074543
+      },
+      "metrics": {
+        "fatigue_life_cycles": 4596333.225018635,
+        "notch_max_stress_MPa": 201.987637521714,
+        "kt_net_fe": 2.246176
+      }
+    },
+    {
+      "label": "p05_axial_load_N-10000",
+      "parameters": {
+        "length_mm": 160.0,
+        "width_mm": 40.0,
+        "thickness_mm": 4.0,
+        "hole_diameter_mm": 16.0,
+        "axial_load_N": 10000.0,
+        "min_load_N": 0.0,
+        "youngs_modulus_MPa": 68900.0,
+        "poisson_ratio": 0.33,
+        "yield_strength_MPa": 276.0,
+        "hole_element_size_mm": 0.4,
+        "hole_element_ratio": 0.025,
+        "far_element_size_mm": 4.0,
+        "sn_data_set": "both"
+      },
+      "status": "completed",
+      "derived": {
+        "gross_stress_MPa": 62.5,
+        "net_stress_MPa": 104.16666666666667,
+        "kt_net_peterson": 2.23568
+      },
+      "solver": {
+        "success": true,
+        "message": "CalculiX: 2597 CPS6 elements; fatigue life 1.2e+06 cycles",
+        "nfev": null
+      },
+      "solver_outputs": {
+        "nodes": 5334,
+        "loaded_edge_nodes": 11,
+        "applied_load_N": 5000.0,
+        "xsym_nodes": 45,
+        "analysis_thickness_mm": 0.16,
+        "force_scale": 0.04,
+        "elements": 2597,
+        "face_area_mm2": 1549.734517542563,
+        "hole_element_size_used_mm": 0.4,
+        "reaction_totals_N": {
+          "XSYM": [
+            -200.0,
+            -3.964708e-13,
+            -1.064376e-13
+          ]
+        },
+        "kt_net_fe": 2.2461696,
+        "notch_sensitivity_q": 0.9264620729588883,
+        "kf": 2.1545288708743486,
+        "notch_max_stress_MPa": 224.43009071607798,
+        "notch_min_stress_MPa": 0.0,
+        "swt_amplitude_MPa": 158.69603904765077,
+        "sn_fit": {
+          "sigma_f_MPa": 503.644701305178,
+          "b": -0.07859827317237869,
+          "log_scatter_sd": 0.07394171035935757,
+          "n_points": 25,
+          "max_reversals_in_data": 41760.0
+        },
+        "fatigue_life_cycles": 1202977.6381501246,
+        "life_by_data_set": {
+          "both": 1202977.6381501246,
+          "chung_abel": 979800.1675724009,
+          "brodrick_spiering": 24865149.638084974
+        },
+        "sn_fit_at_hcf_anchor_MPa": 98.79610219103714,
+        "round_trip_amplitude_MPa": 158.69603904765077
+      },
+      "metrics": {
+        "fatigue_life_cycles": 1202977.6381501246,
+        "notch_max_stress_MPa": 224.43009071607798,
+        "kt_net_fe": 2.2461696
+      }
+    }
+  ],
+  "study": "strap_fatigue",
+  "status": "completed",
+  "finished_utc": "2026-11-20T06:13:53+00:00"
+}

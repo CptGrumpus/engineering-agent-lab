@@ -208,6 +208,9 @@ def sweep_figure(path, sweep_name, rows, requirements, title):
                     xycoords=("axes fraction", "data"), xytext=(-2, 3),
                     textcoords="offset points", ha="right", va="bottom", fontsize=8.5,
                     color=TEXT_2)
+        pos = ys[np.isfinite(ys)]
+        if len(pos) and np.all(pos > 0) and pos.max() / pos.min() > 100:
+            ax.set_yscale("log")  # e.g. fatigue life over several decades
         ax.set_title(f"{req['id']}: {req['metric']}", color=TEXT, fontsize=9.5, loc="left")
         ax.set_xlabel(sweep_name)
         ax.set_ylabel(req["units"] if req["units"] != "-" else "ratio")
@@ -554,6 +557,46 @@ def modal_figure(path, freqs, types, d, xb, prof, xr, wr, m, *, title):
     _legend(ax2, loc="lower left")
     for ax in (ax1, ax2):
         _style(ax)
+    fig.tight_layout()
+    fig.savefig(path, dpi=130, facecolor=SURFACE)
+    plt.close(fig)
+
+
+def fatigue_figure(path, sn, out, required_life, *, title):
+    """S-N evidence: published test points, fitted Basquin curves, the independent
+    high-cycle value, and this load case's equivalent amplitude and life."""
+    fig, ax = plt.subplots(figsize=(8.5, 5.0), facecolor=SURFACE)
+    n = np.logspace(1.5, 10, 200)                         # cycles
+    for name, marker in (("chung_abel", "o"), ("brodrick_spiering", "s")):
+        data = sn.DATA_SETS[name]
+        ax.plot([r / 2 for _, r in data], [s * sn.KSI for s, _ in data], marker, markersize=4,
+                color=SERIES_1, alpha=0.75 if marker == "o" else 0.45,
+                label=("Chung & Abel 1988" if name == "chung_abel" else "Brodrick & Spiering 1972"))
+        f = sn.fit_basquin(name)
+        ax.plot(n, sn.amplitude_at(2 * n, f), color=TEXT_2, linewidth=1, linestyle=(0, (3, 3)))
+    f = out["sn_fit"]
+    ax.plot(n, sn.amplitude_at(2 * n, f), color=SERIES_1, linewidth=2,
+            label=f"fit to both: σf' = {f['sigma_f_MPa']:.0f} MPa, b = {f['b']:.4f}")
+    ax.plot([5e8], [96.5], "D", color=SERIES_2, markersize=7, label="ASM: 96.5 MPa at 5e8 (independent)")
+    life = out["fatigue_life_cycles"]
+    ax.plot([life], [out["swt_amplitude_MPa"]], "*", color=TEXT, markersize=13,
+            label=f"this load case: {out['swt_amplitude_MPa']:.0f} MPa, {life:.2g} cycles")
+    if required_life:
+        ax.axvline(required_life, color=TEXT_2, linewidth=1, linestyle=(0, (2, 2)))
+        ax.annotate("required life", (required_life, 60), xytext=(4, 0), textcoords="offset points",
+                    fontsize=8.5, color=TEXT_2)
+    ax.set_xscale("log")
+    ax.set_yscale("log")
+    ax.set_ylim(50, 500)
+    from matplotlib.ticker import FixedLocator, NullFormatter, ScalarFormatter
+    ax.yaxis.set_major_locator(FixedLocator([50, 70, 100, 150, 200, 300, 500]))
+    ax.yaxis.set_major_formatter(ScalarFormatter())
+    ax.yaxis.set_minor_formatter(NullFormatter())
+    ax.set_xlabel("cycles to failure (dashed: fits to each data set alone)")
+    ax.set_ylabel("equivalent stress amplitude (MPa)")
+    ax.set_title(title, color=TEXT, fontsize=10, loc="left")
+    _legend(ax, loc="upper right")
+    _style(ax)
     fig.tight_layout()
     fig.savefig(path, dpi=130, facecolor=SURFACE)
     plt.close(fig)

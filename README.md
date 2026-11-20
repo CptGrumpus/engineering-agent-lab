@@ -22,6 +22,7 @@ The intended user is an automotive engineer with a master's degree in mechanical
 | Parametric mounting plate | `cadquery_plate` | CadQuery | `mounting_plate` |
 | Strap with a cable hole, CAD to FEA | `cadquery_ccx_strap` | CadQuery -> Gmsh -> CalculiX | `strap_hole_mesh`, `strap_hole_size` |
 | Bracket arm modal analysis (vibration) | `cadquery_ccx_modal` | CadQuery -> Gmsh -> CalculiX | `bracket_modal_mesh`, `bracket_modal_thickness` |
+| Strap fatigue life (chained FE + S-N) | `strap_fatigue` | CadQuery -> Gmsh -> CalculiX, then stress-life | `strap_fatigue_load` |
 | Laminar coolant channel, CFD | `openfoam_channel` | OpenFOAM 14 (in WSL) | `channel_header_mesh`, `channel_header_tolerance`, `channel_header_gap_limits`, `channel_mesh` |
 | Side-wall (3D) check of the channel | `openfoam_duct` | OpenFOAM 14 (in WSL) | `duct_side_walls` |
 | Heat-sink fin tip temperature, 3D conduction | `ccx_fin` | CalculiX (bundled with FreeCAD) | `fin_mesh`, `fin_tolerance`, `fin_h_sweep` |
