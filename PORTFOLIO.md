@@ -27,6 +27,10 @@ All problems are synthetic, so no client data is involved. Every number comes fr
 
 [Technical memo: cold-plate coolant passage](portfolio/deliverables/coolant-channel-memo.md). This is what a client receives at the end of a study: the answer and a recommendation on page one, then the requirements, inputs, method, verification, results, uncertainty, the design options with their numbers, and next steps, all traced to the evidence.
 
+## Evaluation tasks
+
+[Three engineering tasks with reference solutions and automated graders](tasks/README.md), written the way an AI-training or assessment pipeline needs them: a problem statement with a required answer format, a verified reference solution, a grader that scores an answer criterion by criterion, and the traps each task is built to expose, such as assuming fully developed flow, reporting a mesh singularity as a design stress, or using the wrong modulus in Hertz contact. The graders are tested too: each one gives the reference full marks and fails every trap answer on the criterion that trap should break.
+
 ## Case studies
 
 ### Structures and vibration

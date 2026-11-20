@@ -185,7 +185,7 @@ code { font-family: var(--font-data); font-size: 0.85em; }
 .term .p { color: var(--term-dim); }
 .t-row { display: block; }
 .t-row > span { display: inline-block; }
-.t-id { width: 22ch; } .t-pass, .t-fail { width: 6ch; } .t-num { width: 11ch; }
+.t-id { width: 27ch; } .t-pass, .t-fail { width: 6ch; } .t-num { width: 11ch; }
 .t-id { color: var(--term-ink); }
 .t-pass { color: var(--term-pass); }
 .t-fail { color: var(--term-fail); }
@@ -307,6 +307,7 @@ td.num { font-family: var(--font-data); font-variant-numeric: tabular-nums; whit
       <a href="#loop">Method</a>
       <a href="#studies">Studies</a>
       <a href="#agent">Agent workflow</a>
+      <a href="#tasks">Tasks</a>
       <a href="#findings">Findings</a>
       <a href="#capabilities">Capabilities</a>
     </div>
@@ -416,6 +417,26 @@ td.num { font-family: var(--font-data); font-variant-numeric: tabular-nums; whit
       <li>Withholds a verdict when an assumption breaks</li>
       <li>Leaves acceptance to a person</li>
     </ul>
+  </section>
+
+  <section class="band wrap" id="tasks" aria-labelledby="tasks-title">
+    <div class="band-head">
+      <p class="eyebrow">Evaluation tasks</p>
+      <h2 id="tasks-title">Tasks that test whether a solver checks its assumptions</h2>
+      <p>Three engineering tasks built from the verified studies, written the way an AI-training or assessment pipeline needs them: a problem statement with a required answer format, a reference solution with evidence, an automated grader, and the traps each task is designed to expose. The graders are tested as well: each gives the reference answer full marks and fails every trap on the criterion it should break.</p>
+    </div>
+    <div class="loop">
+      <div class="skills" style="grid-template-columns: 1fr;">
+        <div class="skill"><code>hertz_roller_contact</code><b>Contact stress under a track roller</b><p>Trap: the plain modulus E instead of the combined E*. The peak pressure comes out 35 % high and the verdict flips.</p></div>
+        <div class="skill"><code>heated_channel_wall_temperature</code><b>Cold-plate wall temperature</b><p>Trap: assuming fully developed heat transfer when the heated length is shorter than the thermal entry length. Close in value, wrong in method, and the grader catches it.</p></div>
+        <div class="skill"><code>cantilever_root_stress</code><b>Bracket stress from a 3D model</b><p>Trap: reporting the stress at a clamped corner, which grows without limit as the mesh is refined, as the design stress. 217 MPa and climbing, against a real 150 MPa.</p></div>
+      </div>
+      <div class="term" role="figure" aria-label="Real grader output for a trap answer">
+        <div class="term-bar"><i></i><i></i><i></i><span>grade(answer)  # heated_channel_wall_temperature, fully developed shortcut</span></div>
+<pre><span class="p">answer </span>peak wall 44.20 C, Nu 8.235 (fully developed), limit met
+<span class="t-row"><span class="t-id">coolant_rise_K</span><span class="t-pass">PASS</span><span class="t-num">7.2</span><span class="t-tol">ref 7.199 ±0.036</span></span><span class="t-row"><span class="t-id">peak_wall_temperature_C</span><span class="t-fail">FAIL</span><span class="t-num">44.20</span><span class="t-tol">ref 44.047 ±0.10</span></span><span class="t-row"><span class="t-id">nusselt_at_end_of_heating</span><span class="t-fail">FAIL</span><span class="t-num">8.235</span><span class="t-tol">ref 8.343 ±0.05</span></span><span class="t-row"><span class="t-id">wall_limit_met</span><span class="t-pass">PASS</span><span class="t-num">true</span><span class="t-tol">ref true</span></span><span class="p">score  </span><span class="verdict">0.5</span> · right verdict, wrong method: the entry length was never checked</pre>
+      </div>
+    </div>
   </section>
 
   <section class="band wrap" id="findings" aria-labelledby="findings-title">
