@@ -4,6 +4,8 @@ Nine worked case studies in structural analysis, vibration, fatigue, fluids and 
 
 I also show what the checks caught along the way. In several studies the first version of the model gave an answer that looked reasonable and was wrong, and the checks are what exposed it.
 
+![Strap with a 10 mm hole under 5 kN: axial stress over the whole part and a close-up of the hole](portfolio/img/render_strap.png)
+
 All problems are synthetic, so no client data is involved. Every number comes from a saved run that can be reproduced from its recorded inputs.
 
 ## Capabilities
@@ -17,6 +19,7 @@ All problems are synthetic, so no client data is involved. Every number comes fr
 | Computational fluid dynamics: internal laminar flow, pressure budgets, 2D and 3D | OpenFOAM | [5](portfolio/05-coolant-channel.md) |
 | Heat transfer: conduction with surface convection | CalculiX | [6](portfolio/06-heat-sink-fin.md) |
 | Vehicle and system dynamics: ride, road holding, frequency response | Python (SciPy), OpenModelica | [7](portfolio/07-quarter-car.md), [9](portfolio/09-mass-spring-damper.md) |
+| Presentation renders: FE results and CAD parts rendered in Blender, with legend colours and geometry checked automatically | Blender (Cycles), Python | [1](portfolio/01-cantilever-bracket.md), [2](portfolio/02-strap-cable-hole.md), [4](portfolio/04-bracket-modal.md), [6](portfolio/06-heat-sink-fin.md), [8](portfolio/08-mounting-plate.md) |
 | Verification and uncertainty: exact and handbook references, Grid Convergence Index, tolerance and sensitivity studies | Python | All |
 
 ## Sample deliverable
@@ -85,6 +88,7 @@ The workflow is driven by an AI coding agent working through fixed, documented p
 - A report that traces each requirement to its result, the checks behind it, and the evidence files, ending with "pending human review".
 - Figures comparing the model with its references, and the mesh or time-step uncertainty.
 - One command to reproduce the run; it reproduces exactly on the same machine.
+- Presentation renders of the result on the 3D part. Two automated checks guard them. The rendered surface must enclose the part's design volume, which proves no faces are missing or flipped. Every coloured pixel must be a legend colour, which proves the lighting and tone mapping haven't shifted the contours. A render that fails either check isn't published.
 
 ## Limits of these examples
 

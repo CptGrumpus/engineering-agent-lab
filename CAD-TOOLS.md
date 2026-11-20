@@ -137,7 +137,8 @@ All five tool paths are installed on this PC and proven by verified evidence run
 | Gmsh | 4.15 (bundled with FreeCAD) | Through FreeCAD, or the command line with a `.geo` script on a STEP file | Cantilever, strap with a hole, bracket modal analysis |
 | CadQuery (OpenCASCADE) | 2.8.0 | In process; exports STEP for meshing | Mounting plate, strap with a hole, bracket modal analysis |
 | OpenFOAM | 14 (openfoam.org), in WSL Ubuntu 22.04 | A Python writer generates the case; a bash script runs blockMesh, checkMesh and foamRun inside WSL | Coolant channel, 3D duct check |
+| Blender (portable, no install) | 4.5.16 LTS | Background mode (`blender -b -P scripts/blender/render_scene.py`); scenes exported by `harness/femesh.py`; Cycles on the OptiX GPU | Result and CAD renders for the portfolio (`scripts/make_renders.py`, skill `render-results`) |
 
 **OMPython is not used.** The harness calls `omc` directly instead. That compiles each model once per run, passes every setting through explicit command-line flags (OpenModelica 1.26 silently ignores experiment settings passed through `-override`, which the harness's output-grid check caught), and needs no background OpenModelica session. OMPython remains a reasonable choice for interactive work.
 
-**Run times on this PC** (Ryzen 9 5900X, 64 GB): the largest runs so far take minutes, not hours. The 80-cell 2D CFD mesh solves in under a minute, the finest 3D duct mesh in about 7 minutes, and the finest cantilever FEA mesh in about 30 seconds. Nothing has needed cloud hardware.
+**Run times on this PC** (Ryzen 9 5900X, 64 GB): the largest runs so far take minutes, not hours. The 80-cell 2D CFD mesh solves in under a minute, the finest 3D duct mesh in about 7 minutes, the finest cantilever FEA mesh in about 30 seconds, and each Blender render in about 10 seconds on the GPU. Nothing has needed cloud hardware.

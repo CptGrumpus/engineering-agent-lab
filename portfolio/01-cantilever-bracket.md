@@ -9,7 +9,7 @@
 | **Tools** | FreeCAD 1.1, Gmsh, CalculiX 2.22 |
 | **Methods** | 3D solid FEA (quadratic tetrahedra), mesh refinement with the Grid Convergence Index, beam theory, equilibrium |
 
-![Von Mises stress on the deformed cantilever](img/cantilever_stress.png)
+![Von Mises stress on the deformed cantilever, rendered in Blender](img/render_cantilever.png)
 
 ## The question
 

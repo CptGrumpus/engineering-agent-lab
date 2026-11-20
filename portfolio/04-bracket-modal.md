@@ -21,6 +21,8 @@ A steel bracket arm, 150 by 25 mm, is bolted near an engine and carries a light 
 
 ![The first four mode shapes, animated](img/bracket_modes.gif)
 
+![The first four mode shapes, rendered in Blender](img/render_bracket_modes.png)
+
 ## How I know it's right
 
 - **The tool chain.** CadQuery builds the arm, Gmsh meshes it with quadratic tetrahedra, and CalculiX extracts the first six modes. Each mode is classified automatically from how its mass moves, as flapwise bending, in-plane bending or torsion, rather than assuming the order.

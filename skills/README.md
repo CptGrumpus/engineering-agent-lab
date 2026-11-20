@@ -12,8 +12,9 @@ automatically. This file tracks the skill plan and the standard each skill must 
 | Simulation execution | **Built** | [run-case](../.claude/skills/run-case/SKILL.md) |
 | Verification and evidence | **Built** | [verify-against-reference](../.claude/skills/verify-against-reference/SKILL.md) |
 | Engineering review report | **Built** | [requirements-report](../.claude/skills/requirements-report/SKILL.md) |
+| Result presentation | **Built**: Blender renders of FE results and CAD parts, with geometry (enclosed volume) and colour-fidelity checks gating publication | [render-results](../.claude/skills/render-results/SKILL.md) |
 
-The built skills are study-agnostic: they drive `python -m harness`, which supports every model registered in `harness/registry.py` (mass-spring-damper, quarter car, cantilever FEA, mounting plate, OpenFOAM channel and duct flow). `verify-against-reference` also covers cross-tool comparisons and run-level checks such as mesh convergence.
+The built skills are study-agnostic: they drive `python -m harness`, which supports every model registered in `harness/registry.py` (mass-spring-damper, quarter car, cantilever FEA, mounting plate, OpenFOAM channel and duct flow, heat-sink fin, strap with a hole, strap fatigue, bracket modal analysis). `verify-against-reference` also covers cross-tool comparisons and run-level checks such as mesh convergence.
 
 ## Requirements and assumptions
 
@@ -34,6 +35,10 @@ Apply relevant independent checks: analytical references, benchmark comparisons,
 ## Engineering review report
 
 Connect each requirement to a result, check, and evidence file. State failures, uncertainty, and what remains unvalidated. Leave engineering acceptance to human review.
+
+## Result presentation
+
+Render verified results on the 3D part for reports and reviews, without letting the picture say more than the study. The legend is generated from the same numbers as the shader, every pixel is checked against it, deformation scales and range caps are stated in the caption, and the rendered surface must enclose the part's design volume.
 
 ## Definition of a useful skill
 

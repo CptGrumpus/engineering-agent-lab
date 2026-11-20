@@ -5,13 +5,13 @@ Run from the repository root:  .venv\\Scripts\\python.exe scripts\\make_result_v
 
 Uses local evidence runs (result CSVs and full meshes are not committed; rerun
 the named case if a file is missing). Rendering is plain matplotlib with an
-own projection: boundary faces extracted from the solid mesh, oriented
-outwards, back-face culled, and drawn back to front.
+own projection: boundary faces extracted from the solid mesh (harness.femesh),
+oriented outwards, back-face culled, and drawn back to front. The Blender
+renders (scripts/make_renders.py) use the same surface extraction.
 """
 
 from __future__ import annotations
 
-import re
 import shutil
 import subprocess
 import sys
@@ -27,83 +27,11 @@ from matplotlib.collections import PolyCollection  # noqa: E402
 
 REPO = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO))
+from harness.femesh import boundary_triangles, read_inp, von_mises  # noqa: E402
 from harness.plotting import GRID, SERIES_1, SERIES_2, SURFACE, TEXT, TEXT_2  # noqa: E402
 
 OUT = REPO / "portfolio" / "img"
 CMAP = matplotlib.colormaps["turbo"]  # FE-style contour map
-
-# corner-node faces of each element type, as index triples into the element's node list
-FACES = {
-    "C3D10": [(0, 1, 2), (0, 1, 3), (1, 2, 3), (0, 2, 3)],
-    "C3D4": [(0, 1, 2), (0, 1, 3), (1, 2, 3), (0, 2, 3)],
-    "C3D8": [(0, 1, 2, 3), (4, 5, 6, 7), (0, 1, 5, 4), (1, 2, 6, 5), (2, 3, 7, 6), (3, 0, 4, 7)],
-}
-NODES_PER = {"C3D10": 10, "C3D4": 4, "C3D8": 8}
-
-
-# --------------------------------------------------------------------------- mesh input
-
-def read_inp(path: Path) -> tuple[dict, list[tuple[str, list[int]]]]:
-    """Nodes {id: (x, y, z)} and solid elements [(type, node ids)] from an Abaqus/CalculiX deck,
-    following *INCLUDE files."""
-    nodes, elems = {}, []
-    mode, etype, buf = None, None, []
-    lines = Path(path).read_text(encoding="latin-1").splitlines()
-    for raw in lines:
-        line = raw.strip()
-        if not line or line.startswith("**"):
-            continue
-        if line.startswith("*"):
-            key = line.upper()
-            if key.startswith("*INCLUDE"):
-                inc = re.search(r"INPUT\s*=\s*(\S+)", line, re.I).group(1)
-                n2, e2 = read_inp(Path(path).parent / inc)
-                nodes.update(n2); elems += e2
-                mode = None
-            elif key.startswith("*NODE") and "PRINT" not in key and "FILE" not in key and "OUTPUT" not in key:
-                mode = "node"
-            elif key.startswith("*ELEMENT") and "OUTPUT" not in key:
-                t = re.search(r"TYPE\s*=\s*(\w+)", line, re.I).group(1).upper()
-                mode, etype, buf = ("elem", t, []) if t in NODES_PER else (None, None, [])
-            else:
-                mode = None
-            continue
-        if mode == "node":
-            v = line.split(",")
-            nodes[int(v[0])] = tuple(float(c) for c in v[1:4])
-        elif mode == "elem":
-            buf += [int(c) for c in line.rstrip(",").split(",") if c.strip()]
-            if len(buf) >= NODES_PER[etype] + 1:
-                elems.append((etype, buf[1:NODES_PER[etype] + 1]))
-                buf = []
-    return nodes, elems
-
-
-def boundary_triangles(nodes: dict, elems) -> np.ndarray:
-    """Outward-oriented boundary triangles (node-id triples) of a solid mesh."""
-    seen: dict = {}
-    for etype, conn in elems:
-        corners = conn[:4] if etype in ("C3D10", "C3D4") else conn
-        for f in FACES[etype]:
-            ids = tuple(corners[i] for i in f)
-            key = tuple(sorted(ids))
-            seen.setdefault(key, []).append((ids, corners))
-    tris = []
-    for key, owners in seen.items():
-        if len(owners) != 1:
-            continue
-        ids, corners = owners[0]
-        P = np.array([nodes[i] for i in ids])
-        n = np.cross(P[1] - P[0], P[2] - P[0])
-        centroid = np.mean([nodes[i] for i in corners], axis=0)
-        if np.dot(n, P[0] - centroid) < 0:      # make the face normal point out of the element
-            ids = ids[::-1]
-        if len(ids) == 3:
-            tris.append(ids)
-        else:
-            tris += [(ids[0], ids[1], ids[2]), (ids[0], ids[2], ids[3])]
-    return np.array(tris)
-
 
 # --------------------------------------------------------------------------- rendering
 
@@ -145,12 +73,6 @@ def colorbar(fig, ax, vmin, vmax, label):
     cb.set_label(label, color=TEXT_2)
     cb.ax.tick_params(colors=TEXT_2, labelsize=8)
     cb.outline.set_edgecolor(GRID)
-
-
-def von_mises(s):
-    return np.sqrt(0.5 * ((s["sxx_MPa"] - s["syy_MPa"]) ** 2 + (s["syy_MPa"] - s["szz_MPa"]) ** 2
-                          + (s["szz_MPa"] - s["sxx_MPa"]) ** 2)
-                   + 3 * (s["sxy_MPa"] ** 2 + s["syz_MPa"] ** 2 + s["szx_MPa"] ** 2))
 
 
 # --------------------------------------------------------------------------- figures

@@ -11,7 +11,7 @@
 
 ![Strap with a 16 mm cable hole, CadQuery geometry](img/strap_render.png)
 
-![Axial stress around the hole, full plate](img/strap_stress.png)
+![Axial stress over the whole strap and a close-up of the hole, rendered in Blender](img/render_strap.png)
 
 ## The question
 

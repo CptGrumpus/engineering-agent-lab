@@ -9,7 +9,7 @@
 | **Tools** | CalculiX 2.22 (heat transfer), Python |
 | **Methods** | 3D steady conduction with surface convection, 1D fin theory, energy balance, mesh refinement, tolerance corners, a heat-transfer-coefficient sweep |
 
-![Temperature over the 3D fin](img/fin_temperature.png)
+![Temperature over the 3D fin, rendered in Blender](img/render_fin.png)
 
 ## The question
 
