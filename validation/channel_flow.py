@@ -102,3 +102,41 @@ def header_total_pressure_drop(H, L, Hs, Ls, Lc, U, rho, mu, contraction_height)
     supply = 12.0 * mu * q * Ls / Hs**3
     contraction = lubrication_friction(q, mu, contraction_height(s, H, Hs), Lc / (len(s) - 1))
     return supply + contraction + total_pressure_drop_uniform_entry(L, U, H, rho, mu)
+
+
+# --------------------------------------------------------------------------- rectangular duct
+#
+# Fully developed laminar flow in a rectangular duct, cross-section
+# -a < Y < a (gap H = 2a), -b < Z < b (width W = 2b), b >= a, driven by
+# G = -dp/dx (series solution; e.g. White, "Viscous Fluid Flow", 3rd ed., eq. 3-48):
+#
+#   u(Y, Z) = 16 a^2 G / (mu pi^3) * sum_{n odd} (-1)^((n-1)/2) / n^3
+#             * [1 - cosh(n pi Z / 2a) / cosh(n pi b / 2a)] * cos(n pi Y / 2a)
+#   U_mean  = a^2 G / (3 mu) * [1 - (192 a / (pi^5 b)) sum_{n odd} tanh(n pi b / 2a) / n^5]
+#
+# The bracket is the side-wall correction: with b -> inf it tends to 1 and
+# U_mean -> H^2 G / (12 mu), the parallel-plate result.
+
+
+def duct_flow_factor(H: float, W: float, n_terms: int = 200) -> float:
+    """U_mean(duct) / U_mean(parallel plates) at the same pressure gradient."""
+    a, b = H / 2, W / 2
+    n = np.arange(1, 2 * n_terms, 2, dtype=float)
+    return float(1.0 - (192.0 * a / (np.pi**5 * b)) * np.sum(np.tanh(n * np.pi * b / (2 * a)) / n**5))
+
+
+def duct_pressure_gradient(U: float, H: float, W: float, mu: float) -> float:
+    """-dp/dx (Pa/m) for mean velocity U in an H x W rectangular duct."""
+    return pressure_gradient(U, H, mu) / duct_flow_factor(H, W)
+
+
+def duct_velocity(Y, Z, G: float, H: float, W: float, mu: float, n_terms: int = 200):
+    """Exact u at centred coordinates Y (across the gap) and Z (across the width)."""
+    a, b = H / 2, W / 2
+    Y, Z = np.asarray(Y, float)[..., None], np.asarray(Z, float)[..., None]
+    n = np.arange(1, 2 * n_terms, 2, dtype=float)
+    k = n * np.pi / (2 * a)
+    # cosh(kZ)/cosh(kb) without overflow
+    ratio = np.exp(k * (np.abs(Z) - b)) * (1 + np.exp(-2 * k * np.abs(Z))) / (1 + np.exp(-2 * k * b))
+    terms = (-1.0) ** ((n - 1) / 2) / n**3 * (1 - ratio) * np.cos(k * Y)
+    return 16 * a**2 * G / (mu * np.pi**3) * np.sum(terms, axis=-1)

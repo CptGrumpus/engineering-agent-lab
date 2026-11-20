@@ -1,0 +1,94 @@
+# Confirmation runs for the gap limits estimated in channel_header_tolerance.
+#
+# Predictions, written BEFORE these runs (from the tolerance-study corners):
+#   - Pressure budget at 15 C: scaling the two 15 C corners (required pressure
+#     ~ gap^-2.74) gives a minimum gap of 1.078 mm for 30 Pa.
+#     Expect required_pressure_Pa ~ 30 Pa at gap 1.078 mm, 15 C.
+#   - Wall shear at 40 C: exact fully developed wall shear 6 mu q / gap^2 = 0.5 Pa
+#     gives a maximum gap of 0.885 mm.
+#     Expect wall_shear_stress_Pa ~ 0.50 Pa at gap 0.885 mm, 40 C.
+# If both hold, no gap meets both requirements over 15-40 C at this flow rate:
+# the pressure budget needs gap >= 1.078 mm, the shear criterion gap <= 0.885 mm.
+#
+# Requirements and tolerances: identical to channel_header_mesh, fixed before
+# the first run of that case.
+
+[case]
+name = "channel_header_gap_limits"
+model = "openfoam_channel"
+description = "Header-fed parallel-plate channel (as channel_header_tolerance, 80 cells across the gap) at the two gap limits estimated from the tolerance study: 1.078 mm at 15 C (pressure budget) and 0.885 mm at 40 C (wall shear). Confirms or refutes that the requirements leave no feasible gap at a flow rate of 1.0e-4 m^2/s per unit width."
+assumptions = [
+  "As channel_header_mesh, except the inputs varied below.",
+  "Flow rate per unit width is fixed by the pump: mean velocity = 1.0e-4 / gap (m/s, gap in m).",
+  "Water properties from IAPWS tables: 15 C (999.10 kg/m^3, 1.1375 mPa s), 20 C (998.21, 1.0016), 40 C (992.22, 0.6527).",
+  "Gap is uniform along the channel within each scenario (no taper or waviness).",
+]
+limitations = [
+  "Synthetic requirement limits and temperature range.",
+  "The two gaps come from scaling estimates; these runs test those estimates, not a full gap search.",
+  "Numerical uncertainty is taken from channel_header_mesh (same mesh resolution).",
+  "No physical test data.",
+]
+
+[parameters]
+gap_mm = 1.0
+length_mm = 20.0
+mean_velocity_m_per_s = 0.1
+density_kg_per_m3 = 998.21
+dynamic_viscosity_Pa_s = 1.0016e-3
+cells_across_gap = 80
+cell_aspect_ratio = 2.0
+window_start_mm = 10.0
+window_end_mm = 18.0
+supply_height_mm = 3.0
+supply_length_mm = 3.0
+contraction_length_mm = 3.0
+
+[[sweep.scenarios]]
+name = "gap_1.078mm_15C"
+gap_mm = 1.078
+mean_velocity_m_per_s = 0.09276437847866419
+density_kg_per_m3 = 999.10
+dynamic_viscosity_Pa_s = 1.1375e-3
+
+[[sweep.scenarios]]
+name = "gap_0.885mm_40C"
+gap_mm = 0.885
+mean_velocity_m_per_s = 0.11299435028248588
+density_kg_per_m3 = 992.22
+dynamic_viscosity_Pa_s = 0.6527e-3
+
+[numerics]
+solver = "OpenFOAM incompressibleFluid, steady SIMPLEC, laminar"
+convection_scheme = "linearUpwind grad(U)"
+residual_p = 1e-6
+residual_U = 1e-6
+relaxation_U = 0.9
+max_iterations = 20000
+
+[verification]
+mass_rel_tol = 1e-6
+momentum_balance_rel_tol = 1e-3
+profile_rel_tol = 0.01
+fully_developed_rel_tol = 0.01
+correlation_rel_tol = 0.10
+laminar_reynolds_max = 2000.0
+fully_developed_change_max = 1e-3
+gci_fully_developed_max = 0.01
+gci_pressure_drop_max = 0.02
+
+[[requirements]]
+id = "REQ-F1"
+text = "Supply pressure required to drive the flow from the supply header through the channel, including the exit loss, shall not exceed 30 Pa (pump budget share)."
+metric = "required_pressure_Pa"
+operator = "<="
+limit = 30.0
+units = "Pa"
+
+[[requirements]]
+id = "REQ-F2"
+text = "Fully developed wall shear stress shall be at least 0.5 Pa (synthetic anti-fouling criterion)."
+metric = "wall_shear_stress_Pa"
+operator = ">="
+limit = 0.5
+units = "Pa"

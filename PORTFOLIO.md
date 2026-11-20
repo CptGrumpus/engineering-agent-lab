@@ -49,7 +49,9 @@ Linear 2-DOF quarter car (C-segment front-corner wheel rates). The damper rate i
 
 **Question.** A cold-plate passage (1 mm gap between parallel plates, 20 mm long, water at 1.0e-4 m²/s per unit width, about 0.1 m/s) must stay within a 30 Pa share of the pump budget and keep at least 0.5 Pa wall shear stress (a fouling criterion). Does it, across the gap tolerance (±0.05 mm) and coolant temperature range (15-40 °C)?
 
-**Answer.** No. At nominal conditions the passage needs **33.4 Pa** of supply pressure (numerical uncertainty ±0.01 Pa), so it misses the budget by 11 %. Across the tolerance band the required pressure spans 28-42 Pa, and warm coolant pushes wall shear down to 0.43 Pa. No gap satisfies both requirements at this flow rate: scaling from the CFD results, the 30 Pa budget at 15 °C needs a gap of at least about 1.08 mm, while 0.5 Pa wall shear at 40 °C needs at most 0.885 mm. Resolving it is a design decision: limit the coolant temperature range, raise the pressure budget, change the flow split, or revisit the shear criterion. The scaling estimates would be confirmed with a follow-up run.
+**Answer.** No. At nominal conditions the passage needs **33.4 Pa** of supply pressure (numerical uncertainty ±0.01 Pa), so it misses the budget by 11 %. Across the tolerance band the required pressure spans 28-42 Pa, and warm coolant pushes wall shear down to 0.43 Pa. No gap satisfies both requirements at this flow rate. Confirmation runs at the two limits, predicted before running ([report](runs/20261119-201615_channel_header_gap_limits/report.md)), show it directly: the 30 Pa budget at 15 °C needs a gap of at least 1.078 mm (30.02 Pa), while 0.5 Pa wall shear at 40 °C allows at most 0.885 mm (0.500 Pa). Resolving it is a design decision: limit the coolant temperature range, raise the pressure budget, change the flow split, or revisit the shear criterion.
+
+**2D assumption, checked in 3D.** A 3D OpenFOAM model of the same gap with side walls 20 mm apart ([report](runs/20261119-204111_duct_side_walls/report.md)) raises the fully developed pressure gradient by 3.22 % (exact series solution: 3.25 %), within the 5 % accepted for the 2D model. It converges at order 1.99 to within 1e-5 of the exact rectangular-duct solution. Applied to the channel's fully developed friction (24 Pa), the side walls add about 0.8 Pa: the nominal estimate becomes about 34.2 Pa, so the conclusion stands.
 
 **Model.** Steady laminar 2D flow in OpenFOAM 14: a supply header with a fully developed inlet profile at the exact flow rate, a smooth contraction, and the channel. A Python writer generates every OpenFOAM dictionary, and results are read straight from OpenFOAM's field files. Required supply pressure is the flux-weighted total pressure at the inlet minus the outlet static pressure. That counts the outlet dynamic head as lost in the outlet header (exit-loss coefficient 1, conservative); the dynamic head is 7.7 Pa of the 33.4 Pa.
 
@@ -57,7 +59,7 @@ Linear 2-DOF quarter car (C-segment front-corner wheel rates). The damper rate i
 |---|---|---|
 | Numerical: mesh | ±0.04 % | GCI over 20/40/80 cells across the gap; observed order 1.95 (design order 2) |
 | Numerical: iterative, conservation | residuals < 1e-6; mass conserved to 1e-8; force balance to 2e-5 | per-point checks |
-| Model form | CFD vs independent estimate (lubrication theory in the header + Shah & London channel correlation): 0.04 %, at most 0.3 % across the tolerance corners | per-point check. Assumptions: 2D channel (to confirm against the real width), no recovery in the outlet header (conservative) |
+| Model form | CFD vs independent estimate (lubrication theory in the header + Shah & London channel correlation): 0.04 %, at most 0.3 % across the tolerance corners. 2D assumption: +3.2 % on the friction gradient for a 20 mm wide channel (about +0.8 Pa) | per-point check; 3D duct study. Assumption: no recovery in the outlet header (conservative) |
 | Inputs: gap ±0.05 mm, 15-40 °C | −16 % / +27 % | verified tolerance corners at 80 cells across the gap |
 
 Reports: [mesh study](runs/20261119-200042_channel_header_mesh/report.md) (fully developed velocity profile, pressure gradient, and wall shear match the exact Poiseuille solution to 0.02 %), [tolerance study](runs/20261119-200202_channel_header_tolerance/report.md).
@@ -71,6 +73,7 @@ Reports: [mesh study](runs/20261119-200042_channel_header_mesh/report.md) (fully
 **What the checks caught.**
 - The first model imposed a uniform velocity at the channel entry, a common simplification ([report](runs/20261119-191916_channel_mesh/report.md)). Its fully developed results were exact, but the pressure drop kept rising with mesh refinement: it converged at order 0.5, the signature of a singular corner where the uniform inlet meets the no-slip wall. The mesh-convergence check failed (3.5 % against 2 %) and the pressure requirement was marked unverified. That idealized model also said the channel passed (28.6 Pa). Modelling the supply header fixed the convergence (order 1.95, 0.04 %) and, with the exit loss included, reversed the verdict.
 - In the warm, wide-gap corner (Re ≈ 300) the flow is still developing slightly where the fully developed quantities are measured (0.13 % change against a 0.1 % limit). That point is marked unverified rather than used; the conclusion rests on the verified corners.
+- The first 3D run had the side-wall mesh grading inverted, so the cells were coarsest exactly where the side-wall layer needs them ([report](runs/20261119-202956_duct_side_walls/report.md)). The pressure gradient still passed its reference check on the finer meshes, but the full velocity-field check failed at every mesh, with the worst cell always next to the side wall. The integral quantity hid a meshing error that the field comparison exposed.
 
 ## 3. Cantilever, 3D solid FEA, mesh convergence
 
@@ -115,5 +118,5 @@ Tool versions: Python 3.14.10, NumPy 2.5.5, SciPy 1.18.1, OpenModelica 1.26.3 wi
 - Synthetic parameters throughout; nothing is calibrated to a real product.
 - The checks establish numerical verification and model-validity limits. Physical validation needs test data, which these examples do not have.
 - Comfort metrics are unweighted (no ISO 2631 frequency weighting).
-- The CFD example is 2D, isothermal, and laminar; heat transfer is not modelled.
+- The CFD example is isothermal and laminar (2D, with a 3D check of the side-wall effect); heat transfer is not modelled.
 - Engineering acceptance is left to human review; reports end with "Pending human review" by design.

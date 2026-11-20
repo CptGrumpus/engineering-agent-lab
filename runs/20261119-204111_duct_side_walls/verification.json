@@ -1,0 +1,361 @@
+{
+  "run_id": "20261119-204111_duct_side_walls",
+  "verified_utc": "2026-11-20T01:59:04+00:00",
+  "tolerances": {
+    "ux_residual_max": 1e-06,
+    "gradient_change_max": 1e-05,
+    "cross_flow_max": 0.0001,
+    "mean_velocity_rel_tol": 1e-05,
+    "pressure_gradient_rel_tol": 0.01,
+    "velocity_rel_tol": 0.01,
+    "laminar_reynolds_max": 2000.0,
+    "gci_max": 0.01
+  },
+  "points": [
+    {
+      "label": "p00_cells_across_gap-10",
+      "status": "FAIL",
+      "checks": [
+        {
+          "id": "mesh_quality",
+          "description": "checkMesh result (0 = Mesh OK)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "ux_residual",
+          "description": "final initial residual of Ux (inf if the run did not end)",
+          "kind": "numerical",
+          "value": 1.65496120397e-15,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "pressure_gradient_converged",
+          "description": "max relative change of -dp/dx over the last 10 % of iterations",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 1e-05,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "no_cross_flow",
+          "description": "max(|u_y|, |u_z|) / U_mean (exactly 0 for fully developed flow)",
+          "kind": "numerical",
+          "value": 1.97658758264e-15,
+          "tolerance": 0.0001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "mean_velocity",
+          "description": "|U_mean reported by meanVelocityForce - target| / target",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 1e-05,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "pressure_gradient_reference",
+          "description": "|(-dp/dx)_CFD - exact rectangular-duct series| / exact",
+          "kind": "numerical",
+          "value": 0.020305675777235133,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "FAIL"
+        },
+        {
+          "id": "velocity_field_reference",
+          "description": "max |u_CFD - u_exact| / u_max over all cells",
+          "kind": "numerical",
+          "value": 0.010828681608100089,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "FAIL"
+        },
+        {
+          "id": "laminar",
+          "description": "Re_Dh (parallel plates, conservative) / laminar limit",
+          "kind": "validity",
+          "value": 0.09966154153354634,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p01_cells_across_gap-20",
+      "status": "PASS",
+      "checks": [
+        {
+          "id": "mesh_quality",
+          "description": "checkMesh result (0 = Mesh OK)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "ux_residual",
+          "description": "final initial residual of Ux (inf if the run did not end)",
+          "kind": "numerical",
+          "value": 1.89262958207e-15,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "pressure_gradient_converged",
+          "description": "max relative change of -dp/dx over the last 10 % of iterations",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 1e-05,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "no_cross_flow",
+          "description": "max(|u_y|, |u_z|) / U_mean (exactly 0 for fully developed flow)",
+          "kind": "numerical",
+          "value": 4.8294412433200004e-15,
+          "tolerance": 0.0001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "mean_velocity",
+          "description": "|U_mean reported by meanVelocityForce - target| / target",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 1e-05,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "pressure_gradient_reference",
+          "description": "|(-dp/dx)_CFD - exact rectangular-duct series| / exact",
+          "kind": "numerical",
+          "value": 0.005171454885445967,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "velocity_field_reference",
+          "description": "max |u_CFD - u_exact| / u_max over all cells",
+          "kind": "numerical",
+          "value": 0.003178002627998148,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "laminar",
+          "description": "Re_Dh (parallel plates, conservative) / laminar limit",
+          "kind": "validity",
+          "value": 0.09966154153354634,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p02_cells_across_gap-40",
+      "status": "PASS",
+      "checks": [
+        {
+          "id": "mesh_quality",
+          "description": "checkMesh result (0 = Mesh OK)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "ux_residual",
+          "description": "final initial residual of Ux (inf if the run did not end)",
+          "kind": "numerical",
+          "value": 4.79499253504e-15,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "pressure_gradient_converged",
+          "description": "max relative change of -dp/dx over the last 10 % of iterations",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 1e-05,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "no_cross_flow",
+          "description": "max(|u_y|, |u_z|) / U_mean (exactly 0 for fully developed flow)",
+          "kind": "numerical",
+          "value": 2.3377040155799997e-14,
+          "tolerance": 0.0001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "mean_velocity",
+          "description": "|U_mean reported by meanVelocityForce - target| / target",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 1e-05,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "pressure_gradient_reference",
+          "description": "|(-dp/dx)_CFD - exact rectangular-duct series| / exact",
+          "kind": "numerical",
+          "value": 0.0012998962564031657,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "velocity_field_reference",
+          "description": "max |u_CFD - u_exact| / u_max over all cells",
+          "kind": "numerical",
+          "value": 0.0009059988833430308,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "laminar",
+          "description": "Re_Dh (parallel plates, conservative) / laminar limit",
+          "kind": "validity",
+          "value": 0.09966154153354634,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p03_cells_across_gap-80",
+      "status": "PASS",
+      "checks": [
+        {
+          "id": "mesh_quality",
+          "description": "checkMesh result (0 = Mesh OK)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "ux_residual",
+          "description": "final initial residual of Ux (inf if the run did not end)",
+          "kind": "numerical",
+          "value": 6.71976292356e-10,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "pressure_gradient_converged",
+          "description": "max relative change of -dp/dx over the last 10 % of iterations",
+          "kind": "numerical",
+          "value": 1.626907829969361e-08,
+          "tolerance": 1e-05,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "no_cross_flow",
+          "description": "max(|u_y|, |u_z|) / U_mean (exactly 0 for fully developed flow)",
+          "kind": "numerical",
+          "value": 1.66811044782e-13,
+          "tolerance": 0.0001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "mean_velocity",
+          "description": "|U_mean reported by meanVelocityForce - target| / target",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 1e-05,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "pressure_gradient_reference",
+          "description": "|(-dp/dx)_CFD - exact rectangular-duct series| / exact",
+          "kind": "numerical",
+          "value": 0.0003255237566103861,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "velocity_field_reference",
+          "description": "max |u_CFD - u_exact| / u_max over all cells",
+          "kind": "numerical",
+          "value": 0.00024092904242000435,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "laminar",
+          "description": "Re_Dh (parallel plates, conservative) / laminar limit",
+          "kind": "validity",
+          "value": 0.09966154153354634,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ]
+    }
+  ],
+  "run_checks": [
+    {
+      "id": "discretization_pressure_gradient_Pa_per_m",
+      "description": "relative discretization uncertainty of pressure_gradient_Pa_per_m, monotone (R = 0.252): GCI_fine, observed order 1.99, extrapolated 1241.03",
+      "kind": "numerical",
+      "value": 0.0004097557420591239,
+      "tolerance": 0.01,
+      "comparison": "<=",
+      "status": "PASS",
+      "metric": "pressure_gradient_Pa_per_m"
+    }
+  ],
+  "run_check_detail": {
+    "meshes_used": [
+      "p03_cells_across_gap-80",
+      "p02_cells_across_gap-40",
+      "p01_cells_across_gap-20"
+    ],
+    "pressure_gradient_Pa_per_m": {
+      "regime": "monotone",
+      "uncertainty": 0.0004097557420591239,
+      "converged_exactly": false,
+      "order": 1.990369168785482,
+      "extrapolated": 1241.030517585887,
+      "rel_error_fine": 0.0009746897844729511,
+      "rel_error_extrapolated": 0.00032769717300867797,
+      "gci_fine": 0.0004097557420591239,
+      "convergence_ratio": 0.25167447871858317,
+      "r21": 2.0,
+      "r32": 2.0
+    }
+  },
+  "status": "FAIL"
+}

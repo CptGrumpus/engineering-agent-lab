@@ -20,7 +20,8 @@ The intended user is an automotive engineer with a master's degree in mechanical
 | Quarter-car ride / road holding | `quarter_car`, `quarter_car_modelica` | SciPy; OpenModelica + MSL | `qc_speed_bump`, `qc_speed_bump_modelica`, `qc_iso_road`, `qc_bump` |
 | Cantilever, 3D solid FEA | `cantilever_freecad` | FreeCAD + Gmsh + CalculiX | `cantilever_tet10`, `cantilever_tet4` |
 | Parametric mounting plate | `cadquery_plate` | CadQuery | `mounting_plate` |
-| Laminar coolant channel, CFD | `openfoam_channel` | OpenFOAM 14 (in WSL) | `channel_header_mesh`, `channel_header_tolerance`, `channel_mesh` |
+| Laminar coolant channel, CFD | `openfoam_channel` | OpenFOAM 14 (in WSL) | `channel_header_mesh`, `channel_header_tolerance`, `channel_header_gap_limits`, `channel_mesh` |
+| Side-wall (3D) check of the channel | `openfoam_duct` | OpenFOAM 14 (in WSL) | `duct_side_walls` |
 
 ## Project folders
 
@@ -52,7 +53,7 @@ winget install --id FreeCAD.FreeCAD                       # bundles CalculiX and
 .venv\Scripts\python.exe -m pytest -q        # Modelica/FreeCAD/OpenFOAM tests skip if the tool is absent
 ```
 
-Not yet done: heat transfer in the CFD path, 3D CFD, nonlinear models (tire lift-off, bump stops, contact), any physical validation data.
+Not yet done: heat transfer in the CFD path, 3D developing flow, nonlinear models (tire lift-off, bump stops, contact), any physical validation data.
 
 ## First implementation milestone (done)
 

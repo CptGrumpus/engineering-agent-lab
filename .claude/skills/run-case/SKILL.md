@@ -20,6 +20,7 @@ is the `verify-against-reference` skill.
 | `cantilever_freecad` | cantilever FEA | FreeCAD 1.1.4 (`freecadcmd`) + Gmsh + CalculiX 2.22 | `models/fea/cantilever_freecad.py` |
 | `cadquery_plate` | mounting plate | CadQuery 2.8 (OpenCASCADE) | `models/cad/mounting_plate.py` |
 | `openfoam_channel` | laminar channel flow | OpenFOAM 14 in WSL (blockMesh, checkMesh, foamRun) | `models/cfd/channel_openfoam.py`, `models/cfd/run_channel.sh` |
+| `openfoam_duct` | rectangular duct (3D side-wall check) | OpenFOAM 14 in WSL, periodic quarter section | `models/cfd/duct_openfoam.py`, `models/cfd/run_channel.sh` |
 
 The registry is `harness/registry.py`; each study lives in `studies/<name>.py`.
 
@@ -39,6 +40,10 @@ The registry is `harness/registry.py`; each study lives in `studies/<name>.py`.
   contraction ahead of the channel; without them the inlet is an idealized uniform
   velocity at the channel entry (singular inlet corners). If OpenFOAM is missing, stop:
   installing it needs `sudo apt` in WSL, which only the user can do.
+- `openfoam_duct` runs a fixed number of iterations (`[numerics] iterations`), not a
+  residual target: its p, Uy, and Uz fields are exactly uniform or zero, so their
+  normalised residuals never fall. The finest mesh of `duct_side_walls` takes about
+  7 minutes. Velocity relaxation above about 0.99 diverges.
 - For the Modelica models, the harness finds `omc` via `OPENMODELICAHOME` or
   `C:/Program Files/OpenModelica*/bin`. It compiles the model once per run, then runs
   the executable for each point. Model parameters are passed with `-override`; stop

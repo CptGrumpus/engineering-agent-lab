@@ -1,0 +1,443 @@
+{
+  "points": [
+    {
+      "label": "p00_cells_across_gap-10",
+      "parameters": {
+        "gap_mm": 1.0,
+        "width_mm": 20.0,
+        "mean_velocity_m_per_s": 0.1,
+        "density_kg_per_m3": 998.21,
+        "dynamic_viscosity_Pa_s": 0.0010016,
+        "cells_across_gap": 10,
+        "width_cells_per_gap_cell": 2.0,
+        "side_wall_grading": 10.0
+      },
+      "derived": {
+        "aspect_ratio_W_over_H": 20.0,
+        "reynolds_Dh_parallel_plates": 199.32308306709268,
+        "pressure_gradient_2D_Pa_per_m": 1201.9200000000003,
+        "pressure_gradient_exact_Pa_per_m": 1241.027819431496,
+        "side_wall_effect_exact": 0.03253778906374438
+      },
+      "simulation_status": "completed",
+      "verification_status": "FAIL",
+      "checks": [
+        {
+          "id": "mesh_quality",
+          "description": "checkMesh result (0 = Mesh OK)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "ux_residual",
+          "description": "final initial residual of Ux (inf if the run did not end)",
+          "kind": "numerical",
+          "value": 1.65496120397e-15,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "pressure_gradient_converged",
+          "description": "max relative change of -dp/dx over the last 10 % of iterations",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 1e-05,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "no_cross_flow",
+          "description": "max(|u_y|, |u_z|) / U_mean (exactly 0 for fully developed flow)",
+          "kind": "numerical",
+          "value": 1.97658758264e-15,
+          "tolerance": 0.0001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "mean_velocity",
+          "description": "|U_mean reported by meanVelocityForce - target| / target",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 1e-05,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "pressure_gradient_reference",
+          "description": "|(-dp/dx)_CFD - exact rectangular-duct series| / exact",
+          "kind": "numerical",
+          "value": 0.020305675777235133,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "FAIL"
+        },
+        {
+          "id": "velocity_field_reference",
+          "description": "max |u_CFD - u_exact| / u_max over all cells",
+          "kind": "numerical",
+          "value": 0.010828681608100089,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "FAIL"
+        },
+        {
+          "id": "laminar",
+          "description": "Re_Dh (parallel plates, conservative) / laminar limit",
+          "kind": "validity",
+          "value": 0.09966154153354634,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-A1",
+          "text": "The 2D parallel-plate assumption is acceptable if side walls change the fully developed pressure gradient by at most 5 %.",
+          "metric": "side_wall_effect",
+          "operator": "<=",
+          "limit": 0.05,
+          "units": "-",
+          "value": 0.011571411491272832,
+          "margin": 0.03842858850872717,
+          "verdict": "PASS (unverified)"
+        }
+      ]
+    },
+    {
+      "label": "p01_cells_across_gap-20",
+      "parameters": {
+        "gap_mm": 1.0,
+        "width_mm": 20.0,
+        "mean_velocity_m_per_s": 0.1,
+        "density_kg_per_m3": 998.21,
+        "dynamic_viscosity_Pa_s": 0.0010016,
+        "cells_across_gap": 20,
+        "width_cells_per_gap_cell": 2.0,
+        "side_wall_grading": 10.0
+      },
+      "derived": {
+        "aspect_ratio_W_over_H": 20.0,
+        "reynolds_Dh_parallel_plates": 199.32308306709268,
+        "pressure_gradient_2D_Pa_per_m": 1201.9200000000003,
+        "pressure_gradient_exact_Pa_per_m": 1241.027819431496,
+        "side_wall_effect_exact": 0.03253778906374438
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "mesh_quality",
+          "description": "checkMesh result (0 = Mesh OK)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "ux_residual",
+          "description": "final initial residual of Ux (inf if the run did not end)",
+          "kind": "numerical",
+          "value": 1.89262958207e-15,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "pressure_gradient_converged",
+          "description": "max relative change of -dp/dx over the last 10 % of iterations",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 1e-05,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "no_cross_flow",
+          "description": "max(|u_y|, |u_z|) / U_mean (exactly 0 for fully developed flow)",
+          "kind": "numerical",
+          "value": 4.8294412433200004e-15,
+          "tolerance": 0.0001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "mean_velocity",
+          "description": "|U_mean reported by meanVelocityForce - target| / target",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 1e-05,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "pressure_gradient_reference",
+          "description": "|(-dp/dx)_CFD - exact rectangular-duct series| / exact",
+          "kind": "numerical",
+          "value": 0.005171454885445967,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "velocity_field_reference",
+          "description": "max |u_CFD - u_exact| / u_max over all cells",
+          "kind": "numerical",
+          "value": 0.003178002627998148,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "laminar",
+          "description": "Re_Dh (parallel plates, conservative) / laminar limit",
+          "kind": "validity",
+          "value": 0.09966154153354634,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-A1",
+          "text": "The 2D parallel-plate assumption is acceptable if side walls change the fully developed pressure gradient by at most 5 %.",
+          "metric": "side_wall_effect",
+          "operator": "<=",
+          "limit": 0.05,
+          "units": "-",
+          "value": 0.02719806647008327,
+          "margin": 0.022801933529916732,
+          "verdict": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p02_cells_across_gap-40",
+      "parameters": {
+        "gap_mm": 1.0,
+        "width_mm": 20.0,
+        "mean_velocity_m_per_s": 0.1,
+        "density_kg_per_m3": 998.21,
+        "dynamic_viscosity_Pa_s": 0.0010016,
+        "cells_across_gap": 40,
+        "width_cells_per_gap_cell": 2.0,
+        "side_wall_grading": 10.0
+      },
+      "derived": {
+        "aspect_ratio_W_over_H": 20.0,
+        "reynolds_Dh_parallel_plates": 199.32308306709268,
+        "pressure_gradient_2D_Pa_per_m": 1201.9200000000003,
+        "pressure_gradient_exact_Pa_per_m": 1241.027819431496,
+        "side_wall_effect_exact": 0.03253778906374438
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "mesh_quality",
+          "description": "checkMesh result (0 = Mesh OK)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "ux_residual",
+          "description": "final initial residual of Ux (inf if the run did not end)",
+          "kind": "numerical",
+          "value": 4.79499253504e-15,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "pressure_gradient_converged",
+          "description": "max relative change of -dp/dx over the last 10 % of iterations",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 1e-05,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "no_cross_flow",
+          "description": "max(|u_y|, |u_z|) / U_mean (exactly 0 for fully developed flow)",
+          "kind": "numerical",
+          "value": 2.3377040155799997e-14,
+          "tolerance": 0.0001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "mean_velocity",
+          "description": "|U_mean reported by meanVelocityForce - target| / target",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 1e-05,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "pressure_gradient_reference",
+          "description": "|(-dp/dx)_CFD - exact rectangular-duct series| / exact",
+          "kind": "numerical",
+          "value": 0.0012998962564031657,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "velocity_field_reference",
+          "description": "max |u_CFD - u_exact| / u_max over all cells",
+          "kind": "numerical",
+          "value": 0.0009059988833430308,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "laminar",
+          "description": "Re_Dh (parallel plates, conservative) / laminar limit",
+          "kind": "validity",
+          "value": 0.09966154153354634,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-A1",
+          "text": "The 2D parallel-plate assumption is acceptable if side walls change the fully developed pressure gradient by at most 5 %.",
+          "metric": "side_wall_effect",
+          "operator": "<=",
+          "limit": 0.05,
+          "units": "-",
+          "value": 0.031195597057145585,
+          "margin": 0.018804402942854417,
+          "verdict": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p03_cells_across_gap-80",
+      "parameters": {
+        "gap_mm": 1.0,
+        "width_mm": 20.0,
+        "mean_velocity_m_per_s": 0.1,
+        "density_kg_per_m3": 998.21,
+        "dynamic_viscosity_Pa_s": 0.0010016,
+        "cells_across_gap": 80,
+        "width_cells_per_gap_cell": 2.0,
+        "side_wall_grading": 10.0
+      },
+      "derived": {
+        "aspect_ratio_W_over_H": 20.0,
+        "reynolds_Dh_parallel_plates": 199.32308306709268,
+        "pressure_gradient_2D_Pa_per_m": 1201.9200000000003,
+        "pressure_gradient_exact_Pa_per_m": 1241.027819431496,
+        "side_wall_effect_exact": 0.03253778906374438
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "mesh_quality",
+          "description": "checkMesh result (0 = Mesh OK)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "ux_residual",
+          "description": "final initial residual of Ux (inf if the run did not end)",
+          "kind": "numerical",
+          "value": 6.71976292356e-10,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "pressure_gradient_converged",
+          "description": "max relative change of -dp/dx over the last 10 % of iterations",
+          "kind": "numerical",
+          "value": 1.626907829969361e-08,
+          "tolerance": 1e-05,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "no_cross_flow",
+          "description": "max(|u_y|, |u_z|) / U_mean (exactly 0 for fully developed flow)",
+          "kind": "numerical",
+          "value": 1.66811044782e-13,
+          "tolerance": 0.0001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "mean_velocity",
+          "description": "|U_mean reported by meanVelocityForce - target| / target",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 1e-05,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "pressure_gradient_reference",
+          "description": "|(-dp/dx)_CFD - exact rectangular-duct series| / exact",
+          "kind": "numerical",
+          "value": 0.0003255237566103861,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "velocity_field_reference",
+          "description": "max |u_CFD - u_exact| / u_max over all cells",
+          "kind": "numerical",
+          "value": 0.00024092904242000435,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "laminar",
+          "description": "Re_Dh (parallel plates, conservative) / laminar limit",
+          "kind": "validity",
+          "value": 0.09966154153354634,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-A1",
+          "text": "The 2D parallel-plate assumption is acceptable if side walls change the fully developed pressure gradient by at most 5 %.",
+          "metric": "side_wall_effect",
+          "operator": "<=",
+          "limit": 0.05,
+          "units": "-",
+          "value": 0.032201673483806204,
+          "margin": 0.0177983265161938,
+          "verdict": "PASS"
+        }
+      ]
+    }
+  ],
+  "run_id": "20261119-204111_duct_side_walls",
+  "generated_utc": "2026-11-20T01:59:06+00:00",
+  "verification_status": "FAIL"
+}

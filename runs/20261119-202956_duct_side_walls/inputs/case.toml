@@ -1,0 +1,67 @@
+# Check of the 2D assumption in the channel_header_* cases: the same 1 mm gap
+# with side walls 20 mm apart, as a fully developed 3D duct flow in OpenFOAM,
+# verified against the exact rectangular-duct series solution and by GCI.
+#
+# The requirement here is on the modelling assumption, not on the design: the
+# 2D channel model is accepted if adding the side walls changes the fully
+# developed pressure gradient by at most 5 %. The result then corrects the
+# channel's friction pressure drop.
+#
+# Requirements and tolerances were fixed BEFORE the first run.
+
+[case]
+name = "duct_side_walls"
+model = "openfoam_duct"
+description = "Fully developed laminar water flow (20 C, 0.1 m/s mean) in a 1 mm x 20 mm rectangular duct, i.e. the coolant channel with its side walls. 3D OpenFOAM on a periodic quarter cross-section; mesh refined from 10 to 80 cells across the gap (ratio 2). Quantifies the error of the 2D parallel-plate assumption."
+assumptions = [
+  "Channel width 20 mm (synthetic; the real width is not specified). The side-wall effect scales roughly with gap / width.",
+  "Fully developed flow (periodic in x): entrance effects are covered by the 2D header model.",
+  "Incompressible, isothermal, Newtonian water at 20 C (IAPWS: rho = 998.21 kg/m^3, mu = 1.0016 mPa s); laminar.",
+  "Symmetric about mid-gap and mid-width (quarter section modelled).",
+]
+limitations = [
+  "One width only; other widths follow from the verified exact series solution.",
+  "Corner regions of a real channel (fillets, side-wall roughness) are not modelled.",
+  "No physical test data.",
+]
+
+[parameters]
+gap_mm = 1.0
+width_mm = 20.0
+mean_velocity_m_per_s = 0.1
+density_kg_per_m3 = 998.21
+dynamic_viscosity_Pa_s = 1.0016e-3
+cells_across_gap = 20
+width_cells_per_gap_cell = 2.0   # cells across the half width = 2 x cells across the gap
+side_wall_grading = 10.0         # largest / smallest cell across the half width (fine at the side wall)
+
+[sweep]
+parameter = "cells_across_gap"
+values = [10, 20, 40, 80]
+
+[numerics]
+solver = "OpenFOAM incompressibleFluid, steady SIMPLEC, laminar, meanVelocityForce"
+relaxation_U = 0.9
+iterations = 5000               # fixed: see the convergence checks below
+
+[verification]
+# Convergence is judged on Ux and on the quantity of interest, not on the p, Uy,
+# Uz residuals: those fields are exactly uniform / zero here, so their normalised
+# residuals stall at round-off noise (seen in a coarse-mesh smoke test, which
+# also showed the slow width-diffusion mode; settled before the evidence run).
+ux_residual_max = 1e-6            # final initial residual of Ux
+gradient_change_max = 1e-5        # relative change of -dp/dx over the last 10 % of iterations
+cross_flow_max = 1e-4             # max |u_y|, |u_z| relative to U_mean
+mean_velocity_rel_tol = 1e-5      # mean velocity reported by the constraint vs target
+pressure_gradient_rel_tol = 0.01  # -dp/dx vs exact series
+velocity_rel_tol = 0.01           # velocity field vs exact series, relative to u_max
+laminar_reynolds_max = 2000.0
+gci_max = 0.01                    # GCI_fine on -dp/dx
+
+[[requirements]]
+id = "REQ-A1"
+text = "The 2D parallel-plate assumption is acceptable if side walls change the fully developed pressure gradient by at most 5 %."
+metric = "side_wall_effect"
+operator = "<="
+limit = 0.05
+units = "-"

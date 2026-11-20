@@ -18,6 +18,7 @@ points). References live in `validation/` and must not import from `models/`; ke
 | quarter car (iso8608) | window RMS vs closed-form transfer functions, transient decayed, energy balance, solver convergence, **no_wheel_lift (validity)** | - |
 | cantilever FEA | reaction equilibrium, tip deflection vs Timoshenko, extrapolated root stress vs beam theory, **linear_material, small_deflection (validity)** | discretization uncertainty (GCI or oscillatory half-range) over the 3 finest meshes |
 | mounting plate | valid solid, volume vs closed form, bounding box, hole count/positions/diameters, STEP round trip | - |
+| duct flow (CFD, 3D) | checkMesh, Ux residual, pressure-gradient history (last 10 % of iterations), no cross-flow, imposed mean velocity, pressure gradient and full velocity field vs exact rectangular-duct series, **laminar (validity)** | GCI on the pressure gradient (cells_across_gap sweep) |
 | channel flow (CFD) | checkMesh, iterative convergence, mass conservation, imposed flow rate, force balance (tau_w vs pressure gradient), Poiseuille profile / pressure gradient / wall shear, pressure-drop correlation (model form), **laminar, entrance_before_window, fully_developed (validity)** | GCI over the 3 finest meshes (cells_across_gap sweep) on the fully developed metrics and the pressure drops |
 
 Two kinds of check, both gating verification:

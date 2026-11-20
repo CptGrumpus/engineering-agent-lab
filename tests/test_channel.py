@@ -153,3 +153,20 @@ def test_channel_pipeline_coarse(tmp_path):
     for cid in ("mass_conservation", "momentum_balance", "velocity_profile_reference",
                 "pressure_gradient_reference", "wall_shear_reference", "fully_developed"):
         assert by_id[cid]["status"] == "PASS", by_id[cid]
+
+
+def test_duct_series_limits_and_mean():
+    H, mu, U = 1e-3, 1.0016e-3, 0.1
+    # wide duct -> parallel plates; square duct -> known f Re = 56.91 (Shah & London)
+    assert ref.duct_flow_factor(H, 1000 * H) == pytest.approx(1.0, abs=1e-3)
+    G_sq = ref.duct_pressure_gradient(U, H, H, mu)
+    fanning_re = G_sq * H**2 / (2 * mu * U)  # D_h = H for a square duct
+    assert fanning_re == pytest.approx(14.227, rel=1e-4)  # Darcy f Re = 56.91
+    # the exact field integrates back to the mean velocity
+    W = 20 * H
+    G = ref.duct_pressure_gradient(U, H, W, mu)
+    y = np.linspace(-H / 2, H / 2, 401)
+    z = np.linspace(-W / 2, W / 2, 2001)
+    u = ref.duct_velocity(*np.meshgrid(y, z, indexing="ij"), G, H, W, mu)
+    assert np.trapezoid(np.trapezoid(u, z, axis=1), y) / (H * W) == pytest.approx(U, rel=1e-4)
+    assert np.max(np.abs(u[0])) < 1e-12 and np.max(np.abs(u[:, 0])) < 1e-12  # no slip

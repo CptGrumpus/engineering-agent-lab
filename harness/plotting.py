@@ -393,3 +393,46 @@ def channel_field_figure(path, s, p, blocks, *, title):
     fig.tight_layout()
     fig.savefig(path, dpi=130, facecolor=SURFACE)
     plt.close(fig)
+
+
+def duct_figure(path, s, p, d, m, u_exact, *, title):
+    """Quarter-section duct: velocity across the width at mid-gap, and across the gap
+    at mid-width and near the side wall, CFD vs the exact series solution."""
+    from validation import channel_flow as ref
+
+    H, W = float(p["gap_mm"]), float(p["width_mm"])
+    U = float(p["mean_velocity_m_per_s"])
+    x0 = s["x_mm"].min()
+    sl = np.isclose(s["x_mm"], x0, rtol=0, atol=1e-9)  # one periodic slice
+    y, z, u, ue = s["y_mm"][sl], s["z_mm"][sl], s["ux_m_per_s"][sl], u_exact[sl]
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10, 4.2), facecolor=SURFACE,
+                                   gridspec_kw={"width_ratios": (1.6, 1)})
+    ytop = y.max()                       # row nearest mid-gap
+    row = np.isclose(y, ytop, rtol=0, atol=1e-9)
+    o = np.argsort(z[row])
+    ax1.plot(z[row][o], ue[row][o] / U, color=SERIES_2, linewidth=2, label="exact (rectangular duct)")
+    ax1.plot(z[row][o], u[row][o] / U, "o", color=SERIES_1, markersize=3, label="OpenFOAM cells")
+    ax1.axhline(float(ref.velocity_profile(ytop * 1e-3, U, H * 1e-3)) / U, color=TEXT_2, linewidth=1,
+                linestyle=(0, (2, 2)), label="2D parallel plates, same U_mean")
+    ax1.set_xlabel("z from side wall (mm)    mid-width at right")
+    ax1.set_ylabel(f"u / U_mean at y = {ytop:.3g} mm")
+    ax1.set_title(title, color=TEXT, fontsize=10, loc="left")
+    _legend(ax1, loc="lower right")
+
+    for zc, mk, lab in ((z.max(), "o", "mid-width"), (z[z > 0].min() if (z > 0).any() else z.min(),
+                                                       "s", "first cell from side wall")):
+        col = np.isclose(z, zc, rtol=0, atol=1e-9)
+        o = np.argsort(y[col])
+        ax2.plot(ue[col][o] / U, y[col][o], color=SERIES_2, linewidth=1.5)
+        ax2.plot(u[col][o] / U, y[col][o], mk, color=SERIES_1, markersize=3.5, label=f"CFD, {lab}")
+    ax2.set_xlabel("u / U_mean")
+    ax2.set_ylabel("y from plate (mm)    mid-gap at top")
+    ax2.set_title(f"side-wall effect on -dp/dx: {m['side_wall_effect'] * 100:.2f} % "
+                  f"(exact {d['side_wall_effect_exact'] * 100:.2f} %)", color=TEXT, fontsize=10,
+                  loc="left")
+    _legend(ax2, loc="lower right")
+    for ax in (ax1, ax2):
+        _style(ax)
+    fig.tight_layout()
+    fig.savefig(path, dpi=130, facecolor=SURFACE)
+    plt.close(fig)
