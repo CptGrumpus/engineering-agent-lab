@@ -1,5 +1,7 @@
 # Engineering Agent Lab
 
+[![tests](https://github.com/CptGrumpus/engineering-agent-lab/actions/workflows/tests.yml/badge.svg)](https://github.com/CptGrumpus/engineering-agent-lab/actions/workflows/tests.yml)
+
 A personal project for building an agent harness that translates engineering requirements into repeatable models, simulation runs, and reviewable evidence.
 
 ## Background
