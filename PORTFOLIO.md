@@ -1,6 +1,6 @@
 # Engineering Modeling Portfolio
 
-Ten worked case studies, and one in progress, in structural analysis, contact, vibration, fatigue, fluids and heat transfer, vehicle dynamics, and CAD automation. Each one starts from a written question and measurable requirements, builds a model to answer it, and checks the result against something independent: an exact solution, a conservation law, a handbook value, a second tool, or a mesh-convergence study. Each ends with a clear answer and a statement of how sure that answer is.
+Eleven worked case studies in structural analysis, contact, vibration, fatigue, fluids and heat transfer, vehicle dynamics, and CAD automation. Each one starts from a written question and measurable requirements, builds a model to answer it, and checks the result against something independent: an exact solution, a conservation law, a handbook value, a second tool, or a mesh-convergence study. Each ends with a clear answer and a statement of how sure that answer is.
 
 I also show what the checks caught along the way. In several studies the first version of the model gave an answer that looked reasonable and was wrong, and the checks are what exposed it.
 
@@ -45,7 +45,7 @@ All problems are synthetic, so no client data is involved. Every number comes fr
 |---|---|---|
 | [5. Coolant channel pressure budget](portfolio/05-coolant-channel.md) | Does a cold-plate passage stay within its pump budget across manufacturing tolerance and coolant temperature? | No. It needs 33.4 Pa against a 30 Pa budget, and no gap size satisfies both requirements. |
 | [6. Heat-sink fin temperature](portfolio/06-heat-sink-fin.md) | Does the tip of an aluminium heat-sink fin stay above 60 °C, and what would make it fail? | Yes, at 73.2 °C. Even with every input at its worst it stays at 65.9 °C. |
-| [11. Cold-plate channel heat transfer](portfolio/11-cold-plate-heat-transfer.md) *(in progress)* | Does a heated coolant passage keep its wall at or under 45 °C? | Verdict withheld: the wall peaks at about 44.0 °C and matches the Graetz solution, but a convergence check doesn't pass yet. |
+| [11. Cold-plate channel heat transfer](portfolio/11-cold-plate-heat-transfer.md) | Does a heated coolant passage keep its wall at or under 45 °C, and what heat flux can it take? | Coolant rise 7.2 K, verified. Wall 44.0-44.1 °C on every mesh, but its mesh uncertainty isn't estimable yet, so that verdict is withheld. Rated about 31 kW/m². |
 
 ### Vehicle and system dynamics
 

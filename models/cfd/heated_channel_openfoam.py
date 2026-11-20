@@ -10,13 +10,16 @@ function object (constant properties, so temperature is a passive scalar):
     div(phi T) = laplacian(D, T),  D = alphal * nu  with alphal = 1/Pr,
 heated walls fixedGradient q/k, inlet fixedValue T_in, outlet zeroGradient.
 
-The limitedLinear (TVD) scheme for temperature avoids the overshoot linearUpwind gives at the
-end of heating, but its limiter can cycle between states from one iteration to the next
-(0.1 K flip-flop found in run 20261120-130606); under-relaxing the temperature equation
-(relaxation_T, default 0.8) damps it. The last two writes are kept so convergence can be
-judged on the field itself.
+Temperature scheme: linearUpwind. It converges exactly (residual 1e-13, energy balance
+1e-11) but overshoots by 0.06-0.11 K at the last heated cell, where the wall condition steps
+from heated to adiabatic; the overshoot raises the reported peak (conservative) and shrinks
+with the mesh, and the study's peak-vs-reference and mesh-convergence checks bound it.
+Every TVD limiter tried (limitedLinear 1 and 0.2, vanLeer, Minmod) dithered from one
+iteration to the next near the end of heating and never closed the energy balance, with or
+without under-relaxation (runs 20261120-124736, -130606, -131818 and scratch tests).
 
-Run in WSL by models/cfd/run_channel.sh (same stages as the flow-only channel).
+Run in WSL by models/cfd/run_heated.sh: flow first, then temperature alone on the frozen flow
+(the `functions` solver), which makes thousands of temperature iterations cheap.
 """
 
 from __future__ import annotations
@@ -105,24 +108,10 @@ boundary
     frontAndBack {{ type empty; faces ({fb}); }}
 );
 """)
-    n_iter = int(numerics.get("iterations", 2000))
-    _write(case / "system/controlDict", "dictionary", "controlDict", f"""
-solver          incompressibleFluid;
-startFrom       startTime;
-startTime       0;
-stopAt          endTime;
-endTime         {n_iter};
-deltaT          1;
-writeControl    timeStep;
-writeInterval   {int(numerics.get("write_interval", 100))};
-purgeWrite      2;              // keep the last two writes: the convergence check compares them
-writeFormat     ascii;
-writePrecision  12;
-writeCompression off;
-timeFormat      general;
-timePrecision   8;
-runTimeModifiable false;
-
+    n_flow = int(numerics.get("flow_iterations", 600))
+    n_temp = int(numerics.get("temperature_iterations", 4000))
+    every = int(numerics.get("write_interval", 100))
+    functions = f"""
 functions
 {{
     T
@@ -136,7 +125,36 @@ functions
         writeControl    writeTime;
     }}
 }}
-""")
+"""
+    common = """deltaT          1;
+writeControl    timeStep;
+writeFormat     ascii;
+writePrecision  12;
+writeCompression off;
+timeFormat      general;
+timePrecision   8;
+runTimeModifiable false;
+"""
+    # stage 1: flow (and a first pass of temperature), written once at the end
+    _write(case / "system/controlDict", "dictionary", "controlDict", f"""
+solver          incompressibleFluid;
+startFrom       startTime;
+startTime       0;
+stopAt          endTime;
+endTime         {n_flow};
+writeInterval   {n_flow};
+{common}{functions}""")
+    # stage 2: temperature only, on the frozen flow; keep the last two writes for the
+    # convergence check (purgeWrite only removes times written by this stage)
+    _write(case / "system/controlDict.temperature", "dictionary", "controlDict", f"""
+solver          functions;
+subSolver       incompressibleFluid;
+startFrom       latestTime;
+stopAt          endTime;
+endTime         {n_flow + n_temp};
+writeInterval   {every};
+purgeWrite      2;
+{common}{functions}""")
     _write(case / "system/fvSchemes", "dictionary", "fvSchemes", """
 ddtSchemes      { default steadyState; }
 gradSchemes     { default Gauss linear; }
@@ -144,7 +162,7 @@ divSchemes
 {
     default         none;
     div(phi,U)      bounded Gauss linearUpwind grad(U);
-    div(phi,T)      bounded Gauss limitedLinear 1;    // TVD: linearUpwind overshoots at the end of heating
+    div(phi,T)      bounded Gauss linearUpwind grad(T);   // converges exactly; see the docstring
     div((nuEff*dev2(T(grad(U))))) Gauss linear;
 }
 laplacianSchemes     { default Gauss linear corrected; }
@@ -165,7 +183,7 @@ SIMPLE
     consistent      yes;
 }}
 
-relaxationFactors {{ equations {{ U 0.9; T {float(numerics.get("relaxation_T", 0.8))!r}; }} }}
+relaxationFactors {{ equations {{ U 0.9; T {float(numerics.get("relaxation_T", 1.0))!r}; }} }}
 """)
     _write(case / "constant/momentumTransport", "dictionary", "momentumTransport", "\nsimulationType laminar;\n")
     _write(case / "constant/physicalProperties", "dictionary", "physicalProperties",

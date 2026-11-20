@@ -1,0 +1,547 @@
+{
+  "points": [
+    {
+      "label": "p00_wall_heat_flux_W_per_m2-20000",
+      "parameters": {
+        "gap_mm": 1.0,
+        "heated_length_mm": 50.0,
+        "entry_length_mm": 5.0,
+        "exit_length_mm": 5.0,
+        "mean_velocity_m_per_s": 0.1,
+        "density_kg_per_m3": 997.0,
+        "dynamic_viscosity_Pa_s": 0.00089,
+        "specific_heat_J_per_kgK": 4180.0,
+        "conductivity_W_per_mK": 0.607,
+        "inlet_temperature_C": 25.0,
+        "wall_heat_flux_W_per_m2": 20000.0,
+        "cells_across_gap": 40,
+        "cell_aspect_ratio": 5.0
+      },
+      "derived": {
+        "reynolds_Dh": 224.04494382022474,
+        "prandtl": 6.128830313014827,
+        "peclet_Dh": 1373.1334431630974,
+        "graetz_x_star_end": 0.018206533476026163,
+        "bulk_rise_exact_K": 4.799086253977243,
+        "wall_minus_bulk_fully_developed_K": 8.00188279595199
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "mesh",
+          "description": "checkMesh reports Mesh OK (1 = failed)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.5,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "temperature_converged",
+          "description": "max |T change| anywhere over the last write interval (iterations 2400 to 2500) / outlet bulk rise",
+          "kind": "numerical",
+          "value": 2.0837671868890318e-11,
+          "tolerance": 1e-05,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "flow_rate",
+          "description": "|inlet flow - U H| / (U H)",
+          "kind": "numerical",
+          "value": 2.600729961249604e-13,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "developed_inflow",
+          "description": "|peak velocity at the start of heating - 1.5 U| / 1.5 U (parabolic)",
+          "kind": "numerical",
+          "value": 0.0016028359400001762,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "energy_balance",
+          "description": "|outlet bulk rise - 2 q L / (rho cp U H)| / exact rise",
+          "kind": "numerical",
+          "value": 3.312795993082318e-14,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "wall_temperature_reference",
+          "description": "max |T_wall CFD - Graetz| / (T_wall - T_in) at 0.2, 0.5, 0.9 of the heated length",
+          "kind": "numerical",
+          "value": 0.0013365045939736065,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "peak_vs_reference",
+          "description": "|peak wall temperature - Graetz at the end of heating| / rise (model form: the reference has no axial conduction)",
+          "kind": "numerical",
+          "value": 0.0031686725361980803,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "laminar",
+          "description": "Reynolds number (Dh) / 2000",
+          "kind": "validity",
+          "value": 0.11202247191011237,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "reference_assumption",
+          "description": "100 / Peclet (the reference neglects axial conduction)",
+          "kind": "validity",
+          "value": 0.07282613390410465,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-T1",
+          "text": "Peak wall temperature over the heated length shall not exceed 45 C.",
+          "metric": "max_wall_temperature_C",
+          "operator": "<=",
+          "limit": 45.0,
+          "units": "C",
+          "value": 37.73157951409753,
+          "margin": 7.2684204859024675,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-T2",
+          "text": "Coolant temperature rise from inlet to outlet shall not exceed 10 K.",
+          "metric": "outlet_bulk_rise_K",
+          "operator": "<=",
+          "limit": 10.0,
+          "units": "K",
+          "value": 4.799086253977084,
+          "margin": 5.200913746022916,
+          "verdict": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p01_wall_heat_flux_W_per_m2-25000",
+      "parameters": {
+        "gap_mm": 1.0,
+        "heated_length_mm": 50.0,
+        "entry_length_mm": 5.0,
+        "exit_length_mm": 5.0,
+        "mean_velocity_m_per_s": 0.1,
+        "density_kg_per_m3": 997.0,
+        "dynamic_viscosity_Pa_s": 0.00089,
+        "specific_heat_J_per_kgK": 4180.0,
+        "conductivity_W_per_mK": 0.607,
+        "inlet_temperature_C": 25.0,
+        "wall_heat_flux_W_per_m2": 25000.0,
+        "cells_across_gap": 40,
+        "cell_aspect_ratio": 5.0
+      },
+      "derived": {
+        "reynolds_Dh": 224.04494382022474,
+        "prandtl": 6.128830313014827,
+        "peclet_Dh": 1373.1334431630974,
+        "graetz_x_star_end": 0.018206533476026163,
+        "bulk_rise_exact_K": 5.998857817471554,
+        "wall_minus_bulk_fully_developed_K": 10.002353494939987
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "mesh",
+          "description": "checkMesh reports Mesh OK (1 = failed)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.5,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "temperature_converged",
+          "description": "max |T change| anywhere over the last write interval (iterations 2400 to 2500) / outlet bulk rise",
+          "kind": "numerical",
+          "value": 1.666895303168184e-11,
+          "tolerance": 1e-05,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "flow_rate",
+          "description": "|inlet flow - U H| / (U H)",
+          "kind": "numerical",
+          "value": 2.600729961249604e-13,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "developed_inflow",
+          "description": "|peak velocity at the start of heating - 1.5 U| / 1.5 U (parabolic)",
+          "kind": "numerical",
+          "value": 0.0016028359400001762,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "energy_balance",
+          "description": "|outlet bulk rise - 2 q L / (rho cp U H)| / exact rise",
+          "kind": "numerical",
+          "value": 3.481582023567853e-12,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "wall_temperature_reference",
+          "description": "max |T_wall CFD - Graetz| / (T_wall - T_in) at 0.2, 0.5, 0.9 of the heated length",
+          "kind": "numerical",
+          "value": 0.0013365045883159499,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "peak_vs_reference",
+          "description": "|peak wall temperature - Graetz at the end of heating| / rise (model form: the reference has no axial conduction)",
+          "kind": "numerical",
+          "value": 0.0031686725393499987,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "laminar",
+          "description": "Reynolds number (Dh) / 2000",
+          "kind": "validity",
+          "value": 0.11202247191011237,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "reference_assumption",
+          "description": "100 / Peclet (the reference neglects axial conduction)",
+          "kind": "validity",
+          "value": 0.07282613390410465,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-T1",
+          "text": "Peak wall temperature over the heated length shall not exceed 45 C.",
+          "metric": "max_wall_temperature_C",
+          "operator": "<=",
+          "limit": 45.0,
+          "units": "C",
+          "value": 40.91447439267191,
+          "margin": 4.085525607328087,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-T2",
+          "text": "Coolant temperature rise from inlet to outlet shall not exceed 10 K.",
+          "metric": "outlet_bulk_rise_K",
+          "operator": "<=",
+          "limit": 10.0,
+          "units": "K",
+          "value": 5.998857817492439,
+          "margin": 4.001142182507561,
+          "verdict": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p02_wall_heat_flux_W_per_m2-30000",
+      "parameters": {
+        "gap_mm": 1.0,
+        "heated_length_mm": 50.0,
+        "entry_length_mm": 5.0,
+        "exit_length_mm": 5.0,
+        "mean_velocity_m_per_s": 0.1,
+        "density_kg_per_m3": 997.0,
+        "dynamic_viscosity_Pa_s": 0.00089,
+        "specific_heat_J_per_kgK": 4180.0,
+        "conductivity_W_per_mK": 0.607,
+        "inlet_temperature_C": 25.0,
+        "wall_heat_flux_W_per_m2": 30000.0,
+        "cells_across_gap": 40,
+        "cell_aspect_ratio": 5.0
+      },
+      "derived": {
+        "reynolds_Dh": 224.04494382022474,
+        "prandtl": 6.128830313014827,
+        "peclet_Dh": 1373.1334431630974,
+        "graetz_x_star_end": 0.018206533476026163,
+        "bulk_rise_exact_K": 7.198629380965865,
+        "wall_minus_bulk_fully_developed_K": 12.002824193927985
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "mesh",
+          "description": "checkMesh reports Mesh OK (1 = failed)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.5,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "temperature_converged",
+          "description": "max |T change| anywhere over the last write interval (iterations 2400 to 2500) / outlet bulk rise",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 1e-05,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "flow_rate",
+          "description": "|inlet flow - U H| / (U H)",
+          "kind": "numerical",
+          "value": 2.600729961249604e-13,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "developed_inflow",
+          "description": "|peak velocity at the start of heating - 1.5 U| / 1.5 U (parabolic)",
+          "kind": "numerical",
+          "value": 0.0016028359400001762,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "energy_balance",
+          "description": "|outlet bulk rise - 2 q L / (rho cp U H)| / exact rise",
+          "kind": "numerical",
+          "value": 1.3637368384185794e-12,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "wall_temperature_reference",
+          "description": "max |T_wall CFD - Graetz| / (T_wall - T_in) at 0.2, 0.5, 0.9 of the heated length",
+          "kind": "numerical",
+          "value": 0.0013365045939746107,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "peak_vs_reference",
+          "description": "|peak wall temperature - Graetz at the end of heating| / rise (model form: the reference has no axial conduction)",
+          "kind": "numerical",
+          "value": 0.0031686725361978942,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "laminar",
+          "description": "Reynolds number (Dh) / 2000",
+          "kind": "validity",
+          "value": 0.11202247191011237,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "reference_assumption",
+          "description": "100 / Peclet (the reference neglects axial conduction)",
+          "kind": "validity",
+          "value": 0.07282613390410465,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-T1",
+          "text": "Peak wall temperature over the heated length shall not exceed 45 C.",
+          "metric": "max_wall_temperature_C",
+          "operator": "<=",
+          "limit": 45.0,
+          "units": "C",
+          "value": 44.09736927114629,
+          "margin": 0.9026307288537083,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-T2",
+          "text": "Coolant temperature rise from inlet to outlet shall not exceed 10 K.",
+          "metric": "outlet_bulk_rise_K",
+          "operator": "<=",
+          "limit": 10.0,
+          "units": "K",
+          "value": 7.198629380975682,
+          "margin": 2.8013706190243184,
+          "verdict": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p03_wall_heat_flux_W_per_m2-35000",
+      "parameters": {
+        "gap_mm": 1.0,
+        "heated_length_mm": 50.0,
+        "entry_length_mm": 5.0,
+        "exit_length_mm": 5.0,
+        "mean_velocity_m_per_s": 0.1,
+        "density_kg_per_m3": 997.0,
+        "dynamic_viscosity_Pa_s": 0.00089,
+        "specific_heat_J_per_kgK": 4180.0,
+        "conductivity_W_per_mK": 0.607,
+        "inlet_temperature_C": 25.0,
+        "wall_heat_flux_W_per_m2": 35000.0,
+        "cells_across_gap": 40,
+        "cell_aspect_ratio": 5.0
+      },
+      "derived": {
+        "reynolds_Dh": 224.04494382022474,
+        "prandtl": 6.128830313014827,
+        "peclet_Dh": 1373.1334431630974,
+        "graetz_x_star_end": 0.018206533476026163,
+        "bulk_rise_exact_K": 8.398400944460175,
+        "wall_minus_bulk_fully_developed_K": 14.003294892915982
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "mesh",
+          "description": "checkMesh reports Mesh OK (1 = failed)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.5,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "temperature_converged",
+          "description": "max |T change| anywhere over the last write interval (iterations 2400 to 2500) / outlet bulk rise",
+          "kind": "numerical",
+          "value": 1.1906818045291589e-11,
+          "tolerance": 1e-05,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "flow_rate",
+          "description": "|inlet flow - U H| / (U H)",
+          "kind": "numerical",
+          "value": 2.600729961249604e-13,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "developed_inflow",
+          "description": "|peak velocity at the start of heating - 1.5 U| / 1.5 U (parabolic)",
+          "kind": "numerical",
+          "value": 0.0016028359400001762,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "energy_balance",
+          "description": "|outlet bulk rise - 2 q L / (rho cp U H)| / exact rise",
+          "kind": "numerical",
+          "value": 1.0537493782944044e-12,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "wall_temperature_reference",
+          "description": "max |T_wall CFD - Graetz| / (T_wall - T_in) at 0.2, 0.5, 0.9 of the heated length",
+          "kind": "numerical",
+          "value": 0.0013365045899327104,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "peak_vs_reference",
+          "description": "|peak wall temperature - Graetz at the end of heating| / rise (model form: the reference has no axial conduction)",
+          "kind": "numerical",
+          "value": 0.0031686725384496113,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "laminar",
+          "description": "Reynolds number (Dh) / 2000",
+          "kind": "validity",
+          "value": 0.11202247191011237,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "reference_assumption",
+          "description": "100 / Peclet (the reference neglects axial conduction)",
+          "kind": "validity",
+          "value": 0.07282613390410465,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-T1",
+          "text": "Peak wall temperature over the heated length shall not exceed 45 C.",
+          "metric": "max_wall_temperature_C",
+          "operator": "<=",
+          "limit": 45.0,
+          "units": "C",
+          "value": 47.28026414972068,
+          "margin": -2.2802641497206793,
+          "verdict": "FAIL"
+        },
+        {
+          "id": "REQ-T2",
+          "text": "Coolant temperature rise from inlet to outlet shall not exceed 10 K.",
+          "metric": "outlet_bulk_rise_K",
+          "operator": "<=",
+          "limit": 10.0,
+          "units": "K",
+          "value": 8.398400944469024,
+          "margin": 1.6015990555309756,
+          "verdict": "PASS"
+        }
+      ]
+    }
+  ],
+  "run_id": "20261120-150722_heated_channel_flux",
+  "generated_utc": "2026-11-20T20:10:24+00:00",
+  "verification_status": "PASS"
+}

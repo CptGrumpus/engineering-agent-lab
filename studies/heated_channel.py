@@ -29,7 +29,7 @@ from harness.study import Study
 from validation import graetz
 
 WRITER = "models/cfd/heated_channel_openfoam.py"
-RUNNER = "models/cfd/run_channel.sh"
+RUNNER = "models/cfd/run_heated.sh"
 STATIONS = (0.2, 0.5, 0.9)          # fractions of the heated length for the reference comparison
 
 
@@ -85,13 +85,14 @@ class OpenFOAMHeatedChannel(Backend):
         tdir = of.latest_time_dir(case)
         n = info["cells"]
         C = of.read_internal_field(tdir / "C", n)
-        Uf = of.read_internal_field(tdir / "U", n)
+        flow_dir = max((d for d in case.iterdir() if (d / "U").exists() and d.name != "0"), key=lambda d: float(d.name))
+        Uf = of.read_internal_field(flow_dir / "U", n)
         T = of.read_internal_field(tdir / "T", n)
         times = sorted((d for d in case.iterdir() if d.is_dir() and d.name.replace(".", "").isdigit()
                         and d.name != "0"), key=lambda d: float(d.name))
         T_prev = of.read_internal_field(times[-2] / "T", n) if len(times) >= 2 else T * np.nan
-        phi_in = of.read_patch_value(tdir / "phi", "inlet")
-        log_text = (case / "log.foamRun").read_text(encoding="utf-8")
+        phi_in = of.read_patch_value(flow_dir / "phi", "inlet")
+        log_text = (case / "log.foamRun.temperature").read_text(encoding="utf-8")
         t_res = [float(s.split("Initial residual = ")[1].split(",")[0])
                  for s in log_text.splitlines() if "Solving for T," in s]
         series = {"x_mm": C[:, 0] * 1e3, "y_mm": C[:, 1] * 1e3, "ux_m_per_s": Uf[:, 0], "T_C": T}

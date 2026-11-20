@@ -321,8 +321,8 @@ td.num { font-family: var(--font-data); font-variant-numeric: tabular-nums; whit
     <p class="lede">Ten worked studies across <b>structures, contact, vibration, fatigue, fluids, heat transfer and vehicle dynamics</b>. Each one turns written requirements into a model, runs a real solver, and checks the result against something independent before it gives a verdict. Everything runs on open-source tools, driven by a coding agent through written procedures.</p>
     </div>
     <dl class="stats">
-      <div><dt>automated checks</dt><dd>1065</dd></div>
-      <div><dt>saved evidence runs</dt><dd>32</dd></div>
+      <div><dt>automated checks</dt><dd>1128</dd></div>
+      <div><dt>saved evidence runs</dt><dd>34</dd></div>
       <div><dt>open-source solvers and tools</dt><dd>8</dd></div>
       <div><dt>paid licences</dt><dd>0</dd></div>
     </dl>
@@ -384,7 +384,7 @@ td.num { font-family: var(--font-data); font-variant-numeric: tabular-nums; whit
   <section class="band wrap" id="studies" aria-labelledby="studies-title">
     <div class="band-head">
       <p class="eyebrow">Case studies</p>
-      <h2 id="studies-title">Ten studies with a clear answer, and one in progress</h2>
+      <h2 id="studies-title">Eleven studies, each ending in a clear answer or a clearly withheld one</h2>
       <p>The problems are synthetic, so no client data is involved. Every number comes from a saved run that reproduces from its recorded inputs with one command.</p>
     </div>
     <div class="filters" role="group" aria-label="Filter by discipline">
@@ -829,20 +829,26 @@ td.num { font-family: var(--font-data); font-variant-numeric: tabular-nums; whit
 
   <section class="study" id="heat">
     <div class="study-head">
-      <span class="label">Example 11 · In progress · Heat transfer in OpenFOAM</span>
+      <span class="label">Example 11 · Heat transfer in OpenFOAM</span>
       <h2>Cold-plate channel heat transfer</h2>
     </div>
     <figure><div class="plate"><img src="v2/heat_response.webp" alt="Wall and bulk temperature along the heated channel, OpenFOAM against the Graetz reference" loading="lazy"></div><figcaption>Wall and bulk temperature along the heated channel, and the local Nusselt number, against the independent Graetz thermal-entry solution.</figcaption></figure>
-    <p><strong>The question.</strong> A cold-plate passage, 1 mm deep, carries water at 25 °C and 0.1 m/s. Electronics heat both walls at 30 kW/m² over 50 mm. Does the wall stay at or under 45 °C, and does the coolant warm by no more than 10 K?</p>
+    <p><strong>The question.</strong> A cold-plate passage, 1 mm deep, carries water at 25 °C and 0.1 m/s. Electronics heat both walls at 30 kW/m² over 50 mm. Does the wall stay at or under 45 °C, does the coolant warm by no more than 10 K, and how much heat flux could the passage take?</p>
     <div class="answer">
-      <div class="chips"><span class="chip warn">Verdict withheld: convergence check open</span><span class="chip pass">Matches Graetz to 0.03–0.6 %</span><span class="chip pass">Peak wall about 44.0 °C</span></div>
-      <p><strong>Not yet answered.</strong> The wall peaks at about 44.0 °C against the 45 °C limit and the coolant warms by 7.2 K, and the wall temperature matches an independent thermal-entry solution closely. But the finest mesh's temperature field was still changing when the run stopped, and the energy balance doesn't yet close to the tolerance I set. So under this portfolio's rules there is no pass or fail yet. Next: solve the temperature on the converged flow for a few thousand cheap iterations and rerun with the same tolerances.</p>
+      <div class="chips"><span class="chip pass">Coolant rise 7.2 K: verified</span><span class="chip warn">Wall 44.0–44.1 °C: mesh uncertainty open</span><span class="chip pass">Rated about 31 kW/m²</span></div>
+      <p><strong>The coolant warms by 7.2 K</strong>, inside its 10 K budget, and that is verified: the energy balance closes to a part in a trillion on every mesh. <strong>The wall peaks at 44.0 to 44.1 °C</strong> on all three meshes, 0.86 to 0.97 K under the limit, and matches the independent reference within 0.6 %. But the peak isn't yet settling smoothly with refinement, so the mesh-convergence check can't size its uncertainty and that verdict stays formally withheld. At 40 cells the wall reaches 45 °C at about 31 kW/m².</p>
     </div>
+    <h3>How I know it's right</h3>
+    <ul class="proof">
+      <li><b>Against an independent solution.</b> The thermal-entry (Graetz) problem, solved separately and checked against the textbook fully developed Nusselt number and the energy balance. The CFD wall temperature matches it within 0.03 to 0.6 % of the rise.</li>
+      <li><b>Energy balance and convergence.</b> Heat in equals heat carried out to a part in a trillion, and the temperature field stops changing to 10⁻¹¹ of the rise.</li>
+      <li><b>Why the reference matters.</b> The flow is still thermally developing at the end of the heating (Nusselt 8.34, not the textbook 8.24), so a hand calculation assuming developed flow would be wrong.</li>
+    </ul>
     <div class="caught">
       <h3>What the checks caught</h3>
       <ul>
-        <li><b>An overshoot exactly where the answer is.</b> The usual second-order scheme overshot by 0.06 to 0.11 K at the last heated cell, where the peak wall temperature sits. A bounded scheme removed it.</li>
-        <li><b>A field that never settled.</b> The bounded scheme's limiter then flipped part of the field by up to 0.1 K every iteration, while the peak barely moved. The convergence check failed, correctly; that's what is holding the verdict.</li>
+        <li><b>An overshoot exactly where the answer is.</b> The standard scheme overshoots by 0.06 to 0.11 K at the last heated cell, where the peak sits. It errs on the safe side, but it is why the peak doesn't converge smoothly with the mesh.</li>
+        <li><b>Fixes that only hid the problem.</b> Four bounded schemes that remove the overshoot all dithered from one iteration to the next and never closed the energy balance; under-relaxation only masked it. I went back to the scheme that converges exactly, let the checks bound its bias, kept every failed run, and never changed a tolerance.</li>
       </ul>
     </div>
   </section>

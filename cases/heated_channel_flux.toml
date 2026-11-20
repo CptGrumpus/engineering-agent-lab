@@ -38,6 +38,23 @@
 #   (0.2 mK at 30 kW/m2), replacing the residual tolerance, which the limiter cannot reach
 #   (it plateaus at 8e-6). All other tolerances unchanged.
 
+# Revision 2 (after run 20261120-131818, kept as evidence; tolerances unchanged):
+#   Relaxation removed the flip-flop but the energy balance stayed at 4-7e-5. Scratch tests
+#   traced it to the TVD limiter itself: without relaxation a near-wall cell just past the end
+#   of heating flips 0.025 K per iteration; limitedLinear 0.2, vanLeer and Minmod also failed
+#   to converge. Decision: back to linearUpwind, which converged exactly in the prototypes
+#   (residual 1e-13, energy 1e-11). Its overshoot at the last heated cell (0.06-0.11 K) raises
+#   the peak, i.e. it is conservative, shrinks with the mesh, and is bounded by the
+#   peak_vs_reference and GCI checks. Also: temperature now runs as a second stage on the
+#   frozen flow (OpenFOAM `functions` solver; models/cfd/run_heated.sh), relaxation_T = 1.
+# Predictions for the rerun: every check passes on every mesh; peak 44.13 / 44.10 / about
+#   44.07 C at 20 / 40 / 80 cells (overshoot halving); REQ-T1 passes by about 0.9 K.
+
+# Results of revision 2 (run 20261120-150722): every check passes at every flux. Peak wall
+#   temperature 37.73 / 40.91 / 44.10 / 47.28 C (P1 held: REQ-T1 passes up to 30 kW/m2, fails
+#   at 35; rated flux about 31.4 kW/m2 by interpolation); outlet rise 4.80 / 6.00 / 7.20 /
+#   8.40 K (P2 held); P3 held. The peak's mesh uncertainty is open (see heated_channel_mesh).
+
 [case]
 name = "heated_channel_flux"
 model = "openfoam_heated_channel"
@@ -74,9 +91,10 @@ parameter = "wall_heat_flux_W_per_m2"
 values = [20000.0, 25000.0, 30000.0, 35000.0]
 
 [numerics]
-iterations = 1500
+flow_iterations = 1000
+temperature_iterations = 1500
 write_interval = 100
-relaxation_T = 0.8
+relaxation_T = 1.0
 
 [verification]
 temperature_change_rel_max = 1e-5
