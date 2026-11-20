@@ -46,7 +46,8 @@ def _p(params, k):
     return float(params[k])
 
 
-PARAMS = _load_writer(Path(__file__).resolve().parent.parent / WRITER).PARAMS
+_W = _load_writer(Path(__file__).resolve().parent.parent / WRITER)
+PARAMS, HEADER_PARAMS = _W.PARAMS, _W.HEADER_PARAMS
 
 
 class OpenFOAMChannel(Backend):
@@ -93,6 +94,7 @@ class OpenFOAMChannel(Backend):
         phi_in = of.read_patch_value(tdir / "phi", "inlet")
         phi_out = of.read_patch_value(tdir / "phi", "outlet")
         rho = _p(params, "density_kg_per_m3")
+        pt_in, ps_in, pt_out = _patch_pressures(tdir, info, p, Uf, phi_in, phi_out)
         series = {"x_mm": C[:, 0] * 1e3, "y_mm": C[:, 1] * 1e3,
                   "ux_m_per_s": Uf[:, 0], "uy_m_per_s": Uf[:, 1], "p_Pa": p * rho}
         depth = info["depth_mm"] * 1e-3
@@ -101,6 +103,10 @@ class OpenFOAMChannel(Backend):
                    "final_initial_residuals": log["final_initial_residuals"],
                    "inlet_flow_m2_per_s": float(-np.sum(phi_in)) / depth,
                    "outlet_flow_m2_per_s": float(np.sum(phi_out)) / depth,
+                   "inlet_total_pressure_Pa": pt_in * rho,
+                   "inlet_static_pressure_Pa": ps_in * rho,
+                   "outlet_total_pressure_Pa": pt_out * rho,
+                   "blocks": [list(b) for b in info["blocks"]],
                    "result_time": tdir.name}
         msg = (f"foamRun: {'converged' if log['converged'] else 'NOT converged'} after "
                f"{log['iterations']} iterations, {n} cells")
@@ -111,17 +117,57 @@ class OpenFOAMChannel(Backend):
         return self._versions
 
 
+def _patch_pressures(tdir, info, p, U, phi_in, phi_out):
+    """Flux-weighted kinematic pressures on the inlet and outlet patches.
+
+    Returns (total at inlet, static at inlet, total at outlet). Total pressure
+    p + |U|^2/2 is weighted by the face flux, the standard definition for a
+    pressure loss. Inlet p is zeroGradient and outlet U is zeroGradient, so
+    those face values equal the adjacent cell values; faces are matched to
+    cells by their y coordinate (face centres from the written C field).
+    """
+    blocks = info["blocks"]
+    nx0, ny = blocks[0]
+    first = np.arange(ny) * nx0                          # i = 0 column of the first block
+    off = sum(a * b for a, b in blocks[:-1])
+    nxl = blocks[-1][0]
+    last = off + np.arange(ny) * nxl + (nxl - 1)        # i = nx-1 column of the last block
+    C = of.read_internal_field(tdir / "C", info["cells"])
+
+    def by_y(face_c, cells):
+        fo = np.argsort(face_c[:, 1])
+        co = cells[np.argsort(C[cells, 1])]
+        if not np.allclose(face_c[fo, 1], C[co, 1], rtol=0, atol=1e-12 + 1e-6 * np.ptp(C[:, 1])):
+            raise ValueError("cannot match patch faces to boundary cells")
+        return fo, co
+
+    fo, co = by_y(of.read_patch_value(tdir / "C", "inlet"), first)
+    u_in = of.read_patch_value(tdir / "U", "inlet", len(fo))[fo]
+    w_in = phi_in[fo]
+    ps_in = float(np.sum(w_in * p[co]) / np.sum(w_in))
+    pt_in = float(np.sum(w_in * (p[co] + 0.5 * np.sum(u_in**2, axis=1))) / np.sum(w_in))
+    fo, co = by_y(of.read_patch_value(tdir / "C", "outlet"), last)
+    w_out = phi_out[fo]
+    pt_out = float(np.sum(w_out * 0.5 * np.sum(U[co] ** 2, axis=1)) / np.sum(w_out))  # p = 0
+    return pt_in, ps_in, pt_out
+
+
+def _header(params):
+    return all(k in params for k in HEADER_PARAMS)
+
+
 def _window(series, params):
     x = series["x_mm"]
     return (x >= _p(params, "window_start_mm")) & (x <= _p(params, "window_end_mm"))
 
 
 def _near_wall(series, params):
-    """Masks of the first cell row at each wall, and wall distance (m)."""
+    """Masks of the first cell row at each channel wall, and wall distance (m)."""
     y, H = series["y_mm"], _p(params, "gap_mm")
     dy = H / int(params["cells_across_gap"])
-    low = y < dy
-    high = y > H - dy
+    chan = series["x_mm"] > 0
+    low = chan & (y < dy)
+    high = chan & (y > H - dy)
     dist = np.where(low, y, H - y) * 1e-3
     return low, high, dist
 
@@ -143,7 +189,8 @@ def profile_station(series, params):
 class ChannelFlowStudy(Study):
     name = "channel_flow"
     models = {"openfoam_channel": OpenFOAMChannel}
-    metrics = frozenset({"pressure_drop_Pa", "pressure_gradient_Pa_per_m", "wall_shear_stress_Pa"})
+    metrics = frozenset({"pressure_drop_Pa", "total_pressure_drop_Pa", "required_pressure_Pa",
+                         "pressure_gradient_Pa_per_m", "wall_shear_stress_Pa"})
     param_names = PARAMS
     series_file = "cells.csv"
     compare_description = "max relative difference over cell columns"
@@ -164,6 +211,10 @@ class ChannelFlowStudy(Study):
             "wall_shear_stress_exact_Pa": ref.wall_shear_stress(U, H, mu),
             "pressure_drop_shah_london_Pa": ref.pressure_drop_developing(L, U, H, rho, mu),
             "pressure_drop_fully_developed_only_Pa": ref.pressure_gradient(U, H, mu) * L,
+            **({"total_pressure_drop_reference_Pa": ref.header_total_pressure_drop(
+                H, L, _p(params, "supply_height_mm") * 1e-3, _p(params, "supply_length_mm") * 1e-3,
+                _p(params, "contraction_length_mm") * 1e-3, U, rho, mu,
+                _W.contraction_height)} if _header(params) else {}),
         }
 
     def compute_metrics(self, series, params, case, outputs=None):
@@ -176,11 +227,13 @@ class ChannelFlowStudy(Study):
         low, high, dist = _near_wall(series, params)
         wall = win & (low | high)
         tau = mu * series["ux_m_per_s"][wall] / dist[wall]
-        # inlet pressure: inlet patch is zeroGradient, so its face value is the
-        # first-column cell value; outlet is fixed at p = 0
-        x = series["x_mm"]
-        first = np.isclose(x, x.min(), rtol=0, atol=1e-9)
-        return {"pressure_drop_Pa": float(np.mean(series["p_Pa"][first])),
+        # inlet-to-outlet drops from the flux-weighted patch pressures (outlet p = 0)
+        return {"pressure_drop_Pa": outputs["inlet_static_pressure_Pa"],
+                "total_pressure_drop_Pa": (outputs["inlet_total_pressure_Pa"]
+                                           - outputs["outlet_total_pressure_Pa"]),
+                # supply pressure needed if the outlet dynamic head is lost (exit loss
+                # coefficient 1): inlet total pressure minus outlet static pressure (0)
+                "required_pressure_Pa": outputs["inlet_total_pressure_Pa"],
                 "pressure_gradient_Pa_per_m": float(-slope),
                 "wall_shear_stress_Pa": float(np.mean(tau))}
 
@@ -232,10 +285,16 @@ class ChannelFlowStudy(Study):
             check("wall_shear_reference", "|tau_w,CFD - 6 mu U/H| / exact",
                   abs(m["wall_shear_stress_Pa"] - d["wall_shear_stress_exact_Pa"])
                   / d["wall_shear_stress_exact_Pa"], tol["fully_developed_rel_tol"]),
-            check("pressure_drop_correlation",
-                  "|dp_CFD - dp_Shah&London| / dp_Shah&London (entrance included; correlation)",
-                  abs(m["pressure_drop_Pa"] - d["pressure_drop_shah_london_Pa"])
-                  / d["pressure_drop_shah_london_Pa"], tol["correlation_rel_tol"]),
+            (check("total_pressure_drop_reference",
+                   "|dp_t,CFD - dp_t,ref| / dp_t,ref; ref = lubrication friction in header "
+                   "and contraction + Shah & London channel from uniform entry (model form)",
+                   abs(m["total_pressure_drop_Pa"] - d["total_pressure_drop_reference_Pa"])
+                   / d["total_pressure_drop_reference_Pa"], tol["correlation_rel_tol"])
+             if _header(p) else
+             check("pressure_drop_correlation",
+                   "|dp_CFD - dp_Shah&London| / dp_Shah&London (entrance included; correlation)",
+                   abs(m["pressure_drop_Pa"] - d["pressure_drop_shah_london_Pa"])
+                   / d["pressure_drop_shah_london_Pa"], tol["correlation_rel_tol"])),
             check("laminar", "Re_Dh / laminar limit", d["reynolds_Dh"] / tol["laminar_reynolds_max"],
                   1.0, kind="validity"),
             check("entrance_before_window",
@@ -245,10 +304,11 @@ class ChannelFlowStudy(Study):
                   "(max - min) / mean centreline velocity across the window",
                   fd_change, tol["fully_developed_change_max"], kind="validity"),
         ]
-        title = (f"{point['label']}  ({out['nx']} x {out['ny']} cells, Re_Dh = "
-                 f"{d['reynolds_Dh']:.0f})")
-        channel_figure(pdir / "response.png", series, p, d, m, st=st, title=title)
-        channel_field_figure(pdir / "field.png", series, p, out["nx"], out["ny"],
+        blocks = out.get("blocks", [(out["nx"], out["ny"])])
+        title = (f"{point['label']}  ({out['cells']} cells, {out['ny']} across the gap, "
+                 f"Re_Dh = {d['reynolds_Dh']:.0f})")
+        channel_figure(pdir / "response.png", series, p, d, m, st=st, blocks=blocks, title=title)
+        channel_field_figure(pdir / "field.png", series, p, blocks,
                              title=f"{point['label']}: axial velocity")
         return checks
 
@@ -265,9 +325,11 @@ class ChannelFlowStudy(Study):
         fine = done[:3]
         hs = tuple(1.0 / int(pt["parameters"]["cells_across_gap"]) for pt in fine)
         checks, detail = [], {"meshes_used": [pt["label"] for pt in fine]}
+        drops = (("total_pressure_drop_Pa", "required_pressure_Pa") if _header(case["parameters"])
+                 else ("pressure_drop_Pa",))
         for metric, key in (("pressure_gradient_Pa_per_m", "gci_fully_developed_max"),
                             ("wall_shear_stress_Pa", "gci_fully_developed_max"),
-                            ("pressure_drop_Pa", "gci_pressure_drop_max")):
+                            *((dm, "gci_pressure_drop_max") for dm in drops)):
             u = discretization_uncertainty(hs, tuple(pt["metrics"][metric] for pt in fine))
             detail[metric] = u
             how = describe(u)

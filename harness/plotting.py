@@ -179,13 +179,19 @@ def sweep_figure(path, sweep_name, rows, requirements, title):
     status is not supported by the verification checks.
     """
     n = len(requirements)
-    fig, axes = plt.subplots(1, n, figsize=(3.6 * n, 3.4), facecolor=SURFACE, squeeze=False)
-    xs = np.array([r[0] for r in rows], float)
+    categorical = not all(isinstance(r[0], (int, float)) for r in rows)
+    fig, axes = plt.subplots(1, n, figsize=(3.6 * n, 3.4 + 0.6 * categorical), facecolor=SURFACE,
+                             squeeze=False)
+    xs = np.arange(len(rows), dtype=float) if categorical else np.array([r[0] for r in rows], float)
     order = np.argsort(xs)
     for ax, req in zip(axes[0], requirements):
         ys = np.array([r[1].get(req["metric"], np.nan) for r in rows], float)
         verdicts = np.array([r[2].get(req["metric"], "") for r in rows])
-        ax.plot(xs[order], ys[order], color=SERIES_1, linewidth=2)
+        if categorical:  # scenarios are not a continuum: no connecting line
+            ax.set_xticks(xs, [str(r[0]) for r in rows], rotation=30, ha="right")
+            ax.set_xlim(-0.5, len(rows) - 0.5)
+        else:
+            ax.plot(xs[order], ys[order], color=SERIES_1, linewidth=2)
         unver = np.char.find(verdicts.astype(str), "unverified") >= 0
         ok = (verdicts == "PASS") & ~unver
         bad = (verdicts == "FAIL") & ~unver
@@ -210,10 +216,10 @@ def sweep_figure(path, sweep_name, rows, requirements, title):
     for ax in axes[0]:
         for hnd, lab in zip(*ax.get_legend_handles_labels()):
             seen.setdefault(lab, hnd)
-    fig.suptitle(title, color=TEXT, fontsize=11, x=0.01, ha="left")
-    fig.tight_layout(rect=(0, 0, 1, 0.9))
-    leg = fig.legend(seen.values(), seen.keys(), loc="upper right", ncol=len(seen),
-                     frameon=False, fontsize=8.5)
+    fig.suptitle(title, color=TEXT, fontsize=11, x=0.01, y=0.985, ha="left")
+    fig.tight_layout(rect=(0, 0, 1, 0.87))
+    leg = fig.legend(seen.values(), seen.keys(), loc="upper left", ncol=len(seen),
+                     frameon=False, fontsize=8.5, bbox_to_anchor=(0.0, 0.93))
     for txt in leg.get_texts():
         txt.set_color(TEXT)
     fig.savefig(path, dpi=130, facecolor=SURFACE)
@@ -286,7 +292,7 @@ def plate_figure(path, outline_xy, holes, p, *, title, mass_g):
     plt.close(fig)
 
 
-def channel_figure(path, s, p, d, m, *, st, title):
+def channel_figure(path, s, p, d, m, *, st, blocks, title):
     """Velocity profile vs Poiseuille, pressure and centreline velocity along the channel."""
     from validation import channel_flow as ref
 
@@ -310,14 +316,22 @@ def channel_figure(path, s, p, d, m, *, st, title):
                   loc="left")
     _legend(ax1, loc="lower left")
 
-    cl = np.abs(s["y_mm"] - H / 2)
-    cl = cl <= cl.min() + 1e-9 * H
-    order = np.argsort(s["x_mm"][cl])
-    xc = s["x_mm"][cl][order]
-    # two rows straddle the centreline when the cell count is even: average them
-    xu, inv = np.unique(np.round(xc, 9), return_inverse=True)
-    pc = np.bincount(inv, s["p_Pa"][cl][order]) / np.bincount(inv)
-    uc = np.bincount(inv, s["ux_m_per_s"][cl][order]) / np.bincount(inv)
+    # mid-gap cells: the middle row(s) of every block (cell order: block by block,
+    # x fastest); two rows straddle the centreline when ny is even: average them
+    xu, pc, uc, start = [], [], [], 0
+    for nx, ny in blocks:
+        rows = [ny // 2] if ny % 2 else [ny // 2 - 1, ny // 2]
+        idx = [start + j * nx + np.arange(nx) for j in rows]
+        xu.append(np.mean([s["x_mm"][i] for i in idx], axis=0))
+        pc.append(np.mean([s["p_Pa"][i] for i in idx], axis=0))
+        uc.append(np.mean([s["ux_m_per_s"][i] for i in idx], axis=0))
+        start += nx * ny
+    xu, pc, uc = (np.concatenate(a) for a in (xu, pc, uc))
+    last_nx, last_ny = blocks[-1]
+    rows = [last_ny // 2] if last_ny % 2 else [last_ny // 2 - 1, last_ny // 2]
+    cl = np.zeros(len(s["x_mm"]), bool)
+    for j in rows:
+        cl[start - last_nx * last_ny + j * last_nx + np.arange(last_nx)] = True
     G = d["pressure_gradient_exact_Pa_per_m"]
     for ax in (ax2, ax3):
         ax.axvspan(x0, x1, color=TEXT_2, alpha=0.08, linewidth=0)
@@ -325,6 +339,12 @@ def channel_figure(path, s, p, d, m, *, st, title):
     ax2.plot([0, L], [G * L * 1e-3, 0], color=SERIES_2, linewidth=1.5, linestyle="--",
              label=f"exact fully developed slope, {G:.0f} Pa/m")
     ax2.set_ylabel("p (Pa)")
+    if xu.min() < 0:
+        for ax in (ax2, ax3):
+            ax.axvspan(xu.min(), 0, color=SERIES_1, alpha=0.05, linewidth=0)
+        ax2.annotate("supply header +\ncontraction", (xu.min(), pc.max()), xytext=(4, -4),
+                     textcoords="offset points", ha="left", va="top", fontsize=8.5,
+                     color=TEXT_2)
     ax2.set_title(title, color=TEXT, fontsize=10, loc="left")
     _legend(ax2, loc="upper right")
 
@@ -337,7 +357,7 @@ def channel_figure(path, s, p, d, m, *, st, title):
     ax3.axvline(d["entrance_length_mm"], color=TEXT_2, linewidth=1, linestyle=":",
                 label=f"entrance length (Shah & London) {d['entrance_length_mm']:.1f} mm")
     ax3.set_ylabel("u_centre / U_mean")
-    ax3.set_xlabel("x from inlet (mm)    shaded: measurement window")
+    ax3.set_xlabel("x from channel entry (mm)    shaded: measurement window")
     _legend(ax3, loc="lower right")
     for ax in (ax1, ax2, ax3):
         _style(ax)
@@ -346,21 +366,28 @@ def channel_figure(path, s, p, d, m, *, st, title):
     plt.close(fig)
 
 
-def channel_field_figure(path, s, p, nx, ny, *, title):
-    """Axial velocity over the whole channel (structured mesh), y stretched for legibility."""
-    order = np.lexsort((s["x_mm"], s["y_mm"]))
-    u = s["ux_m_per_s"][order].reshape(ny, nx)
-    xe = np.linspace(0, float(p["length_mm"]), nx + 1)  # uniform structured mesh: cell edges
-    ye = np.linspace(0, float(p["gap_mm"]), ny + 1)
-    fig, ax = plt.subplots(figsize=(9, 2.4), facecolor=SURFACE)
-    mesh = ax.pcolormesh(xe, ye, u, cmap="Blues", shading="flat", rasterized=True)
+def channel_field_figure(path, s, p, blocks, *, title):
+    """Axial velocity over the whole domain, y stretched for legibility.
+
+    blocks: [(nx, ny)] in OpenFOAM cell order (blockMesh: block by block, x fastest),
+    so each block reshapes to a structured (possibly curvilinear) grid of cell centres.
+    """
+    fig, ax = plt.subplots(figsize=(9, 2.6), facecolor=SURFACE)
+    u_all = s["ux_m_per_s"]
+    norm = matplotlib.colors.Normalize(vmin=float(u_all.min()), vmax=float(u_all.max()))
+    start = 0
+    for nx, ny in blocks:
+        sl = slice(start, start + nx * ny)
+        start += nx * ny
+        X, Y, Z = (s[k][sl].reshape(ny, nx) for k in ("x_mm", "y_mm", "ux_m_per_s"))
+        mesh = ax.pcolormesh(X, Y, Z, cmap="Blues", norm=norm, shading="gouraud", rasterized=True)
     cb = fig.colorbar(mesh, ax=ax, pad=0.01)
     cb.set_label("u (m/s)", color=TEXT_2)
     cb.ax.tick_params(colors=TEXT_2, labelsize=8)
     cb.outline.set_edgecolor(GRID)
     ax.set_xlabel("x (mm)")
     ax.set_ylabel("y (mm)")
-    ax.set_title(f"{title} (y axis stretched)", color=TEXT, fontsize=10, loc="left")
+    ax.set_title(f"{title} (y axis stretched; cell centres)", color=TEXT, fontsize=10, loc="left")
     _style(ax)
     ax.grid(False)
     fig.tight_layout()

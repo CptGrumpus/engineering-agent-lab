@@ -69,3 +69,36 @@ def pressure_drop_developing(L: float, U: float, H: float, rho: float, mu: float
     Dh = hydraulic_diameter(H)
     f_app = apparent_friction_re(L / (Dh * Re)) / Re
     return 4.0 * f_app * (L / Dh) * 0.5 * rho * U**2
+
+
+# Kinetic-energy flux coefficient of plane Poiseuille flow: <u^3> / U^3 = 54/35.
+ALPHA_POISEUILLE = 54.0 / 35.0
+
+
+def total_pressure_drop_uniform_entry(L, U, H, rho, mu) -> float:
+    """Flux-weighted total-pressure drop over a channel with a uniform entry
+    profile (alpha = 1) and a fully developed exit profile (alpha = 54/35)."""
+    return (pressure_drop_developing(L, U, H, rho, mu)
+            - (ALPHA_POISEUILLE - 1.0) * 0.5 * rho * U**2)
+
+
+def lubrication_friction(q: float, mu: float, heights, dx: float) -> float:
+    """Friction pressure loss int 12 mu q / h(x)^3 dx (locally fully developed flow),
+    for flow q per unit width through a duct of slowly varying height h(x) (m),
+    sampled at uniform spacing dx (trapezoidal rule)."""
+    h = np.asarray(heights, float)
+    return float(np.trapezoid(12.0 * mu * q / h**3, dx=dx))
+
+
+def header_total_pressure_drop(H, L, Hs, Ls, Lc, U, rho, mu, contraction_height) -> float:
+    """Approximate supply-to-outlet total-pressure drop (Pa), lengths in m.
+
+    Supply duct and contraction: locally fully developed friction (lubrication
+    theory). Channel: Shah & London from a uniform entry. The real entry profile
+    lies between uniform and developed, so this is a model-form estimate.
+    """
+    q = U * H
+    s = np.linspace(0.0, 1.0, 2001)
+    supply = 12.0 * mu * q * Ls / Hs**3
+    contraction = lubrication_friction(q, mu, contraction_height(s, H, Hs), Lc / (len(s) - 1))
+    return supply + contraction + total_pressure_drop_uniform_entry(L, U, H, rho, mu)

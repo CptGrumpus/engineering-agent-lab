@@ -98,11 +98,20 @@ def read_patch_value(path: Path, patch: str, n_faces: int | None = None) -> np.n
     m = re.compile(rf"\n\s*{re.escape(patch)}\s*\n\s*\{{").search(text, b)
     if b < 0 or not m:
         raise ValueError(f"{path}: patch {patch!r} not found")
-    end = text.index("}", m.end())
-    v = re.compile(r"\bvalue\s+").search(text, m.end(), end)
-    if not v:
-        return None
-    return _parse_value(text, v.end(), n_faces)
+    # scan the patch block; only a 'value' at the block's top level counts (entries
+    # such as volumetricFlowRate may be sub-dictionaries with their own 'value')
+    depth, i = 1, m.end()
+    key = re.compile(r"\bvalue\s+")
+    while depth:
+        c = text[i]
+        if c == "{":
+            depth += 1
+        elif c == "}":
+            depth -= 1
+        elif depth == 1 and c == "v" and key.match(text, i) and not text[i - 1].isalnum():
+            return _parse_value(text, key.match(text, i).end(), n_faces)
+        i += 1
+    return None
 
 
 def latest_time_dir(case: Path) -> Path:

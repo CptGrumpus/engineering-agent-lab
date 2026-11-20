@@ -119,3 +119,32 @@ def test_failed_run_level_check_withholds_verdicts():
     ver["run_checks"] = [{"id": "run_level_error", "status": "FAIL"}]  # no metric: blanket
     verdicts = {r["id"]: r["verdict"] for r in evaluate(case, manifest, ver)["points"][0]["requirements"]}
     assert verdicts == {"R1": "PASS (unverified)", "R2": "PASS (unverified)"}
+
+
+def _msd_with_sweep(tmp_path, sweep_toml):
+    import re
+    text = Path("cases/msd_step.toml").read_text(encoding="utf-8")
+    text = re.sub(r"\[sweep\]\n(?:[^\[\n].*\n|\n)*", sweep_toml + "\n", text)
+    path = tmp_path / "c.toml"
+    path.write_text(text, encoding="utf-8")
+    return path
+
+
+def test_scenario_sweep_sets_several_parameters(tmp_path):
+    from harness.case import expand_points, sweep_name
+
+    path = _msd_with_sweep(tmp_path, '[[sweep.scenarios]]\nname = "soft"\nstiffness_N_per_m = 500.0\n'
+                                     'damping_ratio = 0.2\n\n[[sweep.scenarios]]\nname = "stiff"\n'
+                                     'stiffness_N_per_m = 2000.0\n')
+    case, _, _ = load_case(path)
+    pts = expand_points(case)
+    assert [lab for lab, _ in pts] == ["p00_soft", "p01_stiff"]
+    assert pts[0][1]["stiffness_N_per_m"] == 500.0 and pts[0][1]["damping_ratio"] == 0.2
+    assert pts[1][1]["damping_ratio"] == case["parameters"]["damping_ratio"]  # baseline kept
+    assert sweep_name(case) == "scenario" and pts[1][1]["scenario"] == "stiff"
+
+
+def test_scenario_with_unknown_parameter_rejected(tmp_path):
+    path = _msd_with_sweep(tmp_path, '[[sweep.scenarios]]\nname = "x"\nno_such_param = 1.0\n')
+    with pytest.raises(CaseError):
+        load_case(path)

@@ -19,6 +19,7 @@ is the `verify-against-reference` skill.
 | `quarter_car_modelica` | quarter car | OpenModelica + MSL (road `bump` only) | `EngLab.mo` (`EngLab.QuarterCarBump`) |
 | `cantilever_freecad` | cantilever FEA | FreeCAD 1.1.4 (`freecadcmd`) + Gmsh + CalculiX 2.22 | `models/fea/cantilever_freecad.py` |
 | `cadquery_plate` | mounting plate | CadQuery 2.8 (OpenCASCADE) | `models/cad/mounting_plate.py` |
+| `openfoam_channel` | laminar channel flow | OpenFOAM 14 in WSL (blockMesh, checkMesh, foamRun) | `models/cfd/channel_openfoam.py`, `models/cfd/run_channel.sh` |
 
 The registry is `harness/registry.py`; each study lives in `studies/<name>.py`.
 
@@ -28,6 +29,16 @@ The registry is `harness/registry.py`; each study lives in `studies/<name>.py`.
   2 mm). The CalculiX deck, `.dat`, and native `cantilever.FCStd` are kept in
   `points/<label>/solver/`. Nodal results are parsed from the `.frd` file by
   `harness/calculix.py`, not by FreeCAD.
+- For `openfoam_channel`, OpenFOAM runs inside WSL. The harness finds the newest
+  `/opt/openfoam*/etc/bashrc` (override with `OPENFOAM_BASHRC`; pick a distro with
+  `OPENFOAM_WSL_DISTRO`). The Python writer generates the case dictionaries and
+  `run_channel.sh` runs blockMesh, checkMesh, foamRun, and writeCellCentres; the
+  dictionaries and logs are kept in `points/<label>/solver/`. Fields are read from
+  OpenFOAM's ASCII files by `harness/openfoam.py`. Giving `supply_height_mm`,
+  `supply_length_mm`, and `contraction_length_mm` adds a supply header and smooth
+  contraction ahead of the channel; without them the inlet is an idealized uniform
+  velocity at the channel entry (singular inlet corners). If OpenFOAM is missing, stop:
+  installing it needs `sudo apt` in WSL, which only the user can do.
 - For the Modelica models, the harness finds `omc` via `OPENMODELICAHOME` or
   `C:/Program Files/OpenModelica*/bin`. It compiles the model once per run, then runs
   the executable for each point. Model parameters are passed with `-override`; stop
@@ -44,7 +55,9 @@ improvise a new model inside this skill.
 
 ## Inputs
 
-A case file under `cases/` with `[case]`, `[parameters]`, optional `[sweep]`,
+A case file under `cases/` with `[case]`, `[parameters]`, optional `[sweep]` (one
+`parameter` with `values`, or named `[[sweep.scenarios]]` that each set several
+parameters, e.g. tolerance corners),
 `[numerics]`, `[metrics]`, `[verification]`, and `[[requirements]]`. See
 `cases/msd_step.toml`.
 

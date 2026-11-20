@@ -5,7 +5,7 @@ from __future__ import annotations
 from datetime import datetime, timezone
 from pathlib import Path
 
-from harness.case import OPERATORS, load_case
+from harness.case import OPERATORS, load_case, sweep_name
 from harness.runio import read_json, write_json
 
 
@@ -78,7 +78,7 @@ def build_report(run_dir: str | Path) -> Path:
     write_json(run_dir / "report.json", result)
 
     env = manifest["environment"]
-    sweep = case.get("sweep", {}).get("parameter")
+    sweep = sweep_name(case)
     reqs = case["requirements"]
     L = []
     L.append(f"# Engineering review report: {case['case']['name']}")
@@ -131,7 +131,7 @@ def build_report(run_dir: str | Path) -> Path:
     for pt in result["points"]:
         row = [pt["label"]]
         if sweep:
-            row.append(f"{pt['parameters'][sweep]:g}")
+            row.append(_fmtv(pt["parameters"][sweep]))
         for rq in pt["requirements"]:
             row.append(f"{_fmt(rq['value'])} {rq['units']}: **{rq['verdict']}**")
         n_pass = sum(c["status"] == "PASS" for c in pt["checks"])
@@ -162,10 +162,11 @@ def build_report(run_dir: str | Path) -> Path:
     rows = [(pt["parameters"][sweep], {rq["metric"]: rq["value"] for rq in pt["requirements"]},
              {rq["metric"]: rq["verdict"] for rq in pt["requirements"]})
             for pt in result["points"] if sweep and pt["simulation_status"] == "completed"]
-    if len(rows) >= 2 and all(isinstance(r[0], (int, float)) for r in rows):
+    if len(rows) >= 2:
         from harness.plotting import sweep_figure
         sweep_figure(run_dir / "sweep.png", sweep, rows, reqs,
-                     f"{case['case']['name']}: requirement metrics vs {sweep}")
+                     f"{case['case']['name']}: requirement metrics "
+                     + ("by scenario" if sweep == "scenario" else f"vs {sweep}"))
         L.append("![Requirement metrics across the sweep](sweep.png)")
         L.append("")
 

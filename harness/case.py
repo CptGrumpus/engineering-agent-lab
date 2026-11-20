@@ -58,7 +58,15 @@ def load_case(path: str | Path) -> tuple[dict, bytes, str]:
             raise CaseError(f"{path}: {r['id']} metric must be one of {sorted(study.metrics)}")
 
     sweep = case.get("sweep")
-    if sweep:
+    if sweep and "scenarios" in sweep:
+        names = [sc.get("name") for sc in sweep["scenarios"]]
+        if not names or not all(isinstance(n, str) and n for n in names) or len(set(names)) < len(names):
+            raise CaseError(f"{path}: every sweep scenario needs a unique non-empty name")
+        for sc in sweep["scenarios"]:
+            unknown = [k for k in sc if k != "name" and k not in case["parameters"]]
+            if unknown:
+                raise CaseError(f"{path}: scenario {sc['name']!r} sets unknown parameters {unknown}")
+    elif sweep:
         if sweep.get("parameter") not in case["parameters"]:
             raise CaseError(f"{path}: sweep parameter must name an entry in [parameters]")
         if not sweep.get("values"):
@@ -67,12 +75,32 @@ def load_case(path: str | Path) -> tuple[dict, bytes, str]:
     return case, raw, hashlib.sha256(raw).hexdigest()
 
 
+def sweep_name(case: dict) -> str | None:
+    """Parameter that identifies each point: the swept parameter, or 'scenario'."""
+    sweep = case.get("sweep")
+    if not sweep:
+        return None
+    return "scenario" if "scenarios" in sweep else sweep["parameter"]
+
+
 def expand_points(case: dict) -> list[tuple[str, dict]]:
-    """Return [(label, parameters)] - one point per sweep value, or the baseline."""
+    """Return [(label, parameters)] - one point per sweep value or scenario, or the baseline.
+
+    A scenario sweep ([[sweep.scenarios]], each with a name) sets several
+    parameters together; the scenario name is recorded as parameter 'scenario'.
+    """
     base = dict(case["parameters"])
     sweep = case.get("sweep")
     if not sweep:
         return [("p00_baseline", base)]
+    if "scenarios" in sweep:
+        points = []
+        for i, sc in enumerate(sweep["scenarios"]):
+            params = dict(base)
+            params.update({k: v for k, v in sc.items() if k != "name"})
+            params["scenario"] = sc["name"]
+            points.append((f"p{i:02d}_{sc['name']}", params))
+        return points
     name = sweep["parameter"]
     points = []
     for i, value in enumerate(sweep["values"]):

@@ -20,18 +20,19 @@ The intended user is an automotive engineer with a master's degree in mechanical
 | Quarter-car ride / road holding | `quarter_car`, `quarter_car_modelica` | SciPy; OpenModelica + MSL | `qc_speed_bump`, `qc_speed_bump_modelica`, `qc_iso_road`, `qc_bump` |
 | Cantilever, 3D solid FEA | `cantilever_freecad` | FreeCAD + Gmsh + CalculiX | `cantilever_tet10`, `cantilever_tet4` |
 | Parametric mounting plate | `cadquery_plate` | CadQuery | `mounting_plate` |
+| Laminar coolant channel, CFD | `openfoam_channel` | OpenFOAM 14 (in WSL) | `channel_header_mesh`, `channel_header_tolerance`, `channel_mesh` |
 
 ## Project folders
 
 - `cases/`: case files (TOML) with parameters, sweep, numerics, verification tolerances, and requirements.
-- `models/`: models under test (Python, Modelica `.mo`, FreeCAD script, CadQuery).
+- `models/`: models under test (Python, Modelica `.mo`, FreeCAD script, CadQuery, OpenFOAM case writer).
 - `validation/`: independent references (closed form, state space, beam theory); these must not import from `models/`.
 - `excitation/`: load definitions shared by models and references (road profiles).
 - `studies/`: one module per study: backends, metrics, checks, plots.
 - `harness/`: generic run, verify, report, compare, and rerun tooling (`python -m harness`).
 - `runs/`: evidence from individual executions; see [runs/README.md](runs/README.md). Git-ignored except curated example runs (without bulky result CSVs).
 - `.claude/skills/`: executable Claude Code skills.
-- `tests/`: pytest suite (43 tests), including negative tests showing that the checks catch wrong models and invalid assumptions.
+- `tests/`: pytest suite (53 tests), including negative tests showing that the checks catch wrong models and invalid assumptions.
 
 ## Setup and commands
 
@@ -41,15 +42,17 @@ py -3.14 -m venv .venv
 # optional tool paths
 winget install --id OpenModelica.OpenModelica.Official   # then an omc script: installPackage(Modelica);
 winget install --id FreeCAD.FreeCAD                       # bundles CalculiX and Gmsh
+# OpenFOAM: in WSL Ubuntu, add the dl.openfoam.org apt repository, then
+#   sudo apt-get install openfoam14
 
 .venv\Scripts\python.exe -m harness pipeline cases\qc_speed_bump.toml      # run + verify + report
 .venv\Scripts\python.exe -m harness compare runs\<run> runs\<other_run>      # cross-tool check
 .venv\Scripts\python.exe -m harness report runs\<run>                        # regenerate the report
 .venv\Scripts\python.exe -m harness rerun runs\<run_id>                      # reproduce
-.venv\Scripts\python.exe -m pytest -q        # Modelica/FreeCAD tests skip if the tool is absent
+.venv\Scripts\python.exe -m pytest -q        # Modelica/FreeCAD/OpenFOAM tests skip if the tool is absent
 ```
 
-Not yet done: OpenFOAM (CFD) path, nonlinear models (tire lift-off, bump stops, contact), any physical validation data.
+Not yet done: heat transfer in the CFD path, 3D CFD, nonlinear models (tire lift-off, bump stops, contact), any physical validation data.
 
 ## First implementation milestone (done)
 

@@ -1,0 +1,575 @@
+{
+  "run_id": "20261119-200042_channel_header_mesh",
+  "verified_utc": "2026-11-20T01:02:59+00:00",
+  "tolerances": {
+    "mass_rel_tol": 1e-06,
+    "momentum_balance_rel_tol": 0.001,
+    "profile_rel_tol": 0.01,
+    "fully_developed_rel_tol": 0.01,
+    "correlation_rel_tol": 0.1,
+    "laminar_reynolds_max": 2000.0,
+    "fully_developed_change_max": 0.001,
+    "gci_fully_developed_max": 0.01,
+    "gci_pressure_drop_max": 0.02
+  },
+  "points": [
+    {
+      "label": "p00_cells_across_gap-10",
+      "status": "FAIL",
+      "checks": [
+        {
+          "id": "mesh_quality",
+          "description": "checkMesh result (0 = Mesh OK)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "iterative_convergence",
+          "description": "max final initial residual / target (inf if SIMPLE did not converge)",
+          "kind": "numerical",
+          "value": 0.9333743462210001,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "mass_conservation",
+          "description": "|Q_out - Q_in| / Q_in (face fluxes at inlet and outlet)",
+          "kind": "numerical",
+          "value": 1.2500173422410062e-11,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "inlet_flow",
+          "description": "|Q_in - U H| / (U H): imposed flow rate",
+          "kind": "numerical",
+          "value": 8.000056780227416e-13,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "momentum_balance",
+          "description": "|tau_w - (-dp/dx) H/2| / tau_w in the fully developed window",
+          "kind": "numerical",
+          "value": 3.3082035186441264e-05,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "velocity_profile_reference",
+          "description": "max |u_CFD - u_Poiseuille| / u_max at mid-window station",
+          "kind": "numerical",
+          "value": 0.00961449597333371,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "pressure_gradient_reference",
+          "description": "|(-dp/dx)_CFD - 12 mu U/H^2| / exact",
+          "kind": "numerical",
+          "value": 0.019543332895287615,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "FAIL"
+        },
+        {
+          "id": "wall_shear_reference",
+          "description": "|tau_w,CFD - 6 mu U/H| / exact",
+          "kind": "numerical",
+          "value": 0.019575767324250478,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "FAIL"
+        },
+        {
+          "id": "total_pressure_drop_reference",
+          "description": "|dp_t,CFD - dp_t,ref| / dp_t,ref; ref = lubrication friction in header and contraction + Shah & London channel from uniform entry (model form)",
+          "kind": "numerical",
+          "value": 0.017358234615215413,
+          "tolerance": 0.1,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "laminar",
+          "description": "Re_Dh / laminar limit",
+          "kind": "validity",
+          "value": 0.09966154153354634,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "entrance_before_window",
+          "description": "Shah & London entrance length / window start (window must be fully developed)",
+          "kind": "validity",
+          "value": 0.4525477343874706,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "fully_developed",
+          "description": "(max - min) / mean centreline velocity across the window",
+          "kind": "validity",
+          "value": 9.864399600565412e-05,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p01_cells_across_gap-20",
+      "status": "PASS",
+      "checks": [
+        {
+          "id": "mesh_quality",
+          "description": "checkMesh result (0 = Mesh OK)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "iterative_convergence",
+          "description": "max final initial residual / target (inf if SIMPLE did not converge)",
+          "kind": "numerical",
+          "value": 0.9160286003200001,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "mass_conservation",
+          "description": "|Q_out - Q_in| / Q_in (face fluxes at inlet and outlet)",
+          "kind": "numerical",
+          "value": 1.144799587158412e-10,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "inlet_flow",
+          "description": "|Q_in - U H| / (U H): imposed flow rate",
+          "kind": "numerical",
+          "value": 1.9922214919421144e-14,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "momentum_balance",
+          "description": "|tau_w - (-dp/dx) H/2| / tau_w in the fully developed window",
+          "kind": "numerical",
+          "value": 2.1316576829193203e-05,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "velocity_profile_reference",
+          "description": "max |u_CFD - u_Poiseuille| / u_max at mid-window station",
+          "kind": "numerical",
+          "value": 0.00247931767333361,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "pressure_gradient_reference",
+          "description": "|(-dp/dx)_CFD - 12 mu U/H^2| / exact",
+          "kind": "numerical",
+          "value": 0.0049300064085119125,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "wall_shear_reference",
+          "description": "|tau_w,CFD - 6 mu U/H| / exact",
+          "kind": "numerical",
+          "value": 0.004951217442333958,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "total_pressure_drop_reference",
+          "description": "|dp_t,CFD - dp_t,ref| / dp_t,ref; ref = lubrication friction in header and contraction + Shah & London channel from uniform entry (model form)",
+          "kind": "numerical",
+          "value": 0.0038934426949174183,
+          "tolerance": 0.1,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "laminar",
+          "description": "Re_Dh / laminar limit",
+          "kind": "validity",
+          "value": 0.09966154153354634,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "entrance_before_window",
+          "description": "Shah & London entrance length / window start (window must be fully developed)",
+          "kind": "validity",
+          "value": 0.4525477343874706,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "fully_developed",
+          "description": "(max - min) / mean centreline velocity across the window",
+          "kind": "validity",
+          "value": 7.580712324586568e-05,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p02_cells_across_gap-40",
+      "status": "PASS",
+      "checks": [
+        {
+          "id": "mesh_quality",
+          "description": "checkMesh result (0 = Mesh OK)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "iterative_convergence",
+          "description": "max final initial residual / target (inf if SIMPLE did not converge)",
+          "kind": "numerical",
+          "value": 0.9812943281809999,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "mass_conservation",
+          "description": "|Q_out - Q_in| / Q_in (face fluxes at inlet and outlet)",
+          "kind": "numerical",
+          "value": 6.4003099695136834e-09,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "inlet_flow",
+          "description": "|Q_in - U H| / (U H): imposed flow rate",
+          "kind": "numerical",
+          "value": 2.600729961249604e-13,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "momentum_balance",
+          "description": "|tau_w - (-dp/dx) H/2| / tau_w in the fully developed window",
+          "kind": "numerical",
+          "value": 1.9743215129125503e-05,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "velocity_profile_reference",
+          "description": "max |u_CFD - u_Poiseuille| / u_max at mid-window station",
+          "kind": "numerical",
+          "value": 0.0006433666466667172,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "pressure_gradient_reference",
+          "description": "|(-dp/dx)_CFD - 12 mu U/H^2| / exact",
+          "kind": "numerical",
+          "value": 0.0011842374361534596,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "wall_shear_reference",
+          "description": "|tau_w,CFD - 6 mu U/H| / exact",
+          "kind": "numerical",
+          "value": 0.0012039568813026942,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "total_pressure_drop_reference",
+          "description": "|dp_t,CFD - dp_t,ref| / dp_t,ref; ref = lubrication friction in header and contraction + Shah & London channel from uniform entry (model form)",
+          "kind": "numerical",
+          "value": 0.0005243881481513323,
+          "tolerance": 0.1,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "laminar",
+          "description": "Re_Dh / laminar limit",
+          "kind": "validity",
+          "value": 0.09966154153354634,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "entrance_before_window",
+          "description": "Shah & London entrance length / window start (window must be fully developed)",
+          "kind": "validity",
+          "value": 0.4525477343874706,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "fully_developed",
+          "description": "(max - min) / mean centreline velocity across the window",
+          "kind": "validity",
+          "value": 5.763631457937938e-05,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p03_cells_across_gap-80",
+      "status": "PASS",
+      "checks": [
+        {
+          "id": "mesh_quality",
+          "description": "checkMesh result (0 = Mesh OK)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "iterative_convergence",
+          "description": "max final initial residual / target (inf if SIMPLE did not converge)",
+          "kind": "numerical",
+          "value": 0.9810170329180001,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "mass_conservation",
+          "description": "|Q_out - Q_in| / Q_in (face fluxes at inlet and outlet)",
+          "kind": "numerical",
+          "value": 7.197499161343331e-10,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "inlet_flow",
+          "description": "|Q_in - U H| / (U H): imposed flow rate",
+          "kind": "numerical",
+          "value": 2.9802007216195303e-13,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "momentum_balance",
+          "description": "|tau_w - (-dp/dx) H/2| / tau_w in the fully developed window",
+          "kind": "numerical",
+          "value": 2.377254039355092e-05,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "velocity_profile_reference",
+          "description": "max |u_CFD - u_Poiseuille| / u_max at mid-window station",
+          "kind": "numerical",
+          "value": 0.0002244551933335466,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "pressure_gradient_reference",
+          "description": "|(-dp/dx)_CFD - 12 mu U/H^2| / exact",
+          "kind": "numerical",
+          "value": 0.0001688589847284419,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "wall_shear_reference",
+          "description": "|tau_w,CFD - 6 mu U/H| / exact",
+          "kind": "numerical",
+          "value": 0.00019262694588996493,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "total_pressure_drop_reference",
+          "description": "|dp_t,CFD - dp_t,ref| / dp_t,ref; ref = lubrication friction in header and contraction + Shah & London channel from uniform entry (model form)",
+          "kind": "numerical",
+          "value": 0.00036903520268259996,
+          "tolerance": 0.1,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "laminar",
+          "description": "Re_Dh / laminar limit",
+          "kind": "validity",
+          "value": 0.09966154153354634,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "entrance_before_window",
+          "description": "Shah & London entrance length / window start (window must be fully developed)",
+          "kind": "validity",
+          "value": 0.4525477343874706,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "fully_developed",
+          "description": "(max - min) / mean centreline velocity across the window",
+          "kind": "validity",
+          "value": 2.115287025876928e-05,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ]
+    }
+  ],
+  "run_checks": [
+    {
+      "id": "discretization_pressure_gradient_Pa_per_m",
+      "description": "relative discretization uncertainty of pressure_gradient_Pa_per_m, monotone (R = 0.271): GCI_fine, observed order 1.88, extrapolated 1202.17",
+      "kind": "numerical",
+      "value": 0.0004720787711562006,
+      "tolerance": 0.01,
+      "comparison": "<=",
+      "status": "PASS",
+      "metric": "pressure_gradient_Pa_per_m"
+    },
+    {
+      "id": "discretization_wall_shear_stress_Pa",
+      "description": "relative discretization uncertainty of wall_shear_stress_Pa, monotone (R = 0.270): GCI_fine, observed order 1.89, extrapolated 0.601069",
+      "kind": "numerical",
+      "value": 0.00046738451772844285,
+      "tolerance": 0.01,
+      "comparison": "<=",
+      "status": "PASS",
+      "metric": "wall_shear_stress_Pa"
+    },
+    {
+      "id": "discretization_total_pressure_drop_Pa",
+      "description": "relative discretization uncertainty of total_pressure_drop_Pa, monotone (R = 0.265): GCI_fine, observed order 1.91, extrapolated 25.7483",
+      "kind": "numerical",
+      "value": 0.0004028825193867701,
+      "tolerance": 0.02,
+      "comparison": "<=",
+      "status": "PASS",
+      "metric": "total_pressure_drop_Pa"
+    },
+    {
+      "id": "discretization_required_pressure_Pa",
+      "description": "relative discretization uncertainty of required_pressure_Pa, monotone (R = 0.258): GCI_fine, observed order 1.95, extrapolated 33.4479",
+      "kind": "numerical",
+      "value": 0.00041090460437539784,
+      "tolerance": 0.02,
+      "comparison": "<=",
+      "status": "PASS",
+      "metric": "required_pressure_Pa"
+    }
+  ],
+  "run_check_detail": {
+    "meshes_used": [
+      "p03_cells_across_gap-80",
+      "p02_cells_across_gap-40",
+      "p01_cells_across_gap-20"
+    ],
+    "pressure_gradient_Pa_per_m": {
+      "regime": "monotone",
+      "uncertainty": 0.0004720787711562006,
+      "converged_exactly": false,
+      "order": 1.883244372953584,
+      "extrapolated": 1202.1708890937837,
+      "rel_error_fine": 0.001015549936156178,
+      "rel_error_extrapolated": 0.0003775204414160248,
+      "gci_fine": 0.0004720787711562006,
+      "convergence_ratio": 0.271073432162503,
+      "r21": 2.0,
+      "r32": 2.0
+    },
+    "wall_shear_stress_Pa": {
+      "regime": "monotone",
+      "uncertainty": 0.00046738451772844285,
+      "converged_exactly": false,
+      "order": 1.8895825595050753,
+      "extrapolated": 0.6010688991464646,
+      "rel_error_fine": 0.001011524782342244,
+      "rel_error_extrapolated": 0.00037376785953417365,
+      "gci_fine": 0.00046738451772844285,
+      "convergence_ratio": 0.2698851384741729,
+      "r21": 2.0,
+      "r32": 2.0
+    },
+    "total_pressure_drop_Pa": {
+      "regime": "monotone",
+      "uncertainty": 0.0004028825193867701,
+      "converged_exactly": false,
+      "order": 1.9149279195978042,
+      "extrapolated": 25.748263140953515,
+      "rel_error_fine": 0.0008930937677943197,
+      "rel_error_extrapolated": 0.00032220216781244065,
+      "gci_fine": 0.0004028825193867701,
+      "convergence_ratio": 0.2651851842801175,
+      "r21": 2.0,
+      "r32": 2.0
+    },
+    "required_pressure_Pa": {
+      "regime": "monotone",
+      "uncertainty": 0.00041090460437539784,
+      "converged_exactly": false,
+      "order": 1.9538895513938048,
+      "extrapolated": 33.447870970833506,
+      "rel_error_fine": 0.0009448097709604973,
+      "rel_error_extrapolated": 0.0003286156597500155,
+      "gci_fine": 0.00041090460437539784,
+      "convergence_ratio": 0.25811939399698947,
+      "r21": 2.0,
+      "r32": 2.0
+    }
+  },
+  "status": "FAIL"
+}

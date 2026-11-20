@@ -1,0 +1,94 @@
+# Revision of channel_mesh: the same channel fed from a supply header through a
+# smooth contraction, with the pressure drop measured as a flux-weighted total
+# pressure between the supply inlet and the outlet.
+#
+# Why revised: in channel_mesh the uniform inlet velocity met the no-slip walls
+# at x = 0, a singular corner; the inlet pressure converged at order 0.5 and its
+# GCI failed (3.5 % > 2 %). That run is kept as evidence. Real hardware has a
+# header, so the inlet condition now carries a fully developed profile at an
+# exact flow rate and no velocity discontinuity touches a wall.
+#
+# Requirements and tolerances were fixed BEFORE the first run of this case.
+# Changes from channel_mesh: water properties from IAPWS at 20 C; REQ-F1 now
+# names the supply pressure the pump must provide: inlet total pressure minus
+# outlet static pressure, i.e. the loss in the model plus a full exit loss
+# (the channel's outlet dynamic head is assumed not recovered in the outlet
+# header; conservative). Same 30 Pa limit. This metric definition was settled
+# after a single coarse-mesh smoke test, before this case's evidence run, when
+# the smoke test showed the outlet dynamic head (~7.7 Pa) is a quarter of the
+# budget and a total-pressure drop alone would have left it out;
+# the correlation check compares against a header + channel estimate with a
+# 10 % tolerance, because its entry-profile assumption (uniform) is known to
+# differ from a contraction-fed entry; it guards against gross errors only.
+
+[case]
+name = "channel_header_mesh"
+model = "openfoam_channel"
+description = "Water at 20 C through a 1 mm gap between parallel plates, 20 mm long, mean velocity 0.1 m/s (Re_Dh about 200), fed from a 3 mm supply header through a 3 mm cosine contraction. Steady laminar 2D CFD with OpenFOAM; mesh refined from 10 to 80 cells across the gap (ratio 2). Checks the header-to-outlet pressure-drop budget and minimum wall shear stress."
+assumptions = [
+  "Incompressible, isothermal, Newtonian water at 20 C (IAPWS: rho = 998.21 kg/m^3, mu = 1.0016 mPa s).",
+  "Laminar flow; checked: Re_Dh below 2000.",
+  "2D: the channel is much wider than the gap (side walls ignored); to be confirmed against the real width.",
+  "Supply header modelled as a 3 mm high, 3 mm long duct with a fully developed inlet profile, then a smooth cosine contraction 3 mm long into the channel.",
+  "Required supply pressure = flux-weighted total pressure at the supply inlet minus static pressure at the channel outlet: the outlet dynamic head is assumed lost in the outlet header (exit loss coefficient 1, conservative).",
+  "Fully developed metrics are measured in x = 10-18 mm; checked: the predicted entrance length ends before the window, and the centreline velocity is constant across it.",
+]
+limitations = [
+  "Synthetic geometry and requirement limits; not a specific cold plate.",
+  "The total-pressure reference is a model-form estimate (lubrication theory + Shah & London), not an exact solution.",
+  "The outlet header is not modelled; its pressure recovery, if any, is neglected (conservative).",
+  "No physical test data.",
+]
+
+[parameters]
+gap_mm = 1.0
+length_mm = 20.0
+mean_velocity_m_per_s = 0.1
+density_kg_per_m3 = 998.21
+dynamic_viscosity_Pa_s = 1.0016e-3
+cells_across_gap = 20
+cell_aspect_ratio = 2.0         # dx / dy in the channel
+window_start_mm = 10.0
+window_end_mm = 18.0
+supply_height_mm = 3.0
+supply_length_mm = 3.0
+contraction_length_mm = 3.0
+
+[sweep]
+parameter = "cells_across_gap"
+values = [10, 20, 40, 80]
+
+[numerics]
+solver = "OpenFOAM incompressibleFluid, steady SIMPLEC, laminar"
+convection_scheme = "linearUpwind grad(U)"
+residual_p = 1e-6               # SIMPLE stops when every initial residual is below its target
+residual_U = 1e-6
+relaxation_U = 0.9
+max_iterations = 20000
+
+[verification]
+mass_rel_tol = 1e-6               # outlet vs inlet face flux; inlet flux vs U*H
+momentum_balance_rel_tol = 1e-3   # tau_w vs (-dp/dx) H/2 in the fully developed window
+profile_rel_tol = 0.01            # velocity profile vs Poiseuille, relative to u_max
+fully_developed_rel_tol = 0.01    # -dp/dx and tau_w vs exact
+correlation_rel_tol = 0.10        # total-pressure drop vs header + Shah & London estimate
+laminar_reynolds_max = 2000.0
+fully_developed_change_max = 1e-3 # centreline velocity variation across the window
+gci_fully_developed_max = 0.01    # GCI_fine on -dp/dx and tau_w
+gci_pressure_drop_max = 0.02      # GCI_fine on total-pressure drop and required pressure
+
+[[requirements]]
+id = "REQ-F1"
+text = "Supply pressure required to drive the flow from the supply header through the channel, including the exit loss, shall not exceed 30 Pa (pump budget share)."
+metric = "required_pressure_Pa"
+operator = "<="
+limit = 30.0
+units = "Pa"
+
+[[requirements]]
+id = "REQ-F2"
+text = "Fully developed wall shear stress shall be at least 0.5 Pa (synthetic anti-fouling criterion)."
+metric = "wall_shear_stress_Pa"
+operator = ">="
+limit = 0.5
+units = "Pa"

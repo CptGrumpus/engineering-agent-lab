@@ -1,0 +1,115 @@
+# Input-uncertainty study for the header-fed channel (channel_header_mesh):
+# manufacturing tolerance on the gap combined with the coolant temperature
+# range, at a fixed coolant flow rate, on the finest mesh of the mesh study.
+#
+# Requirements and tolerances are those of channel_header_mesh, fixed BEFORE
+# the first run of either case.
+#
+# Input ranges (synthetic, stated for review):
+#   gap 1.00 +- 0.05 mm (machined or stamped plates)
+#   coolant 15-40 C; water properties from IAPWS tables
+#   flow per unit width fixed at q = 1.0e-4 m^2/s (pump delivers a flow rate),
+#   so the mean velocity is q / gap.
+# Pressure drop rises with viscosity and falls with gap (about mu / gap^3), so
+# the corner scenarios bound it; wall shear (about mu / gap^2) likewise.
+
+[case]
+name = "channel_header_tolerance"
+model = "openfoam_channel"
+description = "Header-fed 1 mm parallel-plate channel (as channel_header_mesh, 80 cells across the gap) evaluated at the corners of the gap tolerance (0.95-1.05 mm) and coolant temperature range (15-40 C) at a fixed flow rate of 1.0e-4 m^2/s per unit width. Finds whether the pressure budget and minimum wall shear hold across the tolerance band."
+assumptions = [
+  "As channel_header_mesh, except the inputs varied below.",
+  "Flow rate per unit width is fixed by the pump: mean velocity = 1.0e-4 / gap (m/s, gap in m).",
+  "Water properties from IAPWS tables: 15 C (999.10 kg/m^3, 1.1375 mPa s), 20 C (998.21, 1.0016), 40 C (992.22, 0.6527).",
+  "Gap is uniform along the channel within each scenario (no taper or waviness).",
+]
+limitations = [
+  "Synthetic tolerance band and temperature range; not from a drawing or a thermal analysis.",
+  "Corners only: no statistical (e.g. Monte Carlo) combination of tolerances.",
+  "Numerical uncertainty is taken from channel_header_mesh (same mesh resolution).",
+  "No physical test data.",
+]
+
+[parameters]
+gap_mm = 1.0
+length_mm = 20.0
+mean_velocity_m_per_s = 0.1
+density_kg_per_m3 = 998.21
+dynamic_viscosity_Pa_s = 1.0016e-3
+cells_across_gap = 80
+cell_aspect_ratio = 2.0
+window_start_mm = 10.0
+window_end_mm = 18.0
+supply_height_mm = 3.0
+supply_length_mm = 3.0
+contraction_length_mm = 3.0
+
+[[sweep.scenarios]]
+name = "nominal_20C"
+gap_mm = 1.0
+mean_velocity_m_per_s = 0.1
+density_kg_per_m3 = 998.21
+dynamic_viscosity_Pa_s = 1.0016e-3
+
+[[sweep.scenarios]]
+name = "min_gap_15C"
+gap_mm = 0.95
+mean_velocity_m_per_s = 0.10526315789473684
+density_kg_per_m3 = 999.10
+dynamic_viscosity_Pa_s = 1.1375e-3
+
+[[sweep.scenarios]]
+name = "min_gap_40C"
+gap_mm = 0.95
+mean_velocity_m_per_s = 0.10526315789473684
+density_kg_per_m3 = 992.22
+dynamic_viscosity_Pa_s = 0.6527e-3
+
+[[sweep.scenarios]]
+name = "max_gap_15C"
+gap_mm = 1.05
+mean_velocity_m_per_s = 0.09523809523809523
+density_kg_per_m3 = 999.10
+dynamic_viscosity_Pa_s = 1.1375e-3
+
+[[sweep.scenarios]]
+name = "max_gap_40C"
+gap_mm = 1.05
+mean_velocity_m_per_s = 0.09523809523809523
+density_kg_per_m3 = 992.22
+dynamic_viscosity_Pa_s = 0.6527e-3
+
+[numerics]
+solver = "OpenFOAM incompressibleFluid, steady SIMPLEC, laminar"
+convection_scheme = "linearUpwind grad(U)"
+residual_p = 1e-6
+residual_U = 1e-6
+relaxation_U = 0.9
+max_iterations = 20000
+
+[verification]
+mass_rel_tol = 1e-6
+momentum_balance_rel_tol = 1e-3
+profile_rel_tol = 0.01
+fully_developed_rel_tol = 0.01
+correlation_rel_tol = 0.10
+laminar_reynolds_max = 2000.0
+fully_developed_change_max = 1e-3
+gci_fully_developed_max = 0.01
+gci_pressure_drop_max = 0.02
+
+[[requirements]]
+id = "REQ-F1"
+text = "Supply pressure required to drive the flow from the supply header through the channel, including the exit loss, shall not exceed 30 Pa (pump budget share)."
+metric = "required_pressure_Pa"
+operator = "<="
+limit = 30.0
+units = "Pa"
+
+[[requirements]]
+id = "REQ-F2"
+text = "Fully developed wall shear stress shall be at least 0.5 Pa (synthetic anti-fouling criterion)."
+metric = "wall_shear_stress_Pa"
+operator = ">="
+limit = 0.5
+units = "Pa"
