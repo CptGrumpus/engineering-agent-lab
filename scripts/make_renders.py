@@ -356,9 +356,52 @@ def scene_duct():
                                "The volume under the surface equals the imposed flow rate (render check).")
 
 
+def scene_turntable():
+    """The cantilever result, turning: same arrays and checks, plus turntable frames."""
+    import shutil as _sh
+
+    src = scene_cantilever()
+    for ext in (".npz",):
+        _sh.copyfile(src.with_suffix(ext), BUILD / f"turntable{ext}")
+    meta = json.loads(src.with_suffix(".json").read_text(encoding="utf-8"))
+    meta.update(turntable_frames=48, turntable_samples=40, turntable_scale_percent=50, elev=18,
+                distance_factor=3.2, fill=0.92)
+    (BUILD / "turntable.json").write_text(json.dumps(meta, indent=2), encoding="utf-8")
+    return BUILD / "turntable.npz"
+
+
+def assemble_turntable(scene: Path, out_path: Path):
+    """Composite the turntable frames on the page colour with the legend; animated WebP."""
+    from PIL import Image
+
+    meta = json.loads(scene.with_suffix(".json").read_text(encoding="utf-8"))
+    frames = sorted(scene.parent.glob(f"{scene.stem}_tt_*.png"))
+    out = []
+    for f in frames:
+        fig = plt.figure(figsize=(8, 8 * 0.62), facecolor=SURFACE)
+        ax = fig.add_axes((0.0, 0.0, 0.86, 0.9))
+        ax.set_facecolor(SURFACE)
+        img = plt.imread(f)
+        h, w = img.shape[:2]
+        fade = np.outer(np.clip(np.minimum(np.arange(h), np.arange(h)[::-1]) / (0.12 * h), 0, 1),
+                        np.clip(np.minimum(np.arange(w), np.arange(w)[::-1]) / (0.12 * w), 0, 1))
+        img = img.copy()
+        img[..., 3] = np.where(img[..., 3] < 0.999, img[..., 3] * fade, img[..., 3])
+        ax.imshow(img)
+        ax.set_axis_off()
+        legend(fig, (0.885, 0.15, 0.022, 0.62), meta)
+        fig.text(0.015, 0.95, "Cantilever under 1 kN: von Mises stress on the deformed part (deflection ×25)",
+                 color=TEXT, fontsize=10.5, weight="bold", va="center")
+        fig.canvas.draw()
+        rgba = np.asarray(fig.canvas.buffer_rgba())
+        out.append(Image.fromarray(rgba[..., :3].copy()))
+        plt.close(fig)
+    out[0].save(out_path, save_all=True, append_images=out[1:], duration=70, loop=0, quality=92, method=4)
+
+
 SCENES = {"cantilever": scene_cantilever, "fin": scene_fin, "strap": scene_strap,
           "modes": scene_bracket_modes, "cad": scene_cad, "contact": scene_contact,
-          "fatigue": scene_fatigue, "duct": scene_duct}
+          "fatigue": scene_fatigue, "duct": scene_duct, "turntable": scene_turntable}
 
 
 # --------------------------------------------------------------------------- render, check, annotate
@@ -505,6 +548,8 @@ def main():
                           "Bracket arm, first four modes (CalculiX, 7 mm arm clamped at the left end)",
                           "Colour shows how far each point moves, relative to the largest motion in that mode; "
                           "undeformed shape outlined.")
+        elif name == "turntable":
+            assemble_turntable(paths[0], OUT / "turntable_cantilever.webp")
         elif name == "contact":
             annotate_grid(paths, OUT / "render_contact.png",
                           "Roller on plate, 501 N/mm: von Mises stress at the contact (CalculiX contact)",

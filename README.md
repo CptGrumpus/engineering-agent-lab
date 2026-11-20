@@ -28,6 +28,7 @@ The intended user is an automotive engineer with a master's degree in mechanical
 | Strap fatigue life (chained FE + S-N) | `strap_fatigue` | CadQuery -> Gmsh -> CalculiX, then stress-life | `strap_fatigue_load` |
 | Laminar coolant channel, CFD | `openfoam_channel` | OpenFOAM 14 (in WSL) | `channel_header_mesh`, `channel_header_tolerance`, `channel_header_gap_limits`, `channel_mesh` |
 | Side-wall (3D) check of the channel | `openfoam_duct` | OpenFOAM 14 (in WSL) | `duct_side_walls` |
+| Heated coolant channel (thermal entry) | `openfoam_heated_channel` | OpenFOAM 14 (in WSL), scalarTransport | `heated_channel_mesh`, `heated_channel_flux` |
 | Heat-sink fin tip temperature, 3D conduction | `ccx_fin` | CalculiX (bundled with FreeCAD) | `fin_mesh`, `fin_tolerance`, `fin_h_sweep` |
 
 ## Project folders
@@ -42,6 +43,18 @@ The intended user is an automotive engineer with a master's degree in mechanical
 - `runs/`: evidence from individual executions; see [runs/README.md](runs/README.md). Git-ignored except curated example runs (without bulky result CSVs).
 - `.claude/skills/`: executable Claude Code skills.
 - `tests/`: pytest suite (67 tests), including negative tests showing that the checks catch wrong models and invalid assumptions.
+
+## Reading it on another machine
+
+Nothing needs installing to read the work. The portfolio pages, figures, renders and evidence reports are all committed.
+
+```powershell
+gh auth login                                         # the repository is private
+gh repo clone CptGrumpus/engineering-agent-lab
+code engineering-agent-lab                            # open PORTFOLIO.md, then Ctrl+Shift+V for the preview
+```
+
+Or browse it on GitHub: start at `PORTFOLIO.md`; each study links its evidence report under `runs/`. Raw time series and full meshes are not committed (they regenerate from the case files); everything a reviewer reads is.
 
 ## Setup and commands
 
@@ -61,7 +74,7 @@ winget install --id FreeCAD.FreeCAD                       # bundles CalculiX and
 .venv\Scripts\python.exe -m pytest -q        # Modelica/FreeCAD/OpenFOAM tests skip if the tool is absent
 ```
 
-Not yet done: heat transfer in the CFD path, 3D developing flow, structural contact with friction or plasticity, any physical validation data.
+Not yet done: conjugate heat transfer (conduction in the plate), 3D developing flow, structural contact with friction or plasticity, any physical validation data.
 
 ## First implementation milestone (done)
 

@@ -117,6 +117,16 @@ several modes) go through `annotate_grid` with one shared legend.
   contact scene re-solves the finest mesh, then refuses to render unless the
   node count and the line load match the evidence run exactly.
 
+## Turntables
+
+Set `turntable_frames` (with `turntable_samples` and `turntable_scale_percent`) in a
+scene's metadata. The part turns under fixed lights and camera, the framing
+covers the whole rotation envelope, and `assemble_turntable` composites the
+frames with the legend into an animated WebP. Keep the contour material matte
+(roughness about 0.6, specular about 0.2): at some angles a glossy surface
+reflects the key light and washes the contour colours out, which a single-view
+colour check won't see.
+
 ## Animations
 
 `scripts/make_animations.py` draws time-domain results as GIFs from the saved

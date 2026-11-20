@@ -11,6 +11,8 @@
 
 ![Von Mises stress on the deformed cantilever, rendered in Blender](img/render_cantilever.png)
 
+![The same result turning, rendered in Blender](img/turntable_cantilever.webp)
+
 ## The question
 
 A steel bracket, 200 mm long with a 20 by 20 mm section, carries a 1 kN load at its tip. Does it stay within a 1.0 mm deflection limit and a 213 MPa stress limit? And how accurate is the model?

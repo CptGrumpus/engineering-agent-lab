@@ -151,8 +151,8 @@ if contour:
             nt.links.new(em.outputs["Emission"], out.inputs["Surface"])
         else:
             bs = nt.nodes.new("ShaderNodeBsdfPrincipled")
-            bs.inputs["Roughness"].default_value = 0.42
-            bs.inputs["Specular IOR Level"].default_value = 0.35
+            bs.inputs["Roughness"].default_value = 0.6     # matte: no glare washing out contours at any angle
+            bs.inputs["Specular IOR Level"].default_value = 0.18
             nt.links.new(ramp.outputs["Color"], bs.inputs["Base Color"])
             nt.links.new(bs.outputs["BSDF"], out.inputs["Surface"])
         return mat
@@ -228,6 +228,11 @@ P = (allpts - centre) * scale
 if "frame_box" in meta:              # frame a detail: only points inside the box set the framing
     lo_b, hi_b = np.asarray(meta["frame_box"], dtype=float)
     P = P[np.all((allpts >= lo_b) & (allpts <= hi_b), axis=1)]
+NT = int(meta.get("turntable_frames", 0))
+if NT:   # frame the whole rotation: the part turns about the vertical axis through its centre
+    angs = np.linspace(0, 2 * np.pi, 25)[:-1]
+    P = np.vstack([P @ np.array([[np.cos(a), -np.sin(a), 0], [np.sin(a), np.cos(a), 0], [0, 0, 1]]).T
+                   for a in angs])
 # aim at the framed region itself; aiming at the whole model's centre with lens shift turns a
 # close-up into a long-lens, near-orthographic view (found on the contact close-up)
 target = (P.min(axis=0) + P.max(axis=0)) / 2 if "frame_box" in meta else np.zeros(3)
@@ -290,6 +295,22 @@ scene.cycles.use_denoising = True
 scene.cycles.use_adaptive_sampling = True
 scene.render.filepath = str(OUT.parent / (OUT.name + "_beauty.png"))
 bpy.ops.render.render(write_still=True)
+
+if NT:
+    # turntable: the part (and its outline) turn under fixed lights and camera
+    scene.cycles.samples = int(meta.get("turntable_samples", 48))
+    scene.render.resolution_percentage = int(meta.get("turntable_scale_percent", 50))
+    for k in range(NT):
+        a = 2 * math.pi * k / NT
+        part.rotation_euler = (0.0, 0.0, a)
+        if ghost_ob:
+            ghost_ob.rotation_euler = (0.0, 0.0, a)
+        scene.render.filepath = str(OUT.parent / f"{OUT.name}_tt_{k:03d}.png")
+        bpy.ops.render.render(write_still=True)
+    part.rotation_euler = (0.0, 0.0, 0.0)
+    if ghost_ob:
+        ghost_ob.rotation_euler = (0.0, 0.0, 0.0)
+    scene.render.resolution_percentage = 100
 
 if flat_mat is not None:
     # colour-check pass: unlit, one sample at the pixel centre, nothing but the part
