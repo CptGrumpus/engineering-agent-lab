@@ -1,0 +1,501 @@
+{
+  "run_id": "20261120-010318_bracket_modal_mesh",
+  "case_name": "bracket_modal_mesh",
+  "model": "cadquery_ccx_modal",
+  "case_source": "cases/bracket_modal_mesh.toml",
+  "case_sha256": "4e556555e304a751c8204270bc6204a3e48b4c54ce5b3c38474a4a9b2a319165",
+  "model_sources_sha256": {
+    "models/fea/bracket_modal.py": "9cb7bd3fe4d6527f31c4400aa5ff642d504b8f1a949d314bdc3abca4c244541f"
+  },
+  "rerun_of": null,
+  "started_utc": "2026-11-20T06:03:18+00:00",
+  "environment": {
+    "python": "3.14.10",
+    "python_executable": "C:\\Users\\mrstego\\projects\\engineering-agent-lab\\.venv\\Scripts\\python.exe",
+    "platform": "Windows-11-10.0.26100-SP0",
+    "machine": "AMD64",
+    "packages": {
+      "numpy": "2.5.5",
+      "scipy": "1.18.1",
+      "matplotlib": "3.11.2",
+      "cadquery": "2.8.0"
+    },
+    "git": {
+      "commit": "f27451e53271c9fdf413eecd2948844e9dd1096c",
+      "dirty": true
+    },
+    "tools": {
+      "cadquery": "2.8.0",
+      "gmsh": "4.15.0",
+      "CalculiX": "This is Version 2.22"
+    }
+  },
+  "numerics": {
+    "solver": "CalculiX 2.22 *FREQUENCY (Lanczos/ARPACK), quadratic tetrahedra C3D10 from Gmsh 4.15"
+  },
+  "points": [
+    {
+      "label": "p00_element_size_mm-5",
+      "parameters": {
+        "length_mm": 150.0,
+        "width_mm": 25.0,
+        "thickness_mm": 7.0,
+        "youngs_modulus_MPa": 210000.0,
+        "poisson_ratio": 0.3,
+        "density_t_per_mm3": 7.85e-09,
+        "element_size_mm": 5.0,
+        "n_modes": 6
+      },
+      "status": "completed",
+      "derived": {
+        "slenderness_h_over_L": 0.04666666666666667,
+        "volume_closed_form_mm3": 26250.0,
+        "flapwise_timoshenko_Hz": [
+          259.49473656150707,
+          1609.918122409701,
+          4437.436723750987
+        ],
+        "inplane_timoshenko_Hz": 908.833003763116,
+        "torsion_saint_venant_Hz": 2616.47730579721,
+        "first_mode_eff_mass_fraction_ref": 0.6136193093551148
+      },
+      "solver": {
+        "success": true,
+        "message": "CalculiX: 1377 C3D10, modes 262.0 Hz flapwise, 912.7 Hz in-plane, 1626.6 Hz flapwise, 2720.1 Hz torsion, 4494.9 Hz flapwise, 5123.6 Hz in-plane",
+        "nfev": null
+      },
+      "solver_outputs": {
+        "nodes": 2948,
+        "root_nodes": 67,
+        "elements": 1377,
+        "volume_mm3": 26250.0,
+        "frequency_Hz": [
+          261.9902,
+          912.6989,
+          1626.613,
+          2720.112,
+          4494.852,
+          5123.644
+        ],
+        "mode_types": [
+          "flapwise",
+          "in-plane",
+          "flapwise",
+          "torsion",
+          "flapwise",
+          "in-plane"
+        ],
+        "effective_mass": [
+          [
+            7.022733e-17,
+            4.758489e-16,
+            0.0001258347,
+            3.190157e-13,
+            1.499604,
+            4.220988e-12
+          ],
+          [
+            2.178908e-15,
+            0.0001261976,
+            3.536283e-15,
+            3.780907e-13,
+            1.116056e-15,
+            1.512054
+          ],
+          [
+            2.707018e-15,
+            3.746498e-15,
+            3.895441e-05,
+            2.060901e-11,
+            0.0392939,
+            8.63926e-11
+          ],
+          [
+            1.331931e-15,
+            2.394753e-15,
+            6.129984e-16,
+            0.009111522,
+            6.84372e-11,
+            4.173266e-11
+          ],
+          [
+            2.98089e-14,
+            6.354138e-14,
+            1.353029e-05,
+            6.20054e-12,
+            0.00509292,
+            2.01998e-11
+          ],
+          [
+            9.15422e-14,
+            4.108772e-05,
+            5.288045e-15,
+            1.12841e-15,
+            8.150628e-12,
+            0.0379561
+          ]
+        ],
+        "total_effective_mass": [
+          0.0002049482,
+          0.0002049482,
+          0.0002049482,
+          0.01151711,
+          1.546305,
+          1.55615
+        ]
+      },
+      "metrics": {
+        "first_frequency_Hz": 261.9902,
+        "mass_g": 206.06250000000003
+      }
+    },
+    {
+      "label": "p01_element_size_mm-3.125",
+      "parameters": {
+        "length_mm": 150.0,
+        "width_mm": 25.0,
+        "thickness_mm": 7.0,
+        "youngs_modulus_MPa": 210000.0,
+        "poisson_ratio": 0.3,
+        "density_t_per_mm3": 7.85e-09,
+        "element_size_mm": 3.125,
+        "n_modes": 6
+      },
+      "status": "completed",
+      "derived": {
+        "slenderness_h_over_L": 0.04666666666666667,
+        "volume_closed_form_mm3": 26250.0,
+        "flapwise_timoshenko_Hz": [
+          259.49473656150707,
+          1609.918122409701,
+          4437.436723750987
+        ],
+        "inplane_timoshenko_Hz": 908.833003763116,
+        "torsion_saint_venant_Hz": 2616.47730579721,
+        "first_mode_eff_mass_fraction_ref": 0.6136193093551148
+      },
+      "solver": {
+        "success": true,
+        "message": "CalculiX: 4763 C3D10, modes 261.8 Hz flapwise, 912.4 Hz in-plane, 1623.8 Hz flapwise, 2708.9 Hz torsion, 4481.5 Hz flapwise, 5121.9 Hz in-plane",
+        "nfev": null
+      },
+      "solver_outputs": {
+        "nodes": 9026,
+        "root_nodes": 135,
+        "elements": 4763,
+        "volume_mm3": 26250.0,
+        "frequency_Hz": [
+          261.7586,
+          912.3729,
+          1623.836,
+          2708.89,
+          4481.478,
+          5121.851
+        ],
+        "mode_types": [
+          "flapwise",
+          "in-plane",
+          "flapwise",
+          "torsion",
+          "flapwise",
+          "in-plane"
+        ],
+        "effective_mass": [
+          [
+            5.304696e-18,
+            1.333337e-16,
+            0.0001258951,
+            1.102327e-13,
+            1.499786,
+            1.563678e-12
+          ],
+          [
+            1.609626e-15,
+            0.0001262215,
+            8.774969e-16,
+            7.648118e-15,
+            2.934103e-14,
+            1.512124
+          ],
+          [
+            2.235459e-16,
+            1.943426e-15,
+            3.899584e-05,
+            2.524951e-11,
+            0.03918237,
+            2.856533e-11
+          ],
+          [
+            1.307991e-14,
+            3.103275e-16,
+            4.491102e-16,
+            0.009118098,
+            7.052692e-11,
+            1.651504e-13
+          ],
+          [
+            2.800402e-15,
+            8.981228e-15,
+            1.355132e-05,
+            4.184377e-12,
+            0.005060987,
+            2.065058e-12
+          ],
+          [
+            7.595455e-14,
+            4.109285e-05,
+            1.40301e-15,
+            2.897308e-15,
+            1.491954e-12,
+            0.03790685
+          ]
+        ],
+        "total_effective_mass": [
+          0.0002052329,
+          0.0002052329,
+          0.0002052329,
+          0.01153143,
+          1.546307,
+          1.556162
+        ]
+      },
+      "metrics": {
+        "first_frequency_Hz": 261.7586,
+        "mass_g": 206.06250000000003
+      }
+    },
+    {
+      "label": "p02_element_size_mm-1.95312",
+      "parameters": {
+        "length_mm": 150.0,
+        "width_mm": 25.0,
+        "thickness_mm": 7.0,
+        "youngs_modulus_MPa": 210000.0,
+        "poisson_ratio": 0.3,
+        "density_t_per_mm3": 7.85e-09,
+        "element_size_mm": 1.953125,
+        "n_modes": 6
+      },
+      "status": "completed",
+      "derived": {
+        "slenderness_h_over_L": 0.04666666666666667,
+        "volume_closed_form_mm3": 26250.0,
+        "flapwise_timoshenko_Hz": [
+          259.49473656150707,
+          1609.918122409701,
+          4437.436723750987
+        ],
+        "inplane_timoshenko_Hz": 908.833003763116,
+        "torsion_saint_venant_Hz": 2616.47730579721,
+        "first_mode_eff_mass_fraction_ref": 0.6136193093551148
+      },
+      "solver": {
+        "success": true,
+        "message": "CalculiX: 17897 C3D10, modes 261.7 Hz flapwise, 912.1 Hz in-plane, 1623.1 Hz flapwise, 2704.8 Hz torsion, 4478.6 Hz flapwise, 5120.6 Hz in-plane",
+        "nfev": null
+      },
+      "solver_outputs": {
+        "nodes": 30005,
+        "root_nodes": 267,
+        "elements": 17897,
+        "volume_mm3": 26250.0,
+        "frequency_Hz": [
+          261.658,
+          912.1464,
+          1623.057,
+          2704.827,
+          4478.63,
+          5120.646
+        ],
+        "mode_types": [
+          "flapwise",
+          "in-plane",
+          "flapwise",
+          "torsion",
+          "flapwise",
+          "in-plane"
+        ],
+        "effective_mass": [
+          [
+            2.69259e-22,
+            1.132638e-15,
+            0.0001259194,
+            3.575317e-16,
+            1.499859,
+            1.153024e-11
+          ],
+          [
+            3.337052e-20,
+            0.0001262382,
+            6.675194e-16,
+            3.90216e-16,
+            2.931997e-12,
+            1.512172
+          ],
+          [
+            7.599303e-21,
+            3.238359e-15,
+            3.900522e-05,
+            2.707674e-15,
+            0.0391341,
+            6.522744e-11
+          ],
+          [
+            2.872285e-16,
+            1.307914e-18,
+            3.212737e-18,
+            0.009119906,
+            3.887275e-14,
+            6.399599e-15
+          ],
+          [
+            1.24208e-19,
+            2.93052e-14,
+            1.355473e-05,
+            3.405454e-15,
+            0.005048641,
+            1.144888e-11
+          ],
+          [
+            1.017433e-17,
+            4.109621e-05,
+            8.299131e-15,
+            2.114986e-16,
+            6.982145e-12,
+            0.03787261
+          ]
+        ],
+        "total_effective_mass": [
+          0.0002055237,
+          0.0002055237,
+          0.0002055237,
+          0.01154557,
+          1.546308,
+          1.556175
+        ]
+      },
+      "metrics": {
+        "first_frequency_Hz": 261.658,
+        "mass_g": 206.06250000000003
+      }
+    },
+    {
+      "label": "p03_element_size_mm-1.2207",
+      "parameters": {
+        "length_mm": 150.0,
+        "width_mm": 25.0,
+        "thickness_mm": 7.0,
+        "youngs_modulus_MPa": 210000.0,
+        "poisson_ratio": 0.3,
+        "density_t_per_mm3": 7.85e-09,
+        "element_size_mm": 1.220703125,
+        "n_modes": 6
+      },
+      "status": "completed",
+      "derived": {
+        "slenderness_h_over_L": 0.04666666666666667,
+        "volume_closed_form_mm3": 26250.0,
+        "flapwise_timoshenko_Hz": [
+          259.49473656150707,
+          1609.918122409701,
+          4437.436723750987
+        ],
+        "inplane_timoshenko_Hz": 908.833003763116,
+        "torsion_saint_venant_Hz": 2616.47730579721,
+        "first_mode_eff_mass_fraction_ref": 0.6136193093551148
+      },
+      "solver": {
+        "success": true,
+        "message": "CalculiX: 70697 C3D10, modes 261.6 Hz flapwise, 912.0 Hz in-plane, 1622.7 Hz flapwise, 2703.5 Hz torsion, 4477.4 Hz flapwise, 5120.0 Hz in-plane",
+        "nfev": null
+      },
+      "solver_outputs": {
+        "nodes": 109653,
+        "root_nodes": 663,
+        "elements": 70697,
+        "volume_mm3": 26250.0,
+        "frequency_Hz": [
+          261.6044,
+          912.0252,
+          1622.673,
+          2703.48,
+          4477.367,
+          5120.028
+        ],
+        "mode_types": [
+          "flapwise",
+          "in-plane",
+          "flapwise",
+          "torsion",
+          "flapwise",
+          "in-plane"
+        ],
+        "effective_mass": [
+          [
+            2.413238e-18,
+            2.66758e-17,
+            0.0001259327,
+            2.285525e-15,
+            1.499898,
+            2.629535e-13
+          ],
+          [
+            5.143224e-18,
+            0.000126247,
+            5.847389e-17,
+            7.10078e-15,
+            2.935278e-14,
+            1.512197
+          ],
+          [
+            1.080444e-16,
+            1.109451e-16,
+            3.901077e-05,
+            1.951445e-13,
+            0.03910808,
+            2.49575e-12
+          ],
+          [
+            8.709748e-17,
+            4.150727e-18,
+            5.288104e-17,
+            0.00912103,
+            8.200059e-13,
+            3.761281e-13
+          ],
+          [
+            1.400613e-15,
+            2.110174e-15,
+            1.355751e-05,
+            8.17649e-14,
+            0.005041957,
+            8.872218e-13
+          ],
+          [
+            6.3882e-16,
+            4.109773e-05,
+            3.549742e-16,
+            5.941117e-16,
+            3.465701e-13,
+            0.0378543
+          ]
+        ],
+        "total_effective_mass": [
+          0.0002057033,
+          0.0002057033,
+          0.0002057033,
+          0.01155443,
+          1.546309,
+          1.556183
+        ]
+      },
+      "metrics": {
+        "first_frequency_Hz": 261.6044,
+        "mass_g": 206.06250000000003
+      }
+    }
+  ],
+  "study": "bracket_modal",
+  "status": "completed",
+  "finished_utc": "2026-11-20T06:05:08+00:00"
+}

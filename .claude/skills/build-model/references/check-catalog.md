@@ -41,6 +41,17 @@ comparison, and one validity check per assumption that can fail.
 | CAD area or volume vs closed form | numerical | strap `cad_area` |
 | GCI on the peak with the design-order test (a smooth peak converges; a sharp-corner peak does not) | numerical | strap mesh study |
 
+## Vibration (modal analysis)
+
+| Check | Kind | Example |
+|---|---|---|
+| 1D Timoshenko beam model (shear and rotary inertia), solved independently, for each bending family | numerical / model form | bracket `flapwise_reference`, `inplane_reference` |
+| Saint-Venant torsion frequency, labelled model form (warping restraint stiffens short bars) | model form | bracket `torsion_reference` |
+| Every expected mode found, and mode 1 is the type the requirement assumes | numerical | bracket `modes_identified` |
+| First-mode effective mass fraction (0.613 for a uniform cantilever) | numerical | bracket `first_mode_effective_mass` |
+| Mode shape along the part vs the reference, by modal assurance criterion (MAC) | numerical | bracket `first_mode_shape` |
+| GCI on the frequency with the design order (4 for quadratic elements) | numerical | bracket mesh study |
+
 ## Heat conduction (CalculiX)
 
 | Check | Kind | Example |

@@ -1,0 +1,507 @@
+{
+  "points": [
+    {
+      "label": "p00_element_size_mm-5",
+      "parameters": {
+        "length_mm": 150.0,
+        "width_mm": 25.0,
+        "thickness_mm": 7.0,
+        "youngs_modulus_MPa": 210000.0,
+        "poisson_ratio": 0.3,
+        "density_t_per_mm3": 7.85e-09,
+        "element_size_mm": 5.0,
+        "n_modes": 6
+      },
+      "derived": {
+        "slenderness_h_over_L": 0.04666666666666667,
+        "volume_closed_form_mm3": 26250.0,
+        "flapwise_timoshenko_Hz": [
+          259.49473656150707,
+          1609.918122409701,
+          4437.436723750987
+        ],
+        "inplane_timoshenko_Hz": 908.833003763116,
+        "torsion_saint_venant_Hz": 2616.47730579721,
+        "first_mode_eff_mass_fraction_ref": 0.6136193093551148
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "cad_volume",
+          "description": "|CadQuery volume - L b h| / (L b h)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 1e-09,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "modes_identified",
+          "description": "expected modes missing (mode 1 flapwise; >= 2 flapwise, 1 in-plane, 1 torsion)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "flapwise_reference",
+          "description": "max |f_FE - f_Timoshenko| / f_Timoshenko over the first 3 flapwise modes",
+          "kind": "numerical",
+          "value": 0.01293883830313632,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "inplane_reference",
+          "description": "|f_FE - f_Timoshenko| / f_Timoshenko, first in-plane mode (model form)",
+          "kind": "numerical",
+          "value": 0.0042536926155595164,
+          "tolerance": 0.03,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "torsion_reference",
+          "description": "|f_FE - f_Saint-Venant| / f_Saint-Venant, first torsion mode (model form)",
+          "kind": "numerical",
+          "value": 0.039608481974283204,
+          "tolerance": 0.05,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "first_mode_effective_mass",
+          "description": "|effective mass fraction of mode 1 (z) - Timoshenko|",
+          "kind": "numerical",
+          "value": 0.00036363853122922674,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "first_mode_shape",
+          "description": "1 - MAC(FE mode 1 along the arm, Timoshenko mode 1)",
+          "kind": "numerical",
+          "value": 9.481924076282233e-05,
+          "tolerance": 0.0010000000000000009,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "beam_reference_valid",
+          "description": "thickness / length (beam references need a slender arm)",
+          "kind": "validity",
+          "value": 0.04666666666666667,
+          "tolerance": 0.2,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-M1",
+          "text": "The first natural frequency shall be at least 250 Hz (2nd engine order at 6000 rpm = 200 Hz, plus 25 % separation).",
+          "metric": "first_frequency_Hz",
+          "operator": ">=",
+          "limit": 250.0,
+          "units": "Hz",
+          "value": 261.9902,
+          "margin": 11.990200000000016,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-M2",
+          "text": "The arm mass shall not exceed 220 g (synthetic mass budget).",
+          "metric": "mass_g",
+          "operator": "<=",
+          "limit": 220.0,
+          "units": "g",
+          "value": 206.06250000000003,
+          "margin": 13.937499999999972,
+          "verdict": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p01_element_size_mm-3.125",
+      "parameters": {
+        "length_mm": 150.0,
+        "width_mm": 25.0,
+        "thickness_mm": 7.0,
+        "youngs_modulus_MPa": 210000.0,
+        "poisson_ratio": 0.3,
+        "density_t_per_mm3": 7.85e-09,
+        "element_size_mm": 3.125,
+        "n_modes": 6
+      },
+      "derived": {
+        "slenderness_h_over_L": 0.04666666666666667,
+        "volume_closed_form_mm3": 26250.0,
+        "flapwise_timoshenko_Hz": [
+          259.49473656150707,
+          1609.918122409701,
+          4437.436723750987
+        ],
+        "inplane_timoshenko_Hz": 908.833003763116,
+        "torsion_saint_venant_Hz": 2616.47730579721,
+        "first_mode_eff_mass_fraction_ref": 0.6136193093551148
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "cad_volume",
+          "description": "|CadQuery volume - L b h| / (L b h)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 1e-09,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "modes_identified",
+          "description": "expected modes missing (mode 1 flapwise; >= 2 flapwise, 1 in-plane, 1 torsion)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "flapwise_reference",
+          "description": "max |f_FE - f_Timoshenko| / f_Timoshenko over the first 3 flapwise modes",
+          "kind": "numerical",
+          "value": 0.009924936171661035,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "inplane_reference",
+          "description": "|f_FE - f_Timoshenko| / f_Timoshenko, first in-plane mode (model form)",
+          "kind": "numerical",
+          "value": 0.003894990853354375,
+          "tolerance": 0.03,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "torsion_reference",
+          "description": "|f_FE - f_Saint-Venant| / f_Saint-Venant, first torsion mode (model form)",
+          "kind": "numerical",
+          "value": 0.035319509172900165,
+          "tolerance": 0.05,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "first_mode_effective_mass",
+          "description": "|effective mass fraction of mode 1 (z) - Timoshenko|",
+          "kind": "numerical",
+          "value": 0.00019378157667371276,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "first_mode_shape",
+          "description": "1 - MAC(FE mode 1 along the arm, Timoshenko mode 1)",
+          "kind": "numerical",
+          "value": 1.7301337917996484e-05,
+          "tolerance": 0.0010000000000000009,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "beam_reference_valid",
+          "description": "thickness / length (beam references need a slender arm)",
+          "kind": "validity",
+          "value": 0.04666666666666667,
+          "tolerance": 0.2,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-M1",
+          "text": "The first natural frequency shall be at least 250 Hz (2nd engine order at 6000 rpm = 200 Hz, plus 25 % separation).",
+          "metric": "first_frequency_Hz",
+          "operator": ">=",
+          "limit": 250.0,
+          "units": "Hz",
+          "value": 261.7586,
+          "margin": 11.758600000000001,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-M2",
+          "text": "The arm mass shall not exceed 220 g (synthetic mass budget).",
+          "metric": "mass_g",
+          "operator": "<=",
+          "limit": 220.0,
+          "units": "g",
+          "value": 206.06250000000003,
+          "margin": 13.937499999999972,
+          "verdict": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p02_element_size_mm-1.95312",
+      "parameters": {
+        "length_mm": 150.0,
+        "width_mm": 25.0,
+        "thickness_mm": 7.0,
+        "youngs_modulus_MPa": 210000.0,
+        "poisson_ratio": 0.3,
+        "density_t_per_mm3": 7.85e-09,
+        "element_size_mm": 1.953125,
+        "n_modes": 6
+      },
+      "derived": {
+        "slenderness_h_over_L": 0.04666666666666667,
+        "volume_closed_form_mm3": 26250.0,
+        "flapwise_timoshenko_Hz": [
+          259.49473656150707,
+          1609.918122409701,
+          4437.436723750987
+        ],
+        "inplane_timoshenko_Hz": 908.833003763116,
+        "torsion_saint_venant_Hz": 2616.47730579721,
+        "first_mode_eff_mass_fraction_ref": 0.6136193093551148
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "cad_volume",
+          "description": "|CadQuery volume - L b h| / (L b h)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 1e-09,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "modes_identified",
+          "description": "expected modes missing (mode 1 flapwise; >= 2 flapwise, 1 in-plane, 1 torsion)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "flapwise_reference",
+          "description": "max |f_FE - f_Timoshenko| / f_Timoshenko over the first 3 flapwise modes",
+          "kind": "numerical",
+          "value": 0.00928312420288269,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "inplane_reference",
+          "description": "|f_FE - f_Timoshenko| / f_Timoshenko, first in-plane mode (model form)",
+          "kind": "numerical",
+          "value": 0.0036457701504726127,
+          "tolerance": 0.03,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "torsion_reference",
+          "description": "|f_FE - f_Saint-Venant| / f_Saint-Venant, first torsion mode (model form)",
+          "kind": "numerical",
+          "value": 0.03376665794388418,
+          "tolerance": 0.05,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "first_mode_effective_mass",
+          "description": "|effective mass fraction of mode 1 (z) - Timoshenko|",
+          "kind": "numerical",
+          "value": 0.0009434962980318096,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "first_mode_shape",
+          "description": "1 - MAC(FE mode 1 along the arm, Timoshenko mode 1)",
+          "kind": "numerical",
+          "value": 1.0061710990383332e-05,
+          "tolerance": 0.0010000000000000009,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "beam_reference_valid",
+          "description": "thickness / length (beam references need a slender arm)",
+          "kind": "validity",
+          "value": 0.04666666666666667,
+          "tolerance": 0.2,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-M1",
+          "text": "The first natural frequency shall be at least 250 Hz (2nd engine order at 6000 rpm = 200 Hz, plus 25 % separation).",
+          "metric": "first_frequency_Hz",
+          "operator": ">=",
+          "limit": 250.0,
+          "units": "Hz",
+          "value": 261.658,
+          "margin": 11.658000000000015,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-M2",
+          "text": "The arm mass shall not exceed 220 g (synthetic mass budget).",
+          "metric": "mass_g",
+          "operator": "<=",
+          "limit": 220.0,
+          "units": "g",
+          "value": 206.06250000000003,
+          "margin": 13.937499999999972,
+          "verdict": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p03_element_size_mm-1.2207",
+      "parameters": {
+        "length_mm": 150.0,
+        "width_mm": 25.0,
+        "thickness_mm": 7.0,
+        "youngs_modulus_MPa": 210000.0,
+        "poisson_ratio": 0.3,
+        "density_t_per_mm3": 7.85e-09,
+        "element_size_mm": 1.220703125,
+        "n_modes": 6
+      },
+      "derived": {
+        "slenderness_h_over_L": 0.04666666666666667,
+        "volume_closed_form_mm3": 26250.0,
+        "flapwise_timoshenko_Hz": [
+          259.49473656150707,
+          1609.918122409701,
+          4437.436723750987
+        ],
+        "inplane_timoshenko_Hz": 908.833003763116,
+        "torsion_saint_venant_Hz": 2616.47730579721,
+        "first_mode_eff_mass_fraction_ref": 0.6136193093551148
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "cad_volume",
+          "description": "|CadQuery volume - L b h| / (L b h)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 1e-09,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "modes_identified",
+          "description": "expected modes missing (mode 1 flapwise; >= 2 flapwise, 1 in-plane, 1 torsion)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "flapwise_reference",
+          "description": "max |f_FE - f_Timoshenko| / f_Timoshenko over the first 3 flapwise modes",
+          "kind": "numerical",
+          "value": 0.008998500425998205,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "inplane_reference",
+          "description": "|f_FE - f_Timoshenko| / f_Timoshenko, first in-plane mode (model form)",
+          "kind": "numerical",
+          "value": 0.0035124123174074735,
+          "tolerance": 0.03,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "torsion_reference",
+          "description": "|f_FE - f_Saint-Venant| / f_Saint-Venant, first torsion mode (model form)",
+          "kind": "numerical",
+          "value": 0.03325184361814333,
+          "tolerance": 0.05,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "first_mode_effective_mass",
+          "description": "|effective mass fraction of mode 1 (z) - Timoshenko|",
+          "kind": "numerical",
+          "value": 0.0014137686564482665,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "first_mode_shape",
+          "description": "1 - MAC(FE mode 1 along the arm, Timoshenko mode 1)",
+          "kind": "numerical",
+          "value": 8.295872393593307e-06,
+          "tolerance": 0.0010000000000000009,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "beam_reference_valid",
+          "description": "thickness / length (beam references need a slender arm)",
+          "kind": "validity",
+          "value": 0.04666666666666667,
+          "tolerance": 0.2,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-M1",
+          "text": "The first natural frequency shall be at least 250 Hz (2nd engine order at 6000 rpm = 200 Hz, plus 25 % separation).",
+          "metric": "first_frequency_Hz",
+          "operator": ">=",
+          "limit": 250.0,
+          "units": "Hz",
+          "value": 261.6044,
+          "margin": 11.604399999999998,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-M2",
+          "text": "The arm mass shall not exceed 220 g (synthetic mass budget).",
+          "metric": "mass_g",
+          "operator": "<=",
+          "limit": 220.0,
+          "units": "g",
+          "value": 206.06250000000003,
+          "margin": 13.937499999999972,
+          "verdict": "PASS"
+        }
+      ]
+    }
+  ],
+  "run_id": "20261120-010318_bracket_modal_mesh",
+  "generated_utc": "2026-11-20T06:07:14+00:00",
+  "verification_status": "PASS"
+}

@@ -511,3 +511,49 @@ def strap_figure(path, s, p, d, m, *, title):
     fig.tight_layout(rect=(0, 0, 1, 0.94))
     fig.savefig(path, dpi=130, facecolor=SURFACE)
     plt.close(fig)
+
+
+def modal_figure(path, freqs, types, d, xb, prof, xr, wr, m, *, title):
+    """Modal results: FE frequencies by mode type against the beam references,
+    and the first mode shape along the arm against the Timoshenko shape."""
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(11, 4.3), facecolor=SURFACE,
+                                   gridspec_kw={"width_ratios": (1.3, 1)})
+    # reference for the k-th mode of each type: flapwise 1-3, first in-plane, first torsion
+    available = {"flapwise": list(d["flapwise_timoshenko_Hz"]),
+                 "in-plane": [d["inplane_timoshenko_Hz"]],
+                 "torsion": [d["torsion_saint_venant_Hz"]]}
+    seen: dict = {}
+    refs = []
+    for t in types:
+        n = seen.get(t, 0)
+        seen[t] = n + 1
+        lst = available.get(t, [])
+        refs.append(lst[n] if n < len(lst) else np.nan)
+    k = np.arange(1, len(freqs) + 1)
+    ax1.bar(k - 0.18, freqs, width=0.36, color=SERIES_1, label="CalculiX (3D)")
+    ax1.bar(k + 0.18, refs, width=0.36, color=SERIES_2, label="beam reference")
+    for ki, f, t in zip(k, freqs, types):
+        ax1.annotate(f"{f:.0f} Hz\n{t}", (ki, f), xytext=(0, 3), textcoords="offset points",
+                     ha="center", va="bottom", fontsize=7.5, color=TEXT_2)
+    ax1.set_xticks(k)
+    ax1.set_xlabel("mode number")
+    ax1.set_ylabel("natural frequency (Hz)")
+    ax1.set_ylim(0, max(freqs) * 1.25)
+    ax1.set_title(title, color=TEXT, fontsize=10, loc="left")
+    _legend(ax1, loc="upper left")
+
+    s = np.sign(np.dot(prof, np.interp(xb, xr, wr))) or 1.0
+    scale = np.max(np.abs(wr))
+    ax2.plot(xr, wr / scale, color=SERIES_2, linewidth=2, label="Timoshenko mode 1")
+    ax2.plot(xb, s * prof / (np.max(np.abs(prof)) or 1.0) * (np.max(np.abs(np.interp(xb, xr, wr))) / scale),
+             "o", color=SERIES_1, markersize=4, label="CalculiX mode 1 (section means)")
+    ax2.set_xlabel("distance from the clamped root (mm)")
+    ax2.set_ylabel("normalised flapwise displacement")
+    ax2.set_title(f"first mode {m['first_frequency_Hz']:.1f} Hz, mass {m['mass_g']:.0f} g",
+                  color=TEXT, fontsize=10, loc="left")
+    _legend(ax2, loc="lower left")
+    for ax in (ax1, ax2):
+        _style(ax)
+    fig.tight_layout()
+    fig.savefig(path, dpi=130, facecolor=SURFACE)
+    plt.close(fig)

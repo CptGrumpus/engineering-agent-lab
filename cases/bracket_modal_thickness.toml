@@ -1,0 +1,69 @@
+# Thinnest bracket arm whose first natural frequency stays above 250 Hz within
+# a 220 g mass budget (CAD-to-FEA modal pipeline as bracket_modal_mesh).
+#
+# Predictions (written BEFORE the first evidence run; 1D Timoshenko):
+#   h = 5: 185.5 Hz, 147 g     h = 7: 259.5 Hz, 206 g     h = 9: 333.3 Hz, 265 g
+#   h = 6: 222.5 Hz, 177 g     h = 8: 296.4 Hz, 236 g
+#   250 Hz is reached at h = 6.74 mm; 220 g at h = 7.47 mm. Only 7 mm meets both.
+#   The 3D values should sit within about 1 % above these (mesh study).
+#
+# Requirements and tolerances were fixed BEFORE the first evidence run; they
+# match bracket_modal_mesh.
+
+[case]
+name = "bracket_modal_thickness"
+model = "cadquery_ccx_modal"
+description = "Steel bracket arm, 150 x 25 mm, clamped at one end, thickness swept from 5 to 9 mm on 1.95 mm quadratic tetrahedra (the mesh study level). Finds the thinnest arm that keeps the first natural frequency above 250 Hz within a 220 g mass budget."
+assumptions = [
+  "Linear elastic steel (E = 210 GPa, nu = 0.3, density 7850 kg/m^3); small-amplitude vibration.",
+  "Ideal rigid clamp over the whole root face. A real bolted joint is softer and lowers the frequencies; this is the main model-form risk.",
+  "No attached mass at the tip (the carried component is light or mounted at the root).",
+  "The beam references assume a slender arm; checked: thickness / length below 0.2.",
+]
+limitations = [
+  "Synthetic geometry and requirement.",
+  "Beam theory is a model-form reference for a 3D clamped solid, especially for in-plane bending (length / width = 6) and torsion (warping restraint).",
+  "No damping, no prestress, no physical test data.",
+]
+
+[parameters]
+length_mm = 150.0
+width_mm = 25.0
+thickness_mm = 7.0
+youngs_modulus_MPa = 210000.0
+poisson_ratio = 0.3
+density_t_per_mm3 = 7.85e-9
+element_size_mm = 1.953125
+n_modes = 6
+
+[sweep]
+parameter = "thickness_mm"
+values = [5.0, 6.0, 7.0, 8.0, 9.0]
+
+[numerics]
+solver = "CalculiX 2.22 *FREQUENCY (Lanczos/ARPACK), quadratic tetrahedra C3D10 from Gmsh 4.15"
+
+[verification]
+flap_rel_tol = 0.02          # flapwise modes 1-3 vs 1D Timoshenko (slender direction)
+inplane_rel_tol = 0.03       # first in-plane mode vs Timoshenko (stockier: length / width = 6)
+torsion_rel_tol = 0.05       # first torsion mode vs Saint-Venant (warping restraint at the clamp)
+eff_mass_abs_tol = 0.01      # first-mode effective mass fraction vs Timoshenko
+mac_min = 0.999              # first-mode shape along the arm vs Timoshenko
+slenderness_max = 0.2        # thickness / length for the beam references
+gci_frequency_max = 0.005    # GCI_fine on the first natural frequency
+
+[[requirements]]
+id = "REQ-M1"
+text = "The first natural frequency shall be at least 250 Hz (2nd engine order at 6000 rpm = 200 Hz, plus 25 % separation)."
+metric = "first_frequency_Hz"
+operator = ">="
+limit = 250.0
+units = "Hz"
+
+[[requirements]]
+id = "REQ-M2"
+text = "The arm mass shall not exceed 220 g (synthetic mass budget)."
+metric = "mass_g"
+operator = "<="
+limit = 220.0
+units = "g"

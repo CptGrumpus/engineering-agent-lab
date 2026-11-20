@@ -83,6 +83,21 @@ Traps found while building the studies in this repo, by tool.
 - Write `*NODE FILE, OUTPUT=2D` and `*EL FILE, OUTPUT=2D` to get results on the
   2D nodes, which `harness/calculix.py` reads.
 
+## CalculiX frequency (modal) analysis
+
+- Units N, mm, tonne, s: steel density is 7.85e-9 t/mm^3 and frequencies come
+  out in Hz. `*FREQUENCY` with the number of modes, `*NODE FILE` U.
+- The .frd holds one DISP block per mode; `read_frd(...)["blocks"]` keeps them
+  all in order (`out["DISP"]` alone is only the last mode).
+- The .dat prints the eigenvalue table and the effective modal mass table
+  (x, y, z, rx, ry, rz); `read_dat_frequency` parses both. Classify modes from
+  the effective mass fractions instead of assuming an order.
+- The totals leave out the mass of constrained nodes (about 0.5 % here), so
+  compare effective-mass fractions, not absolute masses.
+- Frequencies of quadratic tetrahedra on a fully clamped root converged at
+  order 1.8, not the textbook 4: the clamp corners are singular. A rate below
+  the design order is fine for the GCI; only a rate far above it is suspect.
+
 ## CadQuery (OpenCASCADE)
 
 - Measure every reported quantity back from the B-rep (faces, closed circular

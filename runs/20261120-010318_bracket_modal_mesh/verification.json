@@ -1,0 +1,360 @@
+{
+  "run_id": "20261120-010318_bracket_modal_mesh",
+  "verified_utc": "2026-11-20T06:07:01+00:00",
+  "tolerances": {
+    "flap_rel_tol": 0.02,
+    "inplane_rel_tol": 0.03,
+    "torsion_rel_tol": 0.05,
+    "eff_mass_abs_tol": 0.01,
+    "mac_min": 0.999,
+    "slenderness_max": 0.2,
+    "gci_frequency_max": 0.005
+  },
+  "points": [
+    {
+      "label": "p00_element_size_mm-5",
+      "status": "PASS",
+      "checks": [
+        {
+          "id": "cad_volume",
+          "description": "|CadQuery volume - L b h| / (L b h)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 1e-09,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "modes_identified",
+          "description": "expected modes missing (mode 1 flapwise; >= 2 flapwise, 1 in-plane, 1 torsion)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "flapwise_reference",
+          "description": "max |f_FE - f_Timoshenko| / f_Timoshenko over the first 3 flapwise modes",
+          "kind": "numerical",
+          "value": 0.01293883830313632,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "inplane_reference",
+          "description": "|f_FE - f_Timoshenko| / f_Timoshenko, first in-plane mode (model form)",
+          "kind": "numerical",
+          "value": 0.0042536926155595164,
+          "tolerance": 0.03,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "torsion_reference",
+          "description": "|f_FE - f_Saint-Venant| / f_Saint-Venant, first torsion mode (model form)",
+          "kind": "numerical",
+          "value": 0.039608481974283204,
+          "tolerance": 0.05,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "first_mode_effective_mass",
+          "description": "|effective mass fraction of mode 1 (z) - Timoshenko|",
+          "kind": "numerical",
+          "value": 0.00036363853122922674,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "first_mode_shape",
+          "description": "1 - MAC(FE mode 1 along the arm, Timoshenko mode 1)",
+          "kind": "numerical",
+          "value": 9.481924076282233e-05,
+          "tolerance": 0.0010000000000000009,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "beam_reference_valid",
+          "description": "thickness / length (beam references need a slender arm)",
+          "kind": "validity",
+          "value": 0.04666666666666667,
+          "tolerance": 0.2,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p01_element_size_mm-3.125",
+      "status": "PASS",
+      "checks": [
+        {
+          "id": "cad_volume",
+          "description": "|CadQuery volume - L b h| / (L b h)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 1e-09,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "modes_identified",
+          "description": "expected modes missing (mode 1 flapwise; >= 2 flapwise, 1 in-plane, 1 torsion)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "flapwise_reference",
+          "description": "max |f_FE - f_Timoshenko| / f_Timoshenko over the first 3 flapwise modes",
+          "kind": "numerical",
+          "value": 0.009924936171661035,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "inplane_reference",
+          "description": "|f_FE - f_Timoshenko| / f_Timoshenko, first in-plane mode (model form)",
+          "kind": "numerical",
+          "value": 0.003894990853354375,
+          "tolerance": 0.03,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "torsion_reference",
+          "description": "|f_FE - f_Saint-Venant| / f_Saint-Venant, first torsion mode (model form)",
+          "kind": "numerical",
+          "value": 0.035319509172900165,
+          "tolerance": 0.05,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "first_mode_effective_mass",
+          "description": "|effective mass fraction of mode 1 (z) - Timoshenko|",
+          "kind": "numerical",
+          "value": 0.00019378157667371276,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "first_mode_shape",
+          "description": "1 - MAC(FE mode 1 along the arm, Timoshenko mode 1)",
+          "kind": "numerical",
+          "value": 1.7301337917996484e-05,
+          "tolerance": 0.0010000000000000009,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "beam_reference_valid",
+          "description": "thickness / length (beam references need a slender arm)",
+          "kind": "validity",
+          "value": 0.04666666666666667,
+          "tolerance": 0.2,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p02_element_size_mm-1.95312",
+      "status": "PASS",
+      "checks": [
+        {
+          "id": "cad_volume",
+          "description": "|CadQuery volume - L b h| / (L b h)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 1e-09,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "modes_identified",
+          "description": "expected modes missing (mode 1 flapwise; >= 2 flapwise, 1 in-plane, 1 torsion)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "flapwise_reference",
+          "description": "max |f_FE - f_Timoshenko| / f_Timoshenko over the first 3 flapwise modes",
+          "kind": "numerical",
+          "value": 0.00928312420288269,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "inplane_reference",
+          "description": "|f_FE - f_Timoshenko| / f_Timoshenko, first in-plane mode (model form)",
+          "kind": "numerical",
+          "value": 0.0036457701504726127,
+          "tolerance": 0.03,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "torsion_reference",
+          "description": "|f_FE - f_Saint-Venant| / f_Saint-Venant, first torsion mode (model form)",
+          "kind": "numerical",
+          "value": 0.03376665794388418,
+          "tolerance": 0.05,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "first_mode_effective_mass",
+          "description": "|effective mass fraction of mode 1 (z) - Timoshenko|",
+          "kind": "numerical",
+          "value": 0.0009434962980318096,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "first_mode_shape",
+          "description": "1 - MAC(FE mode 1 along the arm, Timoshenko mode 1)",
+          "kind": "numerical",
+          "value": 1.0061710990383332e-05,
+          "tolerance": 0.0010000000000000009,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "beam_reference_valid",
+          "description": "thickness / length (beam references need a slender arm)",
+          "kind": "validity",
+          "value": 0.04666666666666667,
+          "tolerance": 0.2,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p03_element_size_mm-1.2207",
+      "status": "PASS",
+      "checks": [
+        {
+          "id": "cad_volume",
+          "description": "|CadQuery volume - L b h| / (L b h)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 1e-09,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "modes_identified",
+          "description": "expected modes missing (mode 1 flapwise; >= 2 flapwise, 1 in-plane, 1 torsion)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "flapwise_reference",
+          "description": "max |f_FE - f_Timoshenko| / f_Timoshenko over the first 3 flapwise modes",
+          "kind": "numerical",
+          "value": 0.008998500425998205,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "inplane_reference",
+          "description": "|f_FE - f_Timoshenko| / f_Timoshenko, first in-plane mode (model form)",
+          "kind": "numerical",
+          "value": 0.0035124123174074735,
+          "tolerance": 0.03,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "torsion_reference",
+          "description": "|f_FE - f_Saint-Venant| / f_Saint-Venant, first torsion mode (model form)",
+          "kind": "numerical",
+          "value": 0.03325184361814333,
+          "tolerance": 0.05,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "first_mode_effective_mass",
+          "description": "|effective mass fraction of mode 1 (z) - Timoshenko|",
+          "kind": "numerical",
+          "value": 0.0014137686564482665,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "first_mode_shape",
+          "description": "1 - MAC(FE mode 1 along the arm, Timoshenko mode 1)",
+          "kind": "numerical",
+          "value": 8.295872393593307e-06,
+          "tolerance": 0.0010000000000000009,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "beam_reference_valid",
+          "description": "thickness / length (beam references need a slender arm)",
+          "kind": "validity",
+          "value": 0.04666666666666667,
+          "tolerance": 0.2,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ]
+    }
+  ],
+  "run_checks": [
+    {
+      "id": "discretization_first_frequency_Hz",
+      "description": "relative discretization uncertainty of first_frequency_Hz, monotone (R = 0.533): GCI_fine, observed order 1.34, extrapolated 261.543",
+      "kind": "numerical",
+      "value": 0.00029207655008248293,
+      "tolerance": 0.005,
+      "comparison": "<=",
+      "status": "PASS",
+      "metric": "first_frequency_Hz"
+    }
+  ],
+  "run_check_detail": {
+    "meshes_used": [
+      "p03_element_size_mm-1.2207",
+      "p02_element_size_mm-1.95312",
+      "p01_element_size_mm-3.125"
+    ],
+    "first_frequency_Hz": {
+      "regime": "monotone",
+      "uncertainty": 0.00029207655008248293,
+      "converged_exactly": false,
+      "order": 1.339570910545545,
+      "extrapolated": 261.5432731914893,
+      "rel_error_fine": 0.0002048895202069124,
+      "rel_error_extrapolated": 0.00023371585040142553,
+      "gci_fine": 0.00029207655008248293,
+      "convergence_ratio": 0.532803180914759,
+      "r21": 1.6,
+      "r32": 1.6
+    }
+  },
+  "status": "PASS"
+}

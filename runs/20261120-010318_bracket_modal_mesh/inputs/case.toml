@@ -1,0 +1,89 @@
+# Engine-mounted bracket arm, modal analysis (CAD to FEA): CadQuery builds the
+# arm and exports STEP, Gmsh meshes it with quadratic tetrahedra, CalculiX
+# extracts the first six modes. Mesh-refinement study at the 7 mm design.
+# Independent checks: a 1D Timoshenko beam model (shear and rotary inertia),
+# Saint-Venant torsion, the first mode's effective mass and shape (MAC), and
+# the Grid Convergence Index on the first frequency.
+#
+# Decision (taken in bracket_modal_thickness): the thinnest arm whose first
+# natural frequency stays above 250 Hz (the 2nd engine order at 6000 rpm is
+# 200 Hz; 25 % separation margin) within a 220 g mass budget.
+#
+# Predictions (written BEFORE the first evidence run; 1D Timoshenko, h = 7 mm):
+#   flapwise bending 259.5, 1609.9, 4437.4 Hz; in-plane bending 908.8 Hz;
+#   torsion 2616.5 Hz (Saint-Venant; the clamp restrains warping, so the 3D
+#   value should come out a few percent higher); first-mode effective mass
+#   61.4 % of the arm mass; frequencies converging at about fourth order
+#   (eigenvalues of quadratic elements), from above.
+#
+# Hand run (scratchpad, h = 8 mm, 4 mm elements): six modes, first flapwise at
+# 299 Hz (Timoshenko 296.4), effective mass 61.4 %, torsion 3015 Hz against
+# 2912 Hz Saint-Venant (+3.5 %, warping restraint). No traps found.
+#
+# Smoke test (scratchpad, 5 / 3.125 / 1.95 mm, before the evidence run): every
+# check passed. First mode 261.7 Hz flapwise (Timoshenko 259.5, +0.9 %: a wide
+# 3D section with a fully clamped root is slightly stiffer than a beam), torsion
+# +3.4 % (warping restraint, as predicted). One prediction was wrong: the first
+# frequency converged at observed order 1.8, not about 4. The clamped-root
+# corners are singular, which slows convergence everywhere; the GCI is still
+# valid below the design order (0.03 %). The prediction above is left as written.
+#
+# Requirements and tolerances were fixed BEFORE the first evidence run.
+
+[case]
+name = "bracket_modal_mesh"
+model = "cadquery_ccx_modal"
+description = "Steel bracket arm, 150 x 25 x 7 mm, clamped at one end. CalculiX frequency analysis on a Gmsh quadratic-tetrahedron mesh of the CadQuery solid, refined from 5 mm to 1.22 mm elements (ratio 1.6). Checks the first natural frequency against a 250 Hz minimum and the first six modes against beam theory."
+assumptions = [
+  "Linear elastic steel (E = 210 GPa, nu = 0.3, density 7850 kg/m^3); small-amplitude vibration.",
+  "Ideal rigid clamp over the whole root face. A real bolted joint is softer and lowers the frequencies; this is the main model-form risk.",
+  "No attached mass at the tip (the carried component is light or mounted at the root).",
+  "The beam references assume a slender arm; checked: thickness / length below 0.2.",
+]
+limitations = [
+  "Synthetic geometry and requirement.",
+  "Beam theory is a model-form reference for a 3D clamped solid, especially for in-plane bending (length / width = 6) and torsion (warping restraint).",
+  "No damping, no prestress, no physical test data.",
+]
+
+[parameters]
+length_mm = 150.0
+width_mm = 25.0
+thickness_mm = 7.0
+youngs_modulus_MPa = 210000.0
+poisson_ratio = 0.3
+density_t_per_mm3 = 7.85e-9
+element_size_mm = 1.953125
+n_modes = 6
+
+[sweep]
+parameter = "element_size_mm"
+values = [5.0, 3.125, 1.953125, 1.220703125]
+
+[numerics]
+solver = "CalculiX 2.22 *FREQUENCY (Lanczos/ARPACK), quadratic tetrahedra C3D10 from Gmsh 4.15"
+
+[verification]
+flap_rel_tol = 0.02          # flapwise modes 1-3 vs 1D Timoshenko (slender direction)
+inplane_rel_tol = 0.03       # first in-plane mode vs Timoshenko (stockier: length / width = 6)
+torsion_rel_tol = 0.05       # first torsion mode vs Saint-Venant (warping restraint at the clamp)
+eff_mass_abs_tol = 0.01      # first-mode effective mass fraction vs Timoshenko
+mac_min = 0.999              # first-mode shape along the arm vs Timoshenko
+slenderness_max = 0.2        # thickness / length for the beam references
+gci_frequency_max = 0.005    # GCI_fine on the first natural frequency
+
+[[requirements]]
+id = "REQ-M1"
+text = "The first natural frequency shall be at least 250 Hz (2nd engine order at 6000 rpm = 200 Hz, plus 25 % separation)."
+metric = "first_frequency_Hz"
+operator = ">="
+limit = 250.0
+units = "Hz"
+
+[[requirements]]
+id = "REQ-M2"
+text = "The arm mass shall not exceed 220 g (synthetic mass budget)."
+metric = "mass_g"
+operator = "<="
+limit = 220.0
+units = "g"

@@ -13,7 +13,11 @@ import numpy as np
 
 
 def read_frd(path: str | Path) -> dict:
-    """Return {"nodes": ids, "coords": (n,3), "<BLOCK>": {"ids":..., "<COMP>": array}}.
+    """Return {"nodes": ids, "coords": (n,3), "<BLOCK>": {"ids":..., "<COMP>": array},
+    "blocks": [(name, block), ...]}.
+
+    "<BLOCK>" holds the last block of that name; "blocks" keeps every block in
+    file order (one DISP block per mode in a frequency analysis).
 
     Fixed-width records: ' -1' + node id (10 chars) + values (12 chars each).
     """
@@ -49,7 +53,9 @@ def read_frd(path: str | Path) -> dict:
                     vals.append([float(rec[13 + 12 * k: 25 + 12 * k]) for k in range(len(comps))])
                 i += 1
             arr = np.array(vals)
-            out[name] = {"ids": np.array(ids), **{c: arr[:, k] for k, c in enumerate(comps)}}
+            block = {"ids": np.array(ids), **{c: arr[:, k] for k, c in enumerate(comps)}}
+            out[name] = block                                   # last block of this name
+            out.setdefault("blocks", []).append((name, block))  # every block, in file order
         i += 1
     return out
 
@@ -70,3 +76,47 @@ def read_dat_total_forces(path: str | Path) -> dict:
                     out[m.group(1)] = tuple(float(v) for v in parts)
                     break
     return out
+
+
+def _table_after(lines, title, n_cols):
+    """Numeric rows (first column an integer mode number) after a .dat table title."""
+    for k, line in enumerate(lines):
+        if title in line:
+            rows = []
+            for nxt in lines[k + 1:]:
+                parts = nxt.split()
+                if not parts:
+                    if rows:
+                        break
+                    continue
+                if parts[0].isdigit() and len(parts) == n_cols + 1:
+                    rows.append([float(v) for v in parts[1:]])
+                elif rows:
+                    break
+            return np.array(rows)
+    return np.zeros((0, n_cols))
+
+
+def read_dat_frequency(path: str | Path) -> dict:
+    """Frequency-step output of a .dat file.
+
+    Returns {"frequency_Hz": (n,), "effective_mass": (n, 6) [x, y, z, rx, ry, rz],
+    "total_effective_mass": (6,)}. Effective masses are in the model's mass
+    unit; CalculiX leaves the mass of constrained nodes out of the totals.
+    """
+    lines = Path(path).read_text(encoding="latin-1").splitlines()
+    eig = _table_after(lines, "E I G E N V A L U E   O U T P U T", 4)
+    eff = _table_after(lines, "E F F E C T I V E   M O D A L   M A S S", 6)
+    total = np.zeros(6)
+    for k, line in enumerate(lines):
+        if "T O T A L   E F F E C T I V E   M A S S" in line:
+            for nxt in lines[k + 1:k + 8]:
+                parts = nxt.split()
+                if len(parts) == 6:
+                    try:
+                        total = np.array([float(v) for v in parts])
+                        break
+                    except ValueError:
+                        continue
+    return {"frequency_Hz": eig[:, 2] if len(eig) else np.zeros(0),
+            "effective_mass": eff, "total_effective_mass": total}
