@@ -31,7 +31,7 @@ The intended user is an automotive engineer with a master's degree in mechanical
 
 ## Project folders
 
-- `portfolio/`: one page per case study, linked from PORTFOLIO.md; `portfolio/img/` headline figures (made by `scripts/make_portfolio_figures.py`); `portfolio/deliverables/` sample client memo.
+- `portfolio/`: one page per case study, linked from PORTFOLIO.md; `portfolio/img/` headline figures and result visuals (made by `scripts/make_portfolio_figures.py` and `scripts/make_result_visuals.py`); `portfolio/deliverables/` sample client memo.
 - `cases/`: case files (TOML) with parameters, sweep, numerics, verification tolerances, and requirements.
 - `models/`: models under test (Python, Modelica `.mo`, FreeCAD script, CadQuery, OpenFOAM case writer).
 - `validation/`: independent references (closed form, state space, beam theory); these must not import from `models/`.

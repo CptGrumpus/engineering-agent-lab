@@ -9,6 +9,8 @@
 | **Tools** | CalculiX 2.22 (heat transfer), Python |
 | **Methods** | 3D steady conduction with surface convection, 1D fin theory, energy balance, mesh refinement, tolerance corners, a heat-transfer-coefficient sweep |
 
+![Temperature over the 3D fin](img/fin_temperature.png)
+
 ## The question
 
 One fin of a heat sink is 6061 aluminium, 40 mm tall, 20 mm wide and 2 mm thick. Its base sits at 80 °C, and the surrounding air is at 25 °C with a heat-transfer coefficient of about 25 W/m²K. Does the tip of the fin stay above 60 °C, and how sure can we be?

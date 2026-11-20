@@ -19,7 +19,7 @@ A steel bracket arm, 150 by 25 mm, is bolted near an engine and carries a light 
 
 **7 mm.** The first mode sits at 261.7 Hz and the arm weighs 206 g. At 6 mm the first mode drops to 224 Hz, inside the danger band. At 8 mm it's 299 Hz, but the arm weighs 236 g, over budget. So 7 mm is the only whole-millimetre thickness that meets both.
 
-![The first four mode shapes](img/bracket_modes.png)
+![The first four mode shapes, animated](img/bracket_modes.gif)
 
 ## How I know it's right
 

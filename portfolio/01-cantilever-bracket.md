@@ -9,6 +9,8 @@
 | **Tools** | FreeCAD 1.1, Gmsh, CalculiX 2.22 |
 | **Methods** | 3D solid FEA (quadratic tetrahedra), mesh refinement with the Grid Convergence Index, beam theory, equilibrium |
 
+![Von Mises stress on the deformed cantilever](img/cantilever_stress.png)
+
 ## The question
 
 A steel bracket, 200 mm long with a 20 by 20 mm section, carries a 1 kN load at its tip. Does it stay within a 1.0 mm deflection limit and a 213 MPa stress limit? And how accurate is the model?

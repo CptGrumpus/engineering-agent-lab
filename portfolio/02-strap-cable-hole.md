@@ -11,6 +11,8 @@
 
 ![Strap with a 16 mm cable hole, CadQuery geometry](img/strap_render.png)
 
+![Axial stress around the hole, full plate](img/strap_stress.png)
+
 ## The question
 
 A 6061 aluminium strap, 40 mm wide and 4 mm thick, carries a 5 kN pull. A cable has to pass through a hole drilled in the middle of it. How large can that hole be before the stress at its edge goes over a 120 MPa fatigue allowable?
