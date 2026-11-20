@@ -112,9 +112,20 @@ class ModelicaQuarterCarBump(ModelicaBackend):
         return super().solve(params, numerics, tolerance_scale)
 
 
+class ModelicaQuarterCarLiftoff(ModelicaQuarterCarBump):
+    """Second implementation of the lift-off tire (equations, OpenModelica state events)."""
+    class_name = "EngLab.QuarterCarBumpLiftoff"
+
+    def solve(self, params, numerics, tolerance_scale=1.0):
+        if params.get("tire_model") != "liftoff" or qc.bump_stop(params)[1] > 0:
+            raise ValueError("quarter_car_modelica_liftoff: tire_model = 'liftoff', no bump stop")
+        return super().solve(params, numerics, tolerance_scale)
+
+
 class QuarterCarStudy(Study):
     name = "quarter_car"
-    models = {"quarter_car": ScipyQuarterCar, "quarter_car_modelica": ModelicaQuarterCarBump}
+    models = {"quarter_car": ScipyQuarterCar, "quarter_car_modelica": ModelicaQuarterCarBump,
+              "quarter_car_modelica_liftoff": ModelicaQuarterCarLiftoff}
     metrics = frozenset(BUMP_METRICS | ROAD_METRICS | {"max_tire_lift_ratio", "airborne_time_ms",
                                                        "max_bump_stop_force_N", "max_compression_mm"})
     param_names = qc.PARAMS
@@ -242,9 +253,9 @@ class QuarterCarStudy(Study):
             load_limit=reqs.get("max_tire_load_ratio"),
             title=f"{point['label']}  (c = {params['damping_N_s_per_m']:g} N·s/m)")
         extra = []
-        if piecewise(params):
-            so = point.get("solver_outputs") or {}
-            got = sorted(so.get("tire_events", []) + so.get("stop_events", []))
+        so = point.get("solver_outputs") or {}
+        if piecewise(params) and "tire_events" in so:      # event times reported by the SciPy model
+            got = sorted(so["tire_events"] + so.get("stop_events", []))
             want = r["events"]
             same = len(got) == len(want) and all(a[1] == b[1] for a, b in zip(got, want))
             dt_ev = max((abs(a[0] - b[0]) for a, b in zip(got, want)), default=0.0) if same else float("inf")

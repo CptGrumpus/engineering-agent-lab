@@ -1,0 +1,51 @@
+{
+  "label": "p04_damping_N_s_per_m-3500",
+  "status": "PASS",
+  "checks": [
+    {
+      "id": "energy_balance",
+      "description": "|W_road - (dE + E_dissipated)| / integral |P_road| dt",
+      "kind": "numerical",
+      "value": 1.4420832187884064e-05,
+      "tolerance": 0.0001,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "solver_convergence",
+      "description": "max |z(tol) - z(tol/100)| / max |z| (body and wheel)",
+      "kind": "numerical",
+      "value": 2.4753535478725353e-07,
+      "tolerance": 0.0001,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "reference_agreement",
+      "description": "max |z_num - z_ref| / bump height (body and wheel; matrix-exponential ref)",
+      "kind": "numerical",
+      "value": 2.581444167950339e-07,
+      "tolerance": 0.0001,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "peak_accel_reference",
+      "description": "|peak accel num - peak accel ref| / peak accel ref",
+      "kind": "numerical",
+      "value": 2.955533417920943e-07,
+      "tolerance": 0.001,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "return_to_rest",
+      "description": "max(|zs(t_end)|, |zu(t_end)|) / bump height",
+      "kind": "numerical",
+      "value": 1.1831015131618093e-12,
+      "tolerance": 0.001,
+      "comparison": "<=",
+      "status": "PASS"
+    }
+  ]
+}

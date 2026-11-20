@@ -1,0 +1,91 @@
+# Second-tool cross-check of qc_bump_liftoff.toml: the same vehicle, bump, speed,
+# damper sweep and requirements, with the lift-off tire written independently as
+# Modelica equations (EngLab.QuarterCarBumpLiftoff) and solved by OpenModelica
+# (DASSL), which locates each lift-off and touchdown as a state event itself.
+# Verification tolerances follow qc_speed_bump_modelica.toml (DASSL's tolerance
+# scales with the 1 m nominal of the displacements); the contact_event_times check
+# needs the SciPy model's event list and does not apply here.
+#
+# Predictions, written BEFORE the first run of this case:
+#   P1 Every check passes at the Modelica tolerances.
+#   P2 The two tools agree within the 1e-4 cross-check tolerance (expect about 1e-6), and every
+#      requirement verdict matches qc_bump_liftoff.
+#   P3 Peak body acceleration, travel and tire load agree with the SciPy run to
+#      better than 0.1 %.
+
+[case]
+name = "qc_bump_liftoff_modelica"
+model = "quarter_car_modelica_liftoff"
+description = "2-DOF quarter car with a tire that can leave the road, crossing a 40 mm x 1.0 m (1 - cos) bump at 10 m/s (36 km/h); wheel-rate damping swept from 600 to 3500 N.s/m against peak body acceleration, suspension travel, and dynamic tire load requirements."
+assumptions = [
+  "Linear spring and damper; parameters are wheel rates (motion ratio already applied).",
+  "Point-contact tire that pushes but never pulls: load = max(0, W + kt (zr - zu)); no tire damping, no tread radius (the contact point follows the road profile).",
+  "Coordinates from static equilibrium; gravity acts explicitly while the wheel is airborne.",
+  "Rigid body above one corner (no pitch/roll coupling, no seat or occupant dynamics).",
+  "Suspension travel stays inside the linear range (no bump-stop or rebound-stop contact); REQ-QB2 bounds it.",
+]
+limitations = [
+  "Synthetic parameters; not calibrated to any vehicle.",
+  "Peak acceleration is unweighted; ISO 2631 frequency weighting is not applied.",
+  "A point-contact tire ignores the tire's footprint, which smooths a short bump; the lift-off is likely overstated for a real tire.",
+  "Checks establish numerical verification only; no test data.",
+]
+
+[parameters]
+sprung_mass_kg = 350.0
+unsprung_mass_kg = 45.0
+suspension_stiffness_N_per_m = 22000.0
+damping_N_s_per_m = 1500.0
+tire_stiffness_N_per_m = 220000.0
+road = "bump"
+speed_m_per_s = 10.0
+bump_height_m = 0.04
+bump_length_m = 1.0
+tire_model = "liftoff"
+
+[sweep]
+parameter = "damping_N_s_per_m"
+values = [600.0, 1000.0, 1500.0, 2200.0, 3500.0]
+
+[numerics]
+method = "dassl"
+rtol = 1e-8
+atol = 1e-8          # recorded only; dassl uses rtol with nominal scaling
+t_end_s = 10.0
+n_points = 20001
+
+[verification]
+reference_max_rel_error = 1e-4
+peak_metric_rel_tol = 1e-3
+rest_rel_tol = 1e-3
+energy_residual_rel_tol = 1e-4
+convergence_max_rel_change = 1e-4
+
+[cross_check]
+against_case = "qc_bump_liftoff"
+max_rel_diff = 1e-4
+event_time_tol_s = 1e-6
+
+[[requirements]]
+id = "REQ-QB1"
+text = "Peak vertical body acceleration over the bump shall not exceed 4.0 m/s^2 (comfort)."
+metric = "peak_body_accel_m_per_s2"
+operator = "<="
+limit = 4.0
+units = "m/s^2"
+
+[[requirements]]
+id = "REQ-QB2"
+text = "Suspension travel shall stay within +/-40 mm of static (no bump-stop contact)."
+metric = "max_suspension_travel_mm"
+operator = "<="
+limit = 40.0
+units = "mm"
+
+[[requirements]]
+id = "REQ-QB3"
+text = "Dynamic tire load shall stay within +/-70 % of static load (road holding)."
+metric = "max_tire_load_ratio"
+operator = "<="
+limit = 0.7
+units = "-"
