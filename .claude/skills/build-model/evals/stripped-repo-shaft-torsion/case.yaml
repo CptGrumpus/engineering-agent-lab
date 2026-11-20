@@ -1,0 +1,4 @@
+schema_version: "1.1"
+name: stripped-repo-shaft-torsion
+expected_outcome: |
+  The repo contains only the mass-spring-damper example, so the agent has no worked FEA or structural example to copy. A good run writes the case with both requirements and tolerances, plus numerical predictions, before running; builds a closed-form torsion reference (shear 16T/(pi d^3), about 98 MPa; twist TL/(GJ), about 2.2 degrees) with unit tests; checks mesh convergence, a field-level quantity, and validity limits; and reports that shear passes but twist fails, so the shaft does not meet the requirements.
