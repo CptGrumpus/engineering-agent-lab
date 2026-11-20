@@ -7,8 +7,8 @@ automatically. This file tracks the skill plan and the standard each skill must 
 
 | Skill | Status | Location |
 |---|---|---|
-| Requirements and assumptions | Partial: captured in the case file (`assumptions`, `[[requirements]]`, `[verification]`). No interactive elicitation skill yet. | `cases/*.toml` |
-| Model preparation | Not built. Models for the four studies are hand-written (`models/`). | - |
+| Requirements and assumptions | **Built**: decision, metric definitions, input ranges, assumptions with validity checks, tolerances and predictions fixed before running | [frame-requirements](../.claude/skills/frame-requirements/SKILL.md) |
+| Model preparation | **Built**: file layout and contracts, check selection, smoke test, failure classification; references for checks, convergence diagnosis, and tool traps | [build-model](../.claude/skills/build-model/SKILL.md) |
 | Simulation execution | **Built** | [run-case](../.claude/skills/run-case/SKILL.md) |
 | Verification and evidence | **Built** | [verify-against-reference](../.claude/skills/verify-against-reference/SKILL.md) |
 | Engineering review report | **Built** | [requirements-report](../.claude/skills/requirements-report/SKILL.md) |

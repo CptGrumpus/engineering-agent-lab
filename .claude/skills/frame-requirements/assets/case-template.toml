@@ -1,0 +1,56 @@
+# <One-line description of the study and its independent checks.>
+#
+# Decision: <what the result decides, e.g. "does the passage stay within a
+# 30 Pa pump budget across the gap tolerance?">
+#
+# Predictions (confirmation runs only; written BEFORE running):
+#   <expected value, and how it was derived>
+#
+# Revision history (only if this replaces an earlier case):
+#   <earlier case / run id>: <what failed and why>. Changed: <what>. Tolerances
+#   and limits unchanged unless stated, with the reason.
+#
+# Requirements and tolerances were fixed BEFORE the first run.
+
+[case]
+name = "<case_name>"                 # matches the file name
+model = "<registered model name>"    # see harness/registry.py
+description = "<problem, operating point, sweep, and what is checked, in two or three sentences>"
+assumptions = [
+  "<each modelling assumption; say which check covers it, e.g. 'Laminar flow; checked: Re_Dh below 2000.'>",
+  "<any synthetic value, labelled synthetic, with how the result scales with it>",
+]
+limitations = [
+  "<what the model does not represent>",
+  "<which references are model form, not exact>",
+  "No physical test data.",
+]
+
+[parameters]
+# every input with units in the key name: length_mm, load_N, density_kg_per_m3 ...
+# <name>_<unit> = <value>             # source: <spec / table / synthetic>
+
+[sweep]
+# EITHER one parameter:
+parameter = "<parameter name>"
+values = []
+# OR named scenarios that set several parameters together (tolerance corners):
+# [[sweep.scenarios]]
+# name = "nominal_20C"
+# <param> = <value>
+
+[numerics]
+solver = "<tool, solver, method>"
+# tolerances, step sizes, iteration limits ...
+
+[verification]
+# one entry per check, each with a reason; fixed before the first run
+# <check>_rel_tol = 0.01             # <why this value: what the decision needs>
+
+[[requirements]]
+id = "REQ-1"
+text = "<plain-language requirement, including how the metric is defined if that is a judgement call>"
+metric = "<metric computed by the study>"
+operator = "<="                       # <=, >=, <, >
+limit = 0.0
+units = "<units>"
