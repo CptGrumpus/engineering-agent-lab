@@ -48,7 +48,7 @@ All problems are synthetic, so no client data is involved. Every number comes fr
 
 | | Question | Answer |
 |---|---|---|
-| [7. Quarter-car ride and road holding](portfolio/07-quarter-car.md) | Which damper rates meet comfort, suspension travel, and tire-load targets? | 600 to 1000 N·s/m over a speed bump. On a rough road, the spring rate has to change too. |
+| [7. Quarter-car ride and road holding](portfolio/07-quarter-car.md) | Which damper rates meet comfort, suspension travel, and tire-load targets? | 600 to 1000 N·s/m over a speed bump at 18 km/h. At 36 km/h the wheel leaves the road and nothing passes. On a rough road, the spring rate has to change too. |
 
 ### Geometry automation
 
@@ -66,7 +66,7 @@ All problems are synthetic, so no client data is involved. Every number comes fr
 
 - **A model that converged cleanly to the wrong answer** ([strap](portfolio/02-strap-cable-hole.md)). A textbook-perfect mesh study settled 2 % off the handbook. Running an exact case through the same pipeline exposed a solver formulation issue that no amount of mesh refinement would have shown.
 - **An idealized inlet that reversed the verdict** ([coolant channel](portfolio/05-coolant-channel.md)). The simple model said the channel passed. It never converged at the inlet corner, and the realistic model fails the budget.
-- **A wheel that left the road** ([quarter car](portfolio/07-quarter-car.md)). Every numerical check passed, but the model's assumptions didn't hold, so no verdict was reported.
+- **A wheel that left the road** ([quarter car](portfolio/07-quarter-car.md)). Every numerical check passed, but the model's assumptions didn't hold, so no verdict was reported. The model that check called for, a tire that can lift off, then showed that the linear model had overstated peak body acceleration by up to 29 %.
 - **Elements that made the bracket look too stiff** ([cantilever](portfolio/01-cantilever-bracket.md)). The simplest element type overstated stiffness by up to a third; the checks withheld every result.
 
 ## How I work

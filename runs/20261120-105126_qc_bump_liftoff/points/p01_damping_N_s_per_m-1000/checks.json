@@ -1,0 +1,60 @@
+{
+  "label": "p01_damping_N_s_per_m-1000",
+  "status": "PASS",
+  "checks": [
+    {
+      "id": "energy_balance",
+      "description": "|W_road - (dE + E_dissipated)| / integral |P_road| dt",
+      "kind": "numerical",
+      "value": 7.341409650742295e-06,
+      "tolerance": 0.0001,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "solver_convergence",
+      "description": "max |z(tol) - z(tol/100)| / max |z| (body and wheel)",
+      "kind": "numerical",
+      "value": 1.2898056861034916e-09,
+      "tolerance": 1e-06,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "contact_event_times",
+      "description": "max |t_event model - t_event exact| [s] over lift-offs and touchdowns (2 events; sequence must match)",
+      "kind": "numerical",
+      "value": 6.353889636656618e-12,
+      "tolerance": 1e-06,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "reference_agreement",
+      "description": "max |z_num - z_ref| / bump height (body and wheel; matrix-exponential ref)",
+      "kind": "numerical",
+      "value": 1.6697103769058863e-09,
+      "tolerance": 1e-05,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "peak_accel_reference",
+      "description": "|peak accel num - peak accel ref| / peak accel ref",
+      "kind": "numerical",
+      "value": 3.428361101718508e-12,
+      "tolerance": 0.0001,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "return_to_rest",
+      "description": "max(|zs(t_end)|, |zu(t_end)|) / bump height",
+      "kind": "numerical",
+      "value": 1.5467996415702114e-06,
+      "tolerance": 0.001,
+      "comparison": "<=",
+      "status": "PASS"
+    }
+  ]
+}

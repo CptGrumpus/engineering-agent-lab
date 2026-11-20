@@ -60,7 +60,7 @@ winget install --id FreeCAD.FreeCAD                       # bundles CalculiX and
 .venv\Scripts\python.exe -m pytest -q        # Modelica/FreeCAD/OpenFOAM tests skip if the tool is absent
 ```
 
-Not yet done: heat transfer in the CFD path, 3D developing flow, nonlinear models (tire lift-off, bump stops, contact), any physical validation data.
+Not yet done: heat transfer in the CFD path, 3D developing flow, nonlinear models beyond tire lift-off (bump stops, structural contact), any physical validation data.
 
 ## First implementation milestone (done)
 

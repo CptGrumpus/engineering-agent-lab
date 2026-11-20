@@ -98,3 +98,48 @@ def test_window_must_be_whole_steps(tmp_path):
     point = read_json(run_dir / "manifest.json")["points"][0]
     assert point["status"] == "failed"
     assert "integer number of output steps" in point["error"]
+
+
+def _bump_params(speed, c=1500.0):
+    return dict(sprung_mass_kg=350.0, unsprung_mass_kg=45.0, suspension_stiffness_N_per_m=22000.0,
+                damping_N_s_per_m=c, tire_stiffness_N_per_m=220000.0, road="bump",
+                speed_m_per_s=speed, bump_height_m=0.04, bump_length_m=1.0, tire_model="liftoff")
+
+
+def test_liftoff_reference_equals_linear_reference_when_wheel_stays_down():
+    import numpy as np
+
+    from validation import quarter_car_reference as ref
+    p = _bump_params(5.0)
+    t = np.linspace(0.0, 4.0, 8001)
+    a, b = ref.time_response_liftoff(p, t), ref.time_response(p, t)
+    assert a["events"] == []
+    assert max(np.abs(a["zs_m"] - b["zs_m"]).max(), np.abs(a["zu_m"] - b["zu_m"]).max()) < 1e-7
+
+
+def test_liftoff_model_matches_exact_events_and_response():
+    import numpy as np
+
+    from models import quarter_car as qc
+    from validation import quarter_car_reference as ref
+    p = _bump_params(10.0, c=600.0)
+    r = qc.simulate(p, t_end_s=2.0, n_points=4001, method="DOP853", rtol=1e-9, atol=1e-12)
+    exact = ref.time_response_liftoff(p, r["series"]["t_s"])
+    got, want = r["outputs"]["tire_events"], exact["events"]
+    assert [k for _, k in got] == [k for _, k in want] == ["liftoff", "touchdown"] * 2
+    assert max(abs(a - b) for (a, _), (b, _) in zip(got, want)) < 1e-8
+    assert np.abs(r["series"]["zu_m"] - exact["zu_m"]).max() / 0.04 < 1e-6
+
+
+def test_liftoff_case_gives_the_verdict_the_linear_model_withheld(tmp_path):
+    """Same 10 m/s bump as test_wheel_lift_invalidates_linear_model, with the lift-off tire:
+    every check passes, there is no validity gate, and the road-holding verdict is a fail."""
+    run_dir = run_case(_small_case(tmp_path, "cases/qc_bump_liftoff.toml", "[600.0]"),
+                       runs_root=tmp_path / "runs")
+    summary = verify_run(run_dir)
+    assert summary["status"] == "PASS", summary
+    checks = {c["id"] for c in summary["points"][0]["checks"]}
+    assert "no_wheel_lift" not in checks and "contact_event_times" in checks
+    m = read_json(run_dir / "manifest.json")["points"][0]["metrics"]
+    assert m["airborne_time_ms"] == pytest.approx(59.0, abs=0.6)
+    assert m["max_tire_load_ratio"] == pytest.approx(1.59, abs=0.01)

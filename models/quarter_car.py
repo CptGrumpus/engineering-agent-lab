@@ -1,11 +1,18 @@
-"""Linear 2-DOF quarter-car model, solved numerically (model under test).
+"""2-DOF quarter-car model, solved numerically (model under test).
 
 Coordinates are measured from static equilibrium (gravity cancels), positive up.
 
     ms * zs'' = -ks (zs - zu) - cs (zs' - zu')
-    mu * zu'' =  ks (zs - zu) + cs (zs' - zu') - kt (zu - zr(t))
+    mu * zu'' =  ks (zs - zu) + cs (zs' - zu') + F_tire
 
-Tire: linear point-contact spring, no tire damping, always in contact.
+Tire (parameter tire_model):
+  "linear"   F_tire = kt (zr - zu): point-contact spring that can pull the wheel
+             down, so it is valid only while the tire stays loaded (default).
+  "liftoff"  the tire pushes but never pulls: the total tire load W + kt (zr - zu)
+             (W = static corner weight) is floored at zero, so F_tire = -W while the
+             wheel is in the air. Integration stops exactly at each lift-off and
+             touchdown (solve_ivp event location) and restarts in the other phase,
+             so the integrator never steps across the kink in the force.
 Must not import from validation/.
 """
 
@@ -46,8 +53,17 @@ def derived(params: dict) -> dict:
     }
 
 
+MAX_CONTACT_SWITCHES = 200      # more than this means chattering, not bouncing
+
+
 def simulate(params: dict, *, t_end_s: float, n_points: int, method: str, rtol: float,
              atol: float) -> dict:
+    tire = str(params.get("tire_model", "linear"))
+    if tire == "liftoff":
+        return _simulate_liftoff(params, t_end_s=t_end_s, n_points=n_points, method=method,
+                                 rtol=rtol, atol=atol)
+    if tire != "linear":
+        raise ValueError(f"unknown tire_model {tire!r} (linear | liftoff)")
     ms, mu, ks, cs, kt = unpack(params)
     road = Road(params)
 
@@ -84,4 +100,61 @@ def simulate(params: dict, *, t_end_s: float, n_points: int, method: str, rtol: 
         "success": True, "message": "ok", "nfev": nfev,
         "series": {"t_s": t_eval, "zs_m": y[0], "vs_m_per_s": y[1], "zu_m": y[2],
                    "vu_m_per_s": y[3], "zr_m": np.asarray(road.zr(t_eval), float)},
+    }
+
+
+def _simulate_liftoff(params: dict, *, t_end_s, n_points, method, rtol, atol) -> dict:
+    ms, mu, ks, cs, kt = unpack(params)
+    road = Road(params)
+    W = (ms + mu) * G
+    zr = (lambda t: float(road.zr(t))) if road.kind == "bump" else road.zr
+    breaks = [road.duration] if road.kind == "bump" and road.duration < t_end_s else []
+
+    def compression(t, y):                      # static deflection + dynamic; < 0 means airborne
+        return W / kt + zr(t) - y[2]
+
+    def rhs_factory(contact):
+        def rhs(t, y):
+            zs, vs, zu, vu = y
+            f_susp = ks * (zs - zu) + cs * (vs - vu)
+            f_tire = kt * (zr(t) - zu) if contact else -W
+            return (vs, -f_susp / ms, vu, (f_susp + f_tire) / mu)
+        return rhs
+
+    t_eval = np.linspace(0.0, t_end_s, n_points)
+    out = np.empty((4, n_points))
+    y0, a, contact, nfev, events = np.zeros(4), 0.0, True, 0, []
+    filled = 0
+    while a < t_end_s:
+        b = min([x for x in breaks if x > a + 1e-15] + [t_end_s])
+        ev = lambda t, y: compression(t, y)  # noqa: E731
+        ev.terminal = True
+        ev.direction = -1 if contact else 1
+        sol = solve_ivp(rhs_factory(contact), (a, b), y0, method=method, rtol=rtol, atol=atol,
+                        events=ev, dense_output=True)
+        nfev += sol.nfev
+        if not sol.success:
+            return {"success": False, "message": str(sol.message), "nfev": nfev, "series": None}
+        end = sol.t_events[0][0] if len(sol.t_events[0]) else b
+        last = end >= t_end_s
+        mask = (t_eval >= a) & ((t_eval <= end) if last else (t_eval < end))
+        idx = np.nonzero(mask)[0]
+        if len(idx):
+            out[:, idx] = sol.sol(t_eval[idx])
+            filled += len(idx)
+        y0 = sol.sol(end)
+        if len(sol.t_events[0]):
+            events.append((float(end), "liftoff" if contact else "touchdown"))
+            contact = not contact
+            if len(events) > MAX_CONTACT_SWITCHES:
+                return {"success": False, "message": "tire contact chattering", "nfev": nfev,
+                        "series": None}
+        a = end
+    if filled != n_points:
+        return {"success": False, "message": f"filled {filled} of {n_points} output points",
+                "nfev": nfev, "series": None}
+    return {
+        "success": True, "message": "ok", "nfev": nfev, "outputs": {"tire_events": events},
+        "series": {"t_s": t_eval, "zs_m": out[0], "vs_m_per_s": out[1], "zu_m": out[2],
+                   "vu_m_per_s": out[3], "zr_m": np.asarray(road.zr(t_eval), float)},
     }
