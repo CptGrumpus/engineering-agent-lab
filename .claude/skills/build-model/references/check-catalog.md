@@ -24,6 +24,8 @@ comparison, and one validity check per assumption that can fail.
 | Beam theory (Euler-Bernoulli, Timoshenko with Cowper shear coefficient) | model form | cantilever tip deflection |
 | Bending stress extrapolated from the smooth region, not the singular corner | numerical | root stress fit over 0.25L-0.75L |
 | Reaction equilibrium (sum of reactions = applied load) | numerical | from the CalculiX `.dat` totals |
+| Applied load recomputed from the solver deck; reactions balance the load on the non-fixed nodes | numerical | needed when a loaded face touches the clamp (uniform load on a cantilever's top face) |
+| Deflection field along a free fibre vs beam theory, not only the tip value | numerical | catches a wrong load distribution that a single tip value can hide |
 | GCI over the 3 finest meshes, regime-aware (monotone / oscillatory / divergent) | numerical | `discretization_<metric>` |
 | Stress / yield < 1 | validity | `linear_material` |
 | Deflection / length below a limit | validity | `small_deflection` |

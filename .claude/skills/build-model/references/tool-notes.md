@@ -33,6 +33,14 @@ Traps found while building the studies in this repo, by tool.
   columns 3-13, then 12-character values that can touch each other) and
   reaction totals from the `.dat` file.
 - Keep the `.FCStd`, `.inp`, `.dat` files with each point.
+- When a loaded face shares an edge with a fixed face (pressure on the top of a
+  cantilever), the share of the load on the fixed nodes goes straight into the
+  support and is missing from the `.dat` reaction total (0.57 % at an 8 mm mesh,
+  shrinking with element size). Compare the reaction with the load on the
+  non-fixed nodes, recomputed from the `.inp` deck.
+- `makeConstraintPressure`: positive pressure pushes into the face; CalculiX
+  writes it as `*DLOAD` element-face loads (`P1` to `P4` for tetrahedra).
+- The same reaction-total gap appears in heat transfer: see the next section.
 
 ## CalculiX heat transfer (ccx run directly)
 
