@@ -82,11 +82,11 @@ alive. Check with `ls -td runs/*` and, if one is still solving, `wsl -e pgrep -a
   - Hold it until the CPU is free.
 - **CSM3:** the first run is kept as evidence of the trapezoidal-rule energy drift and of the mode-2
   measurement flaw (fixed: mid-level crossings).
-- **Coupled stage:** waits on the user's sudo install (commands below), then:
-  - build the OpenFOAM adapter against v2512 (`./Allwmake`, no sudo);
+- **Coupled stage, toolchain ready (2026-11-21).** The user installed OpenFOAM v2512, preCICE 3.4.1 and
+  `ccx_preCICE`. The OpenFOAM adapter v1.4.0 is built (`~/precice-adapters`). preCICE's `perpendicular-flap`
+  tutorial (OpenFOAM + CalculiX, tutorials develop branch in `~/precice-tutorials`) matched its reference
+  flap-tip history: peak equal to 5 digits, largest difference 0.7 % of the peak. Next:
   - FSI1 (steady), then FSI2 and FSI3 (periodic, need a transient fluid solver: pimpleFoam).
-  - The tutorials' `perpendicular-flap` (OpenFOAM + CalculiX) is a good first smoke test of the adapter
-    pair.
 - The portfolio page is a draft, not linked from PORTFOLIO.md until study 6 is complete.
 
 **Study 7 (motor), feasibility.** See its row in the table above. The Pyleecan test environment was in
@@ -139,4 +139,4 @@ the ORNL report is the last step, opened blind.
     beat: 4.4 tokens/s generating and 22 tokens/s reading prompts, experts in RAM. Installing it as a
     project skill is a config change: show it first. Its ceiling step would tell us early how much is
     reachable on the RTX 3070's memory bandwidth.
-- **Study 6 install (you, later today):** the three sudo commands above.
+- **Study 6 install:** done by the user 2026-11-21.

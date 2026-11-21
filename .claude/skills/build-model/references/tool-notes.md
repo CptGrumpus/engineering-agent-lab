@@ -352,6 +352,17 @@ Traps found while building the studies in this repo, by tool.
 - preCICE 3.5 has no Ubuntu 22.04 package; 3.4.1 does. A simulated install (`apt-get install -s ./*.deb`)
   showed the dependencies (about 137 packages, Boost and PETSc) without sudo.
 - `apt-get install openfoam2512-dev` downloads well over 1 GB; it can look stalled for minutes.
+- The OpenFOAM adapter v1.4.0 builds without sudo: unpack the release tarball, source the v2512 bashrc,
+  run `./Allwmake`. The library lands in `$FOAM_USER_LIBBIN`.
+- **Smoke test the adapter pair before your own case:** the tutorials' `perpendicular-flap` with
+  `fluid-openfoam` and `solid-calculix` (2026-11-21: 5 s run in about 10 min). Compare the flap-tip
+  watchpoint (`solid-calculix/precice-Solid-watchpoint-Flap-Tip.log`) with
+  `reference-results/watchpoints.tar.gz`. Its peak matched the OpenFOAM v2404 reference to 5 digits,
+  with the largest difference 0.7 % of the peak.
+- The tutorials' `reference-results/*.tar.gz` are Git LFS pointers in a plain clone. Fetch the real file from
+  `https://media.githubusercontent.com/media/precice/tutorials/develop/<path>` and check it against the
+  pointer's sha256.
+- Use the tutorials' develop branch with adapter v1.4.0; the last tutorials release dates from 2024.
 
 ## Optimisation loops (harness/optimize.py)
 
