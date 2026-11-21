@@ -203,6 +203,13 @@ code { font-family: var(--font-data); font-size: 0.85em; }
 .rules { display: flex; flex-wrap: wrap; gap: 8px 10px; list-style: none; margin: 0; padding: 0; }
 .rules li { font-size: 0.92rem; padding: 6px 12px; border: 1px solid var(--rule); border-radius: 999px; background: var(--surface); }
 .rules li::before { content: "✓"; color: var(--pass); margin-right: 8px; font-weight: 600; }
+/* planned studies: same grid as the skills, marked as not yet run */
+.plan .skill { gap: 10px; }
+.plan-meta { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 6px 10px; font-family: var(--font-data); font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-3); }
+.plan-meta .no { color: var(--accent); }
+.plan-tag { padding: 2px 9px; border: 1px dashed var(--ink-3); border-radius: 999px; }
+.plan .skill p b { display: block; font-family: var(--font-data); font-weight: 500; font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-3); margin-bottom: 2px; }
+.plan .tools { font-family: var(--font-data); font-size: 0.78rem; color: var(--ink-3); }
 @media (max-width: 900px) { .skills { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 560px) { .skills { grid-template-columns: 1fr; } }
 
@@ -310,6 +317,7 @@ td.num { font-family: var(--font-data); font-variant-numeric: tabular-nums; whit
       <a href="#agent">Agent workflow</a>
       <a href="#tasks">Tasks</a>
       <a href="#findings">Lessons</a>
+      <a href="#next">Next</a>
       <a href="#capabilities">Capabilities</a>
     </div>
   </div>
@@ -443,6 +451,58 @@ td.num { font-family: var(--font-data); font-variant-numeric: tabular-nums; whit
       <article class="finding"><span class="label">Quarter car · vehicle dynamics</span><h3>A wheel that left the road</h3><p>Every numerical check passed, but the tire was leaving the ground, which the simple model can't represent, so I held the verdict back. When I built a tire model that can lift off, it showed the simple one had overstated the peak body acceleration by up to 29 %.</p><a href="#suspension">Read the study</a></article>
       <article class="finding"><span class="label">Roller contact · nonlinear FEA</span><h3>The right model, read from the wrong output</h3><p>Taking the contact pressure from the element stresses at the surface gave numbers 3.5 to 6.5 % too high, and they added up to more than the applied load. The solver's own contact pressure output matched the exact Hertz solution within 0.2 % on the same mesh.</p><a href="#contact">Read the study</a></article>
       <article class="finding"><span class="label">Cantilever · finite elements</span><h3>Elements that made the bracket look too stiff</h3><p>With the simplest element type, the bracket came out up to a third too stiff and the stress up to 45 % too low. The checks held back every one of those results.</p><a href="#fea">Read the study</a></article>
+    </div>
+  </section>
+
+  <section class="band wrap" id="next" aria-labelledby="next-title">
+    <div class="band-head">
+      <p class="eyebrow">What's next</p>
+      <h2 id="next-title">Six harder studies I'm planning</h2>
+      <p>None of these has been run yet, so there are no results to show. Each one covers something the current set doesn't: friction contact, plasticity, buckling, chained multiphysics, a design loop run by the agent, and coupled fluid and structure. As with the others, I'll pick the independent check before I start modelling.</p>
+    </div>
+    <div class="skills plan">
+      <article class="skill">
+        <span class="plan-meta"><span class="no">01 · Contact</span><span class="plan-tag">Planned · medium effort</span></span>
+        <b>Bolted joint with preload, a side load and friction</b>
+        <p><b>Why it's harder</b>Friction contact plus preload. The question is when the joint starts to slip or open up.</p>
+        <p><b>How I'll check it</b>The VDI 2230 hand method, plus slip load = μ × clamp force.</p>
+        <span class="tools">CalculiX</span>
+      </article>
+      <article class="skill">
+        <span class="plan-meta"><span class="no">02 · Multiphysics</span><span class="plan-tag">Planned · medium-high effort</span></span>
+        <b>Cold plate, the full thermal chain</b>
+        <p><b>Why it's harder</b>Three kinds of physics in a chain: coolant flow, then conduction through the aluminium plate, then thermal stress. Each step gets verified before it hands its results to the next. It builds on the <a href="#heat">heated-channel study</a>.</p>
+        <p><b>How I'll check it</b>Fin and slab conduction theory, the closed-form thermal stress, and an energy balance at every handoff.</p>
+        <span class="tools">OpenFOAM → CalculiX</span>
+      </article>
+      <article class="skill">
+        <span class="plan-meta"><span class="no">03 · Automation</span><span class="plan-tag">Planned · medium effort</span></span>
+        <b>Bracket optimisation loop</b>
+        <p><b>Why it's harder</b>The agent changes the geometry, meshes, solves and checks, then goes round again to bring the mass down while staying inside the stress and stiffness limits. Here it's driving a design instead of running one case.</p>
+        <p><b>How I'll check it</b>Every candidate has to pass the existing checks, and I'll spot-check the final design against beam theory.</p>
+        <span class="tools">CadQuery · Gmsh · CalculiX</span>
+      </article>
+      <article class="skill">
+        <span class="plan-meta"><span class="no">04 · Nonlinear material</span><span class="plan-tag">Planned · medium effort</span></span>
+        <b>Notched bar with plasticity</b>
+        <p><b>Why it's harder</b>The stress at the notch goes past yield, and there's residual stress left behind after unloading.</p>
+        <p><b>How I'll check it</b>Neuber's rule and Glinka's method.</p>
+        <span class="tools">CalculiX</span>
+      </article>
+      <article class="skill">
+        <span class="plan-meta"><span class="no">05 · Stability</span><span class="plan-tag">Planned · low-medium effort</span></span>
+        <b>Buckling of a column or thin panel</b>
+        <p><b>Why it's harder</b>It's a stability problem rather than a stress problem. First a linear eigenvalue buckling analysis, then the same thing with a small imperfection.</p>
+        <p><b>How I'll check it</b>The Euler and Johnson formulas, and a Southwell plot.</p>
+        <span class="tools">CalculiX</span>
+      </article>
+      <article class="skill">
+        <span class="plan-meta"><span class="no">06 · Coupled FSI</span><span class="plan-tag">Planned · high effort</span></span>
+        <b>Flexible flap in a channel</b>
+        <p><b>Why it's harder</b>Two-way fluid-structure interaction, where the flow bends the flap and the bent flap changes the flow.</p>
+        <p><b>How I'll check it</b>A published benchmark.</p>
+        <span class="tools">OpenFOAM · CalculiX · preCICE</span>
+      </article>
     </div>
   </section>
 
