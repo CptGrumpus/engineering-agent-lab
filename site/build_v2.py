@@ -86,7 +86,7 @@ CARDS = [
 ]
 VERDICT = {"pass": "Passes", "fail": "Fails", "mixed": "Depends on speed", "held": "One result on hold"}
 cards_html = "\n".join(
-    f'''      <a class="card{' featured' if k == 'bracket_opt' else ''}" href="#{k}" data-group="{g}">
+    f'''      <a class="card" href="#{k}" data-group="{g}">
         <span class="thumb"><img src="v2/th_{k}.webp" alt="" loading="lazy" width="800" height="500"></span>
         <span class="card-body">
           <span class="meta"><span class="no">{n}</span><span>{d}</span></span>
@@ -115,6 +115,24 @@ if not th_heat.exists():
     canvas.paste(src, ((800 - src.width) // 2, (500 - src.height) // 2))
     canvas.save(th_heat, "WEBP", quality=88)
 
+
+def collapse_studies(text: str) -> str:
+    """Each study sheet becomes a closed <details>: the summary keeps its head (label and title) and
+    adds the gallery card's one-line answer; the body opens on a click or a link to the study."""
+    answers = {c[0]: c[5] for c in CARDS}
+    pat = re.compile(r'  <section class="study" id="(\w+)">\s*<div class="study-head">(.*?)</div>(.*?)\n  </section>', re.S)
+
+    def rep(m):
+        k, head, body = m.group(1), m.group(2), m.group(3)
+        summ = html.escape(answers.get(k, ""))
+        return (f'  <details class="study" id="{k}">\n    <summary class="study-head">{head}'
+                f'<span class="study-sum">{summ}</span><span class="study-toggle"></span></summary>\n'
+                f'    <div class="study-body">{body}\n    </div>\n  </details>')
+
+    out, n = pat.subn(rep, text)
+    assert n == text.count('<section class="study"'), "every study sheet must collapse"
+    return out
+
 import extras
 facts = extras.repo_facts()
 gdata = extras.grader_data()
@@ -133,7 +151,8 @@ page = (page.replace("{{VP_JSON}}", json.dumps(VP, ensure_ascii=False))
             .replace("{{TABS}}", tabs_html)
             .replace("{{CARDS}}", cards_html)
             .replace("{{TERMINAL}}", term_html)
-            .replace("{{STUDIES}}", studies)
+            .replace("{{FEATURED}}", (HERE / "featured.html").read_text(encoding="utf-8"))
+            .replace("{{STUDIES}}", collapse_studies(studies))
             .replace("{{CAPS}}", extras.CAPS))
 (HERE / "index.html").write_text(page, encoding="utf-8")
 assert "{{" not in page, page[page.index("{{"):page.index("{{") + 40]

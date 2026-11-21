@@ -271,14 +271,14 @@ h2.discipline {
   color: var(--accent); display: flex; align-items: center; gap: 14px; margin-top: 28px;
 }
 h2.discipline::after { content: ""; flex: 1; height: 1px; background: var(--rule); }
-section.study {
+.studies .study {
   background: var(--surface); border: 1px solid var(--rule); border-radius: 6px;
   padding: clamp(20px, 3.5vw, 36px); display: grid; gap: 18px; scroll-margin-top: 68px; min-width: 0;
 }
 .study-head { display: grid; gap: 6px; padding-bottom: 14px; border-bottom: 1px solid var(--rule); }
 .study-head .label { color: var(--accent); }
 .study-head h2 { font-size: clamp(1.5rem, 2.8vw, 2rem); font-weight: 750; font-stretch: 106%; letter-spacing: -0.01em; }
-section.study > p, ul.proof li, .caught li { max-width: 70ch; }
+ul.proof li, .caught li { max-width: 70ch; }
 .study h3 { font-family: var(--font-display); font-size: 1.05rem; font-weight: 700; margin-top: 4px; }
 .answer { background: var(--accent-soft); border-radius: var(--radius); padding: 16px 20px; display: grid; gap: 10px; }
 .chips { display: flex; flex-wrap: wrap; gap: 8px; }
@@ -307,17 +307,53 @@ td.num { font-family: var(--font-data); font-variant-numeric: tabular-nums; whit
 .toolchain dt { color: var(--ink); font-weight: 600; }
 .toolchain dd { margin: 0; font-family: var(--font-data); font-size: 0.8rem; align-self: center; }
 @media (max-width: 760px) { .foot { grid-template-columns: 1fr; } }
+
+/* ------------------------------------------------------------- featured study (the optimiser) */
+.feature { gap: 24px; }
+.kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1px; margin: 0; background: var(--rule); border: 1px solid var(--rule); border-radius: 6px; overflow: hidden; }
+.kpis div { background: var(--surface); padding: 18px 20px 20px; display: grid; gap: 6px; align-content: start; min-width: 0; }
+.kpis dt { font-family: var(--font-data); font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-3); }
+.kpis dd { margin: 0; font-family: var(--font-display); font-weight: 800; font-stretch: 110%; font-size: clamp(1.8rem, 3.2vw, 2.6rem); line-height: 1.05; font-variant-numeric: tabular-nums; color: var(--ink); }
+.kpis p { color: var(--ink-2); font-size: 0.92rem; }
+.opt-run { display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr); gap: 28px; align-items: start; }
+.opt-side { display: grid; gap: 16px; align-content: start; min-width: 0; }
+.opt-side h3 { font-family: var(--font-display); font-size: 1.15rem; font-weight: 700; }
+.opt-side .steps li { padding: 12px 0; }
+.opt-side .steps b { font-size: 1.05rem; }
+.opt-side .steps span { font-size: 0.94rem; }
+.feature figcaption b { color: var(--ink); font-weight: 600; }
+.opt-caught { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.opt-caught .finding:first-child { grid-column: auto; }
+details.more { border: 1px solid var(--rule); border-radius: 6px; background: var(--surface); padding: 14px 20px; }
+details.more > summary { cursor: pointer; font-weight: 600; color: var(--accent); }
+details.more[open] > summary { margin-bottom: 14px; }
+details.more .note { margin-top: 12px; color: var(--ink-2); font-size: 0.95rem; max-width: 70ch; }
+@media (max-width: 960px) { .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); } .opt-run { grid-template-columns: 1fr; } .opt-caught { grid-template-columns: 1fr; } }
+@media (max-width: 480px) { .kpis { grid-template-columns: 1fr; } }
+
+/* collapsible study sheets: closed, each shows its title and one-line answer */
+details.study > summary { list-style: none; cursor: pointer; }
+details.study > summary::-webkit-details-marker { display: none; }
+details.study:not([open]) > .study-head { border-bottom: 0; padding-bottom: 0; }
+.study-sum { color: var(--ink-2); font-size: 0.98rem; max-width: 70ch; }
+.study-toggle { font-family: var(--font-data); font-size: 0.74rem; letter-spacing: 0.06em; color: var(--accent); }
+.study-toggle::after { content: "Open the full study ▾"; }
+details.study[open] .study-toggle::after { content: "Close ▴"; }
+details.study > summary:hover .study-toggle { text-decoration: underline; }
+.study-body { display: grid; gap: 18px; min-width: 0; }
+.study-body > p { max-width: 70ch; }
 {{EXTRA_CSS}}</style>
 
 <nav class="topbar" aria-label="Page">
   <div class="wrap">
     <a class="brand" href="#top"><span class="brand-mark" aria-hidden="true"><i style="background:#30123b"></i><i style="background:#4686fb"></i><i style="background:#1ae4b6"></i><i style="background:#a2fc3c"></i><i style="background:#fb8022"></i><i style="background:#7a0403"></i></span>Verified Simulation</a>
     <div class="topnav">
-      <a href="#loop">Method</a>
+      <a href="#bracket_opt">Optimiser</a>
       <a href="#studies">Studies</a>
-      <a href="#agent">Agent workflow</a>
-      <a href="#tasks">Tasks</a>
       <a href="#findings">Lessons</a>
+      <a href="#loop">Method</a>
+      <a href="#agent">Agent</a>
+      <a href="#tasks">Grading</a>
       <a href="#next">Next</a>
       <a href="#capabilities">Capabilities</a>
     </div>
@@ -362,6 +398,43 @@ td.num { font-family: var(--font-data); font-variant-numeric: tabular-nums; whit
     <p class="vp-note">These images are rendered in Blender straight from the solver output. Before one goes on the page it has to pass two checks. The rendered surface has to enclose the part's actual volume, which catches missing or flipped faces, and every coloured pixel has to match a colour in the legend, which catches lighting that has shifted the contours.</p>
   </section>
 
+{{FEATURED}}
+  <section class="band wrap" id="studies" aria-labelledby="studies-title">
+    <div class="band-head">
+      <p class="eyebrow">Case studies</p>
+      <h2 id="studies-title">Twelve studies</h2>
+      <p>The problems are made up, so there's no client data here. Every number on this page comes from a saved run, and each run can be repeated from its recorded inputs with one command.</p>
+    </div>
+    <div class="filters" role="group" aria-label="Filter by discipline">
+      <button type="button" aria-pressed="true" data-f="all">All</button>
+      <button type="button" aria-pressed="false" data-f="struct">Structures and vibration</button>
+      <button type="button" aria-pressed="false" data-f="fluid">Thermal and fluids</button>
+      <button type="button" aria-pressed="false" data-f="vehicle">Vehicle dynamics</button>
+      <button type="button" aria-pressed="false" data-f="geom">Geometry</button>
+      <button type="button" aria-pressed="false" data-f="workflow">Workflow</button>
+    </div>
+    <div class="gallery" id="gallery">
+{{CARDS}}
+    </div>
+{{REQS}}
+  </section>
+
+  <section class="band wrap" id="findings" aria-labelledby="findings-title">
+    <div class="band-head">
+      <p class="eyebrow">Lessons</p>
+      <h2 id="findings-title">Mistakes the checks caught</h2>
+      <p>In several studies my first model gave an answer that looked reasonable and turned out to be wrong. These are the ones where the checks earned their keep.</p>
+    </div>
+    <div class="findings">
+      <article class="finding"><span class="label">Bracket optimisation · design automation</span><h3>An optimiser kept honest by its stress check</h3><p>A check that only looked at the root would have accepted candidate 12, at 90 MPa. Its real peak is 101 MPa in the middle of the span. Measuring the stress along the whole length kept the search inside the limit, and an independent beam-theory optimum lands within 0.13 % of the answer.</p><a href="#bracket_opt">Read the study</a></article>
+      <article class="finding"><span class="label">Strap · stress concentration</span><h3>A model that converged neatly to the wrong answer</h3><p>The mesh study looked textbook, but it settled 2 % away from the handbook value. Running a case with a known exact answer through the same pipeline showed the problem was in how the solver's elements behaved, which no amount of mesh refinement would have revealed.</p><a href="#strap">Read the study</a></article>
+      <article class="finding"><span class="label">Coolant channel · CFD</span><h3>A simplified inlet that flipped the answer</h3><p>The simple model said the channel passed. It never converged at the sharp inlet corner, though, and once I modelled the inlet properly the channel failed its pressure budget.</p><a href="#cfd">Read the study</a></article>
+      <article class="finding"><span class="label">Quarter car · vehicle dynamics</span><h3>A wheel that left the road</h3><p>Every numerical check passed, but the tire was leaving the ground, which the simple model can't represent, so I held the verdict back. When I built a tire model that can lift off, it showed the simple one had overstated the peak body acceleration by up to 29 %.</p><a href="#suspension">Read the study</a></article>
+      <article class="finding"><span class="label">Roller contact · nonlinear FEA</span><h3>The right model, read from the wrong output</h3><p>Taking the contact pressure from the element stresses at the surface gave numbers 3.5 to 6.5 % too high, and they added up to more than the applied load. The solver's own contact pressure output matched the exact Hertz solution within 0.2 % on the same mesh.</p><a href="#contact">Read the study</a></article>
+      <article class="finding"><span class="label">Cantilever · finite elements</span><h3>Elements that made the bracket look too stiff</h3><p>With the simplest element type, the bracket came out up to a third too stiff and the stress up to 45 % too low. The checks held back every one of those results.</p><a href="#fea">Read the study</a></article>
+    </div>
+  </section>
+
   <section class="band wrap" id="loop" aria-labelledby="loop-title">
     <div class="band-head">
       <p class="eyebrow">Method</p>
@@ -386,26 +459,6 @@ td.num { font-family: var(--font-data); font-variant-numeric: tabular-nums; whit
 <span class="p">      </span>verdict: <span class="verdict">FAIL</span>, pending human review</pre>
       </div>
     </div>
-  </section>
-
-  <section class="band wrap" id="studies" aria-labelledby="studies-title">
-    <div class="band-head">
-      <p class="eyebrow">Case studies</p>
-      <h2 id="studies-title">Twelve studies</h2>
-      <p>The problems are made up, so there's no client data here. Every number on this page comes from a saved run, and each run can be repeated from its recorded inputs with one command.</p>
-    </div>
-    <div class="filters" role="group" aria-label="Filter by discipline">
-      <button type="button" aria-pressed="true" data-f="all">All</button>
-      <button type="button" aria-pressed="false" data-f="struct">Structures and vibration</button>
-      <button type="button" aria-pressed="false" data-f="fluid">Thermal and fluids</button>
-      <button type="button" aria-pressed="false" data-f="vehicle">Vehicle dynamics</button>
-      <button type="button" aria-pressed="false" data-f="geom">Geometry</button>
-      <button type="button" aria-pressed="false" data-f="workflow">Workflow</button>
-    </div>
-    <div class="gallery" id="gallery">
-{{CARDS}}
-    </div>
-{{REQS}}
   </section>
 
   <section class="band wrap" id="agent" aria-labelledby="agent-title">
@@ -438,22 +491,6 @@ td.num { font-family: var(--font-data); font-variant-numeric: tabular-nums; whit
       <p>I wrote three engineering tasks based on the studies, set up the way an AI-training pipeline would use them. Each has a problem statement, a reference solution backed by one of my simulations, an automated grader, and a list of the mistakes it's designed to catch. Pick a task and an answer below and the page will grade it using the same criteria and tolerances as the Python grader. You can also change any of the values yourself.</p>
     </div>
 {{GRADER}}
-  </section>
-
-  <section class="band wrap" id="findings" aria-labelledby="findings-title">
-    <div class="band-head">
-      <p class="eyebrow">Lessons</p>
-      <h2 id="findings-title">Mistakes the checks caught</h2>
-      <p>In several studies my first model gave an answer that looked reasonable and turned out to be wrong. These are the ones where the checks earned their keep.</p>
-    </div>
-    <div class="findings">
-      <article class="finding"><span class="label">Bracket optimisation · design automation</span><h3>An optimiser kept honest by its stress check</h3><p>A check that only looked at the root would have accepted candidate 12, at 90 MPa. Its real peak is 101 MPa in the middle of the span. Measuring the stress along the whole length kept the search inside the limit, and an independent beam-theory optimum lands within 0.13 % of the answer.</p><a href="#bracket_opt">Read the study</a></article>
-      <article class="finding"><span class="label">Strap · stress concentration</span><h3>A model that converged neatly to the wrong answer</h3><p>The mesh study looked textbook, but it settled 2 % away from the handbook value. Running a case with a known exact answer through the same pipeline showed the problem was in how the solver's elements behaved, which no amount of mesh refinement would have revealed.</p><a href="#strap">Read the study</a></article>
-      <article class="finding"><span class="label">Coolant channel · CFD</span><h3>A simplified inlet that flipped the answer</h3><p>The simple model said the channel passed. It never converged at the sharp inlet corner, though, and once I modelled the inlet properly the channel failed its pressure budget.</p><a href="#cfd">Read the study</a></article>
-      <article class="finding"><span class="label">Quarter car · vehicle dynamics</span><h3>A wheel that left the road</h3><p>Every numerical check passed, but the tire was leaving the ground, which the simple model can't represent, so I held the verdict back. When I built a tire model that can lift off, it showed the simple one had overstated the peak body acceleration by up to 29 %.</p><a href="#suspension">Read the study</a></article>
-      <article class="finding"><span class="label">Roller contact · nonlinear FEA</span><h3>The right model, read from the wrong output</h3><p>Taking the contact pressure from the element stresses at the surface gave numbers 3.5 to 6.5 % too high, and they added up to more than the applied load. The solver's own contact pressure output matched the exact Hertz solution within 0.2 % on the same mesh.</p><a href="#contact">Read the study</a></article>
-      <article class="finding"><span class="label">Cantilever · finite elements</span><h3>Elements that made the bracket look too stiff</h3><p>With the simplest element type, the bracket came out up to a third too stiff and the stress up to 45 % too low. The checks held back every one of those results.</p><a href="#fea">Read the study</a></article>
-    </div>
   </section>
 
   <section class="band wrap" id="next" aria-labelledby="next-title">
@@ -520,7 +557,7 @@ td.num { font-family: var(--font-data); font-variant-numeric: tabular-nums; whit
     <div class="band-head">
       <p class="eyebrow">In detail</p>
       <h2>Each study in full</h2>
-      <p>For each one you'll find the question, the answer up front, how I checked it, and what went wrong along the way.</p>
+      <p>One write-up per study: the question, the answer up front, how I checked it, and what went wrong along the way. Click a study to open it; the gallery cards and the lesson links open the right one for you.</p>
     </div>
     <div class="studies">
 {{STUDIES}}
@@ -616,6 +653,19 @@ td.num { font-family: var(--font-data); font-variant-numeric: tabular-nums; whit
     const f = b.dataset.f;
     cards.forEach(c => { c.hidden = !(f === "all" || c.dataset.group === f); });
   }));
+  // a link to a study sheet (gallery card, lesson, nav) opens it before the browser scrolls to it
+  const openSheet = id => { const el = document.getElementById(id); if (el && el.tagName === "DETAILS") el.open = true; };
+  document.addEventListener("click", e => {
+    const a = e.target.closest('a[href^="#"]');
+    if (a) openSheet(decodeURIComponent(a.getAttribute("href").slice(1)));
+  });
+  const fromHash = () => {
+    const id = decodeURIComponent(location.hash.slice(1));
+    const el = id && document.getElementById(id);
+    if (el && el.tagName === "DETAILS") { el.open = true; requestAnimationFrame(() => el.scrollIntoView({ block: "start" })); }
+  };
+  window.addEventListener("hashchange", fromHash);
+  fromHash();
 })();
 </script>
 <script>

@@ -54,6 +54,7 @@ Items 9 and 10 start when the other study session finishes its work. The 3D view
 
 | Date | Item | What changed |
 |---|---|---|
+| 2026-11-21 | Page reorganised around the optimiser | Study 12 gets its own section right after the viewer (headline numbers, search animation beside the loop steps, before-and-after and stress-along-span figures, what the checks caught, full method on demand), first in the nav. Results now come before process. The eleven other write-ups are collapsible panels that the gallery and lesson links open; the page is 15,700 px instead of 28,200 |
 | 2026-11-21 | Study 12 on the dashboard | Viewer opens on the optimised bracket; featured card, write-up, search animation, before-and-after render and stress-along-span chart. Hero counts now come from the run records (1,478 checks, 36 runs) |
 | 2026-11-21 | Public site refreshed | `docs/` rebuilt from the new page with `site/export_docs.py` |
 | 2026-11-20 | Personal paths removed | Run records and logs no longer carry the Windows user name, commits use the GitHub no-reply address, and a test guards against leaks |
