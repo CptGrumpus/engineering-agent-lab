@@ -23,6 +23,53 @@ TASKS = REPO / "tasks"
 # --------------------------------------------------------------------------- summary
 EXTRA_RUNS = ("20261120-225322_bracket_opt", "20261120-225744_bracket_opt_confirm")   # study 12
 
+# --------------------------------------------------------------------------- evidence links
+REPO_URL = "https://github.com/CptGrumpus/engineering-agent-lab"
+MEMO = "portfolio/deliverables/coolant-channel-memo.md"
+# page key -> the study's write-up in portfolio/, which lists the runs it rests on
+STUDY_DOCS = {
+    "fea": "01-cantilever-bracket", "strap": "02-strap-cable-hole", "fatigue": "03-strap-fatigue",
+    "modal": "04-bracket-modal", "cfd": "05-coolant-channel", "thermal": "06-heat-sink-fin",
+    "suspension": "07-quarter-car", "cad": "08-mounting-plate", "baseline": "09-mass-spring-damper",
+    "contact": "10-roller-contact", "heat": "11-cold-plate-heat-transfer", "bracket_opt": "12-bracket-optimisation",
+}
+_RUN = re.compile(r"runs/(\d{8}-(\d{2})(\d{2})\d{2}_[A-Za-z0-9_]+)")
+_tracked: set[str] | None = None
+
+
+def tracked(path: str) -> bool:
+    """True if the file is committed, so a link to it on GitHub resolves."""
+    global _tracked
+    if _tracked is None:
+        _tracked = set(subprocess.run(["git", "ls-files"], cwd=REPO, capture_output=True, text=True,
+                                      check=True).stdout.splitlines())
+    return path in _tracked
+
+
+def gh(path: str) -> str:
+    return f"{REPO_URL}/blob/main/{path}"
+
+
+def evidence_html(key: str) -> str:
+    """Links to the study's write-up and to each run report it cites, on the public repository.
+    Only committed files are linked, so the page never points at a file GitHub doesn't have."""
+    doc = f"portfolio/{STUDY_DOCS[key]}.md"
+    if not tracked(doc):
+        return ""
+    runs = sorted(set(m.group(1) for m in _RUN.finditer((REPO / doc).read_text(encoding="utf-8"))))
+    runs = [r for r in runs if tracked(f"runs/{r}/report.md")]
+    names = [r.split("_", 1)[1] for r in runs]
+    links = []
+    for r, name in zip(runs, names):
+        label = name if names.count(name) == 1 else f"{name} · {r[9:11]}:{r[11:13]}"
+        links.append(f'<a href="{gh(f"runs/{r}/report.md")}">{html.escape(label)}</a>')
+    memo = (f'<a class="ev-memo" href="{gh(MEMO)}">Sample client memo from this study</a>'
+            if key == "cfd" and tracked(MEMO) else "")
+    return (f'      <p class="evidence"><span class="label">Evidence on GitHub</span>'
+            f'<a class="ev-doc" href="{gh(doc)}">Full write-up</a>{memo}'
+            + (f'<span class="ev-runs">Run reports: {"".join(links)}</span>' if links else "")
+            + "</p>\n")
+
 
 def repo_facts() -> dict:
     files = subprocess.run(["git", "ls-files", "*.py"], cwd=REPO, capture_output=True, text=True,
@@ -54,7 +101,7 @@ def summary_html(facts: dict) -> str:
       <div><b>What's here</b><p>Twelve studies, each taken from written requirements through to a checked answer using open-source solvers. There are also three evaluation tasks, and their graders are tested as well.</p></div>
       <div><b>The code</b><p>It's all Python, about {k},000 lines across {facts["py_files"]} files. That covers the harness that runs and checks everything, the models, the independent reference solutions and the graders, with {facts["tests"]} automated tests that run on every push.</p></div>
     </div>
-    <p class="tldr-links"><a href="#tasks">Grade an answer yourself</a><a href="#reqs">All the requirements in one table</a><a href="#bracket_opt">The newest study, an optimisation loop</a></p>
+    <p class="tldr-links"><a href="#tasks">Grade an answer yourself</a><a href="#reqs">All the requirements in one table</a><a href="#bracket_opt">The newest study, an optimisation loop</a><a class="ext" href="{gh(MEMO)}">A sample client memo</a></p>
   </section>
 '''
 
@@ -461,6 +508,16 @@ CSS = r"""
 .tldr-grid p { color: var(--ink-2); font-size: 0.96rem; line-height: 1.5; }
 .tldr-links { display: flex; flex-wrap: wrap; gap: 6px 22px; font-size: 0.93rem; font-weight: 600; }
 .tldr-links a::after { content: " ↓"; }
+.tldr-links a.ext::after { content: " ↗"; }
+
+/* evidence links under each study */
+.study-body > p.evidence { max-width: none; }
+.evidence { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 16px; padding-top: 14px; border-top: 1px solid var(--rule); font-size: 0.9rem; }
+.evidence .label { color: var(--ink-3); flex-basis: 100%; }
+.evidence a { font-weight: 600; }
+.evidence a.ev-doc::after, .evidence a.ev-memo::after { content: " ↗"; }
+.ev-runs { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; color: var(--ink-2); flex-basis: 100%; }
+.ev-runs a { font-family: var(--font-data); font-size: 0.78rem; font-weight: 400; }
 @media (max-width: 820px) { .tldr-grid { grid-template-columns: 1fr; } }
 
 /* grader demo */

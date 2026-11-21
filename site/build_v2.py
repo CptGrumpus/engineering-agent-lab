@@ -127,14 +127,24 @@ def collapse_studies(text: str) -> str:
         summ = html.escape(answers.get(k, ""))
         return (f'  <details class="study" id="{k}">\n    <summary class="study-head">{head}'
                 f'<span class="study-sum">{summ}</span><span class="study-toggle"></span></summary>\n'
-                f'    <div class="study-body">{body}\n    </div>\n  </details>')
+                f'    <div class="study-body">{body}\n{extras.evidence_html(k)}    </div>\n  </details>')
 
     out, n = pat.subn(rep, text)
     assert n == text.count('<section class="study"'), "every study sheet must collapse"
     return out
 
+def featured_with_evidence() -> str:
+    """The featured study gets the same evidence line as the others, once its files are committed."""
+    text = (HERE / "featured.html").read_text(encoding="utf-8")
+    ev = extras.evidence_html("bracket_opt")
+    end = text.rindex("  </section>")
+    return text[:end] + ev + text[end:] if ev else text
+
+
 import extras
+import make_og
 facts = extras.repo_facts()
+make_og.make(facts)
 gdata = extras.grader_data()
 gcheck = extras.check_js_against_python(gdata)
 grader_body, grader_js = extras.grader_html(gdata)
@@ -151,7 +161,7 @@ page = (page.replace("{{VP_JSON}}", json.dumps(VP, ensure_ascii=False))
             .replace("{{TABS}}", tabs_html)
             .replace("{{CARDS}}", cards_html)
             .replace("{{TERMINAL}}", term_html)
-            .replace("{{FEATURED}}", (HERE / "featured.html").read_text(encoding="utf-8"))
+            .replace("{{FEATURED}}", featured_with_evidence())
             .replace("{{STUDIES}}", collapse_studies(studies))
             .replace("{{CAPS}}", extras.CAPS))
 (HERE / "index.html").write_text(page, encoding="utf-8")

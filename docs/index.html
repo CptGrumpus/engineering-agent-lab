@@ -4,6 +4,15 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="description" content="Twelve open-source simulation studies, each checked against an independent reference, with a live grader demo and every requirement in one table.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://cptgrumpus.github.io/engineering-agent-lab/">
+<meta property="og:title" content="Simulation results I can back up">
+<meta property="og:description" content="Twelve open-source simulation studies, from FEA and CFD to an optimisation loop. Every result is checked against an independent reference before it's called a pass or a fail.">
+<meta property="og:image" content="https://cptgrumpus.github.io/engineering-agent-lab/v2/og_card.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="A tapered steel bracket rendered with its stress contours, beside the page headline and its counts of studies, checks and runs">
+<meta name="twitter:card" content="summary_large_image">
 <title>Verified Simulation Portfolio</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -87,7 +96,8 @@ code { font-family: var(--font-data); font-size: 0.85em; }
 .topnav { display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none; }
 .topnav a { font-size: 0.9rem; color: var(--ink-2); text-decoration: none; padding: 6px 10px; border-radius: var(--radius); white-space: nowrap; }
 .topnav a:hover { color: var(--ink); background: var(--accent-soft); }
-@media (max-width: 640px) { .topnav a:nth-child(n+3) { display: none; } }
+@media (max-width: 640px) { .topnav a:nth-child(n+3) { display: none; } .topnav a { padding: 6px 7px; font-size: 0.86rem; } }
+@media (max-width: 380px) { .topnav a:nth-child(n+2) { display: none; } }
 
 /* ------------------------------------------------------------- hero */
 .hero { padding-block: clamp(32px, 5vw, 64px) 28px; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 22px 56px; align-items: end; }
@@ -359,6 +369,16 @@ details.study > summary:hover .study-toggle { text-decoration: underline; }
 .tldr-grid p { color: var(--ink-2); font-size: 0.96rem; line-height: 1.5; }
 .tldr-links { display: flex; flex-wrap: wrap; gap: 6px 22px; font-size: 0.93rem; font-weight: 600; }
 .tldr-links a::after { content: " ↓"; }
+.tldr-links a.ext::after { content: " ↗"; }
+
+/* evidence links under each study */
+.study-body > p.evidence { max-width: none; }
+.evidence { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 16px; padding-top: 14px; border-top: 1px solid var(--rule); font-size: 0.9rem; }
+.evidence .label { color: var(--ink-3); flex-basis: 100%; }
+.evidence a { font-weight: 600; }
+.evidence a.ev-doc::after, .evidence a.ev-memo::after { content: " ↗"; }
+.ev-runs { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; color: var(--ink-2); flex-basis: 100%; }
+.ev-runs a { font-family: var(--font-data); font-size: 0.78rem; font-weight: 400; }
 @media (max-width: 820px) { .tldr-grid { grid-template-columns: 1fr; } }
 
 /* grader demo */
@@ -475,7 +495,7 @@ details.study > summary:hover .study-toggle { text-decoration: underline; }
       <div><b>What's here</b><p>Twelve studies, each taken from written requirements through to a checked answer using open-source solvers. There are also three evaluation tasks, and their graders are tested as well.</p></div>
       <div><b>The code</b><p>It's all Python, about 17,000 lines across 126 files. That covers the harness that runs and checks everything, the models, the independent reference solutions and the graders, with 106 automated tests that run on every push.</p></div>
     </div>
-    <p class="tldr-links"><a href="#tasks">Grade an answer yourself</a><a href="#reqs">All the requirements in one table</a><a href="#bracket_opt">The newest study, an optimisation loop</a></p>
+    <p class="tldr-links"><a href="#tasks">Grade an answer yourself</a><a href="#reqs">All the requirements in one table</a><a href="#bracket_opt">The newest study, an optimisation loop</a><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/portfolio/deliverables/coolant-channel-memo.md">A sample client memo</a></p>
   </section>
 
   <section class="viewport wrap" aria-label="Result viewer">
@@ -938,6 +958,7 @@ details.study > summary:hover .study-toggle { text-decoration: underline; }
         <li>I also ran it with the simplest element type, linear tetrahedra. The bracket came out 4 to 33 % too stiff and the stress 7 to 45 % too low, so at face value it would have looked comfortably safe. The beam-theory and mesh checks both failed, and none of those results were reported as verified.</li>
       </ul>
     </div>
+      <p class="evidence"><span class="label">Evidence on GitHub</span><a class="ev-doc" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/portfolio/01-cantilever-bracket.md">Full write-up</a><span class="ev-runs">Run reports: <a href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261119-085818_cantilever_tet10/report.md">cantilever_tet10</a><a href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261119-090004_cantilever_tet4/report.md">cantilever_tet4</a></span></p>
     </div>
   </details>
 
@@ -981,6 +1002,7 @@ details.study > summary:hover .study-toggle { text-decoration: underline; }
         <li>The first trial run also hit three setup problems. The solver couldn't read the number format I was writing, one CAD face pointed the wrong way so every element got rejected, and a remeshed model was still pointing at the old node numbers. That last one would have run and balanced its forces anyway, which is exactly why it's worth checking for.</li>
       </ul>
     </div>
+      <p class="evidence"><span class="label">Evidence on GitHub</span><a class="ev-doc" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/portfolio/02-strap-cable-hole.md">Full write-up</a><span class="ev-runs">Run reports: <a href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261119-235201_strap_hole_mesh/report.md">strap_hole_mesh</a><a href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261119-235211_strap_hole_size/report.md">strap_hole_size</a></span></p>
     </div>
   </details>
 
@@ -1011,6 +1033,7 @@ details.study > summary:hover .study-toggle { text-decoration: underline; }
       <h3>What I caught along the way</h3>
       <ul><li>The two published data sets predict lives about 100 times apart at the service load. That's normal in fatigue, where a 10 % change in stress shifts the life by a factor of about 3.4. It's why I give a load rating with its spread instead of a single life number.</li></ul>
     </div>
+      <p class="evidence"><span class="label">Evidence on GitHub</span><a class="ev-doc" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/portfolio/03-strap-fatigue.md">Full write-up</a><span class="ev-runs">Run reports: <a href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261120-011347_strap_fatigue_load/report.md">strap_fatigue_load</a></span></p>
     </div>
   </details>
 
@@ -1042,6 +1065,7 @@ details.study > summary:hover .study-toggle { text-decoration: underline; }
         <li>The first mesh was almost eight times bigger than it needed to be, because the fine region spread across the whole model. That meant 70,820 nodes and 3.5 minutes per solve. Keeping the fine mesh near the contact brought it down to 9,334 nodes and 20 seconds, with the same answer to 0.2 %.</li>
       </ul>
     </div>
+      <p class="evidence"><span class="label">Evidence on GitHub</span><a class="ev-doc" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/portfolio/10-roller-contact.md">Full write-up</a><span class="ev-runs">Run reports: <a href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261120-120004_contact_roller_mesh/report.md">contact_roller_mesh · 12:00</a><a href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261120-120243_contact_roller_mesh/report.md">contact_roller_mesh · 12:02</a></span></p>
     </div>
   </details>
 
@@ -1057,7 +1081,7 @@ details.study > summary:hover .study-toggle { text-decoration: underline; }
       <div class="chips"><span class="chip pass">7 mm: first mode 261.7 Hz</span><span class="chip pass">206 g, within budget</span><span class="chip pass">Mesh uncertainty 0.03 %</span></div>
       <p><strong>7 mm.</strong> At 6 mm the first mode drops to 224 Hz, right in the band I'm trying to stay out of. At 8 mm it's 299 Hz, but the arm weighs 236 g and goes over budget. 7 mm is the only whole-millimetre thickness that does both.</p>
     </div>
-    <figure><div class="plate"><img src="img/bracket_modes.gif" alt="First four mode shapes, animated" loading="lazy"></div><figcaption>The first four mode shapes from CalculiX. Each one is identified automatically from its effective mass.</figcaption></figure>
+    <figure><div class="plate"><img src="img/bracket_modes.webp" alt="First four mode shapes, animated" loading="lazy"></div><figcaption>The first four mode shapes from CalculiX. Each one is identified automatically from its effective mass.</figcaption></figure>
     <figure><div class="plate"><img src="img/render_bracket_modes.png" alt="First four mode shapes, rendered in Blender" loading="lazy"></div><figcaption>The same four modes rendered in Blender. The colour shows how far each point moves.</figcaption></figure>
     <h3>How I checked it</h3>
     <ul class="proof">
@@ -1070,6 +1094,7 @@ details.study > summary:hover .study-toggle { text-decoration: underline; }
       <h3>What I caught along the way</h3>
       <ul><li>One of my predictions was wrong. The frequencies converged more slowly than the textbook rate, because the clamped corners are singular. Slower convergence still gives an honest uncertainty, 0.03 % here. Convergence much faster than the textbook rate would have been the real warning sign, and the checks now flag that automatically.</li></ul>
     </div>
+      <p class="evidence"><span class="label">Evidence on GitHub</span><a class="ev-doc" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/portfolio/04-bracket-modal.md">Full write-up</a><span class="ev-runs">Run reports: <a href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261120-010318_bracket_modal_mesh/report.md">bracket_modal_mesh</a><a href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261120-010521_bracket_modal_thickness/report.md">bracket_modal_thickness</a></span></p>
     </div>
   </details>
 
@@ -1137,6 +1162,7 @@ details.study > summary:hover .study-toggle { text-decoration: underline; }
         <li>My first 3D mesh was coarsest right where it needed to be finest, next to the side walls. The overall friction still looked fine, but comparing the whole velocity field point by point failed every time, always next to the wall. Averages can hide local errors, so I compare the full field too.</li>
       </ul>
     </div>
+      <p class="evidence"><span class="label">Evidence on GitHub</span><a class="ev-doc" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/portfolio/05-coolant-channel.md">Full write-up</a><a class="ev-memo" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/portfolio/deliverables/coolant-channel-memo.md">Sample client memo from this study</a><span class="ev-runs">Run reports: <a href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261119-191916_channel_mesh/report.md">channel_mesh</a><a href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261119-200042_channel_header_mesh/report.md">channel_header_mesh</a><a href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261119-200202_channel_header_tolerance/report.md">channel_header_tolerance</a><a href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261119-201615_channel_header_gap_limits/report.md">channel_header_gap_limits</a><a href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261119-202956_duct_side_walls/report.md">duct_side_walls · 20:29</a><a href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261119-204111_duct_side_walls/report.md">duct_side_walls · 20:41</a></span></p>
     </div>
   </details>
 
@@ -1179,6 +1205,7 @@ details.study > summary:hover .study-toggle { text-decoration: underline; }
       </ul>
     </div>
     <p class="note">An AI agent built this study working only from my written procedures. I set it up as a test of whether those procedures produce verified work on a problem they hadn't seen before.</p>
+      <p class="evidence"><span class="label">Evidence on GitHub</span><a class="ev-doc" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/portfolio/06-heat-sink-fin.md">Full write-up</a><span class="ev-runs">Run reports: <a href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261119-221454_fin_mesh/report.md">fin_mesh</a><a href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261119-221517_fin_tolerance/report.md">fin_tolerance</a><a href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261119-221655_fin_h_sweep/report.md">fin_h_sweep</a></span></p>
     </div>
   </details>
 
@@ -1208,6 +1235,7 @@ details.study > summary:hover .study-toggle { text-decoration: underline; }
         <li>I tried four bounded schemes that get rid of the overshoot. All of them flip-flopped from one iteration to the next and never closed the energy balance, and under-relaxation just hid the problem. I went back to the scheme that converges exactly and let the checks bound its error. I kept every failed run and didn't change any tolerances.</li>
       </ul>
     </div>
+      <p class="evidence"><span class="label">Evidence on GitHub</span><a class="ev-doc" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/portfolio/11-cold-plate-heat-transfer.md">Full write-up</a><span class="ev-runs">Run reports: <a href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261120-124736_heated_channel_mesh/report.md">heated_channel_mesh · 12:47</a><a href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261120-130606_heated_channel_flux/report.md">heated_channel_flux · 13:06</a><a href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261120-131818_heated_channel_mesh/report.md">heated_channel_mesh · 13:18</a><a href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261120-150722_heated_channel_flux/report.md">heated_channel_flux · 15:07</a><a href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261120-150722_heated_channel_mesh/report.md">heated_channel_mesh · 15:07</a></span></p>
     </div>
   </details>
 
@@ -1219,7 +1247,7 @@ details.study > summary:hover .study-toggle { text-decoration: underline; }
       <h2>Quarter-car ride and road holding</h2>
     <span class="study-sum">600 to 1000 N·s/m works at 18 km/h. At 36 km/h the wheel leaves the road.</span><span class="study-toggle"></span></summary>
     <div class="study-body">
-    <figure><div class="plate"><img src="img/anim_quarter_car.gif" alt="Animation of the quarter car crossing the bump" loading="lazy"></div><figcaption>Drawn from the simulation at 36 km/h and 600 N·s/m. The wheel leaves the road twice, with the tire load and body acceleration plotted alongside.</figcaption></figure>
+    <figure><div class="plate"><img src="img/anim_quarter_car.webp" alt="Animation of the quarter car crossing the bump" loading="lazy"></div><figcaption>Drawn from the simulation at 36 km/h and 600 N·s/m. The wheel leaves the road twice, with the tire load and body acceleration plotted alongside.</figcaption></figure>
     <p><strong>The question.</strong> For a compact car's front corner, which damper rates between 600 and 3500 N·s/m meet the targets for ride comfort, suspension travel and tire load? I tested it over a speed bump and over a rough road.</p>
     <div class="answer">
       <div class="chips"><span class="chip pass">Speed bump: 600 to 1000 N·s/m</span><span class="chip fail">36 km/h: wheel leaves the road</span><span class="chip warn">Bump stop: harsher at light damping</span><span class="chip fail">Rough road: comfort not met</span><span class="chip pass">Two tools agree to one part in a million</span></div>
@@ -1255,6 +1283,7 @@ details.study > summary:hover .study-toggle { text-decoration: underline; }
         <li>Then I built the model that check was asking for, a tire that can leave the road, and wrote down five predictions first. It turned out the linear model had overstated the peak body acceleration by up to 29 %. After the crest, the linear tire pulls the wheel back down, which a real tire can't do, and a stiff damper passes that pull straight into the body. The other surprise was that the worst moment for the tire is the landing. With light damping the wheel bounces twice and comes down hard enough to load the tire to 2.6 times its static load.</li>
       </ul>
     </div>
+      <p class="evidence"><span class="label">Evidence on GitHub</span><a class="ev-doc" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/portfolio/07-quarter-car.md">Full write-up</a><span class="ev-runs">Run reports: <a href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261119-084857_qc_bump/report.md">qc_bump</a><a href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261119-084926_qc_iso_road/report.md">qc_iso_road · 08:49</a><a href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261119-085019_qc_speed_bump/report.md">qc_speed_bump</a><a href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261119-085040_qc_speed_bump_modelica/report.md">qc_speed_bump_modelica</a><a href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261120-105126_qc_bump_liftoff/report.md">qc_bump_liftoff</a><a href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261120-123312_qc_bump_stop/report.md">qc_bump_stop</a><a href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261120-124907_qc_iso_road/report.md">qc_iso_road · 12:49</a></span></p>
     </div>
   </details>
 
@@ -1282,6 +1311,7 @@ details.study > summary:hover .study-toggle { text-decoration: underline; }
       <div class="plate"><img src="img/cad_sweep.png" alt="Plate mass and edge distance against hole size" loading="lazy"></div>
       <figcaption>Mass and edge distance against hole size.</figcaption>
     </figure>
+      <p class="evidence"><span class="label">Evidence on GitHub</span><a class="ev-doc" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/portfolio/08-mounting-plate.md">Full write-up</a><span class="ev-runs">Run reports: <a href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261119-090540_mounting_plate/report.md">mounting_plate</a></span></p>
     </div>
   </details>
 
@@ -1293,7 +1323,7 @@ details.study > summary:hover .study-toggle { text-decoration: underline; }
       <h2>Mass-spring-damper baseline</h2>
     <span class="study-sum">All 72 checks pass, and the two tools agree to a few parts per million.</span><span class="study-toggle"></span></summary>
     <div class="study-body">
-    <figure><div class="plate"><img src="img/anim_msd.gif" alt="Animation of the mass-spring-damper at three damping ratios" loading="lazy"></div><figcaption>The same step force at three damping ratios, drawn from the runs, with the exact solution dotted underneath.</figcaption></figure>
+    <figure><div class="plate"><img src="img/anim_msd.webp" alt="Animation of the mass-spring-damper at three damping ratios" loading="lazy"></div><figcaption>The same step force at three damping ratios, drawn from the runs, with the exact solution dotted underneath.</figcaption></figure>
     <div class="answer">
       <div class="chips"><span class="chip pass">All 72 checks pass</span><span class="chip pass">Two tools agree to a few parts per million</span></div>
       <p>This was the first study, and its job was to prove the workflow on a problem with a known answer. It's a single mass on a spring and damper, hit with a step force, at six levels of damping. The results are checked against the exact textbook solution, an energy balance, the final resting position and the solver's own convergence.</p>
@@ -1304,6 +1334,7 @@ details.study > summary:hover .study-toggle { text-decoration: underline; }
         <li>When I was hooking up OpenModelica, the check that results land on the requested time points failed. OpenModelica was quietly ignoring some of the settings I passed it. I changed how the settings get passed, and that check has been watching for it ever since.</li>
       </ul>
     </div>
+      <p class="evidence"><span class="label">Evidence on GitHub</span><a class="ev-doc" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/portfolio/09-mass-spring-damper.md">Full write-up</a><span class="ev-runs">Run reports: <a href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261118-200205_msd_step/report.md">msd_step</a><a href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261118-213145_msd_step_modelica/report.md">msd_step_modelica</a></span></p>
     </div>
   </details>
 
