@@ -70,7 +70,8 @@ class OpenFOAMHeatedChannel(Backend):
         case = work / "case"
         info = self.writer.write_case(params, numerics, case)
         r = subprocess.run(of.wsl_command("bash", of.to_wsl_path(self.runner), of.to_wsl_path(case), self.bashrc),
-                           capture_output=True, text=True, timeout=7200)
+                           capture_output=True, text=True,
+                           timeout=float(numerics.get("solver_timeout_s", 7200)))
         files = {str(f.relative_to(case)).replace("\\", "/"): f
                  for f in sorted(case.glob("system/*")) + sorted(case.glob("constant/*"))
                  + sorted(case.glob("0/*")) + sorted(case.glob("log.*")) + sorted(case.glob("versions.txt"))
@@ -95,12 +96,15 @@ class OpenFOAMHeatedChannel(Backend):
         log_text = (case / "log.foamRun.temperature").read_text(encoding="utf-8")
         t_res = [float(s.split("Initial residual = ")[1].split(",")[0])
                  for s in log_text.splitlines() if "Solving for T," in s]
+        flow_log = of.read_solver_log(case / "log.foamRun")
         series = {"x_mm": C[:, 0] * 1e3, "y_mm": C[:, 1] * 1e3, "ux_m_per_s": Uf[:, 0], "T_C": T}
         depth = info["depth_mm"] * 1e-3
         outputs = {"cells": n, "blocks": [list(b) for b in info["blocks"]], "prandtl": info["prandtl"],
                    "mesh_ok": "Mesh OK." in (case / "log.checkMesh").read_text(encoding="utf-8"),
                    "inlet_flow_m2_per_s": float(-np.sum(phi_in)) / depth,
                    "final_T_initial_residual": t_res[-1] if t_res else float("nan"),
+                   "flow_final_initial_residuals": {k: v for k, v in flow_log["final_initial_residuals"].items()
+                                                    if k in ("Ux", "Uy", "p")},
                    "T_change_last_write_K": float(np.max(np.abs(T - T_prev))),
                    "previous_write": times[-2].name if len(times) >= 2 else None,
                    "result_time": tdir.name}
@@ -182,6 +186,13 @@ class HeatedChannelStudy(Study):
             check("temperature_converged", "max |T change| anywhere over the last write interval "
                   f"(iterations {out.get('previous_write')} to {out['result_time']}) / outlet bulk rise",
                   out["T_change_last_write_K"] / m["outlet_bulk_rise_K"], tol["temperature_change_rel_max"]),
+        ]
+        if "flow_residual_max" in tol:     # added in heated_channel_mesh_r1; older cases predate it
+            res = out.get("flow_final_initial_residuals") or {}
+            checks.append(check("flow_converged", "max final initial residual of Ux, Uy, p in the flow stage "
+                                "(inf if not logged)", max(res.values()) if res else float("inf"),
+                                tol["flow_residual_max"]))
+        checks += [
             check("flow_rate", "|inlet flow - U H| / (U H)", abs(out["inlet_flow_m2_per_s"] - flow) / flow,
                   tol["flow_rel_tol"]),
             check("developed_inflow", "|peak velocity at the start of heating - 1.5 U| / 1.5 U (parabolic)",

@@ -15,6 +15,40 @@ Notes
 - Study 2 can start from the verified heated-channel flow (`studies/heated_channel.py`).
 - Study 6 needs preCICE and its OpenFOAM and CalculiX adapters installed in WSL, which needs sudo.
 
+### Study 6: what the install needs (checked 2026-11-21)
+
+- **The preCICE OpenFOAM adapter does not support our OpenFOAM 14 (openfoam.org).** Adapter v1.4.0
+  targets the openfoam.com line, v1812 to v2606; its newest openfoam.org branch is OpenFOAM 10
+  (last updated 2024). So the coupled stage needs openfoam.com **v2512** installed alongside ours.
+  It installs to `/usr/lib/openfoam/openfoam2512`, and the harness only looks in `/opt/openfoam*`,
+  so the existing studies are unaffected. v2606 for Ubuntu 22.04 is only a release candidate
+  (2606.0~rc2) in that repository.
+- **preCICE 3.5 dropped Ubuntu 22.04**, so use 3.4.1, the newest release with a jammy package.
+  CalculiX adapter 2.20.2 has a jammy package and needs libprecice3 >= 3.0.
+- Already downloaded to `~/precice-debs` in WSL. Both SHA-256 values match the release's `.sha256`
+  file and GitHub's asset digest:
+  `libprecice3_3.4.1_jammy.deb` 56253637...a854d895b,
+  `calculix-precice3_2.20.2-1_amd64_jammy.deb` 9942fa30...fe49d9cc4.
+  A simulated install resolves from Ubuntu's own repositories: 137 new packages (Boost, PETSc) and
+  7 routine upgrades.
+- `~/openfoam-esi/add-debian-repo.sh` (SHA-256 f7fa2883...3310b5b) has been read. It only adds
+  `/etc/apt/sources.list.d/openfoam.list` and the repository's signing key, then runs `apt-get update`.
+
+The sudo steps (in WSL, about 15 minutes, roughly 1.5 GB):
+
+```bash
+sudo bash ~/openfoam-esi/add-debian-repo.sh
+sudo apt-get install -y openfoam2512-dev
+cd ~/precice-debs && sudo apt-get install -y ./libprecice3_3.4.1_jammy.deb ./calculix-precice3_2.20.2-1_amd64_jammy.deb
+```
+
+The OpenFOAM adapter itself is then built without sudo (`./Allwmake` against v2512).
+
+Plan: Turek and Hron (2006), the flexible flag behind a cylinder, whose paper publishes values for
+each part on its own: CSM1 to CSM3 (solid only, CalculiX, nothing new needed), CFD1 to CFD3 (fluid
+only, OpenFOAM 14, nothing new needed), then FSI1 to FSI3 coupled through preCICE. Each part is
+verified before the coupled run, as in study 2.
+
 ## Session handoff (2026-11-21, afternoon)
 
 Studies 1 to 5 are verified, with portfolio pages 12 to 16 and the index updated. Only study 6
@@ -33,4 +67,31 @@ Harness and skills changes this session (all tested, 206+ tests):
 
 Possible next steps:
 1. Study 6 (FSI) once preCICE is installed.
-2. An eval case for the fillet-margin trap (build-model evals; ask first, per CLAUDE.md).
+2. An eval case for the fillet-margin trap (build-model evals; ask first, per CLAUDE.md). Done
+   2026-11-21: `build-model/evals/fillet-margin-optimisation-trap`.
+
+## Action items
+
+- **Local model (Inkling 2 Mini), parked 2026-11-21: follow up later.**
+  - **Status:** it runs through Unsloth's llama.cpp build at about 4.4 tokens/s on the RTX 3070, with
+    the experts in RAM. On a six-task trial it got the calculation, extraction, report reading and tool
+    call right, and was only partly right on diagnosis and planning.
+  - **Decision:** not for planning. A possible use is overnight batch extraction and triage
+    through a small `harness/local_llm.py`.
+  - **Revisit when:** Ollama ships PC support for Inkling, or an official llama.cpp build includes
+    PR #32704 (merged 2026-11-21) together with Unsloth's `Mainline_Support` files.
+  - The setup and the results are in the session memory note `local-llm-hardware`.
+  - **Speed it up later** with [sybil-solutions/inference-optimisation-skill](https://github.com/sybil-solutions/inference-optimisation-skill)
+    (MIT license; one skill, `skills/inference-optimisation`, plus a `PROMPT.md` any agent can follow).
+    It hill-climbs local LLM serving speed: decode, speculative decoding, prefill, KV cache, startup.
+    Its method:
+    - compute the theoretical ceiling first;
+    - change one thing at a time against interleaved controls;
+    - log every result, failures included;
+    - gate on long-context retrieval.
+
+    Its published results include a 3090 and Arc GPUs, but nothing at 8 GB of VRAM. Our baseline to
+    beat: 4.4 tokens/s generating and 22 tokens/s reading prompts, experts in RAM. Installing it as a
+    project skill is a config change: show it first. Its ceiling step would tell us early how much is
+    reachable on the RTX 3070's memory bandwidth.
+- **Study 6 install (you, later today):** the three sudo commands above.

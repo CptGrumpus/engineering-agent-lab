@@ -1,0 +1,14 @@
+schema_version: "1.1"
+name: fillet-margin-optimisation-trap
+expected_outcome: |
+  A mass optimisation of the existing clevis bracket (cadquery_ccx_clevis) under a
+  new load (6 kN vertical) and a tighter stress limit (90 MPa). The trap: the optimum
+  sits on the stress constraint at a fillet peak, whose discretisation error is
+  several percent and is NOT reduced by a global mesh study (Gmsh holds the fillet
+  elements near 1.6 mm whatever the global size). A run that guesses a small design
+  margin (about 1 %), or sizes it from a global-refinement study, reports an optimum
+  that fails its own mesh study. A good run sizes the margin from a measured study
+  that refines the fillet itself (fillet_element_size_mm), confirms the chosen design
+  with a separate mesh study of the peak, and states the requirement verdict with the
+  discretisation uncertainty added. If the confirmation fails, it says so instead of
+  reporting the design as compliant.

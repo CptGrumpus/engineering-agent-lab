@@ -1,0 +1,91 @@
+# Turek-Hron CSM1: the elastic flag on its own, the first stage of study 6 (FSI).
+#
+# Why: the coupled FSI benchmark (FSI1 to FSI3) is only worth running once each participant is shown
+# to reproduce the benchmark's single-physics results. Turek and Hron (2006) publish them: CSM1 and
+# CSM2 (static, gravity on the flag), CSM3 (dynamic). This is the solid side's qualification, as the
+# cold-plate chain verified each physics before handing results on.
+#
+# Reference values (featflow.de FSI benchmark pages, finest level, point A = (0.6, 0.2) m):
+#   CSM1 ux = -7.18767e-3 m, uy = -66.1023e-3 m.  Plane strain vs plane stress is not stated there.
+#
+# Independent reference, written and unit-tested BEFORE the model (validation/elastica.py):
+#   elastica, plane strain: ux -7.109, uy -65.617 mm (0.7 % short of the benchmark; plane stress gives
+#   -77.2 mm, so the benchmark is plane strain). Linear beam: uy -67.53 mm. Beam f1 = 1.0767 Hz.
+#
+# Prototype (hand run, 2.5 mm, 10 increments, before this case was written):
+#   ux -7.1777, uy -66.0496 mm (0.14 % / 0.08 % from the benchmark); f1 1.07226 Hz. The clamp reaction
+#   was 0.357 % short of the weight: CalculiX leaves the gravity lumped on the clamp nodes (half of the
+#   first element column, 1/280 of the weight) out of its reaction total. The equilibrium check adds that
+#   share back, computed exactly from the mesh (2 x 2 Gauss), not from CalculiX.
+#
+# Predictions, written BEFORE the evidence run:
+#   P1 uy(A) -66.02 / -66.05 / -66.07 mm at 5 / 2.5 / 1.25 mm, observed order near 2, GCI under 0.1 %:
+#      REQ-S1 passes by a wide margin (about 0.05 %).
+#   P2 ux(A) about -7.18 mm on the finer meshes, within 0.2 % of the benchmark: REQ-S2 passes.
+#   P3 Against the elastica: uy 0.6-0.8 % larger, ux about 1 % larger (both inside the 2 % / 3 %
+#      model-form tolerances); the deflected centreline within 1 %.
+#   P4 f1 about 1.072 Hz, 0.4 % under the beam value (root flexibility and the arc lengthen the flag).
+#   P5 Equilibrium closes to about 1e-8 once the clamp share is added back.
+#
+# Smoke test (5 mm, scratch, before the evidence run): every check passes; uy -65.981, ux -7.1648 mm,
+#   f1 1.07290 Hz. Equilibrium 2.4e-7, not 1e-8: the .dat prints the reaction to 7 significant digits.
+#   P5 revised to 'under 1e-6' (the tolerance, unchanged). A first smoke run read only one increment:
+#   a later *NODE PRINT with FREQUENCY=10 had set the print frequency for every request (writer fixed).
+
+[case]
+name = "flag_csm1_mesh"
+model = "ccx_flag"
+description = "Turek-Hron CSM1: the elastic flag alone (plane strain, St. Venant-Kirchhoff, mu_s 0.5 MPa, nu 0.4, rho 1000 kg/m3) clamped on the cylinder and bent by gravity (2 m/s2); CalculiX NLGEOM static, C3D8I elements of 5 / 2.5 / 1.25 mm; checked against the benchmark, a large-deflection elastica and beam vibration theory."
+assumptions = [
+  "Plane strain, per unit depth: the benchmark is 2D, and the elastica only matches it with the plane-strain modulus E / (1 - nu^2) (plane stress would give a 17 % larger drop).",
+  "St. Venant-Kirchhoff material (CalculiX *ELASTIC under NLGEOM), as the benchmark defines it.",
+  "The cylinder is rigid: the flag's left end, on the cylinder arc, is fully clamped.",
+  "Gravity is a dead load applied in equal increments; the static solution is path independent (elastic).",
+]
+limitations = [
+  "A solver-qualification case: it shows that the solid participant reproduces the published solid-only results, not that the coupled FSI result is right.",
+  "The elastica is a beam model (no shear, straight root, inextensible), so it bounds the FE to about 1 %, not to the benchmark's digits.",
+]
+
+[parameters]
+shear_modulus_Pa = 500000.0
+density_kg_per_m3 = 1000.0
+poisson_ratio = 0.4
+gravity_m_per_s2 = 2.0
+flag_length_m = 0.35
+flag_height_m = 0.02
+cylinder_radius_m = 0.05
+element_size_mm = 2.5
+benchmark_ux_A_mm = -7.18767
+benchmark_uy_A_mm = -66.1023
+
+[sweep]
+parameter = "element_size_mm"
+values = [5.0, 2.5, 1.25]
+
+[numerics]
+increments = 10
+
+[verification]
+equilibrium_rel_tol = 1e-6
+elastica_uy_rel_tol = 0.02
+elastica_ux_rel_tol = 0.03
+frequency_rel_tol = 0.02
+height_over_length_max = 0.1
+gci_max = 0.01
+
+[[requirements]]
+id = "REQ-S1"
+text = "Before it is coupled to the fluid, the solid model shall reproduce the Turek-Hron CSM1 vertical displacement of point A within 1 %."
+metric = "uy_A_deviation_pct"
+operator = "<="
+limit = 1.0
+units = "%"
+
+[[requirements]]
+id = "REQ-S2"
+text = "It shall reproduce the CSM1 horizontal displacement of point A within 2 % (a second-order quantity, about a tenth of the vertical one)."
+metric = "ux_A_deviation_pct"
+operator = "<="
+limit = 2.0
+units = "%"

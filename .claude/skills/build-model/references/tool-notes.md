@@ -125,6 +125,24 @@ Traps found while building the studies in this repo, by tool.
   order 1.8, not the textbook 4: the clamp corners are singular. A rate below
   the design order is fine for the GCI; only a rate far above it is suspect.
 
+## CalculiX structural, NLGEOM (static and dynamic; the Turek-Hron flag)
+
+- **Plane strain from hexes:** one layer of C3D8I with every node held in z. The flag's
+  benchmark is plane strain although it does not say so; the elastica only matched it with
+  E / (1 - nu^2) (plane stress missed by 17 %).
+- **Reaction totals leave out loads applied on the constrained nodes**, mechanical as well as
+  thermal: under gravity the clamp's `RF, TOTALS=ONLY` was 0.357 % short of the weight, exactly
+  the body load lumped on the clamp nodes (half the first element column). Compute that share
+  from the mesh (consistent load, 2 x 2 Gauss on the first column) and add it back.
+- **`*NODE PRINT` FREQUENCY is one setting for the whole step: the last request wins.** A
+  centreline print with `FREQUENCY=10` (to get only the last increment) silently cut the
+  point-A history, printed every increment, down to one block. Print everything at the same
+  frequency and keep the last block in Python.
+- The `.dat` prints 7 significant digits, so an equilibrium check closes to about 2e-7, not to
+  the Newton tolerance; set its tolerance at 1e-6.
+- St. Venant-Kirchhoff is plain `*ELASTIC` under `NLGEOM`; `*STATIC, DIRECT` with a fixed
+  increment and `*CONTROLS, PARAMETERS=FIELD` `1.e-8, 1.e-6` converged in 2 iterations per step.
+
 ## CalculiX contact (surface-to-surface, penalty)
 
 - Two bodies that touch at a point: in a Gmsh .geo on the built-in kernel set
@@ -211,6 +229,23 @@ Traps found while building the studies in this repo, by tool.
   are resolved.
 
 
+- **`flowRateInletVelocity` with `profile laminarBL` is not an exact parabola.** It normalises each
+  face's wall distance by the largest distance among the inlet faces, not by the half-height, then
+  rescales to the flow rate: on 22 inlet faces the Turek-Hron profile was +1.5 % at the walls and
+  -1.6 % mid-channel (the heated channel's 0.57 % peak error at 20 cells was the same effect). When a
+  benchmark prescribes the profile, use `fixedProfile` (`direction (0 1 0); origin 0; profile table
+  (...)`, a few thousand points) and check the face values against it; the flow rate then carries
+  the midpoint-sampling error 0.5 (face width / H)^2, which converges with the mesh.
+- **Budget wall time per mesh level from a measured cost per iteration, and keep timeouts in the case.**
+  The heated channel's SIMPLE iteration took 0.39 s at 80 cells across and 7.4 s at 160 (19x for 4x the
+  cells, with the CPU shared by other runs), so the 160-cell point hit a fixed 2-hour backend timeout
+  halfway through. Set `flow_iterations` from where the residuals actually reach the convergence check's
+  limit (here about 1e-8 by iteration 940), and give the backend a `solver_timeout_s` numerics setting.
+- **Gmsh `-setnumber` did not override a `DefineNumber` in the .geo** (the mesh came out unchanged);
+  write the sizes into the .geo itself. `gmshToFoam` names patches after the physical groups and types
+  them all `patch`: set `empty`, `wall` with `foamDictionary constant/polyMesh/boundary -entry
+  entry0/<name>/type -set <type>`.
+
 ### OpenFOAM heat transfer (temperature as a passive scalar)
 
 - Constant properties make temperature a passive scalar: keep `incompressibleFluid` and add
@@ -219,12 +254,15 @@ Traps found while building the studies in this repo, by tool.
 - A `fixedGradient` wall (heat flux q/k) writes no wall value. Evaluate it as the BC does:
   wall-cell value + gradient x centre-to-wall distance.
 - `linearUpwind` overshoots at a step in the wall condition (heated to adiabatic): +0.06 to
-  +0.11 K at the last heated cell, exactly where the peak wall temperature is. Use a bounded
-  TVD scheme (`limitedLinear 1`).
-- A TVD limiter can cycle from one iteration to the next: each linear solve converged to
-  1e-15 while the next started from a 0.22 residual, and a cell flipped 0.1 K per iteration.
-  Under-relax the scalar (0.8), and judge convergence on the field itself (keep two writes
-  with `purgeWrite 2`, compare them); the normalised residual plateaus near 1e-5.
+  +0.11 K at the last heated cell, exactly where the peak wall temperature is. **Bounded TVD
+  schemes were not the fix** (heated channel, revision 2): `limitedLinear 1`, `limitedLinear 0.2`,
+  `vanLeer` and `Minmod` all cycled from one iteration to the next (a cell flipping 0.025-0.1 K,
+  the energy balance stuck at 4-7e-5), and under-relaxing T only masked it. Keep `linearUpwind`,
+  which converges exactly; its overshoot is conservative and shrinks with the mesh, and the
+  peak-vs-reference and GCI checks bound it. Where the overshoot is at the inflow (a flux spike),
+  `cellLimited Gauss linear 1` for `grad(T)` removed it (cold plate, below).
+- Judge scalar convergence on the field itself (keep two writes with `purgeWrite 2`, compare
+  them), not on the normalised residual, which a limiter can hold near 1e-5.
 - Validate a thermal-entry model against the Graetz solution (validation/graetz.py), not the
   fully developed Nusselt number: at Pe ~ 1400 a 50 mm channel never reaches it.
 - **Don't solve each outer iteration's T system to machine precision.** With `relTol 0` and

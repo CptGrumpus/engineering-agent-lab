@@ -1,0 +1,379 @@
+{
+  "points": [
+    {
+      "label": "p00_element_size_mm-5",
+      "parameters": {
+        "shear_modulus_Pa": 500000.0,
+        "density_kg_per_m3": 1000.0,
+        "poisson_ratio": 0.4,
+        "gravity_m_per_s2": 2.0,
+        "flag_length_m": 0.35,
+        "flag_height_m": 0.02,
+        "cylinder_radius_m": 0.05,
+        "element_size_mm": 5.0,
+        "benchmark_ux_A_mm": -7.18767,
+        "benchmark_uy_A_mm": -66.1023
+      },
+      "derived": {
+        "youngs_modulus_Pa": 1400000.0,
+        "load_parameter_qL3_over_EI": 1.5434999999999992,
+        "linear_uy_A_mm": -67.52812499999996,
+        "elastica_ux_A_mm": -7.108871771908998,
+        "elastica_uy_A_mm": -65.6174787926681,
+        "beam_frequency_Hz": 1.0767094945878215,
+        "height_over_length": 0.05714285714285715
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "increments_complete",
+          "description": "static step reached the full load (1 = not)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.5,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "equilibrium",
+          "description": "|clamp reaction - weight carried through the elements| / weight (the weight lumped on the clamp nodes is excluded from CalculiX's reaction total)",
+          "kind": "numerical",
+          "value": 2.388274743553404e-07,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "elastica_uy",
+          "description": "|uy(A) - elastica| / |elastica| (model form: inextensible beam, root on a straight line)",
+          "kind": "numerical",
+          "value": 0.005546711242623655,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "elastica_ux",
+          "description": "|ux(A) - elastica| / |elastica| (model form)",
+          "kind": "numerical",
+          "value": 0.007867525239660202,
+          "tolerance": 0.03,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "load_path",
+          "description": "max over increments of |uy(A) - elastica at that load| / |elastica uy at full load| (model form)",
+          "kind": "numerical",
+          "value": 0.005546711242623655,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "deflected_shape",
+          "description": "max |centreline y - elastica y| at the same x / |elastica uy(A)| (model form)",
+          "kind": "numerical",
+          "value": 0.005765890726280665,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "frequency_reference",
+          "description": "|f1 FE - Euler-Bernoulli cantilever| / beam value (model form)",
+          "kind": "numerical",
+          "value": 0.003541804550800666,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "slender",
+          "description": "height / length (beam references)",
+          "kind": "validity",
+          "value": 0.05714285714285715,
+          "tolerance": 0.1,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-S1",
+          "text": "Before it is coupled to the fluid, the solid model shall reproduce the Turek-Hron CSM1 vertical displacement of point A within 1 %.",
+          "metric": "uy_A_deviation_pct",
+          "operator": "<=",
+          "limit": 1.0,
+          "units": "%",
+          "value": 0.18283781351026107,
+          "margin": 0.8171621864897389,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-S2",
+          "text": "It shall reproduce the CSM1 horizontal displacement of point A within 2 % (a second-order quantity, about a tenth of the vertical one).",
+          "metric": "ux_A_deviation_pct",
+          "operator": "<=",
+          "limit": 2.0,
+          "units": "%",
+          "value": 0.3181698658953462,
+          "margin": 1.6818301341046538,
+          "verdict": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p01_element_size_mm-2.5",
+      "parameters": {
+        "shear_modulus_Pa": 500000.0,
+        "density_kg_per_m3": 1000.0,
+        "poisson_ratio": 0.4,
+        "gravity_m_per_s2": 2.0,
+        "flag_length_m": 0.35,
+        "flag_height_m": 0.02,
+        "cylinder_radius_m": 0.05,
+        "element_size_mm": 2.5,
+        "benchmark_ux_A_mm": -7.18767,
+        "benchmark_uy_A_mm": -66.1023
+      },
+      "derived": {
+        "youngs_modulus_Pa": 1400000.0,
+        "load_parameter_qL3_over_EI": 1.5434999999999992,
+        "linear_uy_A_mm": -67.52812499999996,
+        "elastica_ux_A_mm": -7.108871771908998,
+        "elastica_uy_A_mm": -65.6174787926681,
+        "beam_frequency_Hz": 1.0767094945878215,
+        "height_over_length": 0.05714285714285715
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "increments_complete",
+          "description": "static step reached the full load (1 = not)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.5,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "equilibrium",
+          "description": "|clamp reaction - weight carried through the elements| / weight (the weight lumped on the clamp nodes is excluded from CalculiX's reaction total)",
+          "kind": "numerical",
+          "value": 1.9441530802759063e-08,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "elastica_uy",
+          "description": "|uy(A) - elastica| / |elastica| (model form: inextensible beam, root on a straight line)",
+          "kind": "numerical",
+          "value": 0.006586068457421288,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "elastica_ux",
+          "description": "|ux(A) - elastica| / |elastica| (model form)",
+          "kind": "numerical",
+          "value": 0.009679064456176747,
+          "tolerance": 0.03,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "load_path",
+          "description": "max over increments of |uy(A) - elastica at that load| / |elastica uy at full load| (model form)",
+          "kind": "numerical",
+          "value": 0.006586068457421288,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "deflected_shape",
+          "description": "max |centreline y - elastica y| at the same x / |elastica uy(A)| (model form)",
+          "kind": "numerical",
+          "value": 0.006855715174167252,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "frequency_reference",
+          "description": "|f1 FE - Euler-Bernoulli cantilever| / beam value (model form)",
+          "kind": "numerical",
+          "value": 0.0041297068616671885,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "slender",
+          "description": "height / length (beam references)",
+          "kind": "validity",
+          "value": 0.05714285714285715,
+          "tolerance": 0.1,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-S1",
+          "text": "Before it is coupled to the fluid, the solid model shall reproduce the Turek-Hron CSM1 vertical displacement of point A within 1 %.",
+          "metric": "uy_A_deviation_pct",
+          "operator": "<=",
+          "limit": 1.0,
+          "units": "%",
+          "value": 0.0796643989694807,
+          "margin": 0.9203356010305193,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-S2",
+          "text": "It shall reproduce the CSM1 horizontal displacement of point A within 2 % (a second-order quantity, about a tenth of the vertical one).",
+          "metric": "ux_A_deviation_pct",
+          "operator": "<=",
+          "limit": 2.0,
+          "units": "%",
+          "value": 0.13900192969348088,
+          "margin": 1.8609980703065192,
+          "verdict": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p02_element_size_mm-1.25",
+      "parameters": {
+        "shear_modulus_Pa": 500000.0,
+        "density_kg_per_m3": 1000.0,
+        "poisson_ratio": 0.4,
+        "gravity_m_per_s2": 2.0,
+        "flag_length_m": 0.35,
+        "flag_height_m": 0.02,
+        "cylinder_radius_m": 0.05,
+        "element_size_mm": 1.25,
+        "benchmark_ux_A_mm": -7.18767,
+        "benchmark_uy_A_mm": -66.1023
+      },
+      "derived": {
+        "youngs_modulus_Pa": 1400000.0,
+        "load_parameter_qL3_over_EI": 1.5434999999999992,
+        "linear_uy_A_mm": -67.52812499999996,
+        "elastica_ux_A_mm": -7.108871771908998,
+        "elastica_uy_A_mm": -65.6174787926681,
+        "beam_frequency_Hz": 1.0767094945878215,
+        "height_over_length": 0.05714285714285715
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "increments_complete",
+          "description": "static step reached the full load (1 = not)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.5,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "equilibrium",
+          "description": "|clamp reaction - weight carried through the elements| / weight (the weight lumped on the clamp nodes is excluded from CalculiX's reaction total)",
+          "kind": "numerical",
+          "value": 2.3793545068634038e-07,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "elastica_uy",
+          "description": "|uy(A) - elastica| / |elastica| (model form: inextensible beam, root on a straight line)",
+          "kind": "numerical",
+          "value": 0.007063380304451711,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "elastica_ux",
+          "description": "|ux(A) - elastica| / |elastica| (model form)",
+          "kind": "numerical",
+          "value": 0.01051393673836538,
+          "tolerance": 0.03,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "load_path",
+          "description": "max over increments of |uy(A) - elastica at that load| / |elastica uy at full load| (model form)",
+          "kind": "numerical",
+          "value": 0.007063380304451711,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "deflected_shape",
+          "description": "max |centreline y - elastica y| at the same x / |elastica uy(A)| (model form)",
+          "kind": "numerical",
+          "value": 0.007356285526274703,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "frequency_reference",
+          "description": "|f1 FE - Euler-Bernoulli cantilever| / beam value (model form)",
+          "kind": "numerical",
+          "value": 0.004388829681148522,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "slender",
+          "description": "height / length (beam references)",
+          "kind": "validity",
+          "value": 0.05714285714285715,
+          "tolerance": 0.1,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-S1",
+          "text": "Before it is coupled to the fluid, the solid model shall reproduce the Turek-Hron CSM1 vertical displacement of point A within 1 %.",
+          "metric": "uy_A_deviation_pct",
+          "operator": "<=",
+          "limit": 1.0,
+          "units": "%",
+          "value": 0.03228329422727353,
+          "margin": 0.9677167057727265,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-S2",
+          "text": "It shall reproduce the CSM1 horizontal displacement of point A within 2 % (a second-order quantity, about a tenth of the vertical one).",
+          "metric": "ux_A_deviation_pct",
+          "operator": "<=",
+          "limit": 2.0,
+          "units": "%",
+          "value": 0.05642996965636143,
+          "margin": 1.9435700303436385,
+          "verdict": "PASS"
+        }
+      ]
+    }
+  ],
+  "run_id": "20261121-131111_flag_csm1_mesh",
+  "generated_utc": "2026-11-21T18:11:28+00:00",
+  "verification_status": "PASS"
+}

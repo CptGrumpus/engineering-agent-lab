@@ -1,0 +1,331 @@
+{
+  "run_id": "20261121-131111_flag_csm1_mesh",
+  "verified_utc": "2026-11-21T18:11:27+00:00",
+  "tolerances": {
+    "equilibrium_rel_tol": 1e-06,
+    "elastica_uy_rel_tol": 0.02,
+    "elastica_ux_rel_tol": 0.03,
+    "frequency_rel_tol": 0.02,
+    "height_over_length_max": 0.1,
+    "gci_max": 0.01
+  },
+  "points": [
+    {
+      "label": "p00_element_size_mm-5",
+      "status": "PASS",
+      "checks": [
+        {
+          "id": "increments_complete",
+          "description": "static step reached the full load (1 = not)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.5,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "equilibrium",
+          "description": "|clamp reaction - weight carried through the elements| / weight (the weight lumped on the clamp nodes is excluded from CalculiX's reaction total)",
+          "kind": "numerical",
+          "value": 2.388274743553404e-07,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "elastica_uy",
+          "description": "|uy(A) - elastica| / |elastica| (model form: inextensible beam, root on a straight line)",
+          "kind": "numerical",
+          "value": 0.005546711242623655,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "elastica_ux",
+          "description": "|ux(A) - elastica| / |elastica| (model form)",
+          "kind": "numerical",
+          "value": 0.007867525239660202,
+          "tolerance": 0.03,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "load_path",
+          "description": "max over increments of |uy(A) - elastica at that load| / |elastica uy at full load| (model form)",
+          "kind": "numerical",
+          "value": 0.005546711242623655,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "deflected_shape",
+          "description": "max |centreline y - elastica y| at the same x / |elastica uy(A)| (model form)",
+          "kind": "numerical",
+          "value": 0.005765890726280665,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "frequency_reference",
+          "description": "|f1 FE - Euler-Bernoulli cantilever| / beam value (model form)",
+          "kind": "numerical",
+          "value": 0.003541804550800666,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "slender",
+          "description": "height / length (beam references)",
+          "kind": "validity",
+          "value": 0.05714285714285715,
+          "tolerance": 0.1,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p01_element_size_mm-2.5",
+      "status": "PASS",
+      "checks": [
+        {
+          "id": "increments_complete",
+          "description": "static step reached the full load (1 = not)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.5,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "equilibrium",
+          "description": "|clamp reaction - weight carried through the elements| / weight (the weight lumped on the clamp nodes is excluded from CalculiX's reaction total)",
+          "kind": "numerical",
+          "value": 1.9441530802759063e-08,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "elastica_uy",
+          "description": "|uy(A) - elastica| / |elastica| (model form: inextensible beam, root on a straight line)",
+          "kind": "numerical",
+          "value": 0.006586068457421288,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "elastica_ux",
+          "description": "|ux(A) - elastica| / |elastica| (model form)",
+          "kind": "numerical",
+          "value": 0.009679064456176747,
+          "tolerance": 0.03,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "load_path",
+          "description": "max over increments of |uy(A) - elastica at that load| / |elastica uy at full load| (model form)",
+          "kind": "numerical",
+          "value": 0.006586068457421288,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "deflected_shape",
+          "description": "max |centreline y - elastica y| at the same x / |elastica uy(A)| (model form)",
+          "kind": "numerical",
+          "value": 0.006855715174167252,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "frequency_reference",
+          "description": "|f1 FE - Euler-Bernoulli cantilever| / beam value (model form)",
+          "kind": "numerical",
+          "value": 0.0041297068616671885,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "slender",
+          "description": "height / length (beam references)",
+          "kind": "validity",
+          "value": 0.05714285714285715,
+          "tolerance": 0.1,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p02_element_size_mm-1.25",
+      "status": "PASS",
+      "checks": [
+        {
+          "id": "increments_complete",
+          "description": "static step reached the full load (1 = not)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.5,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "equilibrium",
+          "description": "|clamp reaction - weight carried through the elements| / weight (the weight lumped on the clamp nodes is excluded from CalculiX's reaction total)",
+          "kind": "numerical",
+          "value": 2.3793545068634038e-07,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "elastica_uy",
+          "description": "|uy(A) - elastica| / |elastica| (model form: inextensible beam, root on a straight line)",
+          "kind": "numerical",
+          "value": 0.007063380304451711,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "elastica_ux",
+          "description": "|ux(A) - elastica| / |elastica| (model form)",
+          "kind": "numerical",
+          "value": 0.01051393673836538,
+          "tolerance": 0.03,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "load_path",
+          "description": "max over increments of |uy(A) - elastica at that load| / |elastica uy at full load| (model form)",
+          "kind": "numerical",
+          "value": 0.007063380304451711,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "deflected_shape",
+          "description": "max |centreline y - elastica y| at the same x / |elastica uy(A)| (model form)",
+          "kind": "numerical",
+          "value": 0.007356285526274703,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "frequency_reference",
+          "description": "|f1 FE - Euler-Bernoulli cantilever| / beam value (model form)",
+          "kind": "numerical",
+          "value": 0.004388829681148522,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "slender",
+          "description": "height / length (beam references)",
+          "kind": "validity",
+          "value": 0.05714285714285715,
+          "tolerance": 0.1,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ]
+    }
+  ],
+  "run_checks": [
+    {
+      "id": "discretization_ux_A_mm",
+      "description": "relative discretization uncertainty of ux_A_mm, monotone (R = 0.461): GCI_fine, observed order 1.12, extrapolated -7.18869",
+      "kind": "numerical",
+      "value": 0.0008829137047282217,
+      "tolerance": 0.01,
+      "comparison": "<=",
+      "status": "PASS",
+      "metric": "ux_A_deviation_pct"
+    },
+    {
+      "id": "discretization_uy_A_mm",
+      "description": "relative discretization uncertainty of uy_A_mm, monotone (R = 0.459): GCI_fine, observed order 1.12, extrapolated -66.1076",
+      "kind": "numerical",
+      "value": 0.0005032028961141443,
+      "tolerance": 0.01,
+      "comparison": "<=",
+      "status": "PASS",
+      "metric": "uy_A_deviation_pct"
+    },
+    {
+      "id": "discretization_first_frequency_Hz",
+      "description": "relative discretization uncertainty of first_frequency_Hz, monotone (R = 0.441): GCI_fine, observed order 1.18, extrapolated 1.07176",
+      "kind": "numerical",
+      "value": 0.00025643826653505255,
+      "tolerance": 0.01,
+      "comparison": "<=",
+      "status": "PASS"
+    }
+  ],
+  "run_check_detail": {
+    "meshes_used": [
+      "p02_element_size_mm-1.25",
+      "p01_element_size_mm-2.5",
+      "p00_element_size_mm-5"
+    ],
+    "representative_sizes_mm": [
+      1.2506034619223299,
+      2.5012353822616973,
+      5.002698310186597
+    ],
+    "ux_A_mm": {
+      "regime": "monotone",
+      "uncertainty": 0.0008829137047282217,
+      "converged_exactly": false,
+      "order": 1.1174682809841983,
+      "extrapolated": -7.188688009000064,
+      "rel_error_fine": 0.0008261858167769069,
+      "rel_error_extrapolated": 0.0007058324124945814,
+      "gci_fine": 0.0008829137047282217,
+      "convergence_ratio": 0.46086348811925315,
+      "r21": 2.0000227557478483,
+      "r32": 2.0000909733105554
+    },
+    "uy_A_mm": {
+      "regime": "monotone",
+      "uncertainty": 0.0005032028961141443,
+      "converged_exactly": false,
+      "order": 1.1225669465311068,
+      "extrapolated": -66.10756170436001,
+      "rel_error_fine": 0.0004739640586336519,
+      "rel_error_extrapolated": 0.0004024003256839217,
+      "gci_fine": 0.0005032028961141443,
+      "convergence_ratio": 0.45923753665707445,
+      "r21": 2.0000227557478483,
+      "r32": 2.0000909733105554
+    },
+    "first_frequency_Hz": {
+      "regime": "monotone",
+      "uncertainty": 0.00025643826653505255,
+      "converged_exactly": false,
+      "order": 1.181816987156893,
+      "extrapolated": 1.0717640818250294,
+      "rel_error_fine": 0.0002602650785831861,
+      "rel_error_extrapolated": 0.00020519270863808713,
+      "gci_fine": 0.00025643826653505255,
+      "convergence_ratio": 0.4407582938386597,
+      "r21": 2.0000227557478483,
+      "r32": 2.0000909733105554
+    }
+  },
+  "status": "PASS"
+}
