@@ -1,6 +1,6 @@
 # Dashboard backlog
 
-Open work on the portfolio dashboard. Eleven items are open: six need nothing from me, two wait on a decision about what to show publicly, and three are larger or depend on the other studies. Studies themselves are tracked in [BACKLOG.md](BACKLOG.md).
+Open work on the portfolio dashboard. Four items are open: two wait on a decision about what to show publicly, and two follow the other studies. Studies themselves are tracked in [BACKLOG.md](BACKLOG.md).
 
 ## Where the dashboard lives
 
@@ -9,7 +9,7 @@ Both copies are built from `site/`:
 - **Public:** https://cptgrumpus.github.io/engineering-agent-lab/, served from `docs/`. This is the link to give clients.
 - **Private:** the claude.ai copy, visible only to me unless shared.
 
-To rebuild after a change: run `site/build_v2.py`, then `site/export_docs.py`, then commit and push. See [site/README.md](site/README.md) for how the page is put together.
+To rebuild after a change: run `site/build_v2.py`, then `site/export_docs.py`, then `site/check_viewer3d.py` (checks the 3D view in headless Chrome), then commit and push. See [site/README.md](site/README.md) for how the page is put together.
 
 ## Decisions needed from me
 
@@ -20,40 +20,44 @@ Items 1 and 3 can't start until I decide what goes on a public page. The page cu
 
 ## Biggest impact
 
-These four turn the page from a portfolio into something that wins work.
-
 | # | Item | What it involves | Needs from me | Status |
 |---|---|---|---|---|
 | 1 | Contact section | A closing section with my name, a one-line offer and a link | The name and contact decision | Needs my input |
-| 2 | Evidence links | Each study links to its run report on the public repo. Study 12's links wait until its code is committed | Nothing | Not started |
+| 2 | Evidence links | Each study ends with links to its write-up and run reports on the public repo. Only committed files are linked, so study 12's links appear by themselves once its runs are committed | Nothing | Done for studies 1 to 11 |
 | 3 | Services section | A short "what I can do for you" block listing the offers | The services decision | Needs my input |
-| 4 | Link preview card | A preview image and title when the link is pasted into LinkedIn, email or Slack, using the optimised bracket render | Nothing | Not started |
+| 4 | Link preview card | Open Graph card (1200 × 630) from the optimised bracket render, with the counts from the run records | Nothing | Done |
 
 ## Polish and quality
 
-All four can go ahead without any input from me.
-
-| # | Item | What it involves | Needs from me | Status |
-|---|---|---|---|---|
-| 5 | Light mode and phone check | A full review of the page in light mode and at phone width. So far only dark mode has had a full pass | Nothing | Not started |
-| 6 | Faster loading | Convert the two GIF animations, about 1 MB each, to WebP at roughly half the size | Nothing | Not started |
-| 7 | Sample deliverable link | Link the coolant-channel client memo ([portfolio/deliverables/coolant-channel-memo.md](portfolio/deliverables/coolant-channel-memo.md)) as "see a sample report" | Nothing | Not started |
-| 8 | Render legibility check | Extend the render check to the lit image, where a dark side face could be misread as the wrong colour band | Nothing | Not started |
+| # | Item | What it involves | Status |
+|---|---|---|---|
+| 5 | Light mode and phone check | Full review at 360, 390, 768 and 1280 px in light and dark, with every panel open | Done. Fixed three overflows and a clipped phone menu |
+| 6 | Faster loading | GIF animations to WebP | Done. Lossless, identical frames and timing; 2.71 MB down to 1.94 MB, not the half I'd guessed, because the GIFs are dithered |
+| 7 | Sample deliverable link | Link the coolant-channel client memo | Done, from the summary and from study 5 |
+| 8 | Render legibility check | Check that the lit image reads as the right colour band | Done. Caught the fin render (2.28 % misread against a 2 % limit); re-lit, now 0 % |
 
 ## Larger items and ones that follow the studies
 
-Items 9 and 10 start when the other study session finishes its work. The 3D viewer is independent, but it's the biggest job here.
-
 | # | Item | What it involves | Waits on | Status |
 |---|---|---|---|---|
-| 9 | New studies on the page | The cold-plate thermal chain (in progress) and buckling (next) each get a viewer tab, a gallery card, a write-up and visuals, using the same pipeline as study 12 (`scripts/make_opt_visuals.py`) | Those studies being verified and committed | Not started |
+| 9 | New studies on the page | The cold-plate thermal chain, buckling, strap proof load and the 3D clevis each get a viewer tab, a gallery card, a write-up and visuals, using the same pipeline as study 12 (`scripts/make_opt_visuals.py`) | Those studies being verified and committed | Not started |
 | 10 | Heat-transfer wall verdict | Study 11's wall temperature is withheld until a finer mesh shows the peak converging. Once that run passes, flip the verdict on the page | The finer-mesh run | Not started |
-| 11 | Interactive 3D viewer | Let visitors rotate the parts in the browser instead of seeing fixed renders | Nothing, but it's the most work | Not started |
+| 11 | Interactive 3D viewer | Rotate the parts in the browser | Nothing | Done for five of the seven viewer tabs. The contact close-up and the flow height field stay as images |
+
+## Ideas not yet scheduled
+
+- **3D for the contact and flow tabs.** The contact view is a section close-up and the flow view a height field; both would need their own camera handling.
+- **A colour-blind option.** The turbo scale isn't colour-blind safe. A viridis version of the renders and 3D view would help readers who need it.
+- **Mesh size on phones.** The fatigue strap's 3D mesh is 905 KB. Fine on Wi-Fi, slow on a weak mobile connection; it could be decimated away from the hole.
 
 ## Recently done
 
 | Date | Item | What changed |
 |---|---|---|
+| 2026-11-21 | Interactive 3D view | "Rotate in 3D" in the result viewer for five results. Same surface and colour bands as the renders, checked the same way from four angles per tab (100 % on the legend, at most 0.62 % misread). Plain WebGL2, loaded only on request; mouse, touch and keyboard. Also fixed a live bug where the grader's task tabs were wired into the result viewer |
+| 2026-11-21 | Render legibility check | Third render check, on the lit image. All 13 published renders and the 33 optimisation renders measured; only the fin failed, and it now passes after raising its ambient light. Closes the open item in the render-results skill |
+| 2026-11-21 | Evidence links, preview card, memo link, WebP | Items 2, 4, 6 and 7 above. All 45 GitHub links checked live |
+| 2026-11-21 | Phone and light-mode pass | The requirements table pushed the phone page to 786 px wide when opened; a chip and the menu were clipped. Fixed and rechecked at four widths |
 | 2026-11-21 | Page reorganised around the optimiser | Study 12 gets its own section right after the viewer (headline numbers, search animation beside the loop steps, before-and-after and stress-along-span figures, what the checks caught, full method on demand), first in the nav. Results now come before process. The eleven other write-ups are collapsible panels that the gallery and lesson links open; the page is 15,700 px instead of 28,200 |
 | 2026-11-21 | Study 12 on the dashboard | Viewer opens on the optimised bracket; featured card, write-up, search animation, before-and-after render and stress-along-span chart. Hero counts now come from the run records (1,478 checks, 36 runs) |
 | 2026-11-21 | Public site refreshed | `docs/` rebuilt from the new page with `site/export_docs.py` |
