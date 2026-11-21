@@ -36,7 +36,8 @@ def fit(im, w, h, bg=None):
     return canvas
 
 
-meta = {}
+# scenes written by other scripts (make_opt_visuals.py adds bracket_opt) are kept as they are
+meta = json.loads((OUT / "scenes.json").read_text(encoding="utf-8")) if (OUT / "scenes.json").exists() else {}
 checks = json.loads((REPO / "portfolio/img/renders.json").read_text(encoding="utf-8"))
 flat = {e["scene"]: e for v in checks.values() for e in v}
 for scene in ("cantilever", "strap_detail", "fin", "mode1", "mode4", "strap", "mode3", "cad_plate",
@@ -51,6 +52,7 @@ for scene in ("cantilever", "strap_detail", "fin", "mode1", "mode4", "strap", "m
                                           "caption", "data_min", "data_max")}
     meta[scene]["volume"] = e.get("volume_check")
     meta[scene]["color"] = e.get("color_check")
+    meta[scene]["legibility"] = e.get("legibility_check")
     meta[scene]["seconds"] = e.get("seconds")
 (OUT / "scenes.json").write_text(json.dumps(meta, indent=1), encoding="utf-8")
 

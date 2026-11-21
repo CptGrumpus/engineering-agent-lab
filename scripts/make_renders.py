@@ -13,7 +13,9 @@ Pipeline, one command:
   3. Check: an unlit, un-anti-aliased pass of the same view; every part pixel
      must be one of the legend's band colours. A render that fails is not written
      to the portfolio, because a beautiful picture whose colours don't match its
-     legend is worse than no picture.
+     legend is worse than no picture. Then the lit pass: a reader's reading of
+     each part pixel (nearest legend colour in CIELAB) must land within one band
+     of the true band for 98 % of the part (check_legibility).
   4. Annotate: legend, title and caption composited in matplotlib from the
      same range and band colours the shader used.
 
@@ -50,7 +52,9 @@ OUT = REPO / "portfolio" / "img"
 CMAP = matplotlib.colormaps["turbo"]
 COLOR_TOL = 3            # max 8-bit channel difference from a band colour
 COLOR_PASS = 0.995       # fraction of part pixels that must be legend colours
-VOLUME_TOL = 0.005       # surface's enclosed volume vs the design volume (faceted circles cost ~0.1 %)
+LEGIBLE_MISREAD = 0.02   # fraction of the lit part that may read more than one band off its true band
+LINE_CHROMA = 12         # CIELAB chroma below which a pixel reads as a grey line, not a band (bands are >= 40)
+VOLUME_TOL = 0.005      # surface's enclosed volume vs the design volume (faceted circles cost ~0.1 %)
 CREDIT = "Rendered in Blender (Cycles) from the CalculiX result; colours checked against the legend"
 
 
@@ -114,6 +118,8 @@ def scene_fin():
     return write_scene(BUILD / "fin", xyz, tris, T, field="temperature", units="°C",
                        vmin=float(np.floor(T.min())), vmax=float(np.ceil(T.max())),
                        bands=14, band_colors=bands(14), elev=22, azim=-125, distance_factor=4.5,
+                       ambient=0.45,   # the broad face sits at a grazing angle to the key light; at the
+                                       # default 0.25 its orange band read as the top band (legibility check)
                        expected_volume_mm3=2 * 20 * 40,
                        title=f"Heat-sink fin: temperature, {T.max():.1f} °C at the base to {T.min():.1f} °C at the tip",
                        caption="Steady conduction (CalculiX, 3D mesh): base held at 80 °C, convection to 25 °C air from the other five faces.")
@@ -434,6 +440,56 @@ def check_colors(scene: Path) -> dict:
             "top_band_visible": bool(counts[-1] > 0), "passed": bool(ok.mean() >= COLOR_PASS)}
 
 
+def srgb_to_lab(rgb: np.ndarray) -> np.ndarray:
+    """sRGB in 0..1 to CIELAB (D65), so colour differences are close to what a reader perceives."""
+    c = np.where(rgb <= 0.04045, rgb / 12.92, ((rgb + 0.055) / 1.055) ** 2.4)
+    m = np.array([[0.4124, 0.3576, 0.1805], [0.2126, 0.7152, 0.0722], [0.0193, 0.1192, 0.9505]])
+    xyz = c @ m.T / np.array([0.95047, 1.0, 1.08883])
+    f = np.where(xyz > (6 / 29) ** 3, np.cbrt(xyz), xyz / (3 * (6 / 29) ** 2) + 4 / 29)
+    return np.stack([116 * f[..., 1] - 16, 500 * (f[..., 0] - f[..., 1]), 200 * (f[..., 1] - f[..., 2])], -1)
+
+
+def _shift_all(mask: np.ndarray) -> np.ndarray:
+    """True where the pixel and its four neighbours are all True."""
+    out = np.zeros_like(mask)
+    out[1:-1, 1:-1] = mask[1:-1, 1:-1] & mask[:-2, 1:-1] & mask[2:, 1:-1] & mask[1:-1, :-2] & mask[1:-1, 2:]
+    return out
+
+
+def check_legibility(scene: Path) -> dict:
+    """Does the lit render read correctly against its legend?
+
+    Lighting darkens and tints the band colours, so a shaded face can look like a different band:
+    a dark red face reads as the top band, a shadowed side as the bottom one. For every part pixel
+    away from a band edge, a reader's reading is modelled as the legend colour nearest in CIELAB to
+    the lit pixel, and compared with the true band from the unlit pass. A pixel is misread when the
+    reading is more than one band off. Near-grey pixels (chroma under LINE_CHROMA, a third of the
+    least saturated band) read as a line, not a band: they are the outline of the undeformed shape,
+    and they are left out with a one-pixel border for their anti-aliasing. Passes when no more than
+    LEGIBLE_MISREAD of the part is misread."""
+    meta = json.loads(scene.with_suffix(".json").read_text(encoding="utf-8"))
+    flat = plt.imread(scene.parent / (scene.stem + "_flat.png"))
+    lit = plt.imread(scene.parent / (scene.stem + "_beauty.png"))
+    ref = np.asarray(meta["band_colors"])[:, :3]
+    true = np.abs(np.round(flat[..., :3] * 255)[..., None, :] - np.round(ref * 255)[None, None]).max(-1).argmin(-1)
+    lab = srgb_to_lab(lit[..., :3])
+    line = np.hypot(lab[..., 1], lab[..., 2]) < LINE_CHROMA
+    part = (flat[..., 3] > 0.99) & (lit[..., 3] > 0.999)
+    same = np.zeros_like(part)
+    same[1:-1, 1:-1] = ((true[1:-1, 1:-1] == true[:-2, 1:-1]) & (true[1:-1, 1:-1] == true[2:, 1:-1]) &
+                        (true[1:-1, 1:-1] == true[1:-1, :-2]) & (true[1:-1, 1:-1] == true[1:-1, 2:]))
+    use = _shift_all(part) & same & _shift_all(~line)
+    read = np.linalg.norm(lab[use][:, None] - srgb_to_lab(ref)[None], axis=-1).argmin(-1)
+    off = np.abs(read - true[use])
+    misread = float((off > 1).mean()) if use.any() else 0.0
+    worst = {int(b): round(float(((off > 1) & (true[use] == b)).sum() / (true[use] == b).sum()), 3)
+             for b in np.unique(true[use]) if ((off > 1) & (true[use] == b)).any()}
+    return {"pixels_read": int(use.sum()), "outline_pixels_excluded": int((part & line).sum()),
+            "read_exactly": round(float((off == 0).mean()), 4), "misread": round(misread, 4),
+            "max_bands_off": int(off.max()) if use.any() else 0, "misread_share_by_band": worst,
+            "limit": LEGIBLE_MISREAD, "passed": bool(misread <= LEGIBLE_MISREAD)}
+
+
 def legend(fig, rect, meta):
     nb = meta["bands"]
     edges = np.linspace(meta["vmin"], meta["vmax"], nb + 1)
@@ -532,7 +588,12 @@ def main():
             if abs(err) > VOLUME_TOL:
                 raise RuntimeError(f"{p.stem}: enclosed volume {vol:.1f} mm3 vs design "
                                    f"{meta['expected_volume_mm3']:.1f} mm3 ({err:+.2%})")
-            info = {} if args.skip_render else render(blender, p, args.samples)
+            if args.skip_render:     # keep the record of the render being re-checked
+                prev = next((e for e in report.get(name, []) if e.get("scene") == p.stem), {})
+                info = {k: v for k, v in prev.items() if k not in ("scene", "volume_check", "color_check",
+                                                                   "legibility_check")}
+            else:
+                info = render(blender, p, args.samples)
             entry = {"scene": p.stem, **info, "volume_check": {
                 "enclosed_mm3": round(vol, 1), "design_mm3": round(meta["expected_volume_mm3"], 1),
                 "rel_error": float(f"{err:.2e}"), "passed": True}}
@@ -541,6 +602,11 @@ def main():
                 entry["color_check"] = chk
                 if not chk["passed"]:
                     raise RuntimeError(f"{p.stem}: colour check failed {chk}")
+                leg = check_legibility(p)
+                entry["legibility_check"] = leg
+                if not leg["passed"]:
+                    raise RuntimeError(f"{p.stem}: the lit render misreads {leg['misread']:.2%} of the part "
+                                       f"(limit {LEGIBLE_MISREAD:.0%}) {leg}")
             entries.append(entry)
             print(json.dumps(entry))
         if name == "modes":

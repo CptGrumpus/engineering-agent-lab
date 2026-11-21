@@ -34,6 +34,14 @@ rest with required caption fields.
    - *Colour*: on the unlit pass, at least 99.5 % of part pixels must be a
      legend band colour (within 3/255 per channel). Also records which bands
      are visible, so you know whether the peak is actually in view.
+   - *Legibility*: on the lit beauty pass, a reader's reading of each part pixel
+     (the legend colour nearest in CIELAB) must land within one band of the true
+     band from the unlit pass, for at least 98 % of the part. This catches shading
+     that makes a face look like another band, e.g. a dark red face read as the
+     top band. Band edges are skipped (anti-aliased by design), and near-grey
+     pixels (chroma under 12; every band is 40 or more) read as the undeformed
+     outline, not a band, so they're left out. `check_legibility` in
+     `make_renders.py`; results per scene in `renders.json`.
 4. **Annotate** (matplotlib): legend from the same range and band colours the
    shader used, title, caption, and a credit line. Results go to
    `portfolio/img/render_*.png`; the check log goes to `portfolio/img/renders.json`.
@@ -85,7 +93,10 @@ several modes) go through `annotate_grid` with one shared legend.
   Store the scalar as a mesh attribute and colour it in the shader.
 - **Over-lit renders wash out the contours.** Blender area-light watts depend on
   scene scale. The script normalises every part to a 2-unit size so that one
-  light rig (key 260 W, fill 90 W, rim 160 W, world 0.25) suits all parts.
+  light rig (key 260 W, fill 90 W, rim 160 W, world 0.25) suits almost all
+  parts. When the legibility check fails, raise `ambient` for that scene before
+  touching the shared rig: the fin's broad face sits at a grazing angle to the
+  key light and needed 0.45.
 - **Shadow-catcher haze.** The catcher leaves a 2–4 % black veil over the whole
   ground plane, which shows as a hard-edged rectangle in the composite. Fade
   the shadow alpha to zero towards the image border (`beauty()`).
@@ -141,7 +152,8 @@ the numbers.
 A render shows where the stress, heat or motion is. The numbers come from the
 verified study, and the render's caption says where it came from and how it
 was scaled. The checks show that the picture is faithful: the surface encloses
-the right volume, and every pixel is a legend colour.
+the right volume, every pixel is a legend colour, and the lit image reads as the
+right band.
 
 ## Tested (2026-11-20)
 
@@ -155,10 +167,15 @@ real flaw:
 
 - **Caption error (with skill):** the fin caption said "convection from every face"; the
   base is a fixed-temperature boundary. Fixed.
-- **Lit-image legibility (without skill), open:** the colour check reads the *unlit*
-  pass, so it proves the shader's colours but not that the lit image reads correctly. On
-  the fin, the thin side face was shaded dark enough that only 72 % of its pixels matched
-  the right legend band; doubling the fill light fixed it. Next: add a check that samples
-  the lit beauty pass per face against the expected band, and raise the fill light.
+- **Lit-image legibility (without skill), closed 2026-11-21:** the colour check reads the
+  *unlit* pass, so it proves the shader's colours but not that the lit image reads
+  correctly. On the fin, the thin side face was shaded dark enough that only 72 % of its
+  pixels matched the right legend band. The legibility check now covers this (step 3). The
+  limit (98 % within one band) was set before measuring. Run on all 13 published renders
+  and the 33 optimisation renders, it failed only the fin, at 2.28 %: its orange band on
+  the broad face read as the top band. Raising the fin's `ambient` to 0.45 brought it to
+  0 %. The first version counted the grey undeformed outline as misread pixels on the
+  cantilever; the chroma rule above removes that without hiding shaded faces, whose
+  misread pixels sit near chroma 65.
 - Also worth stating for client work: the turbo scale is not colour-blind safe; offer a
   viridis render when the report must work in greyscale or for colour-blind readers.

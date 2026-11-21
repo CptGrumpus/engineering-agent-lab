@@ -398,7 +398,7 @@ details.study > summary:hover .study-toggle { text-decoration: underline; }
     <div class="tabs" role="tablist" aria-label="Choose a result">
 {{TABS}}
     </div>
-    <p class="vp-note">These images are rendered in Blender straight from the solver output. Before one goes on the page it has to pass two checks. The rendered surface has to enclose the part's actual volume, which catches missing or flipped faces, and every coloured pixel has to match a colour in the legend, which catches lighting that has shifted the contours.</p>
+    <p class="vp-note">These images are rendered in Blender straight from the solver output. Before one goes on the page it has to pass three checks. The rendered surface has to enclose the part's actual volume, which catches missing or flipped faces. Every coloured pixel has to match a colour in the legend, which catches a shader that has shifted the contours. And the lit image has to read as the right band, which catches a shaded face that looks like a different value.</p>
   </section>
 
 {{FEATURED}}
@@ -476,7 +476,7 @@ details.study > summary:hover .study-toggle { text-decoration: underline; }
       <div class="skill"><code>run-case</code><b>Simulation execution</b><p>Runs a case file and saves the inputs, tool versions, solver logs and results, including the runs that fail.</p></div>
       <div class="skill"><code>verify-against-reference</code><b>Verification</b><p>Compares against independent references, conservation and reaction balance, runs mesh convergence with the Grid Convergence Index, and cross-checks between tools.</p></div>
       <div class="skill"><code>requirements-report</code><b>Review report</b><p>Links each requirement to its result, checks and saved files, and ends with "pending human review".</p></div>
-      <div class="skill"><code>render-results</code><b>Result renders</b><p>Renders solver output in Blender, and only keeps an image if it passes a geometry check and a pixel-by-pixel legend colour check.</p></div>
+      <div class="skill"><code>render-results</code><b>Result renders</b><p>Renders solver output in Blender, and only keeps an image if it passes a geometry check, a pixel-by-pixel legend colour check and a check that the lit image reads as the right band.</p></div>
     </div>
     <ul class="rules" aria-label="Rules the agent works under">
       <li>No loosening a tolerance to get a pass</li>

@@ -111,7 +111,10 @@ def gate(scene: Path) -> dict:
     chk = mr.check_colors(scene)
     if not chk["passed"]:
         raise RuntimeError(f"{scene.stem}: colour check failed {chk}")
-    return {"scene": scene.stem, "volume_rel_error": float(f"{err:.2e}"), "color_check": chk}
+    leg = mr.check_legibility(scene)
+    if not leg["passed"]:
+        raise RuntimeError(f"{scene.stem}: the lit render misreads {leg['misread']:.2%} of the part {leg}")
+    return {"scene": scene.stem, "volume_rel_error": float(f"{err:.2e}"), "color_check": chk, "legibility_check": leg}
 
 
 # --------------------------------------------------------------------------- design-space background
@@ -354,6 +357,8 @@ def make_hero(blender, samples):
         mr.render(blender, scene, samples)
     chk = mr.check_colors(scene)
     assert chk["passed"], chk
+    leg = mr.check_legibility(scene)
+    assert leg["passed"], leg
     site = REPO / "site" / "v2"
     a = (np.clip(mr.beauty(scene), 0, 1) * 255).astype(np.uint8)
     im = Image.fromarray(a, "RGBA")

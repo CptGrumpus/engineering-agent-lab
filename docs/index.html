@@ -493,7 +493,7 @@ details.study > summary:hover .study-toggle { text-decoration: underline; }
     <div class="tldr-grid">
       <div><b>About me</b><p>I'm an automotive mechanical engineer with a master's in ME. In my day job I use AI agents to run virtual models and to turn functional requirements into tools that automate engineering work.</p></div>
       <div><b>What's here</b><p>Twelve studies, each taken from written requirements through to a checked answer using open-source solvers. There are also three evaluation tasks, and their graders are tested as well.</p></div>
-      <div><b>The code</b><p>It's all Python, about 17,000 lines across 126 files. That covers the harness that runs and checks everything, the models, the independent reference solutions and the graders, with 106 automated tests that run on every push.</p></div>
+      <div><b>The code</b><p>It's all Python, about 17,000 lines across 127 files. That covers the harness that runs and checks everything, the models, the independent reference solutions and the graders, with 106 automated tests that run on every push.</p></div>
     </div>
     <p class="tldr-links"><a href="#tasks">Grade an answer yourself</a><a href="#reqs">All the requirements in one table</a><a href="#bracket_opt">The newest study, an optimisation loop</a><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/portfolio/deliverables/coolant-channel-memo.md">A sample client memo</a></p>
   </section>
@@ -523,7 +523,7 @@ details.study > summary:hover .study-toggle { text-decoration: underline; }
 <button type="button" role="tab" id="tab-duct" aria-controls="vp" aria-selected="false" data-i="5"><span class="tab-k">Flow</span><span class="tab-v">Coolant passage</span></button>
 <button type="button" role="tab" id="tab-mode1" aria-controls="vp" aria-selected="false" data-i="6"><span class="tab-k">Modal</span><span class="tab-v">Bracket arm</span></button>
     </div>
-    <p class="vp-note">These images are rendered in Blender straight from the solver output. Before one goes on the page it has to pass two checks. The rendered surface has to enclose the part's actual volume, which catches missing or flipped faces, and every coloured pixel has to match a colour in the legend, which catches lighting that has shifted the contours.</p>
+    <p class="vp-note">These images are rendered in Blender straight from the solver output. Before one goes on the page it has to pass three checks. The rendered surface has to enclose the part's actual volume, which catches missing or flipped faces. Every coloured pixel has to match a colour in the legend, which catches a shader that has shifted the contours. And the lit image has to read as the right band, which catches a shaded face that looks like a different value.</p>
   </section>
 
   <section class="band wrap feature" id="bracket_opt" aria-labelledby="opt-title">
@@ -791,7 +791,7 @@ details.study > summary:hover .study-toggle { text-decoration: underline; }
       <div class="skill"><code>run-case</code><b>Simulation execution</b><p>Runs a case file and saves the inputs, tool versions, solver logs and results, including the runs that fail.</p></div>
       <div class="skill"><code>verify-against-reference</code><b>Verification</b><p>Compares against independent references, conservation and reaction balance, runs mesh convergence with the Grid Convergence Index, and cross-checks between tools.</p></div>
       <div class="skill"><code>requirements-report</code><b>Review report</b><p>Links each requirement to its result, checks and saved files, and ends with "pending human review".</p></div>
-      <div class="skill"><code>render-results</code><b>Result renders</b><p>Renders solver output in Blender, and only keeps an image if it passes a geometry check and a pixel-by-pixel legend colour check.</p></div>
+      <div class="skill"><code>render-results</code><b>Result renders</b><p>Renders solver output in Blender, and only keeps an image if it passes a geometry check, a pixel-by-pixel legend colour check and a check that the lit image reads as the right band.</p></div>
     </div>
     <ul class="rules" aria-label="Rules the agent works under">
       <li>No loosening a tolerance to get a pass</li>
