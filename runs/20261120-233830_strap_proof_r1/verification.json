@@ -1,0 +1,380 @@
+{
+  "run_id": "20261120-233830_strap_proof_r1",
+  "verified_utc": "2026-11-21T04:47:33+00:00",
+  "tolerances": {
+    "equilibrium_rel_tol": 1e-06,
+    "kt_rel_tol": 0.02,
+    "bracket_rel_tol": 0.03,
+    "neuber_rel_tol": 0.15,
+    "superposition_rel_tol": 0.0001,
+    "residual_rel_tol": 0.05,
+    "plastic_zone_fraction_max": 0.25,
+    "strain_max": 0.05,
+    "gci_max": 0.02
+  },
+  "points": [
+    {
+      "label": "p00_hole_element_ratio-0.025",
+      "status": "PASS",
+      "checks": [
+        {
+          "id": "equilibrium_proof",
+          "description": "|reaction on the symmetry edge + F/2| / (F/2) at the proof load",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "equilibrium_unloaded",
+          "description": "|reaction on the symmetry edge| / (F/2) after unloading",
+          "kind": "numerical",
+          "value": 1.036208e-17,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "elastic_kt_reference",
+          "description": "|FE elastic peak / net stress - Peterson Kt| / Kt (handbook)",
+          "kind": "numerical",
+          "value": 0.004694768482072497,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "neuber_glinka_bracket",
+          "description": "notch-root strain outside [Glinka, Neuber], as a fraction of the bound crossed (0 = inside)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.03,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "neuber_reference",
+          "description": "|notch-root strain FE - Neuber| / Neuber (model form; plane stress)",
+          "kind": "numerical",
+          "value": 0.08339157130142912,
+          "tolerance": 0.15,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "residual_superposition",
+          "description": "|residual stress - (proof stress - elastic peak)| / elastic peak (exact if the unloading is elastic)",
+          "kind": "numerical",
+          "value": 2.2794295726631254e-06,
+          "tolerance": 0.0001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "residual_reference",
+          "description": "|residual stress FE - Neuber state minus Peterson elastic peak| / elastic peak (model form)",
+          "kind": "numerical",
+          "value": 0.015722334177392522,
+          "tolerance": 0.05,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "net_section_elastic",
+          "description": "net-section stress / initial yield (contained yielding)",
+          "kind": "validity",
+          "value": 0.6981680071492403,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "contained_yield",
+          "description": "plastic zone along the ligament / ligament width",
+          "kind": "validity",
+          "value": 0.14896333333333325,
+          "tolerance": 0.25,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "elastic_unloading",
+          "description": "|residual stress| / current flow stress at the notch root (no reversed yield)",
+          "kind": "validity",
+          "value": 0.27940333407281726,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "small_strain",
+          "description": "notch-root strain (geometrically linear analysis)",
+          "kind": "validity",
+          "value": 0.00583451,
+          "tolerance": 0.05,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p01_hole_element_ratio-0.0125",
+      "status": "PASS",
+      "checks": [
+        {
+          "id": "equilibrium_proof",
+          "description": "|reaction on the symmetry edge + F/2| / (F/2) at the proof load",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "equilibrium_unloaded",
+          "description": "|reaction on the symmetry edge| / (F/2) after unloading",
+          "kind": "numerical",
+          "value": 5.92119e-18,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "elastic_kt_reference",
+          "description": "|FE elastic peak / net stress - Peterson Kt| / Kt (handbook)",
+          "kind": "numerical",
+          "value": 0.005676662134115751,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "neuber_glinka_bracket",
+          "description": "notch-root strain outside [Glinka, Neuber], as a fraction of the bound crossed (0 = inside)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.03,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "neuber_reference",
+          "description": "|notch-root strain FE - Neuber| / Neuber (model form; plane stress)",
+          "kind": "numerical",
+          "value": 0.08344655671580753,
+          "tolerance": 0.15,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "residual_superposition",
+          "description": "|residual stress - (proof stress - elastic peak)| / elastic peak (exact if the unloading is elastic)",
+          "kind": "numerical",
+          "value": 5.693010123170011e-07,
+          "tolerance": 0.0001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "residual_reference",
+          "description": "|residual stress FE - Neuber state minus Peterson elastic peak| / elastic peak (model form)",
+          "kind": "numerical",
+          "value": 0.01684736101486479,
+          "tolerance": 0.05,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "net_section_elastic",
+          "description": "net-section stress / initial yield (contained yielding)",
+          "kind": "validity",
+          "value": 0.6981680071492403,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "contained_yield",
+          "description": "plastic zone along the ligament / ligament width",
+          "kind": "validity",
+          "value": 0.15540583333333333,
+          "tolerance": 0.25,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "elastic_unloading",
+          "description": "|residual stress| / current flow stress at the notch root (no reversed yield)",
+          "kind": "validity",
+          "value": 0.28082034088706104,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "small_strain",
+          "description": "notch-root strain (geometrically linear analysis)",
+          "kind": "validity",
+          "value": 0.00583416,
+          "tolerance": 0.05,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p02_hole_element_ratio-0.00625",
+      "status": "PASS",
+      "checks": [
+        {
+          "id": "equilibrium_proof",
+          "description": "|reaction on the symmetry edge + F/2| / (F/2) at the proof load",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "equilibrium_unloaded",
+          "description": "|reaction on the symmetry edge| / (F/2) after unloading",
+          "kind": "numerical",
+          "value": 9.621933333333333e-18,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "elastic_kt_reference",
+          "description": "|FE elastic peak / net stress - Peterson Kt| / Kt (handbook)",
+          "kind": "numerical",
+          "value": 0.006074572389608607,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "neuber_glinka_bracket",
+          "description": "notch-root strain outside [Glinka, Neuber], as a fraction of the bound crossed (0 = inside)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.03,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "neuber_reference",
+          "description": "|notch-root strain FE - Neuber| / Neuber (model form; plane stress)",
+          "kind": "numerical",
+          "value": 0.08354081742617037,
+          "tolerance": 0.15,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "residual_superposition",
+          "description": "|residual stress - (proof stress - elastic peak)| / elastic peak (exact if the unloading is elastic)",
+          "kind": "numerical",
+          "value": 2.8453792468716624e-07,
+          "tolerance": 0.0001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "residual_reference",
+          "description": "|residual stress FE - Neuber state minus Peterson elastic peak| / elastic peak (model form)",
+          "kind": "numerical",
+          "value": 0.01710986727694162,
+          "tolerance": 0.05,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "net_section_elastic",
+          "description": "net-section stress / initial yield (contained yielding)",
+          "kind": "validity",
+          "value": 0.6981680071492403,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "contained_yield",
+          "description": "plastic zone along the ligament / ligament width",
+          "kind": "validity",
+          "value": 0.1531708333333334,
+          "tolerance": 0.25,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "elastic_unloading",
+          "description": "|residual stress| / current flow stress at the notch root (no reversed yield)",
+          "kind": "validity",
+          "value": 0.2811589332122582,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "small_strain",
+          "description": "notch-root strain (geometrically linear analysis)",
+          "kind": "validity",
+          "value": 0.00583356,
+          "tolerance": 0.05,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ]
+    }
+  ],
+  "run_checks": [
+    {
+      "id": "discretization_notch_strain_percent",
+      "description": "relative discretization uncertainty of notch_strain_percent, divergent (R = 1.714): no estimate",
+      "kind": "numerical",
+      "value": Infinity,
+      "tolerance": 0.02,
+      "comparison": "<=",
+      "status": "FAIL",
+      "metric": "notch_strain_percent"
+    },
+    {
+      "id": "discretization_residual_stress_MPa",
+      "description": "relative discretization uncertainty of residual_stress_MPa, monotone (R = 0.233): GCI_fine, observed order 2.10, extrapolated -77.0898",
+      "kind": "numerical",
+      "value": 0.0004526993178887036,
+      "tolerance": 0.02,
+      "comparison": "<=",
+      "status": "PASS",
+      "metric": "residual_stress_MPa"
+    }
+  ],
+  "run_check_detail": {
+    "meshes_used": [
+      "p02_hole_element_ratio-0.00625",
+      "p01_hole_element_ratio-0.0125",
+      "p00_hole_element_ratio-0.025"
+    ],
+    "notch_strain_percent": {
+      "regime": "divergent",
+      "uncertainty": Infinity,
+      "convergence_ratio": 1.7142857142784638
+    },
+    "residual_stress_MPa": {
+      "regime": "monotone",
+      "uncertainty": 0.0004526993178887036,
+      "converged_exactly": false,
+      "order": 2.099535673551093,
+      "extrapolated": -77.08980869565217,
+      "rel_error_fine": 0.0011899524927362134,
+      "rel_error_extrapolated": 0.00036202834232414426,
+      "gci_fine": 0.0004526993178887036,
+      "convergence_ratio": 0.23333333333330442,
+      "r21": 2.0,
+      "r32": 2.0
+    }
+  },
+  "status": "FAIL"
+}

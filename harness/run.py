@@ -27,6 +27,43 @@ def _fmt_metrics(m: dict) -> str:
     return ", ".join(f"{k} {v:.4g}" for k, v in m.items())
 
 
+def execute_point(study, backend, case: dict, label: str, params: dict, run_dir: Path, log,
+                  prepared: bool = True) -> dict:
+    """Run one point and save its evidence under run_dir/points/<label>. Returns the manifest
+    entry. Failures are recorded, not raised (shared by run_case and the optimisation loop)."""
+    pdir = run_dir / "points" / label
+    pdir.mkdir(parents=True)
+    entry = {"label": label, "parameters": params, "status": "failed"}
+    try:
+        if not prepared:
+            raise RuntimeError("backend preparation failed; see prepare_error")
+        entry["derived"] = study.derive(params)
+        res = backend.solve(params, case["numerics"])
+        entry["solver"] = {k: res[k] for k in ("success", "message", "nfev")}
+        if res.get("outputs"):
+            entry["solver_outputs"] = res["outputs"]
+        if res.get("files"):  # solver decks, logs, native model files
+            (pdir / "solver").mkdir()
+            for name, src in res["files"].items():  # name may contain subfolders
+                (pdir / "solver" / name).parent.mkdir(parents=True, exist_ok=True)
+                shutil.copyfile(src, pdir / "solver" / name)
+        if res.get("cleanup"):
+            shutil.rmtree(res["cleanup"], ignore_errors=True)
+        if not res["success"]:
+            log.error("%s: solver failed: %s", label, res["message"])
+        else:
+            write_series(pdir / study.series_file, res["series"])
+            entry["metrics"] = study.compute_metrics(res["series"], params, case,
+                                                     res.get("outputs") or {})
+            entry["status"] = "completed"
+            log.info("%s: %s", label, _fmt_metrics(entry["metrics"]))
+    except Exception as e:  # keep going; the failure is evidence
+        entry["error"] = f"{type(e).__name__}: {e}"
+        log.error("%s: exception\n%s", label, traceback.format_exc())
+    write_json(pdir / "point.json", entry)
+    return entry
+
+
 def run_case(case_path: str | Path, runs_root: str | Path = "runs", rerun_of: str | None = None,
              model_source_dir: Path | None = None) -> Path:
     """Run every point of a case. Returns the new run directory.
@@ -62,7 +99,7 @@ def run_case(case_path: str | Path, runs_root: str | Path = "runs", rerun_of: st
     }
 
     prepared = False
-    backend = None
+    study = backend = None
     try:
         study, backend = resolve(case["case"]["model"])
         manifest["study"] = study.name
@@ -82,37 +119,8 @@ def run_case(case_path: str | Path, runs_root: str | Path = "runs", rerun_of: st
         manifest["prepare_error"] = f"{type(e).__name__}: {e}"
 
     for label, params in expand_points(case):
-        pdir = run_dir / "points" / label
-        pdir.mkdir(parents=True)
-        entry = {"label": label, "parameters": params, "status": "failed"}
-        try:
-            if not prepared:
-                raise RuntimeError("backend preparation failed; see prepare_error")
-            entry["derived"] = study.derive(params)
-            res = backend.solve(params, case["numerics"])
-            entry["solver"] = {k: res[k] for k in ("success", "message", "nfev")}
-            if res.get("outputs"):
-                entry["solver_outputs"] = res["outputs"]
-            if res.get("files"):  # solver decks, logs, native model files
-                (pdir / "solver").mkdir()
-                for name, src in res["files"].items():  # name may contain subfolders
-                    (pdir / "solver" / name).parent.mkdir(parents=True, exist_ok=True)
-                    shutil.copyfile(src, pdir / "solver" / name)
-            if res.get("cleanup"):
-                shutil.rmtree(res["cleanup"], ignore_errors=True)
-            if not res["success"]:
-                log.error("%s: solver failed: %s", label, res["message"])
-            else:
-                write_series(pdir / study.series_file, res["series"])
-                entry["metrics"] = study.compute_metrics(res["series"], params, case,
-                                                         res.get("outputs") or {})
-                entry["status"] = "completed"
-                log.info("%s: %s", label, _fmt_metrics(entry["metrics"]))
-        except Exception as e:  # keep going; the failure is evidence
-            entry["error"] = f"{type(e).__name__}: {e}"
-            log.error("%s: exception\n%s", label, traceback.format_exc())
-        write_json(pdir / "point.json", entry)
-        manifest["points"].append(entry)
+        manifest["points"].append(execute_point(study, backend, case, label, params, run_dir, log,
+                                                prepared))
     if backend is not None:
         backend.close()
 

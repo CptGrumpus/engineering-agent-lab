@@ -84,7 +84,16 @@ def verify_run(run_dir: str | Path) -> dict:
         for c in run_checks:
             log.info("run-level: %-28s %s  value %.3e  tol %.1e", c["id"], c["status"],
                      c["value"], c["tolerance"])
-    statuses = {p["status"] for p in summary["points"]}
+    opt = manifest.get("optimization")
+    if opt:
+        # an optimisation run: rejected candidates are the checks doing their job (they were
+        # infeasible to the optimiser); the run stands on the optimum and the run-level checks
+        best = next((p for p in summary["points"] if p["label"] == opt.get("best_label")), None)
+        summary["optimum"] = opt.get("best_label")
+        summary["rejected_candidates"] = [p["label"] for p in summary["points"] if p["status"] != "PASS"]
+        statuses = {best["status"] if best else "FAIL"}
+    else:
+        statuses = {p["status"] for p in summary["points"]}
     statuses |= {c["status"] for c in run_checks}
     summary["status"] = "PASS" if statuses == {"PASS"} else "FAIL"
     write_json(run_dir / "verification.json", summary)

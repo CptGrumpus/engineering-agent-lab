@@ -1,0 +1,117 @@
+# Bolted joint: preload plus a side load, with friction contact (CalculiX). Mesh study, revision 1.
+#
+# Why a revision. bolted_joint_mesh (run 20261120-235041) failed verification on two counts: the
+# 0.7 mm level stalled in contact (4 h timeout), and slip_exact failed on every mesh (1.32e-3 and
+# 1.39e-3 under mu F_V, tolerance 1e-3). Problem, requirements and other tolerances: as
+# bolted_joint_mesh (header there, including the investigation).
+#
+# Cause of the slip shortfall, found after that run (hand runs at 1.0 mm):
+# - At every slave node in contact the shear equals mu p to four digits and points along x to 0.2
+#   degrees, and the washer pressure replaced by fixed-direction nodal forces changes nothing
+#   (1.315e-3): the friction law and the load are exact.
+# - The shortfall is linear in 1/E: 1.313e-3 / 1.320e-4 / 1.333e-5 at E / 10 E / 100 E (contact
+#   penalties scale with E). It grows for thin plates (9.98e-3 at 2 mm) and shrinks under a
+#   near-full washer (4.95e-4). CalculiX evaluates contact on the deformed surfaces: under the side
+#   load the interface tilts by about the strain, so part of the contact pressure acts along x and
+#   the friction's x component falls short of mu F_V by about the strain. The VDI reference mu F_V
+#   is exact only for a rigid interface; "exact once the whole interface slides" was wrong.
+# Changes:
+# - Each point is also solved with E x 100; the slip load extrapolated to a rigid interface (linear
+#   in 1/E) must equal mu F_V to 1e-5 (slip_rigid_limit, exact; 2e-7 in the hand run).
+# - The deformable slip load against mu F_V becomes a model-form check (slip_deformable), tolerance
+#   5e-3: the tilt scales with the strain (about 1e-3 here), and 5e-3 is a ninth of the 4.4 % by which
+#   REQ-J1 fails, so it cannot change the verdict.
+# - 0.75 mm in place of 0.7 mm (the GCI handles unequal refinement ratios).
+#
+# Predictions, written BEFORE running:
+#   P1 slip_rigid_limit under 1e-6 on every mesh.
+#   P2 slip_deformable 1.3e-3 to 1.4e-3 on every mesh.
+#   P3 Every point check passes, the 0.75 mm level completes, GCI under 1 %: verification PASS.
+#   P4 REQ-J1 fails (design slip about 2.39 kN against 2.5 kN), REQ-J2 passes (opening about 13.1 kN).
+#
+# Results (run 20261121-110554_bolted_joint_mesh_r1), verification PASS, 10/10 checks at every level:
+#   slip load 2996.04 / 2995.92 / 2995.83 N, design slip load after settling 2389.1 / 2389.9 /
+#   2390.3 N, opening load 13.06 / 13.07 / 13.08 kN at 1.0 / 0.75 / 0.5 mm; GCI 1.0e-4 (design slip),
+#   3.5e-4 (opening).
+#   P1 held: slip_rigid_limit 1.2e-7 / 2.8e-7 / 1.1e-7.
+#   P2 held: slip_deformable 1.32e-3 / 1.36e-3 / 1.39e-3.
+#   P3 held: the 0.75 mm level completed (the 0.5 mm level took 35 min, its 100 E companion as long).
+#   P4 held: REQ-J1 FAILS on every mesh, 2390 N against 2500 N (4.4 % short); REQ-J2 passes.
+#   Not a requirement metric, but drifting: the contact diameter falls 22.8 / 22.0 / 21.1 mm with the
+#   mesh (cone limit 19.1 mm); it feeds no verdict.
+
+[case]
+name = "bolted_joint_mesh_r1"
+model = "ccx_bolted_joint"
+description = "Two 6 mm steel plates clamped by an M8 8.8 bolt at 15 kN, friction 0.2: CalculiX half model with penalty friction contact, clamp then side displacement to gross slip; joint diagram with VDI 2230 bolt compliance and embedding; element size 1.0 / 0.75 / 0.5 mm; each point also solved with the plates 100 times stiffer to extrapolate the slip load to a rigid interface."
+assumptions = [
+  "The bolt acts through its clamp force: uniform pressure on the washer annuli (head and nut bearing areas); its shank is not modelled and must not touch the hole (checked: slip displacement below the 0.5 mm clearance).",
+  "Coulomb friction, mu = 0.2 at the plate interface (dry machined steel): synthetic.",
+  "Clamped region represented by circular plates of 40 mm diameter (the VDI substitute body; checked: the pressure cone fits inside).",
+  "Embedding (settling) 9.5 um: VDI 2230 Table 5 for Rz < 10 um, axial load (thread 3, head 2.5, nut 2.5, one interface 1.5): synthetic surface finish.",
+  "Axial load introduced at mid-thickness of the plates (load introduction factor n = 0.5): synthetic.",
+  "Linear elastic steel, small displacement.",
+]
+limitations = [
+  "No tightening torque scatter (VDI alpha_A): the 15 kN is the minimum preload assumed after tightening.",
+  "Bolt compliance, embedding and the load factor come from VDI 2230 (hand method), not from a modelled bolt.",
+  "Slip under a static side load only; no cyclic loading, fretting or self-loosening.",
+  "No physical test data.",
+]
+
+[parameters]
+plate_outer_diameter_mm = 40.0
+hole_diameter_mm = 9.0
+washer_diameter_mm = 13.0
+top_thickness_mm = 6.0
+bottom_thickness_mm = 6.0
+youngs_modulus_MPa = 210000.0
+poisson_ratio = 0.3
+preload_N = 15000.0
+friction_coefficient = 0.2
+element_size_mm = 1.0
+contact_stiffness_factor = 50.0      # penalty K = 50 E / h (the roller-contact study's choice)
+stick_slope_factor = 50.0            # stick slope = 50 E / h
+slip_displacement_mm = 0.012         # well past gross slip (prototype: plateau from 0.004 mm)
+slip_increments = 6
+bolt_thread = "M8"
+bolt_shank_length_mm = 8.0
+bolt_free_thread_length_mm = 4.0     # clamp length 12 = shank 8 + free thread 4
+bolt_proof_stress_MPa = 600.0        # property class 8.8, ISO 898-1 (S_p for d <= 16 mm about 580-600)
+embedding_um = 9.5
+load_introduction_factor = 0.5
+
+[sweep]
+parameter = "element_size_mm"
+values = [1.0, 0.75, 0.5]
+
+[numerics]
+rigid_limit_stiffness_factor = 100.0    # companion solve at 100 E: slip load extrapolated to a rigid interface
+solver = "CalculiX 2.22 static, C3D8I, surface-to-surface penalty contact with Coulomb friction"
+
+[verification]
+slip_rigid_rel_tol = 1e-5            # Coulomb, exact for a rigid interface (rigid-limit extrapolation)
+slip_rel_tol = 5e-3                  # model form: the deformable interface tilts by about the strain (1.3e-3 measured)
+plateau_rel_tol = 1e-4               # gross slip: force constant over the last three increments
+equilibrium_rel_tol = 1e-6
+plate_compliance_rel_tol = 0.25      # model form: the cone is an approximation, and the plates are about 15 % of
+                                     # the joint compliance, so a 25 % error moves the design slip load by about 1 %
+contact_diameter_rel_tol = 0.2       # model form
+bolt_utilisation_max = 0.9
+gci_max = 0.01
+
+[[requirements]]
+id = "REQ-J1"
+text = "After settling, the joint shall carry 2.5 kN of side load by friction before slipping (2 kN service load, safety 1.25 against slip)."
+metric = "design_slip_load_N"
+operator = ">="
+limit = 2500.0
+units = "N"
+
+[[requirements]]
+id = "REQ-J2"
+text = "After settling, the joint shall not open under a 10 kN axial separating load."
+metric = "opening_load_N"
+operator = ">="
+limit = 10000.0
+units = "N"

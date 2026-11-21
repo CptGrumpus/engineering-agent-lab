@@ -17,6 +17,7 @@ is the `verify-against-reference` skill.
 | `msd_modelica` | mass-spring-damper | OpenModelica 1.26.3 + MSL 4.1.0 | `models/modelica/EngLab.mo` (`EngLab.MSDStep`) |
 | `quarter_car` | quarter car | SciPy `solve_ivp` (road `bump` or `iso8608`) | `models/quarter_car.py`, `excitation/road.py` |
 | `quarter_car_modelica` | quarter car | OpenModelica + MSL (road `bump` only) | `EngLab.mo` (`EngLab.QuarterCarBump`) |
+| `quarter_car_modelica_liftoff` | quarter car, tire that can leave the road | OpenModelica + MSL (road `bump`, `tire_model = "liftoff"`, no bump stop) | `EngLab.mo` (`EngLab.QuarterCarBumpLiftoff`) |
 | `cantilever_freecad` | cantilever FEA | FreeCAD 1.1.4 (`freecadcmd`) + Gmsh + CalculiX 2.22 | `models/fea/cantilever_freecad.py` |
 | `cadquery_plate` | mounting plate | CadQuery 2.8 (OpenCASCADE) | `models/cad/mounting_plate.py` |
 | `cadquery_ccx_strap` | strap with a hole (CAD to FEA) | CadQuery -> STEP -> Gmsh -> CalculiX, plane stress | `models/fea/strap_hole.py` |
@@ -26,6 +27,18 @@ is the `verify-against-reference` skill.
 | `openfoam_channel` | laminar channel flow | OpenFOAM 14 in WSL (blockMesh, checkMesh, foamRun) | `models/cfd/channel_openfoam.py`, `models/cfd/run_channel.sh` |
 | `openfoam_duct` | rectangular duct (3D side-wall check) | OpenFOAM 14 in WSL, periodic quarter section | `models/cfd/duct_openfoam.py`, `models/cfd/run_channel.sh` |
 | `ccx_fin` | heat-sink fin, 3D steady conduction | CalculiX 2.22 (`ccx.exe` bundled with FreeCAD), structured C3D8 deck written in Python | `models/thermal/fin_ccx.py` |
+| `openfoam_heated_channel` | heated coolant channel (thermal entry) | OpenFOAM 14 in WSL, flow then scalarTransport on the frozen flow | `models/cfd/heated_channel_openfoam.py`, `models/cfd/run_heated.sh` |
+| `openfoam_ccx_cold_plate` | cold plate, full thermal chain | OpenFOAM coolant CFD coupled to CalculiX plate conduction (Robin-Neumann, Aitken), then CalculiX thermal stress | `models/cfd/cold_plate_openfoam.py`, `models/cfd/run_cold_plate.sh`, `models/thermal/cold_plate_ccx.py` |
+| `cadquery_ccx_tapered` | tapered cantilever bracket (the optimisation loop's model) | CadQuery -> STEP -> Gmsh (C3D10) -> CalculiX static | `models/fea/tapered_bracket.py` |
+| `ccx_strut` | strut buckling (eigenvalue, then imperfect and nonlinear) | CalculiX *BUCKLE, then geometrically nonlinear static, structured C3D8I deck written in Python | `models/fea/strut_ccx.py` |
+| `cadquery_ccx_strap_plastic` | strap proof test beyond notch yield | strap CAD-to-FEA pipeline with CalculiX isotropic-hardening plasticity, load then unload | `models/fea/strap_hole.py`, `models/fea/strap_plastic.py` |
+| `ccx_bolted_joint` | preloaded bolted joint, friction contact to slip | CalculiX surface-to-surface penalty contact with Coulomb friction, structured polar C3D8I half model | `models/fea/bolted_joint_ccx.py` |
+| `cadquery_ccx_clevis` | machined clevis bracket (the 3D optimisation loop's model) | CadQuery -> STEP -> Gmsh (C3D10; optional `fillet_element_size_mm` refines the fillets) -> CalculiX static, rigid pin | `models/fea/clevis_bracket.py` |
+
+A case with an `[optimization]` section runs with `python -m harness optimize <case>`
+(harness/optimize.py): COBYLA proposes designs, each candidate is a point under
+`points/c###` with its own evidence and checks, and a candidate that fails any check is
+infeasible to the optimiser. Confirm the optimum with a separate mesh-study case.
 
 The registry is `harness/registry.py`; each study lives in `studies/<name>.py`.
 

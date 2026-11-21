@@ -1,0 +1,3004 @@
+{
+  "points": [
+    {
+      "label": "c000",
+      "parameters": {
+        "base_length_mm": 100.0,
+        "base_width_mm": 100.0,
+        "base_thickness_mm": 10.0,
+        "lug_radius_mm": 20.0,
+        "pin_height_mm": 70.0,
+        "pin_diameter_mm": 16.0,
+        "lug_thickness_mm": 12.0,
+        "gusset_thickness_mm": 8.0,
+        "gusset_height_mm": 40.0,
+        "gusset_aspect": 0.7,
+        "fillet_radius_mm": 3.0,
+        "youngs_modulus_MPa": 68900.0,
+        "poisson_ratio": 0.33,
+        "density_t_per_mm3": 2.7e-09,
+        "yield_strength_MPa": 276.0,
+        "load_x_N": 1500.0,
+        "load_y_N": 1000.0,
+        "load_z_N": 4500.0,
+        "element_size_mm": 4.0,
+        "fillet_element_size_mm": 1.0
+      },
+      "derived": {
+        "gusset_reach_mm": 37.0,
+        "load_magnitude_N": 4847.679857416329
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "cad_valid",
+          "description": "CadQuery B-rep is a valid solid (1 = no)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.5,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "mesh_volume",
+          "description": "|meshed volume (straight-sided tets) - CAD volume| / CAD volume",
+          "kind": "numerical",
+          "value": 0.00021301658634021974,
+          "tolerance": 0.002,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "force_balance",
+          "description": "|sum of base reactions + pin load| / |pin load|",
+          "kind": "numerical",
+          "value": 5.287382991700607e-09,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "moment_balance",
+          "description": "|moment of the base reactions + moment of the pin load| about the origin / (|F| x pin height) (the load acts where intended)",
+          "kind": "numerical",
+          "value": 2.3091151099553754e-08,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "linear_material",
+          "description": "peak von Mises / yield strength",
+          "kind": "validity",
+          "value": 0.3220844668114747,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "small_deflection",
+          "description": "pin deflection / pin height",
+          "kind": "validity",
+          "value": 0.000782032027770618,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-C1",
+          "text": "Peak von Mises stress (outside the fixed base layer and the pin ring) shall not exceed 100 MPa (fatigue-rated allowable).",
+          "metric": "peak_von_mises_MPa",
+          "operator": "<=",
+          "limit": 100.0,
+          "units": "MPa",
+          "value": 88.895312839967,
+          "margin": 11.104687160032995,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-C2",
+          "text": "Pin deflection under the load shall not exceed 0.10 mm.",
+          "metric": "pin_deflection_mm",
+          "operator": "<=",
+          "limit": 0.1,
+          "units": "mm",
+          "value": 0.05474224194394326,
+          "margin": 0.045257758056056745,
+          "verdict": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "c001",
+      "parameters": {
+        "base_length_mm": 100.0,
+        "base_width_mm": 100.0,
+        "base_thickness_mm": 10.0,
+        "lug_radius_mm": 20.0,
+        "pin_height_mm": 70.0,
+        "pin_diameter_mm": 16.0,
+        "lug_thickness_mm": 14.0,
+        "gusset_thickness_mm": 8.0,
+        "gusset_height_mm": 40.0,
+        "gusset_aspect": 0.7,
+        "fillet_radius_mm": 3.0,
+        "youngs_modulus_MPa": 68900.0,
+        "poisson_ratio": 0.33,
+        "density_t_per_mm3": 2.7e-09,
+        "yield_strength_MPa": 276.0,
+        "load_x_N": 1500.0,
+        "load_y_N": 1000.0,
+        "load_z_N": 4500.0,
+        "element_size_mm": 4.0,
+        "fillet_element_size_mm": 1.0
+      },
+      "derived": {
+        "gusset_reach_mm": 38.0,
+        "load_magnitude_N": 4847.679857416329
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "cad_valid",
+          "description": "CadQuery B-rep is a valid solid (1 = no)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.5,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "mesh_volume",
+          "description": "|meshed volume (straight-sided tets) - CAD volume| / CAD volume",
+          "kind": "numerical",
+          "value": 0.0002083882572947357,
+          "tolerance": 0.002,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "force_balance",
+          "description": "|sum of base reactions + pin load| / |pin load|",
+          "kind": "numerical",
+          "value": 5.153856319847024e-09,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "moment_balance",
+          "description": "|moment of the base reactions + moment of the pin load| about the origin / (|F| x pin height) (the load acts where intended)",
+          "kind": "numerical",
+          "value": 2.3212780975451503e-08,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "linear_material",
+          "description": "peak von Mises / yield strength",
+          "kind": "validity",
+          "value": 0.29723166441413457,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "small_deflection",
+          "description": "pin deflection / pin height",
+          "kind": "validity",
+          "value": 0.0006316413692652778,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-C1",
+          "text": "Peak von Mises stress (outside the fixed base layer and the pin ring) shall not exceed 100 MPa (fatigue-rated allowable).",
+          "metric": "peak_von_mises_MPa",
+          "operator": "<=",
+          "limit": 100.0,
+          "units": "MPa",
+          "value": 82.03593937830114,
+          "margin": 17.964060621698863,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-C2",
+          "text": "Pin deflection under the load shall not exceed 0.10 mm.",
+          "metric": "pin_deflection_mm",
+          "operator": "<=",
+          "limit": 0.1,
+          "units": "mm",
+          "value": 0.04421489584856945,
+          "margin": 0.05578510415143056,
+          "verdict": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "c002",
+      "parameters": {
+        "base_length_mm": 100.0,
+        "base_width_mm": 100.0,
+        "base_thickness_mm": 10.0,
+        "lug_radius_mm": 20.0,
+        "pin_height_mm": 70.0,
+        "pin_diameter_mm": 16.0,
+        "lug_thickness_mm": 12.0,
+        "gusset_thickness_mm": 10.0,
+        "gusset_height_mm": 40.0,
+        "gusset_aspect": 0.7,
+        "fillet_radius_mm": 3.0,
+        "youngs_modulus_MPa": 68900.0,
+        "poisson_ratio": 0.33,
+        "density_t_per_mm3": 2.7e-09,
+        "yield_strength_MPa": 276.0,
+        "load_x_N": 1500.0,
+        "load_y_N": 1000.0,
+        "load_z_N": 4500.0,
+        "element_size_mm": 4.0,
+        "fillet_element_size_mm": 1.0
+      },
+      "derived": {
+        "gusset_reach_mm": 37.0,
+        "load_magnitude_N": 4847.679857416329
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "cad_valid",
+          "description": "CadQuery B-rep is a valid solid (1 = no)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.5,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "mesh_volume",
+          "description": "|meshed volume (straight-sided tets) - CAD volume| / CAD volume",
+          "kind": "numerical",
+          "value": 0.0002100167436503509,
+          "tolerance": 0.002,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "force_balance",
+          "description": "|sum of base reactions + pin load| / |pin load|",
+          "kind": "numerical",
+          "value": 4.1465473930308275e-09,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "moment_balance",
+          "description": "|moment of the base reactions + moment of the pin load| about the origin / (|F| x pin height) (the load acts where intended)",
+          "kind": "numerical",
+          "value": 1.8234512355619657e-08,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "linear_material",
+          "description": "peak von Mises / yield strength",
+          "kind": "validity",
+          "value": 0.30580057738258837,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "small_deflection",
+          "description": "pin deflection / pin height",
+          "kind": "validity",
+          "value": 0.0007239572354453667,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-C1",
+          "text": "Peak von Mises stress (outside the fixed base layer and the pin ring) shall not exceed 100 MPa (fatigue-rated allowable).",
+          "metric": "peak_von_mises_MPa",
+          "operator": "<=",
+          "limit": 100.0,
+          "units": "MPa",
+          "value": 84.40095935759439,
+          "margin": 15.599040642405612,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-C2",
+          "text": "Pin deflection under the load shall not exceed 0.10 mm.",
+          "metric": "pin_deflection_mm",
+          "operator": "<=",
+          "limit": 0.1,
+          "units": "mm",
+          "value": 0.050677006481175665,
+          "margin": 0.04932299351882434,
+          "verdict": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "c003",
+      "parameters": {
+        "base_length_mm": 100.0,
+        "base_width_mm": 100.0,
+        "base_thickness_mm": 10.0,
+        "lug_radius_mm": 20.0,
+        "pin_height_mm": 70.0,
+        "pin_diameter_mm": 16.0,
+        "lug_thickness_mm": 12.0,
+        "gusset_thickness_mm": 8.0,
+        "gusset_height_mm": 42.0,
+        "gusset_aspect": 0.7,
+        "fillet_radius_mm": 3.0,
+        "youngs_modulus_MPa": 68900.0,
+        "poisson_ratio": 0.33,
+        "density_t_per_mm3": 2.7e-09,
+        "yield_strength_MPa": 276.0,
+        "load_x_N": 1500.0,
+        "load_y_N": 1000.0,
+        "load_z_N": 4500.0,
+        "element_size_mm": 4.0,
+        "fillet_element_size_mm": 1.0
+      },
+      "derived": {
+        "gusset_reach_mm": 38.4,
+        "load_magnitude_N": 4847.679857416329
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "cad_valid",
+          "description": "CadQuery B-rep is a valid solid (1 = no)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.5,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "mesh_volume",
+          "description": "|meshed volume (straight-sided tets) - CAD volume| / CAD volume",
+          "kind": "numerical",
+          "value": 0.00021217577184547205,
+          "tolerance": 0.002,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "force_balance",
+          "description": "|sum of base reactions + pin load| / |pin load|",
+          "kind": "numerical",
+          "value": 4.702079435515284e-09,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "moment_balance",
+          "description": "|moment of the base reactions + moment of the pin load| about the origin / (|F| x pin height) (the load acts where intended)",
+          "kind": "numerical",
+          "value": 2.2256943028513227e-08,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "linear_material",
+          "description": "peak von Mises / yield strength",
+          "kind": "validity",
+          "value": 0.3202810970952898,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "small_deflection",
+          "description": "pin deflection / pin height",
+          "kind": "validity",
+          "value": 0.0007273538378924586,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-C1",
+          "text": "Peak von Mises stress (outside the fixed base layer and the pin ring) shall not exceed 100 MPa (fatigue-rated allowable).",
+          "metric": "peak_von_mises_MPa",
+          "operator": "<=",
+          "limit": 100.0,
+          "units": "MPa",
+          "value": 88.39758279829998,
+          "margin": 11.602417201700021,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-C2",
+          "text": "Pin deflection under the load shall not exceed 0.10 mm.",
+          "metric": "pin_deflection_mm",
+          "operator": "<=",
+          "limit": 0.1,
+          "units": "mm",
+          "value": 0.050914768652472096,
+          "margin": 0.04908523134752791,
+          "verdict": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "c004",
+      "parameters": {
+        "base_length_mm": 100.0,
+        "base_width_mm": 100.0,
+        "base_thickness_mm": 10.0,
+        "lug_radius_mm": 20.0,
+        "pin_height_mm": 70.0,
+        "pin_diameter_mm": 16.0,
+        "lug_thickness_mm": 10.16158436503507,
+        "gusset_thickness_mm": 7.274635170790991,
+        "gusset_height_mm": 39.69328544595491,
+        "gusset_aspect": 0.7,
+        "fillet_radius_mm": 3.0,
+        "youngs_modulus_MPa": 68900.0,
+        "poisson_ratio": 0.33,
+        "density_t_per_mm3": 2.7e-09,
+        "yield_strength_MPa": 276.0,
+        "load_x_N": 1500.0,
+        "load_y_N": 1000.0,
+        "load_z_N": 4500.0,
+        "element_size_mm": 4.0,
+        "fillet_element_size_mm": 1.0
+      },
+      "derived": {
+        "gusset_reach_mm": 35.86609199468597,
+        "load_magnitude_N": 4847.679857416329
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "cad_valid",
+          "description": "CadQuery B-rep is a valid solid (1 = no)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.5,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "mesh_volume",
+          "description": "|meshed volume (straight-sided tets) - CAD volume| / CAD volume",
+          "kind": "numerical",
+          "value": 0.0001793015776252842,
+          "tolerance": 0.002,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "force_balance",
+          "description": "|sum of base reactions + pin load| / |pin load|",
+          "kind": "numerical",
+          "value": 6.9977602251901036e-09,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "moment_balance",
+          "description": "|moment of the base reactions + moment of the pin load| about the origin / (|F| x pin height) (the load acts where intended)",
+          "kind": "numerical",
+          "value": 2.7807252814967562e-08,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "linear_material",
+          "description": "peak von Mises / yield strength",
+          "kind": "validity",
+          "value": 0.3633147316553522,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "small_deflection",
+          "description": "pin deflection / pin height",
+          "kind": "validity",
+          "value": 0.0010455297241591904,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-C1",
+          "text": "Peak von Mises stress (outside the fixed base layer and the pin ring) shall not exceed 100 MPa (fatigue-rated allowable).",
+          "metric": "peak_von_mises_MPa",
+          "operator": "<=",
+          "limit": 100.0,
+          "units": "MPa",
+          "value": 100.2748659368772,
+          "margin": -0.2748659368772053,
+          "verdict": "FAIL"
+        },
+        {
+          "id": "REQ-C2",
+          "text": "Pin deflection under the load shall not exceed 0.10 mm.",
+          "metric": "pin_deflection_mm",
+          "operator": "<=",
+          "limit": 0.1,
+          "units": "mm",
+          "value": 0.07318708069114332,
+          "margin": 0.02681291930885668,
+          "verdict": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "c005",
+      "parameters": {
+        "base_length_mm": 100.0,
+        "base_width_mm": 100.0,
+        "base_thickness_mm": 10.0,
+        "lug_radius_mm": 20.0,
+        "pin_height_mm": 70.0,
+        "pin_diameter_mm": 16.0,
+        "lug_thickness_mm": 10.398984731843628,
+        "gusset_thickness_mm": 8.378557763534468,
+        "gusset_height_mm": 35.8559691995309,
+        "gusset_aspect": 0.7,
+        "fillet_radius_mm": 3.0,
+        "youngs_modulus_MPa": 68900.0,
+        "poisson_ratio": 0.33,
+        "density_t_per_mm3": 2.7e-09,
+        "yield_strength_MPa": 276.0,
+        "load_x_N": 1500.0,
+        "load_y_N": 1000.0,
+        "load_z_N": 4500.0,
+        "element_size_mm": 4.0,
+        "fillet_element_size_mm": 1.0
+      },
+      "derived": {
+        "gusset_reach_mm": 33.29867080559344,
+        "load_magnitude_N": 4847.679857416329
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "cad_valid",
+          "description": "CadQuery B-rep is a valid solid (1 = no)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.5,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "mesh_volume",
+          "description": "|meshed volume (straight-sided tets) - CAD volume| / CAD volume",
+          "kind": "numerical",
+          "value": 0.0001699830902443383,
+          "tolerance": 0.002,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "force_balance",
+          "description": "|sum of base reactions + pin load| / |pin load|",
+          "kind": "numerical",
+          "value": 8.252416565462457e-09,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "moment_balance",
+          "description": "|moment of the base reactions + moment of the pin load| about the origin / (|F| x pin height) (the load acts where intended)",
+          "kind": "numerical",
+          "value": 2.272137942970946e-08,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "linear_material",
+          "description": "peak von Mises / yield strength",
+          "kind": "validity",
+          "value": 0.3540722107470044,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "small_deflection",
+          "description": "pin deflection / pin height",
+          "kind": "validity",
+          "value": 0.0011518927311926462,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-C1",
+          "text": "Peak von Mises stress (outside the fixed base layer and the pin ring) shall not exceed 100 MPa (fatigue-rated allowable).",
+          "metric": "peak_von_mises_MPa",
+          "operator": "<=",
+          "limit": 100.0,
+          "units": "MPa",
+          "value": 97.72393016617322,
+          "margin": 2.2760698338267815,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-C2",
+          "text": "Pin deflection under the load shall not exceed 0.10 mm.",
+          "metric": "pin_deflection_mm",
+          "operator": "<=",
+          "limit": 0.1,
+          "units": "mm",
+          "value": 0.08063249118348524,
+          "margin": 0.019367508816514764,
+          "verdict": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "c006",
+      "parameters": {
+        "base_length_mm": 100.0,
+        "base_width_mm": 100.0,
+        "base_thickness_mm": 10.0,
+        "lug_radius_mm": 20.0,
+        "pin_height_mm": 70.0,
+        "pin_diameter_mm": 16.0,
+        "lug_thickness_mm": 10.19709454885263,
+        "gusset_thickness_mm": 9.474258156528432,
+        "gusset_height_mm": 32.01426632153464,
+        "gusset_aspect": 0.7,
+        "fillet_radius_mm": 3.0,
+        "youngs_modulus_MPa": 68900.0,
+        "poisson_ratio": 0.33,
+        "density_t_per_mm3": 2.7e-09,
+        "yield_strength_MPa": 276.0,
+        "load_x_N": 1500.0,
+        "load_y_N": 1000.0,
+        "load_z_N": 4500.0,
+        "element_size_mm": 4.0,
+        "fillet_element_size_mm": 1.0
+      },
+      "derived": {
+        "gusset_reach_mm": 30.508533699500564,
+        "load_magnitude_N": 4847.679857416329
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "cad_valid",
+          "description": "CadQuery B-rep is a valid solid (1 = no)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.5,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "mesh_volume",
+          "description": "|meshed volume (straight-sided tets) - CAD volume| / CAD volume",
+          "kind": "numerical",
+          "value": 0.00014394523614168943,
+          "tolerance": 0.002,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "force_balance",
+          "description": "|sum of base reactions + pin load| / |pin load|",
+          "kind": "numerical",
+          "value": 8.548591944263136e-09,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "moment_balance",
+          "description": "|moment of the base reactions + moment of the pin load| about the origin / (|F| x pin height) (the load acts where intended)",
+          "kind": "numerical",
+          "value": 3.3200683742243056e-08,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "linear_material",
+          "description": "peak von Mises / yield strength",
+          "kind": "validity",
+          "value": 0.3643887305548324,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "small_deflection",
+          "description": "pin deflection / pin height",
+          "kind": "validity",
+          "value": 0.0013921870452009335,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-C1",
+          "text": "Peak von Mises stress (outside the fixed base layer and the pin ring) shall not exceed 100 MPa (fatigue-rated allowable).",
+          "metric": "peak_von_mises_MPa",
+          "operator": "<=",
+          "limit": 100.0,
+          "units": "MPa",
+          "value": 100.57128963313374,
+          "margin": -0.5712896331337447,
+          "verdict": "FAIL"
+        },
+        {
+          "id": "REQ-C2",
+          "text": "Pin deflection under the load shall not exceed 0.10 mm.",
+          "metric": "pin_deflection_mm",
+          "operator": "<=",
+          "limit": 0.1,
+          "units": "mm",
+          "value": 0.09745309316406535,
+          "margin": 0.0025469068359346564,
+          "verdict": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "c007",
+      "parameters": {
+        "base_length_mm": 100.0,
+        "base_width_mm": 100.0,
+        "base_thickness_mm": 10.0,
+        "lug_radius_mm": 20.0,
+        "pin_height_mm": 70.0,
+        "pin_diameter_mm": 16.0,
+        "lug_thickness_mm": 6.441029240895986,
+        "gusset_thickness_mm": 12.0,
+        "gusset_height_mm": 38.610674551965914,
+        "gusset_aspect": 0.7,
+        "fillet_radius_mm": 3.0,
+        "youngs_modulus_MPa": 68900.0,
+        "poisson_ratio": 0.33,
+        "density_t_per_mm3": 2.7e-09,
+        "yield_strength_MPa": 276.0,
+        "load_x_N": 1500.0,
+        "load_y_N": 1000.0,
+        "load_z_N": 4500.0,
+        "element_size_mm": 4.0,
+        "fillet_element_size_mm": 1.0
+      },
+      "derived": {
+        "gusset_reach_mm": 33.24798680682413,
+        "load_magnitude_N": 4847.679857416329
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "cad_valid",
+          "description": "CadQuery B-rep is a valid solid (1 = no)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.5,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "mesh_volume",
+          "description": "|meshed volume (straight-sided tets) - CAD volume| / CAD volume",
+          "kind": "numerical",
+          "value": 0.00020383678036616466,
+          "tolerance": 0.002,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "force_balance",
+          "description": "|sum of base reactions + pin load| / |pin load|",
+          "kind": "numerical",
+          "value": 9.122356724454761e-09,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "moment_balance",
+          "description": "|moment of the base reactions + moment of the pin load| about the origin / (|F| x pin height) (the load acts where intended)",
+          "kind": "numerical",
+          "value": 2.3718242709570963e-08,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "linear_material",
+          "description": "peak von Mises / yield strength",
+          "kind": "validity",
+          "value": 0.5993086607870289,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "small_deflection",
+          "description": "pin deflection / pin height",
+          "kind": "validity",
+          "value": 0.0020082189491680766,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-C1",
+          "text": "Peak von Mises stress (outside the fixed base layer and the pin ring) shall not exceed 100 MPa (fatigue-rated allowable).",
+          "metric": "peak_von_mises_MPa",
+          "operator": "<=",
+          "limit": 100.0,
+          "units": "MPa",
+          "value": 165.40919037721997,
+          "margin": -65.40919037721997,
+          "verdict": "FAIL"
+        },
+        {
+          "id": "REQ-C2",
+          "text": "Pin deflection under the load shall not exceed 0.10 mm.",
+          "metric": "pin_deflection_mm",
+          "operator": "<=",
+          "limit": 0.1,
+          "units": "mm",
+          "value": 0.14057532644176537,
+          "margin": -0.04057532644176537,
+          "verdict": "FAIL"
+        }
+      ]
+    },
+    {
+      "label": "c008",
+      "parameters": {
+        "base_length_mm": 100.0,
+        "base_width_mm": 100.0,
+        "base_thickness_mm": 10.0,
+        "lug_radius_mm": 20.0,
+        "pin_height_mm": 70.0,
+        "pin_diameter_mm": 16.0,
+        "lug_thickness_mm": 9.702514895212044,
+        "gusset_thickness_mm": 5.202304842916202,
+        "gusset_height_mm": 35.93596860961449,
+        "gusset_aspect": 0.7,
+        "fillet_radius_mm": 3.0,
+        "youngs_modulus_MPa": 68900.0,
+        "poisson_ratio": 0.33,
+        "density_t_per_mm3": 2.7e-09,
+        "yield_strength_MPa": 276.0,
+        "load_x_N": 1500.0,
+        "load_y_N": 1000.0,
+        "load_z_N": 4500.0,
+        "element_size_mm": 4.0,
+        "fillet_element_size_mm": 1.0
+      },
+      "derived": {
+        "gusset_reach_mm": 33.006435474336165,
+        "load_magnitude_N": 4847.679857416329
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "cad_valid",
+          "description": "CadQuery B-rep is a valid solid (1 = no)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.5,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "mesh_volume",
+          "description": "|meshed volume (straight-sided tets) - CAD volume| / CAD volume",
+          "kind": "numerical",
+          "value": 0.0001766579443318597,
+          "tolerance": 0.002,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "force_balance",
+          "description": "|sum of base reactions + pin load| / |pin load|",
+          "kind": "numerical",
+          "value": 5.696744834775002e-09,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "moment_balance",
+          "description": "|moment of the base reactions + moment of the pin load| about the origin / (|F| x pin height) (the load acts where intended)",
+          "kind": "numerical",
+          "value": 2.8557406989993215e-08,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "linear_material",
+          "description": "peak von Mises / yield strength",
+          "kind": "validity",
+          "value": 0.41150706315610064,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "small_deflection",
+          "description": "pin deflection / pin height",
+          "kind": "validity",
+          "value": 0.001532034485531614,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-C1",
+          "text": "Peak von Mises stress (outside the fixed base layer and the pin ring) shall not exceed 100 MPa (fatigue-rated allowable).",
+          "metric": "peak_von_mises_MPa",
+          "operator": "<=",
+          "limit": 100.0,
+          "units": "MPa",
+          "value": 113.57594943108377,
+          "margin": -13.575949431083771,
+          "verdict": "FAIL"
+        },
+        {
+          "id": "REQ-C2",
+          "text": "Pin deflection under the load shall not exceed 0.10 mm.",
+          "metric": "pin_deflection_mm",
+          "operator": "<=",
+          "limit": 0.1,
+          "units": "mm",
+          "value": 0.10724241398721299,
+          "margin": -0.007242413987212981,
+          "verdict": "FAIL"
+        }
+      ]
+    },
+    {
+      "label": "c009",
+      "parameters": {
+        "base_length_mm": 100.0,
+        "base_width_mm": 100.0,
+        "base_thickness_mm": 10.0,
+        "lug_radius_mm": 20.0,
+        "pin_height_mm": 70.0,
+        "pin_diameter_mm": 16.0,
+        "lug_thickness_mm": 10.71976758385514,
+        "gusset_thickness_mm": 3.0,
+        "gusset_height_mm": 35.02158385995848,
+        "gusset_aspect": 0.7,
+        "fillet_radius_mm": 3.0,
+        "youngs_modulus_MPa": 68900.0,
+        "poisson_ratio": 0.33,
+        "density_t_per_mm3": 2.7e-09,
+        "yield_strength_MPa": 276.0,
+        "load_x_N": 1500.0,
+        "load_y_N": 1000.0,
+        "load_z_N": 4500.0,
+        "element_size_mm": 4.0,
+        "fillet_element_size_mm": 1.0
+      },
+      "derived": {
+        "gusset_reach_mm": 32.8749924938985,
+        "load_magnitude_N": 4847.679857416329
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "cad_valid",
+          "description": "CadQuery B-rep is a valid solid (1 = no)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.5,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "mesh_volume",
+          "description": "|meshed volume (straight-sided tets) - CAD volume| / CAD volume",
+          "kind": "numerical",
+          "value": 0.00018618391445562906,
+          "tolerance": 0.002,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "force_balance",
+          "description": "|sum of base reactions + pin load| / |pin load|",
+          "kind": "numerical",
+          "value": 3.1435882477139625e-09,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "moment_balance",
+          "description": "|moment of the base reactions + moment of the pin load| about the origin / (|F| x pin height) (the load acts where intended)",
+          "kind": "numerical",
+          "value": 2.7112529457910916e-08,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "linear_material",
+          "description": "peak von Mises / yield strength",
+          "kind": "validity",
+          "value": 0.4457361812860564,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "small_deflection",
+          "description": "pin deflection / pin height",
+          "kind": "validity",
+          "value": 0.0016226410567526473,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-C1",
+          "text": "Peak von Mises stress (outside the fixed base layer and the pin ring) shall not exceed 100 MPa (fatigue-rated allowable).",
+          "metric": "peak_von_mises_MPa",
+          "operator": "<=",
+          "limit": 100.0,
+          "units": "MPa",
+          "value": 123.02318603495156,
+          "margin": -23.023186034951564,
+          "verdict": "FAIL"
+        },
+        {
+          "id": "REQ-C2",
+          "text": "Pin deflection under the load shall not exceed 0.10 mm.",
+          "metric": "pin_deflection_mm",
+          "operator": "<=",
+          "limit": 0.1,
+          "units": "mm",
+          "value": 0.11358487397268531,
+          "margin": -0.013584873972685305,
+          "verdict": "FAIL"
+        }
+      ]
+    },
+    {
+      "label": "c010",
+      "parameters": {
+        "base_length_mm": 100.0,
+        "base_width_mm": 100.0,
+        "base_thickness_mm": 10.0,
+        "lug_radius_mm": 20.0,
+        "pin_height_mm": 70.0,
+        "pin_diameter_mm": 16.0,
+        "lug_thickness_mm": 8.60070714030822,
+        "gusset_thickness_mm": 9.207533164174547,
+        "gusset_height_mm": 36.137034118927176,
+        "gusset_aspect": 0.7,
+        "fillet_radius_mm": 3.0,
+        "youngs_modulus_MPa": 68900.0,
+        "poisson_ratio": 0.33,
+        "density_t_per_mm3": 2.7e-09,
+        "yield_strength_MPa": 276.0,
+        "load_x_N": 1500.0,
+        "load_y_N": 1000.0,
+        "load_z_N": 4500.0,
+        "element_size_mm": 4.0,
+        "fillet_element_size_mm": 1.0
+      },
+      "derived": {
+        "gusset_reach_mm": 32.59627745340313,
+        "load_magnitude_N": 4847.679857416329
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "cad_valid",
+          "description": "CadQuery B-rep is a valid solid (1 = no)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.5,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "mesh_volume",
+          "description": "|meshed volume (straight-sided tets) - CAD volume| / CAD volume",
+          "kind": "numerical",
+          "value": 0.0001709359763875515,
+          "tolerance": 0.002,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "force_balance",
+          "description": "|sum of base reactions + pin load| / |pin load|",
+          "kind": "numerical",
+          "value": 8.129397415053152e-09,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "moment_balance",
+          "description": "|moment of the base reactions + moment of the pin load| about the origin / (|F| x pin height) (the load acts where intended)",
+          "kind": "numerical",
+          "value": 2.420949623870267e-08,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "linear_material",
+          "description": "peak von Mises / yield strength",
+          "kind": "validity",
+          "value": 0.42324227398142666,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "small_deflection",
+          "description": "pin deflection / pin height",
+          "kind": "validity",
+          "value": 0.0015312528194830954,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-C1",
+          "text": "Peak von Mises stress (outside the fixed base layer and the pin ring) shall not exceed 100 MPa (fatigue-rated allowable).",
+          "metric": "peak_von_mises_MPa",
+          "operator": "<=",
+          "limit": 100.0,
+          "units": "MPa",
+          "value": 116.81486761887376,
+          "margin": -16.814867618873762,
+          "verdict": "FAIL"
+        },
+        {
+          "id": "REQ-C2",
+          "text": "Pin deflection under the load shall not exceed 0.10 mm.",
+          "metric": "pin_deflection_mm",
+          "operator": "<=",
+          "limit": 0.1,
+          "units": "mm",
+          "value": 0.10718769736381668,
+          "margin": -0.007187697363816678,
+          "verdict": "FAIL"
+        }
+      ]
+    },
+    {
+      "label": "c011",
+      "parameters": {
+        "base_length_mm": 100.0,
+        "base_width_mm": 100.0,
+        "base_thickness_mm": 10.0,
+        "lug_radius_mm": 20.0,
+        "pin_height_mm": 70.0,
+        "pin_diameter_mm": 16.0,
+        "lug_thickness_mm": 10.806436423854793,
+        "gusset_thickness_mm": 6.896463672926644,
+        "gusset_height_mm": 34.57636761104227,
+        "gusset_aspect": 0.7,
+        "fillet_radius_mm": 3.0,
+        "youngs_modulus_MPa": 68900.0,
+        "poisson_ratio": 0.33,
+        "density_t_per_mm3": 2.7e-09,
+        "yield_strength_MPa": 276.0,
+        "load_x_N": 1500.0,
+        "load_y_N": 1000.0,
+        "load_z_N": 4500.0,
+        "element_size_mm": 4.0,
+        "fillet_element_size_mm": 1.0
+      },
+      "derived": {
+        "gusset_reach_mm": 32.60667553965698,
+        "load_magnitude_N": 4847.679857416329
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "cad_valid",
+          "description": "CadQuery B-rep is a valid solid (1 = no)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.5,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "mesh_volume",
+          "description": "|meshed volume (straight-sided tets) - CAD volume| / CAD volume",
+          "kind": "numerical",
+          "value": 0.00018355233097970685,
+          "tolerance": 0.002,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "force_balance",
+          "description": "|sum of base reactions + pin load| / |pin load|",
+          "kind": "numerical",
+          "value": 5.998311993844141e-09,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "moment_balance",
+          "description": "|moment of the base reactions + moment of the pin load| about the origin / (|F| x pin height) (the load acts where intended)",
+          "kind": "numerical",
+          "value": 2.5908714743608698e-08,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "linear_material",
+          "description": "peak von Mises / yield strength",
+          "kind": "validity",
+          "value": 0.37398896511400076,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "small_deflection",
+          "description": "pin deflection / pin height",
+          "kind": "validity",
+          "value": 0.001226017437197176,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-C1",
+          "text": "Peak von Mises stress (outside the fixed base layer and the pin ring) shall not exceed 100 MPa (fatigue-rated allowable).",
+          "metric": "peak_von_mises_MPa",
+          "operator": "<=",
+          "limit": 100.0,
+          "units": "MPa",
+          "value": 103.22095437146422,
+          "margin": -3.2209543714642166,
+          "verdict": "FAIL"
+        },
+        {
+          "id": "REQ-C2",
+          "text": "Pin deflection under the load shall not exceed 0.10 mm.",
+          "metric": "pin_deflection_mm",
+          "operator": "<=",
+          "limit": 0.1,
+          "units": "mm",
+          "value": 0.08582122060380232,
+          "margin": 0.014178779396197688,
+          "verdict": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "c012",
+      "parameters": {
+        "base_length_mm": 100.0,
+        "base_width_mm": 100.0,
+        "base_thickness_mm": 10.0,
+        "lug_radius_mm": 20.0,
+        "pin_height_mm": 70.0,
+        "pin_diameter_mm": 16.0,
+        "lug_thickness_mm": 10.126956757418933,
+        "gusset_thickness_mm": 7.926673893546864,
+        "gusset_height_mm": 36.70555836446618,
+        "gusset_aspect": 0.7,
+        "fillet_radius_mm": 3.0,
+        "youngs_modulus_MPa": 68900.0,
+        "poisson_ratio": 0.33,
+        "density_t_per_mm3": 2.7e-09,
+        "yield_strength_MPa": 276.0,
+        "load_x_N": 1500.0,
+        "load_y_N": 1000.0,
+        "load_z_N": 4500.0,
+        "element_size_mm": 4.0,
+        "fillet_element_size_mm": 1.0
+      },
+      "derived": {
+        "gusset_reach_mm": 33.75736923383579,
+        "load_magnitude_N": 4847.679857416329
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "cad_valid",
+          "description": "CadQuery B-rep is a valid solid (1 = no)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.5,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "mesh_volume",
+          "description": "|meshed volume (straight-sided tets) - CAD volume| / CAD volume",
+          "kind": "numerical",
+          "value": 0.00016830400954646706,
+          "tolerance": 0.002,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "force_balance",
+          "description": "|sum of base reactions + pin load| / |pin load|",
+          "kind": "numerical",
+          "value": 7.065633273095145e-09,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "moment_balance",
+          "description": "|moment of the base reactions + moment of the pin load| about the origin / (|F| x pin height) (the load acts where intended)",
+          "kind": "numerical",
+          "value": 2.7858435600375722e-08,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "linear_material",
+          "description": "peak von Mises / yield strength",
+          "kind": "validity",
+          "value": 0.3638910720691509,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "small_deflection",
+          "description": "pin deflection / pin height",
+          "kind": "validity",
+          "value": 0.0011778515330679983,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-C1",
+          "text": "Peak von Mises stress (outside the fixed base layer and the pin ring) shall not exceed 100 MPa (fatigue-rated allowable).",
+          "metric": "peak_von_mises_MPa",
+          "operator": "<=",
+          "limit": 100.0,
+          "units": "MPa",
+          "value": 100.43393589108564,
+          "margin": -0.433935891085639,
+          "verdict": "FAIL"
+        },
+        {
+          "id": "REQ-C2",
+          "text": "Pin deflection under the load shall not exceed 0.10 mm.",
+          "metric": "pin_deflection_mm",
+          "operator": "<=",
+          "limit": 0.1,
+          "units": "mm",
+          "value": 0.08244960731475988,
+          "margin": 0.017550392685240127,
+          "verdict": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "c013",
+      "parameters": {
+        "base_length_mm": 100.0,
+        "base_width_mm": 100.0,
+        "base_thickness_mm": 10.0,
+        "lug_radius_mm": 20.0,
+        "pin_height_mm": 70.0,
+        "pin_diameter_mm": 16.0,
+        "lug_thickness_mm": 10.637116101271339,
+        "gusset_thickness_mm": 8.378308812582894,
+        "gusset_height_mm": 35.93208351433373,
+        "gusset_aspect": 0.7,
+        "fillet_radius_mm": 3.0,
+        "youngs_modulus_MPa": 68900.0,
+        "poisson_ratio": 0.33,
+        "density_t_per_mm3": 2.7e-09,
+        "yield_strength_MPa": 276.0,
+        "load_x_N": 1500.0,
+        "load_y_N": 1000.0,
+        "load_z_N": 4500.0,
+        "element_size_mm": 4.0,
+        "fillet_element_size_mm": 1.0
+      },
+      "derived": {
+        "gusset_reach_mm": 33.47101651066928,
+        "load_magnitude_N": 4847.679857416329
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "cad_valid",
+          "description": "CadQuery B-rep is a valid solid (1 = no)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.5,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "mesh_volume",
+          "description": "|meshed volume (straight-sided tets) - CAD volume| / CAD volume",
+          "kind": "numerical",
+          "value": 0.00015993207802390494,
+          "tolerance": 0.002,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "force_balance",
+          "description": "|sum of base reactions + pin load| / |pin load|",
+          "kind": "numerical",
+          "value": 2.8237308923476483e-09,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "moment_balance",
+          "description": "|moment of the base reactions + moment of the pin load| about the origin / (|F| x pin height) (the load acts where intended)",
+          "kind": "numerical",
+          "value": 2.215256465410029e-08,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "linear_material",
+          "description": "peak von Mises / yield strength",
+          "kind": "validity",
+          "value": 0.3556016376762107,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "small_deflection",
+          "description": "pin deflection / pin height",
+          "kind": "validity",
+          "value": 0.001104441484597992,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-C1",
+          "text": "Peak von Mises stress (outside the fixed base layer and the pin ring) shall not exceed 100 MPa (fatigue-rated allowable).",
+          "metric": "peak_von_mises_MPa",
+          "operator": "<=",
+          "limit": 100.0,
+          "units": "MPa",
+          "value": 98.14605199863416,
+          "margin": 1.8539480013658363,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-C2",
+          "text": "Pin deflection under the load shall not exceed 0.10 mm.",
+          "metric": "pin_deflection_mm",
+          "operator": "<=",
+          "limit": 0.1,
+          "units": "mm",
+          "value": 0.07731090392185944,
+          "margin": 0.02268909607814057,
+          "verdict": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "c014",
+      "parameters": {
+        "base_length_mm": 100.0,
+        "base_width_mm": 100.0,
+        "base_thickness_mm": 10.0,
+        "lug_radius_mm": 20.0,
+        "pin_height_mm": 70.0,
+        "pin_diameter_mm": 16.0,
+        "lug_thickness_mm": 9.91875397129528,
+        "gusset_thickness_mm": 8.260368392480732,
+        "gusset_height_mm": 35.78241861018533,
+        "gusset_aspect": 0.7,
+        "fillet_radius_mm": 3.0,
+        "youngs_modulus_MPa": 68900.0,
+        "poisson_ratio": 0.33,
+        "density_t_per_mm3": 2.7e-09,
+        "yield_strength_MPa": 276.0,
+        "load_x_N": 1500.0,
+        "load_y_N": 1000.0,
+        "load_z_N": 4500.0,
+        "element_size_mm": 4.0,
+        "fillet_element_size_mm": 1.0
+      },
+      "derived": {
+        "gusset_reach_mm": 33.007070012777376,
+        "load_magnitude_N": 4847.679857416329
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "cad_valid",
+          "description": "CadQuery B-rep is a valid solid (1 = no)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.5,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "mesh_volume",
+          "description": "|meshed volume (straight-sided tets) - CAD volume| / CAD volume",
+          "kind": "numerical",
+          "value": 0.0001683408861466364,
+          "tolerance": 0.002,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "force_balance",
+          "description": "|sum of base reactions + pin load| / |pin load|",
+          "kind": "numerical",
+          "value": 1.0844985490257987e-08,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "moment_balance",
+          "description": "|moment of the base reactions + moment of the pin load| about the origin / (|F| x pin height) (the load acts where intended)",
+          "kind": "numerical",
+          "value": 2.3169757706413378e-08,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "linear_material",
+          "description": "peak von Mises / yield strength",
+          "kind": "validity",
+          "value": 0.36686774522241905,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "small_deflection",
+          "description": "pin deflection / pin height",
+          "kind": "validity",
+          "value": 0.0012605228480502574,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-C1",
+          "text": "Peak von Mises stress (outside the fixed base layer and the pin ring) shall not exceed 100 MPa (fatigue-rated allowable).",
+          "metric": "peak_von_mises_MPa",
+          "operator": "<=",
+          "limit": 100.0,
+          "units": "MPa",
+          "value": 101.25549768138765,
+          "margin": -1.2554976813876522,
+          "verdict": "FAIL"
+        },
+        {
+          "id": "REQ-C2",
+          "text": "Pin deflection under the load shall not exceed 0.10 mm.",
+          "metric": "pin_deflection_mm",
+          "operator": "<=",
+          "limit": 0.1,
+          "units": "mm",
+          "value": 0.08823659936351802,
+          "margin": 0.011763400636481985,
+          "verdict": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "c015",
+      "parameters": {
+        "base_length_mm": 100.0,
+        "base_width_mm": 100.0,
+        "base_thickness_mm": 10.0,
+        "lug_radius_mm": 20.0,
+        "pin_height_mm": 70.0,
+        "pin_diameter_mm": 16.0,
+        "lug_thickness_mm": 10.237072043383131,
+        "gusset_thickness_mm": 8.650039607248715,
+        "gusset_height_mm": 35.86501850055403,
+        "gusset_aspect": 0.7,
+        "fillet_radius_mm": 3.0,
+        "youngs_modulus_MPa": 68900.0,
+        "poisson_ratio": 0.33,
+        "density_t_per_mm3": 2.7e-09,
+        "yield_strength_MPa": 276.0,
+        "load_x_N": 1500.0,
+        "load_y_N": 1000.0,
+        "load_z_N": 4500.0,
+        "element_size_mm": 4.0,
+        "fillet_element_size_mm": 1.0
+      },
+      "derived": {
+        "gusset_reach_mm": 33.22404897207939,
+        "load_magnitude_N": 4847.679857416329
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "cad_valid",
+          "description": "CadQuery B-rep is a valid solid (1 = no)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.5,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "mesh_volume",
+          "description": "|meshed volume (straight-sided tets) - CAD volume| / CAD volume",
+          "kind": "numerical",
+          "value": 0.00016529487997351825,
+          "tolerance": 0.002,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "force_balance",
+          "description": "|sum of base reactions + pin load| / |pin load|",
+          "kind": "numerical",
+          "value": 1.8587717921552037e-08,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "moment_balance",
+          "description": "|moment of the base reactions + moment of the pin load| about the origin / (|F| x pin height) (the load acts where intended)",
+          "kind": "numerical",
+          "value": 2.5438193686742353e-08,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "linear_material",
+          "description": "peak von Mises / yield strength",
+          "kind": "validity",
+          "value": 0.3548150124499786,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "small_deflection",
+          "description": "pin deflection / pin height",
+          "kind": "validity",
+          "value": 0.0011694241210483008,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-C1",
+          "text": "Peak von Mises stress (outside the fixed base layer and the pin ring) shall not exceed 100 MPa (fatigue-rated allowable).",
+          "metric": "peak_von_mises_MPa",
+          "operator": "<=",
+          "limit": 100.0,
+          "units": "MPa",
+          "value": 97.92894343619409,
+          "margin": 2.071056563805911,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-C2",
+          "text": "Pin deflection under the load shall not exceed 0.10 mm.",
+          "metric": "pin_deflection_mm",
+          "operator": "<=",
+          "limit": 0.1,
+          "units": "mm",
+          "value": 0.08185968847338106,
+          "margin": 0.01814031152661895,
+          "verdict": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "c016",
+      "parameters": {
+        "base_length_mm": 100.0,
+        "base_width_mm": 100.0,
+        "base_thickness_mm": 10.0,
+        "lug_radius_mm": 20.0,
+        "pin_height_mm": 70.0,
+        "pin_diameter_mm": 16.0,
+        "lug_thickness_mm": 10.178508920987424,
+        "gusset_thickness_mm": 8.933225130556167,
+        "gusset_height_mm": 35.73704850374091,
+        "gusset_aspect": 0.7,
+        "fillet_radius_mm": 3.0,
+        "youngs_modulus_MPa": 68900.0,
+        "poisson_ratio": 0.33,
+        "density_t_per_mm3": 2.7e-09,
+        "yield_strength_MPa": 276.0,
+        "load_x_N": 1500.0,
+        "load_y_N": 1000.0,
+        "load_z_N": 4500.0,
+        "element_size_mm": 4.0,
+        "fillet_element_size_mm": 1.0
+      },
+      "derived": {
+        "gusset_reach_mm": 33.105188413112344,
+        "load_magnitude_N": 4847.679857416329
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "cad_valid",
+          "description": "CadQuery B-rep is a valid solid (1 = no)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.5,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "mesh_volume",
+          "description": "|meshed volume (straight-sided tets) - CAD volume| / CAD volume",
+          "kind": "numerical",
+          "value": 0.00016226649755585526,
+          "tolerance": 0.002,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "force_balance",
+          "description": "|sum of base reactions + pin load| / |pin load|",
+          "kind": "numerical",
+          "value": 1.076141282244599e-08,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "moment_balance",
+          "description": "|moment of the base reactions + moment of the pin load| about the origin / (|F| x pin height) (the load acts where intended)",
+          "kind": "numerical",
+          "value": 2.3212384918965595e-08,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "linear_material",
+          "description": "peak von Mises / yield strength",
+          "kind": "validity",
+          "value": 0.3563330744784786,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "small_deflection",
+          "description": "pin deflection / pin height",
+          "kind": "validity",
+          "value": 0.0011752332724288643,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-C1",
+          "text": "Peak von Mises stress (outside the fixed base layer and the pin ring) shall not exceed 100 MPa (fatigue-rated allowable).",
+          "metric": "peak_von_mises_MPa",
+          "operator": "<=",
+          "limit": 100.0,
+          "units": "MPa",
+          "value": 98.3479285560601,
+          "margin": 1.652071443939903,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-C2",
+          "text": "Pin deflection under the load shall not exceed 0.10 mm.",
+          "metric": "pin_deflection_mm",
+          "operator": "<=",
+          "limit": 0.1,
+          "units": "mm",
+          "value": 0.0822663290700205,
+          "margin": 0.017733670929979503,
+          "verdict": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "c017",
+      "parameters": {
+        "base_length_mm": 100.0,
+        "base_width_mm": 100.0,
+        "base_thickness_mm": 10.0,
+        "lug_radius_mm": 20.0,
+        "pin_height_mm": 70.0,
+        "pin_diameter_mm": 16.0,
+        "lug_thickness_mm": 10.050865213995706,
+        "gusset_thickness_mm": 8.627355190725174,
+        "gusset_height_mm": 36.1196013631675,
+        "gusset_aspect": 0.7,
+        "fillet_radius_mm": 3.0,
+        "youngs_modulus_MPa": 68900.0,
+        "poisson_ratio": 0.33,
+        "density_t_per_mm3": 2.7e-09,
+        "yield_strength_MPa": 276.0,
+        "load_x_N": 1500.0,
+        "load_y_N": 1000.0,
+        "load_z_N": 4500.0,
+        "element_size_mm": 4.0,
+        "fillet_element_size_mm": 1.0
+      },
+      "derived": {
+        "gusset_reach_mm": 33.3091535612151,
+        "load_magnitude_N": 4847.679857416329
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "cad_valid",
+          "description": "CadQuery B-rep is a valid solid (1 = no)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.5,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "mesh_volume",
+          "description": "|meshed volume (straight-sided tets) - CAD volume| / CAD volume",
+          "kind": "numerical",
+          "value": 0.00017661396725548016,
+          "tolerance": 0.002,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "force_balance",
+          "description": "|sum of base reactions + pin load| / |pin load|",
+          "kind": "numerical",
+          "value": 1.3495546429622233e-08,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "moment_balance",
+          "description": "|moment of the base reactions + moment of the pin load| about the origin / (|F| x pin height) (the load acts where intended)",
+          "kind": "numerical",
+          "value": 2.3746886771770557e-08,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "linear_material",
+          "description": "peak von Mises / yield strength",
+          "kind": "validity",
+          "value": 0.35886927515978545,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "small_deflection",
+          "description": "pin deflection / pin height",
+          "kind": "validity",
+          "value": 0.0011923488343272945,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-C1",
+          "text": "Peak von Mises stress (outside the fixed base layer and the pin ring) shall not exceed 100 MPa (fatigue-rated allowable).",
+          "metric": "peak_von_mises_MPa",
+          "operator": "<=",
+          "limit": 100.0,
+          "units": "MPa",
+          "value": 99.04791994410078,
+          "margin": 0.9520800558992164,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-C2",
+          "text": "Pin deflection under the load shall not exceed 0.10 mm.",
+          "metric": "pin_deflection_mm",
+          "operator": "<=",
+          "limit": 0.1,
+          "units": "mm",
+          "value": 0.08346441840291062,
+          "margin": 0.016535581597089385,
+          "verdict": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "c018",
+      "parameters": {
+        "base_length_mm": 100.0,
+        "base_width_mm": 100.0,
+        "base_thickness_mm": 10.0,
+        "lug_radius_mm": 20.0,
+        "pin_height_mm": 70.0,
+        "pin_diameter_mm": 16.0,
+        "lug_thickness_mm": 10.237927543035353,
+        "gusset_thickness_mm": 8.798058037069056,
+        "gusset_height_mm": 35.80943241817844,
+        "gusset_aspect": 0.7,
+        "fillet_radius_mm": 3.0,
+        "youngs_modulus_MPa": 68900.0,
+        "poisson_ratio": 0.33,
+        "density_t_per_mm3": 2.7e-09,
+        "yield_strength_MPa": 276.0,
+        "load_x_N": 1500.0,
+        "load_y_N": 1000.0,
+        "load_z_N": 4500.0,
+        "element_size_mm": 4.0,
+        "fillet_element_size_mm": 1.0
+      },
+      "derived": {
+        "gusset_reach_mm": 33.185566464242584,
+        "load_magnitude_N": 4847.679857416329
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "cad_valid",
+          "description": "CadQuery B-rep is a valid solid (1 = no)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.5,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "mesh_volume",
+          "description": "|meshed volume (straight-sided tets) - CAD volume| / CAD volume",
+          "kind": "numerical",
+          "value": 0.00016632859631794862,
+          "tolerance": 0.002,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "force_balance",
+          "description": "|sum of base reactions + pin load| / |pin load|",
+          "kind": "numerical",
+          "value": 1.8648790201360116e-08,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "moment_balance",
+          "description": "|moment of the base reactions + moment of the pin load| about the origin / (|F| x pin height) (the load acts where intended)",
+          "kind": "numerical",
+          "value": 2.479375993991732e-08,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "linear_material",
+          "description": "peak von Mises / yield strength",
+          "kind": "validity",
+          "value": 0.3533786899438046,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "small_deflection",
+          "description": "pin deflection / pin height",
+          "kind": "validity",
+          "value": 0.0011655140273881743,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-C1",
+          "text": "Peak von Mises stress (outside the fixed base layer and the pin ring) shall not exceed 100 MPa (fatigue-rated allowable).",
+          "metric": "peak_von_mises_MPa",
+          "operator": "<=",
+          "limit": 100.0,
+          "units": "MPa",
+          "value": 97.53251842449008,
+          "margin": 2.4674815755099218,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-C2",
+          "text": "Pin deflection under the load shall not exceed 0.10 mm.",
+          "metric": "pin_deflection_mm",
+          "operator": "<=",
+          "limit": 0.1,
+          "units": "mm",
+          "value": 0.0815859819171722,
+          "margin": 0.018414018082827804,
+          "verdict": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "c019",
+      "parameters": {
+        "base_length_mm": 100.0,
+        "base_width_mm": 100.0,
+        "base_thickness_mm": 10.0,
+        "lug_radius_mm": 20.0,
+        "pin_height_mm": 70.0,
+        "pin_diameter_mm": 16.0,
+        "lug_thickness_mm": 10.138721905021304,
+        "gusset_thickness_mm": 9.06916365232668,
+        "gusset_height_mm": 35.68035884705712,
+        "gusset_aspect": 0.7,
+        "fillet_radius_mm": 3.0,
+        "youngs_modulus_MPa": 68900.0,
+        "poisson_ratio": 0.33,
+        "density_t_per_mm3": 2.7e-09,
+        "yield_strength_MPa": 276.0,
+        "load_x_N": 1500.0,
+        "load_y_N": 1000.0,
+        "load_z_N": 4500.0,
+        "element_size_mm": 4.0,
+        "fillet_element_size_mm": 1.0
+      },
+      "derived": {
+        "gusset_reach_mm": 33.04561214545063,
+        "load_magnitude_N": 4847.679857416329
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "cad_valid",
+          "description": "CadQuery B-rep is a valid solid (1 = no)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.5,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "mesh_volume",
+          "description": "|meshed volume (straight-sided tets) - CAD volume| / CAD volume",
+          "kind": "numerical",
+          "value": 0.00016038603515870466,
+          "tolerance": 0.002,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "force_balance",
+          "description": "|sum of base reactions + pin load| / |pin load|",
+          "kind": "numerical",
+          "value": 4.409147659195365e-09,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "moment_balance",
+          "description": "|moment of the base reactions + moment of the pin load| about the origin / (|F| x pin height) (the load acts where intended)",
+          "kind": "numerical",
+          "value": 2.577402014824582e-08,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "linear_material",
+          "description": "peak von Mises / yield strength",
+          "kind": "validity",
+          "value": 0.3574912875055992,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "small_deflection",
+          "description": "pin deflection / pin height",
+          "kind": "validity",
+          "value": 0.0011803166692723422,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-C1",
+          "text": "Peak von Mises stress (outside the fixed base layer and the pin ring) shall not exceed 100 MPa (fatigue-rated allowable).",
+          "metric": "peak_von_mises_MPa",
+          "operator": "<=",
+          "limit": 100.0,
+          "units": "MPa",
+          "value": 98.66759535154539,
+          "margin": 1.332404648454613,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-C2",
+          "text": "Pin deflection under the load shall not exceed 0.10 mm.",
+          "metric": "pin_deflection_mm",
+          "operator": "<=",
+          "limit": 0.1,
+          "units": "mm",
+          "value": 0.08262216684906395,
+          "margin": 0.01737783315093605,
+          "verdict": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "c020",
+      "parameters": {
+        "base_length_mm": 100.0,
+        "base_width_mm": 100.0,
+        "base_thickness_mm": 10.0,
+        "lug_radius_mm": 20.0,
+        "pin_height_mm": 70.0,
+        "pin_diameter_mm": 16.0,
+        "lug_thickness_mm": 10.171990277576436,
+        "gusset_thickness_mm": 8.790157110722824,
+        "gusset_height_mm": 35.952924063881845,
+        "gusset_aspect": 0.7,
+        "fillet_radius_mm": 3.0,
+        "youngs_modulus_MPa": 68900.0,
+        "poisson_ratio": 0.33,
+        "density_t_per_mm3": 2.7e-09,
+        "yield_strength_MPa": 276.0,
+        "load_x_N": 1500.0,
+        "load_y_N": 1000.0,
+        "load_z_N": 4500.0,
+        "element_size_mm": 4.0,
+        "fillet_element_size_mm": 1.0
+      },
+      "derived": {
+        "gusset_reach_mm": 33.25304198350551,
+        "load_magnitude_N": 4847.679857416329
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "cad_valid",
+          "description": "CadQuery B-rep is a valid solid (1 = no)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.5,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "mesh_volume",
+          "description": "|meshed volume (straight-sided tets) - CAD volume| / CAD volume",
+          "kind": "numerical",
+          "value": 0.0001736878730970078,
+          "tolerance": 0.002,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "force_balance",
+          "description": "|sum of base reactions + pin load| / |pin load|",
+          "kind": "numerical",
+          "value": 1.478811347351054e-08,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "moment_balance",
+          "description": "|moment of the base reactions + moment of the pin load| about the origin / (|F| x pin height) (the load acts where intended)",
+          "kind": "numerical",
+          "value": 2.6091357202495432e-08,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "linear_material",
+          "description": "peak von Mises / yield strength",
+          "kind": "validity",
+          "value": 0.3536189778545304,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "small_deflection",
+          "description": "pin deflection / pin height",
+          "kind": "validity",
+          "value": 0.0011703466537738292,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-C1",
+          "text": "Peak von Mises stress (outside the fixed base layer and the pin ring) shall not exceed 100 MPa (fatigue-rated allowable).",
+          "metric": "peak_von_mises_MPa",
+          "operator": "<=",
+          "limit": 100.0,
+          "units": "MPa",
+          "value": 97.5988378878504,
+          "margin": 2.4011621121496063,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-C2",
+          "text": "Pin deflection under the load shall not exceed 0.10 mm.",
+          "metric": "pin_deflection_mm",
+          "operator": "<=",
+          "limit": 0.1,
+          "units": "mm",
+          "value": 0.08192426576416804,
+          "margin": 0.01807573423583196,
+          "verdict": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "c021",
+      "parameters": {
+        "base_length_mm": 100.0,
+        "base_width_mm": 100.0,
+        "base_thickness_mm": 10.0,
+        "lug_radius_mm": 20.0,
+        "pin_height_mm": 70.0,
+        "pin_diameter_mm": 16.0,
+        "lug_thickness_mm": 10.112740138322767,
+        "gusset_thickness_mm": 8.79315633929557,
+        "gusset_height_mm": 36.09948608360861,
+        "gusset_aspect": 0.7,
+        "fillet_radius_mm": 3.0,
+        "youngs_modulus_MPa": 68900.0,
+        "poisson_ratio": 0.33,
+        "density_t_per_mm3": 2.7e-09,
+        "yield_strength_MPa": 276.0,
+        "load_x_N": 1500.0,
+        "load_y_N": 1000.0,
+        "load_z_N": 4500.0,
+        "element_size_mm": 4.0,
+        "fillet_element_size_mm": 1.0
+      },
+      "derived": {
+        "gusset_reach_mm": 33.326010327687406,
+        "load_magnitude_N": 4847.679857416329
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "cad_valid",
+          "description": "CadQuery B-rep is a valid solid (1 = no)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.5,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "mesh_volume",
+          "description": "|meshed volume (straight-sided tets) - CAD volume| / CAD volume",
+          "kind": "numerical",
+          "value": 0.0001717760043588401,
+          "tolerance": 0.002,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "force_balance",
+          "description": "|sum of base reactions + pin load| / |pin load|",
+          "kind": "numerical",
+          "value": 1.7512314331829623e-08,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "moment_balance",
+          "description": "|moment of the base reactions + moment of the pin load| about the origin / (|F| x pin height) (the load acts where intended)",
+          "kind": "numerical",
+          "value": 2.4356235303209458e-08,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "linear_material",
+          "description": "peak von Mises / yield strength",
+          "kind": "validity",
+          "value": 0.35621112643242264,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "small_deflection",
+          "description": "pin deflection / pin height",
+          "kind": "validity",
+          "value": 0.0011731694114670448,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-C1",
+          "text": "Peak von Mises stress (outside the fixed base layer and the pin ring) shall not exceed 100 MPa (fatigue-rated allowable).",
+          "metric": "peak_von_mises_MPa",
+          "operator": "<=",
+          "limit": 100.0,
+          "units": "MPa",
+          "value": 98.31427089534866,
+          "margin": 1.6857291046513438,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-C2",
+          "text": "Pin deflection under the load shall not exceed 0.10 mm.",
+          "metric": "pin_deflection_mm",
+          "operator": "<=",
+          "limit": 0.1,
+          "units": "mm",
+          "value": 0.08212185880269314,
+          "margin": 0.017878141197306865,
+          "verdict": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "c022",
+      "parameters": {
+        "base_length_mm": 100.0,
+        "base_width_mm": 100.0,
+        "base_thickness_mm": 10.0,
+        "lug_radius_mm": 20.0,
+        "pin_height_mm": 70.0,
+        "pin_diameter_mm": 16.0,
+        "lug_thickness_mm": 10.09750052599443,
+        "gusset_thickness_mm": 8.766641081970736,
+        "gusset_height_mm": 35.9407473114009,
+        "gusset_aspect": 0.7,
+        "fillet_radius_mm": 3.0,
+        "youngs_modulus_MPa": 68900.0,
+        "poisson_ratio": 0.33,
+        "density_t_per_mm3": 2.7e-09,
+        "yield_strength_MPa": 276.0,
+        "load_x_N": 1500.0,
+        "load_y_N": 1000.0,
+        "load_z_N": 4500.0,
+        "element_size_mm": 4.0,
+        "fillet_element_size_mm": 1.0
+      },
+      "derived": {
+        "gusset_reach_mm": 33.207273380977846,
+        "load_magnitude_N": 4847.679857416329
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "cad_valid",
+          "description": "CadQuery B-rep is a valid solid (1 = no)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.5,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "mesh_volume",
+          "description": "|meshed volume (straight-sided tets) - CAD volume| / CAD volume",
+          "kind": "numerical",
+          "value": 0.00016601819170544672,
+          "tolerance": 0.002,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "force_balance",
+          "description": "|sum of base reactions + pin load| / |pin load|",
+          "kind": "numerical",
+          "value": 1.0855778602230417e-08,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "moment_balance",
+          "description": "|moment of the base reactions + moment of the pin load| about the origin / (|F| x pin height) (the load acts where intended)",
+          "kind": "numerical",
+          "value": 2.500942241368148e-08,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "linear_material",
+          "description": "peak von Mises / yield strength",
+          "kind": "validity",
+          "value": 0.3568903768964409,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "small_deflection",
+          "description": "pin deflection / pin height",
+          "kind": "validity",
+          "value": 0.0011870393647234756,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-C1",
+          "text": "Peak von Mises stress (outside the fixed base layer and the pin ring) shall not exceed 100 MPa (fatigue-rated allowable).",
+          "metric": "peak_von_mises_MPa",
+          "operator": "<=",
+          "limit": 100.0,
+          "units": "MPa",
+          "value": 98.50174402341769,
+          "margin": 1.498255976582314,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-C2",
+          "text": "Pin deflection under the load shall not exceed 0.10 mm.",
+          "metric": "pin_deflection_mm",
+          "operator": "<=",
+          "limit": 0.1,
+          "units": "mm",
+          "value": 0.08309275553064328,
+          "margin": 0.016907244469356722,
+          "verdict": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "c023",
+      "parameters": {
+        "base_length_mm": 100.0,
+        "base_width_mm": 100.0,
+        "base_thickness_mm": 10.0,
+        "lug_radius_mm": 20.0,
+        "pin_height_mm": 70.0,
+        "pin_diameter_mm": 16.0,
+        "lug_thickness_mm": 10.165022712874114,
+        "gusset_thickness_mm": 8.813938206973557,
+        "gusset_height_mm": 35.94962065606077,
+        "gusset_aspect": 0.7,
+        "fillet_radius_mm": 3.0,
+        "youngs_modulus_MPa": 68900.0,
+        "poisson_ratio": 0.33,
+        "density_t_per_mm3": 2.7e-09,
+        "yield_strength_MPa": 276.0,
+        "load_x_N": 1500.0,
+        "load_y_N": 1000.0,
+        "load_z_N": 4500.0,
+        "element_size_mm": 4.0,
+        "fillet_element_size_mm": 1.0
+      },
+      "derived": {
+        "gusset_reach_mm": 33.24724581567959,
+        "load_magnitude_N": 4847.679857416329
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "cad_valid",
+          "description": "CadQuery B-rep is a valid solid (1 = no)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.5,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "mesh_volume",
+          "description": "|meshed volume (straight-sided tets) - CAD volume| / CAD volume",
+          "kind": "numerical",
+          "value": 0.00016671212544455103,
+          "tolerance": 0.002,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "force_balance",
+          "description": "|sum of base reactions + pin load| / |pin load|",
+          "kind": "numerical",
+          "value": 7.596315703159655e-09,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "moment_balance",
+          "description": "|moment of the base reactions + moment of the pin load| about the origin / (|F| x pin height) (the load acts where intended)",
+          "kind": "numerical",
+          "value": 2.154306724442397e-08,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "linear_material",
+          "description": "peak von Mises / yield strength",
+          "kind": "validity",
+          "value": 0.3542150376351376,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "small_deflection",
+          "description": "pin deflection / pin height",
+          "kind": "validity",
+          "value": 0.0011707808076902445,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-C1",
+          "text": "Peak von Mises stress (outside the fixed base layer and the pin ring) shall not exceed 100 MPa (fatigue-rated allowable).",
+          "metric": "peak_von_mises_MPa",
+          "operator": "<=",
+          "limit": 100.0,
+          "units": "MPa",
+          "value": 97.76335038729799,
+          "margin": 2.23664961270201,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-C2",
+          "text": "Pin deflection under the load shall not exceed 0.10 mm.",
+          "metric": "pin_deflection_mm",
+          "operator": "<=",
+          "limit": 0.1,
+          "units": "mm",
+          "value": 0.08195465653831711,
+          "margin": 0.01804534346168289,
+          "verdict": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "c024",
+      "parameters": {
+        "base_length_mm": 100.0,
+        "base_width_mm": 100.0,
+        "base_thickness_mm": 10.0,
+        "lug_radius_mm": 20.0,
+        "pin_height_mm": 70.0,
+        "pin_diameter_mm": 16.0,
+        "lug_thickness_mm": 10.16861560988437,
+        "gusset_thickness_mm": 8.741612163884867,
+        "gusset_height_mm": 35.94143494927418,
+        "gusset_aspect": 0.7,
+        "fillet_radius_mm": 3.0,
+        "youngs_modulus_MPa": 68900.0,
+        "poisson_ratio": 0.33,
+        "density_t_per_mm3": 2.7e-09,
+        "yield_strength_MPa": 276.0,
+        "load_x_N": 1500.0,
+        "load_y_N": 1000.0,
+        "load_z_N": 4500.0,
+        "element_size_mm": 4.0,
+        "fillet_element_size_mm": 1.0
+      },
+      "derived": {
+        "gusset_reach_mm": 33.243312269434114,
+        "load_magnitude_N": 4847.679857416329
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "cad_valid",
+          "description": "CadQuery B-rep is a valid solid (1 = no)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.5,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "mesh_volume",
+          "description": "|meshed volume (straight-sided tets) - CAD volume| / CAD volume",
+          "kind": "numerical",
+          "value": 0.00016683348038776737,
+          "tolerance": 0.002,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "force_balance",
+          "description": "|sum of base reactions + pin load| / |pin load|",
+          "kind": "numerical",
+          "value": 1.1406217507047549e-08,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "moment_balance",
+          "description": "|moment of the base reactions + moment of the pin load| about the origin / (|F| x pin height) (the load acts where intended)",
+          "kind": "numerical",
+          "value": 2.2975902566137514e-08,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "linear_material",
+          "description": "peak von Mises / yield strength",
+          "kind": "validity",
+          "value": 0.35452720188044884,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "small_deflection",
+          "description": "pin deflection / pin height",
+          "kind": "validity",
+          "value": 0.0011739953695377233,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-C1",
+          "text": "Peak von Mises stress (outside the fixed base layer and the pin ring) shall not exceed 100 MPa (fatigue-rated allowable).",
+          "metric": "peak_von_mises_MPa",
+          "operator": "<=",
+          "limit": 100.0,
+          "units": "MPa",
+          "value": 97.84950771900388,
+          "margin": 2.1504922809961187,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-C2",
+          "text": "Pin deflection under the load shall not exceed 0.10 mm.",
+          "metric": "pin_deflection_mm",
+          "operator": "<=",
+          "limit": 0.1,
+          "units": "mm",
+          "value": 0.08217967586764063,
+          "margin": 0.017820324132359372,
+          "verdict": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "c025",
+      "parameters": {
+        "base_length_mm": 100.0,
+        "base_width_mm": 100.0,
+        "base_thickness_mm": 10.0,
+        "lug_radius_mm": 20.0,
+        "pin_height_mm": 70.0,
+        "pin_diameter_mm": 16.0,
+        "lug_thickness_mm": 10.174192408442027,
+        "gusset_thickness_mm": 8.795747349764225,
+        "gusset_height_mm": 35.928656805134494,
+        "gusset_aspect": 0.7,
+        "fillet_radius_mm": 3.0,
+        "youngs_modulus_MPa": 68900.0,
+        "poisson_ratio": 0.33,
+        "density_t_per_mm3": 2.7e-09,
+        "yield_strength_MPa": 276.0,
+        "load_x_N": 1500.0,
+        "load_y_N": 1000.0,
+        "load_z_N": 4500.0,
+        "element_size_mm": 4.0,
+        "fillet_element_size_mm": 1.0
+      },
+      "derived": {
+        "gusset_reach_mm": 33.237155967815156,
+        "load_magnitude_N": 4847.679857416329
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "cad_valid",
+          "description": "CadQuery B-rep is a valid solid (1 = no)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.5,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "mesh_volume",
+          "description": "|meshed volume (straight-sided tets) - CAD volume| / CAD volume",
+          "kind": "numerical",
+          "value": 0.00016751509558207014,
+          "tolerance": 0.002,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "force_balance",
+          "description": "|sum of base reactions + pin load| / |pin load|",
+          "kind": "numerical",
+          "value": 1.1180071088051162e-08,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "moment_balance",
+          "description": "|moment of the base reactions + moment of the pin load| about the origin / (|F| x pin height) (the load acts where intended)",
+          "kind": "numerical",
+          "value": 2.4064733183801658e-08,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "linear_material",
+          "description": "peak von Mises / yield strength",
+          "kind": "validity",
+          "value": 0.35590020895676344,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "small_deflection",
+          "description": "pin deflection / pin height",
+          "kind": "validity",
+          "value": 0.0011710651192135119,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-C1",
+          "text": "Peak von Mises stress (outside the fixed base layer and the pin ring) shall not exceed 100 MPa (fatigue-rated allowable).",
+          "metric": "peak_von_mises_MPa",
+          "operator": "<=",
+          "limit": 100.0,
+          "units": "MPa",
+          "value": 98.22845767206671,
+          "margin": 1.7715423279332896,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-C2",
+          "text": "Pin deflection under the load shall not exceed 0.10 mm.",
+          "metric": "pin_deflection_mm",
+          "operator": "<=",
+          "limit": 0.1,
+          "units": "mm",
+          "value": 0.08197455834494582,
+          "margin": 0.01802544165505418,
+          "verdict": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "c026",
+      "parameters": {
+        "base_length_mm": 100.0,
+        "base_width_mm": 100.0,
+        "base_thickness_mm": 10.0,
+        "lug_radius_mm": 20.0,
+        "pin_height_mm": 70.0,
+        "pin_diameter_mm": 16.0,
+        "lug_thickness_mm": 10.128322506701508,
+        "gusset_thickness_mm": 8.772211737167181,
+        "gusset_height_mm": 35.96938885524898,
+        "gusset_aspect": 0.7,
+        "fillet_radius_mm": 3.0,
+        "youngs_modulus_MPa": 68900.0,
+        "poisson_ratio": 0.33,
+        "density_t_per_mm3": 2.7e-09,
+        "yield_strength_MPa": 276.0,
+        "load_x_N": 1500.0,
+        "load_y_N": 1000.0,
+        "load_z_N": 4500.0,
+        "element_size_mm": 4.0,
+        "fillet_element_size_mm": 1.0
+      },
+      "derived": {
+        "gusset_reach_mm": 33.242733452025035,
+        "load_magnitude_N": 4847.679857416329
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "cad_valid",
+          "description": "CadQuery B-rep is a valid solid (1 = no)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.5,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "mesh_volume",
+          "description": "|meshed volume (straight-sided tets) - CAD volume| / CAD volume",
+          "kind": "numerical",
+          "value": 0.00017506888619946373,
+          "tolerance": 0.002,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "force_balance",
+          "description": "|sum of base reactions + pin load| / |pin load|",
+          "kind": "numerical",
+          "value": 3.772410585845994e-09,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "moment_balance",
+          "description": "|moment of the base reactions + moment of the pin load| about the origin / (|F| x pin height) (the load acts where intended)",
+          "kind": "numerical",
+          "value": 2.5972823372538434e-08,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "linear_material",
+          "description": "peak von Mises / yield strength",
+          "kind": "validity",
+          "value": 0.35480434005468703,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "small_deflection",
+          "description": "pin deflection / pin height",
+          "kind": "validity",
+          "value": 0.001178865846056926,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-C1",
+          "text": "Peak von Mises stress (outside the fixed base layer and the pin ring) shall not exceed 100 MPa (fatigue-rated allowable).",
+          "metric": "peak_von_mises_MPa",
+          "operator": "<=",
+          "limit": 100.0,
+          "units": "MPa",
+          "value": 97.92599785509361,
+          "margin": 2.0740021449063875,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-C2",
+          "text": "Pin deflection under the load shall not exceed 0.10 mm.",
+          "metric": "pin_deflection_mm",
+          "operator": "<=",
+          "limit": 0.1,
+          "units": "mm",
+          "value": 0.08252060922398483,
+          "margin": 0.01747939077601518,
+          "verdict": "PASS"
+        }
+      ]
+    }
+  ],
+  "run_id": "20261121-091836_clevis_opt_r2",
+  "generated_utc": "2026-11-21T16:12:20+00:00",
+  "verification_status": "PASS"
+}

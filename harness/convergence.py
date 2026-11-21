@@ -111,7 +111,7 @@ def describe(u: dict) -> str:
                 f"the 3 finest solutions")
     if u["regime"] == "converged":
         return (f"converged to within the noise floor (spread {u['relative_spread']:.1e} "
-                f"<= {u['noise_floor']:.0e})")
+                f"<= {u['noise_floor']:.2g})")
     if u["regime"] == "anomalous order":
         return (f"anomalous: observed order {u['order']:.2f} is far above the design order "
                 f"{u['design_order']:g}, so the solutions are not in the asymptotic range "

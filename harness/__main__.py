@@ -6,6 +6,7 @@
     python -m harness pipeline cases/msd_step.toml     # run + verify + report
     python -m harness rerun    runs/<run_id>           # reproduce from saved inputs
     python -m harness compare  runs/<run_id> runs/<other_run_id>   # cross-tool check
+    python -m harness optimize cases/bracket_opt.toml  # design loop + verify + report
 
 Exit code: 0 when the step completed and every check passed; 1 when the step
 completed but something failed (simulation, check, or reproducibility);
@@ -23,7 +24,7 @@ from harness.case import CaseError
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(prog="python -m harness")
     sub = ap.add_subparsers(dest="cmd", required=True)
-    for name, target in (("run", "case"), ("pipeline", "case"),
+    for name, target in (("run", "case"), ("pipeline", "case"), ("optimize", "case"),
                          ("verify", "run_dir"), ("report", "run_dir"), ("rerun", "run_dir")):
         sp = sub.add_parser(name)
         sp.add_argument(target)
@@ -35,6 +36,7 @@ def main(argv: list[str] | None = None) -> int:
     args = ap.parse_args(argv)
 
     from harness.compare import compare_runs
+    from harness.optimize import optimize_case
     from harness.report import build_report
     from harness.rerun import rerun
     from harness.run import run_case
@@ -62,6 +64,16 @@ def main(argv: list[str] | None = None) -> int:
             print(f"VERIFICATION {summary['status']}")
             print(f"REPORT {out.as_posix()}")
             return 0 if summary["status"] == "PASS" else 1
+        if args.cmd == "optimize":
+            run_dir = optimize_case(args.case, args.runs_root)
+            summary = verify_run(run_dir)
+            out = build_report(run_dir)
+            best = read_json(run_dir / "manifest.json").get("optimization", {}).get("best_label")
+            print(f"RUN_DIR {run_dir.as_posix()}")
+            print(f"OPTIMUM {best}")
+            print(f"VERIFICATION {summary['status']}")
+            print(f"REPORT {out.as_posix()}")
+            return 0 if summary["status"] == "PASS" and best else 1
         if args.cmd == "compare":
             result = compare_runs(args.run_dir, args.against_dir)
             for pt in result["points"]:

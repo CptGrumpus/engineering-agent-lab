@@ -1,0 +1,60 @@
+{
+  "label": "c006",
+  "status": "PASS",
+  "checks": [
+    {
+      "id": "cad_valid",
+      "description": "CadQuery B-rep is a valid solid (1 = no)",
+      "kind": "numerical",
+      "value": 0.0,
+      "tolerance": 0.5,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "mesh_volume",
+      "description": "|meshed volume (straight-sided tets) - CAD volume| / CAD volume",
+      "kind": "numerical",
+      "value": 0.00014394523614168943,
+      "tolerance": 0.002,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "force_balance",
+      "description": "|sum of base reactions + pin load| / |pin load|",
+      "kind": "numerical",
+      "value": 8.548591944263136e-09,
+      "tolerance": 1e-06,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "moment_balance",
+      "description": "|moment of the base reactions + moment of the pin load| about the origin / (|F| x pin height) (the load acts where intended)",
+      "kind": "numerical",
+      "value": 3.3200683742243056e-08,
+      "tolerance": 1e-06,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "linear_material",
+      "description": "peak von Mises / yield strength",
+      "kind": "validity",
+      "value": 0.3643887305548324,
+      "tolerance": 1.0,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "small_deflection",
+      "description": "pin deflection / pin height",
+      "kind": "validity",
+      "value": 0.0013921870452009335,
+      "tolerance": 0.01,
+      "comparison": "<=",
+      "status": "PASS"
+    }
+  ]
+}

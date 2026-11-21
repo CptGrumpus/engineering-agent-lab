@@ -1,0 +1,126 @@
+# Clevis bracket optimisation, confirmation at the optimum: mesh study.
+#
+# The optimisation run (runs/20261121-000013_clevis_opt, case clevis_opt) stopped after 30
+# candidates (COBYLA, trust region at its lower bound). Its final iterates sit near lug 9.1 mm,
+# gussets 6.0 x 49 mm, about 369 g, with peak stress 99.3 to 99.9 MPa: under the 100 MPa limit but
+# over the 99 MPa the 1 % design margin allows (COBYLA tolerates small constraint violations). The
+# lightest candidate that clears the margin is c004, an early step: lug 10.16 mm, gussets 7.27 x
+# 39.69 mm, 371.06 g (0.5 % heavier), peak 93.97 MPa, pin deflection 0.0731 mm, neither constraint
+# active. c004 is the recommended design; this case confirms it.
+# One candidate, c019, was rejected: Gmsh's second-order curving inverted one quadratic tet
+# (gmsh.log: 1 element with jac. < 0) and CalculiX stopped (nonpositive jacobian). Prediction P3 of
+# clevis_opt (no candidate rejected) therefore failed; the loop handled it as designed.
+#
+# Mesh refinement: the curvature refinement now scales with the element size (48 / h elements per
+# circle: 8 / 12 / 18 at 6 / 4 / 2.67 mm), so the fillets refine by the same 1.5 ratio as the rest
+# of the mesh. Before this change it was fixed at 12, which left the fillet elements near 1.6 mm at
+# any element_size_mm. The 4 mm level is unchanged from the optimisation run.
+#
+# Predictions, written BEFORE running:
+#   P1 The 4 mm level reproduces c004 exactly (93.972 MPa, 0.073135 mm, 62 494 nodes): same
+#      geometry, same mesher settings.
+#   P2 Pin deflection (a global quantity) changes by under 0.5 % from 6 to 2.67 mm; GCI under 1 %.
+#   P3 The fillet peak rises with refinement (coarse quadratic tets under-predict a fillet peak), by
+#      under 3 % from 4 to 2.67 mm; its GCI is 1 to 4 %, so it may exceed the 1 % gci_max (that is,
+#      the 1 % design margin of clevis_opt would not cover the fillet's discretisation error), while
+#      REQ-C1 with the uncertainty added still holds at c004 (6 % headroom).
+#   P4 The mesh-volume check passes at every level (about 1.5e-3 at 6 mm, against 2e-3).
+#
+# Requirements and tolerances are those of clevis_opt, fixed before its first run.
+#
+# Run 1 (20261121-002416_clevis_confirm), FAIL, kept as evidence: the 4 mm level crashed CalculiX
+# (one inverted quadratic tet), so P1 failed and no GCI could be computed. Cause: the CAD build was
+# not reproducible. CadQuery's "+" selector merged the fillet edges through a set keyed on OCC shape
+# hashes (memory addresses), so the edge order, and with it the fillet's face split (40 or 41 faces,
+# same volume to 10 digits), changed from run to run, and a different face split meshes differently.
+# The 6 and 2.67 mm levels did solve: 88.00 and 97.47 MPa against 93.97 MPa at 4 mm in the
+# optimisation run, which points to a fillet-peak uncertainty near 6 %, far beyond the 1 % margin.
+# Fixes before run 2: the fillet edges go to OCC in a fixed geometric order (the same parameters now
+# give a byte-identical STEP); if Gmsh still reports an inverted tet, the mesh is redone once with
+# its high-order optimiser (it fixed c019's mesh: minimum scaled Jacobian -0.019 -> +0.086).
+# Revised P1 for run 2 (the face split changed with the fix): the 4 mm level gives 93.967 MPa,
+# 0.07313 mm, 63 010 nodes (hand run after the fix), within 0.01 % of c004's 93.972 MPa.
+# Revised P3 for run 2: stress GCI near 6 %, over gci_max, and REQ-C1 with the uncertainty added
+# FAILS at c004 (about 97.5 x 1.06 = 103 MPa). That is the trigger for clevis_opt_r1.
+#
+# Results, run 2 (20261121-004057_clevis_confirm), verification FAIL on REQ-C1:
+#   peak stress 87.38 / 93.97 / 97.33 MPa and pin deflection 0.07299 / 0.07314 / 0.07319 mm at
+#   6 / 4 / 2.67 mm (22 203 / 63 010 / 180 446 nodes; the 2.67 mm mesh needed the high-order
+#   fallback once). All point checks passed at every level.
+#   P1 held: the 4 mm level reproduced 93.97 MPa and 63 010 nodes.
+#   P2 held: deflection GCI 0.06 %, extrapolated 0.07323 mm.
+#   P3 held in direction, smaller than the revised estimate: stress GCI 4.5 % (order 1.66,
+#      extrapolated 100.8 MPa), over the 1 % gci_max; REQ-C1 with the uncertainty added is
+#      97.33 x 1.045 = 101.7 MPa, 1.7 % over the limit. c004 is NOT accepted: the 1 % design margin
+#      of clevis_opt was too small for a fillet peak at 4 mm.
+#   P4 held: the mesh-volume check passed at every level.
+# Consequence: clevis_opt_r1, with the design margin set from these numbers.
+
+[case]
+name = "clevis_confirm"
+model = "cadquery_ccx_clevis"
+description = "Confirmation of the optimisation run 20261121-000013_clevis_opt: mesh study (6 / 4 / 2.67 mm quadratic tetrahedra, curvature refinement scaled with the element size) at the recommended design c004. Original problem: lightest 6061-T6 machined clevis bracket (base 100 x 100 x 10 mm, lug 40 mm wide with a 16 mm pin at 70 mm, two gussets, 3 mm fillets) under a (1.5, 1.0, 4.5) kN pin load, with peak von Mises at most 100 MPa and pin deflection at most 0.10 mm."
+assumptions = [
+  "Base bottom face fixed (bolted and dowelled to a rigid machine frame); the bottom half of the base is not assessed (the edge of a fixed face is singular, and the real joint is not modelled).",
+  "Pin load through a rigid pin tied to the hole surface; a ring of one pin diameter around the hole is not assessed (pin bearing and lug net section are sized by the standard lug method).",
+  "Linear elastic 6061-T6 (E 68.9 GPa, nu 0.33); checked: peak stress below yield.",
+  "Small deflection; checked: pin deflection / pin height below 1 %.",
+  "Stress allowable 100 MPa (fatigue-rated) and pin deflection limit 0.10 mm: synthetic.",
+]
+limitations = [
+  "Static load only; the fatigue rating is folded into the allowable.",
+  "No closed-form reference for the whole part: the evidence is exact equilibrium, geometry fidelity, a model-form check of the lug section and this mesh study.",
+  "Fixed outline and fillet radius; only three dimensions vary.",
+  "No physical test data.",
+]
+
+[parameters]
+base_length_mm = 100.0
+base_width_mm = 100.0
+base_thickness_mm = 10.0
+lug_radius_mm = 20.0
+pin_height_mm = 70.0
+pin_diameter_mm = 16.0
+lug_thickness_mm = 10.161584365048594     # c004 of run 20261121-000013_clevis_opt
+gusset_thickness_mm = 7.2746351707663095
+gusset_height_mm = 39.693285445932226
+gusset_aspect = 0.7
+fillet_radius_mm = 3.0
+youngs_modulus_MPa = 68900.0
+poisson_ratio = 0.33
+density_t_per_mm3 = 2.7e-9
+yield_strength_MPa = 276.0
+load_x_N = 1500.0
+load_y_N = 1000.0
+load_z_N = 4500.0
+element_size_mm = 4.0
+
+[sweep]
+parameter = "element_size_mm"
+values = [6.0, 4.0, 2.6666666666666665]   # ratio 1.5; curvature points 8 / 12 / 18
+
+[numerics]
+solver = "CalculiX 2.22 static, C3D10, rigid pin (*RIGID BODY)"
+
+[verification]
+mesh_volume_rel_tol = 2e-3
+equilibrium_rel_tol = 1e-6
+section_rel_tol = 0.10
+small_deflection_max = 0.01
+gci_max = 0.01
+
+[[requirements]]
+id = "REQ-C1"
+text = "Peak von Mises stress (outside the fixed base layer and the pin ring) shall not exceed 100 MPa (fatigue-rated allowable)."
+metric = "peak_von_mises_MPa"
+operator = "<="
+limit = 100.0
+units = "MPa"
+
+[[requirements]]
+id = "REQ-C2"
+text = "Pin deflection under the load shall not exceed 0.10 mm."
+metric = "pin_deflection_mm"
+operator = "<="
+limit = 0.10
+units = "mm"

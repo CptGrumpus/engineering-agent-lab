@@ -1,0 +1,144 @@
+# Cold plate: solver-settings check at 40 cells, before re-running the mesh study (cold_plate_mesh_r1).
+#
+# cold_plate_mesh (run 20261120-224255) failed verification on two counts, neither touching the
+# requirement metrics (GCI 5e-5 / 3e-12 / 3e-4):
+# - the coupling loop hit its 25-pass limit at 40 and 80 cells, still contracting (about 0.75 per
+#   pass); one pass at 80 cells took about 8 min, nearly all in the OpenFOAM temperature stage, which
+#   solved every inner T system to 1e-14 (relTol 0, about 200 BiCGStab sweeps per outer iteration);
+# - cfd_wall_reference: the maximum error sat at the plate edges, where the wall flux steps from zero
+#   (5.5 / 2.8 / 6.3 % at 20 / 40 / 80 cells, not converging). Outside 2 gap heights of the edges it
+#   is 1.04 / 0.27 / 0.08 %, second order.
+#
+# This case changes three settings and compares with the 40-cell point of that run:
+#   temperature_solver_rel_tol = 0.01 (inner tolerance; the outer iterations converge the field);
+#   coupling_max_iterations = 60; wall_edge_exclusion_gaps = 2 (the band is chosen from the physical
+#   scale, the gap height, not to make a mesh pass; 20 cells would still fail at 1.04 %).
+#
+# Predictions, written BEFORE running:
+#   P1 Requirement metrics equal the 40-cell point of cold_plate_mesh to 1e-4 relative
+#      (40.99 C, 7.199 K, 46.80 MPa).
+#   P2 Each coupling pass is at least 3 times faster (was about 45 s at 40 cells).
+#   P3 The coupling converges (both criteria) within 60 passes, and every point check passes,
+#      cfd_wall_reference included (about 0.27 %).
+#
+# Results (run 20261121-093029_cold_plate_solver_check): every requirement metric within 5e-7 of the
+# original 40-cell point (component face 40.992209 against 40.992211 C; coolant rise equal to
+# 1.5e-12; interior von Mises 46.800759 against 46.800776 MPa).
+#   P1 held.
+#   P2 held: about 15 s per pass against 45 s (CPU 7 s against 38 s per 1000 outer iterations).
+#   P3 held: coupled in 26 passes; every point check passed (the run is FAIL only on
+#      mesh_convergence_gci, which needs three levels and this case has one).
+
+[case]
+name = "cold_plate_solver_check"
+model = "openfoam_ccx_cold_plate"
+description = "Cold plate: OpenFOAM coolant channel (1 mm gap, water 0.1 m/s) coupled to CalculiX conduction in a 3 mm 6061 plate with 30 kW/m2 over a 50 mm footprint, then CalculiX thermal stress with the plate clamped at both ends; meshes 20 / 40 / 80 cells across the gap, plate refined with them."
+assumptions = [
+  "Symmetric construction: a plate and a component on each side of the channel, so both channel walls see the same flux; checked: top and bottom wall temperatures agree.",
+  "Constant water properties at 25 C, so temperature is a passive scalar on the frozen flow (rise under 20 K).",
+  "Developed laminar inflow; checked: Re and the peak inflow velocity.",
+  "2D: plate and channel much wider than the gap (side walls neglected; the 3D duct study shows a 3 % effect on flow).",
+  "Perfect thermal contact between component and plate, and between plate and water (no interface resistance): synthetic.",
+  "Plate ends adiabatic; all component heat leaves through the coolant.",
+  "Frame rigid: each plate end held in x over its whole face (no growth, no rotation) and in y on its mid-thickness line; plate held in width (plane strain). This bounds the stress from above; a compliant frame would lower it.",
+  "Linear elastic, small deflection; checked: peak stress under yield, membrane stress well below buckling.",
+  "Stress-free at the 20 C assembly temperature: synthetic.",
+]
+limitations = [
+  "Synthetic geometry, loads and limits; not calibrated to a product.",
+  "Stress near the supports (within 4.5 mm, 1.5 plate thicknesses, of each end) is not assessed: the clamped corners are singular and the real bolt joint is not modelled.",
+  "One-way thermal-to-structural coupling (deformation does not change the heat transfer).",
+  "References: the thermal-entry solution and beam theory are model form (no axial conduction; plane sections); the plate series is exact for the data it is given.",
+  "No physical test data.",
+]
+
+[parameters]
+gap_mm = 1.0
+footprint_length_mm = 50.0
+entry_length_mm = 5.0
+exit_length_mm = 5.0
+unplated_length_mm = 5.0                   # channel continues past each plate end with adiabatic walls
+mean_velocity_m_per_s = 0.1
+density_kg_per_m3 = 997.0
+dynamic_viscosity_Pa_s = 0.00089
+specific_heat_J_per_kgK = 4180.0
+conductivity_W_per_mK = 0.607              # water at 25 C
+inlet_temperature_C = 25.0
+cells_across_gap = 40
+cell_aspect_ratio = 5.0
+component_heat_flux_W_per_m2 = 30000.0     # synthetic; same total heat as the heated-channel study
+plate_thickness_mm = 3.0
+plate_conductivity_W_per_mK = 167.0        # 6061-T6
+coupling_htc_W_per_m2K = 2500.0            # coupling coefficient h* (fully developed h); affects convergence speed only
+youngs_modulus_MPa = 68900.0               # 6061-T6
+poisson_ratio = 0.33
+expansion_per_K = 23.6e-6
+assembly_temperature_C = 20.0              # synthetic
+yield_strength_MPa = 276.0                 # 6061-T6
+interior_margin_mm = 4.5                   # 1.5 plate thicknesses: Saint-Venant decay exp(-1.5 pi) < 1 %
+uniform_check_rise_K = 20.0                # exact case run through the stress deck
+
+[sweep]
+parameter = "cells_across_gap"
+values = [40]
+
+[numerics]
+flow_iterations = 1000
+temperature_iterations = 1500
+coupling_temperature_iterations = 1000     # temperature iterations per coupling pass (warm start)
+write_interval = 100
+relaxation_T = 1.0
+coupling_max_iterations = 60
+coupling_relaxation = 1.0                  # first step; then Aitken
+coupling_acceleration = "aitken"
+temperature_gradient_limiter = true        # cellLimited grad(T) in the linearUpwind reconstruction
+temperature_solver_rel_tol = 0.01           # inner T tolerance per outer iteration (was 0: every system to 1e-14)
+coupling_temperature_rel_tol = 1e-4        # stop: interface mismatch / coolant rise
+coupling_flux_rel_tol = 1e-4               # stop: flux change / component flux
+
+[verification]
+temperature_change_rel_max = 1e-5          # CFD field converged (as the heated-channel study)
+flow_rel_tol = 1e-6
+profile_rel_tol = 0.01
+energy_rel_tol = 1e-6                      # exact energy balance
+wall_edge_exclusion_gaps = 2               # no comparison within 2 gap heights of the plate edges (flux steps)
+wall_rel_tol = 0.01                        # model form: reference has no axial conduction (0.03-0.6 % in the heated-channel study)
+symmetry_rel_tol = 1e-6
+interface_temperature_rel_tol = 1e-4       # 0.7 mK: far below the 45 C margin
+interface_flux_rel_tol = 1e-4
+handoff_rel_tol = 1e-6                     # heat across each handoff (7-digit temperatures)
+temperature_handoff_abs_K = 1e-3           # .frd temperatures carry 6 digits
+plate_reference_rel_tol = 1e-3             # exact series; FE discretisation error (0.007 K)
+slab_rel_tol = 0.05                        # model form: axial conduction at mid-footprint
+uniform_exact_rel_tol = 1e-6               # exact case: FE is exact for a homogeneous strain
+reaction_rel_tol = 1e-6
+membrane_rel_tol = 0.01                    # beam theory neglects the through-thickness stress
+stress_peak_rel_tol = 0.02                 # model form; the decision margin is about 20 %
+stress_field_rel_tol = 0.03                # model form, worst where T changes along x on the scale of t
+buckling_ratio_max = 0.1                   # stress stiffening under 11 % of a small bending part
+thickness_over_span_max = 0.1              # beam theory for the plate strip
+gci_max = 0.01
+
+[[requirements]]
+id = "REQ-C1"
+text = "Peak temperature of the component face (plate outer face over the footprint) shall not exceed 45 C."
+metric = "component_face_max_temperature_C"
+operator = "<="
+limit = 45.0
+units = "C"
+
+[[requirements]]
+id = "REQ-C2"
+text = "Coolant temperature rise from inlet to outlet shall not exceed 10 K."
+metric = "coolant_rise_K"
+operator = "<="
+limit = 10.0
+units = "K"
+
+[[requirements]]
+id = "REQ-C3"
+text = "Peak von Mises stress in the plate away from the supports (more than 1.5 plate thicknesses from each end) shall not exceed 60 MPa (synthetic allowable for thermal cycling)."
+metric = "interior_von_mises_max_MPa"
+operator = "<="
+limit = 60.0
+units = "MPa"

@@ -13,12 +13,13 @@ All problems are synthetic, so no client data is involved. Every number comes fr
 | Capability | Tools | Shown in |
 |---|---|---|
 | Structural finite element analysis: 3D solids and plane stress, mesh convergence, stress-concentration and singularity judgement | FreeCAD, Gmsh, CalculiX | [1](portfolio/01-cantilever-bracket.md), [2](portfolio/02-strap-cable-hole.md) |
-| Contact: nonlinear surface-to-surface contact, contact pressure and subsurface stress, verified against Hertz | Gmsh, CalculiX | [10](portfolio/10-roller-contact.md) |
+| Contact: nonlinear surface-to-surface contact, contact pressure and subsurface stress, verified against Hertz; friction contact and bolted joints against VDI 2230 | Gmsh, CalculiX | [10](portfolio/10-roller-contact.md), [16](portfolio/16-bolted-joint-slip.md) |
+| Stability and nonlinear material: eigenvalue and imperfect-strut buckling, plasticity with residual stress | CalculiX | [13](portfolio/13-strut-buckling.md), [14](portfolio/14-strap-proof-plasticity.md) |
 | Vibration: modal analysis, mode identification, frequency targets against engine orders | CadQuery, Gmsh, CalculiX | [4](portfolio/04-bracket-modal.md) |
 | Fatigue: notch factors, mean-stress correction, S-N curves from published test data, life ratings | CalculiX, Python | [3](portfolio/03-strap-fatigue.md) |
-| Scripted CAD-to-analysis pipelines: parametric geometry, STEP exchange, meshing, solving | CadQuery, Gmsh, CalculiX | [2](portfolio/02-strap-cable-hole.md), [4](portfolio/04-bracket-modal.md), [8](portfolio/08-mounting-plate.md) |
+| Scripted CAD-to-analysis pipelines: parametric geometry, STEP exchange, meshing, solving; an optimiser driving the pipeline | CadQuery, Gmsh, CalculiX, SciPy | [2](portfolio/02-strap-cable-hole.md), [4](portfolio/04-bracket-modal.md), [8](portfolio/08-mounting-plate.md), [12](portfolio/12-bracket-optimisation.md) |
 | Computational fluid dynamics: internal laminar flow, pressure budgets, 2D and 3D | OpenFOAM | [5](portfolio/05-coolant-channel.md) |
-| Heat transfer: conduction with surface convection | CalculiX | [6](portfolio/06-heat-sink-fin.md) |
+| Heat transfer: conduction with surface convection; conjugate heat transfer coupling CFD and solid conduction, then thermal stress | CalculiX, OpenFOAM | [6](portfolio/06-heat-sink-fin.md), [15](portfolio/15-cold-plate-thermal-chain.md) |
 | Vehicle and system dynamics: ride, road holding, frequency response | Python (SciPy), OpenModelica | [7](portfolio/07-quarter-car.md), [9](portfolio/09-mass-spring-damper.md) |
 | Presentation renders: FE results and CAD parts rendered in Blender, with legend colours and geometry checked automatically | Blender (Cycles), Python | [1](portfolio/01-cantilever-bracket.md), [2](portfolio/02-strap-cable-hole.md), [4](portfolio/04-bracket-modal.md), [6](portfolio/06-heat-sink-fin.md), [8](portfolio/08-mounting-plate.md) |
 | Verification and uncertainty: exact and handbook references, Grid Convergence Index, tolerance and sensitivity studies | Python | All |
@@ -42,6 +43,10 @@ All problems are synthetic, so no client data is involved. Every number comes fr
 | [3. Strap fatigue life, chained analysis](portfolio/03-strap-fatigue.md) | Does the strap survive ten million service cycles, and what cyclic load can it be rated for? | Yes, by a wide margin; rated to about 7.8 kN cyclic for 3 × 10⁷ cycles. |
 | [4. Bracket arm vibration, modal analysis](portfolio/04-bracket-modal.md) | How thin can an engine-mounted bracket arm be and keep its first mode above 250 Hz within a mass budget? | 7 mm: 261.7 Hz at 206 g. |
 | [10. Roller-on-plate contact](portfolio/10-roller-contact.md) | Does a track roller's contact stay within its pressure and subsurface-shear limits at 500 N/mm? | Yes: 609 MPa against 650, and 184 MPa shear against 200. Matches Hertz to 0.4 %. |
+| [12. Bracket optimisation loop, machined clevis](portfolio/12-bracket-optimisation.md) | Which lug and gusset dimensions make a machined clevis bracket lightest while its peak stress stays under 100 MPa and its pin moves at most 0.1 mm? | 371.9 g, 4.1 % under the start, at 98.3 MPa. It took three optimisation runs: the checks caught a margin too small for a fillet peak, a mesh study that never refined the fillet, and an optimiser stalled in mesh noise. |
+| [13. Strut buckling, with an imperfect strut](portfolio/13-strut-buckling.md) | How long can a pinned aluminium strut be and still reach 16 kN before any fibre yields, allowing for a bow of L/1000? | About 587 mm. The bow costs 4 to 7 % against the elastic buckling load. |
+| [14. Strap proof test, plasticity](portfolio/14-strap-proof-plasticity.md) | Does a 15 kN proof test keep the hole edge within 1 % strain, and does it leave a helpful residual stress? | Yes: 0.58 % strain and −77 MPa of compressive residual stress at the hole edge. |
+| [16. Bolted joint, slip and opening](portfolio/16-bolted-joint-slip.md) | Does a preloaded M8 joint carry a 2.5 kN side load by friction after it settles, and stay closed under 10 kN? | No: it slips at 2.39 kN, 4.4 % short; a 15.6 kN preload fixes it. It stays closed to 13.1 kN. |
 
 ### Thermal and fluids
 
@@ -50,6 +55,7 @@ All problems are synthetic, so no client data is involved. Every number comes fr
 | [5. Coolant channel pressure budget](portfolio/05-coolant-channel.md) | Does a cold-plate passage stay within its pump budget across manufacturing tolerance and coolant temperature? | No. It needs 33.4 Pa against a 30 Pa budget, and no gap size satisfies both requirements. |
 | [6. Heat-sink fin temperature](portfolio/06-heat-sink-fin.md) | Does the tip of an aluminium heat-sink fin stay above 60 °C, and what would make it fail? | Yes, at 73.2 °C. Even with every input at its worst it stays at 65.9 °C. |
 | [11. Cold-plate channel heat transfer](portfolio/11-cold-plate-heat-transfer.md) | Does a heated coolant passage keep its wall at or under 45 °C, and what heat flux can it take? | Coolant rise 7.2 K, verified. Wall 44.0-44.1 °C on every mesh, but its mesh uncertainty isn't estimable yet, so that verdict is withheld. Rated about 31 kW/m². |
+| [15. Cold plate, full thermal chain](portfolio/15-cold-plate-thermal-chain.md) | With the plate's own conduction and thermal stress included, does the cold plate keep its component at or under 45 °C, its coolant rise under 10 K and its stress under 60 MPa? | Yes: 40.99 °C, 7.20 K and 46.8 MPa, with mesh uncertainty 0.035 % or less. |
 
 ### Vehicle and system dynamics
 

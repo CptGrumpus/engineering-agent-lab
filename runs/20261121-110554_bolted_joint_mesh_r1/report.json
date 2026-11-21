@@ -1,0 +1,475 @@
+{
+  "points": [
+    {
+      "label": "p00_element_size_mm-1",
+      "parameters": {
+        "plate_outer_diameter_mm": 40.0,
+        "hole_diameter_mm": 9.0,
+        "washer_diameter_mm": 13.0,
+        "top_thickness_mm": 6.0,
+        "bottom_thickness_mm": 6.0,
+        "youngs_modulus_MPa": 210000.0,
+        "poisson_ratio": 0.3,
+        "preload_N": 15000.0,
+        "friction_coefficient": 0.2,
+        "element_size_mm": 1.0,
+        "contact_stiffness_factor": 50.0,
+        "stick_slope_factor": 50.0,
+        "slip_displacement_mm": 0.012,
+        "slip_increments": 6,
+        "bolt_thread": "M8",
+        "bolt_shank_length_mm": 8.0,
+        "bolt_free_thread_length_mm": 4.0,
+        "bolt_proof_stress_MPa": 600.0,
+        "embedding_um": 9.5,
+        "load_introduction_factor": 0.5
+      },
+      "derived": {
+        "bolt_compliance_mm_per_N": 2.600110648500925e-06,
+        "plate_compliance_vdi_mm_per_N": 4.5125019386845566e-07,
+        "cone_limit_diameter_mm": 19.110630740372148,
+        "slip_load_vdi_N": 3000.0,
+        "embedding_loss_vdi_N": 3113.3649839404943,
+        "load_factor_vdi": 0.07394245013612681,
+        "opening_load_vdi_N": 12835.741167281445,
+        "design_slip_load_vdi_N": 2377.3270032119012,
+        "bolt_stress_area_mm2": 36.605781836358666,
+        "bolt_preload_stress_MPa": 409.7713324921054,
+        "hole_clearance_mm": 0.5
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "slip_rigid_limit",
+          "description": "|slip load extrapolated to a rigid interface (E and 100 E, linear in 1/E) - mu F_V| / mu F_V (Coulomb: exact)",
+          "kind": "numerical",
+          "value": 1.2121212103011202e-07,
+          "tolerance": 1e-05,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "slip_deformable",
+          "description": "|slip load (FE, gross slip) - mu F_V| / mu F_V (model form: the interface tilts by about the strain under the side load)",
+          "kind": "numerical",
+          "value": 0.001321333333333314,
+          "tolerance": 0.005,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "gross_slip_reached",
+          "description": "spread of the rim force over the last three increments / force (a plateau: the whole interface slides)",
+          "kind": "numerical",
+          "value": 2.5366631264647337e-05,
+          "tolerance": 0.0001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "clamp_force_balance",
+          "description": "|z reaction at the support| / (F_V / 2) (the clamp forces balance; none lost into a support)",
+          "kind": "numerical",
+          "value": 1.6168133333333334e-16,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "shear_balance",
+          "description": "|top rim force + bottom rim force| / rim force, last increment",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "plate_compliance_reference",
+          "description": "|plate compliance FE - VDI 2230 pressure cone| / VDI (model form; the plates are about 15 % of the joint compliance)",
+          "kind": "numerical",
+          "value": 0.16599128319925374,
+          "tolerance": 0.25,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "contact_diameter_reference",
+          "description": "|interface contact diameter FE - VDI cone limit D_A,Gr| / D_A,Gr (model form)",
+          "kind": "numerical",
+          "value": 0.19419036161961137,
+          "tolerance": 0.2,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "cone_fits",
+          "description": "VDI cone limit diameter / plate diameter (cone formula valid at or below 1)",
+          "kind": "validity",
+          "value": 0.4777657685093037,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "no_bolt_bearing",
+          "description": "slip displacement / hole clearance (the bolt shank is not modelled: it must not touch the hole)",
+          "kind": "validity",
+          "value": 0.024,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "bolt_within_proof",
+          "description": "preload stress in the bolt / proof stress",
+          "kind": "validity",
+          "value": 0.6829522208201756,
+          "tolerance": 0.9,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-J1",
+          "text": "After settling, the joint shall carry 2.5 kN of side load by friction before slipping (2 kN service load, safety 1.25 against slip).",
+          "metric": "design_slip_load_N",
+          "operator": ">=",
+          "limit": 2500.0,
+          "units": "N",
+          "value": 2389.0849558960804,
+          "margin": -110.91504410391963,
+          "verdict": "FAIL"
+        },
+        {
+          "id": "REQ-J2",
+          "text": "After settling, the joint shall not open under a 10 kN axial separating load.",
+          "metric": "opening_load_N",
+          "operator": ">=",
+          "limit": 10000.0,
+          "units": "N",
+          "value": 13060.257503687591,
+          "margin": 3060.2575036875915,
+          "verdict": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p01_element_size_mm-0.75",
+      "parameters": {
+        "plate_outer_diameter_mm": 40.0,
+        "hole_diameter_mm": 9.0,
+        "washer_diameter_mm": 13.0,
+        "top_thickness_mm": 6.0,
+        "bottom_thickness_mm": 6.0,
+        "youngs_modulus_MPa": 210000.0,
+        "poisson_ratio": 0.3,
+        "preload_N": 15000.0,
+        "friction_coefficient": 0.2,
+        "element_size_mm": 0.75,
+        "contact_stiffness_factor": 50.0,
+        "stick_slope_factor": 50.0,
+        "slip_displacement_mm": 0.012,
+        "slip_increments": 6,
+        "bolt_thread": "M8",
+        "bolt_shank_length_mm": 8.0,
+        "bolt_free_thread_length_mm": 4.0,
+        "bolt_proof_stress_MPa": 600.0,
+        "embedding_um": 9.5,
+        "load_introduction_factor": 0.5
+      },
+      "derived": {
+        "bolt_compliance_mm_per_N": 2.600110648500925e-06,
+        "plate_compliance_vdi_mm_per_N": 4.5125019386845566e-07,
+        "cone_limit_diameter_mm": 19.110630740372148,
+        "slip_load_vdi_N": 3000.0,
+        "embedding_loss_vdi_N": 3113.3649839404943,
+        "load_factor_vdi": 0.07394245013612681,
+        "opening_load_vdi_N": 12835.741167281445,
+        "design_slip_load_vdi_N": 2377.3270032119012,
+        "bolt_stress_area_mm2": 36.605781836358666,
+        "bolt_preload_stress_MPa": 409.7713324921054,
+        "hole_clearance_mm": 0.5
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "slip_rigid_limit",
+          "description": "|slip load extrapolated to a rigid interface (E and 100 E, linear in 1/E) - mu F_V| / mu F_V (Coulomb: exact)",
+          "kind": "numerical",
+          "value": 2.7609427631129316e-07,
+          "tolerance": 1e-05,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "slip_deformable",
+          "description": "|slip load (FE, gross slip) - mu F_V| / mu F_V (model form: the interface tilts by about the strain under the side load)",
+          "kind": "numerical",
+          "value": 0.0013606666666666266,
+          "tolerance": 0.005,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "gross_slip_reached",
+          "description": "spread of the rim force over the last three increments / force (a plateau: the whole interface slides)",
+          "kind": "numerical",
+          "value": 3.271080444560229e-05,
+          "tolerance": 0.0001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "clamp_force_balance",
+          "description": "|z reaction at the support| / (F_V / 2) (the clamp forces balance; none lost into a support)",
+          "kind": "numerical",
+          "value": 1.8266053333333333e-18,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "shear_balance",
+          "description": "|top rim force + bottom rim force| / rim force, last increment",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "plate_compliance_reference",
+          "description": "|plate compliance FE - VDI 2230 pressure cone| / VDI (model form; the plates are about 15 % of the joint compliance)",
+          "kind": "numerical",
+          "value": 0.17635881450322782,
+          "tolerance": 0.25,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "contact_diameter_reference",
+          "description": "|interface contact diameter FE - VDI cone limit D_A,Gr| / D_A,Gr (model form)",
+          "kind": "numerical",
+          "value": 0.1494155915189235,
+          "tolerance": 0.2,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "cone_fits",
+          "description": "VDI cone limit diameter / plate diameter (cone formula valid at or below 1)",
+          "kind": "validity",
+          "value": 0.4777657685093037,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "no_bolt_bearing",
+          "description": "slip displacement / hole clearance (the bolt shank is not modelled: it must not touch the hole)",
+          "kind": "validity",
+          "value": 0.024,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "bolt_within_proof",
+          "description": "preload stress in the bolt / proof stress",
+          "kind": "validity",
+          "value": 0.6829522208201756,
+          "tolerance": 0.9,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-J1",
+          "text": "After settling, the joint shall carry 2.5 kN of side load by friction before slipping (2 kN service load, safety 1.25 against slip).",
+          "metric": "design_slip_load_N",
+          "operator": ">=",
+          "limit": 2500.0,
+          "units": "N",
+          "value": 2389.897749990561,
+          "margin": -110.1022500094391,
+          "verdict": "FAIL"
+        },
+        {
+          "id": "REQ-J2",
+          "text": "After settling, the joint shall not open under a 10 kN axial separating load.",
+          "metric": "opening_load_N",
+          "operator": ">=",
+          "limit": 10000.0,
+          "units": "N",
+          "value": 13074.085686200566,
+          "margin": 3074.0856862005658,
+          "verdict": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p02_element_size_mm-0.5",
+      "parameters": {
+        "plate_outer_diameter_mm": 40.0,
+        "hole_diameter_mm": 9.0,
+        "washer_diameter_mm": 13.0,
+        "top_thickness_mm": 6.0,
+        "bottom_thickness_mm": 6.0,
+        "youngs_modulus_MPa": 210000.0,
+        "poisson_ratio": 0.3,
+        "preload_N": 15000.0,
+        "friction_coefficient": 0.2,
+        "element_size_mm": 0.5,
+        "contact_stiffness_factor": 50.0,
+        "stick_slope_factor": 50.0,
+        "slip_displacement_mm": 0.012,
+        "slip_increments": 6,
+        "bolt_thread": "M8",
+        "bolt_shank_length_mm": 8.0,
+        "bolt_free_thread_length_mm": 4.0,
+        "bolt_proof_stress_MPa": 600.0,
+        "embedding_um": 9.5,
+        "load_introduction_factor": 0.5
+      },
+      "derived": {
+        "bolt_compliance_mm_per_N": 2.600110648500925e-06,
+        "plate_compliance_vdi_mm_per_N": 4.5125019386845566e-07,
+        "cone_limit_diameter_mm": 19.110630740372148,
+        "slip_load_vdi_N": 3000.0,
+        "embedding_loss_vdi_N": 3113.3649839404943,
+        "load_factor_vdi": 0.07394245013612681,
+        "opening_load_vdi_N": 12835.741167281445,
+        "design_slip_load_vdi_N": 2377.3270032119012,
+        "bolt_stress_area_mm2": 36.605781836358666,
+        "bolt_preload_stress_MPa": 409.7713324921054,
+        "hole_clearance_mm": 0.5
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "slip_rigid_limit",
+          "description": "|slip load extrapolated to a rigid interface (E and 100 E, linear in 1/E) - mu F_V| / mu F_V (Coulomb: exact)",
+          "kind": "numerical",
+          "value": 1.0998877663344805e-07,
+          "tolerance": 1e-05,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "slip_deformable",
+          "description": "|slip load (FE, gross slip) - mu F_V| / mu F_V (model form: the interface tilts by about the strain under the side load)",
+          "kind": "numerical",
+          "value": 0.001389111111111106,
+          "tolerance": 0.005,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "gross_slip_reached",
+          "description": "spread of the rim force over the last three increments / force (a plateau: the whole interface slides)",
+          "kind": "numerical",
+          "value": 4.005506235917161e-05,
+          "tolerance": 0.0001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "clamp_force_balance",
+          "description": "|z reaction at the support| / (F_V / 2) (the clamp forces balance; none lost into a support)",
+          "kind": "numerical",
+          "value": 8.853965333333333e-17,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "shear_balance",
+          "description": "|top rim force + bottom rim force| / rim force, last increment",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "plate_compliance_reference",
+          "description": "|plate compliance FE - VDI 2230 pressure cone| / VDI (model form; the plates are about 15 % of the joint compliance)",
+          "kind": "numerical",
+          "value": 0.1820874087274531,
+          "tolerance": 0.25,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "contact_diameter_reference",
+          "description": "|interface contact diameter FE - VDI cone limit D_A,Gr| / D_A,Gr (model form)",
+          "kind": "numerical",
+          "value": 0.10669103821609058,
+          "tolerance": 0.2,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "cone_fits",
+          "description": "VDI cone limit diameter / plate diameter (cone formula valid at or below 1)",
+          "kind": "validity",
+          "value": 0.4777657685093037,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "no_bolt_bearing",
+          "description": "slip displacement / hole clearance (the bolt shank is not modelled: it must not touch the hole)",
+          "kind": "validity",
+          "value": 0.024,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "bolt_within_proof",
+          "description": "preload stress in the bolt / proof stress",
+          "kind": "validity",
+          "value": 0.6829522208201756,
+          "tolerance": 0.9,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-J1",
+          "text": "After settling, the joint shall carry 2.5 kN of side load by friction before slipping (2 kN service load, safety 1.25 against slip).",
+          "metric": "design_slip_load_N",
+          "operator": ">=",
+          "limit": 2500.0,
+          "units": "N",
+          "value": 2390.329605146385,
+          "margin": -109.67039485361511,
+          "verdict": "FAIL"
+        },
+        {
+          "id": "REQ-J2",
+          "text": "After settling, the joint shall not open under a 10 kN axial separating load.",
+          "metric": "opening_load_N",
+          "operator": ">=",
+          "limit": 10000.0,
+          "units": "N",
+          "value": 13081.716788839902,
+          "margin": 3081.7167888399017,
+          "verdict": "PASS"
+        }
+      ]
+    }
+  ],
+  "run_id": "20261121-110554_bolted_joint_mesh_r1",
+  "generated_utc": "2026-11-21T17:17:56+00:00",
+  "verification_status": "PASS"
+}

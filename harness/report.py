@@ -123,6 +123,28 @@ def build_report(run_dir: str | Path) -> Path:
                  f"{r['units']} |")
     L.append("")
 
+    opt = manifest.get("optimization")
+    if opt:
+        L.append("## Optimisation")
+        L.append("")
+        best = opt.get("best_label")
+        L.append(f"- **Objective:** minimise `{opt['objective']}`; constraints are the requirements with a "
+                 f"{100 * opt['design_margin']:g} % design margin.")
+        L.append(f"- **Candidates evaluated:** {opt['evaluations']} (optimiser: {opt['optimizer'].get('message', '?')})")
+        L.append(f"- **Rejected by the checks (treated as infeasible):** "
+                 f"{', '.join(opt['unverified_candidates']) or 'none'}")
+        if best:
+            vs = ", ".join(f"{k} = {v:.4f}" for k, v in opt["best_variables"].items())
+            L.append(f"- **Optimum:** {best} ({vs}); {opt['objective']} = {opt['best_objective']:.4f}")
+        else:
+            L.append("- **Optimum:** none (no verified, feasible candidate)")
+        if (run_dir / "optimization.png").exists():
+            L.append("")
+            L.append("![Design space and the candidates](optimization.png)")
+        L.append("")
+        L.append("The overall verification status of an optimisation run rests on the optimum and the "
+                 "run-level checks; mesh convergence at the optimum is a separate confirmation case.")
+        L.append("")
     L.append("## Summary across points")
     L.append("")
     head = ["Point"] + ([sweep] if sweep else []) + [r["id"] for r in reqs] + ["Checks"]

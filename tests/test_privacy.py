@@ -17,6 +17,7 @@ def test_redact_handles_every_spelling():
     samples = [
         win,                                              # Windows separators
         win.replace("\\", "\\\\"),                        # JSON-escaped
+        win.replace("\\", "\\\\\\\\"),                # escaped twice (exception text in JSON)
         win.replace("\\", "/"),                           # forward slashes
         "/mnt/" + repo.drive[0].lower() + "/" + "/".join(repo.parts[1:]) + "/runs/x",   # WSL view
         str(home / "AppData" / "Local" / "Temp" / "case"),

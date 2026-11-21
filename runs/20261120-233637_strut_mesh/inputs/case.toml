@@ -1,0 +1,67 @@
+# Strut buckling, mesh study at L = 600 mm, next to the acceptance boundary found by strut_length
+# (Perry-Robertson puts it at about 590 mm). Element size 4 / 3 / 2 mm; the GCI uses the
+# representative size (V / N)^(1/3), since the cross-section divisions are rounded to even counts.
+#
+# Predictions, written BEFORE running: P_cr about 16.08 kN and first yield about 15.3 kN on every
+# mesh, changing by under 0.2 %; GCI under 1 % on both; REQ-K1 fails at 600 mm on every mesh.
+#
+# Requirements and tolerances: those of strut_length, fixed before its first run.
+
+[case]
+name = "strut_mesh"
+model = "ccx_strut"
+description = "Mesh study at L = 600 mm (next to the acceptance boundary), 4 / 3 / 2 mm C3D8I. Pinned-pinned 6061-T6 strut, 25 x 16 mm solid section, in compression: CalculiX linear buckling and a geometrically nonlinear analysis with an L/1000 initial bow to first yield, at L = 400 / 500 / 600 / 700 mm; checked against Euler-Engesser, the amplification law, the Southwell plot and Perry-Robertson."
+assumptions = [
+  "Pins on the centroidal axis at both ends (knife-edge line supports across the width at mid-thickness).",
+  "Initial bow e0 = L/1000 in the weak direction, half-sine shaped (the first buckling mode): synthetic tolerance.",
+  "Load axial and concentric at the ends, uniform over the end face (dead load).",
+  "Linear elastic material up to first yield (6061-T6, E = 68.9 GPa, yield 276 MPa); the analysis stops just past first yield.",
+  "Elastic buckling governs; checked: Euler stress at most half the yield stress (Johnson range otherwise).",
+  "Moderate deflection at first yield; checked: below 5 % of the length.",
+]
+limitations = [
+  "No residual stresses, end eccentricity or load misalignment beyond the bow.",
+  "Capacity defined as first yield, not collapse (the plastic reserve beyond first yield is not used).",
+  "References are model form (beam-column theory) except the Southwell plot, which uses the FE response itself.",
+  "No physical test data.",
+]
+
+[parameters]
+length_mm = 600.0
+width_mm = 25.0
+thickness_mm = 16.0
+youngs_modulus_MPa = 68900.0
+poisson_ratio = 0.33
+yield_strength_MPa = 276.0
+element_size_mm = 3.0
+imperfection_over_length = 0.001
+
+[sweep]
+parameter = "element_size_mm"
+values = [4.0, 3.0, 2.0]
+
+[numerics]
+solver = "CalculiX 2.22: *BUCKLE, then *STATIC NLGEOM (C3D8I)"
+increments = 20
+load_over_first_yield = 1.03     # nonlinear run to 3 % past Perry-Robertson first yield ...
+max_load_over_critical = 0.98    # ... but never past 98 % of the FE critical load
+
+[verification]
+buckling_rel_tol = 0.01          # vs Euler-Engesser (model form: 3D solid, line supports)
+mac_min = 0.999                  # first mode is the half sine in the weak direction
+southwell_rel_tol = 0.01         # Southwell P_cr vs eigenvalue: two independent FE routes
+imperfection_rel_tol = 0.03      # bow recovered by the Southwell intercept (an intercept: less precise)
+amplification_rel_tol = 0.02     # vs e0 / (1 - P/P_cr) for P <= 0.8 P_cr (model form: small-deflection theory)
+first_yield_rel_tol = 0.02       # vs Perry-Robertson (model form: beam stresses)
+equilibrium_rel_tol = 1e-6
+deflection_over_length_max = 0.05
+thickness_over_length_max = 0.1
+gci_max = 0.01
+
+[[requirements]]
+id = "REQ-K1"
+text = "The strut, with an L/1000 initial bow, shall reach 16 kN (twice the 8 kN service load) before first yield."
+metric = "first_yield_load_N"
+operator = ">="
+limit = 16000.0
+units = "N"

@@ -1,0 +1,110 @@
+# Bracket optimisation loop, 3D part, revision 2: every candidate meshed with the fillets refined
+# (4 mm globally, 1.0 mm elements on the 3 mm fillets), so the peak stress the optimiser sees is
+# resolved, and a design margin set from a measured fillet-refinement study.
+#
+# Why a second revision. r1 (margin 9 %, global 4 mm mesh) was sized from a global-refinement study
+# whose order estimate was unstable (1.66 at c004, 1.16 at c011); its optimum c011 then failed that
+# kind of confirmation (clevis_confirm_r1). Refining the fillets alone (clevis_confirm_r1_fillet)
+# shows the peak at c011 settles at 96.6 to 97.6 MPa: the 4 mm global mesh under-read it by 6 %,
+# not the 9 % assumed, and the global studies overstated the uncertainty.
+#
+# Design margin 2.5 % (constraint: peak at 1.0 mm fillets <= 97.5 MPa), from the c011 fillet study:
+# the 1.0 mm level reads up to 1.05 % under the finer levels (97.62 at 0.85 mm), their oscillation
+# adds about 0.65 % (1.25 x half range), and neighbouring designs scatter by about 0.25 % at 1.0 mm:
+# 1.95 %, rounded up to 2.5 %.
+# Cost: about 3 to 4 min per candidate (SPOOLES on one core; 140 k nodes).
+#
+# Predictions, written BEFORE running:
+#   P1 Stress governs at the lug-to-base fillet; deflection not active (about 0.064 mm).
+#   P2 The optimum is within 1 % of c011's mass (377.2 g): c011 reads 96.6 MPa against the new
+#      97.5 MPa constraint, about 1 % of stress headroom, worth well under 1 % of mass.
+#   P3 No candidate rejected; the final iterates scatter by under 0.5 % in stress (was 1.5 %).
+#   P4 Its confirmation (fillet sizes 1.0 / 0.85 / 0.75 mm) passes REQ-C1 with the uncertainty added.
+#
+# Problem, requirements and tolerances: as clevis_opt (header there), fixed before its first run.
+
+[case]
+name = "clevis_opt_r2"
+model = "cadquery_ccx_clevis"
+description = "Lightest 6061-T6 machined clevis bracket (base 100 x 100 x 10 mm, lug 40 mm wide with a 16 mm pin at 70 mm, two gussets, 3 mm fillets) under a (1.5, 1.0, 4.5) kN pin load, with peak von Mises at most 100 MPa and pin deflection at most 0.10 mm; COBYLA over lug thickness, gusset thickness and gusset height, each candidate built in CadQuery, meshed in Gmsh, solved and checked in CalculiX."
+assumptions = [
+  "Base bottom face fixed (bolted and dowelled to a rigid machine frame); the bottom half of the base is not assessed (the edge of a fixed face is singular, and the real joint is not modelled).",
+  "Pin load through a rigid pin tied to the hole surface; a ring of one pin diameter around the hole is not assessed (pin bearing and lug net section are sized by the standard lug method).",
+  "Linear elastic 6061-T6 (E 68.9 GPa, nu 0.33); checked: peak stress below yield.",
+  "Small deflection; checked: pin deflection / pin height below 1 %.",
+  "Stress allowable 100 MPa (fatigue-rated) and pin deflection limit 0.10 mm: synthetic.",
+]
+limitations = [
+  "Static load only; the fatigue rating is folded into the allowable.",
+  "No closed-form reference for the whole part: the evidence is exact equilibrium, geometry fidelity, a model-form check of the lug section and mesh convergence at the optimum.",
+  "Fixed outline and fillet radius; only three dimensions vary.",
+  "No physical test data.",
+]
+
+[parameters]
+base_length_mm = 100.0
+base_width_mm = 100.0
+base_thickness_mm = 10.0
+lug_radius_mm = 20.0
+pin_height_mm = 70.0
+pin_diameter_mm = 16.0
+lug_thickness_mm = 12.0           # start of the optimisation
+gusset_thickness_mm = 8.0
+gusset_height_mm = 40.0
+gusset_aspect = 0.7               # gusset length along the base / height
+fillet_radius_mm = 3.0
+youngs_modulus_MPa = 68900.0
+poisson_ratio = 0.33
+density_t_per_mm3 = 2.7e-9
+yield_strength_MPa = 276.0
+load_x_N = 1500.0
+load_y_N = 1000.0
+load_z_N = 4500.0
+element_size_mm = 4.0             # global maximum
+fillet_element_size_mm = 1.0      # local refinement at the fillets, where the peak sits
+
+[optimization]
+method = "COBYLA"
+objective = "mass_g"
+design_margin = 0.025         # from the fillet-refinement study at c011; see the header
+rhobeg = 2.0
+tol = 0.05
+max_evaluations = 60
+[[optimization.variables]]
+name = "lug_thickness_mm"
+lower = 5.0
+upper = 20.0
+[[optimization.variables]]
+name = "gusset_thickness_mm"
+lower = 3.0
+upper = 12.0
+[[optimization.variables]]
+name = "gusset_height_mm"
+lower = 8.0
+upper = 50.0
+
+[numerics]
+solver = "CalculiX 2.22 static, C3D10, rigid pin (*RIGID BODY)"
+
+[verification]
+mesh_volume_rel_tol = 2e-3        # straight-sided tets on curved fillets and the hole
+equilibrium_rel_tol = 1e-6
+section_rel_tol = 0.10            # model form: beam theory on a 40 mm wide section between the gussets and the hole
+small_deflection_max = 0.01
+gci_max = 0.01                    # used by the confirmation mesh study
+
+[[requirements]]
+id = "REQ-C1"
+text = "Peak von Mises stress (outside the fixed base layer and the pin ring) shall not exceed 100 MPa (fatigue-rated allowable)."
+metric = "peak_von_mises_MPa"
+operator = "<="
+limit = 100.0
+units = "MPa"
+
+[[requirements]]
+id = "REQ-C2"
+text = "Pin deflection under the load shall not exceed 0.10 mm."
+metric = "pin_deflection_mm"
+operator = "<="
+limit = 0.10
+units = "mm"

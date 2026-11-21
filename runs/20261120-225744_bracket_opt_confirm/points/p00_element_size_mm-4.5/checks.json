@@ -1,0 +1,96 @@
+{
+  "label": "p00_element_size_mm-4.5",
+  "status": "PASS",
+  "checks": [
+    {
+      "id": "cad_volume",
+      "description": "|CadQuery B-rep volume - b L (h_r + h_t) / 2| / closed form",
+      "kind": "numerical",
+      "value": 2.0923231854406342e-16,
+      "tolerance": 1e-09,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "load_applied",
+      "description": "|sum of tip nodal forces + F| / F and |tip area from the mesh - b h_t| / (b h_t)",
+      "kind": "numerical",
+      "value": 3.885100775549747e-14,
+      "tolerance": 1e-09,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "equilibrium",
+      "description": "|R_root - (0, 0, F)| / F (sum of reactions)",
+      "kind": "numerical",
+      "value": 5.2138435072177804e-12,
+      "tolerance": 1e-06,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "deflection_reference",
+      "description": "|tip deflection FE - tapered Timoshenko beam| / beam (model form)",
+      "kind": "numerical",
+      "value": 0.005781615499245008,
+      "tolerance": 0.02,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "stress_ratio_reference",
+      "description": "max over the span of |fitted FE fibre stress / nominal M/Z - 1| (model form: beam theory)",
+      "kind": "numerical",
+      "value": 0.006238122573120064,
+      "tolerance": 0.02,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "stress_field_reference",
+      "description": "max over 2-element bins of |mean FE fibre stress / nominal - 1| in the smooth region (field, model form)",
+      "kind": "numerical",
+      "value": 0.014225060191294547,
+      "tolerance": 0.03,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "linear_material",
+      "description": "peak bending stress / yield strength",
+      "kind": "validity",
+      "value": 0.2802545235455484,
+      "tolerance": 1.0,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "small_deflection",
+      "description": "tip deflection / length (geometrically linear analysis)",
+      "kind": "validity",
+      "value": 0.0045835962658227845,
+      "tolerance": 0.01,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "beam_reference_valid",
+      "description": "taper slope |h_r - h_t| / 2L (tapered beam theory)",
+      "kind": "validity",
+      "value": 0.04322584558452153,
+      "tolerance": 0.1,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "slender",
+      "description": "root height / length (beam theory)",
+      "kind": "validity",
+      "value": 0.13016219538952478,
+      "tolerance": 0.2,
+      "comparison": "<=",
+      "status": "PASS"
+    }
+  ]
+}

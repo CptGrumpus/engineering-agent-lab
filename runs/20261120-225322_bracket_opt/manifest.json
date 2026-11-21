@@ -1,0 +1,2609 @@
+{
+  "run_id": "20261120-225322_bracket_opt",
+  "case_name": "bracket_opt",
+  "model": "cadquery_ccx_tapered",
+  "case_source": "cases/bracket_opt.toml",
+  "case_sha256": "d8fa568db7b6c075f14c4054ee7b684736a9526d6c43de1131b21f57dc429d3c",
+  "model_sources_sha256": {
+    "models/fea/tapered_bracket.py": "6eca3ec389e497917e9e4fcd9ffe317d25dadeb3e4f0caafbd8b40ad8129a6c3"
+  },
+  "rerun_of": null,
+  "started_utc": "2026-11-21T03:53:22+00:00",
+  "environment": {
+    "python": "3.14.10",
+    "python_executable": "<repo>\\.venv\\Scripts\\python.exe",
+    "platform": "Windows-11-10.0.26100-SP0",
+    "machine": "AMD64",
+    "packages": {
+      "numpy": "2.5.5",
+      "scipy": "1.18.1",
+      "matplotlib": "3.11.2",
+      "cadquery": "2.8.0"
+    },
+    "git": {
+      "commit": "d89f3eb4b3297ce9c7f67030eaeb9a09e04bd06b",
+      "dirty": true
+    },
+    "tools": {
+      "cadquery": "2.8.0",
+      "gmsh": "4.15.0",
+      "CalculiX": "This is Version 2.22"
+    }
+  },
+  "numerics": {
+    "solver": "CalculiX 2.22 static, C3D10"
+  },
+  "points": [
+    {
+      "label": "c000",
+      "parameters": {
+        "length_mm": 200.0,
+        "width_mm": 20.0,
+        "root_height_mm": 25.0,
+        "tip_height_mm": 25.0,
+        "youngs_modulus_MPa": 210000.0,
+        "poisson_ratio": 0.3,
+        "density_t_per_mm3": 7.85e-09,
+        "tip_load_N": 1000.0,
+        "element_size_mm": 3.0,
+        "yield_strength_MPa": 355.0
+      },
+      "status": "completed",
+      "derived": {
+        "tip_deflection_beam_mm": 0.49344761904761897,
+        "peak_nominal_stress_MPa": 96.0,
+        "peak_nominal_stress_x_mm": 0.0,
+        "root_nominal_stress_MPa": 96.0,
+        "volume_closed_form_mm3": 100000.0,
+        "taper_slope": 0.0,
+        "root_height_over_length": 0.125
+      },
+      "solver": {
+        "success": true,
+        "message": "CalculiX: 18416 C3D10, 29728 nodes",
+        "nfev": null
+      },
+      "solver_outputs": {
+        "nodes": 29728,
+        "elements": 18416,
+        "root_nodes": 341,
+        "tip_nodes": 341,
+        "tip_area_mm2": 500.0,
+        "applied_load_N": -1000.0,
+        "volume_mm3": 99999.99999999997,
+        "reaction_root_N": [
+          1.800778e-09,
+          -3.083329e-09,
+          1000.0
+        ]
+      },
+      "metrics": {
+        "tip_deflection_mm": 0.48978504692082114,
+        "peak_bending_stress_MPa": 95.99941077453539,
+        "root_bending_stress_MPa": 95.99941077453539,
+        "mass_g": 784.9999999999999
+      },
+      "candidate": {
+        "variables": {
+          "root_height_mm": 25.0,
+          "tip_height_mm": 25.0
+        },
+        "verified": true,
+        "failed_checks": [],
+        "objective": 784.9999999999999,
+        "constraints": [
+          0.5052149530791789,
+          0.035005892254646086
+        ],
+        "feasible": true
+      }
+    },
+    {
+      "label": "c001",
+      "parameters": {
+        "length_mm": 200.0,
+        "width_mm": 20.0,
+        "root_height_mm": 27.0,
+        "tip_height_mm": 25.0,
+        "youngs_modulus_MPa": 210000.0,
+        "poisson_ratio": 0.3,
+        "density_t_per_mm3": 7.85e-09,
+        "tip_load_N": 1000.0,
+        "element_size_mm": 3.0,
+        "yield_strength_MPa": 355.0
+      },
+      "status": "completed",
+      "derived": {
+        "tip_deflection_beam_mm": 0.4155581246786164,
+        "peak_nominal_stress_MPa": 82.3045267489712,
+        "peak_nominal_stress_x_mm": 0.0,
+        "root_nominal_stress_MPa": 82.3045267489712,
+        "volume_closed_form_mm3": 104000.0,
+        "taper_slope": 0.005,
+        "root_height_over_length": 0.135
+      },
+      "solver": {
+        "success": true,
+        "message": "CalculiX: 19181 C3D10, 30829 nodes",
+        "nfev": null
+      },
+      "solver_outputs": {
+        "nodes": 30829,
+        "elements": 19181,
+        "root_nodes": 341,
+        "tip_nodes": 341,
+        "tip_area_mm2": 500.0,
+        "applied_load_N": -1000.0,
+        "volume_mm3": 103999.99999999999,
+        "reaction_root_N": [
+          3.483812e-09,
+          -2.501002e-09,
+          1000.0
+        ]
+      },
+      "metrics": {
+        "tip_deflection_mm": 0.4123597653958944,
+        "peak_bending_stress_MPa": 82.29004819529965,
+        "root_bending_stress_MPa": 82.29004819529965,
+        "mass_g": 816.4
+      },
+      "candidate": {
+        "variables": {
+          "root_height_mm": 27.0,
+          "tip_height_mm": 25.0
+        },
+        "verified": true,
+        "failed_checks": [],
+        "objective": 816.4,
+        "constraints": [
+          0.5826402346041055,
+          0.17209951804700352
+        ],
+        "feasible": true
+      }
+    },
+    {
+      "label": "c002",
+      "parameters": {
+        "length_mm": 200.0,
+        "width_mm": 20.0,
+        "root_height_mm": 25.0,
+        "tip_height_mm": 27.0,
+        "youngs_modulus_MPa": 210000.0,
+        "poisson_ratio": 0.3,
+        "density_t_per_mm3": 7.85e-09,
+        "tip_load_N": 1000.0,
+        "element_size_mm": 3.0,
+        "yield_strength_MPa": 355.0
+      },
+      "status": "completed",
+      "derived": {
+        "tip_deflection_beam_mm": 0.4657246933637037,
+        "peak_nominal_stress_MPa": 96.0,
+        "peak_nominal_stress_x_mm": 0.0,
+        "root_nominal_stress_MPa": 96.0,
+        "volume_closed_form_mm3": 104000.0,
+        "taper_slope": 0.005,
+        "root_height_over_length": 0.125
+      },
+      "solver": {
+        "success": true,
+        "message": "CalculiX: 19011 C3D10, 30609 nodes",
+        "nfev": null
+      },
+      "solver_outputs": {
+        "nodes": 30609,
+        "elements": 19011,
+        "root_nodes": 341,
+        "tip_nodes": 341,
+        "tip_area_mm2": 540.0,
+        "applied_load_N": -1000.0,
+        "volume_mm3": 104000.0,
+        "reaction_root_N": [
+          -3.486633e-09,
+          -3.031136e-09,
+          1000.0
+        ]
+      },
+      "metrics": {
+        "tip_deflection_mm": 0.4623264017595309,
+        "peak_bending_stress_MPa": 96.01312802071936,
+        "root_bending_stress_MPa": 96.01312802071936,
+        "mass_g": 816.4000000000001
+      },
+      "candidate": {
+        "variables": {
+          "root_height_mm": 25.0,
+          "tip_height_mm": 27.0
+        },
+        "verified": true,
+        "failed_checks": [],
+        "objective": 816.4000000000001,
+        "constraints": [
+          0.5326735982404691,
+          0.03486871979280636
+        ],
+        "feasible": true
+      }
+    },
+    {
+      "label": "c003",
+      "parameters": {
+        "length_mm": 200.0,
+        "width_mm": 20.0,
+        "root_height_mm": 24.48737977841215,
+        "tip_height_mm": 23.066810793424704,
+        "youngs_modulus_MPa": 210000.0,
+        "poisson_ratio": 0.3,
+        "density_t_per_mm3": 7.85e-09,
+        "tip_load_N": 1000.0,
+        "element_size_mm": 3.0,
+        "yield_strength_MPa": 355.0
+      },
+      "status": "completed",
+      "derived": {
+        "tip_deflection_beam_mm": 0.5486957932469118,
+        "peak_nominal_stress_MPa": 100.06140961957149,
+        "peak_nominal_stress_x_mm": 0.0,
+        "root_nominal_stress_MPa": 100.06140961957149,
+        "volume_closed_form_mm3": 95108.38114367372,
+        "taper_slope": 0.0035514224624686188,
+        "root_height_over_length": 0.12243689889206076
+      },
+      "solver": {
+        "success": true,
+        "message": "CalculiX: 17417 C3D10, 28220 nodes",
+        "nfev": null
+      },
+      "solver_outputs": {
+        "nodes": 28220,
+        "elements": 17417,
+        "root_nodes": 345,
+        "tip_nodes": 299,
+        "tip_area_mm2": 461.33621586844004,
+        "applied_load_N": -999.9999999999999,
+        "volume_mm3": 95108.38114367372,
+        "reaction_root_N": [
+          -4.743157e-10,
+          4.530731e-09,
+          1000.0
+        ]
+      },
+      "metrics": {
+        "tip_deflection_mm": 0.5446242943143813,
+        "peak_bending_stress_MPa": 100.04830318775215,
+        "root_bending_stress_MPa": 100.04830318775215,
+        "mass_g": 746.6007919778388
+      },
+      "candidate": {
+        "variables": {
+          "root_height_mm": 24.48737977841215,
+          "tip_height_mm": 23.066810793424704
+        },
+        "verified": true,
+        "failed_checks": [],
+        "objective": 746.6007919778388,
+        "constraints": [
+          0.4503757056856187,
+          -0.00548303187752154
+        ],
+        "feasible": false
+      }
+    },
+    {
+      "label": "c004",
+      "parameters": {
+        "length_mm": 200.0,
+        "width_mm": 20.0,
+        "root_height_mm": 24.728581233044405,
+        "tip_height_mm": 19.07408968392015,
+        "youngs_modulus_MPa": 210000.0,
+        "poisson_ratio": 0.3,
+        "density_t_per_mm3": 7.85e-09,
+        "tip_load_N": 1000.0,
+        "element_size_mm": 3.0,
+        "yield_strength_MPa": 355.0
+      },
+      "status": "completed",
+      "derived": {
+        "tip_deflection_beam_mm": 0.6165090903898356,
+        "peak_nominal_stress_MPa": 98.11894056416531,
+        "peak_nominal_stress_x_mm": 0.0,
+        "root_nominal_stress_MPa": 98.11894056416531,
+        "volume_closed_form_mm3": 87605.34183392912,
+        "taper_slope": 0.014136228872810639,
+        "root_height_over_length": 0.12364290616522203
+      },
+      "solver": {
+        "success": true,
+        "message": "CalculiX: 16146 C3D10, 26367 nodes",
+        "nfev": null
+      },
+      "solver_outputs": {
+        "nodes": 26367,
+        "elements": 16146,
+        "root_nodes": 341,
+        "tip_nodes": 265,
+        "tip_area_mm2": 381.48179367840004,
+        "applied_load_N": -999.9999999999999,
+        "volume_mm3": 87605.3418339291,
+        "reaction_root_N": [
+          -2.972342e-10,
+          -1.62615e-09,
+          1000.0
+        ]
+      },
+      "metrics": {
+        "tip_deflection_mm": 0.6119848226415093,
+        "peak_bending_stress_MPa": 98.06752496587788,
+        "root_bending_stress_MPa": 98.06752496587788,
+        "mass_g": 687.7019333963435
+      },
+      "candidate": {
+        "variables": {
+          "root_height_mm": 24.728581233044405,
+          "tip_height_mm": 19.07408968392015
+        },
+        "verified": true,
+        "failed_checks": [],
+        "objective": 687.7019333963435,
+        "constraints": [
+          0.38301517735849067,
+          0.014324750341221205
+        ],
+        "feasible": true
+      }
+    },
+    {
+      "label": "c005",
+      "parameters": {
+        "length_mm": 200.0,
+        "width_mm": 20.0,
+        "root_height_mm": 24.453140155896616,
+        "tip_height_mm": 11.078832826694132,
+        "youngs_modulus_MPa": 210000.0,
+        "poisson_ratio": 0.3,
+        "density_t_per_mm3": 7.85e-09,
+        "tip_load_N": 1000.0,
+        "element_size_mm": 3.0,
+        "yield_strength_MPa": 355.0
+      },
+      "status": "completed",
+      "derived": {
+        "tip_deflection_beam_mm": 0.9183722503995508,
+        "peak_nominal_stress_MPa": 101.23389604151781,
+        "peak_nominal_stress_x_mm": 34.326630097638585,
+        "root_nominal_stress_MPa": 100.34182051841195,
+        "volume_closed_form_mm3": 71063.94596518148,
+        "taper_slope": 0.03343576832300621,
+        "root_height_over_length": 0.12226570077948308
+      },
+      "solver": {
+        "success": true,
+        "message": "CalculiX: 13313 C3D10, 22119 nodes",
+        "nfev": null
+      },
+      "solver_outputs": {
+        "nodes": 22119,
+        "elements": 13313,
+        "root_nodes": 341,
+        "tip_nodes": 167,
+        "tip_area_mm2": 221.57665653388003,
+        "applied_load_N": -1000.0,
+        "volume_mm3": 71063.94596518151,
+        "reaction_root_N": [
+          -7.190167e-09,
+          5.285017e-10,
+          1000.0
+        ]
+      },
+      "metrics": {
+        "tip_deflection_mm": 0.9127555988023952,
+        "peak_bending_stress_MPa": 101.23882742242337,
+        "root_bending_stress_MPa": 100.2155899599725,
+        "mass_g": 557.8519758266749
+      },
+      "candidate": {
+        "variables": {
+          "root_height_mm": 24.453140155896616,
+          "tip_height_mm": 11.078832826694132
+        },
+        "verified": true,
+        "failed_checks": [],
+        "objective": 557.8519758266749,
+        "constraints": [
+          0.08224440119760479,
+          -0.017388274224233696
+        ],
+        "feasible": false
+      }
+    },
+    {
+      "label": "c006",
+      "parameters": {
+        "length_mm": 200.0,
+        "width_mm": 20.0,
+        "root_height_mm": 24.775910104163874,
+        "tip_height_mm": 9.010617218625923,
+        "youngs_modulus_MPa": 210000.0,
+        "poisson_ratio": 0.3,
+        "density_t_per_mm3": 7.85e-09,
+        "tip_load_N": 1000.0,
+        "element_size_mm": 3.0,
+        "yield_strength_MPa": 355.0
+      },
+      "status": "completed",
+      "derived": {
+        "tip_deflection_beam_mm": 1.0167876984152764,
+        "peak_nominal_stress_MPa": 105.59288963889873,
+        "peak_nominal_stress_x_mm": 85.69045581269634,
+        "root_nominal_stress_MPa": 97.74442974759026,
+        "volume_closed_form_mm3": 67573.05464557958,
+        "taper_slope": 0.03941323221384488,
+        "root_height_over_length": 0.12387955052081936
+      },
+      "solver": {
+        "success": true,
+        "message": "CalculiX: 12708 C3D10, 21186 nodes",
+        "nfev": null
+      },
+      "solver_outputs": {
+        "nodes": 21186,
+        "elements": 12708,
+        "root_nodes": 341,
+        "tip_nodes": 137,
+        "tip_area_mm2": 180.21234437252002,
+        "applied_load_N": -1000.0,
+        "volume_mm3": 67573.0546455796,
+        "reaction_root_N": [
+          1.303846e-11,
+          1.359342e-09,
+          1000.0
+        ]
+      },
+      "metrics": {
+        "tip_deflection_mm": 1.0110942335766422,
+        "peak_bending_stress_MPa": 105.79751270123094,
+        "root_bending_stress_MPa": 97.61763316346577,
+        "mass_g": 530.4484789677998
+      },
+      "candidate": {
+        "variables": {
+          "root_height_mm": 24.775910104163874,
+          "tip_height_mm": 9.010617218625923
+        },
+        "verified": true,
+        "failed_checks": [],
+        "objective": 530.4484789677998,
+        "constraints": [
+          -0.016094233576642192,
+          -0.06297512701230942
+        ],
+        "feasible": false
+      }
+    },
+    {
+      "label": "c007",
+      "parameters": {
+        "length_mm": 200.0,
+        "width_mm": 20.0,
+        "root_height_mm": 16.838827146778673,
+        "tip_height_mm": 8.009261074396818,
+        "youngs_modulus_MPa": 210000.0,
+        "poisson_ratio": 0.3,
+        "density_t_per_mm3": 7.85e-09,
+        "tip_load_N": 1000.0,
+        "element_size_mm": 3.0,
+        "yield_strength_MPa": 355.0
+      },
+      "status": "completed",
+      "derived": {
+        "tip_deflection_beam_mm": 2.7103673459661843,
+        "peak_nominal_stress_MPa": 212.10917163421618,
+        "peak_nominal_stress_x_mm": 18.580867763159503,
+        "root_nominal_stress_MPa": 211.60580261166118,
+        "volume_closed_form_mm3": 49696.17644235098,
+        "taper_slope": 0.022073915180954636,
+        "root_height_over_length": 0.08419413573389337
+      },
+      "solver": {
+        "success": true,
+        "message": "CalculiX: 9658 C3D10, 16631 nodes",
+        "nfev": null
+      },
+      "solver_outputs": {
+        "nodes": 16631,
+        "elements": 9658,
+        "root_nodes": 235,
+        "tip_nodes": 137,
+        "tip_area_mm2": 160.18522148792002,
+        "applied_load_N": -1000.0,
+        "volume_mm3": 49696.17644235098,
+        "reaction_root_N": [
+          7.515268e-09,
+          9.238503e-09,
+          1000.0
+        ]
+      },
+      "metrics": {
+        "tip_deflection_mm": 2.696499927007299,
+        "peak_bending_stress_MPa": 212.0469865592776,
+        "root_bending_stress_MPa": 211.4663544615505,
+        "mass_g": 390.1149850724552
+      },
+      "candidate": {
+        "variables": {
+          "root_height_mm": 16.838827146778673,
+          "tip_height_mm": 8.009261074396818
+        },
+        "verified": false,
+        "failed_checks": [
+          "small_deflection"
+        ],
+        "objective": 390.1149850724552,
+        "constraints": [
+          -1.0,
+          -1.0
+        ],
+        "feasible": false
+      }
+    },
+    {
+      "label": "c008",
+      "parameters": {
+        "length_mm": 200.0,
+        "width_mm": 20.0,
+        "root_height_mm": 22.799829418199888,
+        "tip_height_mm": 8.702226034315952,
+        "youngs_modulus_MPa": 210000.0,
+        "poisson_ratio": 0.3,
+        "density_t_per_mm3": 7.85e-09,
+        "tip_load_N": 1000.0,
+        "element_size_mm": 3.0,
+        "yield_strength_MPa": 355.0
+      },
+      "status": "completed",
+      "derived": {
+        "tip_deflection_beam_mm": 1.2637936715243134,
+        "peak_nominal_stress_MPa": 122.26878914412616,
+        "peak_nominal_stress_x_mm": 76.54318542874967,
+        "root_nominal_stress_MPa": 115.42185635777085,
+        "volume_closed_form_mm3": 63004.11090503168,
+        "taper_slope": 0.03524400845970984,
+        "root_height_over_length": 0.11399914709099944
+      },
+      "solver": {
+        "success": true,
+        "message": "CalculiX: 11924 C3D10, 20015 nodes",
+        "nfev": null
+      },
+      "solver_outputs": {
+        "nodes": 20015,
+        "elements": 11924,
+        "root_nodes": 315,
+        "tip_nodes": 137,
+        "tip_area_mm2": 174.04452068632,
+        "applied_load_N": -1000.0,
+        "volume_mm3": 63004.11090503167,
+        "reaction_root_N": [
+          -1.497462e-09,
+          -7.901493e-10,
+          1000.0
+        ]
+      },
+      "metrics": {
+        "tip_deflection_mm": 1.2569676642335765,
+        "peak_bending_stress_MPa": 122.43874704189766,
+        "root_bending_stress_MPa": 115.2862428816568,
+        "mass_g": 494.5822706044987
+      },
+      "candidate": {
+        "variables": {
+          "root_height_mm": 22.799829418199888,
+          "tip_height_mm": 8.702226034315952
+        },
+        "verified": true,
+        "failed_checks": [],
+        "objective": 494.5822706044987,
+        "constraints": [
+          -0.26196766423357654,
+          -0.22938747041897656
+        ],
+        "feasible": false
+      }
+    },
+    {
+      "label": "c009",
+      "parameters": {
+        "length_mm": 200.0,
+        "width_mm": 20.0,
+        "root_height_mm": 26.885945504602,
+        "tip_height_mm": 6.0,
+        "youngs_modulus_MPa": 210000.0,
+        "poisson_ratio": 0.3,
+        "density_t_per_mm3": 7.85e-09,
+        "tip_load_N": 1000.0,
+        "element_size_mm": 3.0,
+        "yield_strength_MPa": 355.0
+      },
+      "status": "completed",
+      "derived": {
+        "tip_deflection_beam_mm": 1.0673371628572632,
+        "peak_nominal_stress_MPa": 119.6977172735202,
+        "peak_nominal_stress_x_mm": 142.5450957087103,
+        "root_nominal_stress_MPa": 83.00430591595764,
+        "volume_closed_form_mm3": 65771.891009204,
+        "taper_slope": 0.052214863761505,
+        "root_height_over_length": 0.13442972752301
+      },
+      "solver": {
+        "success": true,
+        "message": "CalculiX: 12273 C3D10, 20550 nodes",
+        "nfev": null
+      },
+      "solver_outputs": {
+        "nodes": 20550,
+        "elements": 12273,
+        "root_nodes": 341,
+        "tip_nodes": 107,
+        "tip_area_mm2": 120.0,
+        "applied_load_N": -1000.0,
+        "volume_mm3": 65771.891009204,
+        "reaction_root_N": [
+          -7.219754e-10,
+          1.05455e-09,
+          1000.0
+        ]
+      },
+      "metrics": {
+        "tip_deflection_mm": 1.0622601869158876,
+        "peak_bending_stress_MPa": 120.1988129695627,
+        "root_bending_stress_MPa": 82.88486420869256,
+        "mass_g": 516.3093444222516
+      },
+      "candidate": {
+        "variables": {
+          "root_height_mm": 26.885945504602,
+          "tip_height_mm": 6.0
+        },
+        "verified": true,
+        "failed_checks": [],
+        "objective": 516.3093444222516,
+        "constraints": [
+          -0.06726018691588764,
+          -0.20698812969562697
+        ],
+        "feasible": false
+      }
+    },
+    {
+      "label": "c010",
+      "parameters": {
+        "length_mm": 200.0,
+        "width_mm": 20.0,
+        "root_height_mm": 23.704772975353784,
+        "tip_height_mm": 10.433740667872804,
+        "youngs_modulus_MPa": 210000.0,
+        "poisson_ratio": 0.3,
+        "density_t_per_mm3": 7.85e-09,
+        "tip_load_N": 1000.0,
+        "element_size_mm": 3.0,
+        "yield_strength_MPa": 355.0
+      },
+      "status": "completed",
+      "derived": {
+        "tip_deflection_beam_mm": 1.026753470004986,
+        "peak_nominal_stress_MPa": 108.3294441025202,
+        "peak_nominal_stress_x_mm": 42.759170106288956,
+        "root_nominal_stress_MPa": 106.77747571569775,
+        "volume_closed_form_mm3": 68277.02728645317,
+        "taper_slope": 0.03317758076870245,
+        "root_height_over_length": 0.11852386487676891
+      },
+      "solver": {
+        "success": true,
+        "message": "CalculiX: 12776 C3D10, 21294 nodes",
+        "nfev": null
+      },
+      "solver_outputs": {
+        "nodes": 21294,
+        "elements": 12776,
+        "root_nodes": 303,
+        "tip_nodes": 159,
+        "tip_area_mm2": 208.67481335744,
+        "applied_load_N": -1000.0,
+        "volume_mm3": 68277.02728645317,
+        "reaction_root_N": [
+          -4.999904e-09,
+          1.686056e-10,
+          1000.0
+        ]
+      },
+      "metrics": {
+        "tip_deflection_mm": 1.0206586163522011,
+        "peak_bending_stress_MPa": 108.36066367709358,
+        "root_bending_stress_MPa": 106.63820454448327,
+        "mass_g": 535.9746641986575
+      },
+      "candidate": {
+        "variables": {
+          "root_height_mm": 23.704772975353784,
+          "tip_height_mm": 10.433740667872804
+        },
+        "verified": true,
+        "failed_checks": [],
+        "objective": 535.9746641986575,
+        "constraints": [
+          -0.025658616352201125,
+          -0.08860663677093583
+        ],
+        "feasible": false
+      }
+    },
+    {
+      "label": "c011",
+      "parameters": {
+        "length_mm": 200.0,
+        "width_mm": 20.0,
+        "root_height_mm": 25.733972958069437,
+        "tip_height_mm": 8.72405907798719,
+        "youngs_modulus_MPa": 210000.0,
+        "poisson_ratio": 0.3,
+        "density_t_per_mm3": 7.85e-09,
+        "tip_load_N": 1000.0,
+        "element_size_mm": 3.0,
+        "yield_strength_MPa": 355.0
+      },
+      "status": "completed",
+      "derived": {
+        "tip_deflection_beam_mm": 0.9487172470635269,
+        "peak_nominal_stress_MPa": 101.08123660614578,
+        "peak_nominal_stress_x_mm": 97.42383013234858,
+        "root_nominal_stress_MPa": 90.60195519453836,
+        "volume_closed_form_mm3": 68916.06407211325,
+        "taper_slope": 0.04252478470020561,
+        "root_height_over_length": 0.12866986479034717
+      },
+      "solver": {
+        "success": true,
+        "message": "CalculiX: 12744 C3D10, 21219 nodes",
+        "nfev": null
+      },
+      "solver_outputs": {
+        "nodes": 21219,
+        "elements": 12744,
+        "root_nodes": 333,
+        "tip_nodes": 137,
+        "tip_area_mm2": 174.48118155976002,
+        "applied_load_N": -1000.0,
+        "volume_mm3": 68916.06407211325,
+        "reaction_root_N": [
+          3.851454e-09,
+          -1.882303e-10,
+          1000.0
+        ]
+      },
+      "metrics": {
+        "tip_deflection_mm": 0.9434077080291969,
+        "peak_bending_stress_MPa": 101.33905497666007,
+        "root_bending_stress_MPa": 90.46187671702323,
+        "mass_g": 540.9911029660891
+      },
+      "candidate": {
+        "variables": {
+          "root_height_mm": 25.733972958069437,
+          "tip_height_mm": 8.72405907798719
+        },
+        "verified": true,
+        "failed_checks": [],
+        "objective": 540.9911029660891,
+        "constraints": [
+          0.05159229197080306,
+          -0.018390549766600657
+        ],
+        "feasible": false
+      }
+    },
+    {
+      "label": "c012",
+      "parameters": {
+        "length_mm": 200.0,
+        "width_mm": 20.0,
+        "root_height_mm": 26.391744904825117,
+        "tip_height_mm": 7.970841933956837,
+        "youngs_modulus_MPa": 210000.0,
+        "poisson_ratio": 0.3,
+        "density_t_per_mm3": 7.85e-09,
+        "tip_load_N": 1000.0,
+        "element_size_mm": 3.0,
+        "yield_strength_MPa": 355.0
+      },
+      "status": "completed",
+      "derived": {
+        "tip_deflection_beam_mm": 0.9444650170706643,
+        "peak_nominal_stress_MPa": 102.1588856861835,
+        "peak_nominal_stress_x_mm": 113.45872733207143,
+        "root_nominal_stress_MPa": 86.1420178590889,
+        "volume_closed_form_mm3": 68725.1736775639,
+        "taper_slope": 0.0460522574271707,
+        "root_height_over_length": 0.13195872452412558
+      },
+      "solver": {
+        "success": true,
+        "message": "CalculiX: 12818 C3D10, 21358 nodes",
+        "nfev": null
+      },
+      "solver_outputs": {
+        "nodes": 21358,
+        "elements": 12818,
+        "root_nodes": 333,
+        "tip_nodes": 137,
+        "tip_area_mm2": 159.41683867912,
+        "applied_load_N": -1000.0,
+        "volume_mm3": 68725.1736775639,
+        "reaction_root_N": [
+          -4.908379e-09,
+          4.15084e-10,
+          1000.0
+        ]
+      },
+      "metrics": {
+        "tip_deflection_mm": 0.9393506131386862,
+        "peak_bending_stress_MPa": 102.49402864140886,
+        "root_bending_stress_MPa": 86.00452641666855,
+        "mass_g": 539.4926133688766
+      },
+      "candidate": {
+        "variables": {
+          "root_height_mm": 26.391744904825117,
+          "tip_height_mm": 7.970841933956837
+        },
+        "verified": true,
+        "failed_checks": [],
+        "objective": 539.4926133688766,
+        "constraints": [
+          0.05564938686131382,
+          -0.029940286414088604
+        ],
+        "feasible": false
+      }
+    },
+    {
+      "label": "c013",
+      "parameters": {
+        "length_mm": 200.0,
+        "width_mm": 20.0,
+        "root_height_mm": 25.51019344990609,
+        "tip_height_mm": 9.171186276585274,
+        "youngs_modulus_MPa": 210000.0,
+        "poisson_ratio": 0.3,
+        "density_t_per_mm3": 7.85e-09,
+        "tip_load_N": 1000.0,
+        "element_size_mm": 3.0,
+        "yield_strength_MPa": 355.0
+      },
+      "status": "completed",
+      "derived": {
+        "tip_deflection_beam_mm": 0.9387748837760366,
+        "peak_nominal_stress_MPa": 100.10138377526988,
+        "peak_nominal_stress_x_mm": 87.73875695996432,
+        "root_nominal_stress_MPa": 92.19847684993722,
+        "volume_closed_form_mm3": 69362.75945298273,
+        "taper_slope": 0.04084751793330204,
+        "root_height_over_length": 0.12755096724953044
+      },
+      "solver": {
+        "success": true,
+        "message": "CalculiX: 12850 C3D10, 21411 nodes",
+        "nfev": null
+      },
+      "solver_outputs": {
+        "nodes": 21411,
+        "elements": 12850,
+        "root_nodes": 329,
+        "tip_nodes": 159,
+        "tip_area_mm2": 183.42372553172,
+        "applied_load_N": -1000.0,
+        "volume_mm3": 69362.75945298275,
+        "reaction_root_N": [
+          -4.787164e-09,
+          -6.893144e-09,
+          1000.0
+        ]
+      },
+      "metrics": {
+        "tip_deflection_mm": 0.9334014088050314,
+        "peak_bending_stress_MPa": 100.3151482998278,
+        "root_bending_stress_MPa": 92.0614487555663,
+        "mass_g": 544.4976617059145
+      },
+      "candidate": {
+        "variables": {
+          "root_height_mm": 25.51019344990609,
+          "tip_height_mm": 9.171186276585274
+        },
+        "verified": true,
+        "failed_checks": [],
+        "objective": 544.4976617059145,
+        "constraints": [
+          0.06159859119496858,
+          -0.00815148299827797
+        ],
+        "feasible": false
+      }
+    },
+    {
+      "label": "c014",
+      "parameters": {
+        "length_mm": 200.0,
+        "width_mm": 20.0,
+        "root_height_mm": 25.905226620531334,
+        "tip_height_mm": 8.864675601231598,
+        "youngs_modulus_MPa": 210000.0,
+        "poisson_ratio": 0.3,
+        "density_t_per_mm3": 7.85e-09,
+        "tip_load_N": 1000.0,
+        "element_size_mm": 3.0,
+        "yield_strength_MPa": 355.0
+      },
+      "status": "completed",
+      "derived": {
+        "tip_deflection_beam_mm": 0.9247691525080834,
+        "peak_nominal_stress_MPa": 99.29897778033525,
+        "peak_nominal_stress_x_mm": 95.95787611337605,
+        "root_nominal_stress_MPa": 89.40801616814166,
+        "volume_closed_form_mm3": 69539.80444352586,
+        "taper_slope": 0.04260137754824934,
+        "root_height_over_length": 0.12952613310265668
+      },
+      "solver": {
+        "success": true,
+        "message": "CalculiX: 12968 C3D10, 21567 nodes",
+        "nfev": null
+      },
+      "solver_outputs": {
+        "nodes": 21567,
+        "elements": 12968,
+        "root_nodes": 333,
+        "tip_nodes": 137,
+        "tip_area_mm2": 177.29351202464,
+        "applied_load_N": -1000.0,
+        "volume_mm3": 69539.80444352585,
+        "reaction_root_N": [
+          4.992927e-09,
+          -1.849211e-09,
+          1000.0
+        ]
+      },
+      "metrics": {
+        "tip_deflection_mm": 0.9195497518248175,
+        "peak_bending_stress_MPa": 99.5532132024126,
+        "root_bending_stress_MPa": 89.25349832789172,
+        "mass_g": 545.8874648816779
+      },
+      "candidate": {
+        "variables": {
+          "root_height_mm": 25.905226620531334,
+          "tip_height_mm": 8.864675601231598
+        },
+        "verified": true,
+        "failed_checks": [],
+        "objective": 545.8874648816779,
+        "constraints": [
+          0.07545024817518253,
+          -0.0005321320241260708
+        ],
+        "feasible": false
+      }
+    },
+    {
+      "label": "c015",
+      "parameters": {
+        "length_mm": 200.0,
+        "width_mm": 20.0,
+        "root_height_mm": 26.570153807499025,
+        "tip_height_mm": 8.117767416759618,
+        "youngs_modulus_MPa": 210000.0,
+        "poisson_ratio": 0.3,
+        "density_t_per_mm3": 7.85e-09,
+        "tip_load_N": 1000.0,
+        "element_size_mm": 3.0,
+        "yield_strength_MPa": 355.0
+      },
+      "status": "completed",
+      "derived": {
+        "tip_deflection_beam_mm": 0.9192510161576634,
+        "peak_nominal_stress_MPa": 100.13873821343935,
+        "peak_nominal_stress_x_mm": 112.01390167253771,
+        "root_nominal_stress_MPa": 84.98907715408104,
+        "volume_closed_form_mm3": 69375.84244851729,
+        "taper_slope": 0.046130965976848515,
+        "root_height_over_length": 0.13285076903749513
+      },
+      "solver": {
+        "success": true,
+        "message": "CalculiX: 12951 C3D10, 21523 nodes",
+        "nfev": null
+      },
+      "solver_outputs": {
+        "nodes": 21523,
+        "elements": 12951,
+        "root_nodes": 333,
+        "tip_nodes": 137,
+        "tip_area_mm2": 162.3553483352,
+        "applied_load_N": -1000.0,
+        "volume_mm3": 69375.84244851727,
+        "reaction_root_N": [
+          -3.910912e-09,
+          5.462072e-09,
+          1000.0
+        ]
+      },
+      "metrics": {
+        "tip_deflection_mm": 0.9142246715328467,
+        "peak_bending_stress_MPa": 100.46565189395749,
+        "root_bending_stress_MPa": 84.85073472027155,
+        "mass_g": 544.6003632208606
+      },
+      "candidate": {
+        "variables": {
+          "root_height_mm": 26.570153807499025,
+          "tip_height_mm": 8.117767416759618
+        },
+        "verified": true,
+        "failed_checks": [],
+        "objective": 544.6003632208606,
+        "constraints": [
+          0.0807753284671533,
+          -0.009656518939574851
+        ],
+        "feasible": false
+      }
+    },
+    {
+      "label": "c016",
+      "parameters": {
+        "length_mm": 200.0,
+        "width_mm": 20.0,
+        "root_height_mm": 25.537448724928556,
+        "tip_height_mm": 9.203407677519026,
+        "youngs_modulus_MPa": 210000.0,
+        "poisson_ratio": 0.3,
+        "density_t_per_mm3": 7.85e-09,
+        "tip_load_N": 1000.0,
+        "element_size_mm": 3.0,
+        "yield_strength_MPa": 355.0
+      },
+      "status": "completed",
+      "derived": {
+        "tip_deflection_beam_mm": 0.9343627699291728,
+        "peak_nominal_stress_MPa": 99.78125369469552,
+        "peak_nominal_stress_x_mm": 87.31009490173132,
+        "root_nominal_stress_MPa": 92.00178109497422,
+        "volume_closed_form_mm3": 69481.71280489517,
+        "taper_slope": 0.04083510261852382,
+        "root_height_over_length": 0.1276872436246428
+      },
+      "solver": {
+        "success": true,
+        "message": "CalculiX: 12873 C3D10, 21449 nodes",
+        "nfev": null
+      },
+      "solver_outputs": {
+        "nodes": 21449,
+        "elements": 12873,
+        "root_nodes": 333,
+        "tip_nodes": 159,
+        "tip_area_mm2": 184.06815355039998,
+        "applied_load_N": -1000.0,
+        "volume_mm3": 69481.71280489516,
+        "reaction_root_N": [
+          3.06553e-09,
+          -7.431535e-10,
+          1000.0
+        ]
+      },
+      "metrics": {
+        "tip_deflection_mm": 0.9290029496855348,
+        "peak_bending_stress_MPa": 99.9907864551754,
+        "root_bending_stress_MPa": 91.87460752335778,
+        "mass_g": 545.431445518427
+      },
+      "candidate": {
+        "variables": {
+          "root_height_mm": 25.537448724928556,
+          "tip_height_mm": 9.203407677519026
+        },
+        "verified": true,
+        "failed_checks": [],
+        "objective": 545.431445518427,
+        "constraints": [
+          0.06599705031446523,
+          -0.00490786455175396
+        ],
+        "feasible": false
+      }
+    },
+    {
+      "label": "c017",
+      "parameters": {
+        "length_mm": 200.0,
+        "width_mm": 20.0,
+        "root_height_mm": 26.074560698462214,
+        "tip_height_mm": 8.680757222456396,
+        "youngs_modulus_MPa": 210000.0,
+        "poisson_ratio": 0.3,
+        "density_t_per_mm3": 7.85e-09,
+        "tip_load_N": 1000.0,
+        "element_size_mm": 3.0,
+        "yield_strength_MPa": 355.0
+      },
+      "status": "completed",
+      "derived": {
+        "tip_deflection_beam_mm": 0.9225376651409344,
+        "peak_nominal_stress_MPa": 99.34341608341586,
+        "peak_nominal_stress_x_mm": 100.1856352530231,
+        "root_nominal_stress_MPa": 88.25051530465764,
+        "volume_closed_form_mm3": 69510.63584183723,
+        "taper_slope": 0.043484508690014544,
+        "root_height_over_length": 0.13037280349231106
+      },
+      "solver": {
+        "success": true,
+        "message": "CalculiX: 12987 C3D10, 21592 nodes",
+        "nfev": null
+      },
+      "solver_outputs": {
+        "nodes": 21592,
+        "elements": 12987,
+        "root_nodes": 333,
+        "tip_nodes": 137,
+        "tip_area_mm2": 173.61514444912,
+        "applied_load_N": -1000.0,
+        "volume_mm3": 69510.63584183721,
+        "reaction_root_N": [
+          1.02537e-09,
+          -7.123724e-10,
+          1000.0
+        ]
+      },
+      "metrics": {
+        "tip_deflection_mm": 0.9173698394160583,
+        "peak_bending_stress_MPa": 99.6135242779107,
+        "root_bending_stress_MPa": 88.10943854274021,
+        "mass_g": 545.6584913584221
+      },
+      "candidate": {
+        "variables": {
+          "root_height_mm": 26.074560698462214,
+          "tip_height_mm": 8.680757222456396
+        },
+        "verified": true,
+        "failed_checks": [],
+        "objective": 545.6584913584221,
+        "constraints": [
+          0.07763016058394168,
+          -0.0011352427791069886
+        ],
+        "feasible": false
+      }
+    },
+    {
+      "label": "c018",
+      "parameters": {
+        "length_mm": 200.0,
+        "width_mm": 20.0,
+        "root_height_mm": 26.008673738014835,
+        "tip_height_mm": 8.76824586575361,
+        "youngs_modulus_MPa": 210000.0,
+        "poisson_ratio": 0.3,
+        "density_t_per_mm3": 7.85e-09,
+        "tip_load_N": 1000.0,
+        "element_size_mm": 3.0,
+        "yield_strength_MPa": 355.0
+      },
+      "status": "completed",
+      "derived": {
+        "tip_deflection_beam_mm": 0.9223368850923596,
+        "peak_nominal_stress_MPa": 99.22714594641417,
+        "peak_nominal_stress_x_mm": 98.28273485182848,
+        "root_nominal_stress_MPa": 88.69820619341984,
+        "volume_closed_form_mm3": 69553.83920753689,
+        "taper_slope": 0.04310106968065306,
+        "root_height_over_length": 0.13004336869007418
+      },
+      "solver": {
+        "success": true,
+        "message": "CalculiX: 12995 C3D10, 21585 nodes",
+        "nfev": null
+      },
+      "solver_outputs": {
+        "nodes": 21585,
+        "elements": 12995,
+        "root_nodes": 333,
+        "tip_nodes": 137,
+        "tip_area_mm2": 175.36491731508,
+        "applied_load_N": -1000.0000000000001,
+        "volume_mm3": 69553.83920753689,
+        "reaction_root_N": [
+          -9.422649e-10,
+          5.474879e-09,
+          1000.0
+        ]
+      },
+      "metrics": {
+        "tip_deflection_mm": 0.9171454598540146,
+        "peak_bending_stress_MPa": 99.48747256542346,
+        "root_bending_stress_MPa": 88.56371086395828,
+        "mass_g": 545.9976377791646
+      },
+      "candidate": {
+        "variables": {
+          "root_height_mm": 26.008673738014835,
+          "tip_height_mm": 8.76824586575361
+        },
+        "verified": true,
+        "failed_checks": [],
+        "objective": 545.9976377791646,
+        "constraints": [
+          0.07785454014598536,
+          0.00012527434576540487
+        ],
+        "feasible": true
+      }
+    },
+    {
+      "label": "c019",
+      "parameters": {
+        "length_mm": 200.0,
+        "width_mm": 20.0,
+        "root_height_mm": 26.203009878676603,
+        "tip_height_mm": 8.562738044898321,
+        "youngs_modulus_MPa": 210000.0,
+        "poisson_ratio": 0.3,
+        "density_t_per_mm3": 7.85e-09,
+        "tip_load_N": 1000.0,
+        "element_size_mm": 3.0,
+        "yield_strength_MPa": 355.0
+      },
+      "status": "completed",
+      "derived": {
+        "tip_deflection_beam_mm": 0.9196013995818889,
+        "peak_nominal_stress_MPa": 99.30550578445374,
+        "peak_nominal_stress_x_mm": 102.91829824864655,
+        "root_nominal_stress_MPa": 87.3874142989107,
+        "volume_closed_form_mm3": 69531.49584714984,
+        "taper_slope": 0.044100679584445704,
+        "root_height_over_length": 0.13101504939338302
+      },
+      "solver": {
+        "success": true,
+        "message": "CalculiX: 13086 C3D10, 21711 nodes",
+        "nfev": null
+      },
+      "solver_outputs": {
+        "nodes": 21711,
+        "elements": 13086,
+        "root_nodes": 333,
+        "tip_nodes": 137,
+        "tip_area_mm2": 171.25476089795998,
+        "applied_load_N": -1000.0,
+        "volume_mm3": 69531.49584714984,
+        "reaction_root_N": [
+          -1.644096e-09,
+          -3.902204e-09,
+          1000.0
+        ]
+      },
+      "metrics": {
+        "tip_deflection_mm": 0.9144719781021897,
+        "peak_bending_stress_MPa": 99.5867730954342,
+        "root_bending_stress_MPa": 87.24884624354331,
+        "mass_g": 545.8222424001262
+      },
+      "candidate": {
+        "variables": {
+          "root_height_mm": 26.203009878676603,
+          "tip_height_mm": 8.562738044898321
+        },
+        "verified": true,
+        "failed_checks": [],
+        "objective": 545.8222424001262,
+        "constraints": [
+          0.08052802189781028,
+          -0.0008677309543419653
+        ],
+        "feasible": false
+      }
+    },
+    {
+      "label": "c020",
+      "parameters": {
+        "length_mm": 200.0,
+        "width_mm": 20.0,
+        "root_height_mm": 25.906199373627867,
+        "tip_height_mm": 8.865708702996772,
+        "youngs_modulus_MPa": 210000.0,
+        "poisson_ratio": 0.3,
+        "density_t_per_mm3": 7.85e-09,
+        "tip_load_N": 1000.0,
+        "element_size_mm": 3.0,
+        "yield_strength_MPa": 355.0
+      },
+      "status": "completed",
+      "derived": {
+        "tip_deflection_beam_mm": 0.9246203693403701,
+        "peak_nominal_stress_MPa": 99.28775831130105,
+        "peak_nominal_stress_x_mm": 95.94538239116997,
+        "root_nominal_stress_MPa": 89.40130192260747,
+        "volume_closed_form_mm3": 69543.81615324928,
+        "taper_slope": 0.04260122667657774,
+        "root_height_over_length": 0.12953099686813935
+      },
+      "solver": {
+        "success": true,
+        "message": "CalculiX: 12989 C3D10, 21558 nodes",
+        "nfev": null
+      },
+      "solver_outputs": {
+        "nodes": 21558,
+        "elements": 12989,
+        "root_nodes": 333,
+        "tip_nodes": 137,
+        "tip_area_mm2": 177.31417405992002,
+        "applied_load_N": -999.9999999999999,
+        "volume_mm3": 69543.81615324928,
+        "reaction_root_N": [
+          3.806242e-09,
+          5.457178e-09,
+          1000.0
+        ]
+      },
+      "metrics": {
+        "tip_deflection_mm": 0.9194022408759124,
+        "peak_bending_stress_MPa": 99.53743555487289,
+        "root_bending_stress_MPa": 89.26879329412208,
+        "mass_g": 545.9189568030068
+      },
+      "candidate": {
+        "variables": {
+          "root_height_mm": 25.906199373627867,
+          "tip_height_mm": 8.865708702996772
+        },
+        "verified": true,
+        "failed_checks": [],
+        "objective": 545.9189568030068,
+        "constraints": [
+          0.07559775912408762,
+          -0.0003743555487288575
+        ],
+        "feasible": false
+      }
+    },
+    {
+      "label": "c021",
+      "parameters": {
+        "length_mm": 200.0,
+        "width_mm": 20.0,
+        "root_height_mm": 26.105682940106387,
+        "tip_height_mm": 8.665341955674545,
+        "youngs_modulus_MPa": 210000.0,
+        "poisson_ratio": 0.3,
+        "density_t_per_mm3": 7.85e-09,
+        "tip_load_N": 1000.0,
+        "element_size_mm": 3.0,
+        "yield_strength_MPa": 355.0
+      },
+      "status": "completed",
+      "derived": {
+        "tip_deflection_beam_mm": 0.920949683808088,
+        "peak_nominal_stress_MPa": 99.2545858495292,
+        "peak_nominal_stress_x_mm": 100.62875532755142,
+        "root_nominal_stress_MPa": 88.04022264935834,
+        "volume_closed_form_mm3": 69542.04979156186,
+        "taper_slope": 0.04360085246107961,
+        "root_height_over_length": 0.13052841470053195
+      },
+      "solver": {
+        "success": true,
+        "message": "CalculiX: 12996 C3D10, 21632 nodes",
+        "nfev": null
+      },
+      "solver_outputs": {
+        "nodes": 21632,
+        "elements": 12996,
+        "root_nodes": 333,
+        "tip_nodes": 137,
+        "tip_area_mm2": 173.30683911348,
+        "applied_load_N": -999.9999999999999,
+        "volume_mm3": 69542.04979156186,
+        "reaction_root_N": [
+          -2.422361e-09,
+          2.663297e-09,
+          1000.0
+        ]
+      },
+      "metrics": {
+        "tip_deflection_mm": 0.9157883868613139,
+        "peak_bending_stress_MPa": 99.52800829784456,
+        "root_bending_stress_MPa": 87.89396739597282,
+        "mass_g": 545.9050908637607
+      },
+      "candidate": {
+        "variables": {
+          "root_height_mm": 26.105682940106387,
+          "tip_height_mm": 8.665341955674545
+        },
+        "verified": true,
+        "failed_checks": [],
+        "objective": 545.9050908637607,
+        "constraints": [
+          0.07921161313868608,
+          -0.0002800829784456482
+        ],
+        "feasible": false
+      }
+    },
+    {
+      "label": "c022",
+      "parameters": {
+        "length_mm": 200.0,
+        "width_mm": 20.0,
+        "root_height_mm": 25.95735209085724,
+        "tip_height_mm": 8.816888321828847,
+        "youngs_modulus_MPa": 210000.0,
+        "poisson_ratio": 0.3,
+        "density_t_per_mm3": 7.85e-09,
+        "tip_load_N": 1000.0,
+        "element_size_mm": 3.0,
+        "yield_strength_MPa": 355.0
+      },
+      "status": "completed",
+      "derived": {
+        "tip_deflection_beam_mm": 0.923480931032866,
+        "peak_nominal_stress_MPa": 99.25521872386231,
+        "peak_nominal_stress_x_mm": 97.12193974867422,
+        "root_nominal_stress_MPa": 89.04929271115782,
+        "volume_closed_form_mm3": 69548.48082537217,
+        "taper_slope": 0.042851159422570985,
+        "root_height_over_length": 0.1297867604542862
+      },
+      "solver": {
+        "success": true,
+        "message": "CalculiX: 12905 C3D10, 21465 nodes",
+        "nfev": null
+      },
+      "solver_outputs": {
+        "nodes": 21465,
+        "elements": 12905,
+        "root_nodes": 333,
+        "tip_nodes": 137,
+        "tip_area_mm2": 176.33776643656,
+        "applied_load_N": -999.9999999999999,
+        "volume_mm3": 69548.48082537219,
+        "reaction_root_N": [
+          2.898119e-09,
+          1.438938e-11,
+          1000.0
+        ]
+      },
+      "metrics": {
+        "tip_deflection_mm": 0.9182745328467155,
+        "peak_bending_stress_MPa": 99.51161538969363,
+        "root_bending_stress_MPa": 88.90877960695347,
+        "mass_g": 545.9555744791717
+      },
+      "candidate": {
+        "variables": {
+          "root_height_mm": 25.95735209085724,
+          "tip_height_mm": 8.816888321828847
+        },
+        "verified": true,
+        "failed_checks": [],
+        "objective": 545.9555744791717,
+        "constraints": [
+          0.07672546715328454,
+          -0.00011615389693631073
+        ],
+        "feasible": false
+      }
+    },
+    {
+      "label": "c023",
+      "parameters": {
+        "length_mm": 200.0,
+        "width_mm": 20.0,
+        "root_height_mm": 25.996513123996024,
+        "tip_height_mm": 8.755415453964211,
+        "youngs_modulus_MPa": 210000.0,
+        "poisson_ratio": 0.3,
+        "density_t_per_mm3": 7.85e-09,
+        "tip_load_N": 1000.0,
+        "element_size_mm": 3.0,
+        "yield_strength_MPa": 355.0
+      },
+      "status": "completed",
+      "derived": {
+        "tip_deflection_beam_mm": 0.9241927104453783,
+        "peak_nominal_stress_MPa": 99.3686954521876,
+        "peak_nominal_stress_x_mm": 98.43552166422995,
+        "root_nominal_stress_MPa": 88.78120785778371,
+        "volume_closed_form_mm3": 69503.85715592047,
+        "taper_slope": 0.04310274417507953,
+        "root_height_over_length": 0.12998256561998012
+      },
+      "solver": {
+        "success": true,
+        "message": "CalculiX: 12930 C3D10, 21511 nodes",
+        "nfev": null
+      },
+      "solver_outputs": {
+        "nodes": 21511,
+        "elements": 12930,
+        "root_nodes": 333,
+        "tip_nodes": 137,
+        "tip_area_mm2": 175.10830907928,
+        "applied_load_N": -1000.0,
+        "volume_mm3": 69503.85715592047,
+        "reaction_root_N": [
+          5.274359e-11,
+          -4.176774e-09,
+          1000.0
+        ]
+      },
+      "metrics": {
+        "tip_deflection_mm": 0.9190032846715329,
+        "peak_bending_stress_MPa": 99.63009426922422,
+        "root_bending_stress_MPa": 88.64576787438693,
+        "mass_g": 545.6052786739757
+      },
+      "candidate": {
+        "variables": {
+          "root_height_mm": 25.996513123996024,
+          "tip_height_mm": 8.755415453964211
+        },
+        "verified": true,
+        "failed_checks": [],
+        "objective": 545.6052786739757,
+        "constraints": [
+          0.07599671532846708,
+          -0.0013009426922421597
+        ],
+        "feasible": false
+      }
+    },
+    {
+      "label": "c024",
+      "parameters": {
+        "length_mm": 200.0,
+        "width_mm": 20.0,
+        "root_height_mm": 26.032145716478162,
+        "tip_height_mm": 8.74180600518255,
+        "youngs_modulus_MPa": 210000.0,
+        "poisson_ratio": 0.3,
+        "density_t_per_mm3": 7.85e-09,
+        "tip_load_N": 1000.0,
+        "element_size_mm": 3.0,
+        "yield_strength_MPa": 355.0
+      },
+      "status": "completed",
+      "derived": {
+        "tip_deflection_beam_mm": 0.9220939559671905,
+        "peak_nominal_stress_MPa": 99.2399572117666,
+        "peak_nominal_stress_x_mm": 98.88219490017755,
+        "root_nominal_stress_MPa": 88.53832818553353,
+        "volume_closed_form_mm3": 69547.90344332141,
+        "taper_slope": 0.04322584927823903,
+        "root_height_over_length": 0.1301607285823908
+      },
+      "solver": {
+        "success": true,
+        "message": "CalculiX: 13026 C3D10, 21643 nodes",
+        "nfev": null
+      },
+      "solver_outputs": {
+        "nodes": 21643,
+        "elements": 13026,
+        "root_nodes": 333,
+        "tip_nodes": 137,
+        "tip_area_mm2": 174.83612010363998,
+        "applied_load_N": -1000.0,
+        "volume_mm3": 69547.90344332143,
+        "reaction_root_N": [
+          -1.131369e-09,
+          9.294299e-10,
+          1000.0
+        ]
+      },
+      "metrics": {
+        "tip_deflection_mm": 0.9169146788321166,
+        "peak_bending_stress_MPa": 99.50340437080465,
+        "root_bending_stress_MPa": 88.40343423363566,
+        "mass_g": 545.9510420300733
+      },
+      "candidate": {
+        "variables": {
+          "root_height_mm": 26.032145716478162,
+          "tip_height_mm": 8.74180600518255
+        },
+        "verified": true,
+        "failed_checks": [],
+        "objective": 545.9510420300733,
+        "constraints": [
+          0.07808532116788336,
+          -3.404370804645396e-05
+        ],
+        "feasible": false
+      }
+    },
+    {
+      "label": "c025",
+      "parameters": {
+        "length_mm": 200.0,
+        "width_mm": 20.0,
+        "root_height_mm": 26.057354681487638,
+        "tip_height_mm": 8.717016731632262,
+        "youngs_modulus_MPa": 210000.0,
+        "poisson_ratio": 0.3,
+        "density_t_per_mm3": 7.85e-09,
+        "tip_load_N": 1000.0,
+        "element_size_mm": 3.0,
+        "yield_strength_MPa": 355.0
+      },
+      "status": "completed",
+      "derived": {
+        "tip_deflection_beam_mm": 0.9216034041684519,
+        "peak_nominal_stress_MPa": 99.23521665142769,
+        "peak_nominal_stress_x_mm": 99.45966731628819,
+        "root_nominal_stress_MPa": 88.36709975506766,
+        "volume_closed_form_mm3": 69548.7428262398,
+        "taper_slope": 0.04335084487463844,
+        "root_height_over_length": 0.1302867734074382
+      },
+      "solver": {
+        "success": true,
+        "message": "CalculiX: 12974 C3D10, 21565 nodes",
+        "nfev": null
+      },
+      "solver_outputs": {
+        "nodes": 21565,
+        "elements": 12974,
+        "root_nodes": 333,
+        "tip_nodes": 137,
+        "tip_area_mm2": 174.34033463264,
+        "applied_load_N": -1000.0,
+        "volume_mm3": 69548.74282623979,
+        "reaction_root_N": [
+          3.244345e-09,
+          -1.232625e-09,
+          1000.0
+        ]
+      },
+      "metrics": {
+        "tip_deflection_mm": 0.9164303868613138,
+        "peak_bending_stress_MPa": 99.50176141394677,
+        "root_bending_stress_MPa": 88.23030099283127,
+        "mass_g": 545.9576311859825
+      },
+      "candidate": {
+        "variables": {
+          "root_height_mm": 26.057354681487638,
+          "tip_height_mm": 8.717016731632262
+        },
+        "verified": true,
+        "failed_checks": [],
+        "objective": 545.9576311859825,
+        "constraints": [
+          0.07856961313868616,
+          -1.7614139467667654e-05
+        ],
+        "feasible": false
+      }
+    },
+    {
+      "label": "c026",
+      "parameters": {
+        "length_mm": 200.0,
+        "width_mm": 20.0,
+        "root_height_mm": 26.032439077904954,
+        "tip_height_mm": 8.74210084409634,
+        "youngs_modulus_MPa": 210000.0,
+        "poisson_ratio": 0.3,
+        "density_t_per_mm3": 7.85e-09,
+        "tip_load_N": 1000.0,
+        "element_size_mm": 3.0,
+        "yield_strength_MPa": 355.0
+      },
+      "status": "completed",
+      "derived": {
+        "tip_deflection_beam_mm": 0.9220501928506238,
+        "peak_nominal_stress_MPa": 99.23661869287565,
+        "peak_nominal_stress_x_mm": 98.87877581246505,
+        "root_nominal_stress_MPa": 88.53633270721092,
+        "volume_closed_form_mm3": 69549.0798440026,
+        "taper_slope": 0.04322584558452153,
+        "root_height_over_length": 0.13016219538952478
+      },
+      "solver": {
+        "success": true,
+        "message": "CalculiX: 12885 C3D10, 21468 nodes",
+        "nfev": null
+      },
+      "solver_outputs": {
+        "nodes": 21468,
+        "elements": 12885,
+        "root_nodes": 333,
+        "tip_nodes": 137,
+        "tip_area_mm2": 174.84201688192002,
+        "applied_load_N": -1000.0,
+        "volume_mm3": 69549.07984400258,
+        "reaction_root_N": [
+          -1.219618e-09,
+          -5.947687e-10,
+          1000.0
+        ]
+      },
+      "metrics": {
+        "tip_deflection_mm": 0.9168681897810218,
+        "peak_bending_stress_MPa": 99.49907656182165,
+        "root_bending_stress_MPa": 88.4047849819233,
+        "mass_g": 545.9602767754203
+      },
+      "candidate": {
+        "variables": {
+          "root_height_mm": 26.032439077904954,
+          "tip_height_mm": 8.74210084409634
+        },
+        "verified": true,
+        "failed_checks": [],
+        "objective": 545.9602767754203,
+        "constraints": [
+          0.07813181021897819,
+          9.23438178347169e-06
+        ],
+        "feasible": true
+      }
+    },
+    {
+      "label": "c027",
+      "parameters": {
+        "length_mm": 200.0,
+        "width_mm": 20.0,
+        "root_height_mm": 25.982072738034773,
+        "tip_height_mm": 8.7917318002435,
+        "youngs_modulus_MPa": 210000.0,
+        "poisson_ratio": 0.3,
+        "density_t_per_mm3": 7.85e-09,
+        "tip_load_N": 1000.0,
+        "element_size_mm": 3.0,
+        "yield_strength_MPa": 355.0
+      },
+      "status": "completed",
+      "derived": {
+        "tip_deflection_beam_mm": 0.923039395528603,
+        "peak_nominal_stress_MPa": 99.25041647015868,
+        "peak_nominal_stress_x_mm": 97.71311887228782,
+        "root_nominal_stress_MPa": 88.8799213966841,
+        "volume_closed_form_mm3": 69547.60907655655,
+        "taper_slope": 0.042975852344478184,
+        "root_height_over_length": 0.12991036369017386
+      },
+      "solver": {
+        "success": true,
+        "message": "CalculiX: 13031 C3D10, 21639 nodes",
+        "nfev": null
+      },
+      "solver_outputs": {
+        "nodes": 21639,
+        "elements": 13031,
+        "root_nodes": 333,
+        "tip_nodes": 137,
+        "tip_area_mm2": 175.83463600488,
+        "applied_load_N": -1000.0,
+        "volume_mm3": 69547.60907655655,
+        "reaction_root_N": [
+          7.328254e-10,
+          5.533208e-09,
+          1000.0
+        ]
+      },
+      "metrics": {
+        "tip_deflection_mm": 0.917842,
+        "peak_bending_stress_MPa": 99.50906213938933,
+        "root_bending_stress_MPa": 88.74385285518314,
+        "mass_g": 545.948731250969
+      },
+      "candidate": {
+        "variables": {
+          "root_height_mm": 25.982072738034773,
+          "tip_height_mm": 8.7917318002435
+        },
+        "verified": true,
+        "failed_checks": [],
+        "objective": 545.948731250969,
+        "constraints": [
+          0.07715799999999995,
+          -9.062139389328649e-05
+        ],
+        "feasible": false
+      }
+    },
+    {
+      "label": "c028",
+      "parameters": {
+        "length_mm": 200.0,
+        "width_mm": 20.0,
+        "root_height_mm": 26.057098724123403,
+        "tip_height_mm": 8.716765062119443,
+        "youngs_modulus_MPa": 210000.0,
+        "poisson_ratio": 0.3,
+        "density_t_per_mm3": 7.85e-09,
+        "tip_load_N": 1000.0,
+        "element_size_mm": 3.0,
+        "yield_strength_MPa": 355.0
+      },
+      "status": "completed",
+      "derived": {
+        "tip_deflection_beam_mm": 0.9216412236983493,
+        "peak_nominal_stress_MPa": 99.23810629925097,
+        "peak_nominal_stress_x_mm": 99.46254516175124,
+        "root_nominal_stress_MPa": 88.36883581335002,
+        "volume_closed_form_mm3": 69547.72757248569,
+        "taper_slope": 0.0433508341550099,
+        "root_height_over_length": 0.130285493620617
+      },
+      "solver": {
+        "success": true,
+        "message": "CalculiX: 12999 C3D10, 21604 nodes",
+        "nfev": null
+      },
+      "solver_outputs": {
+        "nodes": 21604,
+        "elements": 12999,
+        "root_nodes": 333,
+        "tip_nodes": 137,
+        "tip_area_mm2": 174.3353012424,
+        "applied_load_N": -1000.0000000000001,
+        "volume_mm3": 69547.72757248569,
+        "reaction_root_N": [
+          -4.316519e-09,
+          4.913373e-09,
+          1000.0
+        ]
+      },
+      "metrics": {
+        "tip_deflection_mm": 0.9164678613138686,
+        "peak_bending_stress_MPa": 99.50438453358659,
+        "root_bending_stress_MPa": 88.23229225638867,
+        "mass_g": 545.9496614440127
+      },
+      "candidate": {
+        "variables": {
+          "root_height_mm": 26.057098724123403,
+          "tip_height_mm": 8.716765062119443
+        },
+        "verified": true,
+        "failed_checks": [],
+        "objective": 545.9496614440127,
+        "constraints": [
+          0.0785321386861314,
+          -4.3845335865881905e-05
+        ],
+        "feasible": false
+      }
+    },
+    {
+      "label": "c029",
+      "parameters": {
+        "length_mm": 200.0,
+        "width_mm": 20.0,
+        "root_height_mm": 26.02610513241073,
+        "tip_height_mm": 8.735935932541727,
+        "youngs_modulus_MPa": 210000.0,
+        "poisson_ratio": 0.3,
+        "density_t_per_mm3": 7.85e-09,
+        "tip_load_N": 1000.0,
+        "element_size_mm": 3.0,
+        "yield_strength_MPa": 355.0
+      },
+      "status": "completed",
+      "derived": {
+        "tip_deflection_beam_mm": 0.9229826167696715,
+        "peak_nominal_stress_MPa": 99.30762039003817,
+        "peak_nominal_stress_x_mm": 98.94909839739552,
+        "root_nominal_stress_MPa": 88.57943193711967,
+        "volume_closed_form_mm3": 69524.08212990491,
+        "taper_slope": 0.04322542299967251,
+        "root_height_over_length": 0.13013052566205366
+      },
+      "solver": {
+        "success": true,
+        "message": "CalculiX: 13109 C3D10, 21738 nodes",
+        "nfev": null
+      },
+      "solver_outputs": {
+        "nodes": 21738,
+        "elements": 13109,
+        "root_nodes": 333,
+        "tip_nodes": 137,
+        "tip_area_mm2": 174.71871865084,
+        "applied_load_N": -1000.0,
+        "volume_mm3": 69524.08212990493,
+        "reaction_root_N": [
+          1.010598e-09,
+          1.522926e-09,
+          1000.0
+        ]
+      },
+      "metrics": {
+        "tip_deflection_mm": 0.9177971240875912,
+        "peak_bending_stress_MPa": 99.57123816200645,
+        "root_bending_stress_MPa": 88.44212310917267,
+        "mass_g": 545.7640447197538
+      },
+      "candidate": {
+        "variables": {
+          "root_height_mm": 26.02610513241073,
+          "tip_height_mm": 8.735935932541727
+        },
+        "verified": true,
+        "failed_checks": [],
+        "objective": 545.7640447197538,
+        "constraints": [
+          0.07720287591240882,
+          -0.0007123816200645195
+        ],
+        "feasible": false
+      }
+    },
+    {
+      "label": "c030",
+      "parameters": {
+        "length_mm": 200.0,
+        "width_mm": 20.0,
+        "root_height_mm": 26.01979910660297,
+        "tip_height_mm": 8.754459287585917,
+        "youngs_modulus_MPa": 210000.0,
+        "poisson_ratio": 0.3,
+        "density_t_per_mm3": 7.85e-09,
+        "tip_load_N": 1000.0,
+        "element_size_mm": 3.0,
+        "yield_strength_MPa": 355.0
+      },
+      "status": "completed",
+      "derived": {
+        "tip_deflection_beam_mm": 0.9223027764990712,
+        "peak_nominal_stress_MPa": 99.24001038614311,
+        "peak_nominal_stress_x_mm": 98.58920381117264,
+        "root_nominal_stress_MPa": 88.62237245863179,
+        "volume_closed_form_mm3": 69548.51678837778,
+        "taper_slope": 0.04316334954754263,
+        "root_height_over_length": 0.13009899553301485
+      },
+      "solver": {
+        "success": true,
+        "message": "CalculiX: 12941 C3D10, 21508 nodes",
+        "nfev": null
+      },
+      "solver_outputs": {
+        "nodes": 21508,
+        "elements": 12941,
+        "root_nodes": 333,
+        "tip_nodes": 137,
+        "tip_area_mm2": 175.08918575172,
+        "applied_load_N": -999.9999999999999,
+        "volume_mm3": 69548.51678837778,
+        "reaction_root_N": [
+          -2.502304e-09,
+          1.880016e-10,
+          1000.0
+        ]
+      },
+      "metrics": {
+        "tip_deflection_mm": 0.9171205255474453,
+        "peak_bending_stress_MPa": 99.50207080887084,
+        "root_bending_stress_MPa": 88.48846013934796,
+        "mass_g": 545.9558567887656
+      },
+      "candidate": {
+        "variables": {
+          "root_height_mm": 26.01979910660297,
+          "tip_height_mm": 8.754459287585917
+        },
+        "verified": true,
+        "failed_checks": [],
+        "objective": 545.9558567887656,
+        "constraints": [
+          0.07787947445255472,
+          -2.070808870840324e-05
+        ],
+        "feasible": false
+      }
+    },
+    {
+      "label": "c031",
+      "parameters": {
+        "length_mm": 200.0,
+        "width_mm": 20.0,
+        "root_height_mm": 26.03936156426475,
+        "tip_height_mm": 8.734884253308545,
+        "youngs_modulus_MPa": 210000.0,
+        "poisson_ratio": 0.3,
+        "density_t_per_mm3": 7.85e-09,
+        "tip_load_N": 1000.0,
+        "element_size_mm": 3.0,
+        "yield_strength_MPa": 355.0
+      },
+      "status": "completed",
+      "derived": {
+        "tip_deflection_beam_mm": 0.9219416549178084,
+        "peak_nominal_stress_MPa": 99.23745517669393,
+        "peak_nominal_stress_x_mm": 99.04480677057931,
+        "root_nominal_stress_MPa": 88.48926472620022,
+        "volume_closed_form_mm3": 69548.4916351466,
+        "taper_slope": 0.0432611932773905,
+        "root_height_over_length": 0.13019680782132373
+      },
+      "solver": {
+        "success": true,
+        "message": "CalculiX: 12950 C3D10, 21549 nodes",
+        "nfev": null
+      },
+      "solver_outputs": {
+        "nodes": 21549,
+        "elements": 12950,
+        "root_nodes": 333,
+        "tip_nodes": 137,
+        "tip_area_mm2": 174.69768506616,
+        "applied_load_N": -1000.0,
+        "volume_mm3": 69548.4916351466,
+        "reaction_root_N": [
+          -1.277925e-09,
+          3.472207e-09,
+          1000.0
+        ]
+      },
+      "metrics": {
+        "tip_deflection_mm": 0.9167638759124088,
+        "peak_bending_stress_MPa": 99.50309496095869,
+        "root_bending_stress_MPa": 88.35472128254803,
+        "mass_g": 545.9556593359008
+      },
+      "candidate": {
+        "variables": {
+          "root_height_mm": 26.03936156426475,
+          "tip_height_mm": 8.734884253308545
+        },
+        "verified": true,
+        "failed_checks": [],
+        "objective": 545.9556593359008,
+        "constraints": [
+          0.07823612408759117,
+          -3.0949609586912176e-05
+        ],
+        "feasible": false
+      }
+    }
+  ],
+  "study": "tapered_bracket",
+  "optimization": {
+    "objective": "mass_g",
+    "variables": [
+      {
+        "name": "root_height_mm",
+        "lower": 10.0,
+        "upper": 40.0
+      },
+      {
+        "name": "tip_height_mm",
+        "lower": 6.0,
+        "upper": 40.0
+      }
+    ],
+    "design_margin": 0.005,
+    "optimizer": {
+      "message": "Return from COBYLA because the trust region radius reaches its lower bound.",
+      "success": true,
+      "x": [
+        26.032439077904954,
+        8.74210084409634
+      ]
+    },
+    "evaluations": 32,
+    "unverified_candidates": [
+      "c007"
+    ],
+    "history": [
+      {
+        "label": "c000",
+        "variables": {
+          "root_height_mm": 25.0,
+          "tip_height_mm": 25.0
+        },
+        "verified": true,
+        "failed_checks": [],
+        "objective": 784.9999999999999,
+        "constraints": [
+          0.5052149530791789,
+          0.035005892254646086
+        ],
+        "feasible": true
+      },
+      {
+        "label": "c001",
+        "variables": {
+          "root_height_mm": 27.0,
+          "tip_height_mm": 25.0
+        },
+        "verified": true,
+        "failed_checks": [],
+        "objective": 816.4,
+        "constraints": [
+          0.5826402346041055,
+          0.17209951804700352
+        ],
+        "feasible": true
+      },
+      {
+        "label": "c002",
+        "variables": {
+          "root_height_mm": 25.0,
+          "tip_height_mm": 27.0
+        },
+        "verified": true,
+        "failed_checks": [],
+        "objective": 816.4000000000001,
+        "constraints": [
+          0.5326735982404691,
+          0.03486871979280636
+        ],
+        "feasible": true
+      },
+      {
+        "label": "c003",
+        "variables": {
+          "root_height_mm": 24.48737977841215,
+          "tip_height_mm": 23.066810793424704
+        },
+        "verified": true,
+        "failed_checks": [],
+        "objective": 746.6007919778388,
+        "constraints": [
+          0.4503757056856187,
+          -0.00548303187752154
+        ],
+        "feasible": false
+      },
+      {
+        "label": "c004",
+        "variables": {
+          "root_height_mm": 24.728581233044405,
+          "tip_height_mm": 19.07408968392015
+        },
+        "verified": true,
+        "failed_checks": [],
+        "objective": 687.7019333963435,
+        "constraints": [
+          0.38301517735849067,
+          0.014324750341221205
+        ],
+        "feasible": true
+      },
+      {
+        "label": "c005",
+        "variables": {
+          "root_height_mm": 24.453140155896616,
+          "tip_height_mm": 11.078832826694132
+        },
+        "verified": true,
+        "failed_checks": [],
+        "objective": 557.8519758266749,
+        "constraints": [
+          0.08224440119760479,
+          -0.017388274224233696
+        ],
+        "feasible": false
+      },
+      {
+        "label": "c006",
+        "variables": {
+          "root_height_mm": 24.775910104163874,
+          "tip_height_mm": 9.010617218625923
+        },
+        "verified": true,
+        "failed_checks": [],
+        "objective": 530.4484789677998,
+        "constraints": [
+          -0.016094233576642192,
+          -0.06297512701230942
+        ],
+        "feasible": false
+      },
+      {
+        "label": "c007",
+        "variables": {
+          "root_height_mm": 16.838827146778673,
+          "tip_height_mm": 8.009261074396818
+        },
+        "verified": false,
+        "failed_checks": [
+          "small_deflection"
+        ],
+        "objective": 390.1149850724552,
+        "constraints": [
+          -1.0,
+          -1.0
+        ],
+        "feasible": false
+      },
+      {
+        "label": "c008",
+        "variables": {
+          "root_height_mm": 22.799829418199888,
+          "tip_height_mm": 8.702226034315952
+        },
+        "verified": true,
+        "failed_checks": [],
+        "objective": 494.5822706044987,
+        "constraints": [
+          -0.26196766423357654,
+          -0.22938747041897656
+        ],
+        "feasible": false
+      },
+      {
+        "label": "c009",
+        "variables": {
+          "root_height_mm": 26.885945504602,
+          "tip_height_mm": 6.0
+        },
+        "verified": true,
+        "failed_checks": [],
+        "objective": 516.3093444222516,
+        "constraints": [
+          -0.06726018691588764,
+          -0.20698812969562697
+        ],
+        "feasible": false
+      },
+      {
+        "label": "c010",
+        "variables": {
+          "root_height_mm": 23.704772975353784,
+          "tip_height_mm": 10.433740667872804
+        },
+        "verified": true,
+        "failed_checks": [],
+        "objective": 535.9746641986575,
+        "constraints": [
+          -0.025658616352201125,
+          -0.08860663677093583
+        ],
+        "feasible": false
+      },
+      {
+        "label": "c011",
+        "variables": {
+          "root_height_mm": 25.733972958069437,
+          "tip_height_mm": 8.72405907798719
+        },
+        "verified": true,
+        "failed_checks": [],
+        "objective": 540.9911029660891,
+        "constraints": [
+          0.05159229197080306,
+          -0.018390549766600657
+        ],
+        "feasible": false
+      },
+      {
+        "label": "c012",
+        "variables": {
+          "root_height_mm": 26.391744904825117,
+          "tip_height_mm": 7.970841933956837
+        },
+        "verified": true,
+        "failed_checks": [],
+        "objective": 539.4926133688766,
+        "constraints": [
+          0.05564938686131382,
+          -0.029940286414088604
+        ],
+        "feasible": false
+      },
+      {
+        "label": "c013",
+        "variables": {
+          "root_height_mm": 25.51019344990609,
+          "tip_height_mm": 9.171186276585274
+        },
+        "verified": true,
+        "failed_checks": [],
+        "objective": 544.4976617059145,
+        "constraints": [
+          0.06159859119496858,
+          -0.00815148299827797
+        ],
+        "feasible": false
+      },
+      {
+        "label": "c014",
+        "variables": {
+          "root_height_mm": 25.905226620531334,
+          "tip_height_mm": 8.864675601231598
+        },
+        "verified": true,
+        "failed_checks": [],
+        "objective": 545.8874648816779,
+        "constraints": [
+          0.07545024817518253,
+          -0.0005321320241260708
+        ],
+        "feasible": false
+      },
+      {
+        "label": "c015",
+        "variables": {
+          "root_height_mm": 26.570153807499025,
+          "tip_height_mm": 8.117767416759618
+        },
+        "verified": true,
+        "failed_checks": [],
+        "objective": 544.6003632208606,
+        "constraints": [
+          0.0807753284671533,
+          -0.009656518939574851
+        ],
+        "feasible": false
+      },
+      {
+        "label": "c016",
+        "variables": {
+          "root_height_mm": 25.537448724928556,
+          "tip_height_mm": 9.203407677519026
+        },
+        "verified": true,
+        "failed_checks": [],
+        "objective": 545.431445518427,
+        "constraints": [
+          0.06599705031446523,
+          -0.00490786455175396
+        ],
+        "feasible": false
+      },
+      {
+        "label": "c017",
+        "variables": {
+          "root_height_mm": 26.074560698462214,
+          "tip_height_mm": 8.680757222456396
+        },
+        "verified": true,
+        "failed_checks": [],
+        "objective": 545.6584913584221,
+        "constraints": [
+          0.07763016058394168,
+          -0.0011352427791069886
+        ],
+        "feasible": false
+      },
+      {
+        "label": "c018",
+        "variables": {
+          "root_height_mm": 26.008673738014835,
+          "tip_height_mm": 8.76824586575361
+        },
+        "verified": true,
+        "failed_checks": [],
+        "objective": 545.9976377791646,
+        "constraints": [
+          0.07785454014598536,
+          0.00012527434576540487
+        ],
+        "feasible": true
+      },
+      {
+        "label": "c019",
+        "variables": {
+          "root_height_mm": 26.203009878676603,
+          "tip_height_mm": 8.562738044898321
+        },
+        "verified": true,
+        "failed_checks": [],
+        "objective": 545.8222424001262,
+        "constraints": [
+          0.08052802189781028,
+          -0.0008677309543419653
+        ],
+        "feasible": false
+      },
+      {
+        "label": "c020",
+        "variables": {
+          "root_height_mm": 25.906199373627867,
+          "tip_height_mm": 8.865708702996772
+        },
+        "verified": true,
+        "failed_checks": [],
+        "objective": 545.9189568030068,
+        "constraints": [
+          0.07559775912408762,
+          -0.0003743555487288575
+        ],
+        "feasible": false
+      },
+      {
+        "label": "c021",
+        "variables": {
+          "root_height_mm": 26.105682940106387,
+          "tip_height_mm": 8.665341955674545
+        },
+        "verified": true,
+        "failed_checks": [],
+        "objective": 545.9050908637607,
+        "constraints": [
+          0.07921161313868608,
+          -0.0002800829784456482
+        ],
+        "feasible": false
+      },
+      {
+        "label": "c022",
+        "variables": {
+          "root_height_mm": 25.95735209085724,
+          "tip_height_mm": 8.816888321828847
+        },
+        "verified": true,
+        "failed_checks": [],
+        "objective": 545.9555744791717,
+        "constraints": [
+          0.07672546715328454,
+          -0.00011615389693631073
+        ],
+        "feasible": false
+      },
+      {
+        "label": "c023",
+        "variables": {
+          "root_height_mm": 25.996513123996024,
+          "tip_height_mm": 8.755415453964211
+        },
+        "verified": true,
+        "failed_checks": [],
+        "objective": 545.6052786739757,
+        "constraints": [
+          0.07599671532846708,
+          -0.0013009426922421597
+        ],
+        "feasible": false
+      },
+      {
+        "label": "c024",
+        "variables": {
+          "root_height_mm": 26.032145716478162,
+          "tip_height_mm": 8.74180600518255
+        },
+        "verified": true,
+        "failed_checks": [],
+        "objective": 545.9510420300733,
+        "constraints": [
+          0.07808532116788336,
+          -3.404370804645396e-05
+        ],
+        "feasible": false
+      },
+      {
+        "label": "c025",
+        "variables": {
+          "root_height_mm": 26.057354681487638,
+          "tip_height_mm": 8.717016731632262
+        },
+        "verified": true,
+        "failed_checks": [],
+        "objective": 545.9576311859825,
+        "constraints": [
+          0.07856961313868616,
+          -1.7614139467667654e-05
+        ],
+        "feasible": false
+      },
+      {
+        "label": "c026",
+        "variables": {
+          "root_height_mm": 26.032439077904954,
+          "tip_height_mm": 8.74210084409634
+        },
+        "verified": true,
+        "failed_checks": [],
+        "objective": 545.9602767754203,
+        "constraints": [
+          0.07813181021897819,
+          9.23438178347169e-06
+        ],
+        "feasible": true
+      },
+      {
+        "label": "c027",
+        "variables": {
+          "root_height_mm": 25.982072738034773,
+          "tip_height_mm": 8.7917318002435
+        },
+        "verified": true,
+        "failed_checks": [],
+        "objective": 545.948731250969,
+        "constraints": [
+          0.07715799999999995,
+          -9.062139389328649e-05
+        ],
+        "feasible": false
+      },
+      {
+        "label": "c028",
+        "variables": {
+          "root_height_mm": 26.057098724123403,
+          "tip_height_mm": 8.716765062119443
+        },
+        "verified": true,
+        "failed_checks": [],
+        "objective": 545.9496614440127,
+        "constraints": [
+          0.0785321386861314,
+          -4.3845335865881905e-05
+        ],
+        "feasible": false
+      },
+      {
+        "label": "c029",
+        "variables": {
+          "root_height_mm": 26.02610513241073,
+          "tip_height_mm": 8.735935932541727
+        },
+        "verified": true,
+        "failed_checks": [],
+        "objective": 545.7640447197538,
+        "constraints": [
+          0.07720287591240882,
+          -0.0007123816200645195
+        ],
+        "feasible": false
+      },
+      {
+        "label": "c030",
+        "variables": {
+          "root_height_mm": 26.01979910660297,
+          "tip_height_mm": 8.754459287585917
+        },
+        "verified": true,
+        "failed_checks": [],
+        "objective": 545.9558567887656,
+        "constraints": [
+          0.07787947445255472,
+          -2.070808870840324e-05
+        ],
+        "feasible": false
+      },
+      {
+        "label": "c031",
+        "variables": {
+          "root_height_mm": 26.03936156426475,
+          "tip_height_mm": 8.734884253308545
+        },
+        "verified": true,
+        "failed_checks": [],
+        "objective": 545.9556593359008,
+        "constraints": [
+          0.07823612408759117,
+          -3.0949609586912176e-05
+        ],
+        "feasible": false
+      }
+    ],
+    "best_label": "c026",
+    "best_variables": {
+      "root_height_mm": 26.032439077904954,
+      "tip_height_mm": 8.74210084409634
+    },
+    "best_objective": 545.9602767754203
+  },
+  "status": "completed",
+  "finished_utc": "2026-11-21T03:56:37+00:00"
+}

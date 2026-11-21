@@ -1,0 +1,112 @@
+# Strap proof test: a load beyond notch yield, then unloaded. CalculiX plasticity on the strap
+# CAD-to-FEA pipeline, checked against Neuber's rule, Glinka's method, Peterson's Kt and exact
+# elastic-unloading superposition. Mesh study (hole-edge element size / diameter 0.05 / 0.025 /
+# 0.0125).
+#
+# Decision (synthetic): the strap of the strap-hole and fatigue studies (6061-T6, 160 x 40 x 4 mm,
+# 16 mm hole, 5 kN service load) is proof tested at 15 kN, three times its service load, before
+# installation. Elastically the hole edge would see about 350 MPa, well past yield, while the net
+# section stays elastic. Does the hole edge stay within 1 % strain during the proof test, and does
+# the test leave a compressive (fatigue-beneficial) residual stress at the hole edge?
+#
+# Material: elastic (E 68.9 GPa), then isotropic hardening along a multilinear (plastic strain,
+# stress) table: a Ramberg-Osgood fit (n = 0.07) with the 0.2 % proof stress at 276 MPa (6061-T6),
+# first yield at 223.8 MPa. Synthetic fit; the same table feeds the FE and the references.
+#
+# Prototype (hand run at 0.025 before this case): notch root 274.4 MPa and 0.583 % strain at 15 kN;
+# FE elastic Kt 2.246 against Peterson 2.236; residual -76.58 MPa, equal to the FE proof stress minus
+# the FE elastic peak (274.39 - 350.97). The .frd held every increment until the output frequency
+# was set above the increment count.
+#
+# Predictions, written BEFORE the first evidence run (validation/notch_plasticity.py, Peterson Kt
+# 2.236, net stress 156.25 MPa, elastic peak 349.3 MPa):
+#   P1 Notch-root strain between Glinka (0.533 %) and Neuber (0.637 %), about 0.58 %: REQ-P1 passes
+#      with about 40 % margin.
+#   P2 Residual stress at the hole edge about -70 to -77 MPa (Neuber with elastic unloading -71 MPa):
+#      REQ-P2 passes.
+#   P3 Unloading is elastic (|residual| well under the flow stress), so the residual equals the proof
+#      stress minus the elastic peak to round-off on every mesh.
+#   P4 Plastic zone well under a quarter of the 12 mm ligament (contained yielding).
+#
+# Revision 1 (after run 20261120-233440_strap_proof, kept as evidence; tolerances unchanged):
+#   Every point check passed on all three meshes and the notch strain converged (GCI 0.3 %), but the
+#   residual stress (-72.74 / -76.58 / -76.97 MPa at 0.05 / 0.025 / 0.0125) showed an observed order
+#   of 3.3, above 1.5 x the design order 2, so the GCI gave no estimate and REQ-P2 was withheld. The
+#   coarsest mesh (0.8 mm at the hole edge) is not in the asymptotic range; the elastic peak shows the
+#   same. This revision drops it and adds a finer level: 0.025 / 0.0125 / 0.00625.
+#   Prediction: residual about -77.0 MPa on the two finest meshes, observed order near 2, GCI under
+#   1 %; notch strain 0.583 % unchanged.
+#
+# Requirements and tolerances were fixed BEFORE the first run of strap_proof.
+#
+# Results (run 20261120-233830_strap_proof_r1): every point check passed. Residual stress -76.58 / -76.97 /
+# -77.06 MPa, observed order 2.10, GCI 0.05 %: REQ-P2 verified PASS (prediction held). Notch strain
+# 0.583451 / 0.583416 / 0.583356 %: the differences grow slightly (ratio 1.7) at the 1e-4 level, above the
+# harness noise floor (1e-5), so the GCI reports "divergent" and REQ-P1 is formally withheld on this run;
+# the noise floor was not changed after the fact. Across all four meshes of both runs the notch strain is
+# 0.581 to 0.5835 % against the 1 % limit, and run 20261120-233440 verified REQ-P1 with GCI 0.3 %.
+
+[case]
+name = "strap_proof_r1"
+model = "cadquery_ccx_strap_plastic"
+description = "6061-T6 strap, 160 x 40 x 4 mm with a 16 mm hole, proof loaded to 15 kN (three times service) and unloaded; CalculiX isotropic-hardening plasticity in true plane stress; hole-edge element size 2.5 / 1.25 / 0.625 % of the diameter; checked against Peterson, Neuber, Glinka and elastic-unloading superposition."
+assumptions = [
+  "True plane stress (thin analysed layer with scaled loads, as in the strap-hole study).",
+  "Isotropic hardening along a synthetic Ramberg-Osgood-fitted table (0.2 % proof 276 MPa); monotonic loading then unloading.",
+  "Geometrically linear, small strain; checked: notch strain below 5 %.",
+  "Contained yielding; checked: net section below first yield and plastic zone under a quarter of the ligament.",
+  "Elastic unloading; checked: residual stress below the current flow stress (no reversed yield).",
+]
+limitations = [
+  "Synthetic material curve; a real proof test would use the certified curve of the batch.",
+  "No Bauschinger effect (isotropic hardening); with reversed yield, which does not occur here, kinematic hardening would matter.",
+  "Neuber and Glinka are model-form estimates; the exact checks are the equilibrium and the unloading superposition.",
+  "No physical test data.",
+]
+
+[parameters]
+length_mm = 160.0
+width_mm = 40.0
+thickness_mm = 4.0
+hole_diameter_mm = 16.0
+axial_load_N = 15000.0            # proof load, 3 x the 5 kN service load
+youngs_modulus_MPa = 68900.0
+poisson_ratio = 0.33
+far_element_size_mm = 4.0
+hole_element_ratio = 0.025
+plastic_strain = [0.0, 0.0002, 0.0005, 0.001, 0.002, 0.004, 0.007, 0.012, 0.02, 0.04, 0.08]
+plastic_stress_MPa = [223.8, 234.9, 250.5, 262.9, 276.0, 289.7, 301.3, 312.9, 324.3, 340.4, 357.3]
+
+[sweep]
+parameter = "hole_element_ratio"
+values = [0.025, 0.0125, 0.00625]
+
+[numerics]
+solver = "CalculiX 2.22: elastic static, then *PLASTIC load and unload (CPS6 expanded to wedges, thin layer)"
+
+[verification]
+equilibrium_rel_tol = 1e-6
+kt_rel_tol = 0.02                 # Peterson chart fit (the strap-hole study's tolerance)
+bracket_rel_tol = 0.03            # FE notch strain within [Glinka, Neuber], 3 % slack for the chart Kt
+neuber_rel_tol = 0.15             # model form: Neuber in plane stress, typically within 5-15 %
+superposition_rel_tol = 1e-4      # exact for elastic unloading (6-digit .frd values)
+residual_rel_tol = 0.05           # vs Neuber state minus Peterson peak (model form), relative to the elastic peak
+plastic_zone_fraction_max = 0.25
+strain_max = 0.05
+gci_max = 0.02
+
+[[requirements]]
+id = "REQ-P1"
+text = "Total strain at the hole edge during the 15 kN proof test shall not exceed 1.0 % (synthetic limit for a proof test that must not damage the part)."
+metric = "notch_strain_percent"
+operator = "<="
+limit = 1.0
+units = "%"
+
+[[requirements]]
+id = "REQ-P2"
+text = "The proof test shall leave a compressive residual stress at the hole edge (axial stress after unloading at most 0 MPa), the fatigue benefit the test is relied on for."
+metric = "residual_stress_MPa"
+operator = "<="
+limit = 0.0
+units = "MPa"

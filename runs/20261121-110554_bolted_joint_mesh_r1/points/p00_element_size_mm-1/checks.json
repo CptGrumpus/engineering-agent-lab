@@ -1,0 +1,96 @@
+{
+  "label": "p00_element_size_mm-1",
+  "status": "PASS",
+  "checks": [
+    {
+      "id": "slip_rigid_limit",
+      "description": "|slip load extrapolated to a rigid interface (E and 100 E, linear in 1/E) - mu F_V| / mu F_V (Coulomb: exact)",
+      "kind": "numerical",
+      "value": 1.2121212103011202e-07,
+      "tolerance": 1e-05,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "slip_deformable",
+      "description": "|slip load (FE, gross slip) - mu F_V| / mu F_V (model form: the interface tilts by about the strain under the side load)",
+      "kind": "numerical",
+      "value": 0.001321333333333314,
+      "tolerance": 0.005,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "gross_slip_reached",
+      "description": "spread of the rim force over the last three increments / force (a plateau: the whole interface slides)",
+      "kind": "numerical",
+      "value": 2.5366631264647337e-05,
+      "tolerance": 0.0001,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "clamp_force_balance",
+      "description": "|z reaction at the support| / (F_V / 2) (the clamp forces balance; none lost into a support)",
+      "kind": "numerical",
+      "value": 1.6168133333333334e-16,
+      "tolerance": 1e-06,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "shear_balance",
+      "description": "|top rim force + bottom rim force| / rim force, last increment",
+      "kind": "numerical",
+      "value": 0.0,
+      "tolerance": 1e-06,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "plate_compliance_reference",
+      "description": "|plate compliance FE - VDI 2230 pressure cone| / VDI (model form; the plates are about 15 % of the joint compliance)",
+      "kind": "numerical",
+      "value": 0.16599128319925374,
+      "tolerance": 0.25,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "contact_diameter_reference",
+      "description": "|interface contact diameter FE - VDI cone limit D_A,Gr| / D_A,Gr (model form)",
+      "kind": "numerical",
+      "value": 0.19419036161961137,
+      "tolerance": 0.2,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "cone_fits",
+      "description": "VDI cone limit diameter / plate diameter (cone formula valid at or below 1)",
+      "kind": "validity",
+      "value": 0.4777657685093037,
+      "tolerance": 1.0,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "no_bolt_bearing",
+      "description": "slip displacement / hole clearance (the bolt shank is not modelled: it must not touch the hole)",
+      "kind": "validity",
+      "value": 0.024,
+      "tolerance": 1.0,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "bolt_within_proof",
+      "description": "preload stress in the bolt / proof stress",
+      "kind": "validity",
+      "value": 0.6829522208201756,
+      "tolerance": 0.9,
+      "comparison": "<=",
+      "status": "PASS"
+    }
+  ]
+}

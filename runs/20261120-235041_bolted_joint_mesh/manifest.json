@@ -1,0 +1,261 @@
+{
+  "run_id": "20261120-235041_bolted_joint_mesh",
+  "case_name": "bolted_joint_mesh",
+  "model": "ccx_bolted_joint",
+  "case_source": "cases/bolted_joint_mesh.toml",
+  "case_sha256": "1ca613bc273045c06c103676a6a57424d01ba569a6a7d9c3b55068da2a647914",
+  "model_sources_sha256": {
+    "models/fea/bolted_joint_ccx.py": "e88b796590b38f71b360734de01e086e38f420e1076a8e6d2f63ee3d492b5ea0"
+  },
+  "rerun_of": null,
+  "started_utc": "2026-11-21T04:50:41+00:00",
+  "environment": {
+    "python": "3.14.10",
+    "python_executable": "<repo>\\.venv\\Scripts\\python.exe",
+    "platform": "Windows-11-10.0.26100-SP0",
+    "machine": "AMD64",
+    "packages": {
+      "numpy": "2.5.5",
+      "scipy": "1.18.1",
+      "matplotlib": "3.11.2",
+      "cadquery": "2.8.0"
+    },
+    "git": {
+      "commit": "356901c82d9a18b1bef3dcca4aad4413874a0b7d",
+      "dirty": true
+    },
+    "tools": {
+      "CalculiX": "This is Version 2.22"
+    }
+  },
+  "numerics": {
+    "solver": "CalculiX 2.22 static, C3D8I, surface-to-surface penalty contact with Coulomb friction"
+  },
+  "points": [
+    {
+      "label": "p00_element_size_mm-1",
+      "parameters": {
+        "plate_outer_diameter_mm": 40.0,
+        "hole_diameter_mm": 9.0,
+        "washer_diameter_mm": 13.0,
+        "top_thickness_mm": 6.0,
+        "bottom_thickness_mm": 6.0,
+        "youngs_modulus_MPa": 210000.0,
+        "poisson_ratio": 0.3,
+        "preload_N": 15000.0,
+        "friction_coefficient": 0.2,
+        "element_size_mm": 1.0,
+        "contact_stiffness_factor": 50.0,
+        "stick_slope_factor": 50.0,
+        "slip_displacement_mm": 0.012,
+        "slip_increments": 6,
+        "bolt_thread": "M8",
+        "bolt_shank_length_mm": 8.0,
+        "bolt_free_thread_length_mm": 4.0,
+        "bolt_proof_stress_MPa": 600.0,
+        "embedding_um": 9.5,
+        "load_introduction_factor": 0.5
+      },
+      "status": "completed",
+      "derived": {
+        "bolt_compliance_mm_per_N": 2.600110648500925e-06,
+        "plate_compliance_vdi_mm_per_N": 4.5125019386845566e-07,
+        "cone_limit_diameter_mm": 19.110630740372148,
+        "slip_load_vdi_N": 3000.0,
+        "embedding_loss_vdi_N": 3113.3649839404943,
+        "load_factor_vdi": 0.07394245013612681,
+        "opening_load_vdi_N": 12835.741167281445,
+        "design_slip_load_vdi_N": 2377.3270032119012,
+        "bolt_stress_area_mm2": 36.605781836358666,
+        "bolt_preload_stress_MPa": 409.7713324921054,
+        "hole_clearance_mm": 0.5
+      },
+      "solver": {
+        "success": true,
+        "message": "CalculiX: 2400 C3D8I, rim force 1498.03 N",
+        "nfev": 6
+      },
+      "solver_outputs": {
+        "divisions": [
+          10,
+          20,
+          6,
+          6
+        ],
+        "elements": 2400,
+        "washer_approach_mm": 0.00789230688888889,
+        "zfix_reaction_N": [
+          2.989139,
+          0.5976569,
+          -1.21261e-12
+        ],
+        "slip_displacement_mm": [
+          0.002000003999999999,
+          0.003999996000000001,
+          0.006,
+          0.008000004,
+          0.009999996,
+          0.012
+        ],
+        "rim_force_top_N": [
+          924.8121,
+          1496.548,
+          1497.727,
+          1497.993,
+          1498.03,
+          1498.031
+        ],
+        "rim_force_bottom_N": [
+          -924.8121,
+          -1496.548,
+          -1497.727,
+          -1497.993,
+          -1498.03,
+          -1498.031
+        ]
+      },
+      "metrics": {
+        "slip_load_N": 2996.036,
+        "plate_compliance_mm_per_N": 5.261537925925926e-07,
+        "contact_diameter_mm": 22.821731034623877,
+        "residual_clamp_force_N": 11961.229550793518,
+        "design_slip_load_N": 2389.0849558960804,
+        "opening_load_N": 13060.257503687591
+      }
+    },
+    {
+      "label": "p01_element_size_mm-0.7",
+      "parameters": {
+        "plate_outer_diameter_mm": 40.0,
+        "hole_diameter_mm": 9.0,
+        "washer_diameter_mm": 13.0,
+        "top_thickness_mm": 6.0,
+        "bottom_thickness_mm": 6.0,
+        "youngs_modulus_MPa": 210000.0,
+        "poisson_ratio": 0.3,
+        "preload_N": 15000.0,
+        "friction_coefficient": 0.2,
+        "element_size_mm": 0.7,
+        "contact_stiffness_factor": 50.0,
+        "stick_slope_factor": 50.0,
+        "slip_displacement_mm": 0.012,
+        "slip_increments": 6,
+        "bolt_thread": "M8",
+        "bolt_shank_length_mm": 8.0,
+        "bolt_free_thread_length_mm": 4.0,
+        "bolt_proof_stress_MPa": 600.0,
+        "embedding_um": 9.5,
+        "load_introduction_factor": 0.5
+      },
+      "status": "failed",
+      "derived": {
+        "bolt_compliance_mm_per_N": 2.600110648500925e-06,
+        "plate_compliance_vdi_mm_per_N": 4.5125019386845566e-07,
+        "cone_limit_diameter_mm": 19.110630740372148,
+        "slip_load_vdi_N": 3000.0,
+        "embedding_loss_vdi_N": 3113.3649839404943,
+        "load_factor_vdi": 0.07394245013612681,
+        "opening_load_vdi_N": 12835.741167281445,
+        "design_slip_load_vdi_N": 2377.3270032119012,
+        "bolt_stress_area_mm2": 36.605781836358666,
+        "bolt_preload_stress_MPa": 409.7713324921054,
+        "hole_clearance_mm": 0.5
+      },
+      "error": "TimeoutExpired: Command '['~\\\\AppData\\\\Local\\\\Programs\\\\FreeCAD 1.1\\\\bin\\\\ccx.exe', '-i', 'job']' timed out after 14400 seconds"
+    },
+    {
+      "label": "p02_element_size_mm-0.5",
+      "parameters": {
+        "plate_outer_diameter_mm": 40.0,
+        "hole_diameter_mm": 9.0,
+        "washer_diameter_mm": 13.0,
+        "top_thickness_mm": 6.0,
+        "bottom_thickness_mm": 6.0,
+        "youngs_modulus_MPa": 210000.0,
+        "poisson_ratio": 0.3,
+        "preload_N": 15000.0,
+        "friction_coefficient": 0.2,
+        "element_size_mm": 0.5,
+        "contact_stiffness_factor": 50.0,
+        "stick_slope_factor": 50.0,
+        "slip_displacement_mm": 0.012,
+        "slip_increments": 6,
+        "bolt_thread": "M8",
+        "bolt_shank_length_mm": 8.0,
+        "bolt_free_thread_length_mm": 4.0,
+        "bolt_proof_stress_MPa": 600.0,
+        "embedding_um": 9.5,
+        "load_introduction_factor": 0.5
+      },
+      "status": "completed",
+      "derived": {
+        "bolt_compliance_mm_per_N": 2.600110648500925e-06,
+        "plate_compliance_vdi_mm_per_N": 4.5125019386845566e-07,
+        "cone_limit_diameter_mm": 19.110630740372148,
+        "slip_load_vdi_N": 3000.0,
+        "embedding_loss_vdi_N": 3113.3649839404943,
+        "load_factor_vdi": 0.07394245013612681,
+        "opening_load_vdi_N": 12835.741167281445,
+        "design_slip_load_vdi_N": 2377.3270032119012,
+        "bolt_stress_area_mm2": 36.605781836358666,
+        "bolt_preload_stress_MPa": 409.7713324921054,
+        "hole_clearance_mm": 0.5
+      },
+      "solver": {
+        "success": true,
+        "message": "CalculiX: 15360 C3D8I, rim force 1497.94 N",
+        "nfev": 6
+      },
+      "solver_outputs": {
+        "divisions": [
+          16,
+          40,
+          12,
+          12
+        ],
+        "elements": 15360,
+        "washer_approach_mm": 0.008001257585365854,
+        "zfix_reaction_N": [
+          0.8283493,
+          0.2900381,
+          6.640474e-13
+        ],
+        "slip_displacement_mm": [
+          0.002000003999999999,
+          0.003999996000000001,
+          0.006,
+          0.008000004,
+          0.009999996,
+          0.012
+        ],
+        "rim_force_top_N": [
+          917.7496,
+          1489.51,
+          1497.519,
+          1497.878,
+          1497.933,
+          1497.938
+        ],
+        "rim_force_bottom_N": [
+          -917.7496,
+          -1489.51,
+          -1497.519,
+          -1497.878,
+          -1497.933,
+          -1497.938
+        ]
+      },
+      "metrics": {
+        "slip_load_N": 2995.8326666666667,
+        "plate_compliance_mm_per_N": 5.334171723577236e-07,
+        "contact_diameter_mm": 21.149563775026788,
+        "residual_clamp_force_N": 11968.273287135898,
+        "design_slip_load_N": 2390.329605146385,
+        "opening_load_N": 13081.716788839902
+      }
+    }
+  ],
+  "study": "bolted_joint",
+  "status": "partial",
+  "finished_utc": "2026-11-21T09:14:03+00:00"
+}

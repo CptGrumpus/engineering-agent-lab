@@ -1,0 +1,211 @@
+# Cold plate, full thermal chain: coolant CFD (OpenFOAM) coupled to conduction in the aluminium
+# plate (CalculiX), then thermal stress in the plate (CalculiX). Mesh study, CFD and plate
+# refined together (cells across the gap 20 / 40 / 80).
+#
+# Decision (synthetic): electronics on both faces of a cold plate put 30 kW/m2 into the plate
+# over a 50 mm footprint. The plate (6061-T6, 3 mm) sits on the verified coolant channel
+# (1 mm gap, water at 25 C and 0.1 m/s) and is bolted at its two ends to a rigid frame,
+# assembled at 20 C. Does the component face stay at or under 45 C, does the coolant warm by
+# no more than 10 K, and does the thermal stress in the plate stay under 60 MPa?
+#
+# Why a chain, and why coupled: the heated-channel study assumed the flux reaches the water
+# uniformly over the heated length, and listed the missing plate conduction as a limitation.
+# The plate spreads heat along its length over about sqrt(k t / h) = 14 mm, comparable to the
+# 5 mm unheated entry and exit, so the flux the coolant sees is not the flux the component
+# puts in. The CFD and the plate are therefore iterated to a common interface temperature and
+# flux (partitioned Robin-Neumann coupling) before the stress stage uses the plate temperature.
+#
+# Each stage is checked against its own independent reference before its result is used:
+#   CFD     thermal-entry solution with the converged (non-uniform) wall flux; exact energy
+#           balance; symmetry; field convergence
+#   plate   exact 2D Fourier series with the film data the plate had; 1D slab estimate;
+#           energy balance across both handoffs
+#   stress  beam theory in plane strain with clamped ends on the plate temperature field;
+#           the exact uniform-temperature case run through the same deck writer and solver;
+#           reaction balance; buckling margin
+#
+# Smoke-test findings (scratch runs and standalone CalculiX tests, before this case):
+# - CalculiX's .frd nodal stresses for C3D8 and C3D8I are 4e-5 low even for a uniform field
+#   (uniform rise, fully restrained: integration points -60.67313 MPa = exact, reactions exact,
+#   .frd -60.6707). The stress stage reads the integration-point stresses from the .dat and
+#   extrapolates them to the nodes itself (harness/calculix.py hex8_nodal_stress); checked
+#   against the .frd on a non-uniform field (agrees apart from the same 0.99996 factor).
+# - Coupling with a plain fixed point contracted by only 0.81 per iteration (not converged in
+#   15): near the start of heating the coolant's local coefficient is several times h*, and
+#   for short-wavelength errors the factor tends to 1 - h*/h_fluid. Aitken dynamic relaxation
+#   on the wall flux added (bounded to |omega| <= 10); h* stays constant so the exact plate
+#   series still applies.
+# - With the plate ending at the channel inlet and outlet, heat reached the wall in the very
+#   first and last cells: the fixed inlet temperature drew heat back out and the outlet column
+#   missed the last half cell (energy balance 5.4e-4, wall-vs-reference 10 % near the inlet).
+#   The channel now continues 5 mm past each plate end with adiabatic walls.
+# - The slab check first compared the through-thickness drop with q_component t / k; at
+#   mid-footprint the flux leaving into the coolant is lower than the component flux (the
+#   plate spreads heat sideways), so the 1D slab estimate uses the mean of the two face
+#   fluxes. Tolerance unchanged (5 %).
+# - The plate's leading edge dumps a flux spike (88 kW/m2) into the fresh coolant. With plain
+#   linearUpwind the last unplated wall cell before it undershot to 24.58 C, below the 25 C
+#   inlet (the mirror image of the heated-channel overshoot at its downstream step). The
+#   temperature reconstruction now uses a cell-limited gradient (cellLimited Gauss linear 1,
+#   not a TVD flux limiter, which cycled in the heated-channel study): minimum wall
+#   temperature exactly 25 C, field change 8e-10 K, energy balance 3e-12.
+# - Aitken steps with omega > 2 amplify the rounding error of the total heat each pass
+#   (factor |1 - omega|; heat handed to the CFD 1.4e-6 off after 20 passes). The flux is
+#   rescaled to the component heat after each step (the plate delivers exactly that heat).
+# - Remaining at 20 cells: the CFD wall temperature is 5.5 % of the rise under the reference
+#   0.4 mm into the plate. The thermal boundary layer there is about 0.045 mm thick (Leveque),
+#   one cell at 20 cells across the gap; expected to shrink with refinement. Tolerance kept.
+# Smoke-run values at 20 cells (coupled in 21 iterations): component face 40.98 C, hottest
+# point near 41 mm, interior von Mises 46.7 MPa, membrane -44.0 MPa, 16.8 % of the heat
+# reaching the coolant outside the footprint; every other check passes.
+#
+# Predictions, written BEFORE the first evidence run (1D hand model: the plate as a fin over the
+# coolant with the fully developed h = 2500 W/m2K and the energy-balance bulk temperature):
+#   P1 Coolant rise 7.199 K on every mesh (exact energy balance), REQ-C2 passes by 2.8 K.
+#   P2 About 14 % of the component heat reaches the coolant outside the footprint.
+#   P3 The hottest point of the component face is inside the footprint (about 38 mm), not at its
+#      downstream end where the heated-channel study put the peak wall temperature; component
+#      face peak about 40.7 C, so REQ-C1 passes by about 4 K (the uniform-flux picture plus the
+#      0.54 K slab drop would give 44.6 C).
+#   P4 Membrane stress about -45 MPa (mean plate temperature about 38.8 C, 18.8 K above
+#      assembly); interior peak von Mises about 47 MPa at the hottest point; REQ-C3 passes by
+#      about 20 %.
+#   P5 The coupling converges in under 10 iterations (plate Biot number 0.045).
+#   P6 With a smooth flux on the coolant wall, the peak no longer sits at a step in the wall
+#      condition, so the requirement metrics converge with the mesh (GCI under 1 %), unlike
+#      the heated-channel peak.
+#
+# Requirements and tolerances were fixed BEFORE the first run.
+#
+# Results (run 20261120-224255_cold_plate_mesh), verification FAIL; every requirement passes on
+# every mesh and the requirement metrics converge, but checks failed:
+#   component face 40.98 / 40.99 / 40.99 C, coolant rise 7.1986 K (all), interior von Mises
+#   46.73 / 46.80 / 46.82 MPa, membrane -44.03 MPa at 20 / 40 / 80 cells; GCI 5e-5, 3e-12, 3e-4.
+#   P1 held: 7.1986 K on every mesh (energy balance exact), REQ-C2 passes by 2.8 K.
+#   P2 failed in size: 16.8 % of the heat reaches the coolant outside the footprint, not about 14 %.
+#   P3 held: component face peak 40.99 C, REQ-C1 passes by 4.0 K.
+#   P4 held: membrane -44.0 MPa, interior peak 46.8 MPa, REQ-C3 passes by 22 %.
+#   P5 failed: the coupling needed 21 passes at 20 cells and had not met its criteria after the
+#      25-pass limit at 40 and 80 (still contracting, about 0.75 per pass; interface mismatch
+#      1.1e-4 and 6.9e-4 of the rise, against 1e-4). The plate Biot number does not set the rate:
+#      the coolant's local coefficient at the plate's leading edge, far above h*, does.
+#   P6 held for the requirement metrics (GCI at most 3e-4).
+#   cfd_wall_reference failed on every mesh (5.5 / 2.8 / 6.3 %, not converging): the maximum sits
+#      at the plate edges, where the wall flux steps from zero and the wall temperature goes like
+#      x^(1/3); outside 2 gap heights of the edges the error is 1.04 / 0.27 / 0.08 %, second order.
+#   One 80-cell pass took about 8 min, nearly all in the OpenFOAM temperature stage solving every
+#   inner T system to 1e-14.
+# Follow-up: cases/cold_plate_solver_check.toml (solver settings at 40 cells), then
+# cases/cold_plate_mesh_r1.toml: verification PASS. SUPERSEDED by it; this run stays as evidence.
+
+[case]
+name = "cold_plate_mesh"
+model = "openfoam_ccx_cold_plate"
+description = "Cold plate: OpenFOAM coolant channel (1 mm gap, water 0.1 m/s) coupled to CalculiX conduction in a 3 mm 6061 plate with 30 kW/m2 over a 50 mm footprint, then CalculiX thermal stress with the plate clamped at both ends; meshes 20 / 40 / 80 cells across the gap, plate refined with them."
+assumptions = [
+  "Symmetric construction: a plate and a component on each side of the channel, so both channel walls see the same flux; checked: top and bottom wall temperatures agree.",
+  "Constant water properties at 25 C, so temperature is a passive scalar on the frozen flow (rise under 20 K).",
+  "Developed laminar inflow; checked: Re and the peak inflow velocity.",
+  "2D: plate and channel much wider than the gap (side walls neglected; the 3D duct study shows a 3 % effect on flow).",
+  "Perfect thermal contact between component and plate, and between plate and water (no interface resistance): synthetic.",
+  "Plate ends adiabatic; all component heat leaves through the coolant.",
+  "Frame rigid: each plate end held in x over its whole face (no growth, no rotation) and in y on its mid-thickness line; plate held in width (plane strain). This bounds the stress from above; a compliant frame would lower it.",
+  "Linear elastic, small deflection; checked: peak stress under yield, membrane stress well below buckling.",
+  "Stress-free at the 20 C assembly temperature: synthetic.",
+]
+limitations = [
+  "Synthetic geometry, loads and limits; not calibrated to a product.",
+  "Stress near the supports (within 4.5 mm, 1.5 plate thicknesses, of each end) is not assessed: the clamped corners are singular and the real bolt joint is not modelled.",
+  "One-way thermal-to-structural coupling (deformation does not change the heat transfer).",
+  "References: the thermal-entry solution and beam theory are model form (no axial conduction; plane sections); the plate series is exact for the data it is given.",
+  "No physical test data.",
+]
+
+[parameters]
+gap_mm = 1.0
+footprint_length_mm = 50.0
+entry_length_mm = 5.0
+exit_length_mm = 5.0
+unplated_length_mm = 5.0                   # channel continues past each plate end with adiabatic walls
+mean_velocity_m_per_s = 0.1
+density_kg_per_m3 = 997.0
+dynamic_viscosity_Pa_s = 0.00089
+specific_heat_J_per_kgK = 4180.0
+conductivity_W_per_mK = 0.607              # water at 25 C
+inlet_temperature_C = 25.0
+cells_across_gap = 40
+cell_aspect_ratio = 5.0
+component_heat_flux_W_per_m2 = 30000.0     # synthetic; same total heat as the heated-channel study
+plate_thickness_mm = 3.0
+plate_conductivity_W_per_mK = 167.0        # 6061-T6
+coupling_htc_W_per_m2K = 2500.0            # coupling coefficient h* (fully developed h); affects convergence speed only
+youngs_modulus_MPa = 68900.0               # 6061-T6
+poisson_ratio = 0.33
+expansion_per_K = 23.6e-6
+assembly_temperature_C = 20.0              # synthetic
+yield_strength_MPa = 276.0                 # 6061-T6
+interior_margin_mm = 4.5                   # 1.5 plate thicknesses: Saint-Venant decay exp(-1.5 pi) < 1 %
+uniform_check_rise_K = 20.0                # exact case run through the stress deck
+
+[sweep]
+parameter = "cells_across_gap"
+values = [20, 40, 80]
+
+[numerics]
+flow_iterations = 1000
+temperature_iterations = 1500
+coupling_temperature_iterations = 1000     # temperature iterations per coupling pass (warm start)
+write_interval = 100
+relaxation_T = 1.0
+coupling_max_iterations = 25
+coupling_relaxation = 1.0                  # first step; then Aitken
+coupling_acceleration = "aitken"
+temperature_gradient_limiter = true        # cellLimited grad(T) in the linearUpwind reconstruction
+coupling_temperature_rel_tol = 1e-4        # stop: interface mismatch / coolant rise
+coupling_flux_rel_tol = 1e-4               # stop: flux change / component flux
+
+[verification]
+temperature_change_rel_max = 1e-5          # CFD field converged (as the heated-channel study)
+flow_rel_tol = 1e-6
+profile_rel_tol = 0.01
+energy_rel_tol = 1e-6                      # exact energy balance
+wall_rel_tol = 0.01                        # model form: reference has no axial conduction (0.03-0.6 % in the heated-channel study)
+symmetry_rel_tol = 1e-6
+interface_temperature_rel_tol = 1e-4       # 0.7 mK: far below the 45 C margin
+interface_flux_rel_tol = 1e-4
+handoff_rel_tol = 1e-6                     # heat across each handoff (7-digit temperatures)
+temperature_handoff_abs_K = 1e-3           # .frd temperatures carry 6 digits
+plate_reference_rel_tol = 1e-3             # exact series; FE discretisation error (0.007 K)
+slab_rel_tol = 0.05                        # model form: axial conduction at mid-footprint
+uniform_exact_rel_tol = 1e-6               # exact case: FE is exact for a homogeneous strain
+reaction_rel_tol = 1e-6
+membrane_rel_tol = 0.01                    # beam theory neglects the through-thickness stress
+stress_peak_rel_tol = 0.02                 # model form; the decision margin is about 20 %
+stress_field_rel_tol = 0.03                # model form, worst where T changes along x on the scale of t
+buckling_ratio_max = 0.1                   # stress stiffening under 11 % of a small bending part
+thickness_over_span_max = 0.1              # beam theory for the plate strip
+gci_max = 0.01
+
+[[requirements]]
+id = "REQ-C1"
+text = "Peak temperature of the component face (plate outer face over the footprint) shall not exceed 45 C."
+metric = "component_face_max_temperature_C"
+operator = "<="
+limit = 45.0
+units = "C"
+
+[[requirements]]
+id = "REQ-C2"
+text = "Coolant temperature rise from inlet to outlet shall not exceed 10 K."
+metric = "coolant_rise_K"
+operator = "<="
+limit = 10.0
+units = "K"
+
+[[requirements]]
+id = "REQ-C3"
+text = "Peak von Mises stress in the plate away from the supports (more than 1.5 plate thicknesses from each end) shall not exceed 60 MPa (synthetic allowable for thermal cycling)."
+metric = "interior_von_mises_max_MPa"
+operator = "<="
+limit = 60.0
+units = "MPa"

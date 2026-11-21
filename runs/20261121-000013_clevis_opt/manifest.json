@@ -1,0 +1,2933 @@
+{
+  "run_id": "20261121-000013_clevis_opt",
+  "case_name": "clevis_opt",
+  "model": "cadquery_ccx_clevis",
+  "case_source": "cases/clevis_opt.toml",
+  "case_sha256": "09939ec13e579756ab2915669fae7881682b7fe79886b9abeb7daec2fde6b097",
+  "model_sources_sha256": {
+    "models/fea/clevis_bracket.py": "3cd3b55da39cdb58b64f490ef2c68fc484ba147d3e8cae011cf0a5d52ddc19b9"
+  },
+  "rerun_of": null,
+  "started_utc": "2026-11-21T05:00:13+00:00",
+  "environment": {
+    "python": "3.14.10",
+    "python_executable": "<repo>\\.venv\\Scripts\\python.exe",
+    "platform": "Windows-11-10.0.26100-SP0",
+    "machine": "AMD64",
+    "packages": {
+      "numpy": "2.5.5",
+      "scipy": "1.18.1",
+      "matplotlib": "3.11.2",
+      "cadquery": "2.8.0"
+    },
+    "git": {
+      "commit": "356901c82d9a18b1bef3dcca4aad4413874a0b7d",
+      "dirty": true
+    },
+    "tools": {
+      "cadquery": "2.8.0",
+      "gmsh": "4.15.0",
+      "CalculiX": "This is Version 2.22"
+    }
+  },
+  "numerics": {
+    "solver": "CalculiX 2.22 static, C3D10, rigid pin (*RIGID BODY)"
+  },
+  "points": [
+    {
+      "label": "c000",
+      "parameters": {
+        "base_length_mm": 100.0,
+        "base_width_mm": 100.0,
+        "base_thickness_mm": 10.0,
+        "lug_radius_mm": 20.0,
+        "pin_height_mm": 70.0,
+        "pin_diameter_mm": 16.0,
+        "lug_thickness_mm": 12.0,
+        "gusset_thickness_mm": 8.0,
+        "gusset_height_mm": 40.0,
+        "gusset_aspect": 0.7,
+        "fillet_radius_mm": 3.0,
+        "youngs_modulus_MPa": 68900.0,
+        "poisson_ratio": 0.33,
+        "density_t_per_mm3": 2.7e-09,
+        "yield_strength_MPa": 276.0,
+        "load_x_N": 1500.0,
+        "load_y_N": 1000.0,
+        "load_z_N": 4500.0,
+        "element_size_mm": 4.0
+      },
+      "status": "completed",
+      "derived": {
+        "gusset_reach_mm": 37.0,
+        "load_magnitude_N": 4847.679857416329
+      },
+      "solver": {
+        "success": true,
+        "message": "CalculiX: 40906 C3D10, 64757 nodes",
+        "nfev": null
+      },
+      "solver_outputs": {
+        "nodes": 64757,
+        "elements": 40906,
+        "base_nodes": 3049,
+        "hole_nodes": 238,
+        "ref_node": 64758,
+        "mesh_volume_mm3": 143677.54450916246,
+        "cad_volume_mm3": 143574.50391578276,
+        "cad_faces": 40,
+        "cad_valid": true,
+        "reaction_force_N": [
+          -1500.0000052249995,
+          -1000.0000005117192,
+          -4500.00000422234
+        ],
+        "reaction_moment_Nmm": [
+          69999.99839274198,
+          -104999.98256065583,
+          -3.306692770532749e-05
+        ],
+        "pin_displacement_mm": [
+          0.03425123,
+          0.04203845,
+          0.007235693
+        ]
+      },
+      "metrics": {
+        "peak_von_mises_MPa": 84.52977945987793,
+        "pin_deflection_mm": 0.05470587983119958,
+        "mass_g": 387.65116057261343
+      },
+      "candidate": {
+        "variables": {
+          "lug_thickness_mm": 12.0,
+          "gusset_thickness_mm": 8.0,
+          "gusset_height_mm": 40.0
+        },
+        "verified": true,
+        "failed_checks": [],
+        "objective": 387.65116057261343,
+        "constraints": [
+          0.1447022054012207,
+          0.4429412016880042
+        ],
+        "feasible": true
+      }
+    },
+    {
+      "label": "c001",
+      "parameters": {
+        "base_length_mm": 100.0,
+        "base_width_mm": 100.0,
+        "base_thickness_mm": 10.0,
+        "lug_radius_mm": 20.0,
+        "pin_height_mm": 70.0,
+        "pin_diameter_mm": 16.0,
+        "lug_thickness_mm": 14.0,
+        "gusset_thickness_mm": 8.0,
+        "gusset_height_mm": 40.0,
+        "gusset_aspect": 0.7,
+        "fillet_radius_mm": 3.0,
+        "youngs_modulus_MPa": 68900.0,
+        "poisson_ratio": 0.33,
+        "density_t_per_mm3": 2.7e-09,
+        "yield_strength_MPa": 276.0,
+        "load_x_N": 1500.0,
+        "load_y_N": 1000.0,
+        "load_z_N": 4500.0,
+        "element_size_mm": 4.0
+      },
+      "status": "completed",
+      "derived": {
+        "gusset_reach_mm": 38.0,
+        "load_magnitude_N": 4847.679857416329
+      },
+      "solver": {
+        "success": true,
+        "message": "CalculiX: 43202 C3D10, 67848 nodes",
+        "nfev": null
+      },
+      "solver_outputs": {
+        "nodes": 67848,
+        "elements": 43202,
+        "base_nodes": 3049,
+        "hole_nodes": 258,
+        "ref_node": 67849,
+        "mesh_volume_mm3": 149344.8750583301,
+        "cad_volume_mm3": 149236.74278442492,
+        "cad_faces": 41,
+        "cad_valid": true,
+        "reaction_force_N": [
+          -1500.000007481164,
+          -999.9999916122692,
+          -4499.999998701342
+        ],
+        "reaction_moment_Nmm": [
+          69999.99508943691,
+          -105000.002262102,
+          -0.003493186528737091
+        ],
+        "pin_displacement_mm": [
+          0.02972341,
+          0.03207563,
+          0.006336728
+        ]
+      },
+      "metrics": {
+        "peak_von_mises_MPa": 77.8182631690672,
+        "pin_deflection_mm": 0.04418689017877343,
+        "mass_g": 402.93920551794736
+      },
+      "candidate": {
+        "variables": {
+          "lug_thickness_mm": 14.0,
+          "gusset_thickness_mm": 8.0,
+          "gusset_height_mm": 40.0
+        },
+        "verified": true,
+        "failed_checks": [],
+        "objective": 402.93920551794736,
+        "constraints": [
+          0.21181736830932807,
+          0.5481310982122657
+        ],
+        "feasible": true
+      }
+    },
+    {
+      "label": "c002",
+      "parameters": {
+        "base_length_mm": 100.0,
+        "base_width_mm": 100.0,
+        "base_thickness_mm": 10.0,
+        "lug_radius_mm": 20.0,
+        "pin_height_mm": 70.0,
+        "pin_diameter_mm": 16.0,
+        "lug_thickness_mm": 12.0,
+        "gusset_thickness_mm": 10.0,
+        "gusset_height_mm": 40.0,
+        "gusset_aspect": 0.7,
+        "fillet_radius_mm": 3.0,
+        "youngs_modulus_MPa": 68900.0,
+        "poisson_ratio": 0.33,
+        "density_t_per_mm3": 2.7e-09,
+        "yield_strength_MPa": 276.0,
+        "load_x_N": 1500.0,
+        "load_y_N": 1000.0,
+        "load_z_N": 4500.0,
+        "element_size_mm": 4.0
+      },
+      "status": "completed",
+      "derived": {
+        "gusset_reach_mm": 37.0,
+        "load_magnitude_N": 4847.679857416329
+      },
+      "solver": {
+        "success": true,
+        "message": "CalculiX: 42526 C3D10, 66890 nodes",
+        "nfev": null
+      },
+      "solver_outputs": {
+        "nodes": 66890,
+        "elements": 42526,
+        "base_nodes": 3049,
+        "hole_nodes": 238,
+        "ref_node": 66891,
+        "mesh_volume_mm3": 145911.32588235664,
+        "cad_volume_mm3": 145808.5955172402,
+        "cad_faces": 40,
+        "cad_valid": true,
+        "reaction_force_N": [
+          -1500.0000054828988,
+          -1000.0000022414399,
+          -4499.999942724182
+        ],
+        "reaction_moment_Nmm": [
+          69999.99743856641,
+          -104999.98316803719,
+          -8.721557644530975e-05
+        ],
+        "pin_displacement_mm": [
+          0.0333377,
+          0.03746761,
+          0.007020521
+        ]
+      },
+      "metrics": {
+        "peak_von_mises_MPa": 80.78219348174386,
+        "pin_deflection_mm": 0.050641008634441126,
+        "mass_g": 393.6832078965486
+      },
+      "candidate": {
+        "variables": {
+          "lug_thickness_mm": 12.0,
+          "gusset_thickness_mm": 10.0,
+          "gusset_height_mm": 40.0
+        },
+        "verified": true,
+        "failed_checks": [],
+        "objective": 393.6832078965486,
+        "constraints": [
+          0.1821780651825614,
+          0.4835899136555888
+        ],
+        "feasible": true
+      }
+    },
+    {
+      "label": "c003",
+      "parameters": {
+        "base_length_mm": 100.0,
+        "base_width_mm": 100.0,
+        "base_thickness_mm": 10.0,
+        "lug_radius_mm": 20.0,
+        "pin_height_mm": 70.0,
+        "pin_diameter_mm": 16.0,
+        "lug_thickness_mm": 12.0,
+        "gusset_thickness_mm": 8.0,
+        "gusset_height_mm": 42.0,
+        "gusset_aspect": 0.7,
+        "fillet_radius_mm": 3.0,
+        "youngs_modulus_MPa": 68900.0,
+        "poisson_ratio": 0.33,
+        "density_t_per_mm3": 2.7e-09,
+        "yield_strength_MPa": 276.0,
+        "load_x_N": 1500.0,
+        "load_y_N": 1000.0,
+        "load_z_N": 4500.0,
+        "element_size_mm": 4.0
+      },
+      "status": "completed",
+      "derived": {
+        "gusset_reach_mm": 38.4,
+        "load_magnitude_N": 4847.679857416329
+      },
+      "solver": {
+        "success": true,
+        "message": "CalculiX: 43000 C3D10, 67752 nodes",
+        "nfev": null
+      },
+      "solver_outputs": {
+        "nodes": 67752,
+        "elements": 43000,
+        "base_nodes": 3049,
+        "hole_nodes": 242,
+        "ref_node": 67753,
+        "mesh_volume_mm3": 144621.7150007185,
+        "cad_volume_mm3": 144519.17118068377,
+        "cad_faces": 41,
+        "cad_valid": true,
+        "reaction_force_N": [
+          -1500.0000123244113,
+          -1000.0000062328013,
+          -4499.999995982276
+        ],
+        "reaction_moment_Nmm": [
+          69999.99186975035,
+          -104999.99835033486,
+          -0.005082033417975751
+        ],
+        "pin_displacement_mm": [
+          0.03414454,
+          0.03704828,
+          0.007099109
+        ]
+      },
+      "metrics": {
+        "peak_von_mises_MPa": 82.55649326532044,
+        "pin_deflection_mm": 0.050880467876817735,
+        "mass_g": 390.2017621878462
+      },
+      "candidate": {
+        "variables": {
+          "lug_thickness_mm": 12.0,
+          "gusset_thickness_mm": 8.0,
+          "gusset_height_mm": 42.0
+        },
+        "verified": true,
+        "failed_checks": [],
+        "objective": 390.2017621878462,
+        "constraints": [
+          0.16443506734679558,
+          0.4811953212318227
+        ],
+        "feasible": true
+      }
+    },
+    {
+      "label": "c004",
+      "parameters": {
+        "base_length_mm": 100.0,
+        "base_width_mm": 100.0,
+        "base_thickness_mm": 10.0,
+        "lug_radius_mm": 20.0,
+        "pin_height_mm": 70.0,
+        "pin_diameter_mm": 16.0,
+        "lug_thickness_mm": 10.161584365048594,
+        "gusset_thickness_mm": 7.2746351707663095,
+        "gusset_height_mm": 39.693285445932226,
+        "gusset_aspect": 0.7,
+        "fillet_radius_mm": 3.0,
+        "youngs_modulus_MPa": 68900.0,
+        "poisson_ratio": 0.33,
+        "density_t_per_mm3": 2.7e-09,
+        "yield_strength_MPa": 276.0,
+        "load_x_N": 1500.0,
+        "load_y_N": 1000.0,
+        "load_z_N": 4500.0,
+        "element_size_mm": 4.0
+      },
+      "status": "completed",
+      "derived": {
+        "gusset_reach_mm": 35.86609199467685,
+        "load_magnitude_N": 4847.679857416329
+      },
+      "solver": {
+        "success": true,
+        "message": "CalculiX: 39187 C3D10, 62494 nodes",
+        "nfev": null
+      },
+      "solver_outputs": {
+        "nodes": 62494,
+        "elements": 39187,
+        "base_nodes": 3049,
+        "hole_nodes": 242,
+        "ref_node": 62495,
+        "mesh_volume_mm3": 137524.32459392538,
+        "cad_volume_mm3": 137430.96547486662,
+        "cad_faces": 41,
+        "cad_valid": true,
+        "reaction_force_N": [
+          -1499.9999876887682,
+          -1000.0000314695026,
+          -4499.999940054835
+        ],
+        "reaction_moment_Nmm": [
+          69999.99165956206,
+          -105000.0019987579,
+          -0.002859296493186836
+        ],
+        "pin_displacement_mm": [
+          0.04024012,
+          0.06048025,
+          0.00846109
+        ]
+      },
+      "metrics": {
+        "peak_von_mises_MPa": 93.97197549805314,
+        "pin_deflection_mm": 0.07313492969617869,
+        "mass_g": 371.0636067821399
+      },
+      "candidate": {
+        "variables": {
+          "lug_thickness_mm": 10.161584365048594,
+          "gusset_thickness_mm": 7.2746351707663095,
+          "gusset_height_mm": 39.693285445932226
+        },
+        "verified": true,
+        "failed_checks": [],
+        "objective": 371.0636067821399,
+        "constraints": [
+          0.050280245019468595,
+          0.2586507030382132
+        ],
+        "feasible": true
+      }
+    },
+    {
+      "label": "c005",
+      "parameters": {
+        "base_length_mm": 100.0,
+        "base_width_mm": 100.0,
+        "base_thickness_mm": 10.0,
+        "lug_radius_mm": 20.0,
+        "pin_height_mm": 70.0,
+        "pin_diameter_mm": 16.0,
+        "lug_thickness_mm": 7.707471202554267,
+        "gusset_thickness_mm": 8.632411987893857,
+        "gusset_height_mm": 42.54526207636647,
+        "gusset_aspect": 0.7,
+        "fillet_radius_mm": 3.0,
+        "youngs_modulus_MPa": 68900.0,
+        "poisson_ratio": 0.33,
+        "density_t_per_mm3": 2.7e-09,
+        "yield_strength_MPa": 276.0,
+        "load_x_N": 1500.0,
+        "load_y_N": 1000.0,
+        "load_z_N": 4500.0,
+        "element_size_mm": 4.0
+      },
+      "status": "completed",
+      "derived": {
+        "gusset_reach_mm": 36.63541905473366,
+        "load_magnitude_N": 4847.679857416329
+      },
+      "solver": {
+        "success": true,
+        "message": "CalculiX: 39231 C3D10, 62751 nodes",
+        "nfev": null
+      },
+      "solver_outputs": {
+        "nodes": 62751,
+        "elements": 39231,
+        "base_nodes": 3049,
+        "hole_nodes": 234,
+        "ref_node": 62752,
+        "mesh_volume_mm3": 133506.57261893377,
+        "cad_volume_mm3": 133431.26866039477,
+        "cad_faces": 41,
+        "cad_valid": true,
+        "reaction_force_N": [
+          -1500.0000230235999,
+          -1000.0000136184699,
+          -4499.9999854521075
+        ],
+        "reaction_moment_Nmm": [
+          69999.9930617054,
+          -105000.0012706864,
+          -0.00318897099821136
+        ],
+        "pin_displacement_mm": [
+          0.05010567,
+          0.07315945,
+          0.00999251
+        ]
+      },
+      "metrics": {
+        "peak_von_mises_MPa": 124.30025101212105,
+        "pin_deflection_mm": 0.08923415011390819,
+        "mass_g": 360.2644253830659
+      },
+      "candidate": {
+        "variables": {
+          "lug_thickness_mm": 7.707471202554267,
+          "gusset_thickness_mm": 8.632411987893857,
+          "gusset_height_mm": 42.54526207636647
+        },
+        "verified": true,
+        "failed_checks": [],
+        "objective": 360.2644253830659,
+        "constraints": [
+          -0.2530025101212105,
+          0.09765849886091818
+        ],
+        "feasible": false
+      }
+    },
+    {
+      "label": "c006",
+      "parameters": {
+        "base_length_mm": 100.0,
+        "base_width_mm": 100.0,
+        "base_thickness_mm": 10.0,
+        "lug_radius_mm": 20.0,
+        "pin_height_mm": 70.0,
+        "pin_diameter_mm": 16.0,
+        "lug_thickness_mm": 8.57751185339343,
+        "gusset_thickness_mm": 3.0,
+        "gusset_height_mm": 37.482160360420906,
+        "gusset_aspect": 0.7,
+        "fillet_radius_mm": 3.0,
+        "youngs_modulus_MPa": 68900.0,
+        "poisson_ratio": 0.33,
+        "density_t_per_mm3": 2.7e-09,
+        "yield_strength_MPa": 276.0,
+        "load_x_N": 1500.0,
+        "load_y_N": 1000.0,
+        "load_z_N": 4500.0,
+        "element_size_mm": 4.0
+      },
+      "status": "completed",
+      "derived": {
+        "gusset_reach_mm": 33.526268178991344,
+        "load_magnitude_N": 4847.679857416329
+      },
+      "solver": {
+        "success": true,
+        "message": "CalculiX: 33128 C3D10, 54438 nodes",
+        "nfev": null
+      },
+      "solver_outputs": {
+        "nodes": 54438,
+        "elements": 33128,
+        "base_nodes": 3049,
+        "hole_nodes": 242,
+        "ref_node": 54439,
+        "mesh_volume_mm3": 127941.68384970342,
+        "cad_volume_mm3": 127857.04975190703,
+        "cad_faces": 41,
+        "cad_valid": true,
+        "reaction_force_N": [
+          -1499.999997115088,
+          -999.9999742644881,
+          -4499.999935162734
+        ],
+        "reaction_moment_Nmm": [
+          69999.98875916778,
+          -105000.00152994214,
+          -0.0024388058894779796
+        ],
+        "pin_displacement_mm": [
+          0.04894508,
+          0.1425684,
+          0.01084936
+        ]
+      },
+      "metrics": {
+        "peak_von_mises_MPa": 122.65673656733046,
+        "pin_deflection_mm": 0.15112603398215677,
+        "mass_g": 345.214034330149
+      },
+      "candidate": {
+        "variables": {
+          "lug_thickness_mm": 8.57751185339343,
+          "gusset_thickness_mm": 3.0,
+          "gusset_height_mm": 37.482160360420906
+        },
+        "verified": true,
+        "failed_checks": [],
+        "objective": 345.214034330149,
+        "constraints": [
+          -0.23656736567330455,
+          -0.5212603398215676
+        ],
+        "feasible": false
+      }
+    },
+    {
+      "label": "c007",
+      "parameters": {
+        "base_length_mm": 100.0,
+        "base_width_mm": 100.0,
+        "base_thickness_mm": 10.0,
+        "lug_radius_mm": 20.0,
+        "pin_height_mm": 70.0,
+        "pin_diameter_mm": 16.0,
+        "lug_thickness_mm": 7.2773465828233945,
+        "gusset_thickness_mm": 7.247198850416825,
+        "gusset_height_mm": 22.896722064634336,
+        "gusset_aspect": 0.7,
+        "fillet_radius_mm": 3.0,
+        "youngs_modulus_MPa": 68900.0,
+        "poisson_ratio": 0.33,
+        "density_t_per_mm3": 2.7e-09,
+        "yield_strength_MPa": 276.0,
+        "load_x_N": 1500.0,
+        "load_y_N": 1000.0,
+        "load_z_N": 4500.0,
+        "element_size_mm": 4.0
+      },
+      "status": "completed",
+      "derived": {
+        "gusset_reach_mm": 22.66637873665573,
+        "load_magnitude_N": 4847.679857416329
+      },
+      "solver": {
+        "success": true,
+        "message": "CalculiX: 28907 C3D10, 47492 nodes",
+        "nfev": null
+      },
+      "solver_outputs": {
+        "nodes": 47492,
+        "elements": 28907,
+        "base_nodes": 3049,
+        "hole_nodes": 234,
+        "ref_node": 47493,
+        "mesh_volume_mm3": 123733.14944669638,
+        "cad_volume_mm3": 123681.29473119855,
+        "cad_faces": 41,
+        "cad_valid": true,
+        "reaction_force_N": [
+          -1500.0000174724514,
+          -1000.0000111155028,
+          -4500.000017694896
+        ],
+        "reaction_moment_Nmm": [
+          69999.99066838088,
+          -105000.00353325254,
+          -0.00269800160323852
+        ],
+        "pin_displacement_mm": [
+          0.05625139,
+          0.3598373,
+          0.01298451
+        ]
+      },
+      "metrics": {
+        "peak_von_mises_MPa": 214.06364433396323,
+        "pin_deflection_mm": 0.3644388821848764,
+        "mass_g": 333.9394957742361
+      },
+      "candidate": {
+        "variables": {
+          "lug_thickness_mm": 7.2773465828233945,
+          "gusset_thickness_mm": 7.247198850416825,
+          "gusset_height_mm": 22.896722064634336
+        },
+        "verified": true,
+        "failed_checks": [],
+        "objective": 333.9394957742361,
+        "constraints": [
+          -1.1506364433396323,
+          -2.654388821848764
+        ],
+        "feasible": false
+      }
+    },
+    {
+      "label": "c008",
+      "parameters": {
+        "base_length_mm": 100.0,
+        "base_width_mm": 100.0,
+        "base_thickness_mm": 10.0,
+        "lug_radius_mm": 20.0,
+        "pin_height_mm": 70.0,
+        "pin_diameter_mm": 16.0,
+        "lug_thickness_mm": 5.2031704656875295,
+        "gusset_thickness_mm": 3.0,
+        "gusset_height_mm": 50.0,
+        "gusset_aspect": 0.7,
+        "fillet_radius_mm": 3.0,
+        "youngs_modulus_MPa": 68900.0,
+        "poisson_ratio": 0.33,
+        "density_t_per_mm3": 2.7e-09,
+        "yield_strength_MPa": 276.0,
+        "load_x_N": 1500.0,
+        "load_y_N": 1000.0,
+        "load_z_N": 4500.0,
+        "element_size_mm": 4.0
+      },
+      "status": "completed",
+      "derived": {
+        "gusset_reach_mm": 40.60158523284377,
+        "load_magnitude_N": 4847.679857416329
+      },
+      "solver": {
+        "success": true,
+        "message": "CalculiX: 32651 C3D10, 54844 nodes",
+        "nfev": null
+      },
+      "solver_outputs": {
+        "nodes": 54844,
+        "elements": 32651,
+        "base_nodes": 3049,
+        "hole_nodes": 142,
+        "ref_node": 54845,
+        "mesh_volume_mm3": 120860.86899089025,
+        "cad_volume_mm3": 120767.97505039227,
+        "cad_faces": 40,
+        "cad_valid": true,
+        "reaction_force_N": [
+          -1499.999979366704,
+          -1000.0000055444302,
+          -4500.00001105322
+        ],
+        "reaction_moment_Nmm": [
+          69999.99543643554,
+          -104999.98144430498,
+          -0.000760820786506855
+        ],
+        "pin_displacement_mm": [
+          0.07742814,
+          0.1208783,
+          0.01478296
+        ]
+      },
+      "metrics": {
+        "peak_von_mises_MPa": 155.43479948978992,
+        "pin_deflection_mm": 0.14430944591783035,
+        "mass_g": 326.07353263605916
+      },
+      "candidate": {
+        "variables": {
+          "lug_thickness_mm": 5.2031704656875295,
+          "gusset_thickness_mm": 3.0,
+          "gusset_height_mm": 50.0
+        },
+        "verified": true,
+        "failed_checks": [],
+        "objective": 326.07353263605916,
+        "constraints": [
+          -0.5643479948978992,
+          -0.45309445917830343
+        ],
+        "feasible": false
+      }
+    },
+    {
+      "label": "c009",
+      "parameters": {
+        "base_length_mm": 100.0,
+        "base_width_mm": 100.0,
+        "base_thickness_mm": 10.0,
+        "lug_radius_mm": 20.0,
+        "pin_height_mm": 70.0,
+        "pin_diameter_mm": 16.0,
+        "lug_thickness_mm": 10.924581106007523,
+        "gusset_thickness_mm": 3.0,
+        "gusset_height_mm": 45.255688231579555,
+        "gusset_aspect": 0.7,
+        "fillet_radius_mm": 3.0,
+        "youngs_modulus_MPa": 68900.0,
+        "poisson_ratio": 0.33,
+        "density_t_per_mm3": 2.7e-09,
+        "yield_strength_MPa": 276.0,
+        "load_x_N": 1500.0,
+        "load_y_N": 1000.0,
+        "load_z_N": 4500.0,
+        "element_size_mm": 4.0
+      },
+      "status": "completed",
+      "derived": {
+        "gusset_reach_mm": 40.14127231510945,
+        "load_magnitude_N": 4847.679857416329
+      },
+      "solver": {
+        "success": true,
+        "message": "CalculiX: 37782 C3D10, 61293 nodes",
+        "nfev": null
+      },
+      "solver_outputs": {
+        "nodes": 61293,
+        "elements": 37782,
+        "base_nodes": 3049,
+        "hole_nodes": 238,
+        "ref_node": 61294,
+        "mesh_volume_mm3": 136059.4612638013,
+        "cad_volume_mm3": 135954.6242251869,
+        "cad_faces": 40,
+        "cad_valid": true,
+        "reaction_force_N": [
+          -1500.0000000253997,
+          -1000.0000094278091,
+          -4499.999997188646
+        ],
+        "reaction_moment_Nmm": [
+          69999.997678962,
+          -104999.98320751093,
+          -0.0003341214091499012
+        ],
+        "pin_displacement_mm": [
+          0.03890903,
+          0.06123115,
+          0.008380335
+        ]
+      },
+      "metrics": {
+        "peak_von_mises_MPa": 102.52194521434132,
+        "pin_deflection_mm": 0.07303010585077653,
+        "mass_g": 367.0774854080047
+      },
+      "candidate": {
+        "variables": {
+          "lug_thickness_mm": 10.924581106007523,
+          "gusset_thickness_mm": 3.0,
+          "gusset_height_mm": 45.255688231579555
+        },
+        "verified": true,
+        "failed_checks": [],
+        "objective": 367.0774854080047,
+        "constraints": [
+          -0.03521945214341315,
+          0.2596989414922347
+        ],
+        "feasible": false
+      }
+    },
+    {
+      "label": "c010",
+      "parameters": {
+        "base_length_mm": 100.0,
+        "base_width_mm": 100.0,
+        "base_thickness_mm": 10.0,
+        "lug_radius_mm": 20.0,
+        "pin_height_mm": 70.0,
+        "pin_diameter_mm": 16.0,
+        "lug_thickness_mm": 11.203019115790507,
+        "gusset_thickness_mm": 3.0000000000000004,
+        "gusset_height_mm": 39.16795732845708,
+        "gusset_aspect": 0.7,
+        "fillet_radius_mm": 3.0,
+        "youngs_modulus_MPa": 68900.0,
+        "poisson_ratio": 0.33,
+        "density_t_per_mm3": 2.7e-09,
+        "yield_strength_MPa": 276.0,
+        "load_x_N": 1500.0,
+        "load_y_N": 1000.0,
+        "load_z_N": 4500.0,
+        "element_size_mm": 4.0
+      },
+      "status": "completed",
+      "derived": {
+        "gusset_reach_mm": 36.01907968781521,
+        "load_magnitude_N": 4847.679857416329
+      },
+      "solver": {
+        "success": true,
+        "message": "CalculiX: 35853 C3D10, 58208 nodes",
+        "nfev": null
+      },
+      "solver_outputs": {
+        "nodes": 58208,
+        "elements": 35853,
+        "base_nodes": 3049,
+        "hole_nodes": 242,
+        "ref_node": 58209,
+        "mesh_volume_mm3": 135679.4813049133,
+        "cad_volume_mm3": 135583.6697503512,
+        "cad_faces": 41,
+        "cad_valid": true,
+        "reaction_force_N": [
+          -1499.9999717407638,
+          -999.9999755278626,
+          -4499.999952447028
+        ],
+        "reaction_moment_Nmm": [
+          69999.99010066601,
+          -105000.00148156664,
+          -0.003082189714198602
+        ],
+        "pin_displacement_mm": [
+          0.03804928,
+          0.07998519,
+          0.008456079
+        ]
+      },
+      "metrics": {
+        "peak_von_mises_MPa": 107.88076836154069,
+        "pin_deflection_mm": 0.08897687115148936,
+        "mass_g": 366.07590832594826
+      },
+      "candidate": {
+        "variables": {
+          "lug_thickness_mm": 11.203019115790507,
+          "gusset_thickness_mm": 3.0000000000000004,
+          "gusset_height_mm": 39.16795732845708
+        },
+        "verified": true,
+        "failed_checks": [],
+        "objective": 366.07590832594826,
+        "constraints": [
+          -0.08880768361540689,
+          0.10023128848510643
+        ],
+        "feasible": false
+      }
+    },
+    {
+      "label": "c011",
+      "parameters": {
+        "base_length_mm": 100.0,
+        "base_width_mm": 100.0,
+        "base_thickness_mm": 10.0,
+        "lug_radius_mm": 20.0,
+        "pin_height_mm": 70.0,
+        "pin_diameter_mm": 16.0,
+        "lug_thickness_mm": 10.866254801991527,
+        "gusset_thickness_mm": 3.0,
+        "gusset_height_mm": 48.302177499702935,
+        "gusset_aspect": 0.7,
+        "fillet_radius_mm": 3.0,
+        "youngs_modulus_MPa": 68900.0,
+        "poisson_ratio": 0.33,
+        "density_t_per_mm3": 2.7e-09,
+        "yield_strength_MPa": 276.0,
+        "load_x_N": 1500.0,
+        "load_y_N": 1000.0,
+        "load_z_N": 4500.0,
+        "element_size_mm": 4.0
+      },
+      "status": "completed",
+      "derived": {
+        "gusset_reach_mm": 42.244651650787816,
+        "load_magnitude_N": 4847.679857416329
+      },
+      "solver": {
+        "success": true,
+        "message": "CalculiX: 38508 C3D10, 62620 nodes",
+        "nfev": null
+      },
+      "solver_outputs": {
+        "nodes": 62620,
+        "elements": 38508,
+        "base_nodes": 3049,
+        "hole_nodes": 238,
+        "ref_node": 62621,
+        "mesh_volume_mm3": 136532.41277317712,
+        "cad_volume_mm3": 136428.05533340422,
+        "cad_faces": 40,
+        "cad_valid": true,
+        "reaction_force_N": [
+          -1499.9999920374769,
+          -1000.0000028158998,
+          -4499.999973028387
+        ],
+        "reaction_moment_Nmm": [
+          69999.99564430659,
+          -104999.98317643619,
+          -0.00020904664327936473
+        ],
+        "pin_displacement_mm": [
+          0.03908127,
+          0.0523343,
+          0.008260344
+        ]
+      },
+      "metrics": {
+        "peak_von_mises_MPa": 100.78541586195098,
+        "pin_deflection_mm": 0.06583660003600761,
+        "mass_g": 368.3557494001914
+      },
+      "candidate": {
+        "variables": {
+          "lug_thickness_mm": 10.866254801991527,
+          "gusset_thickness_mm": 3.0,
+          "gusset_height_mm": 48.302177499702935
+        },
+        "verified": true,
+        "failed_checks": [],
+        "objective": 368.3557494001914,
+        "constraints": [
+          -0.017854158619509803,
+          0.33163399963992396
+        ],
+        "feasible": false
+      }
+    },
+    {
+      "label": "c012",
+      "parameters": {
+        "base_length_mm": 100.0,
+        "base_width_mm": 100.0,
+        "base_thickness_mm": 10.0,
+        "lug_radius_mm": 20.0,
+        "pin_height_mm": 70.0,
+        "pin_diameter_mm": 16.0,
+        "lug_thickness_mm": 10.916525657952093,
+        "gusset_thickness_mm": 3.0,
+        "gusset_height_mm": 50.0,
+        "gusset_aspect": 0.7,
+        "fillet_radius_mm": 3.0,
+        "youngs_modulus_MPa": 68900.0,
+        "poisson_ratio": 0.33,
+        "density_t_per_mm3": 2.7e-09,
+        "yield_strength_MPa": 276.0,
+        "load_x_N": 1500.0,
+        "load_y_N": 1000.0,
+        "load_z_N": 4500.0,
+        "element_size_mm": 4.0
+      },
+      "status": "completed",
+      "derived": {
+        "gusset_reach_mm": 43.458262828976046,
+        "load_magnitude_N": 4847.679857416329
+      },
+      "solver": {
+        "success": true,
+        "message": "CalculiX: 39071 C3D10, 63441 nodes",
+        "nfev": null
+      },
+      "solver_outputs": {
+        "nodes": 63441,
+        "elements": 39071,
+        "base_nodes": 3049,
+        "hole_nodes": 259,
+        "ref_node": 63442,
+        "mesh_volume_mm3": 137054.83756057144,
+        "cad_volume_mm3": 136943.16596998638,
+        "cad_faces": 41,
+        "cad_valid": true,
+        "reaction_force_N": [
+          -1499.9999967524673,
+          -1000.0000371729986,
+          -4500.000080829542
+        ],
+        "reaction_moment_Nmm": [
+          69999.9932448141,
+          -105000.00217728036,
+          -0.002682948860833534
+        ],
+        "pin_displacement_mm": [
+          0.03889854,
+          0.04733156,
+          0.008131315
+        ]
+      },
+      "metrics": {
+        "peak_von_mises_MPa": 100.90747869186902,
+        "pin_deflection_mm": 0.06180203289370363,
+        "mass_g": 369.74654811896323
+      },
+      "candidate": {
+        "variables": {
+          "lug_thickness_mm": 10.916525657952093,
+          "gusset_thickness_mm": 3.0,
+          "gusset_height_mm": 50.0
+        },
+        "verified": true,
+        "failed_checks": [],
+        "objective": 369.74654811896323,
+        "constraints": [
+          -0.019074786918690165,
+          0.3719796710629637
+        ],
+        "feasible": false
+      }
+    },
+    {
+      "label": "c013",
+      "parameters": {
+        "base_length_mm": 100.0,
+        "base_width_mm": 100.0,
+        "base_thickness_mm": 10.0,
+        "lug_radius_mm": 20.0,
+        "pin_height_mm": 70.0,
+        "pin_diameter_mm": 16.0,
+        "lug_thickness_mm": 10.866254801991527,
+        "gusset_thickness_mm": 4.0,
+        "gusset_height_mm": 48.302177499702935,
+        "gusset_aspect": 0.7,
+        "fillet_radius_mm": 3.0,
+        "youngs_modulus_MPa": 68900.0,
+        "poisson_ratio": 0.33,
+        "density_t_per_mm3": 2.7e-09,
+        "yield_strength_MPa": 276.0,
+        "load_x_N": 1500.0,
+        "load_y_N": 1000.0,
+        "load_z_N": 4500.0,
+        "element_size_mm": 4.0
+      },
+      "status": "completed",
+      "derived": {
+        "gusset_reach_mm": 42.244651650787816,
+        "load_magnitude_N": 4847.679857416329
+      },
+      "solver": {
+        "success": true,
+        "message": "CalculiX: 39520 C3D10, 63888 nodes",
+        "nfev": null
+      },
+      "solver_outputs": {
+        "nodes": 63888,
+        "elements": 39520,
+        "base_nodes": 3049,
+        "hole_nodes": 238,
+        "ref_node": 63889,
+        "mesh_volume_mm3": 138164.0462475919,
+        "cad_volume_mm3": 138058.2713799802,
+        "cad_faces": 40,
+        "cad_valid": true,
+        "reaction_force_N": [
+          -1499.9999959511163,
+          -1000.0000265823899,
+          -4500.000117176873
+        ],
+        "reaction_moment_Nmm": [
+          69999.99600668682,
+          -104999.98362277751,
+          -0.0002727045426720309
+        ],
+        "pin_displacement_mm": [
+          0.03883089,
+          0.04374997,
+          0.007989445
+        ]
+      },
+      "metrics": {
+        "peak_von_mises_MPa": 98.22304723747426,
+        "pin_deflection_mm": 0.059040063724567785,
+        "mass_g": 372.7573327259465
+      },
+      "candidate": {
+        "variables": {
+          "lug_thickness_mm": 10.866254801991527,
+          "gusset_thickness_mm": 4.0,
+          "gusset_height_mm": 48.302177499702935
+        },
+        "verified": true,
+        "failed_checks": [],
+        "objective": 372.7573327259465,
+        "constraints": [
+          0.007769527625257382,
+          0.3995993627543222
+        ],
+        "feasible": true
+      }
+    },
+    {
+      "label": "c014",
+      "parameters": {
+        "base_length_mm": 100.0,
+        "base_width_mm": 100.0,
+        "base_thickness_mm": 10.0,
+        "lug_radius_mm": 20.0,
+        "pin_height_mm": 70.0,
+        "pin_diameter_mm": 16.0,
+        "lug_thickness_mm": 10.979164531953998,
+        "gusset_thickness_mm": 3.0,
+        "gusset_height_mm": 46.30536719502204,
+        "gusset_aspect": 0.7,
+        "fillet_radius_mm": 3.0,
+        "youngs_modulus_MPa": 68900.0,
+        "poisson_ratio": 0.33,
+        "density_t_per_mm3": 2.7e-09,
+        "yield_strength_MPa": 276.0,
+        "load_x_N": 1500.0,
+        "load_y_N": 1000.0,
+        "load_z_N": 4500.0,
+        "element_size_mm": 4.0
+      },
+      "status": "completed",
+      "derived": {
+        "gusset_reach_mm": 40.90333930249243,
+        "load_magnitude_N": 4847.679857416329
+      },
+      "solver": {
+        "success": true,
+        "message": "CalculiX: 37675 C3D10, 61226 nodes",
+        "nfev": null
+      },
+      "solver_outputs": {
+        "nodes": 61226,
+        "elements": 37675,
+        "base_nodes": 3049,
+        "hole_nodes": 242,
+        "ref_node": 61227,
+        "mesh_volume_mm3": 136430.91001170228,
+        "cad_volume_mm3": 136324.77291964402,
+        "cad_faces": 41,
+        "cad_valid": true,
+        "reaction_force_N": [
+          -1500.0000080474633,
+          -999.9999853957911,
+          -4499.999996492915
+        ],
+        "reaction_moment_Nmm": [
+          69999.9911612938,
+          -105000.00244344493,
+          -0.0031952730876128044
+        ],
+        "pin_displacement_mm": [
+          0.03871666,
+          0.057462,
+          0.008291322
+        ]
+      },
+      "metrics": {
+        "peak_von_mises_MPa": 102.06661151170495,
+        "pin_deflection_mm": 0.0697825710766183,
+        "mass_g": 368.07688688303887
+      },
+      "candidate": {
+        "variables": {
+          "lug_thickness_mm": 10.979164531953998,
+          "gusset_thickness_mm": 3.0,
+          "gusset_height_mm": 46.30536719502204
+        },
+        "verified": true,
+        "failed_checks": [],
+        "objective": 368.07688688303887,
+        "constraints": [
+          -0.030666115117049485,
+          0.29217428923381705
+        ],
+        "feasible": false
+      }
+    },
+    {
+      "label": "c015",
+      "parameters": {
+        "base_length_mm": 100.0,
+        "base_width_mm": 100.0,
+        "base_thickness_mm": 10.0,
+        "lug_radius_mm": 20.0,
+        "pin_height_mm": 70.0,
+        "pin_diameter_mm": 16.0,
+        "lug_thickness_mm": 11.864659954331973,
+        "gusset_thickness_mm": 3.0,
+        "gusset_height_mm": 48.35863236468417,
+        "gusset_aspect": 0.7,
+        "fillet_radius_mm": 3.0,
+        "youngs_modulus_MPa": 68900.0,
+        "poisson_ratio": 0.33,
+        "density_t_per_mm3": 2.7e-09,
+        "yield_strength_MPa": 276.0,
+        "load_x_N": 1500.0,
+        "load_y_N": 1000.0,
+        "load_z_N": 4500.0,
+        "element_size_mm": 4.0
+      },
+      "status": "completed",
+      "derived": {
+        "gusset_reach_mm": 42.7833726324449,
+        "load_magnitude_N": 4847.679857416329
+      },
+      "solver": {
+        "success": true,
+        "message": "CalculiX: 38985 C3D10, 63155 nodes",
+        "nfev": null
+      },
+      "solver_outputs": {
+        "nodes": 63155,
+        "elements": 38985,
+        "base_nodes": 3049,
+        "hole_nodes": 242,
+        "ref_node": 63156,
+        "mesh_volume_mm3": 139376.17383862427,
+        "cad_volume_mm3": 139266.86066430327,
+        "cad_faces": 41,
+        "cad_valid": true,
+        "reaction_force_N": [
+          -1500.0000084109547,
+          -999.9999698417402,
+          -4499.999970151728
+        ],
+        "reaction_moment_Nmm": [
+          69999.9904255478,
+          -104999.99824683442,
+          -0.004836835959098451
+        ],
+        "pin_displacement_mm": [
+          0.03596844,
+          0.04609595,
+          0.007652253
+        ]
+      },
+      "metrics": {
+        "peak_von_mises_MPa": 97.33540816481533,
+        "pin_deflection_mm": 0.05896712862614313,
+        "mass_g": 376.02052379361885
+      },
+      "candidate": {
+        "variables": {
+          "lug_thickness_mm": 11.864659954331973,
+          "gusset_thickness_mm": 3.0,
+          "gusset_height_mm": 48.35863236468417
+        },
+        "verified": true,
+        "failed_checks": [],
+        "objective": 376.02052379361885,
+        "constraints": [
+          0.01664591835184666,
+          0.4003287137385687
+        ],
+        "feasible": true
+      }
+    },
+    {
+      "label": "c016",
+      "parameters": {
+        "base_length_mm": 100.0,
+        "base_width_mm": 100.0,
+        "base_thickness_mm": 10.0,
+        "lug_radius_mm": 20.0,
+        "pin_height_mm": 70.0,
+        "pin_diameter_mm": 16.0,
+        "lug_thickness_mm": 10.157201695307137,
+        "gusset_thickness_mm": 4.163105520306155,
+        "gusset_height_mm": 49.7665644842581,
+        "gusset_aspect": 0.7,
+        "fillet_radius_mm": 3.0,
+        "youngs_modulus_MPa": 68900.0,
+        "poisson_ratio": 0.33,
+        "density_t_per_mm3": 2.7e-09,
+        "yield_strength_MPa": 276.0,
+        "load_x_N": 1500.0,
+        "load_y_N": 1000.0,
+        "load_z_N": 4500.0,
+        "element_size_mm": 4.0
+      },
+      "status": "completed",
+      "derived": {
+        "gusset_reach_mm": 42.91519598663423,
+        "load_magnitude_N": 4847.679857416329
+      },
+      "solver": {
+        "success": true,
+        "message": "CalculiX: 39722 C3D10, 64247 nodes",
+        "nfev": null
+      },
+      "solver_outputs": {
+        "nodes": 64247,
+        "elements": 39722,
+        "base_nodes": 3049,
+        "hole_nodes": 242,
+        "ref_node": 64248,
+        "mesh_volume_mm3": 136858.65746481385,
+        "cad_volume_mm3": 136754.49353288912,
+        "cad_faces": 41,
+        "cad_valid": true,
+        "reaction_force_N": [
+          -1499.9999631657793,
+          -1000.0000156202515,
+          -4500.000048367907
+        ],
+        "reaction_moment_Nmm": [
+          69999.99118930631,
+          -104999.99870063309,
+          -0.004594740320015944
+        ],
+        "pin_displacement_mm": [
+          0.04128672,
+          0.04249353,
+          0.008289928
+        ]
+      },
+      "metrics": {
+        "peak_von_mises_MPa": 99.90918898576447,
+        "pin_deflection_mm": 0.05982487982824942,
+        "mass_g": 369.23713253880067
+      },
+      "candidate": {
+        "variables": {
+          "lug_thickness_mm": 10.157201695307137,
+          "gusset_thickness_mm": 4.163105520306155,
+          "gusset_height_mm": 49.7665644842581
+        },
+        "verified": true,
+        "failed_checks": [],
+        "objective": 369.23713253880067,
+        "constraints": [
+          -0.00909188985764473,
+          0.3917512017175058
+        ],
+        "feasible": false
+      }
+    },
+    {
+      "label": "c017",
+      "parameters": {
+        "base_length_mm": 100.0,
+        "base_width_mm": 100.0,
+        "base_thickness_mm": 10.0,
+        "lug_radius_mm": 20.0,
+        "pin_height_mm": 70.0,
+        "pin_diameter_mm": 16.0,
+        "lug_thickness_mm": 9.22302713055084,
+        "gusset_thickness_mm": 5.82680152294608,
+        "gusset_height_mm": 49.16703675899235,
+        "gusset_aspect": 0.7,
+        "fillet_radius_mm": 3.0,
+        "youngs_modulus_MPa": 68900.0,
+        "poisson_ratio": 0.33,
+        "density_t_per_mm3": 2.7e-09,
+        "yield_strength_MPa": 276.0,
+        "load_x_N": 1500.0,
+        "load_y_N": 1000.0,
+        "load_z_N": 4500.0,
+        "element_size_mm": 4.0
+      },
+      "status": "completed",
+      "derived": {
+        "gusset_reach_mm": 42.02843929657007,
+        "load_magnitude_N": 4847.679857416329
+      },
+      "solver": {
+        "success": true,
+        "message": "CalculiX: 39855 C3D10, 64088 nodes",
+        "nfev": null
+      },
+      "solver_outputs": {
+        "nodes": 64088,
+        "elements": 39855,
+        "base_nodes": 3049,
+        "hole_nodes": 198,
+        "ref_node": 64089,
+        "mesh_volume_mm3": 136845.9633798133,
+        "cad_volume_mm3": 136739.3654282819,
+        "cad_faces": 40,
+        "cad_valid": true,
+        "reaction_force_N": [
+          -1499.99996861932,
+          -1000.0000016709646,
+          -4499.999953938244
+        ],
+        "reaction_moment_Nmm": [
+          69999.99558512481,
+          -104999.98194184489,
+          -0.0008827142040441771
+        ],
+        "pin_displacement_mm": [
+          0.04431675,
+          0.0401032,
+          0.008512819
+        ]
+      },
+      "metrics": {
+        "peak_von_mises_MPa": 99.4727032608303,
+        "pin_deflection_mm": 0.06037142592426703,
+        "mass_g": 369.1962866563611
+      },
+      "candidate": {
+        "variables": {
+          "lug_thickness_mm": 9.22302713055084,
+          "gusset_thickness_mm": 5.82680152294608,
+          "gusset_height_mm": 49.16703675899235
+        },
+        "verified": true,
+        "failed_checks": [],
+        "objective": 369.1962866563611,
+        "constraints": [
+          -0.004727032608303006,
+          0.38628574075732974
+        ],
+        "feasible": false
+      }
+    },
+    {
+      "label": "c018",
+      "parameters": {
+        "base_length_mm": 100.0,
+        "base_width_mm": 100.0,
+        "base_thickness_mm": 10.0,
+        "lug_radius_mm": 20.0,
+        "pin_height_mm": 70.0,
+        "pin_diameter_mm": 16.0,
+        "lug_thickness_mm": 8.186985446812042,
+        "gusset_thickness_mm": 7.506475226315764,
+        "gusset_height_mm": 49.49155775949008,
+        "gusset_aspect": 0.7,
+        "fillet_radius_mm": 3.0,
+        "youngs_modulus_MPa": 68900.0,
+        "poisson_ratio": 0.33,
+        "density_t_per_mm3": 2.7e-09,
+        "yield_strength_MPa": 276.0,
+        "load_x_N": 1500.0,
+        "load_y_N": 1000.0,
+        "load_z_N": 4500.0,
+        "element_size_mm": 4.0
+      },
+      "status": "completed",
+      "derived": {
+        "gusset_reach_mm": 41.73758315504907,
+        "load_magnitude_N": 4847.679857416329
+      },
+      "solver": {
+        "success": true,
+        "message": "CalculiX: 40928 C3D10, 65676 nodes",
+        "nfev": null
+      },
+      "solver_outputs": {
+        "nodes": 65676,
+        "elements": 40928,
+        "base_nodes": 3049,
+        "hole_nodes": 244,
+        "ref_node": 65677,
+        "mesh_volume_mm3": 136916.24283121768,
+        "cad_volume_mm3": 136816.04829035304,
+        "cad_faces": 41,
+        "cad_valid": true,
+        "reaction_force_N": [
+          -1499.9999836469176,
+          -1000.0000134968293,
+          -4500.000011013513
+        ],
+        "reaction_moment_Nmm": [
+          69999.9932027289,
+          -105000.00095711472,
+          -0.0027516334845127943
+        ],
+        "pin_displacement_mm": [
+          0.04789542,
+          0.03838621,
+          0.008765643
+        ]
+      },
+      "metrics": {
+        "peak_von_mises_MPa": 102.7404698769375,
+        "pin_deflection_mm": 0.06200249085596439,
+        "mass_g": 369.40333038395323
+      },
+      "candidate": {
+        "variables": {
+          "lug_thickness_mm": 8.186985446812042,
+          "gusset_thickness_mm": 7.506475226315764,
+          "gusset_height_mm": 49.49155775949008
+        },
+        "verified": true,
+        "failed_checks": [],
+        "objective": 369.40333038395323,
+        "constraints": [
+          -0.03740469876937496,
+          0.3699750914403561
+        ],
+        "feasible": false
+      }
+    },
+    {
+      "label": "c019",
+      "parameters": {
+        "base_length_mm": 100.0,
+        "base_width_mm": 100.0,
+        "base_thickness_mm": 10.0,
+        "lug_radius_mm": 20.0,
+        "pin_height_mm": 70.0,
+        "pin_diameter_mm": 16.0,
+        "lug_thickness_mm": 8.37317382548609,
+        "gusset_thickness_mm": 5.311782272086855,
+        "gusset_height_mm": 49.055213098191416,
+        "gusset_aspect": 0.7,
+        "fillet_radius_mm": 3.0,
+        "youngs_modulus_MPa": 68900.0,
+        "poisson_ratio": 0.33,
+        "density_t_per_mm3": 2.7e-09,
+        "yield_strength_MPa": 276.0,
+        "load_x_N": 1500.0,
+        "load_y_N": 1000.0,
+        "load_z_N": 4500.0,
+        "element_size_mm": 4.0
+      },
+      "status": "failed",
+      "derived": {
+        "gusset_reach_mm": 41.52523608147703,
+        "load_magnitude_N": 4847.679857416329
+      },
+      "solver": {
+        "success": false,
+        "message": "CalculiX failed (exit 201)",
+        "nfev": null
+      },
+      "candidate": {
+        "variables": {
+          "lug_thickness_mm": 8.37317382548609,
+          "gusset_thickness_mm": 5.311782272086855,
+          "gusset_height_mm": 49.055213098191416
+        },
+        "verified": false,
+        "failed_checks": [],
+        "objective": Infinity,
+        "constraints": [
+          -1.0,
+          -1.0
+        ],
+        "feasible": false
+      }
+    },
+    {
+      "label": "c020",
+      "parameters": {
+        "base_length_mm": 100.0,
+        "base_width_mm": 100.0,
+        "base_thickness_mm": 10.0,
+        "lug_radius_mm": 20.0,
+        "pin_height_mm": 70.0,
+        "pin_diameter_mm": 16.0,
+        "lug_thickness_mm": 9.161175887313048,
+        "gusset_thickness_mm": 5.877432605124355,
+        "gusset_height_mm": 49.40391418980288,
+        "gusset_aspect": 0.7,
+        "fillet_radius_mm": 3.0,
+        "youngs_modulus_MPa": 68900.0,
+        "poisson_ratio": 0.33,
+        "density_t_per_mm3": 2.7e-09,
+        "yield_strength_MPa": 276.0,
+        "load_x_N": 1500.0,
+        "load_y_N": 1000.0,
+        "load_z_N": 4500.0,
+        "element_size_mm": 4.0
+      },
+      "status": "completed",
+      "derived": {
+        "gusset_reach_mm": 42.163327876518544,
+        "load_magnitude_N": 4847.679857416329
+      },
+      "solver": {
+        "success": true,
+        "message": "CalculiX: 40381 C3D10, 64989 nodes",
+        "nfev": null
+      },
+      "solver_outputs": {
+        "nodes": 64989,
+        "elements": 40381,
+        "base_nodes": 3049,
+        "hole_nodes": 242,
+        "ref_node": 64990,
+        "mesh_volume_mm3": 136849.98084979135,
+        "cad_volume_mm3": 136748.95895724642,
+        "cad_faces": 41,
+        "cad_valid": true,
+        "reaction_force_N": [
+          -1500.0000233223682,
+          -1000.000010271821,
+          -4500.000019227737
+        ],
+        "reaction_moment_Nmm": [
+          69999.99367460905,
+          -105000.0010814662,
+          -0.0028286595148716565
+        ],
+        "pin_displacement_mm": [
+          0.04454712,
+          0.0394712,
+          0.008514834
+        ]
+      },
+      "metrics": {
+        "peak_von_mises_MPa": 100.97100823121211,
+        "pin_deflection_mm": 0.06012423744033646,
+        "mass_g": 369.22218918456537
+      },
+      "candidate": {
+        "variables": {
+          "lug_thickness_mm": 9.161175887313048,
+          "gusset_thickness_mm": 5.877432605124355,
+          "gusset_height_mm": 49.40391418980288
+        },
+        "verified": true,
+        "failed_checks": [],
+        "objective": 369.22218918456537,
+        "constraints": [
+          -0.019710082312121104,
+          0.38875762559663546
+        ],
+        "feasible": false
+      }
+    },
+    {
+      "label": "c021",
+      "parameters": {
+        "base_length_mm": 100.0,
+        "base_width_mm": 100.0,
+        "base_thickness_mm": 10.0,
+        "lug_radius_mm": 20.0,
+        "pin_height_mm": 70.0,
+        "pin_diameter_mm": 16.0,
+        "lug_thickness_mm": 9.647473902832013,
+        "gusset_thickness_mm": 6.085167928937306,
+        "gusset_height_mm": 49.22264015596835,
+        "gusset_aspect": 0.7,
+        "fillet_radius_mm": 3.0,
+        "youngs_modulus_MPa": 68900.0,
+        "poisson_ratio": 0.33,
+        "density_t_per_mm3": 2.7e-09,
+        "yield_strength_MPa": 276.0,
+        "load_x_N": 1500.0,
+        "load_y_N": 1000.0,
+        "load_z_N": 4500.0,
+        "element_size_mm": 4.0
+      },
+      "status": "completed",
+      "derived": {
+        "gusset_reach_mm": 42.27958506059385,
+        "load_magnitude_N": 4847.679857416329
+      },
+      "solver": {
+        "success": true,
+        "message": "CalculiX: 41024 C3D10, 65840 nodes",
+        "nfev": null
+      },
+      "solver_outputs": {
+        "nodes": 65840,
+        "elements": 41024,
+        "base_nodes": 3049,
+        "hole_nodes": 242,
+        "ref_node": 65841,
+        "mesh_volume_mm3": 138503.3968638106,
+        "cad_volume_mm3": 138401.4974730762,
+        "cad_faces": 41,
+        "cad_valid": true,
+        "reaction_force_N": [
+          -1500.0000013496203,
+          -999.9999751714619,
+          -4500.000046692348
+        ],
+        "reaction_moment_Nmm": [
+          69999.99411006925,
+          -105000.00106605722,
+          -0.0034490990481246264
+        ],
+        "pin_displacement_mm": [
+          0.04237623,
+          0.03656552,
+          0.008148304
+        ]
+      },
+      "metrics": {
+        "peak_von_mises_MPa": 96.36213156886838,
+        "pin_deflection_mm": 0.05656126748897797,
+        "mass_g": 373.68404317730574
+      },
+      "candidate": {
+        "variables": {
+          "lug_thickness_mm": 9.647473902832013,
+          "gusset_thickness_mm": 6.085167928937306,
+          "gusset_height_mm": 49.22264015596835
+        },
+        "verified": true,
+        "failed_checks": [],
+        "objective": 373.68404317730574,
+        "constraints": [
+          0.026378684311316222,
+          0.42438732511022037
+        ],
+        "feasible": true
+      }
+    },
+    {
+      "label": "c022",
+      "parameters": {
+        "base_length_mm": 100.0,
+        "base_width_mm": 100.0,
+        "base_thickness_mm": 10.0,
+        "lug_radius_mm": 20.0,
+        "pin_height_mm": 70.0,
+        "pin_diameter_mm": 16.0,
+        "lug_thickness_mm": 9.14917414663018,
+        "gusset_thickness_mm": 5.958328240507572,
+        "gusset_height_mm": 49.119639930685864,
+        "gusset_aspect": 0.7,
+        "fillet_radius_mm": 3.0,
+        "youngs_modulus_MPa": 68900.0,
+        "poisson_ratio": 0.33,
+        "density_t_per_mm3": 2.7e-09,
+        "yield_strength_MPa": 276.0,
+        "load_x_N": 1500.0,
+        "load_y_N": 1000.0,
+        "load_z_N": 4500.0,
+        "element_size_mm": 4.0
+      },
+      "status": "completed",
+      "derived": {
+        "gusset_reach_mm": 41.95833502479519,
+        "load_magnitude_N": 4847.679857416329
+      },
+      "solver": {
+        "success": true,
+        "message": "CalculiX: 40132 C3D10, 64525 nodes",
+        "nfev": null
+      },
+      "solver_outputs": {
+        "nodes": 64525,
+        "elements": 40132,
+        "base_nodes": 3049,
+        "hole_nodes": 198,
+        "ref_node": 64526,
+        "mesh_volume_mm3": 136841.5173688456,
+        "cad_volume_mm3": 136732.40469910737,
+        "cad_faces": 40,
+        "cad_valid": true,
+        "reaction_force_N": [
+          -1500.000022800826,
+          -1000.0000227619001,
+          -4499.9999590687485
+        ],
+        "reaction_moment_Nmm": [
+          69999.99554248218,
+          -104999.98145002892,
+          -0.00040781587294702604
+        ],
+        "pin_displacement_mm": [
+          0.04455998,
+          0.04007463,
+          0.008534032
+        ]
+      },
+      "metrics": {
+        "peak_von_mises_MPa": 99.3343636824352,
+        "pin_deflection_mm": 0.060534267067623146,
+        "mass_g": 369.17749268758996
+      },
+      "candidate": {
+        "variables": {
+          "lug_thickness_mm": 9.14917414663018,
+          "gusset_thickness_mm": 5.958328240507572,
+          "gusset_height_mm": 49.119639930685864
+        },
+        "verified": true,
+        "failed_checks": [],
+        "objective": 369.17749268758996,
+        "constraints": [
+          -0.003343636824351961,
+          0.38465732932376856
+        ],
+        "feasible": false
+      }
+    },
+    {
+      "label": "c023",
+      "parameters": {
+        "base_length_mm": 100.0,
+        "base_width_mm": 100.0,
+        "base_thickness_mm": 10.0,
+        "lug_radius_mm": 20.0,
+        "pin_height_mm": 70.0,
+        "pin_diameter_mm": 16.0,
+        "lug_thickness_mm": 9.028868617497041,
+        "gusset_thickness_mm": 5.843590990418401,
+        "gusset_height_mm": 48.85063817771393,
+        "gusset_aspect": 0.7,
+        "fillet_radius_mm": 3.0,
+        "youngs_modulus_MPa": 68900.0,
+        "poisson_ratio": 0.33,
+        "density_t_per_mm3": 2.7e-09,
+        "yield_strength_MPa": 276.0,
+        "load_x_N": 1500.0,
+        "load_y_N": 1000.0,
+        "load_z_N": 4500.0,
+        "element_size_mm": 4.0
+      },
+      "status": "completed",
+      "derived": {
+        "gusset_reach_mm": 41.70988103314827,
+        "load_magnitude_N": 4847.679857416329
+      },
+      "solver": {
+        "success": true,
+        "message": "CalculiX: 39718 C3D10, 64006 nodes",
+        "nfev": null
+      },
+      "solver_outputs": {
+        "nodes": 64006,
+        "elements": 39718,
+        "base_nodes": 3049,
+        "hole_nodes": 210,
+        "ref_node": 64007,
+        "mesh_volume_mm3": 136185.31650105075,
+        "cad_volume_mm3": 136087.02751526487,
+        "cad_faces": 40,
+        "cad_valid": true,
+        "reaction_force_N": [
+          -1500.0000083264904,
+          -999.9999937802597,
+          -4500.000045492505
+        ],
+        "reaction_moment_Nmm": [
+          69999.99596539886,
+          -104999.98204109348,
+          -0.0005086597155248285
+        ],
+        "pin_displacement_mm": [
+          0.04518877,
+          0.04221032,
+          0.00868594
+        ]
+      },
+      "metrics": {
+        "peak_von_mises_MPa": 100.8960120463931,
+        "pin_deflection_mm": 0.062443427214550776,
+        "mass_g": 367.43497429121516
+      },
+      "candidate": {
+        "variables": {
+          "lug_thickness_mm": 9.028868617497041,
+          "gusset_thickness_mm": 5.843590990418401,
+          "gusset_height_mm": 48.85063817771393
+        },
+        "verified": true,
+        "failed_checks": [],
+        "objective": 367.43497429121516,
+        "constraints": [
+          -0.018960120463930964,
+          0.36556572785449226
+        ],
+        "feasible": false
+      }
+    },
+    {
+      "label": "c024",
+      "parameters": {
+        "base_length_mm": 100.0,
+        "base_width_mm": 100.0,
+        "base_thickness_mm": 10.0,
+        "lug_radius_mm": 20.0,
+        "pin_height_mm": 70.0,
+        "pin_diameter_mm": 16.0,
+        "lug_thickness_mm": 8.972937988508402,
+        "gusset_thickness_mm": 6.127435802693606,
+        "gusset_height_mm": 49.32049671792984,
+        "gusset_aspect": 0.7,
+        "fillet_radius_mm": 3.0,
+        "youngs_modulus_MPa": 68900.0,
+        "poisson_ratio": 0.33,
+        "density_t_per_mm3": 2.7e-09,
+        "yield_strength_MPa": 276.0,
+        "load_x_N": 1500.0,
+        "load_y_N": 1000.0,
+        "load_z_N": 4500.0,
+        "element_size_mm": 4.0
+      },
+      "status": "completed",
+      "derived": {
+        "gusset_reach_mm": 42.01081669680509,
+        "load_magnitude_N": 4847.679857416329
+      },
+      "solver": {
+        "success": true,
+        "message": "CalculiX: 39927 C3D10, 64419 nodes",
+        "nfev": null
+      },
+      "solver_outputs": {
+        "nodes": 64419,
+        "elements": 39927,
+        "base_nodes": 3049,
+        "hole_nodes": 206,
+        "ref_node": 64420,
+        "mesh_volume_mm3": 136707.28582089118,
+        "cad_volume_mm3": 136606.01392676073,
+        "cad_faces": 40,
+        "cad_valid": true,
+        "reaction_force_N": [
+          -1499.9999897408418,
+          -1000.0000062543995,
+          -4500.000003204445
+        ],
+        "reaction_moment_Nmm": [
+          69999.99589944026,
+          -104999.98033549826,
+          -0.0004121054769914423
+        ],
+        "pin_displacement_mm": [
+          0.04523112,
+          0.03968239,
+          0.008589072
+        ]
+      },
+      "metrics": {
+        "peak_von_mises_MPa": 100.36056994197622,
+        "pin_deflection_mm": 0.060780905310695105,
+        "mass_g": 368.836237602254
+      },
+      "candidate": {
+        "variables": {
+          "lug_thickness_mm": 8.972937988508402,
+          "gusset_thickness_mm": 6.127435802693606,
+          "gusset_height_mm": 49.32049671792984
+        },
+        "verified": true,
+        "failed_checks": [],
+        "objective": 368.836237602254,
+        "constraints": [
+          -0.01360569941976223,
+          0.382190946893049
+        ],
+        "feasible": false
+      }
+    },
+    {
+      "label": "c025",
+      "parameters": {
+        "base_length_mm": 100.0,
+        "base_width_mm": 100.0,
+        "base_thickness_mm": 10.0,
+        "lug_radius_mm": 20.0,
+        "pin_height_mm": 70.0,
+        "pin_diameter_mm": 16.0,
+        "lug_thickness_mm": 9.15283750048004,
+        "gusset_thickness_mm": 5.969717259605325,
+        "gusset_height_mm": 48.96197931390868,
+        "gusset_aspect": 0.7,
+        "fillet_radius_mm": 3.0,
+        "youngs_modulus_MPa": 68900.0,
+        "poisson_ratio": 0.33,
+        "density_t_per_mm3": 2.7e-09,
+        "yield_strength_MPa": 276.0,
+        "load_x_N": 1500.0,
+        "load_y_N": 1000.0,
+        "load_z_N": 4500.0,
+        "element_size_mm": 4.0
+      },
+      "status": "completed",
+      "derived": {
+        "gusset_reach_mm": 41.84980426997609,
+        "load_magnitude_N": 4847.679857416329
+      },
+      "solver": {
+        "success": true,
+        "message": "CalculiX: 40033 C3D10, 64369 nodes",
+        "nfev": null
+      },
+      "solver_outputs": {
+        "nodes": 64369,
+        "elements": 40033,
+        "base_nodes": 3049,
+        "hole_nodes": 242,
+        "ref_node": 64370,
+        "mesh_volume_mm3": 136798.33442416423,
+        "cad_volume_mm3": 136695.2875412251,
+        "cad_faces": 41,
+        "cad_valid": true,
+        "reaction_force_N": [
+          -1500.0000028317481,
+          -999.999995835892,
+          -4499.999949393219
+        ],
+        "reaction_moment_Nmm": [
+          69999.9917503405,
+          -104999.9978709149,
+          -0.004696922331726583
+        ],
+        "pin_displacement_mm": [
+          0.04454492,
+          0.0405075,
+          0.008547543
+        ]
+      },
+      "metrics": {
+        "peak_von_mises_MPa": 99.93419085927448,
+        "pin_deflection_mm": 0.06081256404225404,
+        "mass_g": 369.0772763613077
+      },
+      "candidate": {
+        "variables": {
+          "lug_thickness_mm": 9.15283750048004,
+          "gusset_thickness_mm": 5.969717259605325,
+          "gusset_height_mm": 48.96197931390868
+        },
+        "verified": true,
+        "failed_checks": [],
+        "objective": 369.0772763613077,
+        "constraints": [
+          -0.0093419085927448,
+          0.38187435957745963
+        ],
+        "feasible": false
+      }
+    },
+    {
+      "label": "c026",
+      "parameters": {
+        "base_length_mm": 100.0,
+        "base_width_mm": 100.0,
+        "base_thickness_mm": 10.0,
+        "lug_radius_mm": 20.0,
+        "pin_height_mm": 70.0,
+        "pin_diameter_mm": 16.0,
+        "lug_thickness_mm": 9.115111094434482,
+        "gusset_thickness_mm": 5.938397607387229,
+        "gusset_height_mm": 49.11740871161653,
+        "gusset_aspect": 0.7,
+        "fillet_radius_mm": 3.0,
+        "youngs_modulus_MPa": 68900.0,
+        "poisson_ratio": 0.33,
+        "density_t_per_mm3": 2.7e-09,
+        "yield_strength_MPa": 276.0,
+        "load_x_N": 1500.0,
+        "load_y_N": 1000.0,
+        "load_z_N": 4500.0,
+        "element_size_mm": 4.0
+      },
+      "status": "completed",
+      "derived": {
+        "gusset_reach_mm": 41.93974164534881,
+        "load_magnitude_N": 4847.679857416329
+      },
+      "solver": {
+        "success": true,
+        "message": "CalculiX: 40500 C3D10, 65029 nodes",
+        "nfev": null
+      },
+      "solver_outputs": {
+        "nodes": 65029,
+        "elements": 40500,
+        "base_nodes": 3049,
+        "hole_nodes": 242,
+        "ref_node": 65030,
+        "mesh_volume_mm3": 136702.56971490372,
+        "cad_volume_mm3": 136601.4253742018,
+        "cad_faces": 41,
+        "cad_valid": true,
+        "reaction_force_N": [
+          -1499.999979119958,
+          -999.9999853371717,
+          -4499.999936173445
+        ],
+        "reaction_moment_Nmm": [
+          69999.9910818432,
+          -104999.9982524951,
+          -0.004395343434474341
+        ],
+        "pin_displacement_mm": [
+          0.04472662,
+          0.04037094,
+          0.008564927
+        ]
+      },
+      "metrics": {
+        "peak_von_mises_MPa": 100.07598199306715,
+        "pin_deflection_mm": 0.06085754930674853,
+        "mass_g": 368.8238485103448
+      },
+      "candidate": {
+        "variables": {
+          "lug_thickness_mm": 9.115111094434482,
+          "gusset_thickness_mm": 5.938397607387229,
+          "gusset_height_mm": 49.11740871161653
+        },
+        "verified": true,
+        "failed_checks": [],
+        "objective": 368.8238485103448,
+        "constraints": [
+          -0.010759819930671455,
+          0.3814245069325147
+        ],
+        "feasible": false
+      }
+    },
+    {
+      "label": "c027",
+      "parameters": {
+        "base_length_mm": 100.0,
+        "base_width_mm": 100.0,
+        "base_thickness_mm": 10.0,
+        "lug_radius_mm": 20.0,
+        "pin_height_mm": 70.0,
+        "pin_diameter_mm": 16.0,
+        "lug_thickness_mm": 9.121055552479262,
+        "gusset_thickness_mm": 5.997948496628909,
+        "gusset_height_mm": 49.18200642784464,
+        "gusset_aspect": 0.7,
+        "fillet_radius_mm": 3.0,
+        "youngs_modulus_MPa": 68900.0,
+        "poisson_ratio": 0.33,
+        "density_t_per_mm3": 2.7e-09,
+        "yield_strength_MPa": 276.0,
+        "load_x_N": 1500.0,
+        "load_y_N": 1000.0,
+        "load_z_N": 4500.0,
+        "element_size_mm": 4.0
+      },
+      "status": "completed",
+      "derived": {
+        "gusset_reach_mm": 41.98793227573088,
+        "load_magnitude_N": 4847.679857416329
+      },
+      "solver": {
+        "success": true,
+        "message": "CalculiX: 40539 C3D10, 65090 nodes",
+        "nfev": null
+      },
+      "solver_outputs": {
+        "nodes": 65090,
+        "elements": 40539,
+        "base_nodes": 3049,
+        "hole_nodes": 242,
+        "ref_node": 65091,
+        "mesh_volume_mm3": 136848.17775789337,
+        "cad_volume_mm3": 136746.15524917332,
+        "cad_faces": 41,
+        "cad_valid": true,
+        "reaction_force_N": [
+          -1499.999991813797,
+          -1000.0000145719006,
+          -4499.999953336933
+        ],
+        "reaction_moment_Nmm": [
+          69999.99208185505,
+          -104999.9977277088,
+          -0.004297213825523727
+        ],
+        "pin_displacement_mm": [
+          0.04465909,
+          0.03986117,
+          0.008536442
+        ]
+      },
+      "metrics": {
+        "peak_von_mises_MPa": 99.49863592215121,
+        "pin_deflection_mm": 0.06046666879708493,
+        "mass_g": 369.214619172768
+      },
+      "candidate": {
+        "variables": {
+          "lug_thickness_mm": 9.121055552479262,
+          "gusset_thickness_mm": 5.997948496628909,
+          "gusset_height_mm": 49.18200642784464
+        },
+        "verified": true,
+        "failed_checks": [],
+        "objective": 369.214619172768,
+        "constraints": [
+          -0.004986359221512089,
+          0.3853333120291508
+        ],
+        "feasible": false
+      }
+    },
+    {
+      "label": "c028",
+      "parameters": {
+        "base_length_mm": 100.0,
+        "base_width_mm": 100.0,
+        "base_thickness_mm": 10.0,
+        "lug_radius_mm": 20.0,
+        "pin_height_mm": 70.0,
+        "pin_diameter_mm": 16.0,
+        "lug_thickness_mm": 9.13993693058765,
+        "gusset_thickness_mm": 5.9758260496390445,
+        "gusset_height_mm": 49.10435920703212,
+        "gusset_aspect": 0.7,
+        "fillet_radius_mm": 3.0,
+        "youngs_modulus_MPa": 68900.0,
+        "poisson_ratio": 0.33,
+        "density_t_per_mm3": 2.7e-09,
+        "yield_strength_MPa": 276.0,
+        "load_x_N": 1500.0,
+        "load_y_N": 1000.0,
+        "load_z_N": 4500.0,
+        "element_size_mm": 4.0
+      },
+      "status": "completed",
+      "derived": {
+        "gusset_reach_mm": 41.94301991021631,
+        "load_magnitude_N": 4847.679857416329
+      },
+      "solver": {
+        "success": true,
+        "message": "CalculiX: 40163 C3D10, 64606 nodes",
+        "nfev": null
+      },
+      "solver_outputs": {
+        "nodes": 64606,
+        "elements": 40163,
+        "base_nodes": 3049,
+        "hole_nodes": 242,
+        "ref_node": 64607,
+        "mesh_volume_mm3": 136831.924315908,
+        "cad_volume_mm3": 136729.27448309973,
+        "cad_faces": 41,
+        "cad_valid": true,
+        "reaction_force_N": [
+          -1500.000009283928,
+          -999.9999787109529,
+          -4500.000020060102
+        ],
+        "reaction_moment_Nmm": [
+          69999.99193035795,
+          -104999.99900526428,
+          -0.004615765772108205
+        ],
+        "pin_displacement_mm": [
+          0.04459039,
+          0.04009706,
+          0.008537487
+        ]
+      },
+      "metrics": {
+        "peak_von_mises_MPa": 99.54217845069395,
+        "pin_deflection_mm": 0.06057198845399472,
+        "mass_g": 369.1690411043693
+      },
+      "candidate": {
+        "variables": {
+          "lug_thickness_mm": 9.13993693058765,
+          "gusset_thickness_mm": 5.9758260496390445,
+          "gusset_height_mm": 49.10435920703212
+        },
+        "verified": true,
+        "failed_checks": [],
+        "objective": 369.1690411043693,
+        "constraints": [
+          -0.005421784506939531,
+          0.38428011546005286
+        ],
+        "feasible": false
+      }
+    },
+    {
+      "label": "c029",
+      "parameters": {
+        "base_length_mm": 100.0,
+        "base_width_mm": 100.0,
+        "base_thickness_mm": 10.0,
+        "lug_radius_mm": 20.0,
+        "pin_height_mm": 70.0,
+        "pin_diameter_mm": 16.0,
+        "lug_thickness_mm": 9.168884137832427,
+        "gusset_thickness_mm": 5.9142484600848375,
+        "gusset_height_mm": 49.132620269845184,
+        "gusset_aspect": 0.7,
+        "fillet_radius_mm": 3.0,
+        "youngs_modulus_MPa": 68900.0,
+        "poisson_ratio": 0.33,
+        "density_t_per_mm3": 2.7e-09,
+        "yield_strength_MPa": 276.0,
+        "load_x_N": 1500.0,
+        "load_y_N": 1000.0,
+        "load_z_N": 4500.0,
+        "element_size_mm": 4.0
+      },
+      "status": "completed",
+      "derived": {
+        "gusset_reach_mm": 41.97727625780784,
+        "load_magnitude_N": 4847.679857416329
+      },
+      "solver": {
+        "success": true,
+        "message": "CalculiX: 40458 C3D10, 64966 nodes",
+        "nfev": null
+      },
+      "solver_outputs": {
+        "nodes": 64966,
+        "elements": 40458,
+        "base_nodes": 3049,
+        "hole_nodes": 202,
+        "ref_node": 64967,
+        "mesh_volume_mm3": 136825.18549014733,
+        "cad_volume_mm3": 136719.33953925734,
+        "cad_faces": 40,
+        "cad_valid": true,
+        "reaction_force_N": [
+          -1499.99996999214,
+          -1000.0000131105594,
+          -4500.000009428713
+        ],
+        "reaction_moment_Nmm": [
+          69999.99458296393,
+          -104999.98193242525,
+          -0.00020275548795289922
+        ],
+        "pin_displacement_mm": [
+          0.04450214,
+          0.04011621,
+          0.008530906
+        ]
+      },
+      "metrics": {
+        "peak_von_mises_MPa": 99.68235503547656,
+        "pin_deflection_mm": 0.060518816301416006,
+        "mass_g": 369.14221675599487
+      },
+      "candidate": {
+        "variables": {
+          "lug_thickness_mm": 9.168884137832427,
+          "gusset_thickness_mm": 5.9142484600848375,
+          "gusset_height_mm": 49.132620269845184
+        },
+        "verified": true,
+        "failed_checks": [],
+        "objective": 369.14221675599487,
+        "constraints": [
+          -0.006823550354765615,
+          0.38481183698584
+        ],
+        "feasible": false
+      }
+    }
+  ],
+  "study": "clevis_bracket",
+  "optimization": {
+    "objective": "mass_g",
+    "variables": [
+      {
+        "name": "lug_thickness_mm",
+        "lower": 5.0,
+        "upper": 20.0
+      },
+      {
+        "name": "gusset_thickness_mm",
+        "lower": 3.0,
+        "upper": 12.0
+      },
+      {
+        "name": "gusset_height_mm",
+        "lower": 8.0,
+        "upper": 50.0
+      }
+    ],
+    "design_margin": 0.01,
+    "optimizer": {
+      "message": "Return from COBYLA because the trust region radius reaches its lower bound.",
+      "success": true,
+      "x": [
+        10.161584365048594,
+        7.2746351707663095,
+        39.693285445932226
+      ]
+    },
+    "evaluations": 30,
+    "unverified_candidates": [
+      "c019"
+    ],
+    "history": [
+      {
+        "label": "c000",
+        "variables": {
+          "lug_thickness_mm": 12.0,
+          "gusset_thickness_mm": 8.0,
+          "gusset_height_mm": 40.0
+        },
+        "verified": true,
+        "failed_checks": [],
+        "objective": 387.65116057261343,
+        "constraints": [
+          0.1447022054012207,
+          0.4429412016880042
+        ],
+        "feasible": true
+      },
+      {
+        "label": "c001",
+        "variables": {
+          "lug_thickness_mm": 14.0,
+          "gusset_thickness_mm": 8.0,
+          "gusset_height_mm": 40.0
+        },
+        "verified": true,
+        "failed_checks": [],
+        "objective": 402.93920551794736,
+        "constraints": [
+          0.21181736830932807,
+          0.5481310982122657
+        ],
+        "feasible": true
+      },
+      {
+        "label": "c002",
+        "variables": {
+          "lug_thickness_mm": 12.0,
+          "gusset_thickness_mm": 10.0,
+          "gusset_height_mm": 40.0
+        },
+        "verified": true,
+        "failed_checks": [],
+        "objective": 393.6832078965486,
+        "constraints": [
+          0.1821780651825614,
+          0.4835899136555888
+        ],
+        "feasible": true
+      },
+      {
+        "label": "c003",
+        "variables": {
+          "lug_thickness_mm": 12.0,
+          "gusset_thickness_mm": 8.0,
+          "gusset_height_mm": 42.0
+        },
+        "verified": true,
+        "failed_checks": [],
+        "objective": 390.2017621878462,
+        "constraints": [
+          0.16443506734679558,
+          0.4811953212318227
+        ],
+        "feasible": true
+      },
+      {
+        "label": "c004",
+        "variables": {
+          "lug_thickness_mm": 10.161584365048594,
+          "gusset_thickness_mm": 7.2746351707663095,
+          "gusset_height_mm": 39.693285445932226
+        },
+        "verified": true,
+        "failed_checks": [],
+        "objective": 371.0636067821399,
+        "constraints": [
+          0.050280245019468595,
+          0.2586507030382132
+        ],
+        "feasible": true
+      },
+      {
+        "label": "c005",
+        "variables": {
+          "lug_thickness_mm": 7.707471202554267,
+          "gusset_thickness_mm": 8.632411987893857,
+          "gusset_height_mm": 42.54526207636647
+        },
+        "verified": true,
+        "failed_checks": [],
+        "objective": 360.2644253830659,
+        "constraints": [
+          -0.2530025101212105,
+          0.09765849886091818
+        ],
+        "feasible": false
+      },
+      {
+        "label": "c006",
+        "variables": {
+          "lug_thickness_mm": 8.57751185339343,
+          "gusset_thickness_mm": 3.0,
+          "gusset_height_mm": 37.482160360420906
+        },
+        "verified": true,
+        "failed_checks": [],
+        "objective": 345.214034330149,
+        "constraints": [
+          -0.23656736567330455,
+          -0.5212603398215676
+        ],
+        "feasible": false
+      },
+      {
+        "label": "c007",
+        "variables": {
+          "lug_thickness_mm": 7.2773465828233945,
+          "gusset_thickness_mm": 7.247198850416825,
+          "gusset_height_mm": 22.896722064634336
+        },
+        "verified": true,
+        "failed_checks": [],
+        "objective": 333.9394957742361,
+        "constraints": [
+          -1.1506364433396323,
+          -2.654388821848764
+        ],
+        "feasible": false
+      },
+      {
+        "label": "c008",
+        "variables": {
+          "lug_thickness_mm": 5.2031704656875295,
+          "gusset_thickness_mm": 3.0,
+          "gusset_height_mm": 50.0
+        },
+        "verified": true,
+        "failed_checks": [],
+        "objective": 326.07353263605916,
+        "constraints": [
+          -0.5643479948978992,
+          -0.45309445917830343
+        ],
+        "feasible": false
+      },
+      {
+        "label": "c009",
+        "variables": {
+          "lug_thickness_mm": 10.924581106007523,
+          "gusset_thickness_mm": 3.0,
+          "gusset_height_mm": 45.255688231579555
+        },
+        "verified": true,
+        "failed_checks": [],
+        "objective": 367.0774854080047,
+        "constraints": [
+          -0.03521945214341315,
+          0.2596989414922347
+        ],
+        "feasible": false
+      },
+      {
+        "label": "c010",
+        "variables": {
+          "lug_thickness_mm": 11.203019115790507,
+          "gusset_thickness_mm": 3.0000000000000004,
+          "gusset_height_mm": 39.16795732845708
+        },
+        "verified": true,
+        "failed_checks": [],
+        "objective": 366.07590832594826,
+        "constraints": [
+          -0.08880768361540689,
+          0.10023128848510643
+        ],
+        "feasible": false
+      },
+      {
+        "label": "c011",
+        "variables": {
+          "lug_thickness_mm": 10.866254801991527,
+          "gusset_thickness_mm": 3.0,
+          "gusset_height_mm": 48.302177499702935
+        },
+        "verified": true,
+        "failed_checks": [],
+        "objective": 368.3557494001914,
+        "constraints": [
+          -0.017854158619509803,
+          0.33163399963992396
+        ],
+        "feasible": false
+      },
+      {
+        "label": "c012",
+        "variables": {
+          "lug_thickness_mm": 10.916525657952093,
+          "gusset_thickness_mm": 3.0,
+          "gusset_height_mm": 50.0
+        },
+        "verified": true,
+        "failed_checks": [],
+        "objective": 369.74654811896323,
+        "constraints": [
+          -0.019074786918690165,
+          0.3719796710629637
+        ],
+        "feasible": false
+      },
+      {
+        "label": "c013",
+        "variables": {
+          "lug_thickness_mm": 10.866254801991527,
+          "gusset_thickness_mm": 4.0,
+          "gusset_height_mm": 48.302177499702935
+        },
+        "verified": true,
+        "failed_checks": [],
+        "objective": 372.7573327259465,
+        "constraints": [
+          0.007769527625257382,
+          0.3995993627543222
+        ],
+        "feasible": true
+      },
+      {
+        "label": "c014",
+        "variables": {
+          "lug_thickness_mm": 10.979164531953998,
+          "gusset_thickness_mm": 3.0,
+          "gusset_height_mm": 46.30536719502204
+        },
+        "verified": true,
+        "failed_checks": [],
+        "objective": 368.07688688303887,
+        "constraints": [
+          -0.030666115117049485,
+          0.29217428923381705
+        ],
+        "feasible": false
+      },
+      {
+        "label": "c015",
+        "variables": {
+          "lug_thickness_mm": 11.864659954331973,
+          "gusset_thickness_mm": 3.0,
+          "gusset_height_mm": 48.35863236468417
+        },
+        "verified": true,
+        "failed_checks": [],
+        "objective": 376.02052379361885,
+        "constraints": [
+          0.01664591835184666,
+          0.4003287137385687
+        ],
+        "feasible": true
+      },
+      {
+        "label": "c016",
+        "variables": {
+          "lug_thickness_mm": 10.157201695307137,
+          "gusset_thickness_mm": 4.163105520306155,
+          "gusset_height_mm": 49.7665644842581
+        },
+        "verified": true,
+        "failed_checks": [],
+        "objective": 369.23713253880067,
+        "constraints": [
+          -0.00909188985764473,
+          0.3917512017175058
+        ],
+        "feasible": false
+      },
+      {
+        "label": "c017",
+        "variables": {
+          "lug_thickness_mm": 9.22302713055084,
+          "gusset_thickness_mm": 5.82680152294608,
+          "gusset_height_mm": 49.16703675899235
+        },
+        "verified": true,
+        "failed_checks": [],
+        "objective": 369.1962866563611,
+        "constraints": [
+          -0.004727032608303006,
+          0.38628574075732974
+        ],
+        "feasible": false
+      },
+      {
+        "label": "c018",
+        "variables": {
+          "lug_thickness_mm": 8.186985446812042,
+          "gusset_thickness_mm": 7.506475226315764,
+          "gusset_height_mm": 49.49155775949008
+        },
+        "verified": true,
+        "failed_checks": [],
+        "objective": 369.40333038395323,
+        "constraints": [
+          -0.03740469876937496,
+          0.3699750914403561
+        ],
+        "feasible": false
+      },
+      {
+        "label": "c019",
+        "variables": {
+          "lug_thickness_mm": 8.37317382548609,
+          "gusset_thickness_mm": 5.311782272086855,
+          "gusset_height_mm": 49.055213098191416
+        },
+        "verified": false,
+        "failed_checks": [],
+        "objective": Infinity,
+        "constraints": [
+          -1.0,
+          -1.0
+        ],
+        "feasible": false
+      },
+      {
+        "label": "c020",
+        "variables": {
+          "lug_thickness_mm": 9.161175887313048,
+          "gusset_thickness_mm": 5.877432605124355,
+          "gusset_height_mm": 49.40391418980288
+        },
+        "verified": true,
+        "failed_checks": [],
+        "objective": 369.22218918456537,
+        "constraints": [
+          -0.019710082312121104,
+          0.38875762559663546
+        ],
+        "feasible": false
+      },
+      {
+        "label": "c021",
+        "variables": {
+          "lug_thickness_mm": 9.647473902832013,
+          "gusset_thickness_mm": 6.085167928937306,
+          "gusset_height_mm": 49.22264015596835
+        },
+        "verified": true,
+        "failed_checks": [],
+        "objective": 373.68404317730574,
+        "constraints": [
+          0.026378684311316222,
+          0.42438732511022037
+        ],
+        "feasible": true
+      },
+      {
+        "label": "c022",
+        "variables": {
+          "lug_thickness_mm": 9.14917414663018,
+          "gusset_thickness_mm": 5.958328240507572,
+          "gusset_height_mm": 49.119639930685864
+        },
+        "verified": true,
+        "failed_checks": [],
+        "objective": 369.17749268758996,
+        "constraints": [
+          -0.003343636824351961,
+          0.38465732932376856
+        ],
+        "feasible": false
+      },
+      {
+        "label": "c023",
+        "variables": {
+          "lug_thickness_mm": 9.028868617497041,
+          "gusset_thickness_mm": 5.843590990418401,
+          "gusset_height_mm": 48.85063817771393
+        },
+        "verified": true,
+        "failed_checks": [],
+        "objective": 367.43497429121516,
+        "constraints": [
+          -0.018960120463930964,
+          0.36556572785449226
+        ],
+        "feasible": false
+      },
+      {
+        "label": "c024",
+        "variables": {
+          "lug_thickness_mm": 8.972937988508402,
+          "gusset_thickness_mm": 6.127435802693606,
+          "gusset_height_mm": 49.32049671792984
+        },
+        "verified": true,
+        "failed_checks": [],
+        "objective": 368.836237602254,
+        "constraints": [
+          -0.01360569941976223,
+          0.382190946893049
+        ],
+        "feasible": false
+      },
+      {
+        "label": "c025",
+        "variables": {
+          "lug_thickness_mm": 9.15283750048004,
+          "gusset_thickness_mm": 5.969717259605325,
+          "gusset_height_mm": 48.96197931390868
+        },
+        "verified": true,
+        "failed_checks": [],
+        "objective": 369.0772763613077,
+        "constraints": [
+          -0.0093419085927448,
+          0.38187435957745963
+        ],
+        "feasible": false
+      },
+      {
+        "label": "c026",
+        "variables": {
+          "lug_thickness_mm": 9.115111094434482,
+          "gusset_thickness_mm": 5.938397607387229,
+          "gusset_height_mm": 49.11740871161653
+        },
+        "verified": true,
+        "failed_checks": [],
+        "objective": 368.8238485103448,
+        "constraints": [
+          -0.010759819930671455,
+          0.3814245069325147
+        ],
+        "feasible": false
+      },
+      {
+        "label": "c027",
+        "variables": {
+          "lug_thickness_mm": 9.121055552479262,
+          "gusset_thickness_mm": 5.997948496628909,
+          "gusset_height_mm": 49.18200642784464
+        },
+        "verified": true,
+        "failed_checks": [],
+        "objective": 369.214619172768,
+        "constraints": [
+          -0.004986359221512089,
+          0.3853333120291508
+        ],
+        "feasible": false
+      },
+      {
+        "label": "c028",
+        "variables": {
+          "lug_thickness_mm": 9.13993693058765,
+          "gusset_thickness_mm": 5.9758260496390445,
+          "gusset_height_mm": 49.10435920703212
+        },
+        "verified": true,
+        "failed_checks": [],
+        "objective": 369.1690411043693,
+        "constraints": [
+          -0.005421784506939531,
+          0.38428011546005286
+        ],
+        "feasible": false
+      },
+      {
+        "label": "c029",
+        "variables": {
+          "lug_thickness_mm": 9.168884137832427,
+          "gusset_thickness_mm": 5.9142484600848375,
+          "gusset_height_mm": 49.132620269845184
+        },
+        "verified": true,
+        "failed_checks": [],
+        "objective": 369.14221675599487,
+        "constraints": [
+          -0.006823550354765615,
+          0.38481183698584
+        ],
+        "feasible": false
+      }
+    ],
+    "best_label": "c004",
+    "best_variables": {
+      "lug_thickness_mm": 10.161584365048594,
+      "gusset_thickness_mm": 7.2746351707663095,
+      "gusset_height_mm": 39.693285445932226
+    },
+    "best_objective": 371.0636067821399
+  },
+  "status": "partial",
+  "finished_utc": "2026-11-21T05:20:50+00:00"
+}

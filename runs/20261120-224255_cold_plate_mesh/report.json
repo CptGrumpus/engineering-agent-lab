@@ -1,0 +1,952 @@
+{
+  "points": [
+    {
+      "label": "p00_cells_across_gap-20",
+      "parameters": {
+        "gap_mm": 1.0,
+        "footprint_length_mm": 50.0,
+        "entry_length_mm": 5.0,
+        "exit_length_mm": 5.0,
+        "unplated_length_mm": 5.0,
+        "mean_velocity_m_per_s": 0.1,
+        "density_kg_per_m3": 997.0,
+        "dynamic_viscosity_Pa_s": 0.00089,
+        "specific_heat_J_per_kgK": 4180.0,
+        "conductivity_W_per_mK": 0.607,
+        "inlet_temperature_C": 25.0,
+        "cells_across_gap": 20,
+        "cell_aspect_ratio": 5.0,
+        "component_heat_flux_W_per_m2": 30000.0,
+        "plate_thickness_mm": 3.0,
+        "plate_conductivity_W_per_mK": 167.0,
+        "coupling_htc_W_per_m2K": 2500.0,
+        "youngs_modulus_MPa": 68900.0,
+        "poisson_ratio": 0.33,
+        "expansion_per_K": 2.36e-05,
+        "assembly_temperature_C": 20.0,
+        "yield_strength_MPa": 276.0,
+        "interior_margin_mm": 4.5,
+        "uniform_check_rise_K": 20.0
+      },
+      "derived": {
+        "reynolds_Dh": 224.04494382022474,
+        "prandtl": 6.128830313014827,
+        "peclet_Dh": 1373.1334431630974,
+        "coolant_rise_exact_K": 7.198629380965865,
+        "h_fully_developed_W_per_m2K": 2499.411764705882,
+        "plate_biot": 0.04489961253962662,
+        "plate_spreading_length_mm": 14.157936432919783,
+        "slab_dT_K": 0.5389221556886228,
+        "thickness_over_span": 0.05,
+        "buckling_stress_MPa": 635.9328762531858,
+        "uniform_case_exact_MPa": -48.538507462686574
+      },
+      "simulation_status": "completed",
+      "verification_status": "FAIL",
+      "checks": [
+        {
+          "id": "cfd_mesh",
+          "description": "checkMesh reports Mesh OK (1 = failed)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.5,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "cfd_temperature_converged",
+          "description": "max |T change| over the last write interval of the final pass (iterations 22400 to 22500) / coolant rise",
+          "kind": "numerical",
+          "value": 1.1113227586179163e-10,
+          "tolerance": 1e-05,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "cfd_flow_rate",
+          "description": "|inlet flow - U H| / (U H)",
+          "kind": "numerical",
+          "value": 1.9922214919421144e-14,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "cfd_developed_inflow",
+          "description": "|peak velocity at the start of the footprint - 1.5 U| / 1.5 U",
+          "kind": "numerical",
+          "value": 0.0050026654000001605,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "cfd_energy_balance",
+          "description": "|outlet bulk rise - 2 (heat given to the CFD) / (rho cp U H)| / exact rise",
+          "kind": "numerical",
+          "value": 2.777566606937398e-12,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "cfd_wall_reference",
+          "description": "max over the wall of |T_wall CFD - thermal-entry reference with the same flux profile| / coolant rise (model form: no axial conduction in the reference)",
+          "kind": "numerical",
+          "value": 0.05536535125159846,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "FAIL"
+        },
+        {
+          "id": "cfd_wall_symmetry",
+          "description": "max |T_wall top - T_wall bottom| / coolant rise (symmetric case)",
+          "kind": "numerical",
+          "value": 5.5566137930895815e-11,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "laminar",
+          "description": "Reynolds number (Dh) / 2000",
+          "kind": "validity",
+          "value": 0.11202247191011237,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "reference_assumption",
+          "description": "100 / Peclet (the CFD reference neglects axial conduction)",
+          "kind": "validity",
+          "value": 0.07282613390410465,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "coupling_converged",
+          "description": "coupling loop met both criteria within the iteration limit (1 = no)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.5,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "interface_temperature",
+          "description": "max |plate wetted-surface T - CFD wall T| / coolant rise, final iteration",
+          "kind": "numerical",
+          "value": 7.607818012629474e-05,
+          "tolerance": 0.0001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "interface_flux",
+          "description": "max |flux the plate returns - flux the CFD used| / component flux, final iteration",
+          "kind": "numerical",
+          "value": 4.563821855893669e-05,
+          "tolerance": 0.0001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "handoff_heat_to_cfd",
+          "description": "|heat the CFD received - component heat| / component heat",
+          "kind": "numerical",
+          "value": 3.0316490059097607e-16,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "plate_energy_balance",
+          "description": "|heat the plate passes to the coolant - component heat| / component heat",
+          "kind": "numerical",
+          "value": 1.7829242551670178e-08,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "handoff_temperature_to_stress",
+          "description": "max |nodal T in the stress solve - thermal result| (K)",
+          "kind": "numerical",
+          "value": 5.000000000165983e-05,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "plate_reference",
+          "description": "max over every node of |T FE - exact 2D series| / coolant rise",
+          "kind": "numerical",
+          "value": 0.00032222928753283147,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "plate_slab",
+          "description": "|outer - wetted T at mid-footprint - t (q_component + q_coolant) / 2k| / slab estimate (model form: 1D slab, mean of the two face fluxes)",
+          "kind": "numerical",
+          "value": 0.00017729909316063785,
+          "tolerance": 0.05,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "plate_plane",
+          "description": "max |T front - T back| of the one-element-deep plate (K)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 1e-09,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "stress_uniform_exact",
+          "description": "uniform rise through the same deck and solver: max |sigma - (-E alpha dT / (1 - nu))| and |sigma_y|, |tau_xy| over all nodes / exact",
+          "kind": "numerical",
+          "value": 5.227423713172883e-08,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "stress_reaction_balance",
+          "description": "|sum of support reactions (x, y)| / |end reaction|",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "stress_membrane_reference",
+          "description": "|membrane stress from the end reaction - beam theory N / t| / |N / t|",
+          "kind": "numerical",
+          "value": 7.508040051146677e-08,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "stress_peak_reference",
+          "description": "|interior peak von Mises FE - beam theory| / beam theory (model form)",
+          "kind": "numerical",
+          "value": 0.0014712077225878227,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "stress_field_reference",
+          "description": "max over the interior of |sigma_x FE - beam theory| / max |sigma_x| (model form)",
+          "kind": "numerical",
+          "value": 0.002582594211732429,
+          "tolerance": 0.03,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "linear_material",
+          "description": "interior peak von Mises / yield strength",
+          "kind": "validity",
+          "value": 0.16931404121179822,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "no_buckling",
+          "description": "|membrane stress| / clamped-strip buckling stress (linear analysis)",
+          "kind": "validity",
+          "value": 0.06913763224882978,
+          "tolerance": 0.1,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "thin_plate",
+          "description": "plate thickness / span (beam-theory reference)",
+          "kind": "validity",
+          "value": 0.05,
+          "tolerance": 0.1,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-C1",
+          "text": "Peak temperature of the component face (plate outer face over the footprint) shall not exceed 45 C.",
+          "metric": "component_face_max_temperature_C",
+          "operator": "<=",
+          "limit": 45.0,
+          "units": "C",
+          "value": 40.98085035112359,
+          "margin": 4.019149648876407,
+          "verdict": "PASS (unverified)"
+        },
+        {
+          "id": "REQ-C2",
+          "text": "Coolant temperature rise from inlet to outlet shall not exceed 10 K.",
+          "metric": "coolant_rise_K",
+          "operator": "<=",
+          "limit": 10.0,
+          "units": "K",
+          "value": 7.198629380985857,
+          "margin": 2.8013706190141434,
+          "verdict": "PASS (unverified)"
+        },
+        {
+          "id": "REQ-C3",
+          "text": "Peak von Mises stress in the plate away from the supports (more than 1.5 plate thicknesses from each end) shall not exceed 60 MPa (synthetic allowable for thermal cycling).",
+          "metric": "interior_von_mises_max_MPa",
+          "operator": "<=",
+          "limit": 60.0,
+          "units": "MPa",
+          "value": 46.73067537445631,
+          "margin": 13.269324625543689,
+          "verdict": "PASS (unverified)"
+        }
+      ]
+    },
+    {
+      "label": "p01_cells_across_gap-40",
+      "parameters": {
+        "gap_mm": 1.0,
+        "footprint_length_mm": 50.0,
+        "entry_length_mm": 5.0,
+        "exit_length_mm": 5.0,
+        "unplated_length_mm": 5.0,
+        "mean_velocity_m_per_s": 0.1,
+        "density_kg_per_m3": 997.0,
+        "dynamic_viscosity_Pa_s": 0.00089,
+        "specific_heat_J_per_kgK": 4180.0,
+        "conductivity_W_per_mK": 0.607,
+        "inlet_temperature_C": 25.0,
+        "cells_across_gap": 40,
+        "cell_aspect_ratio": 5.0,
+        "component_heat_flux_W_per_m2": 30000.0,
+        "plate_thickness_mm": 3.0,
+        "plate_conductivity_W_per_mK": 167.0,
+        "coupling_htc_W_per_m2K": 2500.0,
+        "youngs_modulus_MPa": 68900.0,
+        "poisson_ratio": 0.33,
+        "expansion_per_K": 2.36e-05,
+        "assembly_temperature_C": 20.0,
+        "yield_strength_MPa": 276.0,
+        "interior_margin_mm": 4.5,
+        "uniform_check_rise_K": 20.0
+      },
+      "derived": {
+        "reynolds_Dh": 224.04494382022474,
+        "prandtl": 6.128830313014827,
+        "peclet_Dh": 1373.1334431630974,
+        "coolant_rise_exact_K": 7.198629380965865,
+        "h_fully_developed_W_per_m2K": 2499.411764705882,
+        "plate_biot": 0.04489961253962662,
+        "plate_spreading_length_mm": 14.157936432919783,
+        "slab_dT_K": 0.5389221556886228,
+        "thickness_over_span": 0.05,
+        "buckling_stress_MPa": 635.9328762531858,
+        "uniform_case_exact_MPa": -48.538507462686574
+      },
+      "simulation_status": "completed",
+      "verification_status": "FAIL",
+      "checks": [
+        {
+          "id": "cfd_mesh",
+          "description": "checkMesh reports Mesh OK (1 = failed)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.5,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "cfd_temperature_converged",
+          "description": "max |T change| over the last write interval of the final pass (iterations 26400 to 26500) / coolant rise",
+          "kind": "numerical",
+          "value": 4.223026482748082e-09,
+          "tolerance": 1e-05,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "cfd_flow_rate",
+          "description": "|inlet flow - U H| / (U H)",
+          "kind": "numerical",
+          "value": 2.600729961249604e-13,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "cfd_developed_inflow",
+          "description": "|peak velocity at the start of the footprint - 1.5 U| / 1.5 U",
+          "kind": "numerical",
+          "value": 0.00126094516000023,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "cfd_energy_balance",
+          "description": "|outlet bulk rise - 2 (heat given to the CFD) / (rho cp U H)| / exact rise",
+          "kind": "numerical",
+          "value": 1.5273408416523654e-12,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "cfd_wall_reference",
+          "description": "max over the wall of |T_wall CFD - thermal-entry reference with the same flux profile| / coolant rise (model form: no axial conduction in the reference)",
+          "kind": "numerical",
+          "value": 0.027842248433074694,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "FAIL"
+        },
+        {
+          "id": "cfd_wall_symmetry",
+          "description": "max |T_wall top - T_wall bottom| / coolant rise (symmetric case)",
+          "kind": "numerical",
+          "value": 6.945791917682223e-11,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "laminar",
+          "description": "Reynolds number (Dh) / 2000",
+          "kind": "validity",
+          "value": 0.11202247191011237,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "reference_assumption",
+          "description": "100 / Peclet (the CFD reference neglects axial conduction)",
+          "kind": "validity",
+          "value": 0.07282613390410465,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "coupling_converged",
+          "description": "coupling loop met both criteria within the iteration limit (1 = no)",
+          "kind": "numerical",
+          "value": 1.0,
+          "tolerance": 0.5,
+          "comparison": "<=",
+          "status": "FAIL"
+        },
+        {
+          "id": "interface_temperature",
+          "description": "max |plate wetted-surface T - CFD wall T| / coolant rise, final iteration",
+          "kind": "numerical",
+          "value": 0.00011010643492946167,
+          "tolerance": 0.0001,
+          "comparison": "<=",
+          "status": "FAIL"
+        },
+        {
+          "id": "interface_flux",
+          "description": "max |flux the plate returns - flux the CFD used| / component flux, final iteration",
+          "kind": "numerical",
+          "value": 6.605128479301736e-05,
+          "tolerance": 0.0001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "handoff_heat_to_cfd",
+          "description": "|heat the CFD received - component heat| / component heat",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "plate_energy_balance",
+          "description": "|heat the plate passes to the coolant - component heat| / component heat",
+          "kind": "numerical",
+          "value": 1.7956246513980053e-08,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "handoff_temperature_to_stress",
+          "description": "max |nodal T in the stress solve - thermal result| (K)",
+          "kind": "numerical",
+          "value": 5.000000000165983e-05,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "plate_reference",
+          "description": "max over every node of |T FE - exact 2D series| / coolant rise",
+          "kind": "numerical",
+          "value": 0.00019608795730746605,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "plate_slab",
+          "description": "|outer - wetted T at mid-footprint - t (q_component + q_coolant) / 2k| / slab estimate (model form: 1D slab, mean of the two face fluxes)",
+          "kind": "numerical",
+          "value": 0.0001799943630477249,
+          "tolerance": 0.05,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "plate_plane",
+          "description": "max |T front - T back| of the one-element-deep plate (K)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 1e-09,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "stress_uniform_exact",
+          "description": "uniform rise through the same deck and solver: max |sigma - (-E alpha dT / (1 - nu))| and |sigma_y|, |tau_xy| over all nodes / exact",
+          "kind": "numerical",
+          "value": 5.227423713172883e-08,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "stress_reaction_balance",
+          "description": "|sum of support reactions (x, y)| / |end reaction|",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "stress_membrane_reference",
+          "description": "|membrane stress from the end reaction - beam theory N / t| / |N / t|",
+          "kind": "numerical",
+          "value": 2.865382610823666e-08,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "stress_peak_reference",
+          "description": "|interior peak von Mises FE - beam theory| / beam theory (model form)",
+          "kind": "numerical",
+          "value": 0.000905429085008077,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "stress_field_reference",
+          "description": "max over the interior of |sigma_x FE - beam theory| / max |sigma_x| (model form)",
+          "kind": "numerical",
+          "value": 0.0021107657536456564,
+          "tolerance": 0.03,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "linear_material",
+          "description": "interior peak von Mises / yield strength",
+          "kind": "validity",
+          "value": 0.16956802929773845,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "no_buckling",
+          "description": "|membrane stress| / clamped-strip buckling stress (linear analysis)",
+          "kind": "validity",
+          "value": 0.06922170820820098,
+          "tolerance": 0.1,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "thin_plate",
+          "description": "plate thickness / span (beam-theory reference)",
+          "kind": "validity",
+          "value": 0.05,
+          "tolerance": 0.1,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-C1",
+          "text": "Peak temperature of the component face (plate outer face over the footprint) shall not exceed 45 C.",
+          "metric": "component_face_max_temperature_C",
+          "operator": "<=",
+          "limit": 45.0,
+          "units": "C",
+          "value": 40.992211136363636,
+          "margin": 4.007788863636364,
+          "verdict": "PASS (unverified)"
+        },
+        {
+          "id": "REQ-C2",
+          "text": "Coolant temperature rise from inlet to outlet shall not exceed 10 K.",
+          "metric": "coolant_rise_K",
+          "operator": "<=",
+          "limit": 10.0,
+          "units": "K",
+          "value": 7.19862938095487,
+          "margin": 2.80137061904513,
+          "verdict": "PASS (unverified)"
+        },
+        {
+          "id": "REQ-C3",
+          "text": "Peak von Mises stress in the plate away from the supports (more than 1.5 plate thicknesses from each end) shall not exceed 60 MPa (synthetic allowable for thermal cycling).",
+          "metric": "interior_von_mises_max_MPa",
+          "operator": "<=",
+          "limit": 60.0,
+          "units": "MPa",
+          "value": 46.800776086175816,
+          "margin": 13.199223913824184,
+          "verdict": "PASS (unverified)"
+        }
+      ]
+    },
+    {
+      "label": "p02_cells_across_gap-80",
+      "parameters": {
+        "gap_mm": 1.0,
+        "footprint_length_mm": 50.0,
+        "entry_length_mm": 5.0,
+        "exit_length_mm": 5.0,
+        "unplated_length_mm": 5.0,
+        "mean_velocity_m_per_s": 0.1,
+        "density_kg_per_m3": 997.0,
+        "dynamic_viscosity_Pa_s": 0.00089,
+        "specific_heat_J_per_kgK": 4180.0,
+        "conductivity_W_per_mK": 0.607,
+        "inlet_temperature_C": 25.0,
+        "cells_across_gap": 80,
+        "cell_aspect_ratio": 5.0,
+        "component_heat_flux_W_per_m2": 30000.0,
+        "plate_thickness_mm": 3.0,
+        "plate_conductivity_W_per_mK": 167.0,
+        "coupling_htc_W_per_m2K": 2500.0,
+        "youngs_modulus_MPa": 68900.0,
+        "poisson_ratio": 0.33,
+        "expansion_per_K": 2.36e-05,
+        "assembly_temperature_C": 20.0,
+        "yield_strength_MPa": 276.0,
+        "interior_margin_mm": 4.5,
+        "uniform_check_rise_K": 20.0
+      },
+      "derived": {
+        "reynolds_Dh": 224.04494382022474,
+        "prandtl": 6.128830313014827,
+        "peclet_Dh": 1373.1334431630974,
+        "coolant_rise_exact_K": 7.198629380965865,
+        "h_fully_developed_W_per_m2K": 2499.411764705882,
+        "plate_biot": 0.04489961253962662,
+        "plate_spreading_length_mm": 14.157936432919783,
+        "slab_dT_K": 0.5389221556886228,
+        "thickness_over_span": 0.05,
+        "buckling_stress_MPa": 635.9328762531858,
+        "uniform_case_exact_MPa": -48.538507462686574
+      },
+      "simulation_status": "completed",
+      "verification_status": "FAIL",
+      "checks": [
+        {
+          "id": "cfd_mesh",
+          "description": "checkMesh reports Mesh OK (1 = failed)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.5,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "cfd_temperature_converged",
+          "description": "max |T change| over the last write interval of the final pass (iterations 26400 to 26500) / coolant rise",
+          "kind": "numerical",
+          "value": 3.229920413606256e-07,
+          "tolerance": 1e-05,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "cfd_flow_rate",
+          "description": "|inlet flow - U H| / (U H)",
+          "kind": "numerical",
+          "value": 2.9802007216195303e-13,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "cfd_developed_inflow",
+          "description": "|peak velocity at the start of the footprint - 1.5 U| / 1.5 U",
+          "kind": "numerical",
+          "value": 0.00031844784666686565,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "cfd_energy_balance",
+          "description": "|outlet bulk rise - 2 (heat given to the CFD) / (rho cp U H)| / exact rise",
+          "kind": "numerical",
+          "value": 2.3121712070898563e-13,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "cfd_wall_reference",
+          "description": "max over the wall of |T_wall CFD - thermal-entry reference with the same flux profile| / coolant rise (model form: no axial conduction in the reference)",
+          "kind": "numerical",
+          "value": 0.06277273175013358,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "FAIL"
+        },
+        {
+          "id": "cfd_wall_symmetry",
+          "description": "max |T_wall top - T_wall bottom| / coolant rise (symmetric case)",
+          "kind": "numerical",
+          "value": 2.778306896544791e-10,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "laminar",
+          "description": "Reynolds number (Dh) / 2000",
+          "kind": "validity",
+          "value": 0.11202247191011237,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "reference_assumption",
+          "description": "100 / Peclet (the CFD reference neglects axial conduction)",
+          "kind": "validity",
+          "value": 0.07282613390410465,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "coupling_converged",
+          "description": "coupling loop met both criteria within the iteration limit (1 = no)",
+          "kind": "numerical",
+          "value": 1.0,
+          "tolerance": 0.5,
+          "comparison": "<=",
+          "status": "FAIL"
+        },
+        {
+          "id": "interface_temperature",
+          "description": "max |plate wetted-surface T - CFD wall T| / coolant rise, final iteration",
+          "kind": "numerical",
+          "value": 0.0006942813357866954,
+          "tolerance": 0.0001,
+          "comparison": "<=",
+          "status": "FAIL"
+        },
+        {
+          "id": "interface_flux",
+          "description": "max |flux the plate returns - flux the CFD used| / component flux, final iteration",
+          "kind": "numerical",
+          "value": 0.00041648950187081935,
+          "tolerance": 0.0001,
+          "comparison": "<=",
+          "status": "FAIL"
+        },
+        {
+          "id": "handoff_heat_to_cfd",
+          "description": "|heat the CFD received - component heat| / component heat",
+          "kind": "numerical",
+          "value": 1.5158245029548803e-16,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "plate_energy_balance",
+          "description": "|heat the plate passes to the coolant - component heat| / component heat",
+          "kind": "numerical",
+          "value": 9.985957755513179e-10,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "handoff_temperature_to_stress",
+          "description": "max |nodal T in the stress solve - thermal result| (K)",
+          "kind": "numerical",
+          "value": 5.000000000165983e-05,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "plate_reference",
+          "description": "max over every node of |T FE - exact 2D series| / coolant rise",
+          "kind": "numerical",
+          "value": 0.00011863095604082289,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "plate_slab",
+          "description": "|outer - wetted T at mid-footprint - t (q_component + q_coolant) / 2k| / slab estimate (model form: 1D slab, mean of the two face fluxes)",
+          "kind": "numerical",
+          "value": 0.00017865070481898066,
+          "tolerance": 0.05,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "plate_plane",
+          "description": "max |T front - T back| of the one-element-deep plate (K)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 1e-09,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "stress_uniform_exact",
+          "description": "uniform rise through the same deck and solver: max |sigma - (-E alpha dT / (1 - nu))| and |sigma_y|, |tau_xy| over all nodes / exact",
+          "kind": "numerical",
+          "value": 5.227423713172883e-08,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "stress_reaction_balance",
+          "description": "|sum of support reactions (x, y)| / |end reaction|",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "stress_membrane_reference",
+          "description": "|membrane stress from the end reaction - beam theory N / t| / |N / t|",
+          "kind": "numerical",
+          "value": 6.513086179365502e-08,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "stress_peak_reference",
+          "description": "|interior peak von Mises FE - beam theory| / beam theory (model form)",
+          "kind": "numerical",
+          "value": 0.0006190804114113431,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "stress_field_reference",
+          "description": "max over the interior of |sigma_x FE - beam theory| / max |sigma_x| (model form)",
+          "kind": "numerical",
+          "value": 0.0021488499427717712,
+          "tolerance": 0.03,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "linear_material",
+          "description": "interior peak von Mises / yield strength",
+          "kind": "validity",
+          "value": 0.16965339255738535,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "no_buckling",
+          "description": "|membrane stress| / clamped-strip buckling stress (linear analysis)",
+          "kind": "validity",
+          "value": 0.06924180466881376,
+          "tolerance": 0.1,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "thin_plate",
+          "description": "plate thickness / span (beam-theory reference)",
+          "kind": "validity",
+          "value": 0.05,
+          "tolerance": 0.1,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-C1",
+          "text": "Peak temperature of the component face (plate outer face over the footprint) shall not exceed 45 C.",
+          "metric": "component_face_max_temperature_C",
+          "operator": "<=",
+          "limit": 45.0,
+          "units": "C",
+          "value": 40.99461125,
+          "margin": 4.005388750000002,
+          "verdict": "PASS (unverified)"
+        },
+        {
+          "id": "REQ-C2",
+          "text": "Coolant temperature rise from inlet to outlet shall not exceed 10 K.",
+          "metric": "coolant_rise_K",
+          "operator": "<=",
+          "limit": 10.0,
+          "units": "K",
+          "value": 7.198629380964199,
+          "margin": 2.8013706190358008,
+          "verdict": "PASS (unverified)"
+        },
+        {
+          "id": "REQ-C3",
+          "text": "Peak von Mises stress in the plate away from the supports (more than 1.5 plate thicknesses from each end) shall not exceed 60 MPa (synthetic allowable for thermal cycling).",
+          "metric": "interior_von_mises_max_MPa",
+          "operator": "<=",
+          "limit": 60.0,
+          "units": "MPa",
+          "value": 46.824336345838354,
+          "margin": 13.175663654161646,
+          "verdict": "PASS (unverified)"
+        }
+      ]
+    }
+  ],
+  "run_id": "20261120-224255_cold_plate_mesh",
+  "generated_utc": "2026-11-21T08:03:47+00:00",
+  "verification_status": "FAIL"
+}

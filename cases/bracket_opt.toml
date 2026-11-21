@@ -1,0 +1,125 @@
+# SUPERSEDED (2026-11-21) by cases/clevis_opt.toml: a tapered cantilever was too close to the
+# cantilever study (a slender beam with a closed-form answer) to show the loop on a real part. The
+# runs below stay as evidence of the first version; the model and its tests remain in the repo.
+#
+# Bracket optimisation loop: an optimiser drives the CAD-to-FEA pipeline (CadQuery -> Gmsh ->
+# CalculiX) to the lightest tapered cantilever that meets a stiffness and a stress limit. Every
+# candidate is built, meshed, solved and checked like any case point; a candidate that fails
+# any check counts as infeasible.
+#
+# Decision (synthetic): the steel bracket of the cantilever study (200 mm, 20 mm wide, 1 kN at
+# the tip) sits in a vibrating assembly, so the bending stress allowable is fatigue-rated at
+# 100 MPa, and the tip may deflect at most 1.0 mm. With the width fixed by the mounting, which
+# linear taper (root height h_r, tip height h_t) is lightest? The 20 x 25 mm prismatic bar (20 wide, 25 high) that
+# meets both weighs 785 g.
+#
+# Why this is not a sizing exercise: for h_t / h_r < 1/2 the bending stress peaks inside the
+# span, not at the root, so a check at the root alone would let the optimiser thin the bracket
+# into failure in mid-span. The stress metric (studies/tapered_bracket.py) is the peak over the
+# span of the FE surface stress, measured as a ratio to M/Z in the smooth region (the clamp
+# corner is singular and is not a design stress).
+#
+# Design margin: the optimum sits on a constraint, so the constraint values carry a 0.5 %
+# reserve for discretisation error (the confirmation case then measures that error at the
+# optimum with a mesh study). Element size 3 mm for every candidate: in a hand test at
+# (26, 8.7) mm the tip deflection changed by 1.4e-4 between 4 and 3 mm elements.
+#
+# Predictions, written BEFORE the first evidence run (beam-theory optimum, validation/
+# tapered_beam.optimum, with the same 0.5 % margin):
+#   P1 Optimum near h_r = 26.0 mm, h_t = 8.7 mm (h_t / h_r = 1/3), mass about 545 g: 31 % lighter
+#      than the 20 x 25 prismatic bar.
+#   P2 The stress limit governs, with the peak inside the span near x = 100 mm (mid-span); the root
+#      stress is only about 88 MPa. The deflection limit is not active (about 0.92 mm).
+#   P3 The FE optimum's mass is within 1 % of the beam-theory optimum's: FE is about 0.6 % stiffer
+#      (clamp) and the FE stress ratio to M/Z within about 1 % of 1, which moves the heights by
+#      about half that.
+#   P4 COBYLA needs 30 to 60 candidates; no verified candidate is rejected in the region the
+#      optimiser explores (all validity checks have wide margins there).
+#
+# Requirements and tolerances were fixed BEFORE the first run.
+#
+# Results (run 20261120-225322_bracket_opt; confirmation 20261120-225744_bracket_opt_confirm):
+#   COBYLA converged in 32 candidates to c026: h_r = 26.032 mm, h_t = 8.742 mm, 545.96 g (P1 held;
+#   30.4 % lighter than 20 x 25). Peak stress 99.50 MPa at mid-span, root 88.4 MPa, deflection
+#   0.917 mm (P2 held). Beam-theory optimum 545.2 g: 0.13 % apart (P3 held). P4 missed in one
+#   respect: candidate c007 (an early long step to 390 g, deflection 2.7 mm) failed the
+#   small-deflection validity check and was treated as infeasible; the optimiser recovered.
+#   Confirmation at 4.5 / 3 / 2 mm: GCI 5e-5 (stress) and 1.6e-4 (deflection); with that
+#   uncertainty added the stress is still 0.49 % under its limit. Every check passed.
+
+[case]
+name = "bracket_opt"
+model = "cadquery_ccx_tapered"
+description = "Lightest linearly tapered steel cantilever bracket (200 mm long, 20 mm wide, 1 kN tip load) with tip deflection at most 1.0 mm and peak bending stress at most 100 MPa; COBYLA drives the CadQuery -> Gmsh -> CalculiX pipeline over root and tip height, and every candidate must pass the study's checks."
+assumptions = [
+  "Linear elastic steel (E = 210 GPa, nu = 0.3); checked: peak stress below yield.",
+  "Small deflection; checked: tip deflection / length below 1 %.",
+  "Root face fully fixed (rigid mounting); the clamp-corner stress is singular and is not used as a design stress.",
+  "Tip load applied as a uniform shear traction over the tip face.",
+  "Width fixed at 20 mm by the mounting (synthetic); only the two heights vary, linearly between them.",
+  "Stress allowable 100 MPa (fatigue-rated) and deflection limit 1.0 mm: synthetic.",
+]
+limitations = [
+  "Linear taper only; a curved profile could be lighter still.",
+  "No lateral-torsional buckling check (the bracket is a deep, short cantilever loaded in its stiff plane).",
+  "The stress metric uses the FE stress-to-nominal ratio in the smooth region, extrapolated linearly to the root; the root joint itself (weld, bolts) needs its own assessment.",
+  "Beam theory (deflection and nominal stress) is a model-form reference.",
+  "No physical test data.",
+]
+
+[parameters]
+length_mm = 200.0
+width_mm = 20.0
+root_height_mm = 25.0             # start of the optimisation (prismatic, meets both limits)
+tip_height_mm = 25.0
+youngs_modulus_MPa = 210000.0
+poisson_ratio = 0.3
+density_t_per_mm3 = 7.85e-9
+tip_load_N = 1000.0
+element_size_mm = 3.0
+yield_strength_MPa = 355.0        # S355
+
+[optimization]
+method = "COBYLA"
+objective = "mass_g"
+design_margin = 0.005
+rhobeg = 2.0
+tol = 0.01
+max_evaluations = 80
+[[optimization.variables]]
+name = "root_height_mm"
+lower = 10.0
+upper = 40.0
+[[optimization.variables]]
+name = "tip_height_mm"
+lower = 6.0                       # load introduction and manufacturing (synthetic)
+upper = 40.0
+
+[numerics]
+solver = "CalculiX 2.22 static, C3D10"
+
+[verification]
+equilibrium_rel_tol = 1e-6
+deflection_rel_tol = 0.02         # vs tapered Timoshenko (model form; the cantilever study's tolerance)
+stress_rel_tol = 0.02             # fitted FE / nominal stress ratio vs 1 (model form)
+stress_field_rel_tol = 0.03       # 2-element bin means of the ratio vs 1 (field; tet nodal stresses scatter)
+small_deflection_max = 0.01
+taper_slope_max = 0.1             # tapered beam theory: slope of each face
+slenderness_max = 0.2             # root height / length
+gci_max = 0.005                   # used by the confirmation mesh study
+
+[[requirements]]
+id = "REQ-B1"
+text = "Tip deflection under the 1 kN load shall not exceed 1.0 mm."
+metric = "tip_deflection_mm"
+operator = "<="
+limit = 1.0
+units = "mm"
+
+[[requirements]]
+id = "REQ-B2"
+text = "Peak bending stress along the span (tension surface, outside the singular clamp corner, from the FE stress-to-M/Z ratio) shall not exceed 100 MPa (fatigue-rated allowable)."
+metric = "peak_bending_stress_MPa"
+operator = "<="
+limit = 100.0
+units = "MPa"

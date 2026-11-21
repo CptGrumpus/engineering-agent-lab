@@ -1,0 +1,41 @@
+2026-11-20 23:50:41,420 INFO [harness.20261120-235041_bolted_joint_mesh.run] run 20261120-235041_bolted_joint_mesh: case cases/bolted_joint_mesh.toml (sha256 1ca613bc2730)
+2026-11-20 23:52:02,111 INFO [harness.20261120-235041_bolted_joint_mesh.run] p00_element_size_mm-1: slip_load_N 2996, plate_compliance_mm_per_N 5.262e-07, contact_diameter_mm 22.82, residual_clamp_force_N 1.196e+04, design_slip_load_N 2389, opening_load_N 1.306e+04
+2026-11-21 03:52:02,360 ERROR [harness.20261120-235041_bolted_joint_mesh.run] p01_element_size_mm-0.7: exception
+Traceback (most recent call last):
+  File "<repo>\harness\run.py", line 41, in execute_point
+    res = backend.solve(params, case["numerics"])
+  File "<repo>\studies\bolted_joint.py", line 81, in solve
+    r = subprocess.run([str(self.ccx), "-i", "job"], cwd=work, capture_output=True, text=True, timeout=14400)
+  File "~\AppData\Local\Programs\Python\Python314\Lib\subprocess.py", line 557, in run
+    stdout, stderr = process.communicate(input, timeout=timeout)
+                     ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+  File "~\AppData\Local\Programs\Python\Python314\Lib\subprocess.py", line 1221, in communicate
+    stdout, stderr = self._communicate(input, endtime, timeout)
+                     ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "~\AppData\Local\Programs\Python\Python314\Lib\subprocess.py", line 1664, in _communicate
+    raise TimeoutExpired(self.args, orig_timeout)
+subprocess.TimeoutExpired: Command '['~\\AppData\\Local\\Programs\\FreeCAD 1.1\\bin\\ccx.exe', '-i', 'job']' timed out after 14400 seconds
+
+2026-11-21 04:14:03,008 INFO [harness.20261120-235041_bolted_joint_mesh.run] p02_element_size_mm-0.5: slip_load_N 2996, plate_compliance_mm_per_N 5.334e-07, contact_diameter_mm 21.15, residual_clamp_force_N 1.197e+04, design_slip_load_N 2390, opening_load_N 1.308e+04
+2026-11-21 04:14:03,015 INFO [harness.20261120-235041_bolted_joint_mesh.run] run 20261120-235041_bolted_joint_mesh: partial (2/3 points completed)
+2026-11-21 04:14:03,677 INFO [harness.20261120-235041_bolted_joint_mesh.verify] p00_element_size_mm-1: slip_exact               FAIL  value 1.321e-03  tol 1.0e-03
+2026-11-21 04:14:03,677 INFO [harness.20261120-235041_bolted_joint_mesh.verify] p00_element_size_mm-1: gross_slip_reached       PASS  value 2.537e-05  tol 1.0e-04
+2026-11-21 04:14:03,677 INFO [harness.20261120-235041_bolted_joint_mesh.verify] p00_element_size_mm-1: clamp_force_balance      PASS  value 1.617e-16  tol 1.0e-06
+2026-11-21 04:14:03,677 INFO [harness.20261120-235041_bolted_joint_mesh.verify] p00_element_size_mm-1: shear_balance            PASS  value 0.000e+00  tol 1.0e-06
+2026-11-21 04:14:03,677 INFO [harness.20261120-235041_bolted_joint_mesh.verify] p00_element_size_mm-1: plate_compliance_reference PASS  value 1.660e-01  tol 2.5e-01
+2026-11-21 04:14:03,677 INFO [harness.20261120-235041_bolted_joint_mesh.verify] p00_element_size_mm-1: contact_diameter_reference PASS  value 1.942e-01  tol 2.0e-01
+2026-11-21 04:14:03,677 INFO [harness.20261120-235041_bolted_joint_mesh.verify] p00_element_size_mm-1: cone_fits                PASS  value 4.778e-01  tol 1.0e+00
+2026-11-21 04:14:03,677 INFO [harness.20261120-235041_bolted_joint_mesh.verify] p00_element_size_mm-1: no_bolt_bearing          PASS  value 2.400e-02  tol 1.0e+00
+2026-11-21 04:14:03,677 INFO [harness.20261120-235041_bolted_joint_mesh.verify] p00_element_size_mm-1: bolt_within_proof        PASS  value 6.830e-01  tol 9.0e-01
+2026-11-21 04:14:03,678 WARNING [harness.20261120-235041_bolted_joint_mesh.verify] p01_element_size_mm-0.7: not verified (simulation status 'failed')
+2026-11-21 04:14:03,945 INFO [harness.20261120-235041_bolted_joint_mesh.verify] p02_element_size_mm-0.5: slip_exact               FAIL  value 1.389e-03  tol 1.0e-03
+2026-11-21 04:14:03,946 INFO [harness.20261120-235041_bolted_joint_mesh.verify] p02_element_size_mm-0.5: gross_slip_reached       PASS  value 4.006e-05  tol 1.0e-04
+2026-11-21 04:14:03,946 INFO [harness.20261120-235041_bolted_joint_mesh.verify] p02_element_size_mm-0.5: clamp_force_balance      PASS  value 8.854e-17  tol 1.0e-06
+2026-11-21 04:14:03,946 INFO [harness.20261120-235041_bolted_joint_mesh.verify] p02_element_size_mm-0.5: shear_balance            PASS  value 0.000e+00  tol 1.0e-06
+2026-11-21 04:14:03,946 INFO [harness.20261120-235041_bolted_joint_mesh.verify] p02_element_size_mm-0.5: plate_compliance_reference PASS  value 1.821e-01  tol 2.5e-01
+2026-11-21 04:14:03,946 INFO [harness.20261120-235041_bolted_joint_mesh.verify] p02_element_size_mm-0.5: contact_diameter_reference PASS  value 1.067e-01  tol 2.0e-01
+2026-11-21 04:14:03,946 INFO [harness.20261120-235041_bolted_joint_mesh.verify] p02_element_size_mm-0.5: cone_fits                PASS  value 4.778e-01  tol 1.0e+00
+2026-11-21 04:14:03,946 INFO [harness.20261120-235041_bolted_joint_mesh.verify] p02_element_size_mm-0.5: no_bolt_bearing          PASS  value 2.400e-02  tol 1.0e+00
+2026-11-21 04:14:03,946 INFO [harness.20261120-235041_bolted_joint_mesh.verify] p02_element_size_mm-0.5: bolt_within_proof        PASS  value 6.830e-01  tol 9.0e-01
+2026-11-21 04:14:03,947 INFO [harness.20261120-235041_bolted_joint_mesh.verify] run-level: mesh_convergence_gci         FAIL  value inf  tol 0.0e+00
+2026-11-21 04:14:03,948 INFO [harness.20261120-235041_bolted_joint_mesh.verify] verification 20261120-235041_bolted_joint_mesh: FAIL

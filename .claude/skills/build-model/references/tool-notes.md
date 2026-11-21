@@ -82,6 +82,33 @@ Traps found while building the studies in this repo, by tool.
   are unchanged, and reactions scale back.
 - Write `*NODE FILE, OUTPUT=2D` and `*EL FILE, OUTPUT=2D` to get results on the
   2D nodes, which `harness/calculix.py` reads.
+- **3D quadratic tets: Gmsh's second-order curving can invert an element.** The log says
+  `1 elements with jac. < 0` (only a warning) and CalculiX then stops with "nonpositive
+  jacobian" (exit 201). Remesh once with `Mesh.HighOrderOptimize = 1`: it moves the nodes of a
+  small patch (0.2 s; minimum scaled Jacobian -0.019 -> +0.086) and changes nothing where no
+  element is bad. The clevis backend does this automatically (8 of 21 candidates in one run).
+- **`Mesh.MeshSizeFromCurvature` is a count per circle, independent of `MeshSizeMax`, and
+  `MeshSizeMin` clamps it.** With a fixed count and `MeshSizeMin = h/4`, halving the global
+  size barely refined a 3 mm fillet, so a global mesh study at the fillet peak was not a mesh
+  study. Sweep a separate fillet element size (count = 2 pi r / h_f, minimum h_f / 2) or scale
+  both with h.
+- **A fillet peak needs local refinement.** At 3 mm fillets the peak von Mises under-read by
+  6 % with 4 mm global tets (about 1.6 mm on the fillet) and settled only with fillet elements
+  of r/3 or smaller; global refinement to 2.67 mm (180 k nodes) was still short. Once resolved,
+  the peak (a nodal maximum on a tet mesh) wobbles by about +-0.5 to 0.8 % from mesh to mesh, so
+  a three-level order test reads it as oscillatory or divergent by chance (clevis c011: 96.6 /
+  97.6 / 96.8 / 96.7 MPa at 1.0 / 0.85 / 0.75 / 0.667 mm; design D: 97.36 / 97.54 / 98.33).
+  Declare the measured scatter as the study's noise floor (`verification.mesh_noise_rel`).
+
+## CalculiX equation solvers (the FreeCAD 1.1 build of ccx 2.22)
+
+- SPOOLES runs on one core whatever `OMP_NUM_THREADS` / `CCX_NPROC_*` say; threads only speed
+  assembly and stress recovery (1214 s -> 1150 s at 316 k nodes). Time goes up steeply with
+  size: 140 k nodes about 4 min, 316 k about 20 min, about 700 k did not finish in 2 h.
+- `SOLVER=ITERATIVE CHOLESKY` was 11 times faster but 0.6 % off in peak stress and 0.5 % in
+  deflection, with no tolerance setting in the deck: not for verification evidence.
+- `SOLVER=PARDISO` fails: "the PARDISO library is not linked".
+- For throughput, run independent solves as parallel processes (24 cores here).
 
 ## CalculiX frequency (modal) analysis
 
@@ -121,12 +148,36 @@ Traps found while building the studies in this repo, by tool.
   model cost 7.6x the nodes for the same answer (0.2 %).
 - A sampled maximum (largest nodal value) is not smooth in h and can fail a
   GCI while agreeing to 0.06 %; locate peaks between nodes (parabola) instead.
+- **Coulomb friction itself is exact in CalculiX 2.22 surface-to-surface penalty contact.** A
+  block sliding on a block (C3D8I, K and stick slope 50 E / h, mu 0.2) carried mu p A to 5e-5
+  under uniform pressure and to 6e-7 under a central patch load. Use that exact case to separate
+  a solver effect from a model effect before blaming the contact formulation.
+- **Contact is evaluated on the deformed surfaces even with `NLGEOM=NO`.** In the bolted joint
+  the interface tilts by about the strain under the side load, so the slip plateau fell short of
+  mu F_V by 1.3e-3, independent of mesh, mu and penalty, but exactly linear in 1/E (1.31e-3 /
+  1.32e-4 / 1.33e-5 at E / 10 E / 100 E) and 10 times larger for thin plates. Coulomb mu F_V is
+  exact only for a rigid interface. To keep an exact check, add a companion solve at 100 E and
+  extrapolate the slip load linearly in 1/E (`rigid_limit_slip`, numerics
+  `rigid_limit_stiffness_factor`): 2e-7 from mu F_V. Report the deformable value as model form.
+- Contact stresses at the end of a step: `*CONTACT FILE` / `CSTR` (read with
+  `harness.calculix.read_frd`, blocks named CONTACT: CPRESS, CSHEAR1/2). Nodal values are fine
+  for the ratio shear / (mu p) and the shear direction, but integrating them for a force total
+  was 9 % off (extrapolation at the contact edge). `*CONTACT PRINT` with `CF` stopped with "no
+  existing contact pair defined" for this surface-to-surface pair.
+- One contact solve can stall on a particular mesh: the 0.7 mm joint hit a 4 h timeout while
+  0.5 mm took 22 min. Swap the level (0.75 mm) rather than raise the timeout.
 
 ## CadQuery (OpenCASCADE)
 
 - Measure every reported quantity back from the B-rep (faces, closed circular
   edges), not from the parameters.
 - Re-import the STEP export and compare volume and features.
+- **`+` on selectors (`SumSelector`) returns `list(set(...))`, and shapes hash by memory
+  address**, so the edge order changes from run to run. Fed to `.fillet()`, that changed the
+  fillet's face split (40 or 41 faces, same volume to 10 digits) and so the mesh: the same
+  parameters gave 93.97 or 94.94 MPa, or a crash. Collect the edges yourself and pass them in a
+  fixed geometric order (`models/fea/clevis_bracket.py`); test that two builds give a
+  byte-identical STEP body (`tests/test_clevis_bracket.py`).
 
 ## OpenFOAM (openfoam.org v14, in WSL)
 
@@ -176,3 +227,87 @@ Traps found while building the studies in this repo, by tool.
   with `purgeWrite 2`, compare them); the normalised residual plateaus near 1e-5.
 - Validate a thermal-entry model against the Graetz solution (validation/graetz.py), not the
   fully developed Nusselt number: at Pe ~ 1400 a 50 mm channel never reaches it.
+- **Don't solve each outer iteration's T system to machine precision.** With `relTol 0` and
+  `tolerance 1e-14` every one of 1000 outer iterations took about 200 BiCGStab sweeps at 90 k
+  cells (8 min per coupling pass, growing about 12x per mesh doubling). The outer iterations only
+  converge the deferred `linearUpwind` correction, so `relTol 0.01` gave the same field to 5e-7
+  at a third of the time (cold plate: numerics `temperature_solver_rel_tol`). Keep the tight
+  absolute tolerance; judge convergence on the field, as above.
+- **A step in the wall flux is a singular point for any wall-temperature reference.** Where a
+  conducting plate starts, the flux jumps from zero and the wall temperature goes like x^(1/3)
+  (Leveque); the maximum error against the no-axial-conduction reference sat in the cell at the
+  step and did not converge (5.5 / 2.8 / 6.3 % at 20 / 40 / 80 cells). Compare outside a band of
+  about 2 gap heights round each step (verification `wall_edge_exclusion_gaps`): there it
+  converged at second order (1.04 / 0.27 / 0.08 %).
+
+### CalculiX nodal stresses from full-integration hexes
+
+- The `.frd` nodal stresses of C3D8 and C3D8I are about 4e-5 low even for a uniform field
+  (uniform thermal rise, fully restrained: integration points and reactions exact, `.frd`
+  0.99996 of it; C3D8R is exact). Negligible for most decisions, but it fails an exact-case
+  check at 1e-6. When that precision matters, write `*EL PRINT, ELSET=EALL` / `S` and
+  extrapolate the 8 integration points yourself (`harness/calculix.py`, `hex8_nodal_stress`:
+  Gauss points at +-1/sqrt(3), xi fastest).
+- An exact case run through the same deck writer and solver (uniform temperature, homogeneous
+  strain) is what exposed it; the beam-theory comparison at 1 % never would have.
+
+## Partitioned coupling (OpenFOAM <-> CalculiX, cold-plate chain)
+
+- Match the meshes at the interface one to one (same cell size along the wall), so heat passes
+  across exactly and the handoff energy check can be tight (1e-6 or better).
+- Robin-Neumann coupling: the CFD takes the wall flux from the solid (fixedGradient,
+  nonuniform list), the solid takes a film with a constant coefficient h* and sink
+  T_wall,CFD - q/h*. Keep h* constant if an exact series reference for the solid needs it.
+- **Coupling passes scale with the mesh, so budget for them.** The cold plate needed 21 passes at
+  20 cells and 26 at 40 (Aitken, about 0.75 contraction per pass), not the under-10 a plate Biot
+  number of 0.045 suggested: the rate is set by the coolant's local coefficient at the plate's
+  leading edge, far above h*. Set `coupling_max_iterations` from a pilot run (60 here), and make
+  each pass cheap (inner T tolerance, above) rather than cutting passes.
+- The plain fixed point converges only as fast as 1 - h*/h_fluid for short-wavelength errors;
+  where the coolant's local coefficient is far above h* (start of heating) that was 0.81 per
+  iteration. Aitken dynamic relaxation fixes it (allow omega up to about 10).
+- Aitken steps with omega > 2 amplify the rounding error of the total heat by |1 - omega| each
+  pass (1.4e-6 after 20 passes). Rescale the flux to the known total after every step.
+- The `functions` solver restarting from a temperature-stage time directory needs the frozen
+  flow fields there (`p`, `U`, `phi`): the temperature stage writes only `T`. Copy them from the
+  flow time before each pass.
+- When the heated wall reaches the inlet cells, the fixed-temperature inlet draws heat back
+  out, and an outlet column misses the last half cell of heating (5e-4 of the energy balance).
+  Let the channel run past the heated region with adiabatic walls at both ends.
+- A plate that conducts dumps a flux spike into the fresh coolant at its leading edge. With
+  plain linearUpwind the cell just upstream undershot below the inlet temperature (24.58 C
+  for a 25 C inlet). A cell-limited reconstruction gradient (`cellLimited Gauss linear 1`
+  for `grad(T)` in the `linearUpwind` scheme) removed it and still converged exactly; the TVD
+  flux limiters that cycled in the heated-channel study were not needed.
+
+## Optimisation loops (harness/optimize.py)
+
+- An optimiser pushes the design onto a constraint, so the verdict there depends on the
+  discretisation error: give the constraints a design margin and confirm the optimum with a
+  separate mesh study.
+- **Size the margin from a measurement, not a guess.** 0.5 % was right for a smooth beam stress
+  (tapered bracket: GCI 0.005 %). For a fillet peak, 1 % failed (clevis_opt) and 9 %, sized from
+  a global mesh study, failed too (clevis_opt_r1), because that study never refined the fillet.
+  What worked: at a candidate, refine where the peak sits until it settles; measure the scatter
+  between designs a few hundredths of a mm apart; margin = offset of the optimisation mesh from
+  the refined levels + their oscillation + the scatter (clevis_opt_r2: 1.05 + 0.65 + 0.25 ->
+  2.5 %).
+- **Mesh noise in the constraint stops COBYLA among slightly infeasible points**: at 4 mm the
+  clevis stress scattered 1.5 % between near-identical designs, the trust region shrank onto
+  the noise, and the reported optimum (the best candidate meeting the margin) was an early
+  step. Resolving the peak helps, but the scatter is design-dependent: 0.23 % near one design,
+  1.5 % where the next run converged (clevis_opt_r2), whose only feasible point was then the
+  start. Measure the scatter where the optimiser ends, not where it began.
+- **When the optimiser stalls in noise, choose the design from a local response surface**
+  (`harness/response_surface.py`): fit the constraint linearly over the converged candidates
+  (residual sd = the noise), start at their centroid, move the most mass-efficient dimensions
+  until the fit sits 2 sd inside the limit, and never leave the sampled range. Then give that
+  design its own verified run and mesh study; the fit only chooses it. The objective there was
+  flat (370 +- 1 g), so the safe design cost 0.4 % of mass.
+- Never let the optimiser see an unverified result: a candidate that fails any check returns
+  an infeasible constraint vector. The smoke run rejected a candidate whose tip deflection
+  broke the small-deflection assumption.
+- SLSQP on the beam-theory reference stops with "positive directional derivative" at a corner
+  where several constraints are active; judge it by constraint satisfaction, not its flag.
+  The peak of a tapered beam's stress has a kink where it leaves the root (h_t / h_r = 1/2):
+  constrain the stress at stations along the span as well as the analytic peak.

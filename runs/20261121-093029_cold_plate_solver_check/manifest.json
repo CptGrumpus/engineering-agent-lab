@@ -1,0 +1,392 @@
+{
+  "run_id": "20261121-093029_cold_plate_solver_check",
+  "case_name": "cold_plate_solver_check",
+  "model": "openfoam_ccx_cold_plate",
+  "case_source": "cases/cold_plate_solver_check.toml",
+  "case_sha256": "66eac210210c80ab62780306e68476367f7936a6d604bc4f7fe234766f67542f",
+  "model_sources_sha256": {
+    "models/cfd/cold_plate_openfoam.py": "569cec6f06b3bba13899081f52ba1232d04b7f2d9deaaadef1d22e1084c30f95",
+    "models/cfd/run_cold_plate.sh": "97299eea3dd0e328935f38a7b851a3f492235c7ebcc660d39e803382f9097bf2",
+    "models/thermal/cold_plate_ccx.py": "626b3207bd966baf3b1d52fe83e16e8d575cb33ea12837c53153d5ed742dba01"
+  },
+  "rerun_of": null,
+  "started_utc": "2026-11-21T14:30:29+00:00",
+  "environment": {
+    "python": "3.14.10",
+    "python_executable": "<repo>\\.venv\\Scripts\\python.exe",
+    "platform": "Windows-11-10.0.26100-SP0",
+    "machine": "AMD64",
+    "packages": {
+      "numpy": "2.5.5",
+      "scipy": "1.18.1",
+      "matplotlib": "3.11.2",
+      "cadquery": "2.8.0"
+    },
+    "git": {
+      "commit": "6e284df9a6dafeff85f0f748867344118bca9ad0",
+      "dirty": true
+    },
+    "tools": {
+      "openfoam_bashrc": "/opt/openfoam14/etc/bashrc",
+      "CalculiX": "This is Version 2.22",
+      "openfoam_version": "14",
+      "openfoam_package": "openfoam14 20261008",
+      "linux": "Ubuntu 22.04.5 LTS"
+    }
+  },
+  "numerics": {
+    "flow_iterations": 1000,
+    "temperature_iterations": 1500,
+    "coupling_temperature_iterations": 1000,
+    "write_interval": 100,
+    "relaxation_T": 1.0,
+    "coupling_max_iterations": 60,
+    "coupling_relaxation": 1.0,
+    "coupling_acceleration": "aitken",
+    "temperature_gradient_limiter": true,
+    "temperature_solver_rel_tol": 0.01,
+    "coupling_temperature_rel_tol": 0.0001,
+    "coupling_flux_rel_tol": 0.0001
+  },
+  "points": [
+    {
+      "label": "p00_cells_across_gap-40",
+      "parameters": {
+        "gap_mm": 1.0,
+        "footprint_length_mm": 50.0,
+        "entry_length_mm": 5.0,
+        "exit_length_mm": 5.0,
+        "unplated_length_mm": 5.0,
+        "mean_velocity_m_per_s": 0.1,
+        "density_kg_per_m3": 997.0,
+        "dynamic_viscosity_Pa_s": 0.00089,
+        "specific_heat_J_per_kgK": 4180.0,
+        "conductivity_W_per_mK": 0.607,
+        "inlet_temperature_C": 25.0,
+        "cells_across_gap": 40,
+        "cell_aspect_ratio": 5.0,
+        "component_heat_flux_W_per_m2": 30000.0,
+        "plate_thickness_mm": 3.0,
+        "plate_conductivity_W_per_mK": 167.0,
+        "coupling_htc_W_per_m2K": 2500.0,
+        "youngs_modulus_MPa": 68900.0,
+        "poisson_ratio": 0.33,
+        "expansion_per_K": 2.36e-05,
+        "assembly_temperature_C": 20.0,
+        "yield_strength_MPa": 276.0,
+        "interior_margin_mm": 4.5,
+        "uniform_check_rise_K": 20.0
+      },
+      "status": "completed",
+      "derived": {
+        "reynolds_Dh": 224.04494382022474,
+        "prandtl": 6.128830313014827,
+        "peclet_Dh": 1373.1334431630974,
+        "coolant_rise_exact_K": 7.198629380965865,
+        "h_fully_developed_W_per_m2K": 2499.411764705882,
+        "plate_biot": 0.04489961253962662,
+        "plate_spreading_length_mm": 14.157936432919783,
+        "slab_dT_K": 0.5389221556886228,
+        "thickness_over_span": 0.05,
+        "buckling_stress_MPa": 635.9328762531858,
+        "uniform_case_exact_MPa": -48.538507462686574
+      },
+      "solver": {
+        "success": true,
+        "message": "coupled in 26 iterations (converged); 22400 CFD cells, plate 480x24 hex",
+        "nfev": 26
+      },
+      "solver_outputs": {
+        "cfd_cells": 22400,
+        "blocks": [
+          [
+            40,
+            40
+          ],
+          [
+            40,
+            40
+          ],
+          [
+            400,
+            40
+          ],
+          [
+            40,
+            40
+          ],
+          [
+            40,
+            40
+          ]
+        ],
+        "plate_divisions": [
+          480,
+          24
+        ],
+        "mesh_ok": true,
+        "face_order_error_mm": 0.0,
+        "inlet_flow_m2_per_s": 9.9999999999974e-05,
+        "peak_velocity_start_of_footprint_m_per_s": 0.149810858226,
+        "T_change_last_write_K": 3.939999970725694e-08,
+        "previous_write": "27400",
+        "result_time": "27500",
+        "outlet_bulk_C": 32.198629380965734,
+        "coupling_converged": true,
+        "coupling_iterations": 26,
+        "coupling_history": [
+          {
+            "iteration": 0,
+            "cfd_end_time": 2500,
+            "max_interface_dT_K": 7.879170667299999,
+            "max_flux_change_W_per_m2": 19697.926668249995,
+            "heat_into_coolant_outside_footprint": 0.08400164409322321,
+            "relaxation": 1.0
+          },
+          {
+            "iteration": 1,
+            "cfd_end_time": 3500,
+            "max_interface_dT_K": 6.040516415447822,
+            "max_flux_change_W_per_m2": 15101.291038619562,
+            "heat_into_coolant_outside_footprint": 0.13262599289967814,
+            "relaxation": 1.278097882746938
+          },
+          {
+            "iteration": 2,
+            "cfd_end_time": 4500,
+            "max_interface_dT_K": 4.704128878869142,
+            "max_flux_change_W_per_m2": 11760.322197172849,
+            "heat_into_coolant_outside_footprint": 0.1608137464294524,
+            "relaxation": 1.5554386405921674
+          },
+          {
+            "iteration": 3,
+            "cfd_end_time": 5500,
+            "max_interface_dT_K": 3.517902447994203,
+            "max_flux_change_W_per_m2": 8794.756119985504,
+            "heat_into_coolant_outside_footprint": 0.1700945485657553,
+            "relaxation": 1.6935043045163471
+          },
+          {
+            "iteration": 4,
+            "cfd_end_time": 6500,
+            "max_interface_dT_K": 2.560197177703941,
+            "max_flux_change_W_per_m2": 6400.492944259851,
+            "heat_into_coolant_outside_footprint": 0.17023283411417803,
+            "relaxation": 1.8492353753761397
+          },
+          {
+            "iteration": 5,
+            "cfd_end_time": 7500,
+            "max_interface_dT_K": 1.8014128920193038,
+            "max_flux_change_W_per_m2": 4503.532230048251,
+            "heat_into_coolant_outside_footprint": 0.168729346263948,
+            "relaxation": 1.9924031270191713
+          },
+          {
+            "iteration": 6,
+            "cfd_end_time": 8500,
+            "max_interface_dT_K": 1.2266644763111572,
+            "max_flux_change_W_per_m2": 3066.661190777886,
+            "heat_into_coolant_outside_footprint": 0.16808982455143992,
+            "relaxation": 2.1581265563354446
+          },
+          {
+            "iteration": 7,
+            "cfd_end_time": 9500,
+            "max_interface_dT_K": 0.800456059363416,
+            "max_flux_change_W_per_m2": 2001.1401484085363,
+            "heat_into_coolant_outside_footprint": 0.16848071883702453,
+            "relaxation": 2.5346096841003605
+          },
+          {
+            "iteration": 8,
+            "cfd_end_time": 10500,
+            "max_interface_dT_K": 0.4728950957219027,
+            "max_flux_change_W_per_m2": 1182.23773930475,
+            "heat_into_coolant_outside_footprint": 0.16845971695020057,
+            "relaxation": 2.6103880797454053
+          },
+          {
+            "iteration": 9,
+            "cfd_end_time": 11500,
+            "max_interface_dT_K": 0.27163250840308706,
+            "max_flux_change_W_per_m2": 679.0812710077153,
+            "heat_into_coolant_outside_footprint": 0.168544283148383,
+            "relaxation": 2.043067526818547
+          },
+          {
+            "iteration": 10,
+            "cfd_end_time": 12500,
+            "max_interface_dT_K": 0.18027215628381654,
+            "max_flux_change_W_per_m2": 450.68039070954546,
+            "heat_into_coolant_outside_footprint": 0.16857724563981705,
+            "relaxation": 1.6644723754814
+          },
+          {
+            "iteration": 11,
+            "cfd_end_time": 13500,
+            "max_interface_dT_K": 0.14258023851691703,
+            "max_flux_change_W_per_m2": 356.4505962922849,
+            "heat_into_coolant_outside_footprint": 0.16845873908245654,
+            "relaxation": 2.1152220369099486
+          },
+          {
+            "iteration": 12,
+            "cfd_end_time": 14500,
+            "max_interface_dT_K": 0.11272177309561471,
+            "max_flux_change_W_per_m2": 281.804432739038,
+            "heat_into_coolant_outside_footprint": 0.1684839382355814,
+            "relaxation": 3.8932930682357636
+          },
+          {
+            "iteration": 13,
+            "cfd_end_time": 15500,
+            "max_interface_dT_K": 0.06406463407209273,
+            "max_flux_change_W_per_m2": 160.16158518022712,
+            "heat_into_coolant_outside_footprint": 0.16849840864122506,
+            "relaxation": 4.15232536297353
+          },
+          {
+            "iteration": 14,
+            "cfd_end_time": 16500,
+            "max_interface_dT_K": 0.02882834323603589,
+            "max_flux_change_W_per_m2": 72.07085809009004,
+            "heat_into_coolant_outside_footprint": 0.16843418418663952,
+            "relaxation": 2.216297157718171
+          },
+          {
+            "iteration": 15,
+            "cfd_end_time": 17500,
+            "max_interface_dT_K": 0.019528392570119735,
+            "max_flux_change_W_per_m2": 48.82098142529867,
+            "heat_into_coolant_outside_footprint": 0.16850740620475402,
+            "relaxation": 1.7855467057679775
+          },
+          {
+            "iteration": 16,
+            "cfd_end_time": 18500,
+            "max_interface_dT_K": 0.01431339235435658,
+            "max_flux_change_W_per_m2": 35.78348088588973,
+            "heat_into_coolant_outside_footprint": 0.1684849292844383,
+            "relaxation": 1.8653479226261802
+          },
+          {
+            "iteration": 17,
+            "cfd_end_time": 19500,
+            "max_interface_dT_K": 0.010252806308255202,
+            "max_flux_change_W_per_m2": 25.632015770635917,
+            "heat_into_coolant_outside_footprint": 0.1684744094435818,
+            "relaxation": 2.128870639976307
+          },
+          {
+            "iteration": 18,
+            "cfd_end_time": 20500,
+            "max_interface_dT_K": 0.007706978072981485,
+            "max_flux_change_W_per_m2": 19.267445182456868,
+            "heat_into_coolant_outside_footprint": 0.16847765220636357,
+            "relaxation": 2.8836888986675886
+          },
+          {
+            "iteration": 19,
+            "cfd_end_time": 21500,
+            "max_interface_dT_K": 0.00534377358707161,
+            "max_flux_change_W_per_m2": 13.359433967678342,
+            "heat_into_coolant_outside_footprint": 0.1684806359400956,
+            "relaxation": 3.2339222371052947
+          },
+          {
+            "iteration": 20,
+            "cfd_end_time": 22500,
+            "max_interface_dT_K": 0.0033073565541101857,
+            "max_flux_change_W_per_m2": 8.268391385274299,
+            "heat_into_coolant_outside_footprint": 0.16847543185441866,
+            "relaxation": 2.9677987884144144
+          },
+          {
+            "iteration": 21,
+            "cfd_end_time": 23500,
+            "max_interface_dT_K": 0.0020501627179498882,
+            "max_flux_change_W_per_m2": 5.125406794868468,
+            "heat_into_coolant_outside_footprint": 0.1684796782901986,
+            "relaxation": 2.445777191070295
+          },
+          {
+            "iteration": 22,
+            "cfd_end_time": 24500,
+            "max_interface_dT_K": 0.0013762477919527782,
+            "max_flux_change_W_per_m2": 3.4406194798793877,
+            "heat_into_coolant_outside_footprint": 0.16847880858630637,
+            "relaxation": 1.685712718403515
+          },
+          {
+            "iteration": 23,
+            "cfd_end_time": 25500,
+            "max_interface_dT_K": 0.0010540546817310315,
+            "max_flux_change_W_per_m2": 2.6351367043316714,
+            "heat_into_coolant_outside_footprint": 0.16847768812468633,
+            "relaxation": 1.7544427670647613
+          },
+          {
+            "iteration": 24,
+            "cfd_end_time": 26500,
+            "max_interface_dT_K": 0.0007926132344309167,
+            "max_flux_change_W_per_m2": 1.9815330860801623,
+            "heat_into_coolant_outside_footprint": 0.16847804221385956,
+            "relaxation": 4.569933544763909
+          },
+          {
+            "iteration": 25,
+            "cfd_end_time": 27500,
+            "max_interface_dT_K": 0.000353779149726563,
+            "max_flux_change_W_per_m2": 0.8844478743194486,
+            "heat_into_coolant_outside_footprint": 0.16847840084518276
+          }
+        ],
+        "final_interface_dT_K": 0.000353779149726563,
+        "final_flux_change_W_per_m2": 0.8844478743194486,
+        "heat_to_cfd_W_per_m": 1500.0,
+        "heat_from_plate_W_per_m": 1500.000007288213,
+        "heat_in_W_per_m": 1500.0,
+        "wall_symmetry_max_K": 1.6000001323845936e-09,
+        "depth_variation_max_K": 0.0,
+        "temperature_handoff_max_K": 5.000000000165983e-05,
+        "temperature_handoff_vs_frd_max_K": 0.00010000000000331966,
+        "reaction_left_N": [
+          66.03053,
+          -0.001641951,
+          -2.819966e-14
+        ],
+        "reaction_right_N": [
+          -66.03053,
+          0.001641951,
+          2.741418e-13
+        ],
+        "plate_depth_mm": 0.5,
+        "uniform_case_stress_MPa": {
+          "sxx": [
+            -48.538510000000024,
+            -48.53851000000002
+          ],
+          "syy_absmax": 1.4746094219167107e-11,
+          "szz": [
+            -48.538510000000024,
+            -48.53851000000002
+          ],
+          "sxy_absmax": 5.47475685255675e-12
+        },
+        "frd_vs_extrapolated_sxx_max_MPa": 0.0018378247013188798
+      },
+      "metrics": {
+        "component_face_max_temperature_C": 40.99220918478261,
+        "coolant_rise_K": 7.198629380965734,
+        "interior_von_mises_max_MPa": 46.80075916945496,
+        "wetted_wall_max_temperature_C": 40.51735,
+        "membrane_stress_MPa": -44.02035322916668
+      }
+    }
+  ],
+  "study": "cold_plate",
+  "status": "completed",
+  "finished_utc": "2026-11-21T14:37:29+00:00"
+}

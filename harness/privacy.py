@@ -29,7 +29,8 @@ def _spellings(p: Path) -> list[str]:
         return [re.escape(p.as_posix())]
     drive, rest = p.drive.rstrip(":"), [part for part in p.parts[1:]]
     out = []
-    for sep in (r"\\\\", r"\\", "/"):                      # JSON-escaped, Windows, forward slash
+    # escaped twice (an exception message stored in JSON), JSON-escaped, Windows, forward slash
+    for sep in (r"\\\\\\\\", r"\\\\", r"\\", "/"):
         out.append(re.escape(drive) + ":" + sep + sep.join(re.escape(x) for x in rest))
     out.append("/mnt/" + re.escape(drive.lower()) + "/" + "/".join(re.escape(x) for x in rest))
     return out

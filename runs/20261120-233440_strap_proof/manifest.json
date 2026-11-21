@@ -1,0 +1,270 @@
+{
+  "run_id": "20261120-233440_strap_proof",
+  "case_name": "strap_proof",
+  "model": "cadquery_ccx_strap_plastic",
+  "case_source": "cases/strap_proof.toml",
+  "case_sha256": "fbcc5392fe6ac4cbe5e31b6372110a078ffec7e8e2cbdc7afacda1b000effb8f",
+  "model_sources_sha256": {
+    "models/fea/strap_hole.py": "0384afaa4fee9c5cb2fddfb5a5f83e4438b36bed43454c36a2a686b97169eaa7",
+    "models/fea/strap_plastic.py": "13eae7b68c100e1299fdf5c517ba58b46bc44660b92ae165770114edd6c088a2"
+  },
+  "rerun_of": null,
+  "started_utc": "2026-11-21T04:34:40+00:00",
+  "environment": {
+    "python": "3.14.10",
+    "python_executable": "<repo>\\.venv\\Scripts\\python.exe",
+    "platform": "Windows-11-10.0.26100-SP0",
+    "machine": "AMD64",
+    "packages": {
+      "numpy": "2.5.5",
+      "scipy": "1.18.1",
+      "matplotlib": "3.11.2",
+      "cadquery": "2.8.0"
+    },
+    "git": {
+      "commit": "1eafbc4d5003a06ba7248c449ed08ef12df709fa",
+      "dirty": true
+    },
+    "tools": {
+      "cadquery": "2.8.0",
+      "gmsh": "4.15.0",
+      "CalculiX": "This is Version 2.22"
+    }
+  },
+  "numerics": {
+    "solver": "CalculiX 2.22: elastic static, then *PLASTIC load and unload (CPS6 expanded to wedges, thin layer)"
+  },
+  "points": [
+    {
+      "label": "p00_hole_element_ratio-0.05",
+      "parameters": {
+        "length_mm": 160.0,
+        "width_mm": 40.0,
+        "thickness_mm": 4.0,
+        "hole_diameter_mm": 16.0,
+        "axial_load_N": 15000.0,
+        "youngs_modulus_MPa": 68900.0,
+        "poisson_ratio": 0.33,
+        "far_element_size_mm": 4.0,
+        "hole_element_ratio": 0.05,
+        "plastic_strain": [
+          0.0,
+          0.0002,
+          0.0005,
+          0.001,
+          0.002,
+          0.004,
+          0.007,
+          0.012,
+          0.02,
+          0.04,
+          0.08
+        ],
+        "plastic_stress_MPa": [
+          223.8,
+          234.9,
+          250.5,
+          262.9,
+          276.0,
+          289.7,
+          301.3,
+          312.9,
+          324.3,
+          340.4,
+          357.3
+        ]
+      },
+      "status": "completed",
+      "derived": {
+        "kt_net_peterson": 2.23568,
+        "net_stress_MPa": 156.25,
+        "elastic_peak_peterson_MPa": 349.325,
+        "neuber_stress_MPa": 278.2400043865176,
+        "neuber_strain": 0.006365324403883149,
+        "glinka_stress_MPa": 268.57240592253385,
+        "glinka_strain": 0.005331011074405629,
+        "residual_neuber_MPa": -71.08499561348236,
+        "initial_yield_MPa": 223.8
+      },
+      "solver": {
+        "success": true,
+        "message": "CalculiX: 2333 nodes, load and unload",
+        "nfev": null
+      },
+      "solver_outputs": {
+        "nodes": 2333,
+        "loaded_edge_nodes": 11,
+        "applied_load_N": 7500.0,
+        "force_scale": 0.04,
+        "analysis_thickness_mm": 0.16,
+        "root_node": 2,
+        "ligament_nodes": 27,
+        "reaction_x_proof_N": -7500.0,
+        "reaction_x_unloaded_N": 8.881785e-14,
+        "ligament_width_mm": 12.0
+      },
+      "metrics": {
+        "notch_strain_percent": 0.580714,
+        "notch_stress_MPa": 275.104,
+        "residual_stress_MPa": -72.743,
+        "elastic_peak_MPa": 347.847,
+        "plastic_zone_mm": 1.9253699999999991
+      }
+    },
+    {
+      "label": "p01_hole_element_ratio-0.025",
+      "parameters": {
+        "length_mm": 160.0,
+        "width_mm": 40.0,
+        "thickness_mm": 4.0,
+        "hole_diameter_mm": 16.0,
+        "axial_load_N": 15000.0,
+        "youngs_modulus_MPa": 68900.0,
+        "poisson_ratio": 0.33,
+        "far_element_size_mm": 4.0,
+        "hole_element_ratio": 0.025,
+        "plastic_strain": [
+          0.0,
+          0.0002,
+          0.0005,
+          0.001,
+          0.002,
+          0.004,
+          0.007,
+          0.012,
+          0.02,
+          0.04,
+          0.08
+        ],
+        "plastic_stress_MPa": [
+          223.8,
+          234.9,
+          250.5,
+          262.9,
+          276.0,
+          289.7,
+          301.3,
+          312.9,
+          324.3,
+          340.4,
+          357.3
+        ]
+      },
+      "status": "completed",
+      "derived": {
+        "kt_net_peterson": 2.23568,
+        "net_stress_MPa": 156.25,
+        "elastic_peak_peterson_MPa": 349.325,
+        "neuber_stress_MPa": 278.2400043865176,
+        "neuber_strain": 0.006365324403883149,
+        "glinka_stress_MPa": 268.57240592253385,
+        "glinka_strain": 0.005331011074405629,
+        "residual_neuber_MPa": -71.08499561348236,
+        "initial_yield_MPa": 223.8
+      },
+      "solver": {
+        "success": true,
+        "message": "CalculiX: 5334 nodes, load and unload",
+        "nfev": null
+      },
+      "solver_outputs": {
+        "nodes": 5334,
+        "loaded_edge_nodes": 11,
+        "applied_load_N": 7500.0,
+        "force_scale": 0.04,
+        "analysis_thickness_mm": 0.16,
+        "root_node": 2,
+        "ligament_nodes": 45,
+        "reaction_x_proof_N": -7500.0,
+        "reaction_x_unloaded_N": 7.77156e-14,
+        "ligament_width_mm": 12.0
+      },
+      "metrics": {
+        "notch_strain_percent": 0.583451,
+        "notch_stress_MPa": 274.387,
+        "residual_stress_MPa": -76.5772,
+        "elastic_peak_MPa": 350.965,
+        "plastic_zone_mm": 1.7875599999999991
+      }
+    },
+    {
+      "label": "p02_hole_element_ratio-0.0125",
+      "parameters": {
+        "length_mm": 160.0,
+        "width_mm": 40.0,
+        "thickness_mm": 4.0,
+        "hole_diameter_mm": 16.0,
+        "axial_load_N": 15000.0,
+        "youngs_modulus_MPa": 68900.0,
+        "poisson_ratio": 0.33,
+        "far_element_size_mm": 4.0,
+        "hole_element_ratio": 0.0125,
+        "plastic_strain": [
+          0.0,
+          0.0002,
+          0.0005,
+          0.001,
+          0.002,
+          0.004,
+          0.007,
+          0.012,
+          0.02,
+          0.04,
+          0.08
+        ],
+        "plastic_stress_MPa": [
+          223.8,
+          234.9,
+          250.5,
+          262.9,
+          276.0,
+          289.7,
+          301.3,
+          312.9,
+          324.3,
+          340.4,
+          357.3
+        ]
+      },
+      "status": "completed",
+      "derived": {
+        "kt_net_peterson": 2.23568,
+        "net_stress_MPa": 156.25,
+        "elastic_peak_peterson_MPa": 349.325,
+        "neuber_stress_MPa": 278.2400043865176,
+        "neuber_strain": 0.006365324403883149,
+        "glinka_stress_MPa": 268.57240592253385,
+        "glinka_strain": 0.005331011074405629,
+        "residual_neuber_MPa": -71.08499561348236,
+        "initial_yield_MPa": 223.8
+      },
+      "solver": {
+        "success": true,
+        "message": "CalculiX: 13916 nodes, load and unload",
+        "nfev": null
+      },
+      "solver_outputs": {
+        "nodes": 13916,
+        "loaded_edge_nodes": 11,
+        "applied_load_N": 7500.0,
+        "force_scale": 0.04,
+        "analysis_thickness_mm": 0.16,
+        "root_node": 2,
+        "ligament_nodes": 77,
+        "reaction_x_proof_N": -7500.0,
+        "reaction_x_unloaded_N": 4.4408925e-14,
+        "ligament_width_mm": 12.0
+      },
+      "metrics": {
+        "notch_strain_percent": 0.5834159999999999,
+        "notch_stress_MPa": 274.338,
+        "residual_stress_MPa": -76.9702,
+        "elastic_peak_MPa": 351.308,
+        "plastic_zone_mm": 1.8648699999999998
+      }
+    }
+  ],
+  "study": "strap_plastic",
+  "status": "completed",
+  "finished_utc": "2026-11-21T04:37:12+00:00"
+}

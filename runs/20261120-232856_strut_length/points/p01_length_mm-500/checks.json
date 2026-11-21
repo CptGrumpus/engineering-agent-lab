@@ -1,0 +1,105 @@
+{
+  "label": "p01_length_mm-500",
+  "status": "PASS",
+  "checks": [
+    {
+      "id": "buckling_reference",
+      "description": "|P_cr FE - Euler with Engesser shear correction| / reference (model form)",
+      "kind": "numerical",
+      "value": 0.0006123262076020217,
+      "tolerance": 0.01,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "mode_shape",
+      "description": "1 - MAC(first mode on the axis, half sine) (weak-axis buckling)",
+      "kind": "numerical",
+      "value": 2.5051738461456807e-11,
+      "tolerance": 0.0010000000000000009,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "southwell_vs_eigenvalue",
+      "description": "|P_cr from the Southwell plot of the nonlinear run - eigenvalue| / eigenvalue (two independent FE routes)",
+      "kind": "numerical",
+      "value": 0.00019969625620785676,
+      "tolerance": 0.01,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "southwell_imperfection",
+      "description": "|initial bow recovered by the Southwell fit - imposed| / imposed",
+      "kind": "numerical",
+      "value": 0.0031449984500165895,
+      "tolerance": 0.03,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "amplification_reference",
+      "description": "max over P <= 0.8 P_cr of |midspan deflection - e0 / (1 - P/P_cr)| / deflection (model form: small-deflection theory)",
+      "kind": "numerical",
+      "value": 0.001689549763586133,
+      "tolerance": 0.02,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "first_yield_bracketed",
+      "description": "first yield reached inside the load range (1 = not reached)",
+      "kind": "numerical",
+      "value": 0.0,
+      "tolerance": 0.5,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "first_yield_reference",
+      "description": "|first-yield load FE - Perry-Robertson (FE P_cr)| / Perry-Robertson (model form: beam stresses)",
+      "kind": "numerical",
+      "value": 0.011328607505675948,
+      "tolerance": 0.02,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "equilibrium",
+      "description": "|axial reaction at the midspan restraint| / end load, last increment (the two end loads balance)",
+      "kind": "numerical",
+      "value": 6.717827033510837e-15,
+      "tolerance": 1e-06,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "euler_range",
+      "description": "Euler stress / (yield / 2): elastic buckling governs at or below 1 (Johnson range otherwise)",
+      "kind": "validity",
+      "value": 0.42049282673472116,
+      "tolerance": 1.0,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "moderate_deflection",
+      "description": "midspan deflection at first yield / length",
+      "kind": "validity",
+      "value": 0.02155657132078638,
+      "tolerance": 0.05,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "slender",
+      "description": "thickness / length (beam-column references)",
+      "kind": "validity",
+      "value": 0.032,
+      "tolerance": 0.1,
+      "comparison": "<=",
+      "status": "PASS"
+    }
+  ]
+}

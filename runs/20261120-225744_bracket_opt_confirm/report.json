@@ -1,0 +1,433 @@
+{
+  "points": [
+    {
+      "label": "p00_element_size_mm-4.5",
+      "parameters": {
+        "length_mm": 200.0,
+        "width_mm": 20.0,
+        "root_height_mm": 26.032439077904954,
+        "tip_height_mm": 8.74210084409634,
+        "youngs_modulus_MPa": 210000.0,
+        "poisson_ratio": 0.3,
+        "density_t_per_mm3": 7.85e-09,
+        "tip_load_N": 1000.0,
+        "element_size_mm": 4.5,
+        "yield_strength_MPa": 355.0
+      },
+      "derived": {
+        "tip_deflection_beam_mm": 0.9220501928506238,
+        "peak_nominal_stress_MPa": 99.23661869287565,
+        "peak_nominal_stress_x_mm": 98.87877581246505,
+        "root_nominal_stress_MPa": 88.53633270721092,
+        "volume_closed_form_mm3": 69549.0798440026,
+        "taper_slope": 0.04322584558452153,
+        "root_height_over_length": 0.13016219538952478
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "cad_volume",
+          "description": "|CadQuery B-rep volume - b L (h_r + h_t) / 2| / closed form",
+          "kind": "numerical",
+          "value": 2.0923231854406342e-16,
+          "tolerance": 1e-09,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "load_applied",
+          "description": "|sum of tip nodal forces + F| / F and |tip area from the mesh - b h_t| / (b h_t)",
+          "kind": "numerical",
+          "value": 3.885100775549747e-14,
+          "tolerance": 1e-09,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "equilibrium",
+          "description": "|R_root - (0, 0, F)| / F (sum of reactions)",
+          "kind": "numerical",
+          "value": 5.2138435072177804e-12,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "deflection_reference",
+          "description": "|tip deflection FE - tapered Timoshenko beam| / beam (model form)",
+          "kind": "numerical",
+          "value": 0.005781615499245008,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "stress_ratio_reference",
+          "description": "max over the span of |fitted FE fibre stress / nominal M/Z - 1| (model form: beam theory)",
+          "kind": "numerical",
+          "value": 0.006238122573120064,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "stress_field_reference",
+          "description": "max over 2-element bins of |mean FE fibre stress / nominal - 1| in the smooth region (field, model form)",
+          "kind": "numerical",
+          "value": 0.014225060191294547,
+          "tolerance": 0.03,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "linear_material",
+          "description": "peak bending stress / yield strength",
+          "kind": "validity",
+          "value": 0.2802545235455484,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "small_deflection",
+          "description": "tip deflection / length (geometrically linear analysis)",
+          "kind": "validity",
+          "value": 0.0045835962658227845,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "beam_reference_valid",
+          "description": "taper slope |h_r - h_t| / 2L (tapered beam theory)",
+          "kind": "validity",
+          "value": 0.04322584558452153,
+          "tolerance": 0.1,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "slender",
+          "description": "root height / length (beam theory)",
+          "kind": "validity",
+          "value": 0.13016219538952478,
+          "tolerance": 0.2,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-B1",
+          "text": "Tip deflection under the 1 kN load shall not exceed 1.0 mm.",
+          "metric": "tip_deflection_mm",
+          "operator": "<=",
+          "limit": 1.0,
+          "units": "mm",
+          "value": 0.9167192531645568,
+          "margin": 0.08328074683544318,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-B2",
+          "text": "Peak bending stress along the span (tension surface, outside the singular clamp corner, from the FE stress-to-M/Z ratio) shall not exceed 100 MPa (fatigue-rated allowable).",
+          "metric": "peak_bending_stress_MPa",
+          "operator": "<=",
+          "limit": 100.0,
+          "units": "MPa",
+          "value": 99.49035585866969,
+          "margin": 0.5096441413303126,
+          "verdict": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p01_element_size_mm-3",
+      "parameters": {
+        "length_mm": 200.0,
+        "width_mm": 20.0,
+        "root_height_mm": 26.032439077904954,
+        "tip_height_mm": 8.74210084409634,
+        "youngs_modulus_MPa": 210000.0,
+        "poisson_ratio": 0.3,
+        "density_t_per_mm3": 7.85e-09,
+        "tip_load_N": 1000.0,
+        "element_size_mm": 3.0,
+        "yield_strength_MPa": 355.0
+      },
+      "derived": {
+        "tip_deflection_beam_mm": 0.9220501928506238,
+        "peak_nominal_stress_MPa": 99.23661869287565,
+        "peak_nominal_stress_x_mm": 98.87877581246505,
+        "root_nominal_stress_MPa": 88.53633270721092,
+        "volume_closed_form_mm3": 69549.0798440026,
+        "taper_slope": 0.04322584558452153,
+        "root_height_over_length": 0.13016219538952478
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "cad_volume",
+          "description": "|CadQuery B-rep volume - b L (h_r + h_t) / 2| / closed form",
+          "kind": "numerical",
+          "value": 2.0923231854406342e-16,
+          "tolerance": 1e-09,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "load_applied",
+          "description": "|sum of tip nodal forces + F| / F and |tip area from the mesh - b h_t| / (b h_t)",
+          "kind": "numerical",
+          "value": 3.885100775549747e-14,
+          "tolerance": 1e-09,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "equilibrium",
+          "description": "|R_root - (0, 0, F)| / F (sum of reactions)",
+          "kind": "numerical",
+          "value": 1.356914836098305e-12,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "deflection_reference",
+          "description": "|tip deflection FE - tapered Timoshenko beam| / beam (model form)",
+          "kind": "numerical",
+          "value": 0.005620087832291733,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "stress_ratio_reference",
+          "description": "max over the span of |fitted FE fibre stress / nominal M/Z - 1| (model form: beam theory)",
+          "kind": "numerical",
+          "value": 0.006470002871058256,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "stress_field_reference",
+          "description": "max over 2-element bins of |mean FE fibre stress / nominal - 1| in the smooth region (field, model form)",
+          "kind": "numerical",
+          "value": 0.013999491118045437,
+          "tolerance": 0.03,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "linear_material",
+          "description": "peak bending stress / yield strength",
+          "kind": "validity",
+          "value": 0.28027908890653985,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "small_deflection",
+          "description": "tip deflection / length (geometrically linear analysis)",
+          "kind": "validity",
+          "value": 0.004584340948905109,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "beam_reference_valid",
+          "description": "taper slope |h_r - h_t| / 2L (tapered beam theory)",
+          "kind": "validity",
+          "value": 0.04322584558452153,
+          "tolerance": 0.1,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "slender",
+          "description": "root height / length (beam theory)",
+          "kind": "validity",
+          "value": 0.13016219538952478,
+          "tolerance": 0.2,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-B1",
+          "text": "Tip deflection under the 1 kN load shall not exceed 1.0 mm.",
+          "metric": "tip_deflection_mm",
+          "operator": "<=",
+          "limit": 1.0,
+          "units": "mm",
+          "value": 0.9168681897810218,
+          "margin": 0.0831318102189782,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-B2",
+          "text": "Peak bending stress along the span (tension surface, outside the singular clamp corner, from the FE stress-to-M/Z ratio) shall not exceed 100 MPa (fatigue-rated allowable).",
+          "metric": "peak_bending_stress_MPa",
+          "operator": "<=",
+          "limit": 100.0,
+          "units": "MPa",
+          "value": 99.49907656182165,
+          "margin": 0.5009234381783472,
+          "verdict": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p02_element_size_mm-2",
+      "parameters": {
+        "length_mm": 200.0,
+        "width_mm": 20.0,
+        "root_height_mm": 26.032439077904954,
+        "tip_height_mm": 8.74210084409634,
+        "youngs_modulus_MPa": 210000.0,
+        "poisson_ratio": 0.3,
+        "density_t_per_mm3": 7.85e-09,
+        "tip_load_N": 1000.0,
+        "element_size_mm": 2.0,
+        "yield_strength_MPa": 355.0
+      },
+      "derived": {
+        "tip_deflection_beam_mm": 0.9220501928506238,
+        "peak_nominal_stress_MPa": 99.23661869287565,
+        "peak_nominal_stress_x_mm": 98.87877581246505,
+        "root_nominal_stress_MPa": 88.53633270721092,
+        "volume_closed_form_mm3": 69549.0798440026,
+        "taper_slope": 0.04322584558452153,
+        "root_height_over_length": 0.13016219538952478
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "cad_volume",
+          "description": "|CadQuery B-rep volume - b L (h_r + h_t) / 2| / closed form",
+          "kind": "numerical",
+          "value": 2.0923231854406342e-16,
+          "tolerance": 1e-09,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "load_applied",
+          "description": "|sum of tip nodal forces + F| / F and |tip area from the mesh - b h_t| / (b h_t)",
+          "kind": "numerical",
+          "value": 3.885100775549747e-14,
+          "tolerance": 1e-09,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "equilibrium",
+          "description": "|R_root - (0, 0, F)| / F (sum of reactions)",
+          "kind": "numerical",
+          "value": 8.353678384599403e-13,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "deflection_reference",
+          "description": "|tip deflection FE - tapered Timoshenko beam| / beam (model form)",
+          "kind": "numerical",
+          "value": 0.0055268791751352155,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "stress_ratio_reference",
+          "description": "max over the span of |fitted FE fibre stress / nominal M/Z - 1| (model form: beam theory)",
+          "kind": "numerical",
+          "value": 0.006675439917053438,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "stress_field_reference",
+          "description": "max over 2-element bins of |mean FE fibre stress / nominal - 1| in the smooth region (field, model form)",
+          "kind": "numerical",
+          "value": 0.016146539810282245,
+          "tolerance": 0.03,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "linear_material",
+          "description": "peak bending stress / yield strength",
+          "kind": "validity",
+          "value": 0.2802913569152374,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "small_deflection",
+          "description": "tip deflection / length (geometrically linear analysis)",
+          "kind": "validity",
+          "value": 0.004584770664206641,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "beam_reference_valid",
+          "description": "taper slope |h_r - h_t| / 2L (tapered beam theory)",
+          "kind": "validity",
+          "value": 0.04322584558452153,
+          "tolerance": 0.1,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "slender",
+          "description": "root height / length (beam theory)",
+          "kind": "validity",
+          "value": 0.13016219538952478,
+          "tolerance": 0.2,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-B1",
+          "text": "Tip deflection under the 1 kN load shall not exceed 1.0 mm.",
+          "metric": "tip_deflection_mm",
+          "operator": "<=",
+          "limit": 1.0,
+          "units": "mm",
+          "value": 0.9169541328413283,
+          "margin": 0.08304586715867168,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-B2",
+          "text": "Peak bending stress along the span (tension surface, outside the singular clamp corner, from the FE stress-to-M/Z ratio) shall not exceed 100 MPa (fatigue-rated allowable).",
+          "metric": "peak_bending_stress_MPa",
+          "operator": "<=",
+          "limit": 100.0,
+          "units": "MPa",
+          "value": 99.50343170490927,
+          "margin": 0.4965682950907251,
+          "verdict": "PASS"
+        }
+      ]
+    }
+  ],
+  "run_id": "20261120-225744_bracket_opt_confirm",
+  "generated_utc": "2026-11-21T03:58:22+00:00",
+  "verification_status": "PASS"
+}
