@@ -1,0 +1,69 @@
+{
+  "label": "p02_cell_size_m-0.000625",
+  "status": "PASS",
+  "checks": [
+    {
+      "id": "mesh",
+      "description": "checkMesh reports Mesh OK (1 = failed)",
+      "kind": "numerical",
+      "value": 0.0,
+      "tolerance": 0.5,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "converged",
+      "description": "SIMPLE met its residual targets (1 = stopped at the iteration limit)",
+      "kind": "numerical",
+      "value": 0.0,
+      "tolerance": 0.5,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "forces_settled",
+      "description": "max over drag and lift of the spread over the last 10 % of iterations / final value",
+      "kind": "numerical",
+      "value": 7.573342582507415e-07,
+      "tolerance": 1e-06,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "inflow_profile",
+      "description": "max over inlet faces |U - benchmark parabola at the face centre| / (1.5 U_mean)",
+      "kind": "numerical",
+      "value": 6.249891826293207e-08,
+      "tolerance": 1e-06,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "flow_rate",
+      "description": "|inlet flow - U_mean H depth| / (U_mean H depth) (midpoint sampling of the parabola on the inlet faces; shrinks with the mesh)",
+      "kind": "numerical",
+      "value": 1.8725508492552736e-05,
+      "tolerance": 0.005,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "mass_conservation",
+      "description": "|outlet flow - inlet flow| / inlet flow",
+      "kind": "numerical",
+      "value": 1.6950258026170313e-13,
+      "tolerance": 1e-06,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "laminar",
+      "description": "Reynolds number (D) / 200 (the benchmark's steady laminar range)",
+      "kind": "validity",
+      "value": 0.10000000000000002,
+      "tolerance": 1.0,
+      "comparison": "<=",
+      "status": "PASS"
+    }
+  ]
+}

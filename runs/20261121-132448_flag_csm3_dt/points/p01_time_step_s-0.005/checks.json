@@ -1,0 +1,69 @@
+{
+  "label": "p01_time_step_s-0.005",
+  "status": "FAIL",
+  "checks": [
+    {
+      "id": "integrator_small_amplitude",
+      "description": "|frequency of a gravity/1000 run - linear modal f1| / f1 (the time integrator alone)",
+      "kind": "numerical",
+      "value": 0.00751064832629726,
+      "tolerance": 0.002,
+      "comparison": "<=",
+      "status": "FAIL"
+    },
+    {
+      "id": "returns_to_start",
+      "description": "max uy(A) over the last period / amplitude (undamped: the flag swings back to its undeformed height)",
+      "kind": "numerical",
+      "value": 0.012714038203468952,
+      "tolerance": 0.01,
+      "comparison": "<=",
+      "status": "FAIL"
+    },
+    {
+      "id": "periodic_troughs",
+      "description": "spread of the trough depths of uy(A) over all periods / mean depth",
+      "kind": "numerical",
+      "value": 0.0026345887602487864,
+      "tolerance": 0.01,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "periodic_periods",
+      "description": "spread of the periods / mean period",
+      "kind": "numerical",
+      "value": 0.006221320966344004,
+      "tolerance": 0.01,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "frequency_reference",
+      "description": "|f1 modal - Euler-Bernoulli cantilever| / beam value (model form)",
+      "kind": "numerical",
+      "value": 0.0041297068616671885,
+      "tolerance": 0.02,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "periods_seen",
+      "description": "shortfall of full periods before the last one (needs >= 3)",
+      "kind": "numerical",
+      "value": 0.0,
+      "tolerance": 0.5,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "steps_per_period",
+      "description": "50 / time steps per linear period (below 1: at least 50 steps a period, period error of the trapezoidal rule about (2 pi / 50)^2 / 12 = 0.13 %)",
+      "kind": "validity",
+      "value": 0.2691773736469554,
+      "tolerance": 1.0,
+      "comparison": "<=",
+      "status": "PASS"
+    }
+  ]
+}

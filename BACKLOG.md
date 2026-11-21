@@ -10,6 +10,7 @@ Planned studies, not started. Each one follows the usual loop (frame requirement
 | 4 | Notched bar with plasticity | Nonlinear material: stress beyond yield, residual stress after unloading | Neuber's rule, Glinka's method | CalculiX | Medium | **Done**: proof test at 15 kN strains the hole edge 0.58 % (limit 1 %), leaves -77 MPa residual; [portfolio/14](portfolio/14-strap-proof-plasticity.md) |
 | 5 | Buckling: column or thin panel, linear eigenvalue, then with a small imperfection | Stability: a load-path problem, not just stress | Euler and Johnson formulas, Southwell plot | CalculiX | Low-medium | **Done**: longest acceptable strut about 587 mm; [portfolio/13](portfolio/13-strut-buckling.md) |
 | 6 | Fluid-structure interaction: flexible flap in a channel | Coupled multiphysics | A published benchmark | OpenFOAM · CalculiX · preCICE | High (a weekend or more) | Not started: needs preCICE and its OpenFOAM and CalculiX adapters installed in WSL (sudo) |
+| 7 | Electric motor, an open-source Motor-CAD alternative: the Toyota Prius IPM motor (2004, ORNL) | Three physics on one machine. Electromagnetics: torque, back-EMF, flux-linkage and efficiency maps. Thermal: a lumped network from the geometry. Mechanical: rotor stress at overspeed | The published Prius data (Oak Ridge National Laboratory); an analytic air-gap field; the thermal network against CalculiX heat transfer on a stator section; power balance at every map point | Pyleecan + FEMM (pyFEMM), Python or OpenModelica, CalculiX. Options considered 2026-11-20: SyR-e (needs MATLAB), SWAT-EM (windings), Elmer and GetDP (3D) | High | Not started. Feasibility checked 2026-11-21: Pyleecan's PyPI release (1.5.2, 2024) needs Python < 3.11, but its GitHub master installs and imports on Python 3.14 (numpy 2.5, VTK 9.7, PySide6). Install with `PYTHONUTF8=1`, or setup.py fails on Windows' default encoding. It ships a Toyota Prius IPM model (48 slots, 8 poles, 0.75 mm air gap, 83.8 mm stack), which is the 2004 Prius documented by ORNL, so benchmark against the 2004 report rather than the 2010 one. Still needed: FEMM installed on Windows (the user runs the installer if it needs admin rights). Keep Pyleecan in its own environment, apart from the repo's pinned .venv |
 
 Notes
 - Study 2 can start from the verified heated-channel flow (`studies/heated_channel.py`).
@@ -49,26 +50,53 @@ each part on its own: CSM1 to CSM3 (solid only, CalculiX, nothing new needed), C
 only, OpenFOAM 14, nothing new needed), then FSI1 to FSI3 coupled through preCICE. Each part is
 verified before the coupled run, as in study 2.
 
-## Session handoff (2026-11-21, afternoon)
+## Session handoff (2026-11-21, evening)
 
-Studies 1 to 5 are verified, with portfolio pages 12 to 16 and the index updated. Only study 6
-remains (needs preCICE and its adapters in WSL, which needs your sudo). The dashboard is maintained
-by another session; files under site/ belong to it.
+Read this first in a new session. The dashboard is maintained by another session; files under site/
+and docs/ belong to it.
 
-Harness and skills changes this session (all tested, 206+ tests):
-- clevis model: reproducible CAD (fixed fillet-edge order), Gmsh inverted-tet fallback, optional
-  local fillet refinement, mesh studies that name the metrics they refine and declare a measured
-  mesh noise floor; harness/response_surface.py for choosing a design when the optimiser stalls in noise.
-- cold plate: inner temperature-solver tolerance (3x faster per coupling pass), wall check banded
-  away from the flux steps at the plate edges.
-- bolted joint: rigid-limit companion solve (contact is evaluated on deformed surfaces).
-- CLAUDE.md rule "Keep the skills current" and tests/test_skill_harness.py (skill tables in step
-  with the registry, links, SKILL.md size).
+**Runs that were still going at handoff.** They write to `runs/` whether or not this session is
+alive. Check with `ls -td runs/*` and, if one is still solving, `wsl -e pgrep -a foamRun` or
+`tasklist | grep ccx`. When each finishes, follow these steps:
+1. Read its report.
+2. Compare it with the predictions in its case header.
+3. Append a "Results" block to the header.
+4. Fill in the *pending* items in `portfolio/17-fsi-flag-turek-hron.md`.
+5. Run `scripts/scrub_paths.py <run dir>`, then commit the case and the curated run with `git add -f`. Leave out `*.inp`, `*.dat`, `__pycache__`, and solver logs over about 600 KB (the CSM3 `dynamic.log` files run to 10 MB).
 
-Possible next steps:
-1. Study 6 (FSI) once preCICE is installed.
-2. An eval case for the fillet-margin trap (build-model evals; ask first, per CLAUDE.md). Done
-   2026-11-21: `build-model/evals/fillet-margin-optimisation-trap`.
+| Case | Run directory prefix | Expected |
+|---|---|---|
+| `cases/turek_hron_cfd2_mesh.toml` (CFD2, Re 100) | `*_turek_hron_cfd2_mesh` | At 1.25 mm: drag 137.1 (0.31 %), lift 10.57 (0.36 %). The 0.625 mm level was solving |
+| `cases/flag_csm3_dt_r1.toml` (CSM3 revision) | `*_flag_csm3_dt_r1` | dt 0.0025 and 0.00125 done, matching P1-P4. The 0.000625 level was running |
+| `cases/heated_channel_mesh_r2.toml` (study 11 wall verdict) | `*_heated_channel_mesh_r2` | 40 and 80 cells done. The 160-cell flow takes about 7 s per iteration over 1200 iterations, finishing around 18:00-19:00. If REQ-T1 is verified, update portfolio/11, the PORTFOLIO index, and DASHBOARD.md item 10 |
+
+**Study 6 (FSI) status.**
+- **CSM1, CSM2:** verified and committed (e72d395).
+- **CFD1:**
+  - drag verified on run `20261121-140657_turek_hron_cfd1_mesh_r1`;
+  - lift verified on run `20261121-140245_turek_hron_cfd1_mesh` but "divergent" on r1, because Gmsh's
+    regenerated meshes carry about ±0.6 % mesh-to-mesh noise.
+  - Next revision: nested structured meshes round the body, or measure that noise at a fixed size and
+    declare it before the rerun.
+  - Hold it until the CPU is free.
+- **CSM3:** the first run is kept as evidence of the trapezoidal-rule energy drift and of the mode-2
+  measurement flaw (fixed: mid-level crossings).
+- **Coupled stage:** waits on the user's sudo install (commands below), then:
+  - build the OpenFOAM adapter against v2512 (`./Allwmake`, no sudo);
+  - FSI1 (steady), then FSI2 and FSI3 (periodic, need a transient fluid solver: pimpleFoam).
+  - The tutorials' `perpendicular-flap` (OpenFOAM + CalculiX) is a good first smoke test of the adapter
+    pair.
+- The portfolio page is a draft, not linked from PORTFOLIO.md until study 6 is complete.
+
+**Study 7 (motor), feasibility.** See its row in the table above. The Pyleecan test environment was in
+a session scratchpad and is gone. To recreate it:
+1. `py -3.14 -m venv <dir>`
+2. `set PYTHONUTF8=1`
+3. `<dir>/Scripts/python -m pip install git+https://github.com/Eomys/pyleecan.git`
+
+FEMM is not installed yet.
+
+**Uncommitted at handoff:** nothing settled. Running cases and their runs are committed once they finish.
 
 ## Action items
 

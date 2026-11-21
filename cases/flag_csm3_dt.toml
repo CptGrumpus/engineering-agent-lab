@@ -1,0 +1,143 @@
+# Turek-Hron CSM3: the elastic flag released under gravity from its undeformed shape (dynamic), the
+# last solid-only stage of study 6 (FSI). Same model and material as flag_csm1_mesh.toml (read it for
+# the background); here CalculiX NLGEOM *DYNAMIC, alpha method with ALPHA = 0 (the trapezoidal rule:
+# second order, no numerical damping), 2.5 mm elements, time step 0.01 / 0.005 / 0.0025 / 0.00125 s.
+#
+# Reference (featflow.de FSI benchmark, CSM tests): "Results for CSM3 with timesteps dt = 0.02, 0.01,
+# 0.005", three rows at level 4+0, NOT labelled with their time step:
+#   ux = -14.404 +/- 14.408 [1.0956]   uy = -64.371 +/- 64.695 [1.0956]
+#   ux = -14.645 +/- 14.650 [1.0978]   uy = -64.766 +/- 64.948 [1.0978]
+#   ux = -14.305 +/- 14.305 [1.0995]   uy = -63.607 +/- 65.160 [1.0995]
+#   (x 1e-3 m; mean +/- amplitude [frequency, Hz], from the max and min over the last period:
+#   mean = (max + min) / 2, amplitude = (max - min) / 2, frequency = 1 / period; fsi_quantities page.)
+# The published values themselves spread by 1.8 % (uy mean), 0.7 % (uy amplitude), 2.4 % (ux mean) and
+# 0.36 % (frequency) between rows, without saying which is the finest step. So the requirement is
+# stated against that band: the model's value shall lie inside the band of the three rows, or within
+# 1 % (2 % for ux, the second-order quantity) of its nearest edge. The study's metric is that distance
+# outside the band (0 inside it).
+#
+# Prototype (hand run, 2.5 mm, dt 0.005, 4 s, before this case was written): last period
+#   uy -64.66 +/- 64.97 mm, ux -14.62 mm, f 1.0926 Hz; the flag returns to within 0.31 mm of its start
+#   height each swing (no numerical damping), trough depths within 0.14 %, periods within 0.23 %.
+#   Displacements inside the band; the frequency 0.27 % under its lower edge (1.0956). Linear modal
+#   f1 1.0723 Hz: the large swing stiffens the flag by 1.9 % (the benchmark's rows say 2.2-2.5 %).
+#
+# Checks: a gravity/1000 companion run on the same mesh and step must swing at the linear modal
+#   frequency (the integrator on its own); the undamped flag returns to its start height; trough depths
+#   and periods repeat; modal f1 against beam theory; at least 3 full periods before the last; at
+#   least 50 steps per linear period (validity).
+#
+# Predictions, written BEFORE the evidence run:
+#   P1 Every point check passes at every step; small-amplitude frequency within 0.1 % of the modal one.
+#   P2 Last-period values change by under 0.2 % between dt 0.005 and 0.0025; time-step GCI under 0.5 %.
+#   P3 uy mean about -64.65, amplitude about 64.97, ux mean about -14.62 mm: all inside the published
+#      band (REQ-S3, S4, S5 pass with 0 deviation).
+#   P4 Frequency about 1.093 Hz, 0.2-0.3 % under the band: REQ-S6 passes (limit 1 %). If the time step
+#      were the cause, the frequency would rise toward the band as dt falls; I expect it not to (the
+#      trapezoidal period error at 200 steps a period is 0.008 %), which would put the gap on the spatial
+#      side (2.5 mm elements; the modal f1 still falls by 0.03 % to 1.25 mm) or the reference's.
+#
+# Smoke test (scratch, dt 0.01 s, 6 s, before the evidence run): the integrator check passed (small-
+#   amplitude frequency 0.06 % from the modal one), but returns_to_start (2.9 %), periodic_troughs
+#   (1.3 %) and periodic_periods (1.6 %) FAILED: the flag climbed 1.9 mm above its start height by the
+#   last swing and the frequency rose to 1.107 Hz. Cause: the trapezoidal rule conserves energy only for
+#   linear problems; with large rotations it gains energy each period (an error of order dt^2), so the
+#   swing grows, the flag stiffens, and the last-period values depend on the step and on how long the run
+#   lasts. P4's assumption (a linear period error) was wrong. Not a setup bug, so tolerances stay;
+#   ALPHA < 0 would damp it but would also damp the physical oscillation the benchmark measures.
+# Revision (before the evidence run): add dt = 0.00125 s. The 0.01 s point stays as evidence of the
+#   drift; the GCI uses the three finest steps. Revised predictions:
+#   P1' The energy checks fail at 0.01 s and pass at 0.005 s and below (drift falling about 4x per halving).
+#   P2' Last-period values converge over 0.005 / 0.0025 / 0.00125 at an observed order near 2; GCI under 1 %.
+#   P3' uy mean about -64.7, amplitude about 64.95, ux mean about -14.65 mm: inside or within 0.5 % of the band.
+#   P4' Frequency falls with the step toward about 1.090 Hz (0.4-0.6 % under the band): REQ-S6 passes. The
+#       benchmark rows' own spread (1.0956-1.0995 Hz) is of the same size as this time-step effect.
+#
+# Results (run 20261121-132448_flag_csm3_dt), dt 0.01 / 0.005 / 0.0025 / 0.00125 s:
+#   uy mean -63.213 / -64.292 / -64.613 / -64.799, amplitude 65.095 / 65.120 / 64.905 / 64.847, ux mean
+#   -14.116 / -14.543 / -14.607 / -14.630 mm, frequency 1.1066 / 1.0907 / 1.0939 / 1.0940 Hz.
+#   Energy drift (returns_to_start) 2.9 / 1.27 / 0.45 / 0.074 %: falls with the step as P1' said, but the
+#   0.005 s point still fails it (1.27 % against 1 %), so P1' missed there.
+#   integrator_small_amplitude failed at 0.005 (0.75 %) and 0.00125 (0.34 %) but passed at 0.01 and 0.0025:
+#   not monotone in the step, so a measurement flaw, not the integrator. The sudden release also excites
+#   mode 2 (6.6 Hz), which never decays without damping and shifts single troughs; the check took the
+#   frequency from the last period only. Fixed in revision 1 (mean over every full period, 6 s run); the
+#   tolerance is unchanged.
+#   Time-step GCI (0.005 / 0.0025 / 0.00125): uy amplitude 0.04 % (order 1.88, extrapolated 64.825, inside
+#   the band), ux mean 0.11 % (order 1.50, -14.642, inside), uy mean 0.49 % (order 0.79, extrapolated
+#   -65.05, 0.4 % beyond the band's edge -64.766), frequency "anomalous" (order 4.2: the 0.005 point is
+#   outside the asymptotic range, as its energy check says); 1.0939 / 1.0940 at the two finest steps,
+#   0.14 % under the band. Superseded by flag_csm3_dt_r1.
+
+[case]
+name = "flag_csm3_dt"
+model = "ccx_flag_dynamic"
+description = "Turek-Hron CSM3: the elastic flag (plane strain, St. Venant-Kirchhoff, mu_s 0.5 MPa, nu 0.4, rho 1000 kg/m3) released from rest under gravity (2 m/s2) and left to swing undamped; CalculiX NLGEOM *DYNAMIC (trapezoidal rule), 2.5 mm C3D8I, time step 0.01 / 0.005 / 0.0025 / 0.00125 s, 6 s; checked against the published band, a small-amplitude companion run, the modal frequency and beam theory."
+assumptions = [
+  "Plane strain, per unit depth (established in flag_csm1_mesh).",
+  "St. Venant-Kirchhoff material (CalculiX *ELASTIC under NLGEOM), as the benchmark defines it.",
+  "No damping, physical or numerical (ALPHA = 0), so the oscillation should repeat exactly.",
+  "2.5 mm elements: the static mesh study (flag_csm1_mesh) puts uy(A) at this size 0.09 % from its extrapolated value.",
+]
+limitations = [
+  "Time-step convergence only; the spatial error is taken from the static mesh study at the same size.",
+  "The published rows are not labelled with their time step, so the reference is a band, not a value.",
+]
+
+[parameters]
+density_kg_per_m3 = 1000.0
+shear_modulus_Pa = 500000.0
+poisson_ratio = 0.4
+gravity_m_per_s2 = 2.0
+flag_length_m = 0.35
+flag_height_m = 0.02
+cylinder_radius_m = 0.05
+element_size_mm = 2.5
+time_step_s = 0.005
+
+[sweep]
+parameter = "time_step_s"
+values = [0.01, 0.005, 0.0025, 0.00125]
+
+[numerics]
+end_time_s = 6.0
+small_end_time_s = 3.0
+
+[verification]
+small_amplitude_rel_tol = 0.002
+energy_drift_max = 0.01
+period_spread_max = 0.01
+frequency_rel_tol = 0.02
+gci_max = 0.01
+
+[[requirements]]
+id = "REQ-S3"
+text = "The solid model shall reproduce the CSM3 mean vertical displacement of point A inside the band of the published rows, or within 1 % of its nearest edge."
+metric = "uy_mean_band_dev_pct"
+operator = "<="
+limit = 1.0
+units = "%"
+
+[[requirements]]
+id = "REQ-S4"
+text = "It shall reproduce the CSM3 vertical amplitude of point A inside the published band, or within 1 % of its nearest edge."
+metric = "uy_amplitude_band_dev_pct"
+operator = "<="
+limit = 1.0
+units = "%"
+
+[[requirements]]
+id = "REQ-S5"
+text = "It shall reproduce the CSM3 mean horizontal displacement of point A inside the published band, or within 2 % of its nearest edge."
+metric = "ux_mean_band_dev_pct"
+operator = "<="
+limit = 2.0
+units = "%"
+
+[[requirements]]
+id = "REQ-S6"
+text = "It shall reproduce the CSM3 oscillation frequency inside the published band, or within 1 % of its nearest edge."
+metric = "frequency_band_dev_pct"
+operator = "<="
+limit = 1.0
+units = "%"

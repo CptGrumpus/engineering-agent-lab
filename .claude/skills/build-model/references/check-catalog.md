@@ -29,6 +29,11 @@ comparison, and one validity check per assumption that can fail.
 | GCI over the 3 finest meshes, regime-aware (monotone / oscillatory / divergent) | numerical | `discretization_<metric>` |
 | Stress / yield < 1 | validity | `linear_material` |
 | Deflection / length below a limit | validity | `small_deflection` |
+| Large-deflection elastica (inextensible beam, dead load) for tip displacement, load path and deflected shape | model form | Turek-Hron flag `elastica_uy`, `load_path`, `deflected_shape` |
+| Reaction + body load lumped on the constrained nodes (computed from the mesh) = total weight | numerical | flag `equilibrium` |
+| Dynamics: a small-amplitude companion run at the linear modal frequency (the integrator alone) | numerical | flag CSM3 `integrator_small_amplitude` |
+| Dynamics, undamped: returns to its start height; trough depths and periods repeat (energy drift) | numerical | flag CSM3 `returns_to_start`, `periodic_troughs`, `periodic_periods` |
+| Published benchmark values as the requirement, or a band of published rows when they disagree | requirement | flag CSM1-3, Turek-Hron CFD1-2 |
 
 ## Stress concentration (CAD to FEA)
 
@@ -123,3 +128,5 @@ Fatigue life is extremely sensitive to stress (here a 10 % stress change moves l
 | Re below transition | validity | `laminar` |
 | Entrance length ends before the measurement window; centreline constant across it | validity | `entrance_before_window`, `fully_developed` |
 | checkMesh passes | numerical | `mesh_quality` |
+| Prescribed inflow profile checked face by face against the formula; flow rate carries the face-sampling error | numerical | Turek-Hron `inflow_profile`, `flow_rate` |
+| Force history settled over the last 10 % of iterations; SIMPLE met its residual targets | numerical | Turek-Hron `forces_settled`, `converged` |

@@ -143,6 +143,19 @@ Traps found while building the studies in this repo, by tool.
 - St. Venant-Kirchhoff is plain `*ELASTIC` under `NLGEOM`; `*STATIC, DIRECT` with a fixed
   increment and `*CONTROLS, PARAMETERS=FIELD` `1.e-8, 1.e-6` converged in 2 iterations per step.
 
+- **`*DYNAMIC, ALPHA=0` (trapezoidal rule) gains energy in a large-rotation problem.** It conserves
+  energy only for linear problems. The released Turek-Hron flag climbed above its start height by
+  2.9 / 1.27 / 0.45 / 0.07 % of its swing at dt 0.01 / 0.005 / 0.0025 / 0.00125 s over 6 s (about 4x
+  less per halving), and the extra energy stiffened the swing and raised its frequency. Check the
+  energy directly (an undamped body released from rest must return to its start height), and keep only
+  the steps that pass in the GCI. ALPHA < 0 would damp the drift and the physics with it.
+- **Measure a period from mid-level crossings, not from local extrema.** A sudden release also excites
+  higher modes, which never decay without damping; a mode at 6.6 Hz riding on a 1.07 Hz swing made an
+  extremum search find false troughs (a synthetic two-mode test read 1.71 Hz) and made the last-period
+  frequency jitter between time steps. Downward crossings of the mid level with a quarter-amplitude
+  hysteresis gave 1.0949-1.0952 Hz at every step. Test any signal-processing metric on a synthetic
+  signal with the contamination you expect before trusting it.
+
 ## CalculiX contact (surface-to-surface, penalty)
 
 - Two bodies that touch at a point: in a Gmsh .geo on the built-in kernel set

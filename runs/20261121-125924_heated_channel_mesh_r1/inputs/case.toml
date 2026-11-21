@@ -1,0 +1,104 @@
+# Heated coolant channel: mesh study revision 1 (40 / 80 / 160 cells across the gap).
+# Same model, design question, requirements and tolerances as heated_channel_mesh.toml; read that
+# file for the question, the prototype findings and revisions 1 and 2 of the scheme.
+#
+# Why this run: run 20261120-150722_heated_channel_mesh verified the coolant rise (REQ-T2) but
+# withheld the peak wall temperature (REQ-T1): 44.135 / 44.097 / 44.029 C at 20 / 40 / 80 cells,
+# differences growing (R = 1.84), so the GCI gave no estimate. As in strap_proof_r1, the coarsest
+# mesh is dropped and a finer one added. Requirements and tolerances are unchanged.
+#
+# What the old run shows near the end of heating (wall value at the last cell centres, C):
+#   20 cells:  ... 43.924  43.941 | 44.135      (last cell 0.19 K above its neighbour)
+#   40 cells:  ... 43.992  44.004 | 44.097      (0.09 K above)
+#   80 cells:  ... 44.021  44.029 | 44.003      (last cell now 0.03 K BELOW its neighbour)
+# The linearUpwind overshoot at the heated-to-adiabatic step shrinks and reverses sign, so on the
+# finest mesh the maximum moved one cell inward. The max is switching between two discrete points,
+# which is why the three values did not converge smoothly. The second-to-last cell alone goes
+# 43.941 / 44.004 / 44.029 (ratio 0.40, settling). Scale estimate: axial conduction near the
+# flux step acts over about sqrt(alpha / wall shear rate) = sqrt(1.46e-7 / 600) = 16 um; the
+# 160-cell mesh has 31 um cells along the wall, so the step itself is still not resolved, but
+# the peak (one or more cells upstream of it) should be.
+#
+# Changes, decided before the run:
+# - flow_iterations 1000 -> 2000: SIMPLE converges more slowly per iteration on the finer mesh
+#   (at 80 cells the residuals reached 1e-12 only around iteration 700).
+# - New check flow_converged (max final initial residual of Ux, Uy, p <= 1e-6). Until now only the
+#   temperature stage was checked, so an unconverged flow on a fine mesh would have passed
+#   silently. At 80 cells in the old run it was 1.6e-9 (Uy).
+#
+# Predictions, written BEFORE the run:
+#   P1 Every point check passes on every mesh, flow_converged included (residuals under 1e-9).
+#   P2 At 160 cells the last cell sits below its neighbour again, and the peak is one or two cells
+#      upstream of the end at 44.035 +/- 0.01 C.
+#   P3 The peak's GCI (40 / 80 / 160) gives an estimate, oscillatory or monotone, under 0.5 % of
+#      the rise: REQ-T1 verified PASS by about 0.96 K.
+#   P4 Outlet rise 7.199 K, converged within the noise floor: REQ-T2 PASS. Wall error against
+#      Graetz at the stations about 0.01 % at 160 cells (0.13 / 0.032 % at 40 / 80).
+#   P5 Run time about an hour, almost all of it the 160-cell flow stage.
+
+[case]
+name = "heated_channel_mesh_r1"
+model = "openfoam_heated_channel"
+description = "2D laminar water channel (1 mm gap, 0.1 m/s) with both walls heated at 30 kW/m2 over 50 mm; OpenFOAM incompressibleFluid + scalarTransport; cells across the gap 40 / 80 / 160, verified against the Graetz thermal-entry solution."
+assumptions = [
+  "Constant water properties at 25 C (temperature rise under 20 K), so temperature is a passive scalar.",
+  "Hydrodynamically developed inflow: parabolic profile at an exact flow rate, 5 mm unheated entry.",
+  "Uniform heat flux into the water on both walls; the plate's conduction is not modelled (no conjugate heat transfer).",
+  "2D: the passage is much wider than the gap (side walls neglected; the 3D duct study shows a 3 % effect on flow).",
+]
+limitations = [
+  "Synthetic geometry and loads; not calibrated to a product.",
+  "No conjugate conduction in the plate, so real wall temperatures would be smoothed along the length.",
+  "Checks establish numerical verification against the Graetz solution and the energy balance only; no test data.",
+]
+
+[parameters]
+gap_mm = 1.0
+heated_length_mm = 50.0
+entry_length_mm = 5.0
+exit_length_mm = 5.0
+mean_velocity_m_per_s = 0.1
+density_kg_per_m3 = 997.0
+dynamic_viscosity_Pa_s = 0.00089
+specific_heat_J_per_kgK = 4180.0
+conductivity_W_per_mK = 0.607
+inlet_temperature_C = 25.0
+wall_heat_flux_W_per_m2 = 30000.0
+cells_across_gap = 40
+cell_aspect_ratio = 5.0
+
+[sweep]
+parameter = "cells_across_gap"
+values = [40, 80, 160]
+
+[numerics]
+flow_iterations = 2000
+temperature_iterations = 1500
+write_interval = 100
+relaxation_T = 1.0
+
+[verification]
+temperature_change_rel_max = 1e-5
+flow_residual_max = 1e-6
+flow_rel_tol = 1e-6
+profile_rel_tol = 0.01
+energy_rel_tol = 1e-6
+wall_rel_tol = 0.01
+peak_rel_tol = 0.01
+gci_max = 0.01
+
+[[requirements]]
+id = "REQ-T1"
+text = "Peak wall temperature over the heated length shall not exceed 45 C."
+metric = "max_wall_temperature_C"
+operator = "<="
+limit = 45.0
+units = "C"
+
+[[requirements]]
+id = "REQ-T2"
+text = "Coolant temperature rise from inlet to outlet shall not exceed 10 K."
+metric = "outlet_bulk_rise_K"
+operator = "<="
+limit = 10.0
+units = "K"

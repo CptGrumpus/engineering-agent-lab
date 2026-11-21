@@ -1,0 +1,21 @@
+2026-11-21 12:59:24,971 INFO [harness.20261121-125924_heated_channel_mesh_r1.run] run 20261121-125924_heated_channel_mesh_r1: case cases/heated_channel_mesh_r1.toml (sha256 d55b72f36d7b)
+2026-11-21 13:00:28,547 INFO [harness.20261121-125924_heated_channel_mesh_r1.run] p00_cells_across_gap-40: max_wall_temperature_C 44.1, wall_temperature_end_C 44.1, outlet_bulk_rise_K 7.199
+2026-11-21 13:11:00,009 INFO [harness.20261121-125924_heated_channel_mesh_r1.run] p01_cells_across_gap-80: max_wall_temperature_C 44.03, wall_temperature_end_C 44, outlet_bulk_rise_K 7.199
+2026-11-21 15:11:01,234 ERROR [harness.20261121-125924_heated_channel_mesh_r1.run] p02_cells_across_gap-160: exception
+Traceback (most recent call last):
+  File "<repo>\harness\run.py", line 41, in execute_point
+    res = backend.solve(params, case["numerics"])
+  File "<repo>\studies\heated_channel.py", line 72, in solve
+    r = subprocess.run(of.wsl_command("bash", of.to_wsl_path(self.runner), of.to_wsl_path(case), self.bashrc),
+                       capture_output=True, text=True, timeout=7200)
+  File "~\AppData\Local\Programs\Python\Python314\Lib\subprocess.py", line 557, in run
+    stdout, stderr = process.communicate(input, timeout=timeout)
+                     ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+  File "~\AppData\Local\Programs\Python\Python314\Lib\subprocess.py", line 1221, in communicate
+    stdout, stderr = self._communicate(input, endtime, timeout)
+                     ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "~\AppData\Local\Programs\Python\Python314\Lib\subprocess.py", line 1664, in _communicate
+    raise TimeoutExpired(self.args, orig_timeout)
+subprocess.TimeoutExpired: Command '['wsl', '--', 'bash', '<repo>/runs/20261121-125924_heated_channel_mesh_r1/inputs/run_heated.sh', '~/AppData/Local/Temp/of_heated__w34oxg9/case', '/opt/openfoam14/etc/bashrc']' timed out after 7200 seconds
+
+2026-11-21 15:11:01,237 INFO [harness.20261121-125924_heated_channel_mesh_r1.run] run 20261121-125924_heated_channel_mesh_r1: partial (2/3 points completed)
