@@ -136,8 +136,8 @@ code { font-family: var(--font-data); font-size: 0.85em; }
 }
 .status b { color: var(--vp-ink); font-weight: 500; }
 .status .chk { color: #9fe3b9; }
-.tabs { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 8px; }
-@media (max-width: 1100px) { .tabs { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.tabs { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 8px; }
+@media (max-width: 1100px) { .tabs { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
 .tabs button {
   font: inherit; text-align: left; cursor: pointer; display: grid; gap: 2px; min-width: 0;
   padding: 10px 14px; border-radius: var(--radius); border: 1px solid var(--rule); background: var(--surface); color: var(--ink);
@@ -208,6 +208,7 @@ code { font-family: var(--font-data); font-size: 0.85em; }
 .plan-meta { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 6px 10px; font-family: var(--font-data); font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-3); }
 .plan-meta .no { color: var(--accent); }
 .plan-tag { padding: 2px 9px; border: 1px dashed var(--ink-3); border-radius: 999px; }
+.plan-tag.done { border: 1px solid var(--pass); color: var(--pass); background: var(--pass-bg); }
 .plan .skill p b { display: block; font-family: var(--font-data); font-weight: 500; font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-3); margin-bottom: 2px; }
 .plan .tools { font-family: var(--font-data); font-size: 0.78rem; color: var(--ink-3); }
 @media (max-width: 900px) { .skills { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
@@ -381,10 +382,11 @@ td.num { font-family: var(--font-data); font-variant-numeric: tabular-nums; whit
 .reqs td:nth-child(4) { color: var(--ink-2); }
 .reqs-note { padding: 12px 18px 16px; font-size: 0.88rem; color: var(--ink-2); border-top: 1px solid var(--rule); }
 .v-held { color: var(--warn); background: var(--warn-bg); }
-/* gallery: eleven cards = one featured + nine + the baseline, which spans the last row on wide screens */
-@media (min-width: 961px) {
-  .gallery .card:last-child { grid-column: 1 / -1; grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); grid-template-rows: auto; }
-  .gallery .card:last-child .thumb { border-bottom: 0; border-right: 1px solid var(--rule); }
+.findings .finding:last-child:nth-child(even) { grid-column: 1 / -1; }
+/* gallery: one featured card and eleven more; the last spans two columns so no row has a gap */
+@media (min-width: 601px) {
+  .gallery .card:last-child { grid-column: span 2; grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr); grid-template-rows: auto; }
+  .gallery .card:last-child .thumb { border-bottom: 0; border-right: 1px solid var(--rule); aspect-ratio: auto; height: 100%; }
   .gallery .card:last-child .card-body { align-content: center; padding: 22px 28px; }
 }
 </style>
@@ -409,11 +411,11 @@ td.num { font-family: var(--font-data); font-variant-numeric: tabular-nums; whit
     <div class="hero-text">
     <p class="eyebrow">Mechanical engineering · simulation portfolio</p>
     <h1>Simulation results <em>I can back up.</em></h1>
-    <p class="lede">Eleven studies covering <b>structures, contact, vibration, fatigue, fluids, heat transfer and vehicle dynamics</b>. In each one I start from written requirements, build the model, run a real solver, and compare the result against something independent before I call it a pass or a fail. It's all open-source software, and a coding agent does most of the legwork using procedures I wrote.</p>
+    <p class="lede">Twelve studies covering <b>structures, contact, vibration, fatigue, fluids, heat transfer, vehicle dynamics and design optimisation</b>. In each one I start from written requirements, build the model, run a real solver, and compare the result against something independent before I call it a pass or a fail. It's all open-source software, and a coding agent does most of the legwork using procedures I wrote.</p>
     </div>
     <dl class="stats">
-      <div><dt>automated checks</dt><dd>1128</dd></div>
-      <div><dt>saved runs</dt><dd>34</dd></div>
+      <div><dt>automated checks</dt><dd>1,478</dd></div>
+      <div><dt>saved runs</dt><dd>36</dd></div>
       <div><dt>open-source tools</dt><dd>8</dd></div>
       <div><dt>paid licences</dt><dd>0</dd></div>
     </dl>
@@ -423,19 +425,19 @@ td.num { font-family: var(--font-data); font-variant-numeric: tabular-nums; whit
     <span class="label">The short version</span>
     <div class="tldr-grid">
       <div><b>About me</b><p>I'm an automotive mechanical engineer with a master's in ME. In my day job I use AI agents to run virtual models and to turn functional requirements into tools that automate engineering work.</p></div>
-      <div><b>What's here</b><p>Eleven studies, each taken from written requirements through to a checked answer using open-source solvers. There are also three evaluation tasks, and their graders are tested as well.</p></div>
-      <div><b>The code</b><p>It's all Python, about 16,000 lines across 121 files. That covers the harness that runs and checks everything, the models, the independent reference solutions and the graders, with 104 automated tests that run on every push.</p></div>
+      <div><b>What's here</b><p>Twelve studies, each taken from written requirements through to a checked answer using open-source solvers. There are also three evaluation tasks, and their graders are tested as well.</p></div>
+      <div><b>The code</b><p>It's all Python, about 16,000 lines across 124 files. That covers the harness that runs and checks everything, the models, the independent reference solutions and the graders, with 106 automated tests that run on every push.</p></div>
     </div>
-    <p class="tldr-links"><a href="#tasks">Grade an answer yourself</a><a href="#reqs">All the requirements in one table</a><a href="#contact">The newest study, contact</a></p>
+    <p class="tldr-links"><a href="#tasks">Grade an answer yourself</a><a href="#reqs">All the requirements in one table</a><a href="#bracket_opt">The newest study, an optimisation loop</a></p>
   </section>
 
   <section class="viewport wrap" aria-label="Result viewer">
-    <div class="vp" id="vp" role="tabpanel" aria-labelledby="tab-cantilever">
+    <div class="vp" id="vp" role="tabpanel" aria-labelledby="tab-bracket_opt">
       <div class="legend">
         <div class="legend-title" id="lg-title">S, Mises<small>MPa</small></div>
         <div class="legend-body"><div class="swatches" id="lg-sw"></div><div class="ticks" id="lg-ticks"></div></div>
       </div>
-      <div class="stage"><img id="vp-img" src="v2/vp_cantilever.webp" alt="Von Mises stress on the deformed cantilever bracket">
+      <div class="stage"><img id="vp-img" src="v2/vp_bracket_opt.webp" alt="Von Mises stress on the deformed optimised bracket">
       <svg class="triad" viewBox="0 0 54 54" aria-hidden="true">
         <g stroke-width="1.6" fill="none" stroke-linecap="round">
           <line x1="14" y1="40" x2="44" y2="46" stroke="#ff8f6b"/><line x1="14" y1="40" x2="34" y2="28" stroke="#8fe3a8"/><line x1="14" y1="40" x2="14" y2="8" stroke="#8fb4ff"/>
@@ -446,12 +448,13 @@ td.num { font-family: var(--font-data); font-variant-numeric: tabular-nums; whit
       <div class="status" id="vp-status" aria-live="polite"></div>
     </div>
     <div class="tabs" role="tablist" aria-label="Choose a result">
-<button type="button" role="tab" id="tab-cantilever" aria-controls="vp" aria-selected="true" data-i="0"><span class="tab-k">Stress</span><span class="tab-v">Cantilever bracket</span></button>
-<button type="button" role="tab" id="tab-contact_detail" aria-controls="vp" aria-selected="false" data-i="1"><span class="tab-k">Contact</span><span class="tab-v">Roller on plate</span></button>
-<button type="button" role="tab" id="tab-fatigue" aria-controls="vp" aria-selected="false" data-i="2"><span class="tab-k">Fatigue</span><span class="tab-v">Strap with a 16 mm hole</span></button>
-<button type="button" role="tab" id="tab-fin" aria-controls="vp" aria-selected="false" data-i="3"><span class="tab-k">Thermal</span><span class="tab-v">Heat-sink fin</span></button>
-<button type="button" role="tab" id="tab-duct" aria-controls="vp" aria-selected="false" data-i="4"><span class="tab-k">Flow</span><span class="tab-v">Coolant passage</span></button>
-<button type="button" role="tab" id="tab-mode1" aria-controls="vp" aria-selected="false" data-i="5"><span class="tab-k">Modal</span><span class="tab-v">Bracket arm</span></button>
+<button type="button" role="tab" id="tab-bracket_opt" aria-controls="vp" aria-selected="true" data-i="0"><span class="tab-k">Optimised</span><span class="tab-v">Optimised bracket</span></button>
+<button type="button" role="tab" id="tab-cantilever" aria-controls="vp" aria-selected="false" data-i="1"><span class="tab-k">Stress</span><span class="tab-v">Cantilever bracket</span></button>
+<button type="button" role="tab" id="tab-contact_detail" aria-controls="vp" aria-selected="false" data-i="2"><span class="tab-k">Contact</span><span class="tab-v">Roller on plate</span></button>
+<button type="button" role="tab" id="tab-fatigue" aria-controls="vp" aria-selected="false" data-i="3"><span class="tab-k">Fatigue</span><span class="tab-v">Strap with a 16 mm hole</span></button>
+<button type="button" role="tab" id="tab-fin" aria-controls="vp" aria-selected="false" data-i="4"><span class="tab-k">Thermal</span><span class="tab-v">Heat-sink fin</span></button>
+<button type="button" role="tab" id="tab-duct" aria-controls="vp" aria-selected="false" data-i="5"><span class="tab-k">Flow</span><span class="tab-v">Coolant passage</span></button>
+<button type="button" role="tab" id="tab-mode1" aria-controls="vp" aria-selected="false" data-i="6"><span class="tab-k">Modal</span><span class="tab-v">Bracket arm</span></button>
     </div>
     <p class="vp-note">These images are rendered in Blender straight from the solver output. Before one goes on the page it has to pass two checks. The rendered surface has to enclose the part's actual volume, which catches missing or flipped faces, and every coloured pixel has to match a colour in the legend, which catches lighting that has shifted the contours.</p>
   </section>
@@ -485,7 +488,7 @@ td.num { font-family: var(--font-data); font-variant-numeric: tabular-nums; whit
   <section class="band wrap" id="studies" aria-labelledby="studies-title">
     <div class="band-head">
       <p class="eyebrow">Case studies</p>
-      <h2 id="studies-title">Eleven studies</h2>
+      <h2 id="studies-title">Twelve studies</h2>
       <p>The problems are made up, so there's no client data here. Every number on this page comes from a saved run, and each run can be repeated from its recorded inputs with one command.</p>
     </div>
     <div class="filters" role="group" aria-label="Filter by discipline">
@@ -497,10 +500,19 @@ td.num { font-family: var(--font-data); font-variant-numeric: tabular-nums; whit
       <button type="button" aria-pressed="false" data-f="workflow">Workflow</button>
     </div>
     <div class="gallery" id="gallery">
-      <a class="card featured" href="#contact" data-group="struct">
+      <a class="card featured" href="#bracket_opt" data-group="struct">
+        <span class="thumb"><img src="v2/th_bracket_opt.webp" alt="" loading="lazy" width="800" height="500"></span>
+        <span class="card-body">
+          <span class="meta"><span class="no">12</span><span>New · Design automation</span></span>
+          <span class="card-title">Bracket optimisation loop, driven by the agent</span>
+          <span class="card-answer">The agent searched 32 designs and found a tapered bracket that is 30 % lighter than the straight bar it started from, at 546 g and inside both limits. Every candidate went through the full set of checks, and an independent beam-theory optimum agrees within 0.13 %.</span>
+          <span class="card-foot"><span class="v v-pass">Passes</span><span class="tools">CadQuery · Gmsh · CalculiX · SciPy</span></span>
+        </span>
+      </a>
+      <a class="card" href="#contact" data-group="struct">
         <span class="thumb"><img src="v2/th_contact.webp" alt="" loading="lazy" width="800" height="500"></span>
         <span class="card-body">
-          <span class="meta"><span class="no">10</span><span>New · Contact</span></span>
+          <span class="meta"><span class="no">10</span><span>Contact</span></span>
           <span class="card-title">Roller-on-plate contact, nonlinear FEA</span>
           <span class="card-answer">A track roller carrying 500 N/mm. The contact pressure peaks at 609 MPa against a 650 MPa limit, and the shear under the surface reaches 184 MPa against 200. The CalculiX model lands within 0.4 % of the exact Hertz solution.</span>
           <span class="card-foot"><span class="v v-pass">Passes</span><span class="tools">Gmsh · CalculiX</span></span>
@@ -598,11 +610,13 @@ td.num { font-family: var(--font-data); font-variant-numeric: tabular-nums; whit
       </a>
     </div>
     <details class="reqs" id="reqs">
-      <summary><span class="reqs-title">All the requirements in one table</span><span class="reqs-count">21 requirements · <b class="c-pass">15 met</b> · <b class="c-fail">5 not met</b> · <b class="c-warn">1 withheld</b></span></summary>
+      <summary><span class="reqs-title">All the requirements in one table</span><span class="reqs-count">23 requirements · <b class="c-pass">17 met</b> · <b class="c-fail">5 not met</b> · <b class="c-warn">1 withheld</b></span></summary>
       <div class="table-wrap">
         <table>
           <thead><tr><th>Study</th><th>Requirement</th><th>Limit</th><th>Result</th><th>Verdict</th></tr></thead>
           <tbody>
+          <tr class="r-first"><td><a href="#bracket_opt"><span class="r-no">12</span> Bracket optimisation</a></td><td>Peak bending stress at the optimum, 546 g</td><td class="num">≤ 100 MPa</td><td>99.5 MPa, with the 0.5 % margin and mesh error included</td><td><span class="chip pass">Met</span></td></tr>
+          <tr><td></td><td>Tip deflection at the optimum</td><td class="num">≤ 1.0 mm</td><td>0.917 mm</td><td><span class="chip pass">Met</span></td></tr>
           <tr class="r-first"><td><a href="#fea"><span class="r-no">01</span> Cantilever bracket</a></td><td>Tip deflection</td><td class="num">≤ 1.0 mm</td><td>0.953 mm</td><td><span class="chip pass">Met</span></td></tr>
           <tr><td></td><td>Root bending stress</td><td class="num">≤ 213 MPa</td><td>150 MPa</td><td><span class="chip pass">Met</span></td></tr>
           <tr class="r-first"><td><a href="#strap"><span class="r-no">02</span> Cable hole in a strap</a></td><td>Hole-edge stress, 16 mm hole</td><td class="num">≤ 120 MPa</td><td>117 MPa</td><td><span class="chip pass">Met</span></td></tr>
@@ -695,6 +709,7 @@ td.num { font-family: var(--font-data); font-variant-numeric: tabular-nums; whit
       <p>In several studies my first model gave an answer that looked reasonable and turned out to be wrong. These are the ones where the checks earned their keep.</p>
     </div>
     <div class="findings">
+      <article class="finding"><span class="label">Bracket optimisation · design automation</span><h3>An optimiser kept honest by its stress check</h3><p>A check that only looked at the root would have accepted candidate 12, at 90 MPa. Its real peak is 101 MPa in the middle of the span. Measuring the stress along the whole length kept the search inside the limit, and an independent beam-theory optimum lands within 0.13 % of the answer.</p><a href="#bracket_opt">Read the study</a></article>
       <article class="finding"><span class="label">Strap · stress concentration</span><h3>A model that converged neatly to the wrong answer</h3><p>The mesh study looked textbook, but it settled 2 % away from the handbook value. Running a case with a known exact answer through the same pipeline showed the problem was in how the solver's elements behaved, which no amount of mesh refinement would have revealed.</p><a href="#strap">Read the study</a></article>
       <article class="finding"><span class="label">Coolant channel · CFD</span><h3>A simplified inlet that flipped the answer</h3><p>The simple model said the channel passed. It never converged at the sharp inlet corner, though, and once I modelled the inlet properly the channel failed its pressure budget.</p><a href="#cfd">Read the study</a></article>
       <article class="finding"><span class="label">Quarter car · vehicle dynamics</span><h3>A wheel that left the road</h3><p>Every numerical check passed, but the tire was leaving the ground, which the simple model can't represent, so I held the verdict back. When I built a tire model that can lift off, it showed the simple one had overstated the peak body acceleration by up to 29 %.</p><a href="#suspension">Read the study</a></article>
@@ -706,8 +721,8 @@ td.num { font-family: var(--font-data); font-variant-numeric: tabular-nums; whit
   <section class="band wrap" id="next" aria-labelledby="next-title">
     <div class="band-head">
       <p class="eyebrow">What's next</p>
-      <h2 id="next-title">Six harder studies I'm planning</h2>
-      <p>None of these has been run yet, so there are no results to show. Each one covers something the current set doesn't: friction contact, plasticity, buckling, chained multiphysics, a design loop run by the agent, and coupled fluid and structure. As with the others, I'll pick the independent check before I start modelling.</p>
+      <h2 id="next-title">Six harder studies: one done, five to go</h2>
+      <p>Each of these covers something the earlier studies don't: friction contact, plasticity, buckling, chained multiphysics, a design loop run by the agent, and coupled fluid and structure. The optimisation loop is finished and written up as <a href="#bracket_opt">study 12</a>. The cold-plate chain is being built now, and buckling is next. As with the others, I pick the independent check before I start modelling.</p>
     </div>
     <div class="skills plan">
       <article class="skill">
@@ -718,17 +733,17 @@ td.num { font-family: var(--font-data); font-variant-numeric: tabular-nums; whit
         <span class="tools">CalculiX</span>
       </article>
       <article class="skill">
-        <span class="plan-meta"><span class="no">02 · Multiphysics</span><span class="plan-tag">Planned · medium-high effort</span></span>
+        <span class="plan-meta"><span class="no">02 · Multiphysics</span><span class="plan-tag">In progress</span></span>
         <b>Cold plate, the full thermal chain</b>
         <p><b>Why it's harder</b>Three kinds of physics in a chain: coolant flow, then conduction through the aluminium plate, then thermal stress. Each step gets verified before it hands its results to the next. It builds on the <a href="#heat">heated-channel study</a>.</p>
         <p><b>How I'll check it</b>Fin and slab conduction theory, the closed-form thermal stress, and an energy balance at every handoff.</p>
         <span class="tools">OpenFOAM → CalculiX</span>
       </article>
       <article class="skill">
-        <span class="plan-meta"><span class="no">03 · Automation</span><span class="plan-tag">Planned · medium effort</span></span>
+        <span class="plan-meta"><span class="no">03 · Automation</span><span class="plan-tag done">Done · study 12</span></span>
         <b>Bracket optimisation loop</b>
         <p><b>Why it's harder</b>The agent changes the geometry, meshes, solves and checks, then goes round again to bring the mass down while staying inside the stress and stiffness limits. Here it's driving a design instead of running one case.</p>
-        <p><b>How I'll check it</b>Every candidate has to pass the existing checks, and I'll spot-check the final design against beam theory.</p>
+        <p><b>How I checked it</b>Every candidate passed the full set of checks, and an independent beam-theory optimum agrees to 0.13 %. <a href="#bracket_opt">See the results.</a></p>
         <span class="tools">CadQuery · Gmsh · CalculiX</span>
       </article>
       <article class="skill">
@@ -739,7 +754,7 @@ td.num { font-family: var(--font-data); font-variant-numeric: tabular-nums; whit
         <span class="tools">CalculiX</span>
       </article>
       <article class="skill">
-        <span class="plan-meta"><span class="no">05 · Stability</span><span class="plan-tag">Planned · low-medium effort</span></span>
+        <span class="plan-meta"><span class="no">05 · Stability</span><span class="plan-tag">Up next</span></span>
         <b>Buckling of a column or thin panel</b>
         <p><b>Why it's harder</b>It's a stability problem rather than a stress problem. First a linear eigenvalue buckling analysis, then the same thing with a small imperfection.</p>
         <p><b>How I'll check it</b>The Euler and Johnson formulas, and a Southwell plot.</p>
@@ -768,6 +783,7 @@ td.num { font-family: var(--font-data); font-variant-numeric: tabular-nums; whit
           <tr><td>Contact between separate parts, with the contact pressure and the stress below the surface checked against Hertz</td><td>Gmsh, CalculiX</td><td><a href="#contact">10</a></td></tr>
           <tr><td>Vibration and modal analysis, including identifying the modes and keeping clear of engine orders</td><td>CadQuery, Gmsh, CalculiX</td><td><a href="#modal">4</a></td></tr>
           <tr><td>Fatigue life using notch factors, mean-stress correction and S-N curves fitted to published test data</td><td>CalculiX, Python</td><td><a href="#fatigue">3</a></td></tr>
+          <tr><td>Design optimisation, with an optimiser driving the CAD-to-FEA pipeline and every candidate checked before it counts</td><td>SciPy, CadQuery, Gmsh, CalculiX</td><td><a href="#bracket_opt">12</a></td></tr>
           <tr><td>Scripted pipelines from parametric CAD through STEP export, meshing and solving</td><td>CadQuery, Gmsh, CalculiX</td><td><a href="#strap">2</a>, <a href="#modal">4</a>, <a href="#cad">8</a></td></tr>
           <tr><td>Internal laminar flow and pressure budgets, in 2D and 3D</td><td>OpenFOAM</td><td><a href="#cfd">5</a></td></tr>
           <tr><td>Heat transfer, from conduction with surface convection to convection in a heated coolant channel</td><td>CalculiX, OpenFOAM</td><td><a href="#thermal">6</a>, <a href="#heat">11</a></td></tr>
@@ -786,6 +802,43 @@ td.num { font-family: var(--font-data); font-variant-numeric: tabular-nums; whit
       <p>For each one you'll find the question, the answer up front, how I checked it, and what went wrong along the way.</p>
     </div>
     <div class="studies">
+  <h2 class="discipline">Design automation</h2>
+
+  <section class="study" id="bracket_opt">
+    <div class="study-head">
+      <span class="label">Study 12 · CadQuery, Gmsh, CalculiX and SciPy, driven by the agent</span>
+      <h2>Bracket optimisation loop</h2>
+    </div>
+    <figure><div class="plate"><img src="img/anim_bracket_opt.webp" alt="Animation of the optimiser's search: each candidate's stress render, its place in the design space, and the mass so far" loading="lazy"></div><figcaption>The search as it happened. Each frame is one candidate, with its CalculiX stress, where it sits in the design space and the mass so far. Candidate 8 went too thin, deflected beyond what a linear model can handle, and was thrown out by the checks.</figcaption></figure>
+    <p><strong>The question.</strong> The steel bracket from study 1 (200 mm long, 20 mm wide, 1 kN at the tip) now sits in a vibrating assembly, so its bending stress is limited to 100 MPa for fatigue, and the tip can deflect at most 1.0 mm. The width is fixed by the mounting. Which linear taper, meaning which root and tip heights, makes it as light as possible?</p>
+    <div class="answer">
+      <div class="chips"><span class="chip pass">546 g, 30 % lighter</span><span class="chip pass">Peak stress 99.5 MPa</span><span class="chip pass">Tip 0.917 mm</span><span class="chip pass">Beam-theory optimum within 0.13 %</span></div>
+      <p><strong>A 26.0 mm root tapering to 8.7 mm at the tip, at 546 g.</strong> That's 30 % lighter than the straight 20 × 25 mm bar it started from (785 g), which was the lightest straight bar that meets both limits. Stress is the limit that governs, and it peaks in the middle of the span at 99.5 MPa, not at the root, where it's only 88 MPa. The tip moves 0.917 mm, so deflection isn't the limiting factor.</p>
+      <p>The answer holds once mesh error is included. At the optimum, going from 4.5 mm to 2 mm elements moves the peak stress by 0.013 MPa. I had the optimiser work to a 0.5 % margin on each limit, and the converged stress still sits 0.49 % under 100 MPa.</p>
+    </div>
+    <figure><div class="plate"><img src="img/render_bracket_compare.png" alt="The starting straight bar and the optimised taper rendered on one stress scale" loading="lazy"></div><figcaption>The starting bar and the optimum on one stress scale. Most of the straight bar is lightly loaded. The taper keeps its top surface close to the limit along most of the span, so nearly all of the steel is doing work.</figcaption></figure>
+    <h3>How it works</h3>
+    <p>An optimiser (COBYLA, which doesn't need gradients and handles constraints) proposes a root and tip height. For each candidate the harness builds the solid in CadQuery, exports a STEP file, meshes it with quadratic tetrahedra in Gmsh, solves it in CalculiX and runs every check of the study, exactly as it would for any other case. A candidate that fails a check counts as infeasible whatever its numbers say, so the optimiser can never be steered by a result the checks have rejected. The whole search is one command, and it converged in 32 candidates.</p>
+    <h3>How I checked it</h3>
+    <ul class="proof">
+      <li>Every candidate goes through the full set of checks. The CAD volume is compared with the closed form, the applied load and tip area are read back from the mesh, and the reactions have to balance. The tip deflection has to match tapered Timoshenko beam theory, which it does within 0.6 %, and the FE surface stress has to match M/Z along the span, within 0.7 % as a fit and 1.5 % point by point.</li>
+      <li>A separate mesh study at the optimum puts the mesh uncertainty at 0.005 % on the stress and 0.016 % on the deflection, and the requirement is still met with that added.</li>
+      <li>I also optimised the bracket independently with beam theory, using the same limits and margin. It lands at 545.2 g against the FE optimum's 546.0 g, a 0.13 % difference, with the heights within 0.7 %.</li>
+      <li>I wrote down predictions before running it (the heights, the mass, which limit would govern and where the stress would peak), and they all held.</li>
+    </ul>
+    <h3>Why measuring the stress properly matters</h3>
+    <figure><div class="plate"><img src="img/bracket_stress_span.png" alt="Bending stress along the span for the straight bar, a candidate that passes a root-only check, and the optimum" loading="lazy"></div><figcaption>Candidate 12 is the trap. Its root stress is 90 MPa, comfortably under the limit, but it peaks at 101 MPa in the middle of the span.</figcaption></figure>
+    <p>Once the taper is steeper than 2 to 1, the bending stress peaks inside the span rather than at the root. An optimiser that only checked the root would have kept thinning the tip and handed back a bracket that fails in the middle. The peak right at the clamped corner can't be used either, because it grows without limit as the mesh gets finer, which is the trap from study 1. So the study measures the FE surface stress against M/Z in the smooth part of the span and takes the peak along the whole length.</p>
+    <div class="caught">
+      <h3>What I caught along the way</h3>
+      <ul>
+        <li>Candidate 8 took a long step to a 390 g design that deflected 2.7 mm, 1.35 % of the span. That's past the small-deflection limit of a linear analysis, so the checks rejected it, and the optimiser treated it as infeasible and stepped back. The run is kept as evidence.</li>
+        <li>The optimiser drives the stress right onto the limit at whatever mesh size it's using, so without a reserve, a finer mesh could tip the answer over. I set the 0.5 % margin before running, and the confirmation mesh study measured the actual error at 0.005 %.</li>
+      </ul>
+    </div>
+    <p class="note">It's a linear taper only, so a curved profile would be lighter still. The joint at the root needs its own assessment, and there's no lateral-torsional buckling check yet.</p>
+  </section>
+
   <h2 class="discipline">Structures and vibration</h2>
 
   <section class="study" id="fea">
@@ -1206,7 +1259,7 @@ td.num { font-family: var(--font-data); font-variant-numeric: tabular-nums; whit
 
 <script>
 (() => {
-  const VP = [{"id": "cantilever", "tab": "Stress", "legend": "S, Mises", "unit": "MPa", "model": "Cantilever bracket · steel, 200 × 20 × 20 mm, 1 kN at the tip", "lines": ["Solver: CalculiX 2.22 · C3D10 · 5 758 surface nodes", "Deformation scale factor: +2.500e+01", "Range capped at the 150 MPa beam-theory stress; the clamp corners are singular"], "bands": ["#3b2f80", "#466be3", "#3ba0fd", "#1ad2d2", "#32f298", "#80ff53", "#bef434", "#eecf3a", "#fe9e2f", "#f26014", "#d02f05", "#9b0f01"], "vmin": 0.0, "vmax": 150.0, "check": "Render check: encloses 80 000.0 mm³ of 80 000.0 design · 100.0 % of pixels on the legend", "img": "v2/vp_cantilever.webp"}, {"id": "contact_detail", "tab": "Contact", "legend": "S, Mises", "unit": "MPa", "model": "Roller on plate · steel, R = 50 mm, 501 N/mm · section through the contact", "lines": ["Solver: CalculiX 2.22 · surface-to-surface penalty contact", "Peak contact pressure +6.092e+02 · Hertz exact +6.067e+02", "Highest stress 0.41 mm below the surface, where Hertz puts it"], "bands": ["#3a2d79", "#455ed3", "#458cfd", "#28bceb", "#18e0bd", "#3ff68a", "#84ff51", "#bcf534", "#e5d938", "#fcb336", "#fb7e21", "#e84b0c", "#c82803", "#980e01"], "vmin": 0.0, "vmax": 350.0, "check": "Render check: encloses 59 544.3 mm³ of 59 561.9 design · 100.0 % of pixels on the legend", "img": "v2/vp_contact_detail.webp"}, {"id": "fatigue", "tab": "Fatigue", "legend": "S11 amplitude", "unit": "MPa", "model": "Strap with a 16 mm hole · 160 × 40 × 4 mm, 0 → 5 kN cyclic", "lines": ["Solver: CalculiX 2.22 · plane stress, quarter model mirrored", "Peak amplitude +5.85e+01 at the sides of the hole", "Life about 8 × 10⁹ cycles against 3 × 10⁷ required"], "bands": ["#3b2f80", "#466be3", "#3ba0fd", "#1ad2d2", "#32f298", "#80ff53", "#bef434", "#eecf3a", "#fe9e2f", "#f26014", "#d02f05", "#9b0f01"], "vmin": -6.0, "vmax": 66.0, "check": "Render check: encloses 24 795.8 mm³ of 24 795.8 design · 100.0 % of pixels on the legend", "img": "v2/vp_fatigue.webp"}, {"id": "fin", "tab": "Thermal", "legend": "NT11", "unit": "°C", "model": "Heat-sink fin · 6061-T6, 40 × 20 × 2 mm, h = 25 W/m²K", "lines": ["Solver: CalculiX 2.22 · steady heat transfer", "Tip 73.2 °C against a 60 °C minimum", "Energy balance: base heat in equals convection out"], "bands": ["#3a2d79", "#455ed3", "#458cfd", "#28bceb", "#18e0bd", "#3ff68a", "#84ff51", "#bcf534", "#e5d938", "#fcb336", "#fb7e21", "#e84b0c", "#c82803", "#980e01"], "vmin": 73.0, "vmax": 80.0, "check": "Render check: encloses 1 600.0 mm³ of 1 600.0 design · 100.0 % of pixels on the legend", "img": "v2/vp_fin.webp"}, {"id": "duct", "tab": "Flow", "legend": "U, axial", "unit": "m/s", "model": "Coolant passage · 20 × 1 mm, water at 0.1 m/s mean, Re 199", "lines": ["Solver: OpenFOAM 14 · 3D laminar, quarter section mirrored", "Height = velocity; gap direction drawn 5× wider", "Pressure gradient within 0.03 % of the exact rectangular-duct solution"], "check_text": "Render check: the volume under the surface equals the imposed flow rate to {err} · {col} of pixels on the legend", "bands": ["#4040a2", "#4294ff", "#18ddc2", "#6dfe62", "#cdec34", "#fdac34", "#eb500e", "#a91601"], "vmin": 0.0, "vmax": 0.16, "check": "Render check: the volume under the surface equals the imposed flow rate to 0.03 % · 100.0 % of pixels on the legend", "img": "v2/vp_duct.webp"}, {"id": "mode1", "tab": "Modal", "legend": "U, Magnitude", "unit": "normalised", "model": "Bracket arm · steel, 150 × 25 × 7 mm, clamped", "lines": ["Solver: CalculiX 2.22 · *FREQUENCY, mode 1 of 4", "261.7 Hz flapwise · requirement ≥ 250 Hz (engine 2nd order + 25 %)", "Within 0.9 % of an independent Timoshenko beam model"], "bands": ["#3d358b", "#477bf2", "#28bceb", "#20eaac", "#79fe59", "#c3f134", "#f6c33a", "#fb7e21", "#dd3d08", "#a11201"], "vmin": 0.0, "vmax": 1.0, "check": "Render check: encloses 26 250.0 mm³ of 26 250.0 design · 100.0 % of pixels on the legend", "img": "v2/vp_mode1.webp"}];
+  const VP = [{"id": "bracket_opt", "tab": "Optimised", "legend": "S, Mises", "unit": "MPa", "model": "Optimised bracket · steel taper 26.0 → 8.7 mm, 200 × 20 mm, 1 kN at the tip", "lines": ["Solver: CalculiX 2.22 · C3D10 · candidate 27 of 32, chosen by COBYLA", "Deformation scale factor: +2.500e+01", "Peak bending stress 99.5 MPa against 100 · 546 g, 30 % lighter than the straight bar"], "bands": ["#3c3286", "#4771e9", "#33adf7", "#18dec0", "#4ef97d", "#a4fc3c", "#dde037", "#fcb136", "#f76f1a", "#d63506", "#9e1001"], "vmin": 0.0, "vmax": 110.0, "check": "Render check: encloses 69 549.1 mm³ of 69 549.1 design · 100.0 % of pixels on the legend", "img": "v2/vp_bracket_opt.webp"}, {"id": "cantilever", "tab": "Stress", "legend": "S, Mises", "unit": "MPa", "model": "Cantilever bracket · steel, 200 × 20 × 20 mm, 1 kN at the tip", "lines": ["Solver: CalculiX 2.22 · C3D10 · 5 758 surface nodes", "Deformation scale factor: +2.500e+01", "Range capped at the 150 MPa beam-theory stress; the clamp corners are singular"], "bands": ["#3b2f80", "#466be3", "#3ba0fd", "#1ad2d2", "#32f298", "#80ff53", "#bef434", "#eecf3a", "#fe9e2f", "#f26014", "#d02f05", "#9b0f01"], "vmin": 0.0, "vmax": 150.0, "check": "Render check: encloses 80 000.0 mm³ of 80 000.0 design · 100.0 % of pixels on the legend", "img": "v2/vp_cantilever.webp"}, {"id": "contact_detail", "tab": "Contact", "legend": "S, Mises", "unit": "MPa", "model": "Roller on plate · steel, R = 50 mm, 501 N/mm · section through the contact", "lines": ["Solver: CalculiX 2.22 · surface-to-surface penalty contact", "Peak contact pressure +6.092e+02 · Hertz exact +6.067e+02", "Highest stress 0.41 mm below the surface, where Hertz puts it"], "bands": ["#3a2d79", "#455ed3", "#458cfd", "#28bceb", "#18e0bd", "#3ff68a", "#84ff51", "#bcf534", "#e5d938", "#fcb336", "#fb7e21", "#e84b0c", "#c82803", "#980e01"], "vmin": 0.0, "vmax": 350.0, "check": "Render check: encloses 59 544.3 mm³ of 59 561.9 design · 100.0 % of pixels on the legend", "img": "v2/vp_contact_detail.webp"}, {"id": "fatigue", "tab": "Fatigue", "legend": "S11 amplitude", "unit": "MPa", "model": "Strap with a 16 mm hole · 160 × 40 × 4 mm, 0 → 5 kN cyclic", "lines": ["Solver: CalculiX 2.22 · plane stress, quarter model mirrored", "Peak amplitude +5.85e+01 at the sides of the hole", "Life about 8 × 10⁹ cycles against 3 × 10⁷ required"], "bands": ["#3b2f80", "#466be3", "#3ba0fd", "#1ad2d2", "#32f298", "#80ff53", "#bef434", "#eecf3a", "#fe9e2f", "#f26014", "#d02f05", "#9b0f01"], "vmin": -6.0, "vmax": 66.0, "check": "Render check: encloses 24 795.8 mm³ of 24 795.8 design · 100.0 % of pixels on the legend", "img": "v2/vp_fatigue.webp"}, {"id": "fin", "tab": "Thermal", "legend": "NT11", "unit": "°C", "model": "Heat-sink fin · 6061-T6, 40 × 20 × 2 mm, h = 25 W/m²K", "lines": ["Solver: CalculiX 2.22 · steady heat transfer", "Tip 73.2 °C against a 60 °C minimum", "Energy balance: base heat in equals convection out"], "bands": ["#3a2d79", "#455ed3", "#458cfd", "#28bceb", "#18e0bd", "#3ff68a", "#84ff51", "#bcf534", "#e5d938", "#fcb336", "#fb7e21", "#e84b0c", "#c82803", "#980e01"], "vmin": 73.0, "vmax": 80.0, "check": "Render check: encloses 1 600.0 mm³ of 1 600.0 design · 100.0 % of pixels on the legend", "img": "v2/vp_fin.webp"}, {"id": "duct", "tab": "Flow", "legend": "U, axial", "unit": "m/s", "model": "Coolant passage · 20 × 1 mm, water at 0.1 m/s mean, Re 199", "lines": ["Solver: OpenFOAM 14 · 3D laminar, quarter section mirrored", "Height = velocity; gap direction drawn 5× wider", "Pressure gradient within 0.03 % of the exact rectangular-duct solution"], "check_text": "Render check: the volume under the surface equals the imposed flow rate to {err} · {col} of pixels on the legend", "bands": ["#4040a2", "#4294ff", "#18ddc2", "#6dfe62", "#cdec34", "#fdac34", "#eb500e", "#a91601"], "vmin": 0.0, "vmax": 0.16, "check": "Render check: the volume under the surface equals the imposed flow rate to 0.03 % · 100.0 % of pixels on the legend", "img": "v2/vp_duct.webp"}, {"id": "mode1", "tab": "Modal", "legend": "U, Magnitude", "unit": "normalised", "model": "Bracket arm · steel, 150 × 25 × 7 mm, clamped", "lines": ["Solver: CalculiX 2.22 · *FREQUENCY, mode 1 of 4", "261.7 Hz flapwise · requirement ≥ 250 Hz (engine 2nd order + 25 %)", "Within 0.9 % of an independent Timoshenko beam model"], "bands": ["#3d358b", "#477bf2", "#28bceb", "#20eaac", "#79fe59", "#c3f134", "#f6c33a", "#fb7e21", "#dd3d08", "#a11201"], "vmin": 0.0, "vmax": 1.0, "check": "Render check: encloses 26 250.0 mm³ of 26 250.0 design · 100.0 % of pixels on the legend", "img": "v2/vp_mode1.webp"}];
   const vp = document.getElementById("vp"), img = document.getElementById("vp-img");
   const sw = document.getElementById("lg-sw"), ticks = document.getElementById("lg-ticks");
   const title = document.getElementById("lg-title"), status = document.getElementById("vp-status");

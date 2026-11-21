@@ -20,6 +20,11 @@ for l in pick:
 
 # --- viewport scenes ------------------------------------------------------------
 VP = [
+    {"id": "bracket_opt", "tab": "Optimised", "legend": "S, Mises", "unit": "MPa",
+     "model": "Optimised bracket · steel taper 26.0 → 8.7 mm, 200 × 20 mm, 1 kN at the tip",
+     "lines": ["Solver: CalculiX 2.22 · C3D10 · candidate 27 of 32, chosen by COBYLA",
+               "Deformation scale factor: +2.500e+01",
+               "Peak bending stress 99.5 MPa against 100 · 546 g, 30 % lighter than the straight bar"]},
     {"id": "cantilever", "tab": "Stress", "legend": "S, Mises", "unit": "MPa",
      "model": "Cantilever bracket · steel, 200 × 20 × 20 mm, 1 kN at the tip",
      "lines": ["Solver: CalculiX 2.22 · C3D10 · 5 758 surface nodes",
@@ -66,7 +71,8 @@ for v in VP:
 
 # --- case gallery ---------------------------------------------------------------
 CARDS = [
-    ("contact", "10", "struct", "New · Contact", "Roller-on-plate contact, nonlinear FEA", "A track roller carrying 500 N/mm. The contact pressure peaks at 609 MPa against a 650 MPa limit, and the shear under the surface reaches 184 MPa against 200. The CalculiX model lands within 0.4 % of the exact Hertz solution.", "pass", "Gmsh · CalculiX"),
+    ("bracket_opt", "12", "struct", "New · Design automation", "Bracket optimisation loop, driven by the agent", "The agent searched 32 designs and found a tapered bracket that is 30 % lighter than the straight bar it started from, at 546 g and inside both limits. Every candidate went through the full set of checks, and an independent beam-theory optimum agrees within 0.13 %.", "pass", "CadQuery · Gmsh · CalculiX · SciPy"),
+    ("contact", "10", "struct", "Contact", "Roller-on-plate contact, nonlinear FEA", "A track roller carrying 500 N/mm. The contact pressure peaks at 609 MPa against a 650 MPa limit, and the shear under the surface reaches 184 MPa against 200. The CalculiX model lands within 0.4 % of the exact Hertz solution.", "pass", "Gmsh · CalculiX"),
     ("fea", "01", "struct", "Structures", "Cantilever bracket, 3D FEA", "Passes with room to spare at 0.953 mm and 150 MPa.", "pass", "FreeCAD · Gmsh · CalculiX"),
     ("strap", "02", "struct", "Structures", "Cable hole in a strap, CAD to FEA", "The hole can go up to about 16.7 mm. 16 mm passes at 117 MPa and 18 mm fails.", "pass", "CadQuery · Gmsh · CalculiX"),
     ("fatigue", "03", "struct", "Fatigue", "Strap fatigue life, chained analysis", "Lasts easily, and could be rated to 7.8 kN cyclic for 3 × 10⁷ cycles.", "pass", "CalculiX · Python"),
@@ -80,7 +86,7 @@ CARDS = [
 ]
 VERDICT = {"pass": "Passes", "fail": "Fails", "mixed": "Depends on speed", "held": "One result on hold"}
 cards_html = "\n".join(
-    f'''      <a class="card{' featured' if k == 'contact' else ''}" href="#{k}" data-group="{g}">
+    f'''      <a class="card{' featured' if k == 'bracket_opt' else ''}" href="#{k}" data-group="{g}">
         <span class="thumb"><img src="v2/th_{k}.webp" alt="" loading="lazy" width="800" height="500"></span>
         <span class="card-body">
           <span class="meta"><span class="no">{n}</span><span>{d}</span></span>
@@ -120,7 +126,9 @@ page = (page.replace("{{EXTRA_CSS}}", extras.CSS)
             .replace("{{TLDR}}", extras.summary_html(facts))
             .replace("{{GRADER}}", grader_body)
             .replace("{{GRADER_JS}}", grader_js)
-            .replace("{{REQS}}", extras.reqs_html()))
+            .replace("{{REQS}}", extras.reqs_html())
+            .replace("{{CHECKS}}", f"{facts['checks']:,}")
+            .replace("{{RUNS}}", str(facts["runs"])))
 page = (page.replace("{{VP_JSON}}", json.dumps(VP, ensure_ascii=False))
             .replace("{{TABS}}", tabs_html)
             .replace("{{CARDS}}", cards_html)

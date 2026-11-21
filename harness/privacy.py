@@ -25,6 +25,8 @@ TEXT_SUFFIXES = {".json", ".md", ".log", ".txt", ".mos", ".csv", ".toml", ".inp"
 
 def _spellings(p: Path) -> list[str]:
     """Regex alternatives for one absolute Windows path in all the forms it gets written."""
+    if not p.drive:                                         # POSIX (CI runners): one spelling
+        return [re.escape(p.as_posix())]
     drive, rest = p.drive.rstrip(":"), [part for part in p.parts[1:]]
     out = []
     for sep in (r"\\\\", r"\\", "/"):                      # JSON-escaped, Windows, forward slash

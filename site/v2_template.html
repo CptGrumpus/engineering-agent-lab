@@ -136,8 +136,8 @@ code { font-family: var(--font-data); font-size: 0.85em; }
 }
 .status b { color: var(--vp-ink); font-weight: 500; }
 .status .chk { color: #9fe3b9; }
-.tabs { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 8px; }
-@media (max-width: 1100px) { .tabs { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.tabs { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 8px; }
+@media (max-width: 1100px) { .tabs { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
 .tabs button {
   font: inherit; text-align: left; cursor: pointer; display: grid; gap: 2px; min-width: 0;
   padding: 10px 14px; border-radius: var(--radius); border: 1px solid var(--rule); background: var(--surface); color: var(--ink);
@@ -208,6 +208,7 @@ code { font-family: var(--font-data); font-size: 0.85em; }
 .plan-meta { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 6px 10px; font-family: var(--font-data); font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-3); }
 .plan-meta .no { color: var(--accent); }
 .plan-tag { padding: 2px 9px; border: 1px dashed var(--ink-3); border-radius: 999px; }
+.plan-tag.done { border: 1px solid var(--pass); color: var(--pass); background: var(--pass-bg); }
 .plan .skill p b { display: block; font-family: var(--font-data); font-weight: 500; font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-3); margin-bottom: 2px; }
 .plan .tools { font-family: var(--font-data); font-size: 0.78rem; color: var(--ink-3); }
 @media (max-width: 900px) { .skills { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
@@ -328,11 +329,11 @@ td.num { font-family: var(--font-data); font-variant-numeric: tabular-nums; whit
     <div class="hero-text">
     <p class="eyebrow">Mechanical engineering · simulation portfolio</p>
     <h1>Simulation results <em>I can back up.</em></h1>
-    <p class="lede">Eleven studies covering <b>structures, contact, vibration, fatigue, fluids, heat transfer and vehicle dynamics</b>. In each one I start from written requirements, build the model, run a real solver, and compare the result against something independent before I call it a pass or a fail. It's all open-source software, and a coding agent does most of the legwork using procedures I wrote.</p>
+    <p class="lede">Twelve studies covering <b>structures, contact, vibration, fatigue, fluids, heat transfer, vehicle dynamics and design optimisation</b>. In each one I start from written requirements, build the model, run a real solver, and compare the result against something independent before I call it a pass or a fail. It's all open-source software, and a coding agent does most of the legwork using procedures I wrote.</p>
     </div>
     <dl class="stats">
-      <div><dt>automated checks</dt><dd>1128</dd></div>
-      <div><dt>saved runs</dt><dd>34</dd></div>
+      <div><dt>automated checks</dt><dd>{{CHECKS}}</dd></div>
+      <div><dt>saved runs</dt><dd>{{RUNS}}</dd></div>
       <div><dt>open-source tools</dt><dd>8</dd></div>
       <div><dt>paid licences</dt><dd>0</dd></div>
     </dl>
@@ -340,12 +341,12 @@ td.num { font-family: var(--font-data); font-variant-numeric: tabular-nums; whit
 
 {{TLDR}}
   <section class="viewport wrap" aria-label="Result viewer">
-    <div class="vp" id="vp" role="tabpanel" aria-labelledby="tab-cantilever">
+    <div class="vp" id="vp" role="tabpanel" aria-labelledby="tab-bracket_opt">
       <div class="legend">
         <div class="legend-title" id="lg-title">S, Mises<small>MPa</small></div>
         <div class="legend-body"><div class="swatches" id="lg-sw"></div><div class="ticks" id="lg-ticks"></div></div>
       </div>
-      <div class="stage"><img id="vp-img" src="v2/vp_cantilever.webp" alt="Von Mises stress on the deformed cantilever bracket">
+      <div class="stage"><img id="vp-img" src="v2/vp_bracket_opt.webp" alt="Von Mises stress on the deformed optimised bracket">
       <svg class="triad" viewBox="0 0 54 54" aria-hidden="true">
         <g stroke-width="1.6" fill="none" stroke-linecap="round">
           <line x1="14" y1="40" x2="44" y2="46" stroke="#ff8f6b"/><line x1="14" y1="40" x2="34" y2="28" stroke="#8fe3a8"/><line x1="14" y1="40" x2="14" y2="8" stroke="#8fb4ff"/>
@@ -390,7 +391,7 @@ td.num { font-family: var(--font-data); font-variant-numeric: tabular-nums; whit
   <section class="band wrap" id="studies" aria-labelledby="studies-title">
     <div class="band-head">
       <p class="eyebrow">Case studies</p>
-      <h2 id="studies-title">Eleven studies</h2>
+      <h2 id="studies-title">Twelve studies</h2>
       <p>The problems are made up, so there's no client data here. Every number on this page comes from a saved run, and each run can be repeated from its recorded inputs with one command.</p>
     </div>
     <div class="filters" role="group" aria-label="Filter by discipline">
@@ -446,6 +447,7 @@ td.num { font-family: var(--font-data); font-variant-numeric: tabular-nums; whit
       <p>In several studies my first model gave an answer that looked reasonable and turned out to be wrong. These are the ones where the checks earned their keep.</p>
     </div>
     <div class="findings">
+      <article class="finding"><span class="label">Bracket optimisation · design automation</span><h3>An optimiser kept honest by its stress check</h3><p>A check that only looked at the root would have accepted candidate 12, at 90 MPa. Its real peak is 101 MPa in the middle of the span. Measuring the stress along the whole length kept the search inside the limit, and an independent beam-theory optimum lands within 0.13 % of the answer.</p><a href="#bracket_opt">Read the study</a></article>
       <article class="finding"><span class="label">Strap · stress concentration</span><h3>A model that converged neatly to the wrong answer</h3><p>The mesh study looked textbook, but it settled 2 % away from the handbook value. Running a case with a known exact answer through the same pipeline showed the problem was in how the solver's elements behaved, which no amount of mesh refinement would have revealed.</p><a href="#strap">Read the study</a></article>
       <article class="finding"><span class="label">Coolant channel · CFD</span><h3>A simplified inlet that flipped the answer</h3><p>The simple model said the channel passed. It never converged at the sharp inlet corner, though, and once I modelled the inlet properly the channel failed its pressure budget.</p><a href="#cfd">Read the study</a></article>
       <article class="finding"><span class="label">Quarter car · vehicle dynamics</span><h3>A wheel that left the road</h3><p>Every numerical check passed, but the tire was leaving the ground, which the simple model can't represent, so I held the verdict back. When I built a tire model that can lift off, it showed the simple one had overstated the peak body acceleration by up to 29 %.</p><a href="#suspension">Read the study</a></article>
@@ -457,8 +459,8 @@ td.num { font-family: var(--font-data); font-variant-numeric: tabular-nums; whit
   <section class="band wrap" id="next" aria-labelledby="next-title">
     <div class="band-head">
       <p class="eyebrow">What's next</p>
-      <h2 id="next-title">Six harder studies I'm planning</h2>
-      <p>None of these has been run yet, so there are no results to show. Each one covers something the current set doesn't: friction contact, plasticity, buckling, chained multiphysics, a design loop run by the agent, and coupled fluid and structure. As with the others, I'll pick the independent check before I start modelling.</p>
+      <h2 id="next-title">Six harder studies: one done, five to go</h2>
+      <p>Each of these covers something the earlier studies don't: friction contact, plasticity, buckling, chained multiphysics, a design loop run by the agent, and coupled fluid and structure. The optimisation loop is finished and written up as <a href="#bracket_opt">study 12</a>. The cold-plate chain is being built now, and buckling is next. As with the others, I pick the independent check before I start modelling.</p>
     </div>
     <div class="skills plan">
       <article class="skill">
@@ -469,17 +471,17 @@ td.num { font-family: var(--font-data); font-variant-numeric: tabular-nums; whit
         <span class="tools">CalculiX</span>
       </article>
       <article class="skill">
-        <span class="plan-meta"><span class="no">02 · Multiphysics</span><span class="plan-tag">Planned · medium-high effort</span></span>
+        <span class="plan-meta"><span class="no">02 · Multiphysics</span><span class="plan-tag">In progress</span></span>
         <b>Cold plate, the full thermal chain</b>
         <p><b>Why it's harder</b>Three kinds of physics in a chain: coolant flow, then conduction through the aluminium plate, then thermal stress. Each step gets verified before it hands its results to the next. It builds on the <a href="#heat">heated-channel study</a>.</p>
         <p><b>How I'll check it</b>Fin and slab conduction theory, the closed-form thermal stress, and an energy balance at every handoff.</p>
         <span class="tools">OpenFOAM → CalculiX</span>
       </article>
       <article class="skill">
-        <span class="plan-meta"><span class="no">03 · Automation</span><span class="plan-tag">Planned · medium effort</span></span>
+        <span class="plan-meta"><span class="no">03 · Automation</span><span class="plan-tag done">Done · study 12</span></span>
         <b>Bracket optimisation loop</b>
         <p><b>Why it's harder</b>The agent changes the geometry, meshes, solves and checks, then goes round again to bring the mass down while staying inside the stress and stiffness limits. Here it's driving a design instead of running one case.</p>
-        <p><b>How I'll check it</b>Every candidate has to pass the existing checks, and I'll spot-check the final design against beam theory.</p>
+        <p><b>How I checked it</b>Every candidate passed the full set of checks, and an independent beam-theory optimum agrees to 0.13 %. <a href="#bracket_opt">See the results.</a></p>
         <span class="tools">CadQuery · Gmsh · CalculiX</span>
       </article>
       <article class="skill">
@@ -490,7 +492,7 @@ td.num { font-family: var(--font-data); font-variant-numeric: tabular-nums; whit
         <span class="tools">CalculiX</span>
       </article>
       <article class="skill">
-        <span class="plan-meta"><span class="no">05 · Stability</span><span class="plan-tag">Planned · low-medium effort</span></span>
+        <span class="plan-meta"><span class="no">05 · Stability</span><span class="plan-tag">Up next</span></span>
         <b>Buckling of a column or thin panel</b>
         <p><b>Why it's harder</b>It's a stability problem rather than a stress problem. First a linear eigenvalue buckling analysis, then the same thing with a small imperfection.</p>
         <p><b>How I'll check it</b>The Euler and Johnson formulas, and a Southwell plot.</p>

@@ -21,16 +21,28 @@ TASKS = REPO / "tasks"
 
 
 # --------------------------------------------------------------------------- summary
+EXTRA_RUNS = ("20261120-225322_bracket_opt", "20261120-225744_bracket_opt_confirm")   # study 12
+
+
 def repo_facts() -> dict:
     files = subprocess.run(["git", "ls-files", "*.py"], cwd=REPO, capture_output=True, text=True,
                            check=True).stdout.split()
     lines = sum(len((REPO / f).read_text(encoding="utf-8").splitlines()) for f in files)
     py = REPO / ".venv" / "Scripts" / "python.exe"
-    out = subprocess.run([str(py), "-m", "pytest", "--collect-only", "-q"], cwd=REPO,
+    # count only tests in committed files: the page says they run on every push
+    tests = [f for f in files if f.startswith("tests/") and f.rsplit("/", 1)[-1].startswith("test_")]
+    out = subprocess.run([str(py), "-m", "pytest", "--collect-only", "-q", *tests], cwd=REPO,
                          capture_output=True, text=True).stdout
     m = re.search(r"(\d+) tests? collected", out)
     assert m, out[-500:]
-    return {"py_files": len(files), "py_lines": lines, "tests": int(m.group(1))}
+    # checks and saved runs: every committed run with a verification record, plus runs listed in
+    # EXTRA_RUNS that the page already presents but that have not been committed yet
+    ver = set(subprocess.run(["git", "ls-files", "runs/*/verification.json"], cwd=REPO, capture_output=True,
+                             text=True, check=True).stdout.split())
+    ver |= {f"runs/{r}/verification.json" for r in EXTRA_RUNS if (REPO / "runs" / r / "verification.json").exists()}
+    checks = sum(len(pt.get("checks", [])) for f in ver
+                 for pt in json.loads((REPO / f).read_text(encoding="utf-8")).get("points", []))
+    return {"py_files": len(files), "py_lines": lines, "tests": int(m.group(1)), "checks": checks, "runs": len(ver)}
 
 
 def summary_html(facts: dict) -> str:
@@ -39,10 +51,10 @@ def summary_html(facts: dict) -> str:
     <span class="label">The short version</span>
     <div class="tldr-grid">
       <div><b>About me</b><p>I'm an automotive mechanical engineer with a master's in ME. In my day job I use AI agents to run virtual models and to turn functional requirements into tools that automate engineering work.</p></div>
-      <div><b>What's here</b><p>Eleven studies, each taken from written requirements through to a checked answer using open-source solvers. There are also three evaluation tasks, and their graders are tested as well.</p></div>
+      <div><b>What's here</b><p>Twelve studies, each taken from written requirements through to a checked answer using open-source solvers. There are also three evaluation tasks, and their graders are tested as well.</p></div>
       <div><b>The code</b><p>It's all Python, about {k},000 lines across {facts["py_files"]} files. That covers the harness that runs and checks everything, the models, the independent reference solutions and the graders, with {facts["tests"]} automated tests that run on every push.</p></div>
     </div>
-    <p class="tldr-links"><a href="#tasks">Grade an answer yourself</a><a href="#reqs">All the requirements in one table</a><a href="#contact">The newest study, contact</a></p>
+    <p class="tldr-links"><a href="#tasks">Grade an answer yourself</a><a href="#reqs">All the requirements in one table</a><a href="#bracket_opt">The newest study, an optimisation loop</a></p>
   </section>
 '''
 
@@ -376,6 +388,9 @@ GRADER_UI_JS = r"""
 # --------------------------------------------------------------------------- requirements table
 # One row per headline requirement, taken from the study pages and their evidence reports.
 REQS = [
+    ("bracket_opt", "12", "Bracket optimisation", [
+        ("Peak bending stress at the optimum, 546 g", "≤ 100 MPa", "99.5 MPa, with the 0.5 % margin and mesh error included", "met"),
+        ("Tip deflection at the optimum", "≤ 1.0 mm", "0.917 mm", "met")]),
     ("fea", "01", "Cantilever bracket", [
         ("Tip deflection", "≤ 1.0 mm", "0.953 mm", "met"),
         ("Root bending stress", "≤ 213 MPa", "150 MPa", "met")]),
@@ -512,10 +527,11 @@ CSS = r"""
 .reqs td:nth-child(4) { color: var(--ink-2); }
 .reqs-note { padding: 12px 18px 16px; font-size: 0.88rem; color: var(--ink-2); border-top: 1px solid var(--rule); }
 .v-held { color: var(--warn); background: var(--warn-bg); }
-/* gallery: eleven cards = one featured + nine + the baseline, which spans the last row on wide screens */
-@media (min-width: 961px) {
-  .gallery .card:last-child { grid-column: 1 / -1; grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); grid-template-rows: auto; }
-  .gallery .card:last-child .thumb { border-bottom: 0; border-right: 1px solid var(--rule); }
+.findings .finding:last-child:nth-child(even) { grid-column: 1 / -1; }
+/* gallery: one featured card and eleven more; the last spans two columns so no row has a gap */
+@media (min-width: 601px) {
+  .gallery .card:last-child { grid-column: span 2; grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr); grid-template-rows: auto; }
+  .gallery .card:last-child .thumb { border-bottom: 0; border-right: 1px solid var(--rule); aspect-ratio: auto; height: 100%; }
   .gallery .card:last-child .card-body { align-content: center; padding: 22px 28px; }
 }
 """
@@ -529,6 +545,7 @@ CAPS = """<div class="table-wrap">
           <tr><td>Contact between separate parts, with the contact pressure and the stress below the surface checked against Hertz</td><td>Gmsh, CalculiX</td><td><a href="#contact">10</a></td></tr>
           <tr><td>Vibration and modal analysis, including identifying the modes and keeping clear of engine orders</td><td>CadQuery, Gmsh, CalculiX</td><td><a href="#modal">4</a></td></tr>
           <tr><td>Fatigue life using notch factors, mean-stress correction and S-N curves fitted to published test data</td><td>CalculiX, Python</td><td><a href="#fatigue">3</a></td></tr>
+          <tr><td>Design optimisation, with an optimiser driving the CAD-to-FEA pipeline and every candidate checked before it counts</td><td>SciPy, CadQuery, Gmsh, CalculiX</td><td><a href="#bracket_opt">12</a></td></tr>
           <tr><td>Scripted pipelines from parametric CAD through STEP export, meshing and solving</td><td>CadQuery, Gmsh, CalculiX</td><td><a href="#strap">2</a>, <a href="#modal">4</a>, <a href="#cad">8</a></td></tr>
           <tr><td>Internal laminar flow and pressure budgets, in 2D and 3D</td><td>OpenFOAM</td><td><a href="#cfd">5</a></td></tr>
           <tr><td>Heat transfer, from conduction with surface convection to convection in a heated coolant channel</td><td>CalculiX, OpenFOAM</td><td><a href="#thermal">6</a>, <a href="#heat">11</a></td></tr>

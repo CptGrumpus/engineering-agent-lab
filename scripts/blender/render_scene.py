@@ -92,6 +92,12 @@ xyz = data["xyz"]
 ghost = data["ghost_xyz"] if "ghost_xyz" in data else None
 allpts = xyz if ghost is None else np.vstack([xyz, ghost])
 lo, hi = allpts.min(axis=0), allpts.max(axis=0)
+# fixed_box [[lo], [hi]] (mm): normalise, frame and place the ground from this box instead of the
+# part, so a series of different parts (an optimiser's candidates) share one camera and stage
+FIXED = meta.get("fixed_box")
+if FIXED is not None:
+    lo, hi = (np.asarray(b, dtype=float) for b in FIXED)
+    BOX = np.array([[x, y, z] for x in (lo[0], hi[0]) for y in (lo[1], hi[1]) for z in (lo[2], hi[2])])
 centre, scale = (lo + hi) / 2, 2.0 / float((hi - lo).max())
 
 
@@ -224,7 +230,7 @@ d = np.array([math.cos(e) * math.cos(az), math.cos(e) * math.sin(az), math.sin(e
 right = np.cross([0, 0, 1], d)
 right /= np.linalg.norm(right)
 up = np.cross(d, right)
-P = (allpts - centre) * scale
+P = ((BOX if FIXED is not None else allpts) - centre) * scale
 if "frame_box" in meta:              # frame a detail: only points inside the box set the framing
     lo_b, hi_b = np.asarray(meta["frame_box"], dtype=float)
     P = P[np.all((allpts >= lo_b) & (allpts <= hi_b), axis=1)]
@@ -283,7 +289,7 @@ bg.inputs["Color"].default_value = (0.9, 0.92, 0.95, 1)
 bg.inputs["Strength"].default_value = meta.get("ambient", 0.25)
 scene.world = world
 
-zmin = float(((allpts - centre) * scale)[:, 2].min())
+zmin = float((((BOX if FIXED is not None else allpts) - centre) * scale)[:, 2].min())
 bpy.ops.mesh.primitive_plane_add(size=60, location=(0, 0, zmin - 0.002))
 ground = bpy.context.active_object
 ground.is_shadow_catcher = True
