@@ -31,7 +31,10 @@ HEADER = "FoamFile\n{{\n    version 2.0;\n    format      ascii;\n    class     
 
 
 def _flag_module():
-    p = Path(__file__).resolve().parent.parent / "fea" / "flag_ccx.py"
+    # a run saves its model sources flat in inputs/, so look beside this file first (harness rerun), then in
+    # the repo's models/fea/
+    here = Path(__file__).resolve().parent
+    p = here / "flag_ccx.py" if (here / "flag_ccx.py").exists() else here.parent / "fea" / "flag_ccx.py"
     spec = importlib.util.spec_from_file_location("flag_ccx_for_fsi", p)
     mod = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(mod)
@@ -84,6 +87,9 @@ def write_fluid(params: dict, numerics: dict, d: Path) -> None:
     rho = float(params["fluid_density_kg_per_m3"])
     dt, t_end = float(params["time_step_s"]), float(params["end_time_s"])
     write_every = float(numerics.get("write_interval_s", 1.0))
+    if abs(t_end / write_every - round(t_end / write_every)) > 1e-9:
+        # OpenFOAM writes only at whole write intervals: the final state must be one of them
+        raise ValueError(f"end time {t_end} is not a whole number of write intervals ({write_every})")
     _foam(d / "system/controlDict", "dictionary", "controlDict", f"""
 application     pimpleFoam;
 startFrom       startTime;

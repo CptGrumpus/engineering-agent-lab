@@ -360,7 +360,8 @@ class CalculiXFlagDynamic(CalculiXFlag):
             return np.array(T), np.array(X), np.array(Y)
 
         rr = float(numerics.get("newton_residual_rel", 1e-8))
-        (work / "dynamic.inp").write_text(w.write_dynamic_deck(params, m, dt, t_end, residual_rel=rr),
+        alpha = float(numerics.get("alpha", 0.0))
+        (work / "dynamic.inp").write_text(w.write_dynamic_deck(params, m, dt, t_end, alpha=alpha, residual_rel=rr),
                                           encoding="utf-8")
         if not self._run(work, "dynamic"):
             return failed("CalculiX NLGEOM dynamic failed") | {"files": files(), "cleanup": work}
@@ -369,7 +370,7 @@ class CalculiXFlagDynamic(CalculiXFlag):
         # frequency must be the linear modal one (checks the time integrator on its own)
         small = dict(params) | {"gravity_m_per_s2": _p(params, "gravity_m_per_s2") * 1e-3}
         (work / "small.inp").write_text(w.write_dynamic_deck(small, m, dt, float(numerics["small_end_time_s"]),
-                                                             residual_rel=rr),
+                                                             alpha=alpha, residual_rel=rr),
                                         encoding="utf-8")
         (work / "frequency.inp").write_text(w.write_frequency_deck(params, m), encoding="utf-8")
         if not (self._run(work, "small") and self._run(work, "frequency")):

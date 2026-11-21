@@ -1,0 +1,170 @@
+{
+  "run_id": "20261121-164522_flag_csm3_dt_r2",
+  "verified_utc": "2026-11-21T23:40:13+00:00",
+  "tolerances": {
+    "small_amplitude_rel_tol": 0.002,
+    "energy_drift_max": 0.01,
+    "period_spread_max": 0.01,
+    "frequency_rel_tol": 0.02,
+    "gci_max": 0.01
+  },
+  "points": [
+    {
+      "label": "p00_time_step_s-0.0025",
+      "status": "PASS",
+      "checks": [
+        {
+          "id": "integrator_small_amplitude",
+          "description": "|mean frequency over every period of a gravity/1000 run - linear modal f1| / f1 (the time integrator alone)",
+          "kind": "numerical",
+          "value": 1.832804138387605e-05,
+          "tolerance": 0.002,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "returns_to_start",
+          "description": "max uy(A) over the last period / amplitude (undamped: the flag swings back to its undeformed height)",
+          "kind": "numerical",
+          "value": 0.004501471578688084,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "periodic_troughs",
+          "description": "spread of the trough depths of uy(A) over all periods / mean depth",
+          "kind": "numerical",
+          "value": 9.183846284428797e-05,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "periodic_periods",
+          "description": "spread of the periods / mean period",
+          "kind": "numerical",
+          "value": 0.00012366817811168524,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "frequency_reference",
+          "description": "|f1 modal - Euler-Bernoulli cantilever| / beam value (model form)",
+          "kind": "numerical",
+          "value": 0.0041297068616671885,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "periods_seen",
+          "description": "shortfall of full periods before the last one (needs >= 3)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.5,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "steps_per_period",
+          "description": "50 / time steps per linear period (below 1: at least 50 steps a period, period error of the trapezoidal rule about (2 pi / 50)^2 / 12 = 0.13 %)",
+          "kind": "validity",
+          "value": 0.1345886868234777,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p01_time_step_s-0.00125",
+      "status": "PASS",
+      "checks": [
+        {
+          "id": "integrator_small_amplitude",
+          "description": "|mean frequency over every period of a gravity/1000 run - linear modal f1| / f1 (the time integrator alone)",
+          "kind": "numerical",
+          "value": 2.8312332619106753e-05,
+          "tolerance": 0.002,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "returns_to_start",
+          "description": "max uy(A) over the last period / amplitude (undamped: the flag swings back to its undeformed height)",
+          "kind": "numerical",
+          "value": 0.0007405482017415784,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "periodic_troughs",
+          "description": "spread of the trough depths of uy(A) over all periods / mean depth",
+          "kind": "numerical",
+          "value": 0.0009630034118790619,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "periodic_periods",
+          "description": "spread of the periods / mean period",
+          "kind": "numerical",
+          "value": 0.0001754789331950764,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "frequency_reference",
+          "description": "|f1 modal - Euler-Bernoulli cantilever| / beam value (model form)",
+          "kind": "numerical",
+          "value": 0.0041297068616671885,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "periods_seen",
+          "description": "shortfall of full periods before the last one (needs >= 3)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.5,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "steps_per_period",
+          "description": "50 / time steps per linear period (below 1: at least 50 steps a period, period error of the trapezoidal rule about (2 pi / 50)^2 / 12 = 0.13 %)",
+          "kind": "validity",
+          "value": 0.06729434341173884,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p02_time_step_s-0.000625",
+      "status": "NOT_RUN",
+      "reason": "simulation status 'failed'",
+      "checks": []
+    }
+  ],
+  "run_checks": [
+    {
+      "id": "time_step_convergence",
+      "description": "needs >= 3 completed time steps",
+      "kind": "numerical",
+      "value": Infinity,
+      "tolerance": 0.0,
+      "comparison": "<=",
+      "status": "FAIL"
+    }
+  ],
+  "run_check_detail": {},
+  "status": "FAIL"
+}
