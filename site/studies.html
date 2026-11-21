@@ -1,0 +1,384 @@
+  <h2 class="discipline">Structures and vibration</h2>
+
+  <section class="study" id="fea">
+    <div class="study-head">
+      <span class="label">Study 1 · FreeCAD, Gmsh and CalculiX</span>
+      <h2>Cantilever bracket, 3D finite elements</h2>
+    </div>
+    <figure><div class="plate"><img src="img/render_cantilever.png" alt="Von Mises stress on the deformed cantilever, rendered in Blender" loading="lazy"></div><figcaption>Von Mises stress on the deformed bracket, rendered in Blender from the CalculiX results. It's highest at the clamped end and drops to zero along the middle of the section.</figcaption></figure>
+    <figure><div class="plate"><img src="img/turntable_cantilever.webp" alt="The cantilever result turning, rendered in Blender" loading="lazy"></div><figcaption>The same result from all sides. At the clamped end you can see the bending stress across the section, highest at the top and bottom faces.</figcaption></figure>
+    <p><strong>The question.</strong> A steel bracket, 200 mm long and 20 × 20 mm in section, takes a 1 kN load at the tip. Does it stay under 1.0 mm of deflection and 213 MPa of stress, and how far can I trust the model?</p>
+    <div class="answer">
+      <div class="chips"><span class="chip pass">Deflection 0.953 mm</span><span class="chip pass">Root stress 150 MPa</span><span class="chip pass">Mesh uncertainty 0.02 %</span></div>
+      <p><strong>Yes, with room to spare.</strong> The tip moves 0.953 mm and the bending stress at the root is 150 MPa. The mesh uncertainty is about 0.02 %.</p>
+    </div>
+    <h3>How I checked it</h3>
+    <ul class="proof">
+      <li>The deflection falls between the two standard beam-theory answers, 0.952 mm without shear and 0.960 mm with it. That's where a fully clamped solid bar should land.</li>
+      <li>The support reactions add up to the applied load, to within rounding.</li>
+      <li>As I refine the mesh, the answer converges at the rate these elements should give, and that's where the 0.02 % comes from.</li>
+      <li>The peak stress right in the clamped corner keeps climbing as the mesh gets finer, from 150 to 217 MPa. A perfectly sharp corner does that in any model, so I don't use it. The stress I report comes from the smooth part of the beam, and it matches beam theory at 150 MPa.</li>
+    </ul>
+    <div class="figs-2">
+      <figure>
+        <div class="plate"><img src="img/fea_response.png" alt="Deflection and stress along the beam compared with beam theory" loading="lazy"></div>
+        <figcaption>Deflection and stress along the beam, next to beam theory.</figcaption>
+      </figure>
+      <figure>
+        <div class="plate"><img src="img/fea_tet4_sweep.png" alt="Linear-element results, all held back by the checks" loading="lazy"></div>
+        <figcaption>The same study run with the simplest elements. The checks held back every result.</figcaption>
+      </figure>
+    </div>
+    <div class="caught">
+      <h3>What I caught along the way</h3>
+      <ul>
+        <li>I also ran it with the simplest element type, linear tetrahedra. The bracket came out 4 to 33 % too stiff and the stress 7 to 45 % too low, so at face value it would have looked comfortably safe. The beam-theory and mesh checks both failed, and none of those results were reported as verified.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="study" id="strap">
+    <div class="study-head">
+      <span class="label">Study 2 · CadQuery, Gmsh and CalculiX</span>
+      <h2>Cable hole in a strap, CAD to FEA</h2>
+    </div>
+    <figure><div class="plate"><img src="img/strap_render.png" alt="Strap with a 16 mm cable hole, CadQuery geometry" loading="lazy"></div></figure>
+    <figure><div class="plate"><img src="img/render_strap.png" alt="Axial stress over the whole strap and a close-up of the hole" loading="lazy"></div><figcaption>Axial stress over the whole strap and up close at the hole. The peak sits on the two sides of the hole, at right angles to the load.</figcaption></figure>
+    <p><strong>The question.</strong> A 6061 aluminium strap, 40 mm wide and 4 mm thick, carries a 5 kN pull, and a cable needs to pass through a hole drilled in the middle. How big can the hole be before the stress at its edge goes over a 120 MPa fatigue allowable?</p>
+    <div class="answer">
+      <div class="chips"><span class="chip pass">Largest hole about 16.7 mm</span><span class="chip pass">Within 0.6 % of the handbook</span><span class="chip pass">Mesh uncertainty 0.08 %</span></div>
+      <p><strong>About 16.7 mm.</strong> A 16 mm hole passes at 117 MPa and an 18 mm hole fails at 125 MPa. I'd call out 16 mm, or 14 mm if there's any doubt about the allowable, which gives 8 % margin.</p>
+      <p>It makes a useful contrast with the bracket. The peak at a smooth hole edge is a real number that settles down as the mesh gets finer, while the peak at a sharp corner never settles. Telling those two apart is a big part of doing a stress check well.</p>
+    </div>
+    <figure><div class="plate"><img src="img/strap_mesh.png" alt="Gmsh mesh of the quarter model, refined at the hole edge" loading="lazy"></div></figure>
+    <h3>How I checked it</h3>
+    <ul class="proof">
+      <li>The whole chain is scripted. CadQuery builds the part and writes a STEP file, Gmsh meshes it with small elements around the hole, and CalculiX solves it. Trying a new hole size means changing one number.</li>
+      <li>The stress concentration factor converges to 2.436, within 0.6 % of the value in Peterson's handbook. I'd written down what I expected before running, and all seven hole sizes came in within about 0.6 % of those numbers.</li>
+      <li>Run through the same pipeline, a hole in a very wide plate gives three times the remote stress to within 0.1 %, which is the exact answer. That case now runs as an automatic test.</li>
+      <li>The reactions balance the load, and the stress across the section next to the hole adds up to the full load within 0.2 %.</li>
+      <li>Going from 1 mm down to 0.125 mm elements at the hole edge converges at the expected rate, with 0.08 % uncertainty left.</li>
+    </ul>
+    <div class="figs-2">
+      <figure>
+        <div class="plate"><img src="img/strap_response.png" alt="Stress around the hole and along the section beside it" loading="lazy"></div>
+        <figcaption>Stress around the hole, and across the section beside it, against the handbook peak.</figcaption>
+      </figure>
+      <figure>
+        <div class="plate"><img src="img/strap_sweep.png" alt="Peak hole-edge stress against hole size" loading="lazy"></div>
+        <figcaption>Peak stress at the hole edge for each hole size, with the 120 MPa allowable.</figcaption>
+      </figure>
+    </div>
+    <div class="caught">
+      <h3>What I caught along the way</h3>
+      <ul>
+        <li>My first version converged beautifully, with a tiny mesh uncertainty, to a number 2 % above the handbook. The wide-plate test case should have been exact, but through the same pipeline it came out 1.5 % high. It turned out the solver's plane-stress elements behave partly like a thick 3D slab at this thickness. Modelling a thin slice with the load scaled to match fixed it. A clean mesh study on its own would never have shown that.</li>
+        <li>The first trial run also hit three setup problems. The solver couldn't read the number format I was writing, one CAD face pointed the wrong way so every element got rejected, and a remeshed model was still pointing at the old node numbers. That last one would have run and balanced its forces anyway, which is exactly why it's worth checking for.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="study" id="fatigue">
+    <div class="study-head">
+      <span class="label">Study 3 · CalculiX feeding a stress-life calculation</span>
+      <h2>Strap fatigue life, chained analysis</h2>
+    </div>
+    <figure><div class="plate"><img src="img/render_fatigue.png" alt="Cyclic stress amplitude on the strap" loading="lazy"></div><figcaption>Cyclic stress amplitude for the 0 to 5 kN service cycle. It peaks at the sides of the hole, which is where a crack would start.</figcaption></figure>
+    <p><strong>The question.</strong> Take the strap from study 2 with its 16 mm hole. In service it sees a load from zero up to 5 kN and back, roughly ten million times. With a scatter factor of 3 on life, does it last, and what cyclic load could I rate it for?</p>
+    <div class="answer">
+      <div class="chips"><span class="chip pass">Service life about 8 × 10⁹ cycles</span><span class="chip pass">Rated to 7.8 kN cyclic</span><span class="chip warn">Material data spread: 7.8 to 9.9 kN</span></div>
+      <p><strong>It lasts easily.</strong> At the 0 to 5 kN service cycle the predicted life is about 8 × 10⁹ cycles, around 270 times what's needed. The highest cyclic load that still gives 3 × 10⁷ cycles is about 7.8 kN. Each of the two published data sets on its own gives either 7.8 or 9.9 kN, so I'd quote the lower figure and explain why.</p>
+    </div>
+    <h3>How I checked it</h3>
+    <ul class="proof">
+      <li>Each load case reruns the verified strap model to get the stress at the hole edge, and that model's own checks come along with it. Peterson's notch sensitivity gives a fatigue notch factor of 2.15, a Smith-Watson-Topper correction accounts for the load never reversing, and an S-N curve gives the life.</li>
+      <li>The S-N curve is fitted to 25 published test points for 6061-T6 (Chung and Abel 1988, and Brodrick and Spiering 1972, from the University of Waterloo fatigue database) rather than copied out of a table.</li>
+      <li>All of that test data is short-life, so ten million cycles is an extrapolation. As a cross-check, the fitted curve extended to 10⁹ reversals lands within 2.4 % of ASM's separately published value of 96.5 MPa at 5 × 10⁸ cycles.</li>
+      <li>Every life converts back to its stress amplitude exactly, and the notch stays elastic at every load, reaching at most 81 % of yield.</li>
+    </ul>
+    <div class="figs-2">
+      <figure><div class="plate"><img src="img/fatigue_sn.png" alt="S-N curve with test data, fit, independent value and the service cycle" loading="lazy"></div><figcaption>The published test data, the fitted curve, ASM's long-life value and the service cycle.</figcaption></figure>
+      <figure><div class="plate"><img src="img/fatigue_sweep.png" alt="Fatigue life against peak cyclic load" loading="lazy"></div><figcaption>Fatigue life against peak cyclic load, with the required 3 × 10⁷ cycles.</figcaption></figure>
+    </div>
+    <div class="caught">
+      <h3>What I caught along the way</h3>
+      <ul><li>The two published data sets predict lives about 100 times apart at the service load. That's normal in fatigue, where a 10 % change in stress shifts the life by a factor of about 3.4. It's why I give a load rating with its spread instead of a single life number.</li></ul>
+    </div>
+  </section>
+
+  <section class="study" id="contact">
+    <div class="study-head">
+      <span class="label">Study 10 · Gmsh and CalculiX, nonlinear contact</span>
+      <h2>Roller-on-plate contact</h2>
+    </div>
+    <figure><div class="plate"><img src="img/render_contact.png" alt="Von Mises stress at the contact: whole roller and a section through the contact" loading="lazy"></div><figcaption>Von Mises stress from the CalculiX results. The highest stress sits just under the surface in both parts.</figcaption></figure>
+    <figure><div class="plate"><img src="v2/contact_response.webp" alt="Contact pressure and subsurface shear from CalculiX against the exact Hertz solution" loading="lazy"></div><figcaption>Contact pressure across the patch and shear stress below its centre, both sitting on the exact Hertz curves.</figcaption></figure>
+    <p><strong>The question.</strong> A hardened steel track roller, 100 mm in diameter, runs on a steel plate and carries 500 N for every millimetre of its width. Does the peak contact pressure stay at or under 650 MPa? And does the maximum shear stress below the surface, where rolling-contact fatigue cracks start, stay at or under 200 MPa?</p>
+    <div class="answer">
+      <div class="chips"><span class="chip pass">Peak pressure 609 MPa</span><span class="chip pass">Subsurface shear 184 MPa</span><span class="chip pass">Matches Hertz to 0.4 %</span></div>
+      <p><strong>Yes on both.</strong> The peak contact pressure is 609 MPa and the maximum shear below the surface is 184 MPa, about 0.4 mm down. That leaves 6 % and 8 % of margin. The contact patch is 1.05 mm wide.</p>
+    </div>
+    <h3>How I checked it</h3>
+    <ul class="proof">
+      <li>The roller and plate are separate parts that only touch, and CalculiX works out where they're in contact as it solves. I push the roller down a set distance and read the force from the reactions, which is more reliable than applying a force before the parts are touching.</li>
+      <li>Hertz theory gives the exact contact pressure and the stresses underneath. Compared at the load the model actually carried, 501.1 N/mm, the contact half-width matches to 0.005 %, the peak pressure to 0.4 %, and the depth of maximum shear to within 2 % of one element.</li>
+      <li>The force on the roller and the reaction under the plate balance exactly. The pressure added up across the patch accounts for the load within 2.2 %, and the surfaces overlap by less than a ten-thousandth of how far the roller was pushed.</li>
+      <li>I used contact elements of 0.08, 0.04 and 0.02 mm. The two coarser meshes fail some of the Hertz checks, as you'd expect, so the answer comes from the finest one. Mesh uncertainty is 1.2 % on the pressure and 0.15 % on the shear.</li>
+    </ul>
+    <div class="caught">
+      <h3>What I caught along the way</h3>
+      <ul>
+        <li>My first try read the pressure from the element stresses at the surface. That came out 3.5 to 6.5 % high, and it added up to more than the load I'd applied. CalculiX's own contact pressure output was within 0.2 % of Hertz on the same mesh, so that's what the study uses.</li>
+        <li>The maximum shear agreed across the meshes to 0.06 %, yet the convergence check said it was diverging. I was taking the largest value at any node, and which node lands closest to the true peak changes from mesh to mesh. I left the tolerance alone, changed the measurement to find the peak between nodes, wrote down what I expected first, and kept the failed run. It now passes at 0.15 %.</li>
+        <li>The first mesh was almost eight times bigger than it needed to be, because the fine region spread across the whole model. That meant 70,820 nodes and 3.5 minutes per solve. Keeping the fine mesh near the contact brought it down to 9,334 nodes and 20 seconds, with the same answer to 0.2 %.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="study" id="modal">
+    <div class="study-head">
+      <span class="label">Study 4 · CadQuery, Gmsh and CalculiX, modal analysis</span>
+      <h2>Bracket arm vibration, modal analysis</h2>
+    </div>
+    <figure><div class="plate"><img src="img/bracket_render.png" alt="Bracket arm, CadQuery geometry" loading="lazy"></div></figure>
+    <p><strong>The question.</strong> A steel bracket arm, 150 by 25 mm, bolts on near an engine whose second order reaches 200 Hz at 6000 rpm. Its first natural frequency needs to stay above 250 Hz for 25 % separation, and it has to weigh 220 g or less. How thin can it be?</p>
+    <div class="answer">
+      <div class="chips"><span class="chip pass">7 mm: first mode 261.7 Hz</span><span class="chip pass">206 g, within budget</span><span class="chip pass">Mesh uncertainty 0.03 %</span></div>
+      <p><strong>7 mm.</strong> At 6 mm the first mode drops to 224 Hz, right in the band I'm trying to stay out of. At 8 mm it's 299 Hz, but the arm weighs 236 g and goes over budget. 7 mm is the only whole-millimetre thickness that does both.</p>
+    </div>
+    <figure><div class="plate"><img src="img/bracket_modes.gif" alt="First four mode shapes, animated" loading="lazy"></div><figcaption>The first four mode shapes from CalculiX. Each one is identified automatically from its effective mass.</figcaption></figure>
+    <figure><div class="plate"><img src="img/render_bracket_modes.png" alt="First four mode shapes, rendered in Blender" loading="lazy"></div><figcaption>The same four modes rendered in Blender. The colour shows how far each point moves.</figcaption></figure>
+    <h3>How I checked it</h3>
+    <ul class="proof">
+      <li>I built a separate 1D Timoshenko beam model and tested it against the textbook frequencies first. It agrees with the 3D bending modes within 0.9 % and with the in-plane mode within 0.4 %.</li>
+      <li>The first mode shape matches the beam model almost perfectly, with a modal assurance criterion of 0.99999, and its effective mass is within 0.002 of the textbook 61.4 %.</li>
+      <li>The torsion mode comes out 3.3 % above the simple twisting formula. I expected that, because the clamp stops the root from warping.</li>
+      <li>Every thickness landed within 0.7 to 0.9 % of the values I wrote down before running.</li>
+    </ul>
+    <div class="caught">
+      <h3>What I caught along the way</h3>
+      <ul><li>One of my predictions was wrong. The frequencies converged more slowly than the textbook rate, because the clamped corners are singular. Slower convergence still gives an honest uncertainty, 0.03 % here. Convergence much faster than the textbook rate would have been the real warning sign, and the checks now flag that automatically.</li></ul>
+    </div>
+  </section>
+
+  <h2 class="discipline">Thermal and fluids</h2>
+
+  <section class="study" id="cfd">
+    <div class="study-head">
+      <span class="label">Study 5 · OpenFOAM</span>
+      <h2>Coolant channel pressure budget</h2>
+    </div>
+    <figure><div class="plate"><img src="img/render_duct.png" alt="Velocity over the passage cross-section" loading="lazy"></div><figcaption>Velocity across the passage from the 3D check. It's flat over most of the width and drops to zero at the side walls. The volume under this surface has to equal the flow rate, and the render check confirms it does.</figcaption></figure>
+    <p><strong>The question.</strong> A cold-plate passage is a 1 mm gap between two plates, 20 mm long, with water flowing at about 0.1 m/s. It gets a 30 Pa share of the pump's pressure budget, and it needs at least 0.5 Pa of shear on the walls to keep fouling down. Does it meet both if the gap can vary by ±0.05 mm and the coolant can be anywhere from 15 to 40 °C?</p>
+    <div class="answer">
+      <div class="chips"><span class="chip fail">Over budget at nominal</span><span class="chip fail">No gap meets both requirements</span><span class="chip pass">Mesh uncertainty 0.04 %</span></div>
+      <p><strong>No.</strong> At nominal conditions it needs 33.4 Pa, 11 % over budget. Across the tolerance range it needs anywhere from 28 to 42 Pa, and with warm coolant the wall shear drops to 0.43 Pa.</p>
+      <p>The two requirements pull against each other. To stay inside the pressure budget with cold coolant, the gap has to be at least 1.078 mm. To keep enough wall shear with warm coolant, it can't be more than 0.885 mm. No gap does both. I predicted those two limits before running them, and the confirmation runs came back at 30.02 Pa and 0.500 Pa.</p>
+      <p>So the fix has to come from the design side. The options are a narrower coolant temperature range, a bigger pressure budget, a different flow split between channels, or a second look at the shear guideline.</p>
+    </div>
+
+    <h3>How I checked it</h3>
+    <ul class="proof">
+      <li>The model is a steady 2D flow simulation that includes the supply header and a smooth contraction into the channel. I count the flow's kinetic energy at the exit as lost, which is the usual conservative assumption. That exit loss is 7.7 Pa of the 33.4.</li>
+      <li>Once the flow has settled, the velocity profile, pressure gradient and wall shear match the textbook exact solution within 0.02 %.</li>
+      <li>Mass is conserved to about one part in a hundred million, and wall friction balances the pressure force within a few parts in a hundred thousand.</li>
+      <li>Going from 20 to 80 cells across the gap converges at exactly the expected rate, leaving 0.04 % mesh uncertainty.</li>
+      <li>A hand calculation, using lubrication theory for the header and the Shah and London correlation for the channel, agrees within 0.3 % in every case.</li>
+      <li>I checked the 2D assumption with a separate 3D model that includes the side walls of a 20 mm wide channel. The side walls add 3.2 % friction, and the exact rectangular-duct solution says 3.25 %. That's about 0.8 Pa more, which only makes it a clearer fail.</li>
+    </ul>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Source of uncertainty</th><th>How big it is</th></tr></thead>
+        <tbody>
+          <tr><td>The mesh</td><td class="num">0.04 %</td></tr>
+          <tr><td>Iteration and conservation</td><td>Negligible, well under one part in ten thousand</td></tr>
+          <tr><td>Simplifications in the model</td><td>0.3 % or less against the hand calculation, plus about 3 % from the side walls</td></tr>
+          <tr><td>Manufacturing tolerance and coolant temperature</td><td><b>16 % below to 27 % above nominal. This outweighs everything else.</b></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <figure>
+      <div class="plate"><img src="img/cfd_field.png" alt="Water velocity through the supply header, contraction, and channel" loading="lazy"></div>
+      <figcaption>Water velocity through the supply header, the contraction and the 1 mm channel. The height is stretched so you can see the channel.</figcaption>
+    </figure>
+    <figure>
+      <div class="plate"><img src="img/cfd_response.png" alt="Velocity profile, pressure, and centreline velocity compared with the exact solution" loading="lazy"></div>
+      <figcaption>On the left, the velocity across the gap sits on the exact solution. On the right, the pressure drops through the contraction and then follows the exact slope, and the flow settles within the predicted entrance length.</figcaption>
+    </figure>
+    <figure>
+      <div class="plate"><img src="img/cfd_tolerance.png" alt="Required pressure and wall shear across the tolerance cases" loading="lazy"></div>
+      <figcaption>Both requirements across the tolerance cases. The grey cross is a case the checks held back because the flow hadn't fully settled.</figcaption>
+    </figure>
+    <figure>
+      <div class="plate"><img src="img/cfd_duct.png" alt="3D side-wall check compared with the exact rectangular-duct solution" loading="lazy"></div>
+      <figcaption>The 3D side-wall check, with velocity across the width and across the gap compared against the exact rectangular-duct solution.</figcaption>
+    </figure>
+
+    <div class="caught">
+      <h3>What I caught along the way</h3>
+      <ul>
+        <li>My first model pushed a perfectly uniform flow straight into the channel, which is a common shortcut, and it said the channel passed at 28.6 Pa. But the pressure kept creeping up as I refined the mesh and never settled, which usually means there's a sharp corner the solver can't resolve. The mesh check failed, so that answer was never reported as verified. Adding the supply header fixed it, and once I counted the exit loss the answer went from a pass to a fail.</li>
+        <li>With warm water and the widest gap, the flow was still developing slightly where I take the measurements. That case is marked unverified, and the conclusion stands on the other four.</li>
+        <li>My first 3D mesh was coarsest right where it needed to be finest, next to the side walls. The overall friction still looked fine, but comparing the whole velocity field point by point failed every time, always next to the wall. Averages can hide local errors, so I compare the full field too.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="study" id="thermal">
+    <div class="study-head">
+      <span class="label">Study 6 · CalculiX heat transfer</span>
+      <h2>Heat-sink fin temperature</h2>
+    </div>
+    <figure><div class="plate"><img src="img/render_fin.png" alt="Temperature over the 3D fin, rendered in Blender" loading="lazy"></div><figcaption>Temperature over the 3D fin, from 80 °C at the base to 73.2 °C at the tip. The bands bunch up near the base, where most of the heat is flowing.</figcaption></figure>
+    <p><strong>The question.</strong> One fin of a heat sink is 6061 aluminium, 40 mm tall, 20 mm wide and 2 mm thick. The base is at 80 °C and the air is at 25 °C, with a heat-transfer coefficient of about 25 W/m²K. Does the tip stay above 60 °C, and how sure can I be?</p>
+    <div class="answer">
+      <div class="chips"><span class="chip pass">Tip 73.2 °C, 13 degrees of margin</span><span class="chip pass">Worst case 65.9 °C</span><span class="chip pass">Numerical error under 0.001 °C</span></div>
+      <p><strong>Yes, comfortably.</strong> The coldest point on the tip is 73.2 °C. Even with every input at its worst at the same time (double the air-side coefficient, the lowest likely conductivity for this alloy, and every dimension at the cold end of its tolerance) the tip still sits at 65.9 °C.</p>
+      <p>The air-side coefficient matters most. The tip only gets down to 60 °C if that coefficient climbs to about 95 W/m²K, almost four times the estimate. The other realistic way to fail is a poor joint between the fin and the base. If the fin root only reaches about 65 °C instead of 80, the tip drops to 60 °C, so that's what I'd check on the real part.</p>
+    </div>
+    <h3>How I checked it</h3>
+    <ul class="proof">
+      <li>It's a full 3D heat-conduction model in CalculiX, losing heat to the air from every exposed face, with the mesh generated in code.</li>
+      <li>The textbook 1D fin solution agrees with the 3D result within half a thousandth of a degree along the whole fin. I wrote down the expected values before running, and every result came within a tenth of a degree of them.</li>
+      <li>The heat going in at the base matches the heat leaving through all the surfaces.</li>
+      <li>Going from 2 mm to 0.25 mm elements converges at exactly the expected rate, leaving under a thousandth of a degree of numerical uncertainty.</li>
+      <li>The temperature through the thickness is uniform to a few hundredths of a degree, so comparing against a 1D textbook solution is fair.</li>
+    </ul>
+    <div class="figs-2">
+      <figure>
+        <div class="plate"><img src="img/fin_response.png" alt="Temperature along the fin, 3D model against fin theory" loading="lazy"></div>
+        <figcaption>Temperature along the fin. The 3D model sits on the textbook solution.</figcaption>
+      </figure>
+      <figure>
+        <div class="plate"><img src="img/fin_h_sweep.png" alt="Tip temperature as the air-side heat-transfer coefficient rises" loading="lazy"></div>
+        <figcaption>How high the air-side coefficient can go before the tip drops below 60 °C.</figcaption>
+      </figure>
+    </div>
+    <div class="caught">
+      <h3>What I caught along the way</h3>
+      <ul>
+        <li>The base heat flow CalculiX reported was 1.3 % short of the heat leaving the surfaces, because the solver leaves out the convection on the base nodes themselves. With that added back, the energy balance closes exactly.</li>
+        <li>On the finest meshes, the change in tip temperature was about the same size as the rounding in the solver's standard output, which made convergence impossible to judge. I switched to a higher-precision output so rounding can't decide it.</li>
+      </ul>
+    </div>
+    <p class="note">An AI agent built this study working only from my written procedures. I set it up as a test of whether those procedures produce verified work on a problem they hadn't seen before.</p>
+  </section>
+
+  <section class="study" id="heat">
+    <div class="study-head">
+      <span class="label">Study 11 · OpenFOAM heat transfer</span>
+      <h2>Cold-plate channel heat transfer</h2>
+    </div>
+    <figure><div class="plate"><img src="v2/heat_response.webp" alt="Wall and bulk temperature along the heated channel, OpenFOAM against the Graetz reference" loading="lazy"></div><figcaption>Wall and bulk temperature along the heated channel, and the local Nusselt number, against the independent Graetz thermal-entry solution.</figcaption></figure>
+    <p><strong>The question.</strong> A cold-plate passage, 1 mm deep, carries water at 25 °C and 0.1 m/s. Electronics heat both walls at 30 kW/m² over 50 mm. Does the wall stay at or under 45 °C, does the coolant warm up by no more than 10 K, and how much heat flux could the passage take?</p>
+    <div class="answer">
+      <div class="chips"><span class="chip pass">Coolant rise 7.2 K: verified</span><span class="chip warn">Wall 44.0–44.1 °C: mesh uncertainty open</span><span class="chip pass">Rated about 31 kW/m²</span></div>
+      <p><strong>The coolant warms up by 7.2 K</strong>, inside its 10 K budget, and that result is verified. The energy balance closes to about one part in a trillion on every mesh.</p>
+      <p><strong>The wall peaks at 44.0 to 44.1 °C</strong> on all three meshes, 0.86 to 0.97 K under the limit, and it matches the independent reference within 0.6 %. The trouble is that the peak isn't settling smoothly as the mesh gets finer, so the mesh check can't put a number on its uncertainty. Until it can, I'm not calling that one a pass. With 40 cells across the gap, the wall reaches 45 °C at about 31 kW/m².</p>
+    </div>
+    <h3>How I checked it</h3>
+    <ul class="proof">
+      <li>I compared against the thermal-entry (Graetz) problem, solved separately and checked against the textbook fully developed Nusselt number and the energy balance. The CFD wall temperature matches it within 0.03 to 0.6 % of the temperature rise.</li>
+      <li>Heat in equals heat carried out to about one part in a trillion, and the temperature field stops changing to within 10⁻¹¹ of the rise.</li>
+      <li>The separate reference matters here because the flow is still thermally developing at the end of the heated section. The Nusselt number there is 8.34 rather than the textbook 8.24, so a hand calculation that assumed developed flow would be slightly off.</li>
+    </ul>
+    <div class="caught">
+      <h3>What I caught along the way</h3>
+      <ul>
+        <li>The standard scheme overshoots by 0.06 to 0.11 K at the last heated cell, which is exactly where the peak is. It errs on the safe side, but it's the reason the peak doesn't converge smoothly.</li>
+        <li>I tried four bounded schemes that get rid of the overshoot. All of them flip-flopped from one iteration to the next and never closed the energy balance, and under-relaxation just hid the problem. I went back to the scheme that converges exactly and let the checks bound its error. I kept every failed run and didn't change any tolerances.</li>
+      </ul>
+    </div>
+  </section>
+
+  <h2 class="discipline">Vehicle and system dynamics</h2>
+
+  <section class="study" id="suspension">
+    <div class="study-head">
+      <span class="label">Study 7 · Python (SciPy) and OpenModelica</span>
+      <h2>Quarter-car ride and road holding</h2>
+    </div>
+    <figure><div class="plate"><img src="img/anim_quarter_car.gif" alt="Animation of the quarter car crossing the bump" loading="lazy"></div><figcaption>Drawn from the simulation at 36 km/h and 600 N·s/m. The wheel leaves the road twice, with the tire load and body acceleration plotted alongside.</figcaption></figure>
+    <p><strong>The question.</strong> For a compact car's front corner, which damper rates between 600 and 3500 N·s/m meet the targets for ride comfort, suspension travel and tire load? I tested it over a speed bump and over a rough road.</p>
+    <div class="answer">
+      <div class="chips"><span class="chip pass">Speed bump: 600 to 1000 N·s/m</span><span class="chip fail">36 km/h: wheel leaves the road</span><span class="chip warn">Bump stop: harsher at light damping</span><span class="chip fail">Rough road: comfort not met</span><span class="chip pass">Two tools agree to one part in a million</span></div>
+      <p><strong>Over a 40 mm speed bump at 18 km/h,</strong> anything from 600 to 1000 N·s/m meets all three targets. At 1500 it just misses the comfort limit, 4.18 against 4.0 m/s², and at 3500 the tire load goes over.</p>
+      <p><strong>Over the same bump at 36 km/h, nothing works.</strong> The wheel leaves the road at every damper setting, for 32 to 59 ms, and comfort and road holding fail across the board. A damper change can't fix that. It needs a lower speed, a softer tire or a gentler bump.</p>
+      <p><strong>Adding a bump stop makes light damping worse.</strong> At 600 N·s/m the suspension compresses past the 40 mm gap to the bump stop. With the stop in the model, the peak body acceleration more than doubles, from 5.2 to 11.3 m/s², and the stop still runs past its 8 mm of stroke at 2.8 kN against a 2.5 kN rating. From 1000 N·s/m up, it stays within its rating.</p>
+      <p><strong>Weighted the way people actually feel vibration (ISO 2631-1),</strong> the rough-road ride rates as uncomfortable at 1000 N·s/m (1.01 m/s²) and gets worse with more damping, up to very uncomfortable at 3500 (1.64 m/s²). The raw, unweighted acceleration overstates it by 10 to 29 %.</p>
+      <p><strong>On a rough road at 72 km/h,</strong> no damper rate meets the comfort target, while travel and tire load need at least about 1500. Those pull in opposite directions, so the real fix is a different spring rate.</p>
+    </div>
+    <h3>How I checked it</h3>
+    <ul class="proof">
+      <li>Over the speed bump, the simulation matches an independent exact solution of the same equations, and the energy going in balances the energy stored and dissipated. All 30 checks pass. I also built the same car from standard components in OpenModelica, and it agrees with the Python model to about one part in a million.</li>
+      <li>The bump stop is just one more switch in the same exact solution. The model and the reference agree on every time the stop engages and releases, and on the motion to a few parts per billion of the bump height.</li>
+      <li>The tire can push but not pull, and the solver stops exactly when the wheel leaves the road and again when it lands. I built an exact solution for this independently, using matrix exponentials within each phase and root-finding for the switch times. It agrees on those times within a tenth of a nanosecond and on the motion to about two parts per billion of the bump height.</li>
+      <li>My ISO 2631-1 weighting filter matches the standard's own table within 0.1 %. My first version came out at exactly double the table, and that comparison is what caught it.</li>
+      <li>On the rough road, the simulated vibration levels match the prediction from the frequency response within one part in ten billion.</li>
+    </ul>
+    <div class="figs-2">
+      <figure>
+        <div class="plate"><img src="img/qc_bump_sweep.png" alt="Comfort, travel, and tire load against damper rate over the speed bump" loading="lazy"></div>
+        <figcaption>Each requirement against damper rate over the speed bump.</figcaption>
+      </figure>
+      <figure>
+        <div class="plate"><img src="img/qc_iso_response.png" alt="Rough-road response compared with the frequency-response prediction" loading="lazy"></div>
+        <figcaption>The rough-road simulation against the frequency-response prediction.</figcaption>
+      </figure>
+    </div>
+    <figure><div class="plate"><img src="img/qc_liftoff_response.png" alt="At 36 km/h with light damping the wheel leaves the road twice" loading="lazy"></div><figcaption>At 36 km/h and 600 N·s/m, the tire load sits at zero twice while the wheel is in the air, and the landing spikes it to 2.6 times static. The simulation follows the exact solution the whole way.</figcaption></figure>
+    <div class="caught">
+      <h3>What I caught along the way</h3>
+      <ul>
+        <li>I first ran the bump at 36 km/h. Every numerical check passed, but the check on whether the wheel stays on the road failed at every damper rate, with the tire load swinging to as much as 1.7 times static. A linear tire model can't handle a wheel leaving the ground, so I didn't report any of those results as a pass or a fail. I kept that run and added a case at 18 km/h.</li>
+        <li>Then I built the model that check was asking for, a tire that can leave the road, and wrote down five predictions first. It turned out the linear model had overstated the peak body acceleration by up to 29 %. After the crest, the linear tire pulls the wheel back down, which a real tire can't do, and a stiff damper passes that pull straight into the body. The other surprise was that the worst moment for the tire is the landing. With light damping the wheel bounces twice and comes down hard enough to load the tire to 2.6 times its static load.</li>
+      </ul>
+    </div>
+  </section>
+
+  <h2 class="discipline">Geometry automation</h2>
+
+  <section class="study" id="cad">
+    <div class="study-head">
+      <span class="label">Study 8 · CadQuery</span>
+      <h2>Parametric mounting plate</h2>
+    </div>
+    <figure><div class="plate"><img src="img/render_cad_parts.png" alt="Mounting plate, strap and bracket arm generated by CadQuery, rendered in Blender" loading="lazy"></div></figure>
+    <p><strong>The question.</strong> An aluminium plate, 120 by 80 by 6 mm, has a grid of six holes. Which clearance hole size, from M5 up to M12, keeps the plate at 150 g or less while leaving at least twice the hole diameter between each hole and the edge?</p>
+    <div class="answer">
+      <div class="chips"><span class="chip pass">9 mm (M8 clearance) meets both</span><span class="chip pass">All 40 checks pass</span></div>
+      <p><strong>Only the 9 mm hole works</strong>, the M8 clearance size. Bigger holes save weight but eat into the edge distance, and smaller ones do the opposite.</p>
+    </div>
+    <h3>How I checked it</h3>
+    <ul class="proof">
+      <li>Every number is measured from the finished solid instead of being taken from the inputs. That includes the volume, the overall size, and the position and diameter of each hole.</li>
+      <li>The volume matches a hand calculation to the limit of floating-point arithmetic.</li>
+      <li>Each plate is exported as a STEP file, read back in and confirmed unchanged.</li>
+    </ul>
+    <figure>
+      <div class="plate"><img src="img/cad_sweep.png" alt="Plate mass and edge distance against hole size" loading="lazy"></div>
+      <figcaption>Mass and edge distance against hole size.</figcaption>
+    </figure>
+  </section>
+
+  <h2 class="discipline">Workflow validation</h2>
+
+  <section class="study" id="baseline">
+    <div class="study-head">
+      <span class="label">Study 9 · Python and OpenModelica</span>
+      <h2>Mass-spring-damper baseline</h2>
+    </div>
+    <figure><div class="plate"><img src="img/anim_msd.gif" alt="Animation of the mass-spring-damper at three damping ratios" loading="lazy"></div><figcaption>The same step force at three damping ratios, drawn from the runs, with the exact solution dotted underneath.</figcaption></figure>
+    <div class="answer">
+      <div class="chips"><span class="chip pass">All 72 checks pass</span><span class="chip pass">Two tools agree to a few parts per million</span></div>
+      <p>This was the first study, and its job was to prove the workflow on a problem with a known answer. It's a single mass on a spring and damper, hit with a step force, at six levels of damping. The results are checked against the exact textbook solution, an energy balance, the final resting position and the solver's own convergence.</p>
+    </div>
+    <div class="caught">
+      <h3>What I caught along the way</h3>
+      <ul>
+        <li>When I was hooking up OpenModelica, the check that results land on the requested time points failed. OpenModelica was quietly ignoring some of the settings I passed it. I changed how the settings get passed, and that check has been watching for it ever since.</li>
+      </ul>
+    </div>
+  </section>

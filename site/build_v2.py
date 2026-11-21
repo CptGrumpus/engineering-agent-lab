@@ -1,4 +1,4 @@
-"""Assemble the v2 portfolio page: new frame + the existing case-study sections."""
+"""Assemble the portfolio page: the template, the study write-ups (studies.html) and the extras."""
 import html
 import json
 import re
@@ -6,12 +6,7 @@ from pathlib import Path
 
 HERE = Path(__file__).parent
 REPO = Path(r"c:\Users\mrstego\projects\engineering-agent-lab")
-old = (HERE / "index_v1.html").read_text(encoding="utf-8")
-CONTACT = (HERE / "contact_section.html").read_text(encoding="utf-8")
-HEAT = (HERE / "heat_section.html").read_text(encoding="utf-8")
-studies = old[old.index('  <h2 class="discipline">Structures and vibration</h2>'):old.index("  <footer>")]
-i0 = old.index('<section class="caps" aria-labelledby="caps-title">')
-caps = old[old.index('<div class="table-wrap">', i0):old.index("</section>", i0)]
+studies = (HERE / "studies.html").read_text(encoding="utf-8")
 scenes = json.loads((HERE / "v2" / "scenes.json").read_text(encoding="utf-8"))
 
 # real pipeline output for the terminal panel
@@ -71,18 +66,19 @@ for v in VP:
 
 # --- case gallery ---------------------------------------------------------------
 CARDS = [
-    ("contact", "10", "struct", "New · Contact", "Roller-on-plate contact, nonlinear FEA", "A track roller carries 500 N/mm. Peak contact pressure 609 MPa against a 650 MPa limit, shear below the surface 184 MPa against 200. CalculiX contact matches the exact Hertz solution to 0.4 %.", "pass", "Gmsh · CalculiX"),
-    ("fea", "01", "struct", "Structures", "Cantilever bracket, 3D FEA", "Yes: 0.953 mm and 150 MPa, mesh uncertainty 0.02 %.", "pass", "FreeCAD · Gmsh · CalculiX"),
-    ("strap", "02", "struct", "Structures", "Cable hole in a strap, CAD to FEA", "Largest hole about 16.7 mm: 16 passes at 117 MPa, 18 fails.", "pass", "CadQuery · Gmsh · CalculiX"),
-    ("fatigue", "03", "struct", "Fatigue", "Strap fatigue life, chained analysis", "Lasts by a wide margin; rated to 7.8 kN cyclic for 3 × 10⁷ cycles.", "pass", "CalculiX · Python"),
-    ("modal", "04", "struct", "Vibration", "Bracket arm modal analysis", "7 mm: first mode 261.7 Hz at 206 g, clear of the engine order.", "pass", "CadQuery · Gmsh · CalculiX"),
-    ("cfd", "05", "fluid", "CFD", "Coolant channel pressure budget", "No: needs 33.4 Pa against a 30 Pa budget. No gap size fixes it.", "fail", "OpenFOAM"),
-    ("thermal", "06", "fluid", "Heat transfer", "Heat-sink fin temperature", "Yes: tip at 73.2 °C, still 65.9 °C with every input at its worst.", "pass", "CalculiX"),
-    ("suspension", "07", "vehicle", "Vehicle dynamics", "Quarter car, ride and road holding", "600 to 1000 N·s/m at 18 km/h. At 36 km/h the wheel leaves the road.", "mixed", "SciPy · OpenModelica"),
-    ("cad", "08", "geom", "Geometry", "Parametric mounting plate", "Only the 9 mm (M8 clearance) hole meets weight and edge rules.", "pass", "CadQuery"),
-    ("baseline", "09", "workflow", "Workflow", "Mass-spring-damper baseline", "All 72 checks pass; two tools agree to parts per million.", "pass", "SciPy · OpenModelica"),
+    ("contact", "10", "struct", "New · Contact", "Roller-on-plate contact, nonlinear FEA", "A track roller carrying 500 N/mm. The contact pressure peaks at 609 MPa against a 650 MPa limit, and the shear under the surface reaches 184 MPa against 200. The CalculiX model lands within 0.4 % of the exact Hertz solution.", "pass", "Gmsh · CalculiX"),
+    ("fea", "01", "struct", "Structures", "Cantilever bracket, 3D FEA", "Passes with room to spare at 0.953 mm and 150 MPa.", "pass", "FreeCAD · Gmsh · CalculiX"),
+    ("strap", "02", "struct", "Structures", "Cable hole in a strap, CAD to FEA", "The hole can go up to about 16.7 mm. 16 mm passes at 117 MPa and 18 mm fails.", "pass", "CadQuery · Gmsh · CalculiX"),
+    ("fatigue", "03", "struct", "Fatigue", "Strap fatigue life, chained analysis", "Lasts easily, and could be rated to 7.8 kN cyclic for 3 × 10⁷ cycles.", "pass", "CalculiX · Python"),
+    ("modal", "04", "struct", "Vibration", "Bracket arm modal analysis", "7 mm thick puts the first mode at 261.7 Hz and the weight at 206 g.", "pass", "CadQuery · Gmsh · CalculiX"),
+    ("cfd", "05", "fluid", "CFD", "Coolant channel pressure budget", "Fails. It needs 33.4 Pa against a 30 Pa budget, and no gap size fixes it.", "fail", "OpenFOAM"),
+    ("thermal", "06", "fluid", "Heat transfer", "Heat-sink fin temperature", "The tip sits at 73.2 °C, and still 65.9 °C with every input at its worst.", "pass", "CalculiX"),
+    ("heat", "11", "fluid", "Heat transfer", "Cold-plate channel heat transfer", "The coolant warms 7.2 K, verified. The wall stays under 45 °C, but I haven't pinned down its mesh uncertainty yet.", "held", "OpenFOAM"),
+    ("suspension", "07", "vehicle", "Vehicle dynamics", "Quarter car, ride and road holding", "600 to 1000 N·s/m works at 18 km/h. At 36 km/h the wheel leaves the road.", "mixed", "SciPy · OpenModelica"),
+    ("cad", "08", "geom", "Geometry", "Parametric mounting plate", "Only the 9 mm (M8 clearance) hole meets both the weight and edge-distance rules.", "pass", "CadQuery"),
+    ("baseline", "09", "workflow", "Workflow", "Mass-spring-damper baseline", "All 72 checks pass, and the two tools agree to a few parts per million.", "pass", "SciPy · OpenModelica"),
 ]
-VERDICT = {"pass": "Answer delivered", "fail": "Design fails, with the fix", "mixed": "Pass and fail regimes"}
+VERDICT = {"pass": "Passes", "fail": "Fails", "mixed": "Depends on speed", "held": "One result on hold"}
 cards_html = "\n".join(
     f'''      <a class="card{' featured' if k == 'contact' else ''}" href="#{k}" data-group="{g}">
         <span class="thumb"><img src="v2/th_{k}.webp" alt="" loading="lazy" width="800" height="500"></span>
@@ -103,39 +99,35 @@ term_html = "".join(
     f'<span class="t-row"><span class="t-id">{cid}</span><span class="t-{st.lower()}">{st}</span><span class="t-num">{val}</span><span class="t-tol">tol {tol}</span></span>'
     for cid, st, val, tol in term_lines)
 
-def fig(src, alt, cap):
-    return ("\n    " + f'<figure><div class="plate"><img src="{src}" alt="{alt}" loading="lazy"></div>'
-            f'<figcaption>{cap}</figcaption></figure>')
+# gallery thumbnail for study 11: the wall and bulk temperature panel of its response plot
+th_heat = HERE / "v2" / "th_heat.webp"
+if not th_heat.exists():
+    from PIL import Image
+    src = Image.open(HERE / "v2" / "heat_response.webp").convert("RGB").crop((10, 80, 725, 535))
+    src.thumbnail((760, 470), Image.LANCZOS)
+    canvas = Image.new("RGB", (800, 500), (252, 252, 251))
+    canvas.paste(src, ((800 - src.width) // 2, (500 - src.height) // 2))
+    canvas.save(th_heat, "WEBP", quality=88)
 
+import extras
+facts = extras.repo_facts()
+gdata = extras.grader_data()
+gcheck = extras.check_js_against_python(gdata)
+grader_body, grader_js = extras.grader_html(gdata)
 
-def after_head(text, sid, html):
-    import re as _re
-    m = _re.search(rf'(<section class="study" id="{sid}">\s*<div class="study-head">.*?</div>)', text, flags=_re.S)
-    assert m, sid
-    return text[:m.end()] + html + text[m.end():]
-
-
-studies = after_head(studies, "fea", fig("img/turntable_cantilever.webp", "The cantilever result turning, rendered in Blender",
-    "The same result turning: the clamped end shows the bending stress across the section, highest at the top and bottom faces."))
-_i = studies.index('  <h2 class="discipline">Vehicle and system dynamics</h2>')
-studies = studies[:_i] + HEAT + chr(10) + studies[_i:]
-studies = after_head(studies, "fatigue", fig("img/render_fatigue.png", "Cyclic stress amplitude on the strap",
-    "The cyclic stress amplitude for the 0 to 5 kN service cycle, highest at the sides of the hole where a crack would start."))
-studies = after_head(studies, "cfd", fig("img/render_duct.png", "Velocity over the passage cross-section",
-    "Velocity over the passage cross-section from the 3D check: flat across most of the width, falling to zero at the side walls. The volume under this surface equals the flow rate, which the render check confirms."))
-studies = after_head(studies, "suspension", fig("img/anim_quarter_car.gif", "Animation of the quarter car crossing the bump",
-    "Drawn from the simulation at 36 km/h and 600 N·s/m: the wheel leaves the road twice, and the tire load and body acceleration trace beside it."))
-studies = after_head(studies, "baseline", fig("img/anim_msd.gif", "Animation of the mass-spring-damper at three damping ratios",
-    "The same step force at three damping ratios, drawn from the runs, with the exact solution dotted underneath."))
 page = (HERE / "v2_template.html").read_text(encoding="utf-8")
+page = (page.replace("{{EXTRA_CSS}}", extras.CSS)
+            .replace("{{TLDR}}", extras.summary_html(facts))
+            .replace("{{GRADER}}", grader_body)
+            .replace("{{GRADER_JS}}", grader_js)
+            .replace("{{REQS}}", extras.reqs_html()))
 page = (page.replace("{{VP_JSON}}", json.dumps(VP, ensure_ascii=False))
             .replace("{{TABS}}", tabs_html)
             .replace("{{CARDS}}", cards_html)
             .replace("{{TERMINAL}}", term_html)
-            .replace("{{STUDIES}}", studies.replace('  <section class="study" id="modal">',
-                                                    CONTACT + "\n" + '  <section class="study" id="modal">', 1))
-            .replace("{{CAPS}}", caps.replace(
-                '<td><a href="#fea">1</a>, <a href="#strap">2</a></td></tr>',
-                '<td><a href="#fea">1</a>, <a href="#strap">2</a></td></tr>\n          <tr><td>Contact: nonlinear surface-to-surface contact, contact pressure and subsurface stress, verified against Hertz</td><td>Gmsh, CalculiX</td><td><a href="#contact">10</a></td></tr>', 1)))
+            .replace("{{STUDIES}}", studies)
+            .replace("{{CAPS}}", extras.CAPS))
 (HERE / "index.html").write_text(page, encoding="utf-8")
-print("written", len(page) // 1024, "KB;", len(term_lines), "terminal lines")
+assert "{{" not in page, page[page.index("{{"):page.index("{{") + 40]
+print("written", len(page) // 1024, "KB;", len(term_lines), "terminal lines;", facts,
+      f"; page grader matches Python on {gcheck['checked']} answers")

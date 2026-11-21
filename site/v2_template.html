@@ -213,6 +213,7 @@ code { font-family: var(--font-data); font-size: 0.85em; }
 .filters button[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: var(--bg); }
 .gallery { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
 .card { display: grid; grid-template-rows: auto 1fr; background: var(--surface); border: 1px solid var(--rule); border-radius: 6px; overflow: hidden; color: var(--ink); text-decoration: none; transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s; }
+.card[hidden] { display: none; }
 .card:hover { transform: translateY(-3px); border-color: var(--accent); box-shadow: 0 18px 32px -24px rgba(20, 40, 90, 0.5); }
 .thumb { display: block; aspect-ratio: 16 / 10; background: var(--plate); border-bottom: 1px solid var(--rule); }
 .thumb img { width: 100%; height: 100%; object-fit: contain; display: block; }
@@ -298,7 +299,7 @@ td.num { font-family: var(--font-data); font-variant-numeric: tabular-nums; whit
 .toolchain dt { color: var(--ink); font-weight: 600; }
 .toolchain dd { margin: 0; font-family: var(--font-data); font-size: 0.8rem; align-self: center; }
 @media (max-width: 760px) { .foot { grid-template-columns: 1fr; } }
-</style>
+{{EXTRA_CSS}}</style>
 
 <nav class="topbar" aria-label="Page">
   <div class="wrap">
@@ -308,7 +309,7 @@ td.num { font-family: var(--font-data); font-variant-numeric: tabular-nums; whit
       <a href="#studies">Studies</a>
       <a href="#agent">Agent workflow</a>
       <a href="#tasks">Tasks</a>
-      <a href="#findings">Findings</a>
+      <a href="#findings">Lessons</a>
       <a href="#capabilities">Capabilities</a>
     </div>
   </div>
@@ -317,18 +318,19 @@ td.num { font-family: var(--font-data); font-variant-numeric: tabular-nums; whit
 <main id="top">
   <header class="hero wrap">
     <div class="hero-text">
-    <p class="eyebrow">Mechanical engineering · simulation and verification portfolio</p>
-    <h1>Simulation answers <em>you can check.</em></h1>
-    <p class="lede">Ten worked studies across <b>structures, contact, vibration, fatigue, fluids, heat transfer and vehicle dynamics</b>. Each one turns written requirements into a model, runs a real solver, and checks the result against something independent before it gives a verdict. Everything runs on open-source tools, driven by a coding agent through written procedures.</p>
+    <p class="eyebrow">Mechanical engineering · simulation portfolio</p>
+    <h1>Simulation results <em>I can back up.</em></h1>
+    <p class="lede">Eleven studies covering <b>structures, contact, vibration, fatigue, fluids, heat transfer and vehicle dynamics</b>. In each one I start from written requirements, build the model, run a real solver, and compare the result against something independent before I call it a pass or a fail. It's all open-source software, and a coding agent does most of the legwork using procedures I wrote.</p>
     </div>
     <dl class="stats">
       <div><dt>automated checks</dt><dd>1128</dd></div>
-      <div><dt>saved evidence runs</dt><dd>34</dd></div>
-      <div><dt>open-source solvers and tools</dt><dd>8</dd></div>
+      <div><dt>saved runs</dt><dd>34</dd></div>
+      <div><dt>open-source tools</dt><dd>8</dd></div>
       <div><dt>paid licences</dt><dd>0</dd></div>
     </dl>
   </header>
 
+{{TLDR}}
   <section class="viewport wrap" aria-label="Result viewer">
     <div class="vp" id="vp" role="tabpanel" aria-labelledby="tab-cantilever">
       <div class="legend">
@@ -348,21 +350,21 @@ td.num { font-family: var(--font-data); font-variant-numeric: tabular-nums; whit
     <div class="tabs" role="tablist" aria-label="Choose a result">
 {{TABS}}
     </div>
-    <p class="vp-note">Every result image is rendered in Blender from the solver's own output, and published only if it passes two checks. The rendered surface must enclose the part's design volume, so no faces are missing or flipped. Every coloured pixel must match the legend, so the lighting hasn't shifted the contours.</p>
+    <p class="vp-note">These images are rendered in Blender straight from the solver output. Before one goes on the page it has to pass two checks. The rendered surface has to enclose the part's actual volume, which catches missing or flipped faces, and every coloured pixel has to match a colour in the legend, which catches lighting that has shifted the contours.</p>
   </section>
 
   <section class="band wrap" id="loop" aria-labelledby="loop-title">
     <div class="band-head">
       <p class="eyebrow">Method</p>
-      <h2 id="loop-title">From a requirement to a verdict</h2>
-      <p>Every study follows the same loop. The tolerances and my predictions are written down before the first run, so a pass can't come from moving the goalposts.</p>
+      <h2 id="loop-title">How each study works</h2>
+      <p>Every study goes through the same four steps. I write down the tolerances and what I expect to see before the first run, so I can't quietly move the goalposts afterwards.</p>
     </div>
     <div class="loop">
       <ol class="steps">
-        <li><b>Frame</b><span>Turn the question into measurable requirements, input ranges, assumptions to check, and acceptance tolerances, in a case file.</span></li>
-        <li><b>Model</b><span>Build geometry, mesh, materials, loads and solver inputs in code: CadQuery, Gmsh, CalculiX, OpenFOAM, SciPy, Modelica.</span></li>
-        <li><b>Check</b><span>Compare every reported number with something independent: an exact solution, a conservation law, a handbook value, a second tool, and mesh or time-step convergence.</span></li>
-        <li><b>Report</b><span>Trace each requirement to its result, its checks and the evidence files. If an assumption broke, the verdict is withheld rather than guessed.</span></li>
+        <li><b>Set up</b><span>Turn the question into requirements I can measure, along with the input ranges, the assumptions that need checking and the acceptance tolerances. All of it goes in a case file.</span></li>
+        <li><b>Build</b><span>Write the geometry, mesh, materials, loads and solver inputs as code, using CadQuery, Gmsh, CalculiX, OpenFOAM, SciPy or Modelica.</span></li>
+        <li><b>Check</b><span>Compare every number I report with something independent. That might be an exact solution, a conservation law, a handbook value or a second tool, plus a mesh or time-step convergence study.</span></li>
+        <li><b>Report</b><span>Link each requirement to its result, the checks behind it and the saved files. If an assumption broke along the way, I hold the verdict back instead of guessing.</span></li>
       </ol>
       <div class="term" role="figure" aria-label="Real output from the quarter-car lift-off run">
         <div class="term-bar"><i></i><i></i><i></i><span>python -m harness pipeline cases/qc_bump_liftoff.toml</span></div>
@@ -380,8 +382,8 @@ td.num { font-family: var(--font-data); font-variant-numeric: tabular-nums; whit
   <section class="band wrap" id="studies" aria-labelledby="studies-title">
     <div class="band-head">
       <p class="eyebrow">Case studies</p>
-      <h2 id="studies-title">Eleven studies, each ending in a clear answer or a clearly withheld one</h2>
-      <p>The problems are synthetic, so no client data is involved. Every number comes from a saved run that reproduces from its recorded inputs with one command.</p>
+      <h2 id="studies-title">Eleven studies</h2>
+      <p>The problems are made up, so there's no client data here. Every number on this page comes from a saved run, and each run can be repeated from its recorded inputs with one command.</p>
     </div>
     <div class="filters" role="group" aria-label="Filter by discipline">
       <button type="button" aria-pressed="true" data-f="all">All</button>
@@ -394,79 +396,69 @@ td.num { font-family: var(--font-data); font-variant-numeric: tabular-nums; whit
     <div class="gallery" id="gallery">
 {{CARDS}}
     </div>
+{{REQS}}
   </section>
 
   <section class="band wrap" id="agent" aria-labelledby="agent-title">
     <div class="band-head">
       <p class="eyebrow">Agent workflow</p>
-      <h2 id="agent-title">Run by a coding agent, through written procedures</h2>
-      <p>The work is done with Claude Code following six skills I wrote and tested. The skills fix the order of work and the checks. The agent writes and runs the code, and I review the engineering.</p>
+      <h2 id="agent-title">How the agent fits in</h2>
+      <p>I use Claude Code for the hands-on work, guided by six skills I wrote and tested. The skills set the order of the work and which checks have to pass. The agent writes and runs the code, and I review the engineering.</p>
     </div>
     <div class="skills">
-      <div class="skill"><code>frame-requirements</code><b>Requirements first</b><p>The decision, metrics, input ranges, assumptions with validity checks, tolerances and predictions, all fixed before anything runs.</p></div>
-      <div class="skill"><code>build-model</code><b>Model preparation</b><p>File layout, check selection, a smoke test, and failure diagnosis, with reference notes on solver traps found the hard way.</p></div>
-      <div class="skill"><code>run-case</code><b>Simulation execution</b><p>Runs a case file and keeps inputs, tool versions, solver logs, results and failures as evidence.</p></div>
-      <div class="skill"><code>verify-against-reference</code><b>Verification</b><p>Independent references, conservation, reaction balance, mesh convergence with the Grid Convergence Index, and cross-tool comparison.</p></div>
-      <div class="skill"><code>requirements-report</code><b>Review report</b><p>Each requirement traced to its result, checks and evidence, ending in "pending human review".</p></div>
-      <div class="skill"><code>render-results</code><b>Result renders</b><p>Blender renders from the solver output, gated by a geometry check and a pixel-level legend-colour check.</p></div>
+      <div class="skill"><code>frame-requirements</code><b>Requirements first</b><p>Pins down the decision, the metrics, the input ranges, the assumptions and how to check them, the tolerances and my predictions, all before anything runs.</p></div>
+      <div class="skill"><code>build-model</code><b>Model preparation</b><p>Covers file layout, choosing the checks, a quick smoke test and diagnosing failures, plus notes on solver traps I found the hard way.</p></div>
+      <div class="skill"><code>run-case</code><b>Simulation execution</b><p>Runs a case file and saves the inputs, tool versions, solver logs and results, including the runs that fail.</p></div>
+      <div class="skill"><code>verify-against-reference</code><b>Verification</b><p>Compares against independent references, conservation and reaction balance, runs mesh convergence with the Grid Convergence Index, and cross-checks between tools.</p></div>
+      <div class="skill"><code>requirements-report</code><b>Review report</b><p>Links each requirement to its result, checks and saved files, and ends with "pending human review".</p></div>
+      <div class="skill"><code>render-results</code><b>Result renders</b><p>Renders solver output in Blender, and only keeps an image if it passes a geometry check and a pixel-by-pixel legend colour check.</p></div>
     </div>
     <ul class="rules" aria-label="Rules the agent works under">
-      <li>Never loosens a tolerance to pass</li>
-      <li>Keeps failed runs as evidence</li>
-      <li>Writes predictions before evidence runs</li>
-      <li>Withholds a verdict when an assumption breaks</li>
-      <li>Leaves acceptance to a person</li>
+      <li>No loosening a tolerance to get a pass</li>
+      <li>Failed runs are kept</li>
+      <li>Predictions are written down before the run</li>
+      <li>No verdict if an assumption breaks</li>
+      <li>A person signs off, not the agent</li>
     </ul>
   </section>
 
   <section class="band wrap" id="tasks" aria-labelledby="tasks-title">
     <div class="band-head">
       <p class="eyebrow">Evaluation tasks</p>
-      <h2 id="tasks-title">Tasks that test whether a solver checks its assumptions</h2>
-      <p>Three engineering tasks built from the verified studies, written the way an AI-training or assessment pipeline needs them: a problem statement with a required answer format, a reference solution with evidence, an automated grader, and the traps each task is designed to expose. The graders are tested as well: each gives the reference answer full marks and fails every trap on the criterion it should break.</p>
+      <h2 id="tasks-title">Try grading an answer</h2>
+      <p>I wrote three engineering tasks based on the studies, set up the way an AI-training pipeline would use them. Each has a problem statement, a reference solution backed by one of my simulations, an automated grader, and a list of the mistakes it's designed to catch. Pick a task and an answer below and the page will grade it using the same criteria and tolerances as the Python grader. You can also change any of the values yourself.</p>
     </div>
-    <div class="loop">
-      <div class="skills" style="grid-template-columns: 1fr;">
-        <div class="skill"><code>hertz_roller_contact</code><b>Contact stress under a track roller</b><p>Trap: the plain modulus E instead of the combined E*. The peak pressure comes out 35 % high and the verdict flips.</p></div>
-        <div class="skill"><code>heated_channel_wall_temperature</code><b>Cold-plate wall temperature</b><p>Trap: assuming fully developed heat transfer when the heated length is shorter than the thermal entry length. Close in value, wrong in method, and the grader catches it.</p></div>
-        <div class="skill"><code>cantilever_root_stress</code><b>Bracket stress from a 3D model</b><p>Trap: reporting the stress at a clamped corner, which grows without limit as the mesh is refined, as the design stress. 217 MPa and climbing, against a real 150 MPa.</p></div>
-      </div>
-      <div class="term" role="figure" aria-label="Real grader output for a trap answer">
-        <div class="term-bar"><i></i><i></i><i></i><span>grade(answer)  # heated_channel_wall_temperature, fully developed shortcut</span></div>
-<pre><span class="p">answer </span>peak wall 44.20 C, Nu 8.235 (fully developed), limit met
-<span class="t-row"><span class="t-id">coolant_rise_K</span><span class="t-pass">PASS</span><span class="t-num">7.2</span><span class="t-tol">ref 7.199 ±0.036</span></span><span class="t-row"><span class="t-id">peak_wall_temperature_C</span><span class="t-fail">FAIL</span><span class="t-num">44.20</span><span class="t-tol">ref 44.047 ±0.10</span></span><span class="t-row"><span class="t-id">nusselt_at_end_of_heating</span><span class="t-fail">FAIL</span><span class="t-num">8.235</span><span class="t-tol">ref 8.343 ±0.05</span></span><span class="t-row"><span class="t-id">wall_limit_met</span><span class="t-pass">PASS</span><span class="t-num">true</span><span class="t-tol">ref true</span></span><span class="p">score  </span><span class="verdict">0.5</span> · right verdict, wrong method: the entry length was never checked</pre>
-      </div>
-    </div>
+{{GRADER}}
   </section>
 
   <section class="band wrap" id="findings" aria-labelledby="findings-title">
     <div class="band-head">
-      <p class="eyebrow">What the checks caught</p>
-      <h2 id="findings-title">Answers that looked right and weren't</h2>
-      <p>In several studies the first model gave a plausible answer that was wrong. These are the cases where the checks paid for themselves.</p>
+      <p class="eyebrow">Lessons</p>
+      <h2 id="findings-title">Mistakes the checks caught</h2>
+      <p>In several studies my first model gave an answer that looked reasonable and turned out to be wrong. These are the ones where the checks earned their keep.</p>
     </div>
     <div class="findings">
-      <article class="finding"><span class="label">Strap · stress concentration</span><h3>A model that converged cleanly to the wrong answer</h3><p>A textbook-perfect mesh study settled 2 % off the handbook. Running an exact case through the same pipeline exposed a solver formulation issue that no amount of mesh refinement would have shown.</p><a href="#strap">Read the study</a></article>
-      <article class="finding"><span class="label">Coolant channel · CFD</span><h3>An idealised inlet that reversed the verdict</h3><p>The simple model said the channel passed. It never converged at the inlet corner, and the realistic model fails the pressure budget.</p><a href="#cfd">Read the study</a></article>
-      <article class="finding"><span class="label">Quarter car · vehicle dynamics</span><h3>A wheel that left the road</h3><p>Every numerical check passed, but the model was outside its valid range, so the verdict was withheld. The model that check called for, a tire that can lift off, showed the simple one had overstated peak body acceleration by up to 29 %.</p><a href="#suspension">Read the study</a></article>
-      <article class="finding"><span class="label">Roller contact · nonlinear FEA</span><h3>The right answer, read from the wrong output</h3><p>Contact pressure taken from the element stresses at the surface read 3.5 to 6.5 % high, and added up to more than the load. The solver's own contact output matched the exact Hertz solution to 0.2 % on the same mesh.</p><a href="#contact">Read the study</a></article>
-      <article class="finding"><span class="label">Cantilever · finite elements</span><h3>Elements that made the bracket look too stiff</h3><p>The simplest element type overstated stiffness by up to a third and understated stress by up to 45 %. The checks withheld every one of those results.</p><a href="#fea">Read the study</a></article>
+      <article class="finding"><span class="label">Strap · stress concentration</span><h3>A model that converged neatly to the wrong answer</h3><p>The mesh study looked textbook, but it settled 2 % away from the handbook value. Running a case with a known exact answer through the same pipeline showed the problem was in how the solver's elements behaved, which no amount of mesh refinement would have revealed.</p><a href="#strap">Read the study</a></article>
+      <article class="finding"><span class="label">Coolant channel · CFD</span><h3>A simplified inlet that flipped the answer</h3><p>The simple model said the channel passed. It never converged at the sharp inlet corner, though, and once I modelled the inlet properly the channel failed its pressure budget.</p><a href="#cfd">Read the study</a></article>
+      <article class="finding"><span class="label">Quarter car · vehicle dynamics</span><h3>A wheel that left the road</h3><p>Every numerical check passed, but the tire was leaving the ground, which the simple model can't represent, so I held the verdict back. When I built a tire model that can lift off, it showed the simple one had overstated the peak body acceleration by up to 29 %.</p><a href="#suspension">Read the study</a></article>
+      <article class="finding"><span class="label">Roller contact · nonlinear FEA</span><h3>The right model, read from the wrong output</h3><p>Taking the contact pressure from the element stresses at the surface gave numbers 3.5 to 6.5 % too high, and they added up to more than the applied load. The solver's own contact pressure output matched the exact Hertz solution within 0.2 % on the same mesh.</p><a href="#contact">Read the study</a></article>
+      <article class="finding"><span class="label">Cantilever · finite elements</span><h3>Elements that made the bracket look too stiff</h3><p>With the simplest element type, the bracket came out up to a third too stiff and the stress up to 45 % too low. The checks held back every one of those results.</p><a href="#fea">Read the study</a></article>
     </div>
   </section>
 
   <section class="band wrap" id="capabilities" aria-labelledby="caps-title">
     <div class="band-head">
       <p class="eyebrow">Capabilities</p>
-      <h2 id="caps-title">What I model, and with which tools</h2>
+      <h2 id="caps-title">What I can model, and with what</h2>
     </div>
     {{CAPS}}
   </section>
 
   <section class="band wrap" aria-label="Case study details">
     <div class="band-head">
-      <p class="eyebrow">The studies in full</p>
-      <h2>Question, answer, proof</h2>
-      <p>Each study states the question, gives the answer first, shows how I know it's right, and says what the checks caught along the way.</p>
+      <p class="eyebrow">In detail</p>
+      <h2>Each study in full</h2>
+      <p>For each one you'll find the question, the answer up front, how I checked it, and what went wrong along the way.</p>
     </div>
     <div class="studies">
 {{STUDIES}}
@@ -476,28 +468,28 @@ td.num { font-family: var(--font-data); font-variant-numeric: tabular-nums; whit
   <footer class="band wrap" aria-label="Limits and toolchain">
     <div class="foot">
       <div>
-        <span class="label">Limits of these examples</span>
+        <span class="label">What these studies don't cover</span>
         <ul>
-          <li>The parameters and requirement limits are synthetic. Nothing here is calibrated to a real product.</li>
-          <li>The checks show the equations were solved correctly and the models were used within their valid range. Showing that a model matches real hardware needs test data, which these examples don't have.</li>
-          <li>Ride comfort is unweighted; a production study would apply ISO 2631 weighting.</li>
-          <li>The coolant-channel model covers flow and pressure, not heat transfer. The fin takes the air-side heat-transfer coefficient as an input.</li>
-          <li>Every report ends with "pending human review". Accepting a design stays with a person.</li>
+          <li>The parameters and limits are made up. None of it is calibrated to a real product.</li>
+          <li>The checks show the equations were solved correctly and each model was used where it's valid. Showing that a model matches real hardware would take test data, and I don't have any for these.</li>
+          <li>The peak acceleration over the bump is unweighted. Only the rough-road ride level uses ISO 2631-1 weighting.</li>
+          <li>The cold-plate study applies the heat flux directly at the channel wall. I haven't modelled conduction through the plate itself (conjugate heat transfer) yet. The fin study takes the air-side heat-transfer coefficient as a given.</li>
+          <li>Every report ends with "pending human review", because accepting a design is a person's call.</li>
         </ul>
       </div>
       <div>
-        <span class="label">Toolchain, all open source</span>
+        <span class="label">Tools, all open source</span>
         <dl class="toolchain">
           <dt>Python</dt><dd>3.14 · NumPy 2.5 · SciPy 1.18</dd>
-          <dt>CalculiX</dt><dd>2.22 · structural, modal, heat transfer</dd>
+          <dt>CalculiX</dt><dd>2.22 · structural, contact, modal, heat transfer</dd>
           <dt>Gmsh</dt><dd>4.15 · scripted meshing from STEP</dd>
           <dt>CadQuery</dt><dd>2.8 · parametric CAD, STEP export</dd>
           <dt>FreeCAD</dt><dd>1.1.4 · headless FEM workbench</dd>
-          <dt>OpenFOAM</dt><dd>14 · laminar internal flow, in WSL</dd>
+          <dt>OpenFOAM</dt><dd>14 · laminar flow and heat transfer, in WSL</dd>
           <dt>OpenModelica</dt><dd>1.26.3 · Modelica Standard Library 4.1</dd>
           <dt>Blender</dt><dd>4.5 LTS · Cycles result renders</dd>
         </dl>
-        <p style="margin-top:12px">Every run records its exact inputs, tool versions and code version, and repeats with one command. Evidence reports and case files are available on request.</p>
+        <p style="margin-top:12px">Every run records its exact inputs, tool versions and code version, and can be repeated with one command. I'm happy to share the full reports and case files.</p>
       </div>
     </div>
   </footer>
@@ -563,4 +555,7 @@ td.num { font-family: var(--font-data); font-variant-numeric: tabular-nums; whit
     cards.forEach(c => { c.hidden = !(f === "all" || c.dataset.group === f); });
   }));
 })();
+</script>
+<script>
+{{GRADER_JS}}
 </script>

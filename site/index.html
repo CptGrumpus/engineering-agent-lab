@@ -213,6 +213,7 @@ code { font-family: var(--font-data); font-size: 0.85em; }
 .filters button[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: var(--bg); }
 .gallery { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
 .card { display: grid; grid-template-rows: auto 1fr; background: var(--surface); border: 1px solid var(--rule); border-radius: 6px; overflow: hidden; color: var(--ink); text-decoration: none; transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s; }
+.card[hidden] { display: none; }
 .card:hover { transform: translateY(-3px); border-color: var(--accent); box-shadow: 0 18px 32px -24px rgba(20, 40, 90, 0.5); }
 .thumb { display: block; aspect-ratio: 16 / 10; background: var(--plate); border-bottom: 1px solid var(--rule); }
 .thumb img { width: 100%; height: 100%; object-fit: contain; display: block; }
@@ -298,6 +299,87 @@ td.num { font-family: var(--font-data); font-variant-numeric: tabular-nums; whit
 .toolchain dt { color: var(--ink); font-weight: 600; }
 .toolchain dd { margin: 0; font-family: var(--font-data); font-size: 0.8rem; align-self: center; }
 @media (max-width: 760px) { .foot { grid-template-columns: 1fr; } }
+
+/* 30-second summary */
+.tldr { display: grid; gap: 12px; padding: 18px 22px 20px; margin-bottom: 28px; background: var(--surface); border: 1px solid var(--rule); border-left: 3px solid var(--accent); border-radius: 6px; }
+.tldr .label { color: var(--accent); }
+.tldr-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px 28px; }
+.tldr-grid b { font-family: var(--font-display); font-weight: 700; font-size: 1.02rem; display: block; margin-bottom: 2px; }
+.tldr-grid p { color: var(--ink-2); font-size: 0.96rem; line-height: 1.5; }
+.tldr-links { display: flex; flex-wrap: wrap; gap: 6px 22px; font-size: 0.93rem; font-weight: 600; }
+.tldr-links a::after { content: " ↓"; }
+@media (max-width: 820px) { .tldr-grid { grid-template-columns: 1fr; } }
+
+/* grader demo */
+.grader { display: grid; gap: 14px; grid-template-columns: minmax(0, 1fr); }
+.g-tabs { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.g-body { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); grid-template-areas: "pick term" "edit term"; gap: 18px 24px; align-items: start; }
+.g-pick { grid-area: pick; display: grid; gap: 18px; min-width: 0; }
+.g-edit { grid-area: edit; min-width: 0; }
+.g-term { grid-area: term; grid-row: 1 / span 2; min-width: 0; }
+.g-task { color: var(--ink-2); font-size: 0.98rem; max-width: 62ch; }
+.g-group { display: grid; gap: 8px; }
+.g-group .label small { text-transform: none; letter-spacing: 0; font-size: 0.78rem; color: var(--ink-3); }
+.g-presets { display: grid; gap: 6px; }
+.g-preset { font: inherit; text-align: left; cursor: pointer; display: grid; gap: 1px; padding: 9px 14px; border-radius: var(--radius); border: 1px solid var(--rule); background: var(--surface); color: var(--ink); }
+.g-preset b { font-weight: 600; font-size: 0.96rem; }
+.g-preset span { color: var(--ink-2); font-size: 0.86rem; line-height: 1.4; display: none; }
+.g-preset:hover { border-color: var(--ink-3); }
+.g-preset[aria-pressed="true"] { border-color: var(--accent); box-shadow: inset 3px 0 0 var(--accent); }
+.g-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 14px; }
+.g-field { display: grid; gap: 3px; font-size: 0.86rem; color: var(--ink-2); min-width: 0; }
+.g-field small { color: var(--ink-3); }
+.g-field input { font-family: var(--font-data); font-size: 0.9rem; padding: 6px 9px; border: 1px solid var(--rule); border-radius: var(--radius); background: var(--surface); color: var(--ink); min-width: 0; width: 100%; }
+.g-field input:focus { border-color: var(--accent); outline: none; box-shadow: 0 0 0 2px var(--accent-soft); }
+.g-yn { display: inline-flex; border: 1px solid var(--rule); border-radius: var(--radius); overflow: hidden; width: max-content; }
+.g-yn button { font: inherit; font-size: 0.85rem; padding: 5px 14px; border: 0; background: var(--surface); color: var(--ink-2); cursor: pointer; }
+.g-yn button + button { border-left: 1px solid var(--rule); }
+.g-yn button[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
+.g-term { position: sticky; top: 72px; }
+.g-term .t-id { width: 28ch; }
+.g-term .t-num { width: 9ch; }
+.g-score { display: flex; align-items: center; gap: 12px; padding: 0 16px 6px; font-size: 0.82rem; color: var(--term-dim); }
+.g-score b { color: var(--term-ink); font-weight: 500; }
+.g-meter { flex: 1; height: 6px; border-radius: 3px; background: var(--term-line); overflow: hidden; }
+.g-meter i { display: block; height: 100%; width: 0; transition: width 0.35s ease, background 0.35s; }
+.g-meter i.full { background: var(--term-pass); }
+.g-meter i.part { background: #e9c46a; }
+.g-meter i.low { background: var(--term-fail); }
+.g-note { padding: 4px 16px 16px; font-family: var(--font-body); font-size: 0.92rem; line-height: 1.5; color: var(--term-ink); }
+@media (max-width: 900px) { .g-body { grid-template-columns: minmax(0, 1fr); grid-template-areas: "pick" "term" "edit"; } .g-term { position: static; grid-row: auto; } }
+@media (max-width: 520px) { .g-fields { grid-template-columns: 1fr; } .g-tabs { grid-template-columns: 1fr; } }
+
+/* requirements table */
+.reqs { border: 1px solid var(--rule); border-radius: 6px; background: var(--surface); }
+.reqs summary { cursor: pointer; list-style: none; display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 6px 18px; padding: 14px 18px; }
+.reqs summary::-webkit-details-marker { display: none; }
+.reqs-title { font-family: var(--font-display); font-weight: 700; font-size: 1.1rem; }
+.reqs-title::before { content: "▸"; display: inline-block; width: 1.1em; color: var(--accent); transition: transform 0.2s; }
+.reqs[open] .reqs-title::before { transform: rotate(90deg); }
+.reqs-count { font-family: var(--font-data); font-size: 0.8rem; color: var(--ink-3); }
+.reqs-count b { font-weight: 500; }
+.c-pass { color: var(--pass); } .c-fail { color: var(--fail); } .c-warn { color: var(--warn); }
+.reqs .table-wrap { border: 0; border-top: 1px solid var(--rule); border-radius: 0; }
+.reqs table { font-size: 0.9rem; min-width: 760px; }
+.reqs th, .reqs td { padding: 8px 14px; }
+.reqs td:nth-child(2) { font-family: var(--font-body); font-size: 0.9rem; color: var(--ink); }
+.reqs td:first-child { white-space: nowrap; font-weight: 600; }
+.reqs td:first-child a { color: var(--ink); text-decoration: none; }
+.reqs td:first-child a:hover { color: var(--accent); }
+.reqs .r-no { font-family: var(--font-data); font-size: 0.78rem; color: var(--accent); margin-right: 4px; }
+.reqs tr.r-first td { border-top: 1px solid var(--rule); }
+.reqs tbody tr:not(.r-first) td { border-top: 0; }
+.reqs td { border-bottom: 0; }
+.reqs td.num { color: var(--ink-2); font-size: 0.8rem; }
+.reqs td:nth-child(4) { color: var(--ink-2); }
+.reqs-note { padding: 12px 18px 16px; font-size: 0.88rem; color: var(--ink-2); border-top: 1px solid var(--rule); }
+.v-held { color: var(--warn); background: var(--warn-bg); }
+/* gallery: eleven cards = one featured + nine + the baseline, which spans the last row on wide screens */
+@media (min-width: 961px) {
+  .gallery .card:last-child { grid-column: 1 / -1; grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); grid-template-rows: auto; }
+  .gallery .card:last-child .thumb { border-bottom: 0; border-right: 1px solid var(--rule); }
+  .gallery .card:last-child .card-body { align-content: center; padding: 22px 28px; }
+}
 </style>
 
 <nav class="topbar" aria-label="Page">
@@ -308,7 +390,7 @@ td.num { font-family: var(--font-data); font-variant-numeric: tabular-nums; whit
       <a href="#studies">Studies</a>
       <a href="#agent">Agent workflow</a>
       <a href="#tasks">Tasks</a>
-      <a href="#findings">Findings</a>
+      <a href="#findings">Lessons</a>
       <a href="#capabilities">Capabilities</a>
     </div>
   </div>
@@ -317,17 +399,27 @@ td.num { font-family: var(--font-data); font-variant-numeric: tabular-nums; whit
 <main id="top">
   <header class="hero wrap">
     <div class="hero-text">
-    <p class="eyebrow">Mechanical engineering · simulation and verification portfolio</p>
-    <h1>Simulation answers <em>you can check.</em></h1>
-    <p class="lede">Ten worked studies across <b>structures, contact, vibration, fatigue, fluids, heat transfer and vehicle dynamics</b>. Each one turns written requirements into a model, runs a real solver, and checks the result against something independent before it gives a verdict. Everything runs on open-source tools, driven by a coding agent through written procedures.</p>
+    <p class="eyebrow">Mechanical engineering · simulation portfolio</p>
+    <h1>Simulation results <em>I can back up.</em></h1>
+    <p class="lede">Eleven studies covering <b>structures, contact, vibration, fatigue, fluids, heat transfer and vehicle dynamics</b>. In each one I start from written requirements, build the model, run a real solver, and compare the result against something independent before I call it a pass or a fail. It's all open-source software, and a coding agent does most of the legwork using procedures I wrote.</p>
     </div>
     <dl class="stats">
       <div><dt>automated checks</dt><dd>1128</dd></div>
-      <div><dt>saved evidence runs</dt><dd>34</dd></div>
-      <div><dt>open-source solvers and tools</dt><dd>8</dd></div>
+      <div><dt>saved runs</dt><dd>34</dd></div>
+      <div><dt>open-source tools</dt><dd>8</dd></div>
       <div><dt>paid licences</dt><dd>0</dd></div>
     </dl>
   </header>
+
+  <section class="tldr wrap" aria-label="The short version">
+    <span class="label">The short version</span>
+    <div class="tldr-grid">
+      <div><b>About me</b><p>I'm an automotive mechanical engineer with a master's in ME. In my day job I use AI agents to run virtual models and to turn functional requirements into tools that automate engineering work.</p></div>
+      <div><b>What's here</b><p>Eleven studies, each taken from written requirements through to a checked answer using open-source solvers. There are also three evaluation tasks, and their graders are tested as well.</p></div>
+      <div><b>The code</b><p>It's all Python, about 16,000 lines across 120 files. That covers the harness that runs and checks everything, the models, the independent reference solutions and the graders, with 104 automated tests that run on every push.</p></div>
+    </div>
+    <p class="tldr-links"><a href="#tasks">Grade an answer yourself</a><a href="#reqs">All the requirements in one table</a><a href="#contact">The newest study, contact</a></p>
+  </section>
 
   <section class="viewport wrap" aria-label="Result viewer">
     <div class="vp" id="vp" role="tabpanel" aria-labelledby="tab-cantilever">
@@ -353,21 +445,21 @@ td.num { font-family: var(--font-data); font-variant-numeric: tabular-nums; whit
 <button type="button" role="tab" id="tab-duct" aria-controls="vp" aria-selected="false" data-i="4"><span class="tab-k">Flow</span><span class="tab-v">Coolant passage</span></button>
 <button type="button" role="tab" id="tab-mode1" aria-controls="vp" aria-selected="false" data-i="5"><span class="tab-k">Modal</span><span class="tab-v">Bracket arm</span></button>
     </div>
-    <p class="vp-note">Every result image is rendered in Blender from the solver's own output, and published only if it passes two checks. The rendered surface must enclose the part's design volume, so no faces are missing or flipped. Every coloured pixel must match the legend, so the lighting hasn't shifted the contours.</p>
+    <p class="vp-note">These images are rendered in Blender straight from the solver output. Before one goes on the page it has to pass two checks. The rendered surface has to enclose the part's actual volume, which catches missing or flipped faces, and every coloured pixel has to match a colour in the legend, which catches lighting that has shifted the contours.</p>
   </section>
 
   <section class="band wrap" id="loop" aria-labelledby="loop-title">
     <div class="band-head">
       <p class="eyebrow">Method</p>
-      <h2 id="loop-title">From a requirement to a verdict</h2>
-      <p>Every study follows the same loop. The tolerances and my predictions are written down before the first run, so a pass can't come from moving the goalposts.</p>
+      <h2 id="loop-title">How each study works</h2>
+      <p>Every study goes through the same four steps. I write down the tolerances and what I expect to see before the first run, so I can't quietly move the goalposts afterwards.</p>
     </div>
     <div class="loop">
       <ol class="steps">
-        <li><b>Frame</b><span>Turn the question into measurable requirements, input ranges, assumptions to check, and acceptance tolerances, in a case file.</span></li>
-        <li><b>Model</b><span>Build geometry, mesh, materials, loads and solver inputs in code: CadQuery, Gmsh, CalculiX, OpenFOAM, SciPy, Modelica.</span></li>
-        <li><b>Check</b><span>Compare every reported number with something independent: an exact solution, a conservation law, a handbook value, a second tool, and mesh or time-step convergence.</span></li>
-        <li><b>Report</b><span>Trace each requirement to its result, its checks and the evidence files. If an assumption broke, the verdict is withheld rather than guessed.</span></li>
+        <li><b>Set up</b><span>Turn the question into requirements I can measure, along with the input ranges, the assumptions that need checking and the acceptance tolerances. All of it goes in a case file.</span></li>
+        <li><b>Build</b><span>Write the geometry, mesh, materials, loads and solver inputs as code, using CadQuery, Gmsh, CalculiX, OpenFOAM, SciPy or Modelica.</span></li>
+        <li><b>Check</b><span>Compare every number I report with something independent. That might be an exact solution, a conservation law, a handbook value or a second tool, plus a mesh or time-step convergence study.</span></li>
+        <li><b>Report</b><span>Link each requirement to its result, the checks behind it and the saved files. If an assumption broke along the way, I hold the verdict back instead of guessing.</span></li>
       </ol>
       <div class="term" role="figure" aria-label="Real output from the quarter-car lift-off run">
         <div class="term-bar"><i></i><i></i><i></i><span>python -m harness pipeline cases/qc_bump_liftoff.toml</span></div>
@@ -385,8 +477,8 @@ td.num { font-family: var(--font-data); font-variant-numeric: tabular-nums; whit
   <section class="band wrap" id="studies" aria-labelledby="studies-title">
     <div class="band-head">
       <p class="eyebrow">Case studies</p>
-      <h2 id="studies-title">Eleven studies, each ending in a clear answer or a clearly withheld one</h2>
-      <p>The problems are synthetic, so no client data is involved. Every number comes from a saved run that reproduces from its recorded inputs with one command.</p>
+      <h2 id="studies-title">Eleven studies</h2>
+      <p>The problems are made up, so there's no client data here. Every number on this page comes from a saved run, and each run can be repeated from its recorded inputs with one command.</p>
     </div>
     <div class="filters" role="group" aria-label="Filter by discipline">
       <button type="button" aria-pressed="true" data-f="all">All</button>
@@ -402,8 +494,8 @@ td.num { font-family: var(--font-data); font-variant-numeric: tabular-nums; whit
         <span class="card-body">
           <span class="meta"><span class="no">10</span><span>New · Contact</span></span>
           <span class="card-title">Roller-on-plate contact, nonlinear FEA</span>
-          <span class="card-answer">A track roller carries 500 N/mm. Peak contact pressure 609 MPa against a 650 MPa limit, shear below the surface 184 MPa against 200. CalculiX contact matches the exact Hertz solution to 0.4 %.</span>
-          <span class="card-foot"><span class="v v-pass">Answer delivered</span><span class="tools">Gmsh · CalculiX</span></span>
+          <span class="card-answer">A track roller carrying 500 N/mm. The contact pressure peaks at 609 MPa against a 650 MPa limit, and the shear under the surface reaches 184 MPa against 200. The CalculiX model lands within 0.4 % of the exact Hertz solution.</span>
+          <span class="card-foot"><span class="v v-pass">Passes</span><span class="tools">Gmsh · CalculiX</span></span>
         </span>
       </a>
       <a class="card" href="#fea" data-group="struct">
@@ -411,8 +503,8 @@ td.num { font-family: var(--font-data); font-variant-numeric: tabular-nums; whit
         <span class="card-body">
           <span class="meta"><span class="no">01</span><span>Structures</span></span>
           <span class="card-title">Cantilever bracket, 3D FEA</span>
-          <span class="card-answer">Yes: 0.953 mm and 150 MPa, mesh uncertainty 0.02 %.</span>
-          <span class="card-foot"><span class="v v-pass">Answer delivered</span><span class="tools">FreeCAD · Gmsh · CalculiX</span></span>
+          <span class="card-answer">Passes with room to spare at 0.953 mm and 150 MPa.</span>
+          <span class="card-foot"><span class="v v-pass">Passes</span><span class="tools">FreeCAD · Gmsh · CalculiX</span></span>
         </span>
       </a>
       <a class="card" href="#strap" data-group="struct">
@@ -420,8 +512,8 @@ td.num { font-family: var(--font-data); font-variant-numeric: tabular-nums; whit
         <span class="card-body">
           <span class="meta"><span class="no">02</span><span>Structures</span></span>
           <span class="card-title">Cable hole in a strap, CAD to FEA</span>
-          <span class="card-answer">Largest hole about 16.7 mm: 16 passes at 117 MPa, 18 fails.</span>
-          <span class="card-foot"><span class="v v-pass">Answer delivered</span><span class="tools">CadQuery · Gmsh · CalculiX</span></span>
+          <span class="card-answer">The hole can go up to about 16.7 mm. 16 mm passes at 117 MPa and 18 mm fails.</span>
+          <span class="card-foot"><span class="v v-pass">Passes</span><span class="tools">CadQuery · Gmsh · CalculiX</span></span>
         </span>
       </a>
       <a class="card" href="#fatigue" data-group="struct">
@@ -429,8 +521,8 @@ td.num { font-family: var(--font-data); font-variant-numeric: tabular-nums; whit
         <span class="card-body">
           <span class="meta"><span class="no">03</span><span>Fatigue</span></span>
           <span class="card-title">Strap fatigue life, chained analysis</span>
-          <span class="card-answer">Lasts by a wide margin; rated to 7.8 kN cyclic for 3 × 10⁷ cycles.</span>
-          <span class="card-foot"><span class="v v-pass">Answer delivered</span><span class="tools">CalculiX · Python</span></span>
+          <span class="card-answer">Lasts easily, and could be rated to 7.8 kN cyclic for 3 × 10⁷ cycles.</span>
+          <span class="card-foot"><span class="v v-pass">Passes</span><span class="tools">CalculiX · Python</span></span>
         </span>
       </a>
       <a class="card" href="#modal" data-group="struct">
@@ -438,8 +530,8 @@ td.num { font-family: var(--font-data); font-variant-numeric: tabular-nums; whit
         <span class="card-body">
           <span class="meta"><span class="no">04</span><span>Vibration</span></span>
           <span class="card-title">Bracket arm modal analysis</span>
-          <span class="card-answer">7 mm: first mode 261.7 Hz at 206 g, clear of the engine order.</span>
-          <span class="card-foot"><span class="v v-pass">Answer delivered</span><span class="tools">CadQuery · Gmsh · CalculiX</span></span>
+          <span class="card-answer">7 mm thick puts the first mode at 261.7 Hz and the weight at 206 g.</span>
+          <span class="card-foot"><span class="v v-pass">Passes</span><span class="tools">CadQuery · Gmsh · CalculiX</span></span>
         </span>
       </a>
       <a class="card" href="#cfd" data-group="fluid">
@@ -447,8 +539,8 @@ td.num { font-family: var(--font-data); font-variant-numeric: tabular-nums; whit
         <span class="card-body">
           <span class="meta"><span class="no">05</span><span>CFD</span></span>
           <span class="card-title">Coolant channel pressure budget</span>
-          <span class="card-answer">No: needs 33.4 Pa against a 30 Pa budget. No gap size fixes it.</span>
-          <span class="card-foot"><span class="v v-fail">Design fails, with the fix</span><span class="tools">OpenFOAM</span></span>
+          <span class="card-answer">Fails. It needs 33.4 Pa against a 30 Pa budget, and no gap size fixes it.</span>
+          <span class="card-foot"><span class="v v-fail">Fails</span><span class="tools">OpenFOAM</span></span>
         </span>
       </a>
       <a class="card" href="#thermal" data-group="fluid">
@@ -456,8 +548,17 @@ td.num { font-family: var(--font-data); font-variant-numeric: tabular-nums; whit
         <span class="card-body">
           <span class="meta"><span class="no">06</span><span>Heat transfer</span></span>
           <span class="card-title">Heat-sink fin temperature</span>
-          <span class="card-answer">Yes: tip at 73.2 °C, still 65.9 °C with every input at its worst.</span>
-          <span class="card-foot"><span class="v v-pass">Answer delivered</span><span class="tools">CalculiX</span></span>
+          <span class="card-answer">The tip sits at 73.2 °C, and still 65.9 °C with every input at its worst.</span>
+          <span class="card-foot"><span class="v v-pass">Passes</span><span class="tools">CalculiX</span></span>
+        </span>
+      </a>
+      <a class="card" href="#heat" data-group="fluid">
+        <span class="thumb"><img src="v2/th_heat.webp" alt="" loading="lazy" width="800" height="500"></span>
+        <span class="card-body">
+          <span class="meta"><span class="no">11</span><span>Heat transfer</span></span>
+          <span class="card-title">Cold-plate channel heat transfer</span>
+          <span class="card-answer">The coolant warms 7.2 K, verified. The wall stays under 45 °C, but I haven&#x27;t pinned down its mesh uncertainty yet.</span>
+          <span class="card-foot"><span class="v v-held">One result on hold</span><span class="tools">OpenFOAM</span></span>
         </span>
       </a>
       <a class="card" href="#suspension" data-group="vehicle">
@@ -465,8 +566,8 @@ td.num { font-family: var(--font-data); font-variant-numeric: tabular-nums; whit
         <span class="card-body">
           <span class="meta"><span class="no">07</span><span>Vehicle dynamics</span></span>
           <span class="card-title">Quarter car, ride and road holding</span>
-          <span class="card-answer">600 to 1000 N·s/m at 18 km/h. At 36 km/h the wheel leaves the road.</span>
-          <span class="card-foot"><span class="v v-mixed">Pass and fail regimes</span><span class="tools">SciPy · OpenModelica</span></span>
+          <span class="card-answer">600 to 1000 N·s/m works at 18 km/h. At 36 km/h the wheel leaves the road.</span>
+          <span class="card-foot"><span class="v v-mixed">Depends on speed</span><span class="tools">SciPy · OpenModelica</span></span>
         </span>
       </a>
       <a class="card" href="#cad" data-group="geom">
@@ -474,8 +575,8 @@ td.num { font-family: var(--font-data); font-variant-numeric: tabular-nums; whit
         <span class="card-body">
           <span class="meta"><span class="no">08</span><span>Geometry</span></span>
           <span class="card-title">Parametric mounting plate</span>
-          <span class="card-answer">Only the 9 mm (M8 clearance) hole meets weight and edge rules.</span>
-          <span class="card-foot"><span class="v v-pass">Answer delivered</span><span class="tools">CadQuery</span></span>
+          <span class="card-answer">Only the 9 mm (M8 clearance) hole meets both the weight and edge-distance rules.</span>
+          <span class="card-foot"><span class="v v-pass">Passes</span><span class="tools">CadQuery</span></span>
         </span>
       </a>
       <a class="card" href="#baseline" data-group="workflow">
@@ -483,263 +584,308 @@ td.num { font-family: var(--font-data); font-variant-numeric: tabular-nums; whit
         <span class="card-body">
           <span class="meta"><span class="no">09</span><span>Workflow</span></span>
           <span class="card-title">Mass-spring-damper baseline</span>
-          <span class="card-answer">All 72 checks pass; two tools agree to parts per million.</span>
-          <span class="card-foot"><span class="v v-pass">Answer delivered</span><span class="tools">SciPy · OpenModelica</span></span>
+          <span class="card-answer">All 72 checks pass, and the two tools agree to a few parts per million.</span>
+          <span class="card-foot"><span class="v v-pass">Passes</span><span class="tools">SciPy · OpenModelica</span></span>
         </span>
       </a>
     </div>
+    <details class="reqs" id="reqs">
+      <summary><span class="reqs-title">All the requirements in one table</span><span class="reqs-count">21 requirements · <b class="c-pass">15 met</b> · <b class="c-fail">5 not met</b> · <b class="c-warn">1 withheld</b></span></summary>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Study</th><th>Requirement</th><th>Limit</th><th>Result</th><th>Verdict</th></tr></thead>
+          <tbody>
+          <tr class="r-first"><td><a href="#fea"><span class="r-no">01</span> Cantilever bracket</a></td><td>Tip deflection</td><td class="num">≤ 1.0 mm</td><td>0.953 mm</td><td><span class="chip pass">Met</span></td></tr>
+          <tr><td></td><td>Root bending stress</td><td class="num">≤ 213 MPa</td><td>150 MPa</td><td><span class="chip pass">Met</span></td></tr>
+          <tr class="r-first"><td><a href="#strap"><span class="r-no">02</span> Cable hole in a strap</a></td><td>Hole-edge stress, 16 mm hole</td><td class="num">≤ 120 MPa</td><td>117 MPa</td><td><span class="chip pass">Met</span></td></tr>
+          <tr class="r-first"><td><a href="#fatigue"><span class="r-no">03</span> Strap fatigue life</a></td><td>Life at the 0–5 kN service cycle</td><td class="num">≥ 3 × 10⁷ cycles</td><td>about 8 × 10⁹</td><td><span class="chip pass">Met</span></td></tr>
+          <tr class="r-first"><td><a href="#modal"><span class="r-no">04</span> Bracket arm modal</a></td><td>First natural frequency, 7 mm arm</td><td class="num">≥ 250 Hz</td><td>261.7 Hz</td><td><span class="chip pass">Met</span></td></tr>
+          <tr><td></td><td>Arm mass</td><td class="num">≤ 220 g</td><td>206 g</td><td><span class="chip pass">Met</span></td></tr>
+          <tr class="r-first"><td><a href="#cfd"><span class="r-no">05</span> Coolant channel</a></td><td>Supply pressure</td><td class="num">≤ 30 Pa</td><td>33.4 Pa nominal, 28–42 Pa over tolerances</td><td><span class="chip fail">Not met</span></td></tr>
+          <tr><td></td><td>Wall shear stress</td><td class="num">≥ 0.5 Pa</td><td>0.43 Pa with warm coolant</td><td><span class="chip fail">Not met</span></td></tr>
+          <tr><td></td><td>2D assumption: side-wall effect</td><td class="num">≤ 5 %</td><td>3.2 %</td><td><span class="chip pass">Met</span></td></tr>
+          <tr class="r-first"><td><a href="#thermal"><span class="r-no">06</span> Heat-sink fin</a></td><td>Coldest tip temperature</td><td class="num">≥ 60 °C</td><td>73.2 °C (65.9 °C worst case)</td><td><span class="chip pass">Met</span></td></tr>
+          <tr class="r-first"><td><a href="#suspension"><span class="r-no">07</span> Quarter car</a></td><td>Bump at 18 km/h: comfort, travel, tire load</td><td class="num">4.0 m/s², 40 mm, ±70 %</td><td>all met from 600 to 1000 N·s/m</td><td><span class="chip pass">Met</span></td></tr>
+          <tr><td></td><td>Bump at 36 km/h: peak body acceleration</td><td class="num">≤ 4.0 m/s²</td><td>5.2 m/s², and the wheel leaves the road at every rate</td><td><span class="chip fail">Not met</span></td></tr>
+          <tr><td></td><td>Bump-stop force at 36 km/h</td><td class="num">≤ 2.5 kN</td><td>2.8 kN at 600 N·s/m (met from 1000 up)</td><td><span class="chip fail">Not met</span></td></tr>
+          <tr><td></td><td>Rough road at 72 km/h: RMS body acceleration</td><td class="num">≤ 1.0 m/s²</td><td>missed at every damper rate</td><td><span class="chip fail">Not met</span></td></tr>
+          <tr class="r-first"><td><a href="#cad"><span class="r-no">08</span> Mounting plate</a></td><td>Plate mass, 9 mm holes</td><td class="num">≤ 150 g</td><td>148.4 g</td><td><span class="chip pass">Met</span></td></tr>
+          <tr><td></td><td>Edge distance and web between holes</td><td class="num">≥ 2 × d, ≥ 9 mm</td><td>2.22 × d, 31 mm</td><td><span class="chip pass">Met</span></td></tr>
+          <tr class="r-first"><td><a href="#baseline"><span class="r-no">09</span> Mass-spring-damper</a></td><td>Overshoot, settling time, deflection</td><td class="num">≤ 20 %, ≤ 0.5 s, ≤ 12 mm</td><td>all met for damping ratio ≥ 0.5</td><td><span class="chip pass">Met</span></td></tr>
+          <tr class="r-first"><td><a href="#contact"><span class="r-no">10</span> Roller contact</a></td><td>Peak contact pressure</td><td class="num">≤ 650 MPa</td><td>609 MPa</td><td><span class="chip pass">Met</span></td></tr>
+          <tr><td></td><td>Max shear below the surface</td><td class="num">≤ 200 MPa</td><td>184 MPa</td><td><span class="chip pass">Met</span></td></tr>
+          <tr class="r-first"><td><a href="#heat"><span class="r-no">11</span> Cold-plate heat transfer</a></td><td>Coolant temperature rise</td><td class="num">≤ 10 K</td><td>7.2 K</td><td><span class="chip pass">Met</span></td></tr>
+          <tr><td></td><td>Peak wall temperature</td><td class="num">≤ 45 °C</td><td>44.0–44.1 °C on every mesh, but the mesh uncertainty can&#x27;t be estimated yet</td><td><span class="chip warn">Withheld</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="reqs-note">"Not met" is still a verified answer. The design fails, and the study explains what would fix it. "Withheld" means the checks didn't support calling it either way.</p>
+    </details>
   </section>
 
   <section class="band wrap" id="agent" aria-labelledby="agent-title">
     <div class="band-head">
       <p class="eyebrow">Agent workflow</p>
-      <h2 id="agent-title">Run by a coding agent, through written procedures</h2>
-      <p>The work is done with Claude Code following six skills I wrote and tested. The skills fix the order of work and the checks. The agent writes and runs the code, and I review the engineering.</p>
+      <h2 id="agent-title">How the agent fits in</h2>
+      <p>I use Claude Code for the hands-on work, guided by six skills I wrote and tested. The skills set the order of the work and which checks have to pass. The agent writes and runs the code, and I review the engineering.</p>
     </div>
     <div class="skills">
-      <div class="skill"><code>frame-requirements</code><b>Requirements first</b><p>The decision, metrics, input ranges, assumptions with validity checks, tolerances and predictions, all fixed before anything runs.</p></div>
-      <div class="skill"><code>build-model</code><b>Model preparation</b><p>File layout, check selection, a smoke test, and failure diagnosis, with reference notes on solver traps found the hard way.</p></div>
-      <div class="skill"><code>run-case</code><b>Simulation execution</b><p>Runs a case file and keeps inputs, tool versions, solver logs, results and failures as evidence.</p></div>
-      <div class="skill"><code>verify-against-reference</code><b>Verification</b><p>Independent references, conservation, reaction balance, mesh convergence with the Grid Convergence Index, and cross-tool comparison.</p></div>
-      <div class="skill"><code>requirements-report</code><b>Review report</b><p>Each requirement traced to its result, checks and evidence, ending in "pending human review".</p></div>
-      <div class="skill"><code>render-results</code><b>Result renders</b><p>Blender renders from the solver output, gated by a geometry check and a pixel-level legend-colour check.</p></div>
+      <div class="skill"><code>frame-requirements</code><b>Requirements first</b><p>Pins down the decision, the metrics, the input ranges, the assumptions and how to check them, the tolerances and my predictions, all before anything runs.</p></div>
+      <div class="skill"><code>build-model</code><b>Model preparation</b><p>Covers file layout, choosing the checks, a quick smoke test and diagnosing failures, plus notes on solver traps I found the hard way.</p></div>
+      <div class="skill"><code>run-case</code><b>Simulation execution</b><p>Runs a case file and saves the inputs, tool versions, solver logs and results, including the runs that fail.</p></div>
+      <div class="skill"><code>verify-against-reference</code><b>Verification</b><p>Compares against independent references, conservation and reaction balance, runs mesh convergence with the Grid Convergence Index, and cross-checks between tools.</p></div>
+      <div class="skill"><code>requirements-report</code><b>Review report</b><p>Links each requirement to its result, checks and saved files, and ends with "pending human review".</p></div>
+      <div class="skill"><code>render-results</code><b>Result renders</b><p>Renders solver output in Blender, and only keeps an image if it passes a geometry check and a pixel-by-pixel legend colour check.</p></div>
     </div>
     <ul class="rules" aria-label="Rules the agent works under">
-      <li>Never loosens a tolerance to pass</li>
-      <li>Keeps failed runs as evidence</li>
-      <li>Writes predictions before evidence runs</li>
-      <li>Withholds a verdict when an assumption breaks</li>
-      <li>Leaves acceptance to a person</li>
+      <li>No loosening a tolerance to get a pass</li>
+      <li>Failed runs are kept</li>
+      <li>Predictions are written down before the run</li>
+      <li>No verdict if an assumption breaks</li>
+      <li>A person signs off, not the agent</li>
     </ul>
   </section>
 
   <section class="band wrap" id="tasks" aria-labelledby="tasks-title">
     <div class="band-head">
       <p class="eyebrow">Evaluation tasks</p>
-      <h2 id="tasks-title">Tasks that test whether a solver checks its assumptions</h2>
-      <p>Three engineering tasks built from the verified studies, written the way an AI-training or assessment pipeline needs them: a problem statement with a required answer format, a reference solution with evidence, an automated grader, and the traps each task is designed to expose. The graders are tested as well: each gives the reference answer full marks and fails every trap on the criterion it should break.</p>
+      <h2 id="tasks-title">Try grading an answer</h2>
+      <p>I wrote three engineering tasks based on the studies, set up the way an AI-training pipeline would use them. Each has a problem statement, a reference solution backed by one of my simulations, an automated grader, and a list of the mistakes it's designed to catch. Pick a task and an answer below and the page will grade it using the same criteria and tolerances as the Python grader. You can also change any of the values yourself.</p>
     </div>
-    <div class="loop">
-      <div class="skills" style="grid-template-columns: 1fr;">
-        <div class="skill"><code>hertz_roller_contact</code><b>Contact stress under a track roller</b><p>Trap: the plain modulus E instead of the combined E*. The peak pressure comes out 35 % high and the verdict flips.</p></div>
-        <div class="skill"><code>heated_channel_wall_temperature</code><b>Cold-plate wall temperature</b><p>Trap: assuming fully developed heat transfer when the heated length is shorter than the thermal entry length. Close in value, wrong in method, and the grader catches it.</p></div>
-        <div class="skill"><code>cantilever_root_stress</code><b>Bracket stress from a 3D model</b><p>Trap: reporting the stress at a clamped corner, which grows without limit as the mesh is refined, as the design stress. 217 MPa and climbing, against a real 150 MPa.</p></div>
+    <div class="grader" id="grader">
+      <div class="tabs g-tabs" role="tablist" aria-label="Choose a task">
+        <button type="button" role="tab" id="gt-0" aria-selected="true" data-t="0"><span class="tab-k">Heat transfer</span><span class="tab-v">Cold-plate wall</span></button>
+        <button type="button" role="tab" id="gt-1" aria-selected="false" data-t="1"><span class="tab-k">Contact stress</span><span class="tab-v">Roller contact</span></button>
+        <button type="button" role="tab" id="gt-2" aria-selected="false" data-t="2"><span class="tab-k">3D FEA</span><span class="tab-v">Bracket stress</span></button>
       </div>
-      <div class="term" role="figure" aria-label="Real grader output for a trap answer">
-        <div class="term-bar"><i></i><i></i><i></i><span>grade(answer)  # heated_channel_wall_temperature, fully developed shortcut</span></div>
-<pre><span class="p">answer </span>peak wall 44.20 C, Nu 8.235 (fully developed), limit met
-<span class="t-row"><span class="t-id">coolant_rise_K</span><span class="t-pass">PASS</span><span class="t-num">7.2</span><span class="t-tol">ref 7.199 ±0.036</span></span><span class="t-row"><span class="t-id">peak_wall_temperature_C</span><span class="t-fail">FAIL</span><span class="t-num">44.20</span><span class="t-tol">ref 44.047 ±0.10</span></span><span class="t-row"><span class="t-id">nusselt_at_end_of_heating</span><span class="t-fail">FAIL</span><span class="t-num">8.235</span><span class="t-tol">ref 8.343 ±0.05</span></span><span class="t-row"><span class="t-id">wall_limit_met</span><span class="t-pass">PASS</span><span class="t-num">true</span><span class="t-tol">ref true</span></span><span class="p">score  </span><span class="verdict">0.5</span> · right verdict, wrong method: the entry length was never checked</pre>
+      <div class="g-body" role="tabpanel" aria-labelledby="gt-0" id="g-panel">
+        <div class="g-pick">
+          <p class="g-task" id="g-task"></p>
+          <div class="g-group">
+            <span class="label">Answers to try</span>
+            <div class="g-presets" id="g-presets"></div>
+          </div>
+        </div>
+        <div class="g-group g-edit">
+          <span class="label">The answer being graded <small>(edit any value)</small></span>
+          <div class="g-fields" id="g-fields"></div>
+        </div>
+        <div class="term g-term" role="figure" aria-label="Grader output">
+          <div class="term-bar"><i></i><i></i><i></i><span id="g-cmd">grade(answer)</span></div>
+<pre id="g-out" aria-live="polite"></pre>
+          <div class="g-score"><div class="g-meter"><i id="g-bar"></i></div><span id="g-pct"></span></div>
+          <p class="g-note" id="g-note"></p>
+        </div>
       </div>
     </div>
   </section>
 
   <section class="band wrap" id="findings" aria-labelledby="findings-title">
     <div class="band-head">
-      <p class="eyebrow">What the checks caught</p>
-      <h2 id="findings-title">Answers that looked right and weren't</h2>
-      <p>In several studies the first model gave a plausible answer that was wrong. These are the cases where the checks paid for themselves.</p>
+      <p class="eyebrow">Lessons</p>
+      <h2 id="findings-title">Mistakes the checks caught</h2>
+      <p>In several studies my first model gave an answer that looked reasonable and turned out to be wrong. These are the ones where the checks earned their keep.</p>
     </div>
     <div class="findings">
-      <article class="finding"><span class="label">Strap · stress concentration</span><h3>A model that converged cleanly to the wrong answer</h3><p>A textbook-perfect mesh study settled 2 % off the handbook. Running an exact case through the same pipeline exposed a solver formulation issue that no amount of mesh refinement would have shown.</p><a href="#strap">Read the study</a></article>
-      <article class="finding"><span class="label">Coolant channel · CFD</span><h3>An idealised inlet that reversed the verdict</h3><p>The simple model said the channel passed. It never converged at the inlet corner, and the realistic model fails the pressure budget.</p><a href="#cfd">Read the study</a></article>
-      <article class="finding"><span class="label">Quarter car · vehicle dynamics</span><h3>A wheel that left the road</h3><p>Every numerical check passed, but the model was outside its valid range, so the verdict was withheld. The model that check called for, a tire that can lift off, showed the simple one had overstated peak body acceleration by up to 29 %.</p><a href="#suspension">Read the study</a></article>
-      <article class="finding"><span class="label">Roller contact · nonlinear FEA</span><h3>The right answer, read from the wrong output</h3><p>Contact pressure taken from the element stresses at the surface read 3.5 to 6.5 % high, and added up to more than the load. The solver's own contact output matched the exact Hertz solution to 0.2 % on the same mesh.</p><a href="#contact">Read the study</a></article>
-      <article class="finding"><span class="label">Cantilever · finite elements</span><h3>Elements that made the bracket look too stiff</h3><p>The simplest element type overstated stiffness by up to a third and understated stress by up to 45 %. The checks withheld every one of those results.</p><a href="#fea">Read the study</a></article>
+      <article class="finding"><span class="label">Strap · stress concentration</span><h3>A model that converged neatly to the wrong answer</h3><p>The mesh study looked textbook, but it settled 2 % away from the handbook value. Running a case with a known exact answer through the same pipeline showed the problem was in how the solver's elements behaved, which no amount of mesh refinement would have revealed.</p><a href="#strap">Read the study</a></article>
+      <article class="finding"><span class="label">Coolant channel · CFD</span><h3>A simplified inlet that flipped the answer</h3><p>The simple model said the channel passed. It never converged at the sharp inlet corner, though, and once I modelled the inlet properly the channel failed its pressure budget.</p><a href="#cfd">Read the study</a></article>
+      <article class="finding"><span class="label">Quarter car · vehicle dynamics</span><h3>A wheel that left the road</h3><p>Every numerical check passed, but the tire was leaving the ground, which the simple model can't represent, so I held the verdict back. When I built a tire model that can lift off, it showed the simple one had overstated the peak body acceleration by up to 29 %.</p><a href="#suspension">Read the study</a></article>
+      <article class="finding"><span class="label">Roller contact · nonlinear FEA</span><h3>The right model, read from the wrong output</h3><p>Taking the contact pressure from the element stresses at the surface gave numbers 3.5 to 6.5 % too high, and they added up to more than the applied load. The solver's own contact pressure output matched the exact Hertz solution within 0.2 % on the same mesh.</p><a href="#contact">Read the study</a></article>
+      <article class="finding"><span class="label">Cantilever · finite elements</span><h3>Elements that made the bracket look too stiff</h3><p>With the simplest element type, the bracket came out up to a third too stiff and the stress up to 45 % too low. The checks held back every one of those results.</p><a href="#fea">Read the study</a></article>
     </div>
   </section>
 
   <section class="band wrap" id="capabilities" aria-labelledby="caps-title">
     <div class="band-head">
       <p class="eyebrow">Capabilities</p>
-      <h2 id="caps-title">What I model, and with which tools</h2>
+      <h2 id="caps-title">What I can model, and with what</h2>
     </div>
     <div class="table-wrap">
       <table>
-        <thead><tr><th>What I model</th><th>Tools</th><th>Shown in</th></tr></thead>
+        <thead><tr><th>Area</th><th>Tools</th><th>Studies</th></tr></thead>
         <tbody>
-          <tr><td>Structural finite element analysis: 3D solids and plane stress, mesh convergence, stress-concentration and singularity judgement</td><td>FreeCAD, Gmsh, CalculiX</td><td><a href="#fea">1</a>, <a href="#strap">2</a></td></tr>
-          <tr><td>Contact: nonlinear surface-to-surface contact, contact pressure and subsurface stress, verified against Hertz</td><td>Gmsh, CalculiX</td><td><a href="#contact">10</a></td></tr>
-          <tr><td>Vibration: modal analysis, mode identification, frequency targets against engine orders</td><td>CadQuery, Gmsh, CalculiX</td><td><a href="#modal">4</a></td></tr>
-          <tr><td>Fatigue: notch factors, mean-stress correction, S-N curves from published test data, life ratings</td><td>CalculiX, Python</td><td><a href="#fatigue">3</a></td></tr>
-          <tr><td>Scripted CAD-to-analysis pipelines: parametric geometry, STEP exchange, meshing, solving</td><td>CadQuery, Gmsh, CalculiX</td><td><a href="#strap">2</a>, <a href="#modal">4</a>, <a href="#cad">8</a></td></tr>
-          <tr><td>Computational fluid dynamics: internal laminar flow, pressure budgets, 2D and 3D</td><td>OpenFOAM</td><td><a href="#cfd">5</a></td></tr>
-          <tr><td>Heat transfer: conduction with surface convection</td><td>CalculiX</td><td><a href="#thermal">6</a></td></tr>
-          <tr><td>Vehicle and system dynamics: ride, road holding, frequency response</td><td>Python (SciPy), OpenModelica</td><td><a href="#suspension">7</a>, <a href="#baseline">9</a></td></tr>
-          <tr><td>Presentation renders: FE results and CAD parts rendered in Blender, with legend colours and geometry checked automatically</td><td>Blender (Cycles), Python</td><td><a href="#fea">1</a>, <a href="#strap">2</a>, <a href="#modal">4</a>, <a href="#thermal">6</a>, <a href="#cad">8</a></td></tr>
-          <tr><td>Verification and uncertainty: exact and handbook references, Grid Convergence Index, tolerance and sensitivity studies</td><td>Python</td><td>All</td></tr>
+          <tr><td>Structural FEA with 3D solids and plane stress, including mesh convergence and telling real stress peaks from singularities</td><td>FreeCAD, Gmsh, CalculiX</td><td><a href="#fea">1</a>, <a href="#strap">2</a></td></tr>
+          <tr><td>Contact between separate parts, with the contact pressure and the stress below the surface checked against Hertz</td><td>Gmsh, CalculiX</td><td><a href="#contact">10</a></td></tr>
+          <tr><td>Vibration and modal analysis, including identifying the modes and keeping clear of engine orders</td><td>CadQuery, Gmsh, CalculiX</td><td><a href="#modal">4</a></td></tr>
+          <tr><td>Fatigue life using notch factors, mean-stress correction and S-N curves fitted to published test data</td><td>CalculiX, Python</td><td><a href="#fatigue">3</a></td></tr>
+          <tr><td>Scripted pipelines from parametric CAD through STEP export, meshing and solving</td><td>CadQuery, Gmsh, CalculiX</td><td><a href="#strap">2</a>, <a href="#modal">4</a>, <a href="#cad">8</a></td></tr>
+          <tr><td>Internal laminar flow and pressure budgets, in 2D and 3D</td><td>OpenFOAM</td><td><a href="#cfd">5</a></td></tr>
+          <tr><td>Heat transfer, from conduction with surface convection to convection in a heated coolant channel</td><td>CalculiX, OpenFOAM</td><td><a href="#thermal">6</a>, <a href="#heat">11</a></td></tr>
+          <tr><td>Ride, road holding and frequency response, including ISO 2631 comfort weighting</td><td>Python (SciPy), OpenModelica</td><td><a href="#suspension">7</a>, <a href="#baseline">9</a></td></tr>
+          <tr><td>Renders of FE results and CAD parts in Blender, with the legend colours and geometry checked automatically</td><td>Blender (Cycles), Python</td><td><a href="#fea">1</a>, <a href="#strap">2</a>, <a href="#modal">4</a>, <a href="#thermal">6</a>, <a href="#cad">8</a></td></tr>
+          <tr><td>Verification against exact and handbook solutions, the Grid Convergence Index, and tolerance and sensitivity studies</td><td>Python</td><td>All</td></tr>
         </tbody>
       </table>
     </div>
-  
   </section>
 
   <section class="band wrap" aria-label="Case study details">
     <div class="band-head">
-      <p class="eyebrow">The studies in full</p>
-      <h2>Question, answer, proof</h2>
-      <p>Each study states the question, gives the answer first, shows how I know it's right, and says what the checks caught along the way.</p>
+      <p class="eyebrow">In detail</p>
+      <h2>Each study in full</h2>
+      <p>For each one you'll find the question, the answer up front, how I checked it, and what went wrong along the way.</p>
     </div>
     <div class="studies">
   <h2 class="discipline">Structures and vibration</h2>
 
   <section class="study" id="fea">
     <div class="study-head">
-      <span class="label">Example 1 · Finite elements in FreeCAD and CalculiX</span>
+      <span class="label">Study 1 · FreeCAD, Gmsh and CalculiX</span>
       <h2>Cantilever bracket, 3D finite elements</h2>
     </div>
-    <figure><div class="plate"><img src="img/turntable_cantilever.webp" alt="The cantilever result turning, rendered in Blender" loading="lazy"></div><figcaption>The same result turning: the clamped end shows the bending stress across the section, highest at the top and bottom faces.</figcaption></figure>
-    <figure><div class="plate"><img src="img/render_cantilever.png" alt="Von Mises stress on the deformed cantilever, rendered in Blender" loading="lazy"></div><figcaption>Von Mises stress on the deformed bracket, rendered in Blender from the CalculiX result: highest at the clamped root, zero along the neutral axis.</figcaption></figure>
-    <p><strong>The question.</strong> A steel bracket, 200 mm long with a 20 by 20 mm section, carries a 1 kN load at its tip. Does it stay within a 1.0 mm deflection limit and a 213 MPa stress limit, and how accurate is the model?</p>
+    <figure><div class="plate"><img src="img/render_cantilever.png" alt="Von Mises stress on the deformed cantilever, rendered in Blender" loading="lazy"></div><figcaption>Von Mises stress on the deformed bracket, rendered in Blender from the CalculiX results. It's highest at the clamped end and drops to zero along the middle of the section.</figcaption></figure>
+    <figure><div class="plate"><img src="img/turntable_cantilever.webp" alt="The cantilever result turning, rendered in Blender" loading="lazy"></div><figcaption>The same result from all sides. At the clamped end you can see the bending stress across the section, highest at the top and bottom faces.</figcaption></figure>
+    <p><strong>The question.</strong> A steel bracket, 200 mm long and 20 × 20 mm in section, takes a 1 kN load at the tip. Does it stay under 1.0 mm of deflection and 213 MPa of stress, and how far can I trust the model?</p>
     <div class="answer">
       <div class="chips"><span class="chip pass">Deflection 0.953 mm</span><span class="chip pass">Root stress 150 MPa</span><span class="chip pass">Mesh uncertainty 0.02 %</span></div>
-      <p><strong>Yes, with margin.</strong> The tip deflects 0.953 mm and the bending stress at the root is 150 MPa, with a mesh uncertainty of 0.02 %.</p>
+      <p><strong>Yes, with room to spare.</strong> The tip moves 0.953 mm and the bending stress at the root is 150 MPa. The mesh uncertainty is about 0.02 %.</p>
     </div>
-    <h3>How I know it's right</h3>
+    <h3>How I checked it</h3>
     <ul class="proof">
-      <li><b>Beam theory.</b> The deflection lands between the two standard beam-theory results, 0.952 and 0.960 mm, which is where a fully clamped solid block should be.</li>
-      <li><b>Equilibrium.</b> The support reactions balance the applied load to within rounding error.</li>
-      <li><b>Mesh refinement.</b> The result converges at the rate the elements are designed for, which gives the 0.02 % uncertainty.</li>
-      <li><b>The stress I report.</b> The peak stress right at the clamped corner keeps growing with refinement, from 150 to 217 MPa, a known artifact of a perfectly sharp corner. The stress I report is taken from the smooth part of the beam, and it matches beam theory at 150 MPa.</li>
+      <li>The deflection falls between the two standard beam-theory answers, 0.952 mm without shear and 0.960 mm with it. That's where a fully clamped solid bar should land.</li>
+      <li>The support reactions add up to the applied load, to within rounding.</li>
+      <li>As I refine the mesh, the answer converges at the rate these elements should give, and that's where the 0.02 % comes from.</li>
+      <li>The peak stress right in the clamped corner keeps climbing as the mesh gets finer, from 150 to 217 MPa. A perfectly sharp corner does that in any model, so I don't use it. The stress I report comes from the smooth part of the beam, and it matches beam theory at 150 MPa.</li>
     </ul>
     <div class="figs-2">
       <figure>
         <div class="plate"><img src="img/fea_response.png" alt="Deflection and stress along the beam compared with beam theory" loading="lazy"></div>
-        <figcaption>Deflection and stress along the beam, compared with beam theory.</figcaption>
+        <figcaption>Deflection and stress along the beam, next to beam theory.</figcaption>
       </figure>
       <figure>
         <div class="plate"><img src="img/fea_tet4_sweep.png" alt="Linear-element results, all held back by the checks" loading="lazy"></div>
-        <figcaption>The same study with the simplest elements: every result held back by the checks.</figcaption>
+        <figcaption>The same study run with the simplest elements. The checks held back every result.</figcaption>
       </figure>
     </div>
     <div class="caught">
-      <h3>What the checks caught</h3>
+      <h3>What I caught along the way</h3>
       <ul>
-        <li>With the simplest element type, linear tetrahedra, the bracket looked 4 to 33 % stiffer than it is and the stress was understated by 7 to 45 %. Taken at face value, the bracket would have looked comfortably within its limits. The beam-theory and mesh checks failed instead, and every one of those results was marked unverified.</li>
+        <li>I also ran it with the simplest element type, linear tetrahedra. The bracket came out 4 to 33 % too stiff and the stress 7 to 45 % too low, so at face value it would have looked comfortably safe. The beam-theory and mesh checks both failed, and none of those results were reported as verified.</li>
       </ul>
     </div>
   </section>
 
   <section class="study" id="strap">
     <div class="study-head">
-      <span class="label">Example 2 · CadQuery to Gmsh to CalculiX</span>
+      <span class="label">Study 2 · CadQuery, Gmsh and CalculiX</span>
       <h2>Cable hole in a strap, CAD to FEA</h2>
     </div>
     <figure><div class="plate"><img src="img/strap_render.png" alt="Strap with a 16 mm cable hole, CadQuery geometry" loading="lazy"></div></figure>
-    <figure><div class="plate"><img src="img/render_strap.png" alt="Axial stress over the whole strap and a close-up of the hole" loading="lazy"></div><figcaption>Axial stress over the whole strap and around the hole: the peak sits at the two sides of the hole, at right angles to the load.</figcaption></figure>
-    <p><strong>The question.</strong> A 6061 aluminium strap, 40 mm wide and 4 mm thick, carries a 5 kN pull, and a cable has to pass through a hole drilled in the middle of it. How large can that hole be before the stress at its edge goes over a 120 MPa fatigue allowable?</p>
+    <figure><div class="plate"><img src="img/render_strap.png" alt="Axial stress over the whole strap and a close-up of the hole" loading="lazy"></div><figcaption>Axial stress over the whole strap and up close at the hole. The peak sits on the two sides of the hole, at right angles to the load.</figcaption></figure>
+    <p><strong>The question.</strong> A 6061 aluminium strap, 40 mm wide and 4 mm thick, carries a 5 kN pull, and a cable needs to pass through a hole drilled in the middle. How big can the hole be before the stress at its edge goes over a 120 MPa fatigue allowable?</p>
     <div class="answer">
       <div class="chips"><span class="chip pass">Largest hole about 16.7 mm</span><span class="chip pass">Within 0.6 % of the handbook</span><span class="chip pass">Mesh uncertainty 0.08 %</span></div>
-      <p><strong>About 16.7 mm.</strong> A 16 mm hole passes at 117 MPa, and an 18 mm hole fails at 125 MPa. I'd specify 16 mm, or 14 mm if the allowable carries any doubt, since that gives 8 % margin.</p>
-      <p>This example makes a point the stress trap couldn't: the peak at a smooth hole edge is a real, finite number that settles as the mesh is refined, while the peak at a sharp corner never does. Knowing which kind of peak you're looking at is most of the judgement in a stress check.</p>
+      <p><strong>About 16.7 mm.</strong> A 16 mm hole passes at 117 MPa and an 18 mm hole fails at 125 MPa. I'd call out 16 mm, or 14 mm if there's any doubt about the allowable, which gives 8 % margin.</p>
+      <p>It makes a useful contrast with the bracket. The peak at a smooth hole edge is a real number that settles down as the mesh gets finer, while the peak at a sharp corner never settles. Telling those two apart is a big part of doing a stress check well.</p>
     </div>
     <figure><div class="plate"><img src="img/strap_mesh.png" alt="Gmsh mesh of the quarter model, refined at the hole edge" loading="lazy"></div></figure>
-    <h3>How I know it's right</h3>
+    <h3>How I checked it</h3>
     <ul class="proof">
-      <li><b>The tool chain.</b> CadQuery builds the geometry and exports a STEP file, Gmsh meshes it with fine elements around the hole, and CalculiX solves it. Every step is scripted, so a new hole size is a one-line change.</li>
-      <li><b>Against the handbook.</b> The stress concentration factor converges to 2.436, within 0.6 % of Peterson's Stress Concentration Factors. All seven hole sizes landed within about 0.6 % of the values I wrote down before running.</li>
-      <li><b>Against an exact solution.</b> The whole pipeline reproduces the exact result for a hole in a very wide plate, three times the remote stress, to within 0.1 %. That check runs as an automatic test.</li>
-      <li><b>Equilibrium.</b> The reactions balance the load exactly, and the stress across the section beside the hole carries the full load to within 0.2 %.</li>
-      <li><b>Mesh dependence.</b> Refining the hole-edge elements from 1 mm to 0.125 mm converges at the designed rate, with 0.08 % uncertainty left.</li>
+      <li>The whole chain is scripted. CadQuery builds the part and writes a STEP file, Gmsh meshes it with small elements around the hole, and CalculiX solves it. Trying a new hole size means changing one number.</li>
+      <li>The stress concentration factor converges to 2.436, within 0.6 % of the value in Peterson's handbook. I'd written down what I expected before running, and all seven hole sizes came in within about 0.6 % of those numbers.</li>
+      <li>Run through the same pipeline, a hole in a very wide plate gives three times the remote stress to within 0.1 %, which is the exact answer. That case now runs as an automatic test.</li>
+      <li>The reactions balance the load, and the stress across the section next to the hole adds up to the full load within 0.2 %.</li>
+      <li>Going from 1 mm down to 0.125 mm elements at the hole edge converges at the expected rate, with 0.08 % uncertainty left.</li>
     </ul>
     <div class="figs-2">
       <figure>
         <div class="plate"><img src="img/strap_response.png" alt="Stress around the hole and along the section beside it" loading="lazy"></div>
-        <figcaption>Stress around the hole, and along the section beside it compared with the handbook peak.</figcaption>
+        <figcaption>Stress around the hole, and across the section beside it, against the handbook peak.</figcaption>
       </figure>
       <figure>
         <div class="plate"><img src="img/strap_sweep.png" alt="Peak hole-edge stress against hole size" loading="lazy"></div>
-        <figcaption>Peak hole-edge stress against hole size, with the 120 MPa allowable.</figcaption>
+        <figcaption>Peak stress at the hole edge for each hole size, with the 120 MPa allowable.</figcaption>
       </figure>
     </div>
     <div class="caught">
-      <h3>What the checks caught</h3>
+      <h3>What I caught along the way</h3>
       <ul>
-        <li><b>The model converged cleanly to the wrong answer.</b> My first version converged at the textbook rate with tiny mesh uncertainty, to a value 2 % above the handbook. Running the exact wide-plate case through the same pipeline came out 1.5 % high when it should have been exact. The solver's "plane stress" elements behave partly as a 3D slab for a plate this thick. Analysing a thin slice with the load scaled to match fixed it. A clean convergence study only tells you the mesh is fine, not that the model is.</li>
-        <li><b>Three pipeline traps in the first trial run:</b> number formatting the solver couldn't read, a CAD face pointing the wrong way so every element was rejected, and a remeshed model still pointing at the old node numbers, which would have run and balanced its forces anyway.</li>
+        <li>My first version converged beautifully, with a tiny mesh uncertainty, to a number 2 % above the handbook. The wide-plate test case should have been exact, but through the same pipeline it came out 1.5 % high. It turned out the solver's plane-stress elements behave partly like a thick 3D slab at this thickness. Modelling a thin slice with the load scaled to match fixed it. A clean mesh study on its own would never have shown that.</li>
+        <li>The first trial run also hit three setup problems. The solver couldn't read the number format I was writing, one CAD face pointed the wrong way so every element got rejected, and a remeshed model was still pointing at the old node numbers. That last one would have run and balanced its forces anyway, which is exactly why it's worth checking for.</li>
       </ul>
     </div>
   </section>
 
   <section class="study" id="fatigue">
     <div class="study-head">
-      <span class="label">Example 3 · Strap FE chained to stress-life fatigue</span>
+      <span class="label">Study 3 · CalculiX feeding a stress-life calculation</span>
       <h2>Strap fatigue life, chained analysis</h2>
     </div>
-    <figure><div class="plate"><img src="img/render_fatigue.png" alt="Cyclic stress amplitude on the strap" loading="lazy"></div><figcaption>The cyclic stress amplitude for the 0 to 5 kN service cycle, highest at the sides of the hole where a crack would start.</figcaption></figure>
-    <p><strong>The question.</strong> The strap from example 2, with its 16 mm hole, is loaded from zero to 5 kN and back about ten million times over the product's life. With a scatter factor of 3 on life, does it last, and what cyclic load can it be rated for?</p>
+    <figure><div class="plate"><img src="img/render_fatigue.png" alt="Cyclic stress amplitude on the strap" loading="lazy"></div><figcaption>Cyclic stress amplitude for the 0 to 5 kN service cycle. It peaks at the sides of the hole, which is where a crack would start.</figcaption></figure>
+    <p><strong>The question.</strong> Take the strap from study 2 with its 16 mm hole. In service it sees a load from zero up to 5 kN and back, roughly ten million times. With a scatter factor of 3 on life, does it last, and what cyclic load could I rate it for?</p>
     <div class="answer">
       <div class="chips"><span class="chip pass">Service life about 8 × 10⁹ cycles</span><span class="chip pass">Rated to 7.8 kN cyclic</span><span class="chip warn">Material data spread: 7.8 to 9.9 kN</span></div>
-      <p><strong>It lasts, by a wide margin.</strong> At the 0 to 5 kN service cycle the predicted life is about 8 × 10⁹ cycles, roughly 270 times what's needed. The highest cyclic load that still gives 3 × 10⁷ cycles is about 7.8 kN. Fitting either published data set alone gives 7.8 or 9.9 kN, so I'd quote the conservative end and say so.</p>
+      <p><strong>It lasts easily.</strong> At the 0 to 5 kN service cycle the predicted life is about 8 × 10⁹ cycles, around 270 times what's needed. The highest cyclic load that still gives 3 × 10⁷ cycles is about 7.8 kN. Each of the two published data sets on its own gives either 7.8 or 9.9 kN, so I'd quote the lower figure and explain why.</p>
     </div>
-    <h3>How I know it's right</h3>
+    <h3>How I checked it</h3>
     <ul class="proof">
-      <li><b>A chained analysis.</b> Every load case reruns the verified strap model for the stress at the hole edge and carries its checks along. Peterson notch sensitivity gives a fatigue notch factor of 2.15, a Smith-Watson-Topper correction handles the load never reversing, and an S-N curve gives the life.</li>
-      <li><b>Material data with a source.</b> The S-N curve is fitted to 25 published 6061-T6 test points (Chung and Abel 1988; Brodrick and Spiering 1972, via the University of Waterloo fatigue database), not copied from a table.</li>
-      <li><b>An independent check on the extrapolation.</b> All the test points are short-life, so ten million cycles is an extrapolation. Extended to 10⁹ reversals, the fitted curve lands within 2.4 % of ASM's separately published 96.5 MPa at 5 × 10⁸ cycles.</li>
-      <li><b>The arithmetic.</b> Every life inverts back to its stress amplitude exactly, and the notch stays elastic at every load (at most 81 % of yield).</li>
+      <li>Each load case reruns the verified strap model to get the stress at the hole edge, and that model's own checks come along with it. Peterson's notch sensitivity gives a fatigue notch factor of 2.15, a Smith-Watson-Topper correction accounts for the load never reversing, and an S-N curve gives the life.</li>
+      <li>The S-N curve is fitted to 25 published test points for 6061-T6 (Chung and Abel 1988, and Brodrick and Spiering 1972, from the University of Waterloo fatigue database) rather than copied out of a table.</li>
+      <li>All of that test data is short-life, so ten million cycles is an extrapolation. As a cross-check, the fitted curve extended to 10⁹ reversals lands within 2.4 % of ASM's separately published value of 96.5 MPa at 5 × 10⁸ cycles.</li>
+      <li>Every life converts back to its stress amplitude exactly, and the notch stays elastic at every load, reaching at most 81 % of yield.</li>
     </ul>
     <div class="figs-2">
-      <figure><div class="plate"><img src="img/fatigue_sn.png" alt="S-N curve with test data, fit, independent value and the service cycle" loading="lazy"></div><figcaption>Published test data, the fitted curve, ASM's independent long-life value, and the service cycle.</figcaption></figure>
-      <figure><div class="plate"><img src="img/fatigue_sweep.png" alt="Fatigue life against peak cyclic load" loading="lazy"></div><figcaption>Fatigue life against the peak cyclic load, with the required 3 × 10⁷ cycles.</figcaption></figure>
+      <figure><div class="plate"><img src="img/fatigue_sn.png" alt="S-N curve with test data, fit, independent value and the service cycle" loading="lazy"></div><figcaption>The published test data, the fitted curve, ASM's long-life value and the service cycle.</figcaption></figure>
+      <figure><div class="plate"><img src="img/fatigue_sweep.png" alt="Fatigue life against peak cyclic load" loading="lazy"></div><figcaption>Fatigue life against peak cyclic load, with the required 3 × 10⁷ cycles.</figcaption></figure>
     </div>
     <div class="caught">
-      <h3>What the checks caught</h3>
-      <ul><li><b>How much the answer depends on the material data.</b> At the service load the two published data sets predict lives that differ by a factor of about 100. That's normal for fatigue, where a 10 % change in stress moves life by a factor of about 3.4, so the result is quoted as a rating with its data spread, not a single life.</li></ul>
+      <h3>What I caught along the way</h3>
+      <ul><li>The two published data sets predict lives about 100 times apart at the service load. That's normal in fatigue, where a 10 % change in stress shifts the life by a factor of about 3.4. It's why I give a load rating with its spread instead of a single life number.</li></ul>
     </div>
   </section>
 
   <section class="study" id="contact">
     <div class="study-head">
-      <span class="label">Example 10 · Nonlinear contact in Gmsh and CalculiX</span>
+      <span class="label">Study 10 · Gmsh and CalculiX, nonlinear contact</span>
       <h2>Roller-on-plate contact</h2>
     </div>
-    <figure><div class="plate"><img src="img/render_contact.png" alt="Von Mises stress at the contact: whole roller and a section through the contact" loading="lazy"></div><figcaption>Von Mises stress, rendered from the CalculiX result: the highest stress sits just below the surface, in both bodies.</figcaption></figure>
-    <figure><div class="plate"><img src="v2/contact_response.webp" alt="Contact pressure and subsurface shear from CalculiX against the exact Hertz solution" loading="lazy"></div><figcaption>CalculiX's contact pressure across the patch and the shear stress below its centre, both on the exact Hertz curves.</figcaption></figure>
-    <p><strong>The question.</strong> A hardened steel track roller, 100 mm in diameter, runs on a steel rail plate and carries 500 N per mm of its width. Does the peak contact pressure stay at or under 650 MPa, and does the maximum shear stress below the surface, where rolling-contact fatigue cracks start, stay at or under 200 MPa?</p>
+    <figure><div class="plate"><img src="img/render_contact.png" alt="Von Mises stress at the contact: whole roller and a section through the contact" loading="lazy"></div><figcaption>Von Mises stress from the CalculiX results. The highest stress sits just under the surface in both parts.</figcaption></figure>
+    <figure><div class="plate"><img src="v2/contact_response.webp" alt="Contact pressure and subsurface shear from CalculiX against the exact Hertz solution" loading="lazy"></div><figcaption>Contact pressure across the patch and shear stress below its centre, both sitting on the exact Hertz curves.</figcaption></figure>
+    <p><strong>The question.</strong> A hardened steel track roller, 100 mm in diameter, runs on a steel plate and carries 500 N for every millimetre of its width. Does the peak contact pressure stay at or under 650 MPa? And does the maximum shear stress below the surface, where rolling-contact fatigue cracks start, stay at or under 200 MPa?</p>
     <div class="answer">
       <div class="chips"><span class="chip pass">Peak pressure 609 MPa</span><span class="chip pass">Subsurface shear 184 MPa</span><span class="chip pass">Matches Hertz to 0.4 %</span></div>
-      <p><strong>Yes, on both.</strong> The peak contact pressure is 609 MPa and the maximum shear below the surface is 184 MPa, about 0.4 mm down: margins of 6 % and 8 %. The contact patch is 1.05 mm wide.</p>
+      <p><strong>Yes on both.</strong> The peak contact pressure is 609 MPa and the maximum shear below the surface is 184 MPa, about 0.4 mm down. That leaves 6 % and 8 % of margin. The contact patch is 1.05 mm wide.</p>
     </div>
-    <h3>How I know it's right</h3>
+    <h3>How I checked it</h3>
     <ul class="proof">
-      <li><b>The model.</b> The roller and the plate are separate bodies that only touch. CalculiX finds where they're in contact as part of the solution. I push the roller down a set distance and read the force from the reactions, which is more robust than pushing with a force before the bodies have engaged.</li>
-      <li><b>Against the exact solution.</b> Hertz's theory gives the exact contact pressure and the stress field underneath. Compared at the load the model actually carries, 501.1 N/mm, the contact half-width matches to 0.005 %, the peak pressure to 0.4 %, and the depth of the maximum shear to within 2 % of one element.</li>
-      <li><b>Equilibrium and contact.</b> The force on the roller and the reaction under the plate balance exactly, the pressure integrated across the patch accounts for the load to within 2.2 %, and the largest overlap of the penalty contact is less than a ten-thousandth of the imposed approach.</li>
-      <li><b>Mesh refinement.</b> Contact elements of 0.08, 0.04 and 0.02 mm. The two coarser meshes fail some Hertz checks, as they should, so only the finest gives the verdict. Mesh uncertainty is 1.2 % on the pressure and 0.15 % on the shear.</li>
+      <li>The roller and plate are separate parts that only touch, and CalculiX works out where they're in contact as it solves. I push the roller down a set distance and read the force from the reactions, which is more reliable than applying a force before the parts are touching.</li>
+      <li>Hertz theory gives the exact contact pressure and the stresses underneath. Compared at the load the model actually carried, 501.1 N/mm, the contact half-width matches to 0.005 %, the peak pressure to 0.4 %, and the depth of maximum shear to within 2 % of one element.</li>
+      <li>The force on the roller and the reaction under the plate balance exactly. The pressure added up across the patch accounts for the load within 2.2 %, and the surfaces overlap by less than a ten-thousandth of how far the roller was pushed.</li>
+      <li>I used contact elements of 0.08, 0.04 and 0.02 mm. The two coarser meshes fail some of the Hertz checks, as you'd expect, so the answer comes from the finest one. Mesh uncertainty is 1.2 % on the pressure and 0.15 % on the shear.</li>
     </ul>
     <div class="caught">
-      <h3>What the checks caught</h3>
+      <h3>What I caught along the way</h3>
       <ul>
-        <li><b>Reading the wrong output overstates the pressure.</b> The pressure taken from element stresses at the surface read 3.5 to 6.5 % high and added up to more than the load. CalculiX's own contact pressure was within 0.2 % of Hertz on the same mesh, so the study reads that.</li>
-        <li><b>A converged answer the convergence check called divergent.</b> The maximum shear agreed across meshes to 0.06 %, but it was the largest value at any node, and which node sits nearest the true peak changes with the mesh. I kept the tolerance, changed the metric to locate the peak between nodes, wrote down the expected result first, and kept the failed run as evidence. The check now passes at 0.15 %.</li>
-        <li><b>A mesh nearly eight times bigger than it needed to be.</b> The first refinement zone spread across the whole model: 70,820 nodes and 3.5 minutes per solve. Keeping it near the contact gave 9,334 nodes, 20 seconds, and the same answer to 0.2 %.</li>
+        <li>My first try read the pressure from the element stresses at the surface. That came out 3.5 to 6.5 % high, and it added up to more than the load I'd applied. CalculiX's own contact pressure output was within 0.2 % of Hertz on the same mesh, so that's what the study uses.</li>
+        <li>The maximum shear agreed across the meshes to 0.06 %, yet the convergence check said it was diverging. I was taking the largest value at any node, and which node lands closest to the true peak changes from mesh to mesh. I left the tolerance alone, changed the measurement to find the peak between nodes, wrote down what I expected first, and kept the failed run. It now passes at 0.15 %.</li>
+        <li>The first mesh was almost eight times bigger than it needed to be, because the fine region spread across the whole model. That meant 70,820 nodes and 3.5 minutes per solve. Keeping the fine mesh near the contact brought it down to 9,334 nodes and 20 seconds, with the same answer to 0.2 %.</li>
       </ul>
     </div>
   </section>
 
   <section class="study" id="modal">
     <div class="study-head">
-      <span class="label">Example 4 · CadQuery to Gmsh to CalculiX, modal analysis</span>
+      <span class="label">Study 4 · CadQuery, Gmsh and CalculiX, modal analysis</span>
       <h2>Bracket arm vibration, modal analysis</h2>
     </div>
     <figure><div class="plate"><img src="img/bracket_render.png" alt="Bracket arm, CadQuery geometry" loading="lazy"></div></figure>
-    <p><strong>The question.</strong> A steel bracket arm, 150 by 25 mm, is bolted near an engine whose 2nd order reaches 200 Hz at 6000 rpm. Its first natural frequency has to stay above 250 Hz (25 % separation), within a 220 g mass budget. How thin can it be?</p>
+    <p><strong>The question.</strong> A steel bracket arm, 150 by 25 mm, bolts on near an engine whose second order reaches 200 Hz at 6000 rpm. Its first natural frequency needs to stay above 250 Hz for 25 % separation, and it has to weigh 220 g or less. How thin can it be?</p>
     <div class="answer">
       <div class="chips"><span class="chip pass">7 mm: first mode 261.7 Hz</span><span class="chip pass">206 g, within budget</span><span class="chip pass">Mesh uncertainty 0.03 %</span></div>
-      <p><strong>7 mm.</strong> At 6 mm the first mode drops to 224 Hz, inside the danger band; at 8 mm it's 299 Hz but the arm weighs 236 g, over budget. 7 mm is the only whole-millimetre thickness that meets both.</p>
+      <p><strong>7 mm.</strong> At 6 mm the first mode drops to 224 Hz, right in the band I'm trying to stay out of. At 8 mm it's 299 Hz, but the arm weighs 236 g and goes over budget. 7 mm is the only whole-millimetre thickness that does both.</p>
     </div>
-    <figure><div class="plate"><img src="img/bracket_modes.gif" alt="First four mode shapes, animated" loading="lazy"></div><figcaption>The first four mode shapes from CalculiX, classified automatically from their effective mass.</figcaption></figure>
-    <figure><div class="plate"><img src="img/render_bracket_modes.png" alt="First four mode shapes, rendered in Blender" loading="lazy"></div><figcaption>The same four modes rendered in Blender; colour shows how far each point moves.</figcaption></figure>
-    <h3>How I know it's right</h3>
+    <figure><div class="plate"><img src="img/bracket_modes.gif" alt="First four mode shapes, animated" loading="lazy"></div><figcaption>The first four mode shapes from CalculiX. Each one is identified automatically from its effective mass.</figcaption></figure>
+    <figure><div class="plate"><img src="img/render_bracket_modes.png" alt="First four mode shapes, rendered in Blender" loading="lazy"></div><figcaption>The same four modes rendered in Blender. The colour shows how far each point moves.</figcaption></figure>
+    <h3>How I checked it</h3>
     <ul class="proof">
-      <li><b>Against an independent beam model.</b> A separate 1D Timoshenko beam model, tested first against the exact textbook frequencies, agrees with the 3D flapwise modes to within 0.9 % and the in-plane mode to within 0.4 %.</li>
-      <li><b>Mode shape and mass.</b> The first mode's shape matches the beam model (modal assurance criterion 0.99999), and its effective mass is within 0.002 of the textbook 61.4 %.</li>
-      <li><b>Torsion.</b> 3.3 % above the simple twisting formula, as predicted, because the clamp stops the root from warping.</li>
-      <li><b>Predictions.</b> Every thickness landed within 0.7 to 0.9 % of the values written down before running.</li>
+      <li>I built a separate 1D Timoshenko beam model and tested it against the textbook frequencies first. It agrees with the 3D bending modes within 0.9 % and with the in-plane mode within 0.4 %.</li>
+      <li>The first mode shape matches the beam model almost perfectly, with a modal assurance criterion of 0.99999, and its effective mass is within 0.002 of the textbook 61.4 %.</li>
+      <li>The torsion mode comes out 3.3 % above the simple twisting formula. I expected that, because the clamp stops the root from warping.</li>
+      <li>Every thickness landed within 0.7 to 0.9 % of the values I wrote down before running.</li>
     </ul>
     <div class="caught">
-      <h3>What the checks caught</h3>
-      <ul><li><b>A prediction that was wrong, and why it didn't matter.</b> The frequencies converged more slowly than the textbook rate because the clamped corners are singular. Slower convergence still gives an honest uncertainty (0.03 %); a rate far faster than the textbook one would have been the warning sign, and the checks now flag that automatically.</li></ul>
+      <h3>What I caught along the way</h3>
+      <ul><li>One of my predictions was wrong. The frequencies converged more slowly than the textbook rate, because the clamped corners are singular. Slower convergence still gives an honest uncertainty, 0.03 % here. Convergence much faster than the textbook rate would have been the real warning sign, and the checks now flag that automatically.</li></ul>
     </div>
   </section>
 
@@ -747,129 +893,130 @@ td.num { font-family: var(--font-data); font-variant-numeric: tabular-nums; whit
 
   <section class="study" id="cfd">
     <div class="study-head">
-      <span class="label">Example 5 · Computational fluid dynamics in OpenFOAM</span>
+      <span class="label">Study 5 · OpenFOAM</span>
       <h2>Coolant channel pressure budget</h2>
     </div>
-    <figure><div class="plate"><img src="img/render_duct.png" alt="Velocity over the passage cross-section" loading="lazy"></div><figcaption>Velocity over the passage cross-section from the 3D check: flat across most of the width, falling to zero at the side walls. The volume under this surface equals the flow rate, which the render check confirms.</figcaption></figure>
-    <p><strong>The question.</strong> A cold-plate passage is a 1 mm gap between two plates, 20 mm long, carrying water at about 0.1 m/s. It has to stay within a 30 Pa share of the pump's pressure budget, and it needs at least 0.5 Pa of shear stress on the walls to limit fouling. Does it meet both when the gap can vary by plus or minus 0.05 mm and the coolant runs anywhere from 15 to 40 °C?</p>
+    <figure><div class="plate"><img src="img/render_duct.png" alt="Velocity over the passage cross-section" loading="lazy"></div><figcaption>Velocity across the passage from the 3D check. It's flat over most of the width and drops to zero at the side walls. The volume under this surface has to equal the flow rate, and the render check confirms it does.</figcaption></figure>
+    <p><strong>The question.</strong> A cold-plate passage is a 1 mm gap between two plates, 20 mm long, with water flowing at about 0.1 m/s. It gets a 30 Pa share of the pump's pressure budget, and it needs at least 0.5 Pa of shear on the walls to keep fouling down. Does it meet both if the gap can vary by ±0.05 mm and the coolant can be anywhere from 15 to 40 °C?</p>
     <div class="answer">
       <div class="chips"><span class="chip fail">Over budget at nominal</span><span class="chip fail">No gap meets both requirements</span><span class="chip pass">Mesh uncertainty 0.04 %</span></div>
-      <p><strong>The answer is no.</strong> At nominal conditions the passage needs 33.4 Pa, which is 11 % over budget. Across the tolerance range it needs anywhere from 28 to 42 Pa, and warm coolant drops the wall shear to 0.43 Pa.</p>
-      <p>The two requirements pull in opposite directions. Staying within the pressure budget with cold coolant needs a gap of at least 1.078 mm. Keeping enough wall shear with warm coolant allows a gap of at most 0.885 mm. No gap does both. I predicted those two limits before running them, and the confirmation runs came back at 30.02 Pa and 0.500 Pa.</p>
-      <p>So this is a design decision rather than a modeling one: narrow the coolant temperature range, raise the pressure budget, change how the flow is split between channels, or revisit the shear guideline.</p>
+      <p><strong>No.</strong> At nominal conditions it needs 33.4 Pa, 11 % over budget. Across the tolerance range it needs anywhere from 28 to 42 Pa, and with warm coolant the wall shear drops to 0.43 Pa.</p>
+      <p>The two requirements pull against each other. To stay inside the pressure budget with cold coolant, the gap has to be at least 1.078 mm. To keep enough wall shear with warm coolant, it can't be more than 0.885 mm. No gap does both. I predicted those two limits before running them, and the confirmation runs came back at 30.02 Pa and 0.500 Pa.</p>
+      <p>So the fix has to come from the design side. The options are a narrower coolant temperature range, a bigger pressure budget, a different flow split between channels, or a second look at the shear guideline.</p>
     </div>
 
-    <h3>How I know it's right</h3>
+    <h3>How I checked it</h3>
     <ul class="proof">
-      <li><b>The model.</b> A steady, two-dimensional flow simulation that includes the supply header and a smooth contraction into the channel. The pressure the pump has to supply counts the flow's kinetic energy at the exit as lost, which is the conservative and usual assumption; that exit loss is 7.7 Pa of the 33.4 Pa.</li>
-      <li><b>Exact solutions.</b> Where the flow has settled, the velocity profile, pressure gradient, and wall shear match the textbook exact solution to within 0.02 %.</li>
-      <li><b>Conservation.</b> Mass is conserved to about one part in a hundred million, and wall friction balances the pressure force to within a few parts in a hundred thousand.</li>
-      <li><b>Mesh dependence.</b> Refining from 20 to 80 cells across the gap converges at exactly the rate the method is designed for, leaving 0.04 % mesh uncertainty.</li>
-      <li><b>Independent estimate.</b> A hand calculation using lubrication theory for the header and the Shah and London correlation for the channel agrees within 0.3 % in every case.</li>
-      <li><b>The two-dimensional assumption.</b> A separate 3D model with the channel's side walls, assuming a 20 mm wide channel, raises the friction by 3.2 %; the exact rectangular-duct solution says 3.25 %. That adds about 0.8 Pa, so the conclusion only gets firmer.</li>
+      <li>The model is a steady 2D flow simulation that includes the supply header and a smooth contraction into the channel. I count the flow's kinetic energy at the exit as lost, which is the usual conservative assumption. That exit loss is 7.7 Pa of the 33.4.</li>
+      <li>Once the flow has settled, the velocity profile, pressure gradient and wall shear match the textbook exact solution within 0.02 %.</li>
+      <li>Mass is conserved to about one part in a hundred million, and wall friction balances the pressure force within a few parts in a hundred thousand.</li>
+      <li>Going from 20 to 80 cells across the gap converges at exactly the expected rate, leaving 0.04 % mesh uncertainty.</li>
+      <li>A hand calculation, using lubrication theory for the header and the Shah and London correlation for the channel, agrees within 0.3 % in every case.</li>
+      <li>I checked the 2D assumption with a separate 3D model that includes the side walls of a 20 mm wide channel. The side walls add 3.2 % friction, and the exact rectangular-duct solution says 3.25 %. That's about 0.8 Pa more, which only makes it a clearer fail.</li>
     </ul>
 
     <div class="table-wrap">
       <table>
-        <thead><tr><th>Where the uncertainty comes from</th><th>How big it is</th></tr></thead>
+        <thead><tr><th>Source of uncertainty</th><th>How big it is</th></tr></thead>
         <tbody>
           <tr><td>The mesh</td><td class="num">0.04 %</td></tr>
           <tr><td>Iteration and conservation</td><td>Negligible, well under one part in ten thousand</td></tr>
-          <tr><td>The model's simplifications</td><td>0.3 % or less against the independent estimate; the side walls add about 3 %</td></tr>
-          <tr><td>Manufacturing tolerance and coolant temperature</td><td><b>16 % lower to 27 % higher than nominal. This dominates everything else.</b></td></tr>
+          <tr><td>Simplifications in the model</td><td>0.3 % or less against the hand calculation, plus about 3 % from the side walls</td></tr>
+          <tr><td>Manufacturing tolerance and coolant temperature</td><td><b>16 % below to 27 % above nominal. This outweighs everything else.</b></td></tr>
         </tbody>
       </table>
     </div>
 
     <figure>
       <div class="plate"><img src="img/cfd_field.png" alt="Water velocity through the supply header, contraction, and channel" loading="lazy"></div>
-      <figcaption>Water velocity through the supply header, the smooth contraction, and the 1 mm channel. The height is stretched so the channel is visible.</figcaption>
+      <figcaption>Water velocity through the supply header, the contraction and the 1 mm channel. The height is stretched so you can see the channel.</figcaption>
     </figure>
     <figure>
       <div class="plate"><img src="img/cfd_response.png" alt="Velocity profile, pressure, and centreline velocity compared with the exact solution" loading="lazy"></div>
-      <figcaption>Left: the velocity across the gap sits on the exact solution. Right: the pressure falls through the contraction and then follows the exact slope, and the flow settles within the predicted entrance length.</figcaption>
+      <figcaption>On the left, the velocity across the gap sits on the exact solution. On the right, the pressure drops through the contraction and then follows the exact slope, and the flow settles within the predicted entrance length.</figcaption>
     </figure>
     <figure>
       <div class="plate"><img src="img/cfd_tolerance.png" alt="Required pressure and wall shear across the tolerance cases" loading="lazy"></div>
-      <figcaption>Both requirements across the tolerance cases. The grey cross is a case the checks held back because the flow had not fully settled.</figcaption>
+      <figcaption>Both requirements across the tolerance cases. The grey cross is a case the checks held back because the flow hadn't fully settled.</figcaption>
     </figure>
     <figure>
       <div class="plate"><img src="img/cfd_duct.png" alt="3D side-wall check compared with the exact rectangular-duct solution" loading="lazy"></div>
-      <figcaption>The 3D side-wall check: velocity across the width and across the gap, compared with the exact solution for a rectangular duct.</figcaption>
+      <figcaption>The 3D side-wall check, with velocity across the width and across the gap compared against the exact rectangular-duct solution.</figcaption>
     </figure>
 
     <div class="caught">
-      <h3>What the checks caught</h3>
+      <h3>What I caught along the way</h3>
       <ul>
-        <li><b>The simple inlet gave the wrong verdict.</b> My first model forced a perfectly uniform flow straight into the channel, a common shortcut, and it said the channel passed at 28.6 Pa. But the pressure kept creeping up as the mesh got finer and never settled, which is the signature of a sharp corner the solver can't resolve. The mesh-convergence check failed, so that answer was never reported as verified. Modeling the supply header fixed it, and counting the exit loss turned the verdict from pass to fail.</li>
-        <li><b>One tolerance case wasn't fully settled.</b> With warm water and the widest gap, the flow was still developing slightly where the measurements are taken. That case is marked unverified, and the conclusion rests on the other four.</li>
-        <li><b>A meshing mistake in the 3D check.</b> The first 3D mesh was coarsest exactly where it needed to be finest, next to the side walls. The overall friction still looked fine, but a point-by-point comparison of the whole velocity field failed every time, always next to the wall. An average can hide a local error, so I check the full field as well.</li>
+        <li>My first model pushed a perfectly uniform flow straight into the channel, which is a common shortcut, and it said the channel passed at 28.6 Pa. But the pressure kept creeping up as I refined the mesh and never settled, which usually means there's a sharp corner the solver can't resolve. The mesh check failed, so that answer was never reported as verified. Adding the supply header fixed it, and once I counted the exit loss the answer went from a pass to a fail.</li>
+        <li>With warm water and the widest gap, the flow was still developing slightly where I take the measurements. That case is marked unverified, and the conclusion stands on the other four.</li>
+        <li>My first 3D mesh was coarsest right where it needed to be finest, next to the side walls. The overall friction still looked fine, but comparing the whole velocity field point by point failed every time, always next to the wall. Averages can hide local errors, so I compare the full field too.</li>
       </ul>
     </div>
   </section>
 
   <section class="study" id="thermal">
     <div class="study-head">
-      <span class="label">Example 6 · Heat transfer in CalculiX</span>
+      <span class="label">Study 6 · CalculiX heat transfer</span>
       <h2>Heat-sink fin temperature</h2>
     </div>
-    <figure><div class="plate"><img src="img/render_fin.png" alt="Temperature over the 3D fin, rendered in Blender" loading="lazy"></div><figcaption>Temperature over the 3D fin, from 80 °C at the base to 73.2 °C at the tip. The bands crowd near the base, where the heat flow is largest.</figcaption></figure>
-    <p><strong>The question.</strong> One fin of a heat sink is 6061 aluminium, 40 mm tall, 20 mm wide and 2 mm thick. Its base sits at 80 °C, and the surrounding air is at 25 °C with a heat-transfer coefficient of about 25 W/m²K. Does the tip of the fin stay above 60 °C, and how sure can we be?</p>
+    <figure><div class="plate"><img src="img/render_fin.png" alt="Temperature over the 3D fin, rendered in Blender" loading="lazy"></div><figcaption>Temperature over the 3D fin, from 80 °C at the base to 73.2 °C at the tip. The bands bunch up near the base, where most of the heat is flowing.</figcaption></figure>
+    <p><strong>The question.</strong> One fin of a heat sink is 6061 aluminium, 40 mm tall, 20 mm wide and 2 mm thick. The base is at 80 °C and the air is at 25 °C, with a heat-transfer coefficient of about 25 W/m²K. Does the tip stay above 60 °C, and how sure can I be?</p>
     <div class="answer">
       <div class="chips"><span class="chip pass">Tip 73.2 °C, 13 degrees of margin</span><span class="chip pass">Worst case 65.9 °C</span><span class="chip pass">Numerical error under 0.001 °C</span></div>
-      <p><strong>Yes, comfortably.</strong> The coldest point on the tip is 73.2 °C. With every input pushed to its unfavourable end at once (the air-side coefficient doubled, the lowest likely conductivity for this alloy, and every dimension at the cold end of its tolerance) the tip still sits at 65.9 °C.</p>
-      <p>The input that matters most is the air-side coefficient: the tip only reaches 60 °C once it climbs to about 95 W/m²K, almost four times the estimate. The other realistic way to fail is a poor joint where the fin meets the base. The tip drops to 60 °C if the fin root runs at about 65 °C instead of 80, so that's what I'd check on the real part.</p>
+      <p><strong>Yes, comfortably.</strong> The coldest point on the tip is 73.2 °C. Even with every input at its worst at the same time (double the air-side coefficient, the lowest likely conductivity for this alloy, and every dimension at the cold end of its tolerance) the tip still sits at 65.9 °C.</p>
+      <p>The air-side coefficient matters most. The tip only gets down to 60 °C if that coefficient climbs to about 95 W/m²K, almost four times the estimate. The other realistic way to fail is a poor joint between the fin and the base. If the fin root only reaches about 65 °C instead of 80, the tip drops to 60 °C, so that's what I'd check on the real part.</p>
     </div>
-    <h3>How I know it's right</h3>
+    <h3>How I checked it</h3>
     <ul class="proof">
-      <li><b>The model.</b> A full 3D heat-conduction model solved in CalculiX, losing heat to the air from every exposed face, with the mesh generated directly in code.</li>
-      <li><b>Against theory.</b> The textbook one-dimensional fin solution agrees with the 3D result to within half a thousandth of a degree along the whole fin. I wrote the expected values down before running anything, and every result landed within a tenth of a degree of them.</li>
-      <li><b>Energy balance.</b> The heat entering at the base matches the heat leaving through all the surfaces.</li>
-      <li><b>Mesh dependence.</b> Refining from 2 mm to 0.25 mm elements converges at exactly the designed rate, leaving less than a thousandth of a degree of numerical uncertainty.</li>
-      <li><b>Is a one-dimensional view valid?</b> The temperature across the thickness is uniform to within a few hundredths of a degree, so the textbook comparison is a fair one.</li>
+      <li>It's a full 3D heat-conduction model in CalculiX, losing heat to the air from every exposed face, with the mesh generated in code.</li>
+      <li>The textbook 1D fin solution agrees with the 3D result within half a thousandth of a degree along the whole fin. I wrote down the expected values before running, and every result came within a tenth of a degree of them.</li>
+      <li>The heat going in at the base matches the heat leaving through all the surfaces.</li>
+      <li>Going from 2 mm to 0.25 mm elements converges at exactly the expected rate, leaving under a thousandth of a degree of numerical uncertainty.</li>
+      <li>The temperature through the thickness is uniform to a few hundredths of a degree, so comparing against a 1D textbook solution is fair.</li>
     </ul>
     <div class="figs-2">
       <figure>
         <div class="plate"><img src="img/fin_response.png" alt="Temperature along the fin, 3D model against fin theory" loading="lazy"></div>
-        <figcaption>Temperature along the fin: the 3D model sits on the textbook solution.</figcaption>
+        <figcaption>Temperature along the fin. The 3D model sits on the textbook solution.</figcaption>
       </figure>
       <figure>
         <div class="plate"><img src="img/fin_h_sweep.png" alt="Tip temperature as the air-side heat-transfer coefficient rises" loading="lazy"></div>
-        <figcaption>How far the air-side coefficient can rise before the tip drops below 60 °C.</figcaption>
+        <figcaption>How high the air-side coefficient can go before the tip drops below 60 °C.</figcaption>
       </figure>
     </div>
     <div class="caught">
-      <h3>What the checks caught</h3>
+      <h3>What I caught along the way</h3>
       <ul>
-        <li><b>The solver's own heat total was 1.3 % short.</b> The heat flow CalculiX reported at the base didn't match the heat leaving the surfaces, because the solver leaves out the convection assigned to the base nodes themselves. With that share added back, the energy balance closes exactly.</li>
-        <li><b>The printed temperatures were too coarse to judge convergence.</b> On the finest meshes the change in tip temperature was about the size of the rounding in the solver's standard output. I now read a higher-precision output, so rounding can't decide the convergence estimate.</li>
+        <li>The base heat flow CalculiX reported was 1.3 % short of the heat leaving the surfaces, because the solver leaves out the convection on the base nodes themselves. With that added back, the energy balance closes exactly.</li>
+        <li>On the finest meshes, the change in tip temperature was about the same size as the rounding in the solver's standard output, which made convergence impossible to judge. I switched to a higher-precision output so rounding can't decide it.</li>
       </ul>
     </div>
-    <p class="note">This example was built by an AI agent working only from my written modeling procedures, as a test of whether they produce verified work on a problem they hadn't seen.</p>
+    <p class="note">An AI agent built this study working only from my written procedures. I set it up as a test of whether those procedures produce verified work on a problem they hadn't seen before.</p>
   </section>
 
   <section class="study" id="heat">
     <div class="study-head">
-      <span class="label">Example 11 · Heat transfer in OpenFOAM</span>
+      <span class="label">Study 11 · OpenFOAM heat transfer</span>
       <h2>Cold-plate channel heat transfer</h2>
     </div>
     <figure><div class="plate"><img src="v2/heat_response.webp" alt="Wall and bulk temperature along the heated channel, OpenFOAM against the Graetz reference" loading="lazy"></div><figcaption>Wall and bulk temperature along the heated channel, and the local Nusselt number, against the independent Graetz thermal-entry solution.</figcaption></figure>
-    <p><strong>The question.</strong> A cold-plate passage, 1 mm deep, carries water at 25 °C and 0.1 m/s. Electronics heat both walls at 30 kW/m² over 50 mm. Does the wall stay at or under 45 °C, does the coolant warm by no more than 10 K, and how much heat flux could the passage take?</p>
+    <p><strong>The question.</strong> A cold-plate passage, 1 mm deep, carries water at 25 °C and 0.1 m/s. Electronics heat both walls at 30 kW/m² over 50 mm. Does the wall stay at or under 45 °C, does the coolant warm up by no more than 10 K, and how much heat flux could the passage take?</p>
     <div class="answer">
       <div class="chips"><span class="chip pass">Coolant rise 7.2 K: verified</span><span class="chip warn">Wall 44.0–44.1 °C: mesh uncertainty open</span><span class="chip pass">Rated about 31 kW/m²</span></div>
-      <p><strong>The coolant warms by 7.2 K</strong>, inside its 10 K budget, and that is verified: the energy balance closes to a part in a trillion on every mesh. <strong>The wall peaks at 44.0 to 44.1 °C</strong> on all three meshes, 0.86 to 0.97 K under the limit, and matches the independent reference within 0.6 %. But the peak isn't yet settling smoothly with refinement, so the mesh-convergence check can't size its uncertainty and that verdict stays formally withheld. At 40 cells the wall reaches 45 °C at about 31 kW/m².</p>
+      <p><strong>The coolant warms up by 7.2 K</strong>, inside its 10 K budget, and that result is verified. The energy balance closes to about one part in a trillion on every mesh.</p>
+      <p><strong>The wall peaks at 44.0 to 44.1 °C</strong> on all three meshes, 0.86 to 0.97 K under the limit, and it matches the independent reference within 0.6 %. The trouble is that the peak isn't settling smoothly as the mesh gets finer, so the mesh check can't put a number on its uncertainty. Until it can, I'm not calling that one a pass. With 40 cells across the gap, the wall reaches 45 °C at about 31 kW/m².</p>
     </div>
-    <h3>How I know it's right</h3>
+    <h3>How I checked it</h3>
     <ul class="proof">
-      <li><b>Against an independent solution.</b> The thermal-entry (Graetz) problem, solved separately and checked against the textbook fully developed Nusselt number and the energy balance. The CFD wall temperature matches it within 0.03 to 0.6 % of the rise.</li>
-      <li><b>Energy balance and convergence.</b> Heat in equals heat carried out to a part in a trillion, and the temperature field stops changing to 10⁻¹¹ of the rise.</li>
-      <li><b>Why the reference matters.</b> The flow is still thermally developing at the end of the heating (Nusselt 8.34, not the textbook 8.24), so a hand calculation assuming developed flow would be wrong.</li>
+      <li>I compared against the thermal-entry (Graetz) problem, solved separately and checked against the textbook fully developed Nusselt number and the energy balance. The CFD wall temperature matches it within 0.03 to 0.6 % of the temperature rise.</li>
+      <li>Heat in equals heat carried out to about one part in a trillion, and the temperature field stops changing to within 10⁻¹¹ of the rise.</li>
+      <li>The separate reference matters here because the flow is still thermally developing at the end of the heated section. The Nusselt number there is 8.34 rather than the textbook 8.24, so a hand calculation that assumed developed flow would be slightly off.</li>
     </ul>
     <div class="caught">
-      <h3>What the checks caught</h3>
+      <h3>What I caught along the way</h3>
       <ul>
-        <li><b>An overshoot exactly where the answer is.</b> The standard scheme overshoots by 0.06 to 0.11 K at the last heated cell, where the peak sits. It errs on the safe side, but it is why the peak doesn't converge smoothly with the mesh.</li>
-        <li><b>Fixes that only hid the problem.</b> Four bounded schemes that remove the overshoot all dithered from one iteration to the next and never closed the energy balance; under-relaxation only masked it. I went back to the scheme that converges exactly, let the checks bound its bias, kept every failed run, and never changed a tolerance.</li>
+        <li>The standard scheme overshoots by 0.06 to 0.11 K at the last heated cell, which is exactly where the peak is. It errs on the safe side, but it's the reason the peak doesn't converge smoothly.</li>
+        <li>I tried four bounded schemes that get rid of the overshoot. All of them flip-flopped from one iteration to the next and never closed the energy balance, and under-relaxation just hid the problem. I went back to the scheme that converges exactly and let the checks bound its error. I kept every failed run and didn't change any tolerances.</li>
       </ul>
     </div>
   </section>
@@ -878,41 +1025,43 @@ td.num { font-family: var(--font-data); font-variant-numeric: tabular-nums; whit
 
   <section class="study" id="suspension">
     <div class="study-head">
-      <span class="label">Example 7 · Vehicle dynamics in Python and OpenModelica</span>
+      <span class="label">Study 7 · Python (SciPy) and OpenModelica</span>
       <h2>Quarter-car ride and road holding</h2>
     </div>
-    <figure><div class="plate"><img src="img/anim_quarter_car.gif" alt="Animation of the quarter car crossing the bump" loading="lazy"></div><figcaption>Drawn from the simulation at 36 km/h and 600 N·s/m: the wheel leaves the road twice, and the tire load and body acceleration trace beside it.</figcaption></figure>
-    <p><strong>The question.</strong> For a compact-car front corner, which damper rates between 600 and 3500 N·s/m meet the targets for ride comfort, suspension travel, and tire load, over a speed bump and over a rough road?</p>
+    <figure><div class="plate"><img src="img/anim_quarter_car.gif" alt="Animation of the quarter car crossing the bump" loading="lazy"></div><figcaption>Drawn from the simulation at 36 km/h and 600 N·s/m. The wheel leaves the road twice, with the tire load and body acceleration plotted alongside.</figcaption></figure>
+    <p><strong>The question.</strong> For a compact car's front corner, which damper rates between 600 and 3500 N·s/m meet the targets for ride comfort, suspension travel and tire load? I tested it over a speed bump and over a rough road.</p>
     <div class="answer">
       <div class="chips"><span class="chip pass">Speed bump: 600 to 1000 N·s/m</span><span class="chip fail">36 km/h: wheel leaves the road</span><span class="chip warn">Bump stop: harsher at light damping</span><span class="chip fail">Rough road: comfort not met</span><span class="chip pass">Two tools agree to one part in a million</span></div>
-      <p><strong>Over a 40 mm speed bump at 18 km/h,</strong> damper rates from 600 to 1000 N·s/m meet all three targets. At 1500 the car just misses the comfort limit, 4.18 against 4.0 m/s², and at 3500 the tire load goes over its limit.</p>
-      <p><strong>Over the same bump at 36 km/h, no damper rate works.</strong> The wheel leaves the road at every setting, for 32 to 59 ms, and the comfort and road-holding targets fail everywhere. A damper change can't fix that; it needs a lower speed, a softer tire, or a gentler bump.</p>
-      <p><strong>With a bump stop, light damping gets worse, not better.</strong> At 600 N·s/m the suspension compresses past the 40 mm bump-stop gap. Adding the stop to the model more than doubles the peak body acceleration, from 5.2 to 11.3 m/s², and the stop still overruns its 8 mm stroke at 2.8 kN against a 2.5 kN rating. From 1000 N·s/m upwards it stays within its rating.</p>
-      <p><strong>On a rough road at 72 km/h,</strong> no damper rate meets the comfort target, while travel and tire load need at least about 1500. Those demands conflict, so the fix is a spring-rate change rather than a different damper.</p>
+      <p><strong>Over a 40 mm speed bump at 18 km/h,</strong> anything from 600 to 1000 N·s/m meets all three targets. At 1500 it just misses the comfort limit, 4.18 against 4.0 m/s², and at 3500 the tire load goes over.</p>
+      <p><strong>Over the same bump at 36 km/h, nothing works.</strong> The wheel leaves the road at every damper setting, for 32 to 59 ms, and comfort and road holding fail across the board. A damper change can't fix that. It needs a lower speed, a softer tire or a gentler bump.</p>
+      <p><strong>Adding a bump stop makes light damping worse.</strong> At 600 N·s/m the suspension compresses past the 40 mm gap to the bump stop. With the stop in the model, the peak body acceleration more than doubles, from 5.2 to 11.3 m/s², and the stop still runs past its 8 mm of stroke at 2.8 kN against a 2.5 kN rating. From 1000 N·s/m up, it stays within its rating.</p>
+      <p><strong>Weighted the way people actually feel vibration (ISO 2631-1),</strong> the rough-road ride rates as uncomfortable at 1000 N·s/m (1.01 m/s²) and gets worse with more damping, up to very uncomfortable at 3500 (1.64 m/s²). The raw, unweighted acceleration overstates it by 10 to 29 %.</p>
+      <p><strong>On a rough road at 72 km/h,</strong> no damper rate meets the comfort target, while travel and tire load need at least about 1500. Those pull in opposite directions, so the real fix is a different spring rate.</p>
     </div>
-    <h3>How I know it's right</h3>
+    <h3>How I checked it</h3>
     <ul class="proof">
-      <li><b>Speed bump.</b> The simulation matches an independent exact solution of the same equations, and the energy put in balances the energy stored and dissipated. All 30 checks pass. The same car built from standard components in OpenModelica agrees with the Python model to about one part in a million.</li>
-      <li><b>Bump stop.</b> The same exact solution handles the bump stop as one more switch: the model and the reference agree on every engagement and release, and on the motion to a few parts per billion of the bump height.</li>
-      <li><b>Wheel lift-off.</b> The tire pushes but never pulls, and the solver stops exactly when the wheel leaves the road and again when it lands. An exact solution built independently (the matrix exponential within each phase, root-finding for the switch times) agrees on those times to within a tenth of a nanosecond, and on the motion to about two parts per billion of the bump height.</li>
-      <li><b>Rough road.</b> The simulated vibration levels match the prediction from the system's frequency response to within one part in ten billion.</li>
+      <li>Over the speed bump, the simulation matches an independent exact solution of the same equations, and the energy going in balances the energy stored and dissipated. All 30 checks pass. I also built the same car from standard components in OpenModelica, and it agrees with the Python model to about one part in a million.</li>
+      <li>The bump stop is just one more switch in the same exact solution. The model and the reference agree on every time the stop engages and releases, and on the motion to a few parts per billion of the bump height.</li>
+      <li>The tire can push but not pull, and the solver stops exactly when the wheel leaves the road and again when it lands. I built an exact solution for this independently, using matrix exponentials within each phase and root-finding for the switch times. It agrees on those times within a tenth of a nanosecond and on the motion to about two parts per billion of the bump height.</li>
+      <li>My ISO 2631-1 weighting filter matches the standard's own table within 0.1 %. My first version came out at exactly double the table, and that comparison is what caught it.</li>
+      <li>On the rough road, the simulated vibration levels match the prediction from the frequency response within one part in ten billion.</li>
     </ul>
     <div class="figs-2">
       <figure>
         <div class="plate"><img src="img/qc_bump_sweep.png" alt="Comfort, travel, and tire load against damper rate over the speed bump" loading="lazy"></div>
-        <figcaption>Speed bump: each requirement against damper rate.</figcaption>
+        <figcaption>Each requirement against damper rate over the speed bump.</figcaption>
       </figure>
       <figure>
         <div class="plate"><img src="img/qc_iso_response.png" alt="Rough-road response compared with the frequency-response prediction" loading="lazy"></div>
-        <figcaption>Rough road: the simulation compared with the frequency-response prediction.</figcaption>
+        <figcaption>The rough-road simulation against the frequency-response prediction.</figcaption>
       </figure>
     </div>
-    <figure><div class="plate"><img src="img/qc_liftoff_response.png" alt="At 36 km/h with light damping the wheel leaves the road twice" loading="lazy"></div><figcaption>36 km/h, 600 N·s/m: the tire load sits at zero twice while the wheel is in the air, and the landing spikes it to 2.6 times static. The simulation lies on the exact solution throughout.</figcaption></figure>
+    <figure><div class="plate"><img src="img/qc_liftoff_response.png" alt="At 36 km/h with light damping the wheel leaves the road twice" loading="lazy"></div><figcaption>At 36 km/h and 600 N·s/m, the tire load sits at zero twice while the wheel is in the air, and the landing spikes it to 2.6 times static. The simulation follows the exact solution the whole way.</figcaption></figure>
     <div class="caught">
-      <h3>What the checks caught</h3>
+      <h3>What I caught along the way</h3>
       <ul>
-        <li>I first ran the bump at 36 km/h. Every numerical check passed, but the check on whether the wheel stays on the road failed at every damper rate: the tire load swung to as much as 1.7 times its static value. A linear tire model can't represent a wheel leaving the ground, so none of those results were reported as pass or fail. I kept that run as evidence and added a documented case at 18 km/h.</li>
-        <li><b>Then I built the model that check called for</b>, a tire that can leave the road, with five predictions written down first. <b>The linear model had overstated the peak body acceleration by up to 29 %:</b> after the crest the linear tire pulls the wheel back down, which a real tire can't do, and a stiff damper passes that pull into the body. And <b>the worst moment for the tire is the landing, not the lift-off</b>: with light damping the wheel bounces twice and lands hard enough to load the tire to 2.6 times its static load.</li>
+        <li>I first ran the bump at 36 km/h. Every numerical check passed, but the check on whether the wheel stays on the road failed at every damper rate, with the tire load swinging to as much as 1.7 times static. A linear tire model can't handle a wheel leaving the ground, so I didn't report any of those results as a pass or a fail. I kept that run and added a case at 18 km/h.</li>
+        <li>Then I built the model that check was asking for, a tire that can leave the road, and wrote down five predictions first. It turned out the linear model had overstated the peak body acceleration by up to 29 %. After the crest, the linear tire pulls the wheel back down, which a real tire can't do, and a stiff damper passes that pull straight into the body. The other surprise was that the worst moment for the tire is the landing. With light damping the wheel bounces twice and comes down hard enough to load the tire to 2.6 times its static load.</li>
       </ul>
     </div>
   </section>
@@ -921,20 +1070,20 @@ td.num { font-family: var(--font-data); font-variant-numeric: tabular-nums; whit
 
   <section class="study" id="cad">
     <div class="study-head">
-      <span class="label">Example 8 · Geometry automation in CadQuery</span>
+      <span class="label">Study 8 · CadQuery</span>
       <h2>Parametric mounting plate</h2>
     </div>
     <figure><div class="plate"><img src="img/render_cad_parts.png" alt="Mounting plate, strap and bracket arm generated by CadQuery, rendered in Blender" loading="lazy"></div></figure>
-    <p><strong>The question.</strong> An aluminium plate, 120 by 80 by 6 mm, has a grid of six holes. Which clearance-hole size, from M5 up to M12, keeps the plate at or under 150 g while leaving at least twice the hole diameter between each hole and the edge?</p>
+    <p><strong>The question.</strong> An aluminium plate, 120 by 80 by 6 mm, has a grid of six holes. Which clearance hole size, from M5 up to M12, keeps the plate at 150 g or less while leaving at least twice the hole diameter between each hole and the edge?</p>
     <div class="answer">
       <div class="chips"><span class="chip pass">9 mm (M8 clearance) meets both</span><span class="chip pass">All 40 checks pass</span></div>
-      <p><strong>Only the 9 mm hole works.</strong> Bigger holes save weight but eat into the edge distance; smaller holes do the opposite.</p>
+      <p><strong>Only the 9 mm hole works</strong>, the M8 clearance size. Bigger holes save weight but eat into the edge distance, and smaller ones do the opposite.</p>
     </div>
-    <h3>How I know it's right</h3>
+    <h3>How I checked it</h3>
     <ul class="proof">
-      <li>Every number is measured back from the finished solid rather than taken from the design inputs: the volume, the overall size, and the position and diameter of each hole.</li>
-      <li>The volume matches a hand calculation to the limit of the computer's arithmetic.</li>
-      <li>Each plate is exported as a STEP file, read back in, and confirmed unchanged.</li>
+      <li>Every number is measured from the finished solid instead of being taken from the inputs. That includes the volume, the overall size, and the position and diameter of each hole.</li>
+      <li>The volume matches a hand calculation to the limit of floating-point arithmetic.</li>
+      <li>Each plate is exported as a STEP file, read back in and confirmed unchanged.</li>
     </ul>
     <figure>
       <div class="plate"><img src="img/cad_sweep.png" alt="Plate mass and edge distance against hole size" loading="lazy"></div>
@@ -946,22 +1095,21 @@ td.num { font-family: var(--font-data); font-variant-numeric: tabular-nums; whit
 
   <section class="study" id="baseline">
     <div class="study-head">
-      <span class="label">Example 9 · Python and OpenModelica</span>
+      <span class="label">Study 9 · Python and OpenModelica</span>
       <h2>Mass-spring-damper baseline</h2>
     </div>
     <figure><div class="plate"><img src="img/anim_msd.gif" alt="Animation of the mass-spring-damper at three damping ratios" loading="lazy"></div><figcaption>The same step force at three damping ratios, drawn from the runs, with the exact solution dotted underneath.</figcaption></figure>
     <div class="answer">
       <div class="chips"><span class="chip pass">All 72 checks pass</span><span class="chip pass">Two tools agree to a few parts per million</span></div>
-      <p>This was the first example, used to prove the workflow on a problem with a known answer: a single mass on a spring and damper, pushed by a step force, at six damping levels. The results are checked against the exact textbook solution, an energy balance, the final resting position, and the solver's own convergence.</p>
+      <p>This was the first study, and its job was to prove the workflow on a problem with a known answer. It's a single mass on a spring and damper, hit with a step force, at six levels of damping. The results are checked against the exact textbook solution, an energy balance, the final resting position and the solver's own convergence.</p>
     </div>
     <div class="caught">
-      <h3>What the checks caught</h3>
+      <h3>What I caught along the way</h3>
       <ul>
-        <li>While I was connecting OpenModelica, the check that results land on the requested time points failed. OpenModelica was silently ignoring some of the simulation settings I was passing it. I changed how the settings are passed, and the check has guarded against it since.</li>
+        <li>When I was hooking up OpenModelica, the check that results land on the requested time points failed. OpenModelica was quietly ignoring some of the settings I passed it. I changed how the settings get passed, and that check has been watching for it ever since.</li>
       </ul>
     </div>
   </section>
-
 
     </div>
   </section>
@@ -969,28 +1117,28 @@ td.num { font-family: var(--font-data); font-variant-numeric: tabular-nums; whit
   <footer class="band wrap" aria-label="Limits and toolchain">
     <div class="foot">
       <div>
-        <span class="label">Limits of these examples</span>
+        <span class="label">What these studies don't cover</span>
         <ul>
-          <li>The parameters and requirement limits are synthetic. Nothing here is calibrated to a real product.</li>
-          <li>The checks show the equations were solved correctly and the models were used within their valid range. Showing that a model matches real hardware needs test data, which these examples don't have.</li>
-          <li>Ride comfort is unweighted; a production study would apply ISO 2631 weighting.</li>
-          <li>The coolant-channel model covers flow and pressure, not heat transfer. The fin takes the air-side heat-transfer coefficient as an input.</li>
-          <li>Every report ends with "pending human review". Accepting a design stays with a person.</li>
+          <li>The parameters and limits are made up. None of it is calibrated to a real product.</li>
+          <li>The checks show the equations were solved correctly and each model was used where it's valid. Showing that a model matches real hardware would take test data, and I don't have any for these.</li>
+          <li>The peak acceleration over the bump is unweighted. Only the rough-road ride level uses ISO 2631-1 weighting.</li>
+          <li>The cold-plate study applies the heat flux directly at the channel wall. I haven't modelled conduction through the plate itself (conjugate heat transfer) yet. The fin study takes the air-side heat-transfer coefficient as a given.</li>
+          <li>Every report ends with "pending human review", because accepting a design is a person's call.</li>
         </ul>
       </div>
       <div>
-        <span class="label">Toolchain, all open source</span>
+        <span class="label">Tools, all open source</span>
         <dl class="toolchain">
           <dt>Python</dt><dd>3.14 · NumPy 2.5 · SciPy 1.18</dd>
-          <dt>CalculiX</dt><dd>2.22 · structural, modal, heat transfer</dd>
+          <dt>CalculiX</dt><dd>2.22 · structural, contact, modal, heat transfer</dd>
           <dt>Gmsh</dt><dd>4.15 · scripted meshing from STEP</dd>
           <dt>CadQuery</dt><dd>2.8 · parametric CAD, STEP export</dd>
           <dt>FreeCAD</dt><dd>1.1.4 · headless FEM workbench</dd>
-          <dt>OpenFOAM</dt><dd>14 · laminar internal flow, in WSL</dd>
+          <dt>OpenFOAM</dt><dd>14 · laminar flow and heat transfer, in WSL</dd>
           <dt>OpenModelica</dt><dd>1.26.3 · Modelica Standard Library 4.1</dd>
           <dt>Blender</dt><dd>4.5 LTS · Cycles result renders</dd>
         </dl>
-        <p style="margin-top:12px">Every run records its exact inputs, tool versions and code version, and repeats with one command. Evidence reports and case files are available on request.</p>
+        <p style="margin-top:12px">Every run records its exact inputs, tool versions and code version, and can be repeated with one command. I'm happy to share the full reports and case files.</p>
       </div>
     </div>
   </footer>
@@ -1056,4 +1204,117 @@ td.num { font-family: var(--font-data); font-variant-numeric: tabular-nums; whit
     cards.forEach(c => { c.hidden = !(f === "all" || c.dataset.group === f); });
   }));
 })();
+</script>
+<script>
+function gradeAnswer(criteria, ans) {
+  const rows = criteria.map(c => {
+    const v = ans[c.key];
+    if (c.kind === "num") {
+      const tol = c.rel !== null ? Math.abs(c.ref) * c.rel : c.abs;
+      const x = (v === null || v === undefined || typeof v === "boolean" || String(v).trim() === "") ? NaN : Number(v);
+      if (!Number.isFinite(x)) return { key: c.key, passed: false, value: null, tol };
+      return { key: c.key, passed: Math.abs(x - c.ref) <= tol, value: x, tol };
+    }
+    return { key: c.key, passed: v === c.ref, value: v === undefined ? null : v };
+  });
+  const n = rows.filter(r => r.passed).length;
+  return { rows, n, score: n / rows.length };
+}
+  const GT = [{"name": "heated_channel_wall_temperature", "tab": "Cold-plate wall", "statement": "Water at 25 °C and 0.1 m/s flows through a 1 mm gap. Both walls take 30 kW/m² over 50 mm. Find the coolant rise, the peak wall temperature and the Nusselt number at the end of the heating. Limit: wall at or under 45 °C.", "criteria": [{"key": "coolant_rise_K", "kind": "num", "ref": 7.1986, "rel": 0.005, "abs": null, "label": "Coolant rise", "unit": "K", "dec": 3}, {"key": "peak_wall_temperature_C", "kind": "num", "ref": 44.047, "rel": null, "abs": 0.1, "label": "Peak wall temperature", "unit": "°C", "dec": 2}, {"key": "nusselt_at_end_of_heating", "kind": "num", "ref": 8.343, "rel": null, "abs": 0.05, "label": "Nusselt number, end of heating", "unit": "", "dec": 3}, {"key": "wall_limit_met", "kind": "bool", "ref": true, "label": "Wall limit met?", "unit": "", "dec": 0}], "presets": [{"name": "Thermal-entry (Graetz) solution", "note": "Checks the entry length first. It's 137 mm against 50 mm of heating, so the flow is still developing and Nu has to come from the Graetz solution.", "answer": {"coolant_rise_K": 7.1986, "peak_wall_temperature_C": 44.047, "nusselt_at_end_of_heating": 8.343, "wall_limit_met": true}}, {"name": "Fully developed shortcut", "note": "Uses the textbook Nu = 8.235 without checking the entry length. The verdict happens to be right but the method isn't, so it gets half marks.", "answer": {"coolant_rise_K": 7.1986, "peak_wall_temperature_C": 44.2, "nusselt_at_end_of_heating": 8.235, "wall_limit_met": true}}, {"name": "Constant-wall-temperature Nu", "note": "Uses Nu = 7.54, which is for a wall held at a constant temperature rather than a constant heat flux. The wall verdict flips.", "answer": {"coolant_rise_K": 7.1986, "peak_wall_temperature_C": 45.31, "nusselt_at_end_of_heating": 7.541, "wall_limit_met": false}}, {"name": "Only one wall heated", "note": "Uses Nu = 5.385, the value for one heated wall. The wall comes out about 6.5 K too hot and the verdict flips.", "answer": {"coolant_rise_K": 7.1986, "peak_wall_temperature_C": 50.55, "nusselt_at_end_of_heating": 5.385, "wall_limit_met": false}}, {"name": "One wall in the energy balance", "note": "Only counts the heat from one wall, so the coolant rise comes out at half the real value.", "answer": {"coolant_rise_K": 3.599, "peak_wall_temperature_C": 44.047, "nusselt_at_end_of_heating": 8.343, "wall_limit_met": true}}]}, {"name": "hertz_roller_contact", "tab": "Roller contact", "statement": "A steel track roller, 100 mm diameter, carries 500 N per mm on a steel plate. Find the contact half-width, peak pressure, and the largest shear below the surface and its depth. Limits: 650 MPa pressure, 200 MPa shear.", "criteria": [{"key": "contact_half_width_mm", "kind": "num", "ref": 0.5252, "rel": 0.02, "abs": null, "label": "Contact half-width", "unit": "mm", "dec": 4}, {"key": "peak_contact_pressure_MPa", "kind": "num", "ref": 606.04, "rel": 0.02, "abs": null, "label": "Peak contact pressure", "unit": "MPa", "dec": 1}, {"key": "max_subsurface_shear_MPa", "kind": "num", "ref": 181.98, "rel": 0.03, "abs": null, "label": "Max subsurface shear", "unit": "MPa", "dec": 1}, {"key": "max_shear_depth_mm", "kind": "num", "ref": 0.4129, "rel": 0.05, "abs": null, "label": "Depth of max shear", "unit": "mm", "dec": 4}, {"key": "pressure_limit_met", "kind": "bool", "ref": true, "label": "Pressure limit met?", "unit": "", "dec": 0}, {"key": "shear_limit_met", "kind": "bool", "ref": true, "label": "Shear limit met?", "unit": "", "dec": 0}], "presets": [{"name": "Hertz line contact", "note": "Uses the combined modulus E*, works out the half-width and peak pressure, and puts the maximum shear 0.786 a below the surface.", "answer": {"contact_half_width_mm": 0.5252, "peak_contact_pressure_MPa": 606.04, "max_subsurface_shear_MPa": 181.98, "max_shear_depth_mm": 0.4129, "pressure_limit_met": true, "shear_limit_met": true}}, {"name": "CalculiX contact model", "note": "My finite-element answer from study 10, on the finest mesh, at the 501 N/mm the model actually carried. It's a different method and it lands inside every tolerance.", "answer": {"contact_half_width_mm": 0.5258, "peak_contact_pressure_MPa": 609.2, "max_subsurface_shear_MPa": 184.3, "max_shear_depth_mm": 0.413, "pressure_limit_met": true, "shear_limit_met": true}}, {"name": "Plain E instead of E*", "note": "Uses the plain steel modulus where Hertz needs the combined one. Everything after that is wrong and both verdicts flip.", "answer": {"contact_half_width_mm": 0.3893, "peak_contact_pressure_MPa": 817.6, "max_subsurface_shear_MPa": 245.3, "max_shear_depth_mm": 0.306, "pressure_limit_met": false, "shear_limit_met": false}}, {"name": "Shear taken at the surface", "note": "Gets the numbers right but puts the maximum shear at the surface. Rolling-contact cracks start below it.", "answer": {"contact_half_width_mm": 0.5252, "peak_contact_pressure_MPa": 606.04, "max_subsurface_shear_MPa": 181.98, "max_shear_depth_mm": 0.0, "pressure_limit_met": true, "shear_limit_met": true}}, {"name": "Pressure from element stresses", "note": "Reads the pressure from element stresses instead of the contact output, which comes out 3.5 % high. I made this exact mistake in study 10.", "answer": {"contact_half_width_mm": 0.5252, "peak_contact_pressure_MPa": 627.3, "max_subsurface_shear_MPa": 181.98, "max_shear_depth_mm": 0.4129, "pressure_limit_met": true, "shear_limit_met": true}}]}, {"name": "cantilever_root_stress", "tab": "Bracket stress", "statement": "A steel bar, 200 mm long and 20 × 20 mm, is clamped at one end with 1 kN at the tip. Report the tip deflection and the design root stress against 1.0 mm and 213 MPa, and say whether the FE peak stress is real.", "criteria": [{"key": "tip_deflection_mm", "kind": "num", "ref": 0.955, "rel": null, "abs": 0.01, "label": "Tip deflection", "unit": "mm", "dec": 3}, {"key": "root_bending_stress_MPa", "kind": "num", "ref": 150.0, "rel": 0.03, "abs": null, "label": "Root bending stress", "unit": "MPa", "dec": 1}, {"key": "deflection_limit_met", "kind": "bool", "ref": true, "label": "Deflection limit met?", "unit": "", "dec": 0}, {"key": "stress_limit_met", "kind": "bool", "ref": true, "label": "Stress limit met?", "unit": "", "dec": 0}, {"key": "peak_fe_stress_is_singular", "kind": "bool", "ref": true, "label": "FE peak stress is an artifact?", "unit": "", "dec": 0}], "presets": [{"name": "3D FE, stress from the smooth beam", "note": "My quadratic-element model from study 1. It gives 0.953 mm, with the design stress taken from the smooth part of the beam and extrapolated to the root.", "answer": {"tip_deflection_mm": 0.953, "root_bending_stress_MPa": 150.0, "deflection_limit_met": true, "stress_limit_met": true, "peak_fe_stress_is_singular": true}}, {"name": "Beam theory by hand", "note": "Euler-Bernoulli by hand, P L³ / 3 E I and M c / I. It's a valid method, so it gets full marks too.", "answer": {"tip_deflection_mm": 0.952, "root_bending_stress_MPa": 150.0, "deflection_limit_met": true, "stress_limit_met": true, "peak_fe_stress_is_singular": true}}, {"name": "Peak stress at the clamped corner", "note": "Reports the FE peak at the sharp clamped corner as the design stress. That's 217 MPa and still climbing as the mesh is refined.", "answer": {"tip_deflection_mm": 0.953, "root_bending_stress_MPa": 217.0, "deflection_limit_met": true, "stress_limit_met": false, "peak_fe_stress_is_singular": false}}, {"name": "Full depth used as c", "note": "Uses the full 20 mm depth for c instead of the 10 mm to the outer fibre. The stress doubles and the verdict flips.", "answer": {"tip_deflection_mm": 0.952, "root_bending_stress_MPa": 300.0, "deflection_limit_met": true, "stress_limit_met": false, "peak_fe_stress_is_singular": true}}, {"name": "Linear tetrahedra, coarse mesh", "note": "The real 5 mm linear-tet run from study 1. It deflects 17 % too little and the stress reads 26 % low, but both verdicts still look like passes.", "answer": {"tip_deflection_mm": 0.788, "root_bending_stress_MPa": 110.8, "deflection_limit_met": true, "stress_limit_met": true, "peak_fe_stress_is_singular": true}}]}];
+
+  (() => {
+    const tabs = [...document.querySelectorAll('.g-tabs [role="tab"]')];
+    const panel = document.getElementById("g-panel"), taskEl = document.getElementById("g-task");
+    const presetsEl = document.getElementById("g-presets"), fieldsEl = document.getElementById("g-fields");
+    const out = document.getElementById("g-out"), cmd = document.getElementById("g-cmd");
+    const bar = document.getElementById("g-bar"), pct = document.getElementById("g-pct"), note = document.getElementById("g-note");
+    const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+    const fmt = (x, d) => (x === null ? "—" : Number(x).toFixed(d));
+    const pad = (s, n) => s + " ".repeat(Math.max(1, n - s.length));
+    let t = 0, p = 0, ans = {};
+
+    function renderFields() {
+      const task = GT[t];
+      fieldsEl.innerHTML = task.criteria.map(c => {
+        const id = "gf-" + c.key, unit = c.unit ? ` <small>${esc(c.unit)}</small>` : "";
+        if (c.kind === "num") {
+          const v = ans[c.key] === undefined ? "" : String(ans[c.key]);
+          return `<label class="g-field" for="${id}"><span>${esc(c.label)}${unit}</span>` +
+                 `<input id="${id}" data-k="${c.key}" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" value="${esc(v)}"></label>`;
+        }
+        const v = ans[c.key];
+        return `<div class="g-field"><span>${esc(c.label)}</span><span class="g-yn" role="group" aria-label="${esc(c.label)}">` +
+               `<button type="button" data-k="${c.key}" data-v="true" aria-pressed="${v === true}">Yes</button>` +
+               `<button type="button" data-k="${c.key}" data-v="false" aria-pressed="${v === false}">No</button></span></div>`;
+      }).join("");
+    }
+
+    function renderPresets() {
+      presetsEl.innerHTML = GT[t].presets.map((q, i) =>
+        `<button type="button" class="g-preset" data-p="${i}" aria-pressed="${i === p}"><b>${esc(q.name)}</b><span>${esc(q.note)}</span></button>`).join("");
+    }
+
+    function grade() {
+      const task = GT[t], r = gradeAnswer(task.criteria, ans);
+      const name = p >= 0 ? task.presets[p].name : "your edited answer";
+      cmd.textContent = `grade(answer)  # ${task.name}`;
+      out.innerHTML = `<span class="p">answer </span>${esc(name)}\n` + r.rows.map((row, i) => {
+        const c = task.criteria[i];
+        const val = c.kind === "num" ? fmt(row.value, c.dec) : (row.value === null ? "—" : String(row.value));
+        const ref = c.kind === "num"
+          ? `ref ${fmt(c.ref, c.dec)} ±${c.rel !== null ? (100 * c.rel).toFixed(c.rel < 0.01 ? 1 : 0) + " %" : fmt(c.abs, c.dec)}`
+          : `ref ${c.ref}`;
+        return `<span class="t-row"><span class="t-id">${esc(c.key)}</span><span class="${row.passed ? "t-pass" : "t-fail"}">${row.passed ? "PASS" : "FAIL"}</span>` +
+               `<span class="t-num">${esc(val)}</span><span class="t-tol">${esc(ref)}</span></span>`;
+      }).join("");
+      const s = Math.round(100 * r.score);
+      bar.style.width = s + "%";
+      bar.className = s === 100 ? "full" : s >= 50 ? "part" : "low";
+      pct.innerHTML = `<b>${s} %</b> · ${r.n} of ${r.rows.length} criteria`;
+      if (p >= 0) note.textContent = task.presets[p].note;
+      else {
+        const failed = r.rows.filter(x => !x.passed).map(x => task.criteria.find(c => c.key === x.key).label.replace("?", ""));
+        note.textContent = failed.length ? "This answer fails on " + failed.join(", ").toLowerCase() + "." : "Full marks. Every value is inside its tolerance and every verdict is right.";
+      }
+    }
+
+    function pickPreset(i) {
+      p = i; ans = JSON.parse(JSON.stringify(GT[t].presets[i].answer));
+      renderPresets(); renderFields(); grade();
+    }
+
+    function edited() {
+      if (p !== -1) { p = -1; presetsEl.querySelectorAll(".g-preset").forEach(b => b.setAttribute("aria-pressed", "false")); }
+      grade();
+    }
+
+    function show(i, focus) {
+      t = i;
+      tabs.forEach((b, k) => { b.setAttribute("aria-selected", k === i ? "true" : "false"); b.tabIndex = k === i ? 0 : -1; });
+      panel.setAttribute("aria-labelledby", tabs[i].id);
+      if (focus) tabs[i].focus();
+      taskEl.textContent = GT[t].statement;
+      pickPreset(0);
+    }
+
+    presetsEl.addEventListener("click", e => { const b = e.target.closest(".g-preset"); if (b) pickPreset(+b.dataset.p); });
+    fieldsEl.addEventListener("input", e => { const k = e.target.dataset.k; if (!k) return; ans[k] = e.target.value; edited(); });
+    fieldsEl.addEventListener("click", e => {
+      const b = e.target.closest(".g-yn button"); if (!b) return;
+      ans[b.dataset.k] = b.dataset.v === "true";
+      b.parentElement.querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", x === b ? "true" : "false"));
+      edited();
+    });
+    tabs.forEach((b, k) => {
+      b.tabIndex = k === 0 ? 0 : -1;
+      b.addEventListener("click", () => show(k));
+      b.addEventListener("keydown", e => {
+        if (e.key === "ArrowRight" || e.key === "ArrowLeft") {
+          e.preventDefault(); show((t + (e.key === "ArrowRight" ? 1 : tabs.length - 1)) % tabs.length, true);
+        }
+      });
+    });
+    show(0);
+  })();
+
 </script>
