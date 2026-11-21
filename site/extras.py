@@ -101,7 +101,7 @@ def summary_html(facts: dict) -> str:
       <div><b>What's here</b><p>Twelve studies, each taken from written requirements through to a checked answer using open-source solvers. There are also three evaluation tasks, and their graders are tested as well.</p></div>
       <div><b>The code</b><p>It's all Python, about {k},000 lines across {facts["py_files"]} files. That covers the harness that runs and checks everything, the models, the independent reference solutions and the graders, with {facts["tests"]} automated tests that run on every push.</p></div>
     </div>
-    <p class="tldr-links"><a href="#tasks">Grade an answer yourself</a><a href="#reqs">All the requirements in one table</a><a href="#bracket_opt">The newest study, an optimisation loop</a><a class="ext" href="{gh(MEMO)}">A sample client memo</a></p>
+    <p class="tldr-links"><a href="#tasks">Grade an answer yourself</a><a href="#reqs">All the requirements in one table</a><a href="#bracket_opt">The newest study, an optimisation loop</a><a class="ext" href="{gh(MEMO)}">A sample client memo</a><a href="#contact">Get in touch</a></p>
   </section>
 '''
 

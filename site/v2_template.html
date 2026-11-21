@@ -81,8 +81,12 @@ code { font-family: var(--font-data); font-size: 0.85em; }
 .topnav { display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none; }
 .topnav a { font-size: 0.9rem; color: var(--ink-2); text-decoration: none; padding: 6px 10px; border-radius: var(--radius); white-space: nowrap; }
 .topnav a:hover { color: var(--ink); background: var(--accent-soft); }
-@media (max-width: 640px) { .topnav a:nth-child(n+3) { display: none; } .topnav a { padding: 6px 7px; font-size: 0.86rem; } }
-@media (max-width: 380px) { .topnav a:nth-child(n+2) { display: none; } }
+.navgroup { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.topnav { min-width: 0; }
+.nav-contact { flex: none; font-size: 0.9rem; font-weight: 600; color: var(--accent); text-decoration: none; padding: 5px 12px; border: 1px solid var(--accent); border-radius: var(--radius); white-space: nowrap; }
+.nav-contact:hover { background: var(--accent-soft); }
+@media (max-width: 640px) { .topnav a:nth-child(n+2) { display: none; } .topnav a, .nav-contact { font-size: 0.86rem; } .topnav a { padding: 6px 7px; } .nav-contact { padding: 4px 10px; } }
+@media (max-width: 400px) { .topnav { display: none; } }
 
 /* ------------------------------------------------------------- hero */
 .hero { padding-block: clamp(32px, 5vw, 64px) 28px; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 22px 56px; align-items: end; }
@@ -360,11 +364,21 @@ details.study > summary:hover .study-toggle { text-decoration: underline; }
 .studies .study, .study-body { grid-template-columns: minmax(0, 1fr); }
 .study-body { display: grid; gap: 18px; min-width: 0; }
 .study-body > p { max-width: 70ch; }
+
+/* ------------------------------------------------------------- contact */
+.contact { display: grid; gap: 22px; padding: 30px 32px 32px; background: var(--surface); border: 1px solid var(--rule); border-top: 3px solid var(--accent); border-radius: 6px; }
+.contact-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 18px; }
+.cta { display: inline-block; padding: 11px 22px; border-radius: var(--radius); background: var(--accent); color: var(--surface); font-weight: 700; font-size: 1.02rem; text-decoration: none; }
+.cta:hover { background: color-mix(in srgb, var(--accent) 85%, var(--ink)); }
+.cta-2 { font: inherit; font-size: 0.95rem; font-weight: 600; color: var(--accent); background: none; border: 0; padding: 4px 0; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+.contact-addr { font-family: var(--font-data); font-size: 0.95rem; color: var(--ink); user-select: all; overflow-wrap: anywhere; }
+@media (max-width: 640px) { .contact { padding: 22px 18px 24px; } }
 {{EXTRA_CSS}}</style>
 
 <nav class="topbar" aria-label="Page">
   <div class="wrap">
     <a class="brand" href="#top"><span class="brand-mark" aria-hidden="true"><i style="background:#30123b"></i><i style="background:#4686fb"></i><i style="background:#1ae4b6"></i><i style="background:#a2fc3c"></i><i style="background:#fb8022"></i><i style="background:#7a0403"></i></span>Verified Simulation</a>
+    <div class="navgroup">
     <div class="topnav">
       <a href="#bracket_opt">Optimiser</a>
       <a href="#studies">Studies</a>
@@ -374,6 +388,8 @@ details.study > summary:hover .study-toggle { text-decoration: underline; }
       <a href="#tasks">Grading</a>
       <a href="#next">Next</a>
       <a href="#capabilities">Capabilities</a>
+    </div>
+    <a class="nav-contact" href="#contact">Contact</a>
     </div>
   </div>
 </nav>
@@ -584,6 +600,22 @@ details.study > summary:hover .study-toggle { text-decoration: underline; }
     </div>
   </section>
 
+  <section class="band wrap" id="contact" aria-labelledby="contact-title">
+    <div class="contact">
+      <div class="band-head">
+        <p class="eyebrow">Contact</p>
+        <h2 id="contact-title">Get in touch</h2>
+        <p>If something here is close to what you need, or you have a model that needs building or checking, send me a note and tell me about it. I'm available for remote contract work.</p>
+      </div>
+      <div class="contact-actions">
+        <!-- the address is stored reversed and base64-encoded so scrapers reading the page or the repository don't pick it up; the script below decodes it -->
+        <a class="cta" id="contact-mail" href="#contact" data-m="bW9jLmxpYW1nQDg1MW5pdHN1amh0aW1z">Email me</a>
+        <button class="cta-2" id="contact-show" type="button">Show the address</button>
+        <span class="contact-addr" id="contact-addr" hidden></span>
+      </div>
+    </div>
+  </section>
+
   <footer class="band wrap" aria-label="Limits and toolchain">
     <div class="foot">
       <div>
@@ -608,7 +640,7 @@ details.study > summary:hover .study-toggle { text-decoration: underline; }
           <dt>OpenModelica</dt><dd>1.26.3 · Modelica Standard Library 4.1</dd>
           <dt>Blender</dt><dd>4.5 LTS · Cycles result renders</dd>
         </dl>
-        <p style="margin-top:12px">Every run records its exact inputs, tool versions and code version, and can be repeated with one command. I'm happy to share the full reports and case files.</p>
+        <p style="margin-top:12px">Every run records its exact inputs, tool versions and code version, and can be repeated with one command. I'm happy to share the full reports and case files; <a href="#contact">just ask</a>.</p>
       </div>
     </div>
   </footer>
@@ -697,4 +729,18 @@ details.study > summary:hover .study-toggle { text-decoration: underline; }
 </script>
 <script>
 {{VIEWER3D_JS}}
+</script>
+<script>
+// contact: decode the address only when someone asks for it
+(() => {
+  const mail = document.getElementById("contact-mail"), show = document.getElementById("contact-show"), out = document.getElementById("contact-addr");
+  const addr = () => atob(mail.dataset.m).split("").reverse().join("");
+  const subject = encodeURIComponent("Simulation work");
+  mail.addEventListener("click", e => { e.preventDefault(); location.href = `mailto:${addr()}?subject=${subject}`; });
+  show.addEventListener("click", () => {
+    const a = document.createElement("a");
+    a.href = `mailto:${addr()}?subject=${subject}`; a.textContent = addr();
+    out.replaceChildren(a); out.hidden = false; show.hidden = true;
+  });
+})();
 </script>

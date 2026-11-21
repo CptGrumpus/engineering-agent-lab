@@ -1,6 +1,6 @@
 # Dashboard backlog
 
-Open work on the portfolio dashboard. Four items are open: two wait on a decision about what to show publicly, and two follow the other studies. Studies themselves are tracked in [BACKLOG.md](BACKLOG.md).
+Open work on the portfolio dashboard. Two items are open, and both follow the other studies. Studies themselves are tracked in [BACKLOG.md](BACKLOG.md).
 
 ## Where the dashboard lives
 
@@ -11,20 +11,20 @@ Both copies are built from `site/`:
 
 To rebuild after a change: run `site/build_v2.py`, then `site/export_docs.py`, then `site/check_viewer3d.py` (checks the 3D view in headless Chrome), then commit and push. See [site/README.md](site/README.md) for how the page is put together.
 
-## Decisions needed from me
+## Decisions made
 
-Items 1 and 3 can't start until I decide what goes on a public page. The page currently shows no name.
+Decided 2026-11-21:
 
-- [ ] **Name and contact:** show my name or not, and which link to give (LinkedIn, an email address, or a contact form).
-- [ ] **Services:** which offers to list (FEA and contact, CFD and heat transfer, design optimisation, verification audits of existing models, AI-evaluation task writing), and whether to mention availability.
+- **Contact:** an email button only. No name on the page and no LinkedIn yet; LinkedIn can be added once my profile is updated.
+- **Services:** no services list. The page showcases the work and ends with a simple contact section, so people can ask for whatever they need. One line says I'm available for remote contract work.
 
 ## Biggest impact
 
 | # | Item | What it involves | Needs from me | Status |
 |---|---|---|---|---|
-| 1 | Contact section | A closing section with my name, a one-line offer and a link | The name and contact decision | Needs my input |
+| 1 | Contact section | A closing section with an email button, plus a Contact button in the top bar | Nothing | Done. The address is stored encoded and only decoded when someone clicks, to keep it away from scrapers |
 | 2 | Evidence links | Each study ends with links to its write-up and run reports on the public repo. Only committed files are linked, so study 12's links appear by themselves once its runs are committed | Nothing | Done for studies 1 to 11 |
-| 3 | Services section | A short "what I can do for you" block listing the offers | The services decision | Needs my input |
+| 3 | Services section | A short "what I can do for you" block listing the offers | Nothing | Dropped. I decided to let the work speak for itself and keep only the contact section |
 | 4 | Link preview card | Open Graph card (1200 × 630) from the optimised bracket render, with the counts from the run records | Nothing | Done |
 
 ## Polish and quality
@@ -40,7 +40,7 @@ Items 1 and 3 can't start until I decide what goes on a public page. The page cu
 
 | # | Item | What it involves | Waits on | Status |
 |---|---|---|---|---|
-| 9 | New studies on the page | The cold-plate thermal chain, buckling, strap proof load and the 3D clevis each get a viewer tab, a gallery card, a write-up and visuals, using the same pipeline as study 12 (`scripts/make_opt_visuals.py`) | Those studies being verified and committed | Not started |
+| 9 | New studies on the page | The cold-plate thermal chain, buckling, strap proof load and the 3D clevis each get a viewer tab, a gallery card, a write-up and visuals, using the same pipeline as study 12 (`scripts/make_opt_visuals.py`) | Nothing now: studies 1 to 5 were committed on 2026-11-21 | Ready to start. The page's counts already include their runs, but the "What's next" section still says one study is done |
 | 10 | Heat-transfer wall verdict | Study 11's wall temperature is withheld until a finer mesh shows the peak converging. Once that run passes, flip the verdict on the page | The finer-mesh run | Not started |
 | 11 | Interactive 3D viewer | Rotate the parts in the browser | Nothing | Done for five of the seven viewer tabs. The contact close-up and the flow height field stay as images |
 
@@ -54,6 +54,7 @@ Items 1 and 3 can't start until I decide what goes on a public page. The page cu
 
 | Date | Item | What changed |
 |---|---|---|
+| 2026-11-21 | Contact section | "Get in touch" closes the showcase, with an email button and a "show the address" link; a Contact button stays in the top bar at every width. Checked at 360, 390, 768 and 1280 px in light and dark |
 | 2026-11-21 | Interactive 3D view | "Rotate in 3D" in the result viewer for five results. Same surface and colour bands as the renders, checked the same way from four angles per tab (100 % on the legend, at most 0.62 % misread). Plain WebGL2, loaded only on request; mouse, touch and keyboard. Also fixed a live bug where the grader's task tabs were wired into the result viewer |
 | 2026-11-21 | Render legibility check | Third render check, on the lit image. All 13 published renders and the 33 optimisation renders measured; only the fin failed, and it now passes after raising its ambient light. Closes the open item in the render-results skill |
 | 2026-11-21 | Evidence links, preview card, memo link, WebP | Items 2, 4, 6 and 7 above. All 45 GitHub links checked live |

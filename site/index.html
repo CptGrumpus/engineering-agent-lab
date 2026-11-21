@@ -81,8 +81,12 @@ code { font-family: var(--font-data); font-size: 0.85em; }
 .topnav { display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none; }
 .topnav a { font-size: 0.9rem; color: var(--ink-2); text-decoration: none; padding: 6px 10px; border-radius: var(--radius); white-space: nowrap; }
 .topnav a:hover { color: var(--ink); background: var(--accent-soft); }
-@media (max-width: 640px) { .topnav a:nth-child(n+3) { display: none; } .topnav a { padding: 6px 7px; font-size: 0.86rem; } }
-@media (max-width: 380px) { .topnav a:nth-child(n+2) { display: none; } }
+.navgroup { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.topnav { min-width: 0; }
+.nav-contact { flex: none; font-size: 0.9rem; font-weight: 600; color: var(--accent); text-decoration: none; padding: 5px 12px; border: 1px solid var(--accent); border-radius: var(--radius); white-space: nowrap; }
+.nav-contact:hover { background: var(--accent-soft); }
+@media (max-width: 640px) { .topnav a:nth-child(n+2) { display: none; } .topnav a, .nav-contact { font-size: 0.86rem; } .topnav a { padding: 6px 7px; } .nav-contact { padding: 4px 10px; } }
+@media (max-width: 400px) { .topnav { display: none; } }
 
 /* ------------------------------------------------------------- hero */
 .hero { padding-block: clamp(32px, 5vw, 64px) 28px; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 22px 56px; align-items: end; }
@@ -361,6 +365,15 @@ details.study > summary:hover .study-toggle { text-decoration: underline; }
 .study-body { display: grid; gap: 18px; min-width: 0; }
 .study-body > p { max-width: 70ch; }
 
+/* ------------------------------------------------------------- contact */
+.contact { display: grid; gap: 22px; padding: 30px 32px 32px; background: var(--surface); border: 1px solid var(--rule); border-top: 3px solid var(--accent); border-radius: 6px; }
+.contact-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 18px; }
+.cta { display: inline-block; padding: 11px 22px; border-radius: var(--radius); background: var(--accent); color: var(--surface); font-weight: 700; font-size: 1.02rem; text-decoration: none; }
+.cta:hover { background: color-mix(in srgb, var(--accent) 85%, var(--ink)); }
+.cta-2 { font: inherit; font-size: 0.95rem; font-weight: 600; color: var(--accent); background: none; border: 0; padding: 4px 0; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+.contact-addr { font-family: var(--font-data); font-size: 0.95rem; color: var(--ink); user-select: all; overflow-wrap: anywhere; }
+@media (max-width: 640px) { .contact { padding: 22px 18px 24px; } }
+
 /* 30-second summary */
 .tldr { display: grid; gap: 12px; padding: 18px 22px 20px; margin-bottom: 28px; background: var(--surface); border: 1px solid var(--rule); border-left: 3px solid var(--accent); border-radius: 6px; }
 .tldr .label { color: var(--accent); }
@@ -457,6 +470,7 @@ details.study > summary:hover .study-toggle { text-decoration: underline; }
 <nav class="topbar" aria-label="Page">
   <div class="wrap">
     <a class="brand" href="#top"><span class="brand-mark" aria-hidden="true"><i style="background:#30123b"></i><i style="background:#4686fb"></i><i style="background:#1ae4b6"></i><i style="background:#a2fc3c"></i><i style="background:#fb8022"></i><i style="background:#7a0403"></i></span>Verified Simulation</a>
+    <div class="navgroup">
     <div class="topnav">
       <a href="#bracket_opt">Optimiser</a>
       <a href="#studies">Studies</a>
@@ -466,6 +480,8 @@ details.study > summary:hover .study-toggle { text-decoration: underline; }
       <a href="#tasks">Grading</a>
       <a href="#next">Next</a>
       <a href="#capabilities">Capabilities</a>
+    </div>
+    <a class="nav-contact" href="#contact">Contact</a>
     </div>
   </div>
 </nav>
@@ -478,8 +494,8 @@ details.study > summary:hover .study-toggle { text-decoration: underline; }
     <p class="lede">Twelve studies covering <b>structures, contact, vibration, fatigue, fluids, heat transfer, vehicle dynamics and design optimisation</b>. In each one I start from written requirements, build the model, run a real solver, and compare the result against something independent before I call it a pass or a fail. It's all open-source software, and a coding agent does most of the legwork using procedures I wrote.</p>
     </div>
     <dl class="stats">
-      <div><dt>automated checks</dt><dd>1,478</dd></div>
-      <div><dt>saved runs</dt><dd>36</dd></div>
+      <div><dt>automated checks</dt><dd>2,464</dd></div>
+      <div><dt>saved runs</dt><dd>56</dd></div>
       <div><dt>open-source tools</dt><dd>8</dd></div>
       <div><dt>paid licences</dt><dd>0</dd></div>
     </dl>
@@ -490,9 +506,9 @@ details.study > summary:hover .study-toggle { text-decoration: underline; }
     <div class="tldr-grid">
       <div><b>About me</b><p>I'm an automotive mechanical engineer with a master's in ME. In my day job I use AI agents to run virtual models and to turn functional requirements into tools that automate engineering work.</p></div>
       <div><b>What's here</b><p>Twelve studies, each taken from written requirements through to a checked answer using open-source solvers. There are also three evaluation tasks, and their graders are tested as well.</p></div>
-      <div><b>The code</b><p>It's all Python, about 17,000 lines across 127 files. That covers the harness that runs and checks everything, the models, the independent reference solutions and the graders, with 106 automated tests that run on every push.</p></div>
+      <div><b>The code</b><p>It's all Python, about 28,000 lines across 191 files. That covers the harness that runs and checks everything, the models, the independent reference solutions and the graders, with 224 automated tests that run on every push.</p></div>
     </div>
-    <p class="tldr-links"><a href="#tasks">Grade an answer yourself</a><a href="#reqs">All the requirements in one table</a><a href="#bracket_opt">The newest study, an optimisation loop</a><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/portfolio/deliverables/coolant-channel-memo.md">A sample client memo</a></p>
+    <p class="tldr-links"><a href="#tasks">Grade an answer yourself</a><a href="#reqs">All the requirements in one table</a><a href="#bracket_opt">The newest study, an optimisation loop</a><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/portfolio/deliverables/coolant-channel-memo.md">A sample client memo</a><a href="#contact">Get in touch</a></p>
   </section>
 
   <section class="viewport wrap" aria-label="Result viewer">
@@ -574,6 +590,7 @@ details.study > summary:hover .study-toggle { text-decoration: underline; }
       </ul>
       <p class="note">It's a linear taper only, so a curved profile would be lighter still. The joint at the root needs its own assessment, and there's no lateral-torsional buckling check yet.</p>
     </details>
+      <p class="evidence"><span class="label">Evidence on GitHub</span><a class="ev-doc" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/portfolio/12-bracket-optimisation.md">Full write-up</a><span class="ev-runs">Run reports: <a href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261120-225322_bracket_opt/report.md">bracket_opt</a><a href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261120-225744_bracket_opt_confirm/report.md">bracket_opt_confirm</a><a href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261121-000013_clevis_opt/report.md">clevis_opt</a><a href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261121-002416_clevis_confirm/report.md">clevis_confirm · 00:24</a><a href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261121-004057_clevis_confirm/report.md">clevis_confirm · 00:40</a><a href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261121-004740_clevis_opt_r1/report.md">clevis_opt_r1</a><a href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261121-010500_clevis_confirm_r1/report.md">clevis_confirm_r1</a><a href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261121-091836_clevis_confirm_r1_fillet/report.md">clevis_confirm_r1_fillet</a><a href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261121-091836_clevis_opt_r2/report.md">clevis_opt_r2</a><a href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261121-111455_clevis_confirm_r2/report.md">clevis_confirm_r2</a><a href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261121-115130_clevis_confirm_r2b/report.md">clevis_confirm_r2b</a></span></p>
   </section>
 
   <section class="band wrap" id="studies" aria-labelledby="studies-title">
@@ -1340,6 +1357,22 @@ details.study > summary:hover .study-toggle { text-decoration: underline; }
     </div>
   </section>
 
+  <section class="band wrap" id="contact" aria-labelledby="contact-title">
+    <div class="contact">
+      <div class="band-head">
+        <p class="eyebrow">Contact</p>
+        <h2 id="contact-title">Get in touch</h2>
+        <p>If something here is close to what you need, or you have a model that needs building or checking, send me a note and tell me about it. I'm available for remote contract work.</p>
+      </div>
+      <div class="contact-actions">
+        <!-- the address is stored reversed and base64-encoded so scrapers reading the page or the repository don't pick it up; the script below decodes it -->
+        <a class="cta" id="contact-mail" href="#contact" data-m="bW9jLmxpYW1nQDg1MW5pdHN1amh0aW1z">Email me</a>
+        <button class="cta-2" id="contact-show" type="button">Show the address</button>
+        <span class="contact-addr" id="contact-addr" hidden></span>
+      </div>
+    </div>
+  </section>
+
   <footer class="band wrap" aria-label="Limits and toolchain">
     <div class="foot">
       <div>
@@ -1364,7 +1397,7 @@ details.study > summary:hover .study-toggle { text-decoration: underline; }
           <dt>OpenModelica</dt><dd>1.26.3 · Modelica Standard Library 4.1</dd>
           <dt>Blender</dt><dd>4.5 LTS · Cycles result renders</dd>
         </dl>
-        <p style="margin-top:12px">Every run records its exact inputs, tool versions and code version, and can be repeated with one command. I'm happy to share the full reports and case files.</p>
+        <p style="margin-top:12px">Every run records its exact inputs, tool versions and code version, and can be repeated with one command. I'm happy to share the full reports and case files; <a href="#contact">just ask</a>.</p>
       </div>
     </div>
   </footer>
@@ -1829,4 +1862,18 @@ function gradeAnswer(criteria, ans) {
   };
 })();
 
+</script>
+<script>
+// contact: decode the address only when someone asks for it
+(() => {
+  const mail = document.getElementById("contact-mail"), show = document.getElementById("contact-show"), out = document.getElementById("contact-addr");
+  const addr = () => atob(mail.dataset.m).split("").reverse().join("");
+  const subject = encodeURIComponent("Simulation work");
+  mail.addEventListener("click", e => { e.preventDefault(); location.href = `mailto:${addr()}?subject=${subject}`; });
+  show.addEventListener("click", () => {
+    const a = document.createElement("a");
+    a.href = `mailto:${addr()}?subject=${subject}`; a.textContent = addr();
+    out.replaceChildren(a); out.hidden = false; show.hidden = true;
+  });
+})();
 </script>
