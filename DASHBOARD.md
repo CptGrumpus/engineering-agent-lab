@@ -40,7 +40,7 @@ Decided 2026-11-21:
 
 | # | Item | What it involves | Waits on | Status |
 |---|---|---|---|---|
-| 9 | New studies on the page | The cold-plate thermal chain, buckling, strap proof load and the 3D clevis each get a viewer tab, a gallery card, a write-up and visuals, using the same pipeline as study 12 (`scripts/make_opt_visuals.py`) | Nothing now: studies 1 to 5 were committed on 2026-11-21 | Ready to start. The page's counts already include their runs, but the "What's next" section still says one study is done |
+| 9 | New studies on the page | The cold-plate thermal chain, buckling, strap proof load and the 3D clevis each get a viewer tab, a gallery card, a write-up and visuals, using the same pipeline as study 12 (`scripts/make_opt_visuals.py`) | Nothing now: studies 1 to 5 were committed on 2026-11-21 | Ready to start. The "Harder studies" section already lists their results and links their write-ups on GitHub. Note: write-up 12 is now the clevis bracket, while the page still features the earlier tapered bracket |
 | 10 | Heat-transfer wall verdict | Study 11's wall temperature is withheld until a finer mesh shows the peak converging. Once that run passes, flip the verdict on the page | The finer-mesh run | Not started |
 | 11 | Interactive 3D viewer | Rotate the parts in the browser | Nothing | Done for five of the seven viewer tabs. The contact close-up and the flow height field stay as images |
 
@@ -54,6 +54,7 @@ Decided 2026-11-21:
 
 | Date | Item | What changed |
 |---|---|---|
+| 2026-11-21 | "What's next" brought up to date | Now "Six harder studies: five done, one in progress", with each finished study's result, its check and a link to its write-up, and where the fluid-structure study stands |
 | 2026-11-21 | Contact section | "Get in touch" closes the showcase, with an email button and a "show the address" link; a Contact button stays in the top bar at every width. Checked at 360, 390, 768 and 1280 px in light and dark |
 | 2026-11-21 | Interactive 3D view | "Rotate in 3D" in the result viewer for five results. Same surface and colour bands as the renders, checked the same way from four angles per tab (100 % on the legend, at most 0.62 % misread). Plain WebGL2, loaded only on request; mouse, touch and keyboard. Also fixed a live bug where the grader's task tabs were wired into the result viewer |
 | 2026-11-21 | Render legibility check | Third render check, on the lit image. All 13 published renders and the 33 optimisation renders measured; only the fin failed, and it now passes after raising its ambient light. Closes the open item in the render-results skill |

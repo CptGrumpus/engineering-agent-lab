@@ -230,6 +230,7 @@ code { font-family: var(--font-data); font-size: 0.85em; }
 .plan-tag { padding: 2px 9px; border: 1px dashed var(--ink-3); border-radius: 999px; }
 .plan-tag.done { border: 1px solid var(--pass); color: var(--pass); background: var(--pass-bg); }
 .plan .skill p b { display: block; font-family: var(--font-data); font-weight: 500; font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-3); margin-bottom: 2px; }
+.plan a.ext::after { content: " ↗"; }
 .plan .tools { font-family: var(--font-data); font-size: 0.78rem; color: var(--ink-3); }
 @media (max-width: 900px) { .skills { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 560px) { .skills { grid-template-columns: 1fr; } }
@@ -531,23 +532,25 @@ details.study > summary:hover .study-toggle { text-decoration: underline; }
 
   <section class="band wrap" id="next" aria-labelledby="next-title">
     <div class="band-head">
-      <p class="eyebrow">What's next</p>
-      <h2 id="next-title">Six harder studies: one done, five to go</h2>
-      <p>Each of these covers something the earlier studies don't: friction contact, plasticity, buckling, chained multiphysics, a design loop run by the agent, and coupled fluid and structure. The optimisation loop is finished and written up as <a href="#bracket_opt">study 12</a>. The cold-plate chain is being built now, and buckling is next. As with the others, I pick the independent check before I start modelling.</p>
+      <p class="eyebrow">Harder studies</p>
+      <h2 id="next-title">Six harder studies: five done, one in progress</h2>
+      <p>Each of these covers something the earlier studies don't: friction contact, plasticity, buckling, chained multiphysics, a design loop run by the agent, and coupled fluid and structure. Five are finished and verified. The optimisation loop is on this page as <a href="#bracket_opt">study 12</a>; the other four are written up on GitHub, and I'll add them here next. The fluid-structure study is under way. As with the others, I picked the independent check before I started modelling.</p>
     </div>
     <div class="skills plan">
       <article class="skill">
-        <span class="plan-meta"><span class="no">01 · Contact</span><span class="plan-tag">Planned · medium effort</span></span>
+        <span class="plan-meta"><span class="no">01 · Contact</span><span class="plan-tag done">Done · study 16</span></span>
         <b>Bolted joint with preload, a side load and friction</b>
         <p><b>Why it's harder</b>Friction contact plus preload. The question is when the joint starts to slip or open up.</p>
-        <p><b>How I'll check it</b>The VDI 2230 hand method, plus slip load = μ × clamp force.</p>
+        <p><b>The result</b>It fails, narrowly. Once the joint settles it slips at 2.39 kN, 4.4 % short of the 2.5 kN it must carry. A preload of about 15.6 kN fixes it. It stays closed up to 13.1 kN, against 10 kN required.</p>
+        <p><b>How I checked it</b>The VDI 2230 hand method for the clamp and the settling loss, and slip load = μ × clamp force taken straight from the contact model. Mesh uncertainty 0.01 %. <a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/portfolio/16-bolted-joint-slip.md">Read the write-up</a></p>
         <span class="tools">CalculiX</span>
       </article>
       <article class="skill">
-        <span class="plan-meta"><span class="no">02 · Multiphysics</span><span class="plan-tag">In progress</span></span>
+        <span class="plan-meta"><span class="no">02 · Multiphysics</span><span class="plan-tag done">Done · study 15</span></span>
         <b>Cold plate, the full thermal chain</b>
-        <p><b>Why it's harder</b>Three kinds of physics in a chain: coolant flow, then conduction through the aluminium plate, then thermal stress. Each step gets verified before it hands its results to the next. It builds on the <a href="#heat">heated-channel study</a>.</p>
-        <p><b>How I'll check it</b>Fin and slab conduction theory, the closed-form thermal stress, and an energy balance at every handoff.</p>
+        <p><b>Why it's harder</b>Three kinds of physics in a chain: coolant flow, then conduction through the aluminium plate, then thermal stress. Each step is verified before it hands its results to the next. It builds on the <a href="#heat">heated-channel study</a>.</p>
+        <p><b>The result</b>It passes on all three counts: the component face peaks at 40.99 °C (limit 45 °C), the coolant warms by 7.20 K (limit 10 K) and the thermal stress peaks at 46.8 MPa (limit 60 MPa).</p>
+        <p><b>How I checked it</b>An exact series solution for the plate, beam theory for the thermal stress, and an energy balance at every handoff. Mesh uncertainty 0.035 % or less on every answer. <a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/portfolio/15-cold-plate-thermal-chain.md">Read the write-up</a></p>
         <span class="tools">OpenFOAM → CalculiX</span>
       </article>
       <article class="skill">
@@ -558,24 +561,27 @@ details.study > summary:hover .study-toggle { text-decoration: underline; }
         <span class="tools">CadQuery · Gmsh · CalculiX</span>
       </article>
       <article class="skill">
-        <span class="plan-meta"><span class="no">04 · Nonlinear material</span><span class="plan-tag">Planned · medium effort</span></span>
-        <b>Notched bar with plasticity</b>
-        <p><b>Why it's harder</b>The stress at the notch goes past yield, and there's residual stress left behind after unloading.</p>
-        <p><b>How I'll check it</b>Neuber's rule and Glinka's method.</p>
+        <span class="plan-meta"><span class="no">04 · Nonlinear material</span><span class="plan-tag done">Done · study 14</span></span>
+        <b>Strap proof test with plasticity</b>
+        <p><b>Why it's harder</b>During the proof test the hole edge goes past yield, and residual stress is left behind after unloading.</p>
+        <p><b>The result</b>A 15 kN proof test, three times the service load, strains the hole edge to 0.58 %, inside a 1 % limit. It leaves −77 MPa of compressive residual stress there, which helps fatigue.</p>
+        <p><b>How I checked it</b>The strain sits between Glinka's estimate (0.53 %) and Neuber's (0.64 %), and the residual stress matches exact elastic unloading to 2 × 10⁻⁶. <a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/portfolio/14-strap-proof-plasticity.md">Read the write-up</a></p>
+        <span class="tools">CadQuery · Gmsh · CalculiX</span>
+      </article>
+      <article class="skill">
+        <span class="plan-meta"><span class="no">05 · Stability</span><span class="plan-tag done">Done · study 13</span></span>
+        <b>Buckling of an imperfect strut</b>
+        <p><b>Why it's harder</b>It's a stability problem rather than a stress problem: a linear buckling analysis, then the same strut with a small initial bow.</p>
+        <p><b>The result</b>The longest acceptable strut is about 587 mm. The bow costs 4 to 7 % of the elastic buckling load, so checking buckling alone would overstate the capacity.</p>
+        <p><b>How I checked it</b>The linear analysis and a Southwell plot of the nonlinear run agree to 0.04 %, both within 0.1 % of Euler with a shear correction. First yield is within 1.3 % of the Perry-Robertson formula. <a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/portfolio/13-strut-buckling.md">Read the write-up</a></p>
         <span class="tools">CalculiX</span>
       </article>
       <article class="skill">
-        <span class="plan-meta"><span class="no">05 · Stability</span><span class="plan-tag">Up next</span></span>
-        <b>Buckling of a column or thin panel</b>
-        <p><b>Why it's harder</b>It's a stability problem rather than a stress problem. First a linear eigenvalue buckling analysis, then the same thing with a small imperfection.</p>
-        <p><b>How I'll check it</b>The Euler and Johnson formulas, and a Southwell plot.</p>
-        <span class="tools">CalculiX</span>
-      </article>
-      <article class="skill">
-        <span class="plan-meta"><span class="no">06 · Coupled FSI</span><span class="plan-tag">Planned · high effort</span></span>
-        <b>Flexible flap in a channel</b>
-        <p><b>Why it's harder</b>Two-way fluid-structure interaction, where the flow bends the flap and the bent flap changes the flow.</p>
-        <p><b>How I'll check it</b>A published benchmark.</p>
+        <span class="plan-meta"><span class="no">06 · Coupled FSI</span><span class="plan-tag">In progress</span></span>
+        <b>Flexible flag behind a cylinder</b>
+        <p><b>Why it's harder</b>Two-way fluid-structure interaction, where the flow bends the flag and the bent flag changes the flow.</p>
+        <p><b>So far</b>Each half has to reproduce the published Turek-Hron benchmark before the two are coupled. The solid's sag matches to 0.01 %, and it swings at 1.095 Hz against the published 1.096 to 1.100. The fluid's drag matches to 0.07 % and 0.014 % at the two flow speeds. Lift is within 0.7 % but scatters from mesh to mesh, so I'm holding that verdict back. The coupled runs come next.</p>
+        <p><b>How I'll check it</b>The benchmark's published values, for each half and for the coupled runs.</p>
         <span class="tools">OpenFOAM · CalculiX · preCICE</span>
       </article>
     </div>
