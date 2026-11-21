@@ -124,7 +124,7 @@ Before using a prepared workflow on a paid task, establish the required software
 
 Use public or synthetic practice problems. Keep employer and client models, data, credentials, and licensed environments outside this personal preparation project unless their use is explicitly authorized.
 
-## Current setup status (2026-11-20)
+## Current setup status (updated 2026-11-21)
 
 All five tool paths are installed on this PC and proven by verified evidence runs. The harness drives each one from Python through the interface below; the agent skills (`run-case`, `build-model`) carry the details and the traps found along the way.
 
@@ -137,6 +137,10 @@ All five tool paths are installed on this PC and proven by verified evidence run
 | Gmsh | 4.15 (bundled with FreeCAD) | Through FreeCAD, or the command line with a `.geo` script on a STEP file | Cantilever, strap with a hole, bracket modal analysis, roller contact |
 | CadQuery (OpenCASCADE) | 2.8.0 | In process; exports STEP for meshing | Mounting plate, strap with a hole, bracket modal analysis |
 | OpenFOAM | 14 (openfoam.org), in WSL Ubuntu 22.04 | A Python writer generates the case; a bash script runs blockMesh, checkMesh and foamRun inside WSL | Coolant channel, 3D duct check |
+| OpenFOAM v2512 (openfoam.com) | 2512.0-2, in WSL, at `/usr/lib/openfoam/openfoam2512` (installed 2026-11-21) | Only for the preCICE coupled stage of study 6: the preCICE OpenFOAM adapter does not support openfoam.org v14. The harness's `find_openfoam_bashrc` looks only in `/opt/openfoam*`, so the existing studies are unaffected | Study 6 coupled stage (in progress) |
+| preCICE + CalculiX adapter | libprecice3 3.4.1, calculix-precice3 2.20.2 (`ccx_preCICE`), in WSL; OpenFOAM adapter v1.4.0 built in `~/precice-adapters` | Partitioned fluid-structure coupling between OpenFOAM v2512 and CalculiX | Study 6 coupled stage (in progress) |
+| FEMM | 4.2 (x64, 22 Oct 2023 build), `C:\femm42` | pyFEMM (Python, needs pywin32) over FEMM's ActiveX server; a wire test matched mu0 I / (2 pi r) to 0.1-0.5 % | Study 7 (motor), not started |
+| Pyleecan | GitHub master (the 2024 PyPI release needs Python < 3.11) | In its own environment, not the repo's .venv; install with `PYTHONUTF8=1` | Study 7 (motor), feasibility only |
 | Blender (portable, no install) | 4.5.16 LTS | Background mode (`blender -b -P scripts/blender/render_scene.py`); scenes exported by `harness/femesh.py`; Cycles on the OptiX GPU | Result and CAD renders for the portfolio (`scripts/make_renders.py`, skill `render-results`) |
 
 **OMPython is not used.** The harness calls `omc` directly instead. That compiles each model once per run, passes every setting through explicit command-line flags (OpenModelica 1.26 silently ignores experiment settings passed through `-override`, which the harness's output-grid check caught), and needs no background OpenModelica session. OMPython remains a reasonable choice for interactive work.

@@ -331,6 +331,28 @@ Traps found while building the studies in this repo, by tool.
   for `grad(T)` in the `linearUpwind` scheme) removed it and still converged exactly; the TVD
   flux limiters that cycled in the heated-channel study were not needed.
 
+## FEMM 4.2 and Pyleecan (electric machines, study 7)
+
+- **FEMM 4.2, not FEMM 5, for Pyleecan.** pyFEMM drives FEMM's ActiveX server through win32com, which is
+  what Pyleecan uses; FEMM 5 talks to scripts over TCP instead. After installing, open FEMM once so it
+  registers `femm.ActiveFEMM`. `pip install pyfemm pywin32`. `femm.openfemm(1)` runs it hidden.
+- First check through the whole chain: a 100 A wire, where B = mu0 I / (2 pi r) holds outside it whatever
+  the mesh, with an A = 0 circle far out. FEMM's default mesh gave 0.1-0.5 %.
+- **Pyleecan: use GitHub master, in its own environment.** The PyPI release (1.5.2, 2024) needs Python
+  < 3.11 and pins numpy 1.23; master uses numpy 2 and PySide6 and installs on Python 3.14. Its setup.py
+  reads a file with the Windows default encoding and fails: set `PYTHONUTF8=1`. Its bundled
+  `Toyota_Prius.json` is the 2004 Prius (48 slots, 8 poles, 0.75 mm air gap).
+
+## preCICE coupling (OpenFOAM v2512 + CalculiX, study 6)
+
+- The preCICE OpenFOAM adapter (v1.4.0) supports the openfoam.com line v1812 to v2606, not
+  openfoam.org v14 (its newest .org branch is OpenFOAM 10). Install openfoam.com v2512 beside v14; its
+  bashrc is `/usr/lib/openfoam/openfoam2512/etc/bashrc`, outside the `/opt/openfoam*` the harness
+  searches.
+- preCICE 3.5 has no Ubuntu 22.04 package; 3.4.1 does. A simulated install (`apt-get install -s ./*.deb`)
+  showed the dependencies (about 137 packages, Boost and PETSc) without sudo.
+- `apt-get install openfoam2512-dev` downloads well over 1 GB; it can look stalled for minutes.
+
 ## Optimisation loops (harness/optimize.py)
 
 - An optimiser pushes the design onto a constraint, so the verdict there depends on the
