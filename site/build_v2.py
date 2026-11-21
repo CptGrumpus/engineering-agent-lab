@@ -5,7 +5,7 @@ import re
 from pathlib import Path
 
 HERE = Path(__file__).parent
-REPO = Path(r"c:\Users\mrstego\projects\engineering-agent-lab")
+REPO = Path(__file__).resolve().parent.parent
 studies = (HERE / "studies.html").read_text(encoding="utf-8")
 scenes = json.loads((HERE / "v2" / "scenes.json").read_text(encoding="utf-8"))
 

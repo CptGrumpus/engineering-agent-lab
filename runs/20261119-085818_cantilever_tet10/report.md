@@ -4,7 +4,7 @@
 - **Generated:** 2026-11-19T14:01:12+00:00
 - **Case file SHA-256:** `a9e840aea9ca98a2fadfe179d9a9f97aae6dc207090111b27c21aa9c45e0e038`
 - **Environment:** Python 3.14.10, numpy 2.5.5, scipy 1.18.1, matplotlib 3.11.2; Windows-11-10.0.26100-SP0
-- **Tools:** freecadcmd C:\Users\mrstego\AppData\Local\Programs\FreeCAD 1.1\bin\freecadcmd.exe; CalculiX This is Version 2.22; FreeCAD 1.1.4
+- **Tools:** freecadcmd ~\AppData\Local\Programs\FreeCAD 1.1\bin\freecadcmd.exe; CalculiX This is Version 2.22; FreeCAD 1.1.4
 - **Code version:** git `cf813cec2ea2e8d2fea2f44f46ba0521707f8d32` (uncommitted changes present)
 - **Simulation status:** completed
 - **Verification status:** PASS

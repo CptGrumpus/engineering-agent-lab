@@ -6,7 +6,7 @@ from pathlib import Path
 import numpy as np
 from PIL import Image
 
-REPO = Path(r"c:\Users\mrstego\projects\engineering-agent-lab")
+REPO = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO))
 sys.path.insert(0, str(REPO / "scripts"))
 from make_renders import beauty  # noqa: E402

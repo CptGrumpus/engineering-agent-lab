@@ -96,7 +96,7 @@ def test_solver_log(tmp_path):
 
 
 def test_wsl_path():
-    assert of.to_wsl_path(Path("C:/Users/a b/x")) == "/mnt/c/Users/a b/x"
+    assert of.to_wsl_path(Path("C:/Data/a b/x")) == "/mnt/c/Data/a b/x"
 
 
 def test_poiseuille_relations():

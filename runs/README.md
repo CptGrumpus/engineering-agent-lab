@@ -18,4 +18,8 @@ Each execution writes `runs/<YYYYmmdd-HHMMSS>_<case>/`:
 | `cross_check_<run_id>.json` | Cross-tool comparison against another run (after `compare`) |
 | `reproducibility.json` | Only in rerun directories: comparison against the original run |
 
-Run directories are git-ignored. Commit a curated example with `git add -f`.
+Run directories are git-ignored. Commit a curated example with `git add -f`, after running
+`python scripts/scrub_paths.py runs/<run_id>`. Solver logs print absolute paths that contain the
+Windows user name; the script replaces the repository root with `<repo>` and the home folder
+with `~`, and removes stray `__pycache__` folders. JSON records are already written that way.
+`tests/test_privacy.py` fails if a committed file still contains a personal path.

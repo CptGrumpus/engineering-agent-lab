@@ -12,6 +12,8 @@ from pathlib import Path
 
 import numpy as np
 
+from harness.privacy import redact
+
 def environment() -> dict:
     pkgs = {}
     for name in ("numpy", "scipy", "matplotlib", "cadquery"):
@@ -67,7 +69,10 @@ def close_logger(logger: logging.Logger) -> None:
 
 
 def write_json(path: Path, data) -> None:
-    path.write_text(json.dumps(data, indent=2, default=_json_default) + "\n", encoding="utf-8")
+    # Absolute paths in run records (executables, tool installs) are informational only;
+    # redact the user's home folder so committed evidence doesn't carry it.
+    text = json.dumps(data, indent=2, default=_json_default) + "\n"
+    path.write_text(redact(text), encoding="utf-8")
 
 
 def read_json(path: Path):
