@@ -1,10 +1,14 @@
 # Published portfolio page
 
-Source of the published portfolio page (a private claude.ai artifact).
+Source of the portfolio page. It's published two ways: the public site at https://cptgrumpus.github.io/engineering-agent-lab/ (served from `docs/`, written by `export_docs.py`) and a private claude.ai artifact.
 
 - `index.html`: the page as published. It references `v2/*` (renders, thumbnails, response plots) and `img/*` (the figures in `portfolio/img` and the run folders).
 - `build_v2.py`: builds `index.html` from `v2_template.html` (layout, hero, viewport, method, gallery, agent workflow, tasks, lessons, footer), `featured.html` (the featured study, the optimiser, shown right after the viewer), `studies.html` (the other eleven study write-ups, each turned into a collapsible panel at build time) and `extras.py`. It reads the real pipeline output for the terminal panel from the lift-off run log.
 - `extras.py`: the short summary at the top (code size and test count read from the repository), the requirements table, the capabilities table, and the interactive grader demo. The demo's criteria are read from `tasks/*/grader.py`, every preset answer is graded by the Python grader, and the build fails unless the page's JavaScript grader agrees with the Python graders on every preset and on random answers (needs `node`).
+- `extras.py` also writes the evidence line under each study: links to its write-up and run reports on the public repository. Only committed files are linked, so the page never points at a file GitHub doesn't have.
+- `make_og.py`: the link preview card (`v2/og_card.png`, 1200 × 630) shown when the link is pasted into LinkedIn, email or Slack. Drawn from the optimised bracket render and the counts in the run records; `export_docs.py` adds the Open Graph tags.
+- `make_mesh3d.py`, `viewer3d.js`: the interactive 3D view in the result viewer. `make_mesh3d.py` writes `v2/m3d_<tab>.bin` from the same surfaces and fields the Blender renders use (`build/render/`) and reads each file back against its source; `v2/m3d.json` indexes them so the page builds without `build/`. `viewer3d.js` is plain WebGL2: the field is banded per pixel as the render's shader does, with the legend's colours.
+- `check_viewer3d.py` (with `check_viewer3d.mjs`): opens the built page in headless Chrome and holds the 3D view to the renders' own checks, from four angles per tab: unlit pixels on the legend (99.5 %) and the lit view reading as the right band (`check_legibility`, 2 %). Needs node and Chrome; run after `export_docs.py`.
 - `make_assets.py`: builds the viewport renders and gallery thumbnails from the Blender passes in `build/render/` (run `scripts/make_renders.py` first).
 - `index_v1.html`, `contact_section.html`, `heat_section.html`: earlier sources, superseded by `studies.html` and kept for reference only.
 

@@ -42,7 +42,7 @@ OG_CARD = "v2/og_card.png"      # referenced by absolute URL in the head, so cop
 def main() -> int:
     page = (HERE / "index.html").read_text(encoding="utf-8")
     refs = sorted(set(re.findall(r'(?:src|href)="((?:img|v2)/[^"#?]+)"', page)) |
-                  set(re.findall(r'"img": "((?:img|v2)/[^"]+)"', page)) | {OG_CARD})
+                  set(re.findall(r'"(?:img|mesh)": "((?:img|v2)/[^"]+)"', page)) | {OG_CARD})
     missing = []
     for ref in refs:
         folder, name = ref.split("/", 1)

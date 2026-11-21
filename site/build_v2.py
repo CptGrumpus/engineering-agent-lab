@@ -57,7 +57,12 @@ VP = [
                "261.7 Hz flapwise · requirement ≥ 250 Hz (engine 2nd order + 25 %)",
                "Within 0.9 % of an independent Timoshenko beam model"]},
 ]
+import make_mesh3d
+mesh3d = make_mesh3d.index()
 for v in VP:
+    if v["id"] in mesh3d:          # interactive 3D view: same surface and bands as the render
+        m = mesh3d[v["id"]]
+        v.update(mesh=m["file"], mesh_kb=m["kb"], elev=m["elev"], azim=m["azim"])
     s = scenes[v["id"]]
     vol, col = s["volume"], s["color"]
     v["bands"] = [("#%02x%02x%02x" % tuple(round(c * 255) for c in rgb)) for rgb in s["band_colors"]]
@@ -163,7 +168,8 @@ page = (page.replace("{{VP_JSON}}", json.dumps(VP, ensure_ascii=False))
             .replace("{{TERMINAL}}", term_html)
             .replace("{{FEATURED}}", featured_with_evidence())
             .replace("{{STUDIES}}", collapse_studies(studies))
-            .replace("{{CAPS}}", extras.CAPS))
+            .replace("{{CAPS}}", extras.CAPS)
+            .replace("{{VIEWER3D_JS}}", (HERE / "viewer3d.js").read_text(encoding="utf-8")))
 (HERE / "index.html").write_text(page, encoding="utf-8")
 assert "{{" not in page, page[page.index("{{"):page.index("{{") + 40]
 print("written", len(page) // 1024, "KB;", len(term_lines), "terminal lines;", facts,

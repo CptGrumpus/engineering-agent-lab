@@ -128,6 +128,21 @@ code { font-family: var(--font-data); font-size: 0.85em; }
 .stage { position: relative; z-index: 1; display: grid; place-items: center; padding: 20px 28px 8px 8px; min-width: 0; }
 .stage img { max-width: 100%; max-height: clamp(280px, 44vw, 520px); width: auto; height: auto; transition: opacity 0.35s ease, transform 0.5s cubic-bezier(.2,.7,.2,1); filter: drop-shadow(0 18px 24px rgba(0, 8, 20, 0.35)); }
 .vp.switching .stage img { opacity: 0; transform: translateY(6px) scale(0.985); }
+.vp-3d { position: absolute; top: 14px; right: 16px; z-index: 3; font: 500 0.76rem var(--font-data); letter-spacing: 0.02em;
+  color: var(--vp-ink); background: rgba(8, 14, 26, 0.45); border: 1px solid rgba(237, 241, 248, 0.32); border-radius: 999px;
+  padding: 6px 14px; cursor: pointer; backdrop-filter: blur(4px); }
+.vp-3d:hover { background: rgba(8, 14, 26, 0.7); border-color: rgba(237, 241, 248, 0.6); }
+.vp-3d[aria-pressed="true"] { background: var(--vp-ink); color: var(--vp-top); }
+.vp-3d[hidden] { display: none; }
+.vp-hint { position: absolute; left: 50%; bottom: 8px; transform: translateX(-50%); z-index: 3; margin: 0;
+  width: max-content; max-width: calc(100% - 24px); text-align: center;
+  font: 0.7rem/1.4 var(--font-data); color: var(--vp-ink-2); pointer-events: none; }
+@media (max-width: 640px) { .vp-hint .long { display: none; } }
+.vp-canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: none; touch-action: none; cursor: grab; }
+.vp-canvas:active { cursor: grabbing; }
+.vp.is-3d .vp-canvas { display: block; }
+.vp-canvas:focus-visible { outline: 2px solid var(--vp-ink); outline-offset: -4px; border-radius: 4px; }
+.vp.is-3d .stage img, .vp.is-3d .triad { visibility: hidden; }
 .triad { position: absolute; left: 4px; bottom: 6px; width: 54px; height: 54px; opacity: 0.85; }
 .status {
   grid-column: 1 / -1; position: relative; z-index: 1;
@@ -385,7 +400,9 @@ details.study > summary:hover .study-toggle { text-decoration: underline; }
         <div class="legend-title" id="lg-title">S, Mises<small>MPa</small></div>
         <div class="legend-body"><div class="swatches" id="lg-sw"></div><div class="ticks" id="lg-ticks"></div></div>
       </div>
-      <div class="stage"><img id="vp-img" src="v2/vp_bracket_opt.webp" alt="Von Mises stress on the deformed optimised bracket">
+      <div class="stage"><button class="vp-3d" id="vp-3d" type="button" aria-pressed="false">Rotate in 3D</button>
+      <p class="vp-hint" id="vp-hint" hidden><span class="long">Same surface and colour bands as the render · </span>Drag to turn · <span class="long">scroll or </span>pinch to zoom<span class="long"> · double-click to reset</span></p>
+      <img id="vp-img" src="v2/vp_bracket_opt.webp" alt="Von Mises stress on the deformed optimised bracket">
       <svg class="triad" viewBox="0 0 54 54" aria-hidden="true">
         <g stroke-width="1.6" fill="none" stroke-linecap="round">
           <line x1="14" y1="40" x2="44" y2="46" stroke="#ff8f6b"/><line x1="14" y1="40" x2="34" y2="28" stroke="#8fe3a8"/><line x1="14" y1="40" x2="14" y2="8" stroke="#8fb4ff"/>
@@ -398,7 +415,7 @@ details.study > summary:hover .study-toggle { text-decoration: underline; }
     <div class="tabs" role="tablist" aria-label="Choose a result">
 {{TABS}}
     </div>
-    <p class="vp-note">These images are rendered in Blender straight from the solver output. Before one goes on the page it has to pass three checks. The rendered surface has to enclose the part's actual volume, which catches missing or flipped faces. Every coloured pixel has to match a colour in the legend, which catches a shader that has shifted the contours. And the lit image has to read as the right band, which catches a shaded face that looks like a different value.</p>
+    <p class="vp-note">These images are rendered in Blender straight from the solver output. Before one goes on the page it has to pass three checks. The rendered surface has to enclose the part's actual volume, which catches missing or flipped faces. Every coloured pixel has to match a colour in the legend, which catches a shader that has shifted the contours. And the lit image has to read as the right band, which catches a shaded face that looks like a different value. Most results can also be turned in 3D: that view uses the same surface and colour bands, and it's checked the same way from four angles.</p>
   </section>
 
 {{FEATURED}}
@@ -603,11 +620,13 @@ details.study > summary:hover .study-toggle { text-decoration: underline; }
   const vp = document.getElementById("vp"), img = document.getElementById("vp-img");
   const sw = document.getElementById("lg-sw"), ticks = document.getElementById("lg-ticks");
   const title = document.getElementById("lg-title"), status = document.getElementById("vp-status");
-  const tabs = [...document.querySelectorAll('.tabs [role="tab"]')];
+  const tabs = [...document.querySelectorAll('.viewport .tabs [role="tab"]')];
   const sci = v => (v < 0 ? "-" : "+") + Math.abs(v).toExponential(3).replace(/e([+-])(\d)$/, "e$10$2");
   const esc = s => s.replace(/[&<>]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]));
   VP.forEach(v => { const p = new Image(); p.src = v.img; });
 
+  // the 3D view listens for tab changes; the current tab is also kept on the element for late listeners
+  const announce = v => { vp.vpEntry = v; vp.dispatchEvent(new CustomEvent("vpchange", { detail: v })); };
   function paint(v) {
     const n = v.bands.length;
     sw.innerHTML = v.bands.slice().reverse().map(c => `<i style="background:${c}"></i>`).join("");
@@ -625,6 +644,7 @@ details.study > summary:hover .study-toggle { text-decoration: underline; }
   function show(i, focus) {
     if (i === current && img.getAttribute("src") === VP[i].img) { paint(VP[i]); return; }
     current = i;
+    announce(VP[i]);
     tabs.forEach((t, k) => { t.setAttribute("aria-selected", k === i ? "true" : "false"); t.tabIndex = k === i ? 0 : -1; });
     vp.setAttribute("aria-labelledby", tabs[i].id);
     if (focus) tabs[i].focus();
@@ -648,6 +668,7 @@ details.study > summary:hover .study-toggle { text-decoration: underline; }
     });
   });
   paint(VP[0]);
+  announce(VP[0]);
 
   const btns = [...document.querySelectorAll(".filters button")];
   const cards = [...document.querySelectorAll("#gallery .card")];
@@ -673,4 +694,7 @@ details.study > summary:hover .study-toggle { text-decoration: underline; }
 </script>
 <script>
 {{GRADER_JS}}
+</script>
+<script>
+{{VIEWER3D_JS}}
 </script>
