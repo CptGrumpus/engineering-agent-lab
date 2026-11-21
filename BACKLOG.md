@@ -97,6 +97,22 @@ a session scratchpad and is gone. To recreate it:
 
 FEMM is not installed yet.
 
+**Study 7 (motor) plan, agreed 2026-11-21, not started.** Build and verify everything ourselves;
+the ORNL report is the last step, opened blind.
+1. **Design inputs.** Use Pyleecan's Prius model (geometry, winding, magnet and lamination data).
+   Spot-check a few key dimensions against a published source, so that the model is really the 2004
+   Prius.
+2. **Our model and internal checks.** These are independent of ORNL:
+   - FEMM electromagnetics: torque, back-EMF, flux-linkage and efficiency maps;
+   - a thermal network checked against CalculiX on a stator section;
+   - rotor stress at overspeed;
+   - checks: an analytic air-gap field, the power balance at every operating point, mesh convergence,
+     and FEMM against a second calculation route.
+3. **Blind validation.** Write predictions into the case file first: the back-EMF constant, torque at a
+   few currents, efficiency at some operating points. Only then fetch ORNL's measured values and
+   compare. This is the portfolio's first comparison with test data. Expect 5 to 10 % from material
+   and temperature uncertainty, and explain the gap rather than tune it away.
+
 **Uncommitted at handoff:** nothing settled. Running cases and their runs are committed once they finish.
 
 ## Action items
