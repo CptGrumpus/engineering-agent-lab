@@ -16,6 +16,17 @@
 #      more at Re 100): REQ-F2 PASS in value, possibly withheld.
 #   P4 If SIMPLE does not converge (a residual plateau or a periodic force history), that is a finding
 #      about the steady assumption, not a tolerance to relax: the case would then need a transient solver.
+#
+# Results (run 20261121-151947_turek_hron_cfd2_mesh): every point check passes on every mesh; SIMPLE converged
+#   in 383 / 981 / 2808 iterations (13047 / 52321 / 207971 cells). P1 held for steadiness but missed on cost:
+#   fewer iterations than CFD1 (411 / 1266 / 4494), not twice as many.
+#   Drag 138.113 / 137.124 / 136.838 N/m: monotone, observed order 1.78, GCI 0.11 %, extrapolated 136.719,
+#   0.014 % from the benchmark: REQ-F1 verified PASS on the two finer meshes (0.31 % and 0.10 %); the coarsest
+#   fails it (1.03 %). P2: the uncertainty held, the 0.2 % band at 1.25 mm did not (0.31 %).
+#   Lift 10.852 / 10.573 / 10.606 N/m: oscillatory, uncertainty 1.65 % against the 1 % limit, so REQ-F2 is
+#   withheld; the finest mesh is 0.68 % from the benchmark, the coarsest 3.0 %. P3: the withheld GCI was
+#   anticipated; the 2 % band on every mesh was not met (coarsest). Same mesh-to-mesh lift noise as CFD1:
+#   the planned CFD1 revision (nested meshes, or a measured noise floor declared before the rerun) covers both.
 
 [case]
 name = "turek_hron_cfd2_mesh"

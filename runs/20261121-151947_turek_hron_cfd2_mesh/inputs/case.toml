@@ -1,0 +1,74 @@
+# Turek-Hron CFD2: steady laminar flow at Re 100 round the cylinder and its rigid flag, the second fluid
+# test of study 6. Same model, checks and tolerances as turek_hron_cfd1_mesh_r1.toml (exact parabolic
+# inflow, body sizes 2.5 / 1.25 / 0.625 mm); read turek_hron_cfd1_mesh.toml for the background.
+#
+# Reference (featflow.de FSI benchmark, CFD tests, finest level 6+0): CFD2 drag 136.700, lift 10.5343 N/m
+# (U_mean 1 m/s, rho 1000 kg/m3, nu 1e-3 m2/s).
+#
+# What CFD1 showed: drag converges smoothly on these meshes (GCI 0.02 %); lift carries about +-0.6 %
+# mesh-to-mesh noise because Gmsh regenerates the quad-dominant mesh at each size.
+#
+# Predictions, written BEFORE any CFD2 run:
+#   P1 Steady SIMPLE converges at Re 100 (the flag suppresses shedding in the benchmark's steady test),
+#      in more iterations than CFD1 (thinner boundary layers, stronger convection): about 2x.
+#   P2 Drag within 0.2 % of 136.70 on the two finer meshes, GCI under 0.5 %: REQ-F1 verified PASS.
+#   P3 Lift within 2 % on every mesh, but its GCI may again fail on mesh noise (about +-0.6 %, possibly
+#      more at Re 100): REQ-F2 PASS in value, possibly withheld.
+#   P4 If SIMPLE does not converge (a residual plateau or a periodic force history), that is a finding
+#      about the steady assumption, not a tolerance to relax: the case would then need a transient solver.
+
+[case]
+name = "turek_hron_cfd2_mesh"
+model = "openfoam_turek_hron"
+description = "Turek-Hron CFD2: steady laminar flow (Re 100) in a 2.5 x 0.41 m channel round a cylinder (r 0.05 m) with a rigid 0.35 x 0.02 m flag; OpenFOAM 14 on a Gmsh quad-dominant mesh, body cell size 2.5 / 1.25 / 0.625 mm; drag and lift against the published benchmark."
+assumptions = [
+  "2D (one cell deep, empty front and back), as the benchmark defines it.",
+  "Steady flow: the benchmark treats CFD2 (Re 100) as steady (the flag acts as a splitter plate); the SIMPLE residual targets and the settled force history check it.",
+  "The flag is rigid and fixed (the CFD tests make it so by a huge stiffness and density).",
+  "Inflow: the benchmark's parabolic profile at the full mean velocity (the steady tests have no time ramp).",
+]
+limitations = [
+  "A solver-qualification case: it shows that the fluid participant reproduces the published fluid-only forces, not that the coupled result is right.",
+  "Pressure outlet at 2.5 m as in the benchmark; no separate domain-length study.",
+]
+
+[parameters]
+mean_velocity_m_per_s = 1.0
+kinematic_viscosity_m2_per_s = 0.001
+density_kg_per_m3 = 1000.0
+flag_length_m = 0.35
+cell_size_m = 0.0025
+benchmark_drag_N_per_m = 136.7
+benchmark_lift_N_per_m = 10.5343
+
+[sweep]
+parameter = "cell_size_m"
+values = [0.0025, 0.00125, 0.000625]
+
+[numerics]
+max_iterations = 20000
+residual_p = 1e-10
+residual_U = 1e-11
+
+[verification]
+forces_settled_max = 1e-6
+flow_rel_tol = 5e-3
+mass_rel_tol = 1e-6
+profile_rel_tol = 1e-6
+gci_max = 0.01
+
+[[requirements]]
+id = "REQ-F1"
+text = "Before it is coupled to the solid, the fluid model shall reproduce the Turek-Hron CFD2 drag within 1 %."
+metric = "drag_deviation_pct"
+operator = "<="
+limit = 1.0
+units = "%"
+
+[[requirements]]
+id = "REQ-F2"
+text = "It shall reproduce the CFD2 lift within 2 % (lift is a small difference of large pressure forces, about 8 % of the drag)."
+metric = "lift_deviation_pct"
+operator = "<="
+limit = 2.0
+units = "%"

@@ -7,7 +7,7 @@
 
 | | |
 |---|---|
-| **Answer so far** | Both single-physics halves reproduce the published Turek-Hron benchmark before any coupling. Solid, static (CSM1, CSM2): the tip displacement extrapolates to within 0.015 % of the published values. Fluid (CFD1): drag within 0.07 %, lift within 0.6 % on every mesh. Solid, dynamic (CSM3): frequency 1.095 Hz, 0.06 % from the published values. CFD2 and the coupled runs (FSI1 to FSI3): *pending*. |
+| **Answer so far** | Both single-physics halves reproduce the published Turek-Hron benchmark before any coupling. Solid, static (CSM1, CSM2): the tip displacement extrapolates to within 0.015 % of the published values. Fluid (CFD1): drag within 0.07 %, lift within 0.6 % on every mesh. Solid, dynamic (CSM3): frequency 1.095 Hz, 0.06 % from the published values. Fluid at Re 100 (CFD2): drag within 0.014 % when extrapolated, lift within 0.7 % on the finer meshes. Coupled runs (FSI1 to FSI3): *pending*. |
 | **Discipline** | Structures (large deflection, dynamics), fluids, fluid-structure interaction |
 | **Tools** | CalculiX (solid), OpenFOAM 14 with Gmsh (fluid), Python; preCICE with OpenFOAM v2512 for the coupled stage (*pending*) |
 | **Methods** | Geometrically nonlinear static and dynamic FE, a large-deflection elastica as an independent reference, steady laminar CFD, mesh and time-step refinement with GCI, published benchmark values as the acceptance requirement |
@@ -34,7 +34,10 @@ published results first, and only then are they coupled.
   every mesh, but it scatters between meshes (see below).
 - **Solid, dynamic (CSM3).** Released from rest, the flag swings at 1.095 Hz, against published values of
   1.096 to 1.100. Amplitude and mean: *pending, final run in progress*.
-- **Fluid at Re 100 (CFD2)** and **the coupled runs**: *pending*.
+- **Fluid at Re 100 (CFD2).** Drag converges to 136.719 N/m against the published 136.700 (0.014 %, mesh
+  uncertainty 0.11 %). Lift is 10.61 on the finest mesh, 0.7 % from the published 10.53, with the same
+  mesh-to-mesh scatter as CFD1.
+- **The coupled runs**: *pending*.
 
 ## How it works
 
@@ -79,7 +82,7 @@ published results first, and only then are they coupled.
   frequency became steady across time steps at 1.095 Hz.
 - **Lift scatters with the mesh.** Gmsh regenerates the mesh at each size rather than refining it, and
   lift is a small difference of large pressure forces, so it scatters by about ±0.6 % from mesh to mesh.
-  One mesh study verified it and the next withheld it. The fix (nested meshes, or measuring that scatter
+  One CFD1 mesh study verified it and the next withheld it; CFD2 shows the same. The fix (nested meshes, or measuring that scatter
   first) is the next revision; the tolerance stays.
 - **Smaller finds.** CalculiX uses one print frequency for every request in a step, so one request
   silently thinned another's output. The `.dat` file's seven digits limit how well equilibrium can close.
@@ -98,7 +101,7 @@ published results first, and only then are they coupled.
   [CSM2 mesh study](../runs/20261121-131133_flag_csm2_mesh/report.md) (both verification PASS)
 - solid, dynamic: CSM3 time-step study (first run kept as evidence of the energy drift; final run
   *pending*)
-- fluid: CFD1 mesh studies (lift verified on the first, drag on the second); CFD2 *pending*
+- fluid: [CFD1 first mesh study](../runs/20261121-140245_turek_hron_cfd1_mesh/report.md) (lift verified), [CFD1 refined](../runs/20261121-140657_turek_hron_cfd1_mesh_r1/report.md) (drag verified), [CFD2](../runs/20261121-151947_turek_hron_cfd2_mesh/report.md) (drag verified, lift withheld on mesh noise)
 - case files: `cases/flag_csm1_mesh.toml`, `cases/flag_csm2_mesh.toml`, `cases/flag_csm3_dt.toml`,
   `cases/flag_csm3_dt_r1.toml`, `cases/turek_hron_cfd1_mesh.toml`, `cases/turek_hron_cfd1_mesh_r1.toml`,
   `cases/turek_hron_cfd2_mesh.toml` (predictions, smoke-test findings and results in the headers)

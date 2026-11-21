@@ -66,7 +66,6 @@ alive. Check with `ls -td runs/*` and, if one is still solving, `wsl -e pgrep -a
 
 | Case | Run directory prefix | Expected |
 |---|---|---|
-| `cases/turek_hron_cfd2_mesh.toml` (CFD2, Re 100) | `*_turek_hron_cfd2_mesh` | At 1.25 mm: drag 137.1 (0.31 %), lift 10.57 (0.36 %). The 0.625 mm level was solving |
 | `cases/flag_csm3_dt_r1.toml` (CSM3 revision) | `*_flag_csm3_dt_r1` | dt 0.0025 and 0.00125 done, matching P1-P4. The 0.000625 level was running |
 | `cases/heated_channel_mesh_r2.toml` (study 11 wall verdict) | `*_heated_channel_mesh_r2` | 40 and 80 cells done. The 160-cell flow takes about 7 s per iteration over 1200 iterations, finishing around 18:00-19:00. If REQ-T1 is verified, update portfolio/11, the PORTFOLIO index, and DASHBOARD.md item 10 |
 
@@ -76,8 +75,10 @@ alive. Check with `ls -td runs/*` and, if one is still solving, `wsl -e pgrep -a
   - drag verified on run `20261121-140657_turek_hron_cfd1_mesh_r1`;
   - lift verified on run `20261121-140245_turek_hron_cfd1_mesh` but "divergent" on r1, because Gmsh's
     regenerated meshes carry about ±0.6 % mesh-to-mesh noise.
-  - Next revision: nested structured meshes round the body, or measure that noise at a fixed size and
-    declare it before the rerun.
+  - **CFD2 is done** (run `20261121-151947_turek_hron_cfd2_mesh`): drag verified (extrapolated 136.719,
+    0.014 % from the benchmark); lift withheld on the same mesh noise (uncertainty 1.65 %).
+  - Next revision, for CFD1 and CFD2 both: nested structured meshes round the body, or measure that
+    noise at a fixed size and declare it before the rerun.
   - Hold it until the CPU is free.
 - **CSM3:** the first run is kept as evidence of the trapezoidal-rule energy drift and of the mode-2
   measurement flaw (fixed: mid-level crossings).
