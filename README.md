@@ -30,6 +30,14 @@ The intended user is an automotive engineer with a master's degree in mechanical
 | Side-wall (3D) check of the channel | `openfoam_duct` | OpenFOAM 14 (in WSL) | `duct_side_walls` |
 | Heated coolant channel (thermal entry) | `openfoam_heated_channel` | OpenFOAM 14 (in WSL), scalarTransport | `heated_channel_mesh`, `heated_channel_flux` |
 | Heat-sink fin tip temperature, 3D conduction | `ccx_fin` | CalculiX (bundled with FreeCAD) | `fin_mesh`, `fin_tolerance`, `fin_h_sweep` |
+| Cold plate, full thermal chain (CFD + conduction + thermal stress) | `openfoam_ccx_cold_plate` | OpenFOAM 14 (in WSL) coupled to CalculiX | `cold_plate_mesh`, `cold_plate_mesh_r1`, `cold_plate_solver_check` |
+| Tapered bracket, optimisation loop | `cadquery_ccx_tapered` | CadQuery -> Gmsh -> CalculiX, COBYLA | `bracket_opt`, `bracket_opt_confirm` |
+| Clevis bracket, 3D optimisation loop | `cadquery_ccx_clevis` | CadQuery -> Gmsh -> CalculiX, COBYLA | `clevis_opt`, `clevis_opt_r1`, `clevis_opt_r2`, `clevis_confirm`, `clevis_confirm_r1`, `clevis_confirm_r1_fillet`, `clevis_confirm_r2`, `clevis_confirm_r2b` |
+| Strut buckling (eigenvalue, then imperfect and nonlinear) | `ccx_strut` | CalculiX | `strut_mesh`, `strut_length` |
+| Strap proof test, plasticity | `cadquery_ccx_strap_plastic` | CadQuery -> Gmsh -> CalculiX plasticity | `strap_proof`, `strap_proof_r1` |
+| Bolted joint, friction contact to slip | `ccx_bolted_joint` | CalculiX contact with friction | `bolted_joint_mesh`, `bolted_joint_mesh_r1` |
+| Turek-Hron flag, solid stage (static, dynamic) | `ccx_flag`, `ccx_flag_dynamic` | CalculiX NLGEOM | `flag_csm1_mesh`, `flag_csm2_mesh`, `flag_csm3_dt`, `flag_csm3_dt_r1` |
+| Turek-Hron fluid stage (cylinder + rigid flag) | `openfoam_turek_hron` | Gmsh -> OpenFOAM 14 (in WSL) | `turek_hron_cfd1_mesh`, `turek_hron_cfd1_mesh_r1`, `turek_hron_cfd2_mesh` |
 
 ## Project folders
 
