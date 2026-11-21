@@ -436,8 +436,8 @@ GRADER_UI_JS = r"""
 # One row per headline requirement, taken from the study pages and their evidence reports.
 REQS = [
     ("bracket_opt", "12", "Bracket optimisation", [
-        ("Peak bending stress at the optimum, 546 g", "≤ 100 MPa", "99.5 MPa, with the 0.5 % margin and mesh error included", "met"),
-        ("Tip deflection at the optimum", "≤ 1.0 mm", "0.917 mm", "met")]),
+        ("Peak stress at design D, 372 g", "≤ 100 MPa", "98.3 MPa; 98.9 MPa with the mesh uncertainty added", "met"),
+        ("Pin deflection at design D", "≤ 0.10 mm", "0.079 mm", "met")]),
     ("fea", "01", "Cantilever bracket", [
         ("Tip deflection", "≤ 1.0 mm", "0.953 mm", "met"),
         ("Root bending stress", "≤ 213 MPa", "150 MPa", "met")]),

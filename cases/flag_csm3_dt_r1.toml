@@ -22,6 +22,14 @@
 #   P5 uy mean converging to about -64.9 to -65.05 mm, just beyond the band's edge (-64.766), within its
 #      1 % allowance: REQ-S3 PASS. If it lands outside the band, that is reported as found: the published
 #      rows themselves spread by 1.8 % between their time steps.
+#
+# Results (run 20261121-142836_flag_csm3_dt_r1): dt 0.0025 and 0.00125 passed every check and matched P1-P4:
+#   frequency 1.0950 / 1.0949 Hz (0.05-0.07 % under the band), small-amplitude mean frequency 1.07224 / 1.07223 Hz
+#   against the modal 1.07226 (3e-5: the crossing method fixed the integrator check), energy drift 0.45 / 0.07 %,
+#   uy -64.613 / -64.799 +/- 64.905 / 64.847 mm, ux -14.607 / -14.630 mm. The 0.000625 s point FAILED to solve:
+#   CalculiX's Newton iterations crept from 2 to 12 per step over the run and diverged at t = 5.84 s. The force
+#   criterion (1e-8 of the time-averaged force) fell below round-off with such small steps; at 0.00125 s it never
+#   needed more than 4. No time-step GCI on this run (two levels). Superseded by flag_csm3_dt_r2 (residual 1e-6).
 
 [case]
 name = "flag_csm3_dt_r1"

@@ -140,6 +140,10 @@ Traps found while building the studies in this repo, by tool.
   frequency and keep the last block in Python.
 - The `.dat` prints 7 significant digits, so an equilibrium check closes to about 2e-7, not to
   the Newton tolerance; set its tolerance at 1e-6.
+- **The `*CONTROLS, PARAMETERS=FIELD` force criterion is relative to the time-averaged force, so a tight value
+  fails late in long runs with small steps.** At 1e-8 and dt 0.000625 s the Newton iterations crept from 2 to 12
+  per step over 9300 steps and then diverged; 0.00125 s never needed more than 4. 1e-6 is the safer setting
+  for long dynamic runs; check the answer does not move by rerunning a coarser step.
 - St. Venant-Kirchhoff is plain `*ELASTIC` under `NLGEOM`; `*STATIC, DIRECT` with a fixed
   increment and `*CONTROLS, PARAMETERS=FIELD` `1.e-8, 1.e-6` converged in 2 iterations per step.
 
@@ -363,6 +367,16 @@ Traps found while building the studies in this repo, by tool.
   `https://media.githubusercontent.com/media/precice/tutorials/develop/<path>` and check it against the
   pointer's sha256.
 - Use the tutorials' develop branch with adapter v1.4.0; the last tutorials release dates from 2024.
+- **Clear the positional arguments before sourcing the openfoam.com bashrc in a script** (`set --`).
+  `source` passes the script's own arguments on, and the v2512 bashrc parses them as its options: with a case
+  path and a bashrc path inherited it crawled through `foamEtcFile` for minutes; cleared, it loads in 0.4 s.
+  The openfoam.org v14 bashrc did not care, which is why run_heated.sh never showed it.
+- Wetted node set for `ccx_preCICE`: leave out the clamped nodes. CalculiX drops loads on constrained nodes
+  from its reaction totals, which breaks a force-transfer check (fluid force on the body + clamp reaction = 0);
+  preCICE's conservative mapping hands their share to the neighbours.
+- Coupled start-up from rest: relative convergence on near-zero forces costs 5-8 iterations per window at
+  first, falling to 2-3 once the flow builds. A ramped channel inflow puts large unsteady forces on the body
+  (the whole channel accelerates): drag ran ahead of the ramp (13 N/m at half speed in FSI1).
 
 ## Optimisation loops (harness/optimize.py)
 

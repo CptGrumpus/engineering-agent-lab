@@ -1,4 +1,8 @@
-"""Presentation visuals for the bracket optimisation study (portfolio study 12).
+"""Presentation visuals for the first version of the bracket optimisation study, the tapered cantilever.
+
+Superseded: study 12 is now the clevis bracket, drawn by scripts/make_clevis_visuals.py. Kept so the
+figures of the earlier version can be redrawn from its runs; running it in full overwrites the page's
+bracket_opt viewer render, so rerun make_clevis_visuals.py afterwards.
 
     .venv\\Scripts\\python.exe scripts\\make_opt_visuals.py [--samples N] [--skip-render]
 

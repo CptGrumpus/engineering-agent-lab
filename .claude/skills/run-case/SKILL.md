@@ -37,6 +37,7 @@ is the `verify-against-reference` skill.
 | `ccx_flag` | Turek-Hron elastic flag, static (CSM1, CSM2) | CalculiX NLGEOM static under gravity plus *FREQUENCY, structured plane-strain C3D8I mesh clamped on the cylinder arc | `models/fea/flag_ccx.py` |
 | `ccx_flag_dynamic` | Turek-Hron elastic flag, dynamic (CSM3) | CalculiX NLGEOM *DYNAMIC (ALPHA 0), plus a gravity/1000 companion run and *FREQUENCY | `models/fea/flag_ccx.py` |
 | `openfoam_turek_hron` | Turek-Hron fluid stage (cylinder + rigid flag, steady) | Gmsh .geo (FreeCAD's gmsh.exe) -> gmshToFoam -> OpenFOAM 14 incompressibleFluid in WSL, forces on the body | `models/cfd/turek_hron_openfoam.py`, `models/cfd/run_turek_hron.sh` |
+| `openfoam_ccx_precice_fsi` | Turek-Hron FSI (flag behind a cylinder, coupled) | OpenFOAM v2512 pimpleFoam (moving mesh, Gmsh mesh) + CalculiX (`ccx_preCICE`) through preCICE 3.4, both in WSL; needs the v2512 bashrc (`OPENFOAM_V2512_BASHRC` to override) | `models/fsi/turek_hron_fsi.py`, `models/fsi/run_turek_hron_fsi.sh` |
 
 A case with an `[optimization]` section runs with `python -m harness optimize <case>`
 (harness/optimize.py): COBYLA proposes designs, each candidate is a point under

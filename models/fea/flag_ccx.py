@@ -122,10 +122,13 @@ def write_frequency_deck(params: dict, m: FlagMesh, n_modes: int = 3) -> str:
     return "\n".join(out) + "\n"
 
 
-def write_dynamic_deck(params: dict, m: FlagMesh, dt: float, t_end: float, alpha: float = 0.0) -> str:
+def write_dynamic_deck(params: dict, m: FlagMesh, dt: float, t_end: float, alpha: float = 0.0,
+                       residual_rel: float = 1e-8) -> str:
+    # residual_rel: CalculiX's force-residual criterion, relative to the time-averaged force. With tiny steps
+    # 1e-8 fell below round-off late in the run (iterations crept from 2 to 12, then diverged at dt 0.000625)
     out = _model(params, m)
     out += [f"*STEP, NLGEOM, INC={int(round(t_end / dt)) + 10}", f"*DYNAMIC, DIRECT, ALPHA={alpha!r}",
-            f"{dt!r}, {t_end!r}", "*CONTROLS, PARAMETERS=FIELD", "1.e-8, 1.e-6",
+            f"{dt!r}, {t_end!r}", "*CONTROLS, PARAMETERS=FIELD", f"{residual_rel!r}, 1.e-6",
             "*AMPLITUDE, NAME=STEPON", "0., 1., 1.e6, 1.", "*DLOAD, AMPLITUDE=STEPON", _gravity(params),
             "*NODE PRINT, NSET=NA, FREQUENCY=1", "U", "*END STEP"]
     return "\n".join(out) + "\n"

@@ -2,49 +2,49 @@
     <div class="band-head">
       <p class="eyebrow">Featured · study 12 · design automation</p>
       <h2 id="opt-title">The agent designs a lighter bracket</h2>
-      <p>The steel bracket from study 1 (200 mm long, 1 kN at the tip) now sits in a vibrating assembly. Its bending stress has to stay under 100 MPa for fatigue, the tip can deflect at most 1.0 mm, and the 20 mm width is fixed by the mounting. An optimiser run by the agent picks the root and tip heights of a linear taper to make it as light as possible, and every design it tries is built, meshed, solved and checked like any other study.</p>
+      <p>A machined aluminium clevis bracket on a vibrating machine carries an inclined 4.8 kN pin load. The parts around it fix the base, the lug outline and the fillets. An optimiser run by the agent picks the lug thickness, the gusset thickness and the gusset height to make the bracket as light as possible. The peak stress has to stay at or under 100 MPa, a fatigue rating, and the pin can move at most 0.10 mm. Every design it tries is built, meshed, solved and checked like any other study.</p>
     </div>
     <dl class="kpis">
-      <div><dt>Mass of the optimum</dt><dd>546 g</dd><p>30 % lighter than the lightest straight bar that meets both limits (20 × 25 mm, 785 g)</p></div>
-      <div><dt>Designs tried</dt><dd>32</dd><p>Each one built, meshed, solved and checked. One was rejected by the checks.</p></div>
-      <div><dt>Peak stress</dt><dd>99.5 MPa</dd><p>Against the 100 MPa limit, and it peaks in the middle of the span. The root sees only 88 MPa.</p></div>
-      <div><dt>Independent check</dt><dd>0.13 %</dd><p>Difference from a separate beam-theory optimum. Mesh uncertainty at the optimum: 0.005 %.</p></div>
+      <div><dt>Mass of the chosen design</dt><dd>372 g</dd><p>4 % lighter than the starting design. The 270 g base plate is fixed, so the parts the optimiser could change lost 13 %.</p></div>
+      <div><dt>Designs tried</dt><dd>78</dd><p>Over three optimisation runs. The checks threw out the answers of the first two.</p></div>
+      <div><dt>Peak stress</dt><dd>98.3 MPa</dd><p>At the fillet where the lug meets the base, on the finest mesh. With the mesh uncertainty added it's 98.9 MPa, still under 100.</p></div>
+      <div><dt>Pin deflection</dt><dd>0.079 mm</dd><p>Against the 0.10 mm limit. Stress governs this design, not stiffness.</p></div>
     </dl>
     <div class="opt-run">
-      <figure><div class="plate"><img src="img/anim_bracket_opt.webp" alt="Animation of the optimiser's search: each candidate's stress render, its place in the design space, and the mass so far" loading="lazy"></div><figcaption>The search as it happened. Each frame is one candidate, with its CalculiX stress, where it sits in the design space and the mass so far. Candidate 8 went too thin, deflected beyond what a linear model can handle, and was thrown out by the checks.</figcaption></figure>
+      <figure><div class="plate"><img src="img/anim_clevis_opt.webp" alt="Animation of the optimiser's search: each candidate's stress render, its peak stress against its mass, and the thicknesses tried" loading="lazy"></div><figcaption>The final search, one frame per candidate: its CalculiX stress, its peak stress against its mass, and the thicknesses tried. It closes in on about 370 g, but the candidates there land either side of the search limit by mesh noise, so the only one that passed was the starting design. The last frame is design D, chosen from those candidates by a fitted response surface.</figcaption></figure>
       <div class="opt-side">
         <h3>How the loop works</h3>
         <ol class="steps">
-          <li><b>Propose</b><span>COBYLA, an optimiser that needs no gradients and handles limits, picks a root and a tip height.</span></li>
-          <li><b>Build</b><span>CadQuery draws the tapered solid and exports a STEP file. Gmsh meshes it with quadratic tetrahedra.</span></li>
-          <li><b>Solve</b><span>CalculiX computes the deflection and stresses under the 1 kN tip load.</span></li>
+          <li><b>Propose</b><span>COBYLA, an optimiser that needs no gradients and handles limits, picks the three dimensions.</span></li>
+          <li><b>Build</b><span>CadQuery draws the solid and exports a STEP file. Gmsh meshes it with quadratic tetrahedra, 4 mm overall and 1 mm on the fillets.</span></li>
+          <li><b>Solve</b><span>CalculiX computes the stresses and the pin deflection, with the load applied through the pin and the base held.</span></li>
           <li><b>Check</b><span>The study's full set of checks runs. A design that fails any of them counts as infeasible, whatever its numbers say.</span></li>
-          <li><b>Repeat</b><span>The optimiser steps toward lighter designs that pass until its step shrinks below 0.01 mm. The whole search is one command.</span></li>
+          <li><b>Repeat</b><span>The optimiser steps toward lighter designs that pass until its step can't shrink any further. Each run is one command.</span></li>
         </ol>
         <ul class="rules" aria-label="Rules for the search">
           <li>Rejected designs can't steer the search</li>
-          <li>0.5 % margin kept for mesh error</li>
-          <li>Predictions written before the run</li>
+          <li>2.5 % margin kept for mesh error</li>
+          <li>Predictions written before every run</li>
         </ul>
       </div>
     </div>
     <div class="figs-2">
-      <figure><div class="plate"><img src="img/render_bracket_compare.png" alt="The starting straight bar and the optimised taper rendered on one stress scale" loading="lazy"></div><figcaption><b>Before and after, on one stress scale.</b> Most of the straight bar is lightly loaded. The taper keeps its top surface close to the limit along most of the span, so nearly all of the steel is doing work.</figcaption></figure>
-      <figure><div class="plate"><img src="img/bracket_stress_span.png" alt="Bending stress along the span for the straight bar, a candidate that passes a root-only check, and the optimum" loading="lazy"></div><figcaption><b>Why the stress has to be measured along the whole span.</b> Candidate 12 is the trap: 90 MPa at the root, comfortably under the limit, but 101 MPa in the middle of the span.</figcaption></figure>
+      <figure><div class="plate"><img src="img/render_clevis_compare.png" alt="The starting clevis bracket and design D rendered on one stress scale" loading="lazy"></div><figcaption><b>Before and after, on one stress scale.</b> The optimiser thinned the lug and shortened the gussets, but made the gussets slightly thicker. That's the cheapest way to support the fillet where the stress peaks. The tops of the gussets, where they meet the lug, come close behind at about 95 MPa.</figcaption></figure>
+      <figure><div class="plate"><img src="img/clevis_noise.png" alt="Peak stress found by CalculiX against the stress a linear fit predicts, for the last fifteen candidates and design D" loading="lazy"></div><figcaption><b>Why the optimiser stalled.</b> Near the answer, designs a tenth of a millimetre apart scatter by 1.5 % in peak stress, because a fillet peak is a maximum over mesh nodes. A straight-line fit through the last 15 candidates averages that out. Design D sits where the fit reads two standard deviations under the search limit, and its own mesh study confirms it.</figcaption></figure>
     </div>
     <div class="findings opt-caught">
-      <article class="finding"><span class="label">What a root-only check misses</span><h3>The stress peak moves into the span</h3><p>Once the taper is steeper than 2 to 1, the bending stress peaks inside the span, not at the root. An optimiser that only checked the root would have kept thinning the tip and handed back a bracket that fails in the middle. The peak at the clamped corner can't be used either: it grows without limit as the mesh gets finer, the trap from study 1.</p></article>
-      <article class="finding"><span class="label">A design outside the model</span><h3>Candidate 8 was thrown out</h3><p>One long step reached a 390 g design that deflected 2.7 mm, 1.35 % of the span. That's past the small-deflection limit of a linear analysis, so the checks rejected it, and the optimiser treated it as infeasible and stepped back. The run is kept as evidence.</p></article>
-      <article class="finding"><span class="label">An answer sitting on its limit</span><h3>Room left for mesh error</h3><p>The optimiser drives the stress right onto the limit at whatever mesh size it's using, so a finer mesh could tip the answer over. I set a 0.5 % margin before running. The mesh study at the optimum then measured the real error at 0.005 %, and the stress stays 0.49 % under 100 MPa with it included.</p></article>
+      <article class="finding"><span class="label">A margin sized for the wrong stress</span><h3>The first answer failed its own mesh study</h3><p>With a 1 % margin, the optimiser's pick read 94 MPa on its mesh. The mesh study put it at 101.7 MPa once the uncertainty was included. A peak in a fillet needs far more room than a smooth bending stress, where 0.5 % had been plenty.</p></article>
+      <article class="finding"><span class="label">A mesh study that missed the peak</span><h3>The second answer failed too</h3><p>Gmsh held the fillet elements at about 1.6 mm whatever the overall element size, so the "global" mesh study barely touched the peak, and the margin sized from it failed as well. The final mesh study refines the fillet itself, from 1.0 to 0.75 mm.</p></article>
+      <article class="finding"><span class="label">The same CAD, different meshes</span><h3>A model that wasn't repeatable</h3><p>The same three dimensions gave 40 or 41 faces from run to run, so different meshes and different stresses: 94.0 against 94.9 MPa. CadQuery was ordering the fillet edges by memory address. They now go in a fixed order, and a test checks that two builds are byte-identical.</p></article>
     </div>
     <details class="more">
       <summary>How I checked it, and what it doesn't cover</summary>
       <ul class="proof">
-        <li>Every candidate goes through the full set of checks. The CAD volume is compared with the closed form, the applied load and tip area are read back from the mesh, and the reactions have to balance. The tip deflection has to match tapered Timoshenko beam theory, which it does within 0.6 %, and the FE surface stress has to match M/Z along the span, within 0.7 % as a fit and 1.5 % point by point.</li>
-        <li>A separate mesh study at the optimum puts the mesh uncertainty at 0.005 % on the stress and 0.016 % on the deflection, and the requirement is still met with that added.</li>
-        <li>I also optimised the bracket independently with beam theory, using the same limits and margin. It lands at 545.2 g against the FE optimum's 546.0 g, a 0.13 % difference, with the heights within 0.7 %.</li>
-        <li>I wrote down predictions before running it (the heights, the mass, which limit would govern and where the stress would peak), and they all held.</li>
+        <li>No closed form covers this shape, so every candidate is checked by what has to hold exactly. The CAD solid is valid. The meshed volume equals the CAD volume to 2 × 10⁻⁴. The base reactions balance the pin load in force and moment to 10⁻⁸, so the load acts where it should. Where the lug has a clear section, its stress is compared with beam theory. The stress stays below yield and the deflection small.</li>
+        <li>Design D has its own mesh study, refining the peak itself: fillet elements of 1.0, 0.85 and 0.75 mm. The peak moves 0.99 %, less than the 1.5 % mesh noise I measured beforehand, so it counts as converged, with 0.62 % uncertainty. The requirement holds with that added: 98.9 MPa against 100.</li>
+        <li>Gmsh occasionally turned an element inside out when curving the quadratic tetrahedra, which CalculiX rejects. The pipeline now remeshes once with Gmsh's high-order optimiser. It fired on 8 of 21 candidates in one run, and every one then solved.</li>
+        <li>I wrote down predictions before every run, and each one is marked held or failed in the case files.</li>
       </ul>
-      <p class="note">It's a linear taper only, so a curved profile would be lighter still. The joint at the root needs its own assessment, and there's no lateral-torsional buckling check yet.</p>
+      <p class="note">The load is static, with the fatigue rating folded into the 100 MPa allowable. Only three dimensions vary; the outline and the fillet radius are fixed. The base is held rigidly and the pin is rigid, so the bottom of the base and a ring around the hole aren't assessed: the bolted base and the pin bearing need their own checks, and the lug is sized by the standard lug method. My first version of this study optimised a tapered cantilever. It was verified (546 g, within 0.13 % of an independent beam-theory optimum), but it was too close to study 1 to show anything new. Its <a href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261120-225322_bracket_opt/report.md">runs are kept</a>.</p>
     </details>
   </section>

@@ -36,7 +36,7 @@ def fit(im, w, h, bg=None):
     return canvas
 
 
-# scenes written by other scripts (make_opt_visuals.py adds bracket_opt) are kept as they are
+# scenes written by other scripts (make_clevis_visuals.py adds bracket_opt) are kept as they are
 meta = json.loads((OUT / "scenes.json").read_text(encoding="utf-8")) if (OUT / "scenes.json").exists() else {}
 checks = json.loads((REPO / "portfolio/img/renders.json").read_text(encoding="utf-8"))
 flat = {e["scene"]: e for v in checks.values() for e in v}

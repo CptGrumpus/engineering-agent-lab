@@ -359,14 +359,17 @@ class CalculiXFlagDynamic(CalculiXFlag):
                     Y.append(blk["rows"][0][2])
             return np.array(T), np.array(X), np.array(Y)
 
-        (work / "dynamic.inp").write_text(w.write_dynamic_deck(params, m, dt, t_end), encoding="utf-8")
+        rr = float(numerics.get("newton_residual_rel", 1e-8))
+        (work / "dynamic.inp").write_text(w.write_dynamic_deck(params, m, dt, t_end, residual_rel=rr),
+                                          encoding="utf-8")
         if not self._run(work, "dynamic"):
             return failed("CalculiX NLGEOM dynamic failed") | {"files": files(), "cleanup": work}
         t, ux, uy = history("dynamic")
         # small-amplitude companion: gravity / 1000 for a few periods, same mesh and time step; its
         # frequency must be the linear modal one (checks the time integrator on its own)
         small = dict(params) | {"gravity_m_per_s2": _p(params, "gravity_m_per_s2") * 1e-3}
-        (work / "small.inp").write_text(w.write_dynamic_deck(small, m, dt, float(numerics["small_end_time_s"])),
+        (work / "small.inp").write_text(w.write_dynamic_deck(small, m, dt, float(numerics["small_end_time_s"]),
+                                                             residual_rel=rr),
                                         encoding="utf-8")
         (work / "frequency.inp").write_text(w.write_frequency_deck(params, m), encoding="utf-8")
         if not (self._run(work, "small") and self._run(work, "frequency")):

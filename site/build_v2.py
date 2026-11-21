@@ -21,10 +21,10 @@ for l in pick:
 # --- viewport scenes ------------------------------------------------------------
 VP = [
     {"id": "bracket_opt", "tab": "Optimised", "legend": "S, Mises", "unit": "MPa",
-     "model": "Optimised bracket · steel taper 26.0 → 8.7 mm, 200 × 20 mm, 1 kN at the tip",
-     "lines": ["Solver: CalculiX 2.22 · C3D10 · candidate 27 of 32, chosen by COBYLA",
-               "Deformation scale factor: +2.500e+01",
-               "Peak bending stress 99.5 MPa against 100 · 546 g, 30 % lighter than the straight bar"]},
+     "model": "Optimised clevis bracket · 6061-T6, 100 × 100 mm base, (1.5, 1.0, 4.5) kN on the pin",
+     "lines": ["Solver: CalculiX 2.22 · C3D10 · design D on the finest of its three meshes",
+               "Deformation scale factor: +1.000e+02",
+               "Peak 98.3 MPa against 100, at the lug fillet · 372 g, 4 % lighter than the start"]},
     {"id": "cantilever", "tab": "Stress", "legend": "S, Mises", "unit": "MPa",
      "model": "Cantilever bracket · steel, 200 × 20 × 20 mm, 1 kN at the tip",
      "lines": ["Solver: CalculiX 2.22 · C3D10 · 5 758 surface nodes",
@@ -76,7 +76,7 @@ for v in VP:
 
 # --- case gallery ---------------------------------------------------------------
 CARDS = [
-    ("bracket_opt", "12", "struct", "New · Design automation", "Bracket optimisation loop, driven by the agent", "The agent searched 32 designs and found a tapered bracket that is 30 % lighter than the straight bar it started from, at 546 g and inside both limits. Every candidate went through the full set of checks, and an independent beam-theory optimum agrees within 0.13 %.", "pass", "CadQuery · Gmsh · CalculiX · SciPy"),
+    ("bracket_opt", "12", "struct", "New · Design automation", "Bracket optimisation loop, driven by the agent", "The agent searched 78 designs over three runs for the lightest machined clevis bracket that stays under 100 MPa. The checks threw out its first two answers. The final one is 372 g, 4 % lighter than the start, at 98.3 MPa, and its own mesh study confirms it.", "pass", "CadQuery · Gmsh · CalculiX · SciPy"),
     ("contact", "10", "struct", "Contact", "Roller-on-plate contact, nonlinear FEA", "A track roller carrying 500 N/mm. The contact pressure peaks at 609 MPa against a 650 MPa limit, and the shear under the surface reaches 184 MPa against 200. The CalculiX model lands within 0.4 % of the exact Hertz solution.", "pass", "Gmsh · CalculiX"),
     ("fea", "01", "struct", "Structures", "Cantilever bracket, 3D FEA", "Passes with room to spare at 0.953 mm and 150 MPa.", "pass", "FreeCAD · Gmsh · CalculiX"),
     ("strap", "02", "struct", "Structures", "Cable hole in a strap, CAD to FEA", "The hole can go up to about 16.7 mm. 16 mm passes at 117 MPa and 18 mm fails.", "pass", "CadQuery · Gmsh · CalculiX"),
