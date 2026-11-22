@@ -29,8 +29,8 @@ from models.motor.build_prius_ornl import CHANGES, IN, MAGNET_CHANGES, ROTOR_CHA
 from studies.motor_em import pyleecan_python  # noqa: E402
 
 CASES = ["motor_prius_oc_mesh", "motor_prius_oc_mesh_r1", "motor_prius_ornl_oc_mesh", "motor_prius_ornl_oc_mesh_r1",
-         "motor_prius_ornl_oc_mesh_r2"]
-TORQUE_CASES = ["motor_prius_torque_mesh", "motor_prius_torque_current"]
+         "motor_prius_ornl_oc_mesh_r2", "motor_prius_ornl_oc_mesh_r3"]
+TORQUE_CASES = ["motor_prius_torque_mesh", "motor_prius_torque_current", "motor_prius_torque_current_r1"]
 ORNL_THERMAL = "https://info.ornl.gov/sites/publications/Files/Pub57487.pdf"
 ORNL_DESIGN = "https://info.ornl.gov/sites/publications/Files/Pub57348.pdf"
 E = html.escape
@@ -129,7 +129,7 @@ CSS = """
   --bg: #eef1f5; --surface: #ffffff; --ink: #0e1621; --ink-2: #4a5666; --ink-3: #6e7c8c; --rule: #d5dce5;
   --accent: #2346c4; --accent-soft: #e4e9fb; --plate: #fcfcfb;
   --pass: #157447; --pass-bg: #e0f1e7; --fail: #b0381a; --fail-bg: #fbe6df; --warn: #855f00; --warn-bg: #f9efd6;
-  --s1: #2346c4; --s2: #c9461a; --grid: #e3e8ee;
+  --s1: #2346c4; --s2: #c9461a; --s3: #1a7f5a; --grid: #e3e8ee;
   --font-display: "Archivo", "Arial Narrow", system-ui, sans-serif;
   --font-body: "Source Sans 3", "Segoe UI", system-ui, -apple-system, sans-serif;
   --font-data: "JetBrains Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
@@ -139,12 +139,12 @@ CSS = """
   --bg: #0b1016; --surface: #121a24; --ink: #e8edf3; --ink-2: #a2b0bf; --ink-3: #7d8b9b; --rule: #233041;
   --accent: #8fa9ff; --accent-soft: #1b2645; --plate: #fcfcfb;
   --pass: #7fd6a2; --pass-bg: #14301f; --fail: #ff9b7b; --fail-bg: #3a1e16; --warn: #e9c46a; --warn-bg: #33290f;
-  --s1: #6f8cf0; --s2: #e0683a; --grid: #1f2a38; color-scheme: dark; } }
+  --s1: #6f8cf0; --s2: #e0683a; --s3: #45c08f; --grid: #1f2a38; color-scheme: dark; } }
 :root[data-theme="dark"] {
   --bg: #0b1016; --surface: #121a24; --ink: #e8edf3; --ink-2: #a2b0bf; --ink-3: #7d8b9b; --rule: #233041;
   --accent: #8fa9ff; --accent-soft: #1b2645; --plate: #fcfcfb;
   --pass: #7fd6a2; --pass-bg: #14301f; --fail: #ff9b7b; --fail-bg: #3a1e16; --warn: #e9c46a; --warn-bg: #33290f;
-  --s1: #6f8cf0; --s2: #e0683a; --grid: #1f2a38; color-scheme: dark; }
+  --s1: #6f8cf0; --s2: #e0683a; --s3: #45c08f; --grid: #1f2a38; color-scheme: dark; }
 * { box-sizing: border-box; }
 body { background: var(--bg); color: var(--ink); font: 17px/1.55 var(--font-body); margin: 0; }
 .bar { background: var(--surface); border-bottom: 1px solid var(--rule);
@@ -310,13 +310,15 @@ def point_pass(pt):
 # --------------------------------------------------------------------------- page: overview
 
 def build_index(cases, runs, full=True):
-    r0, r1, r2, r3, r4 = (runs[c] for c in CASES)
-    f0, f1, f2, f3, f4 = (finest(r) if r else None for r in (r0, r1, r2, r3, r4))
+    r0, r1, r2, r3, r4, r5 = (runs[c] for c in CASES)
+    f0, f1, f2, f3, f4, f5 = (finest(r) if r else None for r in (r0, r1, r2, r3, r4, r5))
     emf = lambda p: p["metrics"]["back_emf_LL_rms_per_krpm_V"] if p else None  # noqa: E731
     ornl_done = r2 is not None and r2["complete"]
-    done = [(r, f) for r, f in ((r4, f4), (r3, f3), (r2, f2), (r1, f1)) if r is not None and r["complete"] and f]
+    done = [(r, f) for r, f in ((r5, f5), (r4, f4), (r3, f3), (r2, f2), (r1, f1)) if r is not None and r["complete"] and f]
     latest_run, latest_pt = done[0]
     tm, tc = runs.get("motor_prius_torque_mesh"), runs.get("motor_prius_torque_current")
+    tc1 = runs.get("motor_prius_torque_current_r1")
+    so = runs.get("motor_prius_rotor_overspeed_mesh")
 
     ledger = [
         ("19:14", "Smoke solve, Pyleecan machine", 107.253, "case motor_prius_oc_mesh, smoke test (fineness 1)"),
@@ -329,7 +331,8 @@ def build_index(cases, runs, full=True):
                        f"run {r2['id']} (fineness {f2['parameters']['mesh_fineness']:g})"
                        + ("" if ornl_done else ", run still going")))
     for tstamp, lab, r, f in (("22:36", "Rotor and magnets sourced (pocket grown inward)", r3, f3),
-                              ("late", "Pocket placed as drawn (final machine)", r4, f4)):
+                              ("01:37*", "Pocket placed as drawn (final machine; inherited M400-50A steel)", r4, f4),
+                              ("01:47*", "Laminations M330-35A, the stand-in steel (final machine)", r5, f5)):
         if f:
             ledger.append((tstamp, lab, emf(f), f"run {r['id']} (fineness {f['parameters']['mesh_fineness']:g})"
                            + ("" if r["complete"] else ", run still going")))
@@ -340,7 +343,7 @@ def build_index(cases, runs, full=True):
     chart = line_chart(
         [{"name": "Blind back-EMF prediction", "color_var": "--s1", "points": pts, "legend": False,
           "label": f"{pts[-1][1]:.1f} V"}],
-        xlabel="revision of the prediction (time on 2026-11-21)", ylabel="V rms line-to-line per 1000 rpm",
+        xlabel="revision of the prediction (time on 2026-11-21; * the next morning)", ylabel="V rms line-to-line per 1000 rpm",
         xticks=[(i, t) for i, (t, *_rest) in enumerate(ledger)], xpos=lambda i: (i + 0.3) / (n - 0.4),
         ylim=(lo, hi), yticks=[v for v in range(lo, hi + 1)], height=300)
     ledger_rows = [[f'<span class="mono">{t}</span>', E(lab), f'<span class="mono">{v:.3f} V</span>' if v else "–",
@@ -360,16 +363,24 @@ def build_index(cases, runs, full=True):
         ["Design inputs: magnet pockets, bridge, magnet material",
          "Fig. 21 pocket outline (stretch corrected), ORNL/TM-2004/120 bridge, ORNL/TM-2004/137 Fig. 14 magnet B-H line",
          pill("PASS") + " sourced", '<a href="geometry.html#rotor">Design inputs</a>'],
-        ["Design inputs: lamination steel, magnet width", "Still Pyleecan's (M400-50A; 18.9 mm)", pill("OPEN"), ""],
+        ["Design inputs: lamination steel",
+         "ORNL gives 0.36 mm but no grade: M330-35A (0.35 mm, Tata typical data) as the single stand-in for every property; "
+         "bracketed by M250-35A and powercore 035-190Y390 (open circuit and torque at 100 / 300 A, running)",
+         pill("PASS") + " stand-in chosen", '<a href="geometry.html#steel">Design inputs</a>'],
+        ["Design inputs: magnet width", "Still Pyleecan's (18.9 mm)", pill("OPEN"), ""],
         ["Electromagnetics, open circuit", "FEMM via Pyleecan; phase symmetry, winding theory, zero cogging mean, mesh GCI",
          pill("PASS") + " verified", '<a href="open-circuit.html">Open circuit</a>'],
         ["Electromagnetics, torque against current: mesh study at 333 A",
          "Current-angle sweep, MTPA; power balance, current amplitude, symmetry, GCI", torque_status(tm),
          '<a href="torque.html">Torque</a>'],
-        ["Electromagnetics, torque against current: 50-350 A curve", "Same checks at every current", torque_status(tc),
-         '<a href="torque.html">Torque</a>'],
+        ["Electromagnetics, torque against current: 50-350 A curve, inherited M400-50A steel", "Same checks at every current",
+         torque_status(tc), '<a href="torque.html">Torque</a>'],
+        ["Electromagnetics, torque against current: 50-350 A curve, M330-35A (the blind prediction)",
+         "Same checks at every current", torque_status(tc1), '<a href="torque.html">Torque</a>'],
         ["Efficiency map", "Copper and iron losses on the torque-speed plane", pill("NOT STARTED"), ""],
-        ["Rotor bridge stress at overspeed", "CalculiX, plane stress, centrifugal load", pill("NOT STARTED"), ""],
+        ["Rotor bridge stress at overspeed (REQ-M4)", "CalculiX, plane stress, centrifugal and magnet loads, 7200 rpm; "
+         "linearized bridge stress against M330-35A's yield (335 MPa)",
+         (torque_status(so) + ": REQ-M4 fail, 424 MPa") if so and so["complete"] else torque_status(so), ""],
         ["Thermal network", "Lumped network checked against CalculiX on a stator section", pill("NOT STARTED"), ""],
         ["Blind comparison with ORNL test data", "Opened only after every prediction above is written down", pill("SEALED"), ""],
     ]
@@ -403,7 +414,8 @@ before any data was seen:</li>
 </div>
 {table(["Quantity", "Agreed limit", "Status"], [
         ["Back-EMF constant", "within 5 %", pill("SEALED") + " prediction written"],
-        ["Peak torque at several currents", "within 10 %", pill("SEALED") + " not yet predicted"],
+        ["Peak torque at several currents", "within 10 %",
+         pill("SEALED") + (" prediction written" if tc1 and tc1["complete"] else " stand-in steel curve still running")],
         ["Efficiency at sample points", "within 2 percentage points", pill("SEALED") + " not yet predicted"],
     ])}
 <div class="col">
@@ -447,6 +459,17 @@ inputs, hashes and tool versions with every run.</li>
 <li><time>22:20</time><span>Magnet pockets: Fig. 21 draws each pole's V as a vector outline; ORNL/TM-2004/120 gives the bridge and a magnet size. A scratch sensitivity shows remanence dominates (1.12 T would cut back-EMF 11 %).</span></li>
 <li><time>22:30</time><span>Decision: open the design report's Fig. 14 only (ORNL's measured B-H line of a Prius magnet sample). Br 1.243 T, recoil permeability 1.129.</span></li>
 <li><time>22:40</time><span>Fig. 21 found stretched 1.1 % in x; corrected, the pocket's extra thickness sits on the air-gap side. Torque study added; evidence runs queued overnight.</span></li>
+</ol>
+<h3>2026-11-22</h3>
+<ol class="timeline">
+<li><time>00:08</time><span>Torque mesh study at 333 A: 608 N m, spread 0.055 % but the GCI withheld (mesh noise). REQ-M2 passes, unverified.</span></li>
+<li><time>00:30</time><span>Rotor overspeed check (CalculiX): 424 MPa linearized in the bridge at 7200 rpm against a 335 MPa yield. REQ-M4 verified fail; elastic at 6000 rpm (295 MPa).</span></li>
+<li><time>00:40</time><span>Decision: one stand-in lamination steel, M330-35A, for every property; bracket the unknown grade with a lower-loss and a high-strength grade; a material trade study after validation.</span></li>
+<li><time>01:36</time><span>Torque curve on the inherited M400-50A steel verified: 115-622 N m from 50 to 350 A rms, 400 N m at about 171 A.</span></li>
+<li><time>01:37</time><span>Open circuit on the final machine (M400-50A), then the same machine and the torque curve on M330-35A, queued.</span></li>
+<li><time>01:46</time><span>Open circuit on the final machine with M400-50A: 109.7 V per 1000 rpm (+1.1 % on revision 1, above the predicted +0.2 %).</span></li>
+<li><time>01:56</time><span>The same machine on M330-35A: 110.9 V per 1000 rpm (+1.1 %, predicted +1.0 to +3.5 %), the new blind back-EMF prediction. REQ-M1 fails at 1040 V; its mesh uncertainty is withheld (anomalous convergence order), the verdict is not in doubt.</span></li>
+<li><time>03:20</time><span>Torque curve on M330-35A verified, the blind torque prediction: 119-606 N m from 50 to 350 A rms, 400 N m at about 168 A. Against M400-50A: +3.0 % at 50 A, changing sign near 240 A, −2.5 % at 350 A, because above 1.8 T our M330-35A curve is extrapolated. Bracket runs (M250-35A, 190Y390) started.</span></li>
 </ol>
 
 <h2>Blind protocol log</h2>
@@ -651,7 +674,7 @@ notches at the shoulder (probably for slot wedges) cannot be represented by Slot
 <h2>Why the slot matters</h2>
 <div class="col">
 <p>The verified open-circuit run on Pyleecan's machine gives an air-gap field fundamental of 0.893 T. Spread over a
-tooth at the bore, that is about 1.70 T in Pyleecan's 5.55 mm tooth, past the knee of the M400-50A steel, and about
+tooth at the bore, that is about 1.70 T in Pyleecan's 5.55 mm tooth, past the knee of the steel, and about
 1.27 T in the drawing's 7.40 mm tooth. Under load the difference grows, so it matters more for torque than for
 back-EMF.</p>
 </div>
@@ -661,9 +684,23 @@ back-EMF.</p>
 <ul>
 <li><b>Magnet width</b>: 18.9 mm. ORNL/TM-2004/120 gives 19.24 mm with a 5.31 mm thickness, which does not fit the
 drawn 6.80 mm pocket in this pocket model; together they would move the back-EMF about −0.4 %.</li>
-<li><b>Lamination material</b>: M400-50A, a 0.5 mm grade. The real laminations are 0.36 mm (0.014 in), which matters for
-iron loss and efficiency more than for the field.</li>
 <li><b>Winding</b>: 9 turns per coil, one parallel path, consistent with the 9 conductor bundles per slot in ORNL's text.</li>
+</ul>
+</div>
+<h2 id="steel">Lamination steel</h2>
+<div class="col">
+<p>ORNL's design report gives the lamination thickness, 0.014 in (0.36 mm), but not the grade, and Toyota probably
+used a supplier's own 0.35 mm grade. Until 2026-11-22 the electromagnetics used the M400-50A curve (0.5 mm) that came
+with Pyleecan's file and was never chosen. Now one stand-in grade serves every property: <b>M330-35A</b>, a standard
+0.35 mm EN 10106 grade with full public data, mid-range in its class (Tata Steel typical data, 2009: B-H at 50 Hz to
+1.8 T, losses to 2500 Hz, yield 315-335 MPa). The aim is the closest guess to what Toyota used, not the best steel.</p>
+<ul>
+<li><b>Above 1.8 T</b> the datasheets stop. The curve continues with the polarization approaching 2.0 T as 1/H,
+joined with a continuous slope: our assumption, which matters only in the tooth tips at high current.</li>
+<li><b>The bracket</b>: M250-35A (lower loss, Tata 2008; less permeable above 1.3 T) and thyssenkrupp powercore
+035-190Y390 (high strength, 2025: yield 390 MPa guaranteed, 407 typical). The blind predictions become ranges.</li>
+<li><b>Field needed</b> at 1.3 T: 242 A/m for M330-35A against 950 A/m for the inherited M400-50A curve; at 1.5 T,
+1027 against 2450. That is why the back-EMF and torque move when the steel changes.</li>
 </ul>
 </div>
 <p class="muted">Generated by <code>reports/motor/build_report.py</code>.</p>
@@ -687,8 +724,10 @@ RUN_NOTES = {
     "motor_prius_ornl_oc_mesh_r1": "Rotor and magnets from published sources: pocket 6.78 mm (grown inward, later "
                                    "corrected), bridge 1.45 mm, magnet Br 1.243 T and recoil permeability 1.129 from "
                                    "ORNL's Fig. 14.",
-    "motor_prius_ornl_oc_mesh_r2": "Final machine: the pocket placed as drawn (outer apex 10.65 mm, 6.80 mm thick). Its "
-                                   "finest-mesh back-EMF is the blind prediction.",
+    "motor_prius_ornl_oc_mesh_r2": "Final machine: the pocket placed as drawn (outer apex 10.65 mm, 6.80 mm thick), still "
+                                   "on Pyleecan's inherited M400-50A steel: the other side of the steel sensitivity.",
+    "motor_prius_ornl_oc_mesh_r3": "Final machine with M330-35A laminations, the study's stand-in steel. Its finest-mesh "
+                                   "back-EMF is the blind prediction.",
 }
 
 
@@ -754,14 +793,16 @@ def build_open_circuit(cases, runs):
     s_pyl = series(["motor_prius_oc_mesh", "motor_prius_oc_mesh_r1"], "--s1", "Pyleecan's machine (2 runs)", -2)
     s_orn = series(["motor_prius_ornl_oc_mesh"], "--s2", "Our machine, stator rebuilt (ORNL Fig. 21)", 4)
     final = "motor_prius_ornl_oc_mesh_r2" if runs.get("motor_prius_ornl_oc_mesh_r2") else "motor_prius_ornl_oc_mesh_r1"
-    s_fin = series([final], "--accent", "Our machine, rotor and magnets sourced (latest)", -6)
+    s_fin = series([final], "--accent", "Our machine, rotor and magnets sourced (M400-50A)", -6)
+    s_m330 = series(["motor_prius_ornl_oc_mesh_r3"], "--s3", "Final machine, M330-35A steel (the prediction)", -6)
     scratch = {"name": "ORNL radii only, Pyleecan's slot (scratch)", "color_var": "--ink-3", "hollow": True,
                "points": [(4.0, 106.591, "fineness 4: 106.591 V (scratch run, BACKLOG 21:45)")], "label": "radii only"}
-    ys = [y for s in (s_pyl, s_orn, s_fin, scratch) for _, y, _ in s["points"]]
+    all_series = [s_pyl, s_orn, s_fin, scratch] + ([s_m330] if s_m330["points"] else [])
+    ys = [y for s in all_series for _, y, _ in s["points"]]
     lo, hi = math.floor(min(ys) - 0.4), math.ceil(max(ys) + 0.4)
     step = 0.5 if hi - lo <= 4 else 1
     yt = [lo + i * step for i in range(int((hi - lo) / step) + 1)]
-    chart = line_chart([s_pyl, s_orn, s_fin, scratch], xlabel="mesh fineness (Pyleecan Kmesh_fineness, log scale)",
+    chart = line_chart(all_series, xlabel="mesh fineness (Pyleecan Kmesh_fineness, log scale)",
                        ylabel="back-EMF, V rms LL per 1000 rpm",
                        xticks=[(1, "1"), (2, "2"), (4, "4"), (8, "8")], xpos=lambda v: (math.log2(v) + 0.25) / 3.5,
                        ylim=(lo, hi), yticks=yt)
@@ -779,7 +820,7 @@ def build_open_circuit(cases, runs):
     ]
 
     sections = "".join(run_section(c, runs[c["name"]]) for c in cases)
-    r2 = runs["motor_prius_ornl_oc_mesh"]
+    r2 = runs["motor_prius_ornl_oc_mesh_r3"] or runs["motor_prius_ornl_oc_mesh_r2"]
     body = f"""
 <div class="col">
 <div class="eyebrow">Study 7 · electromagnetics · no current</div>
@@ -830,8 +871,12 @@ slot raises it 1.4 %, because the wider teeth saturate less.</p></div>
 TORQUE_NOTES = {
     "motor_prius_torque_mesh": "Mesh study at 333 A rms, the 25 A/mm² copper limit, fineness 2 / 4 / 8. REQ-M2: does "
                                "the MTPA torque reach the rated 400 N m within that limit?",
-    "motor_prius_torque_current": "The MTPA torque curve from 50 to 350 A rms at fineness 4: the blind prediction of "
-                                  "torque against current.",
+    "motor_prius_torque_current": "The MTPA torque curve from 50 to 350 A rms at fineness 4, on Pyleecan's inherited "
+                                  "M400-50A steel: the other side of the steel sensitivity.",
+    "motor_prius_torque_current_r1": "The same curve with M330-35A laminations, the study's stand-in steel: the blind "
+                                     "prediction of torque against current. It sits 3 % above the M400-50A curve at 50 A "
+                                     "and 2.5 % below it at 350 A, the sign changing near 240 A: at high current the "
+                                     "teeth run above 1.8 T, where M330-35A's curve is our extrapolation, not data.",
 }
 
 
@@ -875,14 +920,26 @@ def torque_section(case, run):
 
 
 def build_torque(tcases, runs):
-    tc = runs.get("motor_prius_torque_current")
+    def curve(r, steel):
+        if not r:
+            return []
+        return [(float(pt["parameters"]["current_rms_A"]), pt["metrics"]["torque_mtpa_Nm"],
+                 f'{steel}, {float(pt["parameters"]["current_rms_A"]):g} A rms: {pt["metrics"]["torque_mtpa_Nm"]:.1f} N m at '
+                 f'{pt["metrics"]["mtpa_angle_deg"]:.1f} deg') for pt in r["points"] if pt.get("status") == "completed"]
+
     chart = ""
-    if tc and tc["points"]:
-        pts = [(float(pt["parameters"]["current_rms_A"]), pt["metrics"]["torque_mtpa_Nm"],
-                f'{float(pt["parameters"]["current_rms_A"]):g} A rms: {pt["metrics"]["torque_mtpa_Nm"]:.1f} N m at '
-                f'{pt["metrics"]["mtpa_angle_deg"]:.1f} deg') for pt in tc["points"] if pt.get("status") == "completed"]
+    pts = curve(runs.get("motor_prius_torque_current"), "M400-50A")
+    pts1 = curve(runs.get("motor_prius_torque_current_r1"), "M330-35A")
+    if pts or pts1:
+        series = []
         if pts:
-            ymax = max(500, math.ceil(max(y for _, y, _ in pts) / 100) * 100)
+            series.append({"name": "M400-50A (inherited)", "color_var": "--s1", "points": pts,
+                           "label": f"M400-50A {pts[-1][1]:.0f} N m", "label_dy": 8})
+        if pts1:
+            series.append({"name": "M330-35A (stand-in, the prediction)", "color_var": "--s2", "points": pts1,
+                           "label": f"M330-35A {pts1[-1][1]:.0f} N m", "label_dy": -8})
+        if True:
+            ymax = max(500, math.ceil(max(y for _, y, _ in pts + pts1) / 100) * 100)
             X0, X1 = 0, 375
             L, Rr, T, B, Wd, Hd = 64, 150, 16, 46, 760, 330
             W, H = Wd - L - Rr, Hd - T - B
@@ -892,8 +949,7 @@ def build_torque(tcases, runs):
                      f'<text x="{L + 6}" y="{y400 - 6:.1f}">rated 400 N m</text>'
                      f'<line x1="{xlim:.1f}" x2="{xlim:.1f}" y1="{T}" y2="{T + H}" stroke="var(--ink-3)" stroke-width="1"/>'
                      f'<text x="{xlim - 6:.1f}" y="{T + 14}" text-anchor="end">25 A/mm² limit</text>')
-            chart = line_chart([{"name": "MTPA torque", "color_var": "--s1", "points": pts, "legend": False,
-                                 "label": f"{pts[-1][1]:.0f} N m"}],
+            chart = line_chart(series,
                                xlabel="phase current (A rms)", ylabel="MTPA torque (N m)",
                                xticks=[(v, str(v)) for v in range(0, 376, 50)], xpos=lambda v: (v - X0) / (X1 - X0),
                                ylim=(0, ymax), yticks=list(range(0, ymax + 1, 100)), extra=extra)
@@ -940,6 +996,10 @@ linkages; the MTPA torque comes from a parabola through the best three angles.</
 
 <h2>MTPA torque against current</h2>
 {chart or '<p class="muted">The curve appears when the 50-350 A run has points.</p>'}
+<div class="col"><p>The two steels differ by at most 3 %. M330-35A needs less field below 1.7 T, so it gives more torque
+at low current. Above about 240 A the teeth saturate past 1.8 T, the top of Tata Steel's table. There our M330-35A curve
+is extrapolated (saturation polarization 2.0 T), and it carries less flux than Pyleecan's M400-50A curve. The prediction
+above 200 A therefore rests on a stated assumption about deep saturation.</p></div>
 
 <h2>Runs</h2>
 {sections}
@@ -952,7 +1012,7 @@ linkages; the MTPA torque comes from a parabola through the best three angles.</
 def main():
     cases = [case_record(c) for c in CASES]
     tcases = [case_record(c) for c in TORQUE_CASES]
-    runs = {c: load_run(c) for c in CASES + TORQUE_CASES}
+    runs = {c: load_run(c) for c in CASES + TORQUE_CASES + ["motor_prius_rotor_overspeed_mesh"]}
     (OUT / "index.html").write_text(build_index(cases, runs), encoding="utf-8")
     if len(sys.argv) > 1:  # also write the artifact's main page (no document skeleton) to the given path
         Path(sys.argv[1]).write_text(build_index(cases, runs, full=False), encoding="utf-8")
