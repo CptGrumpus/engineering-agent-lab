@@ -58,7 +58,7 @@ each part on its own: CSM1 to CSM3 (solid only, CalculiX, nothing new needed), C
 only, OpenFOAM 14, nothing new needed), then FSI1 to FSI3 coupled through preCICE. Each part is
 verified before the coupled run, as in study 2.
 
-## Session handoff (2026-11-22, 19:10; first written 2026-11-21, 23:10)
+## Session handoff (2026-11-22, 19:45; first written 2026-11-21, 23:10)
 
 **Done this evening (17:15-19:10 session; user, ~18:10: "do as much of this list as you can before I go to bed"; user
 said yes to the blind comparison and to the skill eval):** study 7 thermal network (r1 final); FSI1 r1 scored (29e6655,
@@ -115,7 +115,10 @@ Logs of the 17:15 session (thermal runs): `$TEMP/claude/cb67dd1e648f8970/4abd5a9
 
 | Job | Run dir (log) | Done about | When it finishes |
 |---|---|---|---|
-| (none at 19:10: FSI1 r1 finished 18:09 and is scored) | | | |
+| Study 6 FSI2 (2.5 mm, dt 0.001, 15 s, periodic) | started ~19:35; run dir `runs/<ts>_turek_hron_fsi2` (log `fsi2.log` in the 17:15 session's scratchpad) | early morning (predicted 4-7 h) | Score P1-P7 in `cases/turek_hron_fsi2.toml`, Results block, commit evidence (curate as FSI1 r1: no postProcessing, .sta, .dat, logs > 600 kB), update `portfolio/17-...` (draft) and PORTFOLIO row. If the mesh motion failed: the log and `points/*/solver/fluid/log.*` show where; that is P1's named risk. |
+| Study 6 FSI3 (2.5 mm, dt 0.0005, 8 s, periodic) | started ~19:40; `runs/<ts>_turek_hron_fsi3` (log `fsi3.log`, same scratchpad) | morning (predicted 6-10 h) | Same as FSI2 with `cases/turek_hron_fsi3.toml`. |
+
+Alive check: `ps -ef | grep "[h]arness pipeline"`; WSL: `wsl.exe -e bash -lc "ps -eo etime,cmd | grep -E 'Foam|ccx' | grep -v grep"` (two pimpleFoam + two ccx_preCICE while both run). Progress: the newest `$TEMP/fsi_*/case/fluid/precice-Fluid-iterations.log` (one line per window; 15000 for FSI2, 16000 for FSI3).
 
 ### Study 7 (motor): state and next steps
 
