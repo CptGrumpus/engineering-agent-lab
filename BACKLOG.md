@@ -50,7 +50,7 @@ each part on its own: CSM1 to CSM3 (solid only, CalculiX, nothing new needed), C
 only, OpenFOAM 14, nothing new needed), then FSI1 to FSI3 coupled through preCICE. Each part is
 verified before the coupled run, as in study 2.
 
-## Session handoff (2026-11-22, 03:30; first written 2026-11-21, 23:10)
+## Session handoff (2026-11-22, 04:45; first written 2026-11-21, 23:10)
 
 Read this first in a new session. The dashboard is maintained by another session; files under site/
 and docs/ belong to it. Study 7's own HTML reports live in `reports/motor/`, apart from the dashboard.
@@ -60,13 +60,11 @@ Done and committed since 01:00: torque curve on M400-50A (d1ace08), open circuit
 machine file switched to M330-35A and open circuit r3 (2bc520b, **the blind back-EMF prediction, 110.9 V**), the
 bracket grades' data (bd6b786) and cases (1cbfb70), **torque curve r1 on M330-35A (cc99acc, the blind torque
 prediction)**, the bracket machines registered in `studies/motor_em.py` `MACHINES` (4c3f790), the reports regenerated
-(dcea1ba) and the artifact republished (version 2, 03:25).
+(dcea1ba) and the artifact republished (version 2, 03:25); then **the whole lamination bracket** (25d346a, 7d1533d,
+8509f9f, f58cb8e), the bracket in the reports (1fe5bb8, artifact version 3, 04:35) and the two deferred fixes (6da34c6:
+the privacy scrub now also redacts any other user's home folder, with a test; the torque figure's time axis label).
 
-**Running at 03:30: the bracket, one case at a time** (each started by hand in its own background shell, so each
-notifies when it ends): `motor_prius_ornl_oc_m250` (run `20261122-032255_...`, started 03:22), then
-`motor_prius_torque_m250`, `motor_prius_ornl_oc_y390`, `motor_prius_torque_y390` (about 8 + 25 + 8 + 25 min). Start
-each with `.venv/Scripts/python.exe -m harness pipeline cases/<case>.toml`. Alive if `ps -ef | grep "[h]arness
-pipeline"` shows it and `tasklist | grep -i femm` shows FEMM. Never run two FEMM cases at once.
+**Nothing is running at 04:45.** FEMM is idle; every run is scored, scrubbed and committed.
 
 | Case | Run | Result |
 |---|---|---|
@@ -74,7 +72,15 @@ pipeline"` shows it and `tasklist | grep -i femm` shows FEMM. Never run two FEMM
 | `motor_prius_ornl_oc_mesh_r2` (final machine, M400-50A) | `20261122-013743_...` | FAIL on the peak's GCI only (oscillatory). 109.70 V per 1000 rpm, +1.09 % on r1 (predicted +0.2 %: missed); peak 1028.5 V |
 | `motor_prius_ornl_oc_mesh_r3` (final machine, M330-35A) | `20261122-014658_...` | FAIL on the peak's GCI only (anomalous order 3.8). **110.88 V per 1000 rpm, the blind prediction** (flux GCI 0.16 %), +1.08 % on r2 (predicted +1.0 to +3.5 %); peak 1040.4 V |
 | `motor_prius_torque_current_r1` (M330-35A) | `20261122-015619_...` | PASS. **118.8 / 251.6 / 366.6 / 456.9 / 522.3 / 569.4 / 606.4 N m, the blind torque prediction**; 400 N m at about 168 A. Against M400-50A +3.0 % at 50 A, sign change near 240 A, -2.5 % at 350 A (P2 partly: predicted +1 % at 350 A, range -1 to +3) |
-| bracket: `motor_prius_ornl_oc_m250` / `_y390`, `motor_prius_torque_m250` / `_y390` | running / queued | predictions in their headers |
+| `motor_prius_ornl_oc_m250` (bracket, M250-35A) | `20261122-032255_...` | FAIL on the peak's GCI only (anomalous order). 111.02 V, +0.13 % on r3 (predicted -0.35 %: wrong sign; below 1.15 T this grade needs less field, and most of the open-circuit iron runs there) |
+| `motor_prius_torque_m250` (bracket) | `20261122-033236_...` | PASS. 247.2 / 563.9 N m at 100 / 300 A, -1.8 / -1.0 % on r1 (predicted -0.5 / -1.0: the 100 A gap is larger, because the loaded teeth sit at 1.4-1.6 T where the curves differ most) |
+| `motor_prius_ornl_oc_y390` (bracket, powercore 035-190Y390) | `20261122-035642_...` | FAIL on the peak's GCI only. 111.01 V, +0.12 % (predicted -0.1 %, just outside) |
+| `motor_prius_torque_y390` (bracket) | `20261122-040603_...` | PASS. 249.3 / 566.1 N m, -0.9 / -0.6 % (predicted -0.2 / -0.6) |
+
+**The bracket's answer:** across the three 0.35 mm grades the back-EMF spans 0.13 % (110.88-111.02 V) and the torque
+1.8 % at 100 A and 1.0 % at 300 A, the stand-in M330-35A at the top. Far inside the 5 % and 10 % validation limits: the
+unknown grade does not limit the blind comparison. Pattern in the misses: our estimates put the open-circuit teeth near
+1.5 T; the results say most of the open-circuit iron runs below about 1.2 T.
 
 **Finding from torque r1, for the ORNL write-up:** above about 200 A the teeth saturate past 1.8 T, the top of Tata's
 M330-35A table, so the high-current torque rests on our extrapolated tail (saturation polarization 2.0 T), which
@@ -89,23 +95,17 @@ So the lower-loss grade is also the strongest of the three on typical values; th
 bound the strength from above. A run per grade would only relabel the yield; worth a case only if the user wants
 the density effect shown.
 
-When each finishes:
-1. Read its report; compare with the predictions in its case header; append a Results block.
-2. `scripts/scrub_paths.py <run dir>`, then commit the case and the curated run with `git add -f`. Leave out `*.inp`,
-   `*.dat`, `__pycache__` and solver logs over about 600 KB. Run `tests/test_privacy.py` after committing.
-3. After the last one: add the bracket to `reports/motor/build_report.py` (a row on the overview, the bracket points on
-   both charts), regenerate with `.venv/Scripts/python.exe reports/motor/build_report.py <scratchpad>/motor_index.html`
-   and republish https://claude.ai/artifact/C6dNdzjs1FdP8vVb6MLaRy (main page = that index file; `geometry.html`,
-   `open-circuit.html`, `torque.html` from `reports/motor/` as files; read the artifact first in a new session).
-
-**Deferred until the bracket finishes (these files are loaded by the runs):** extend `harness/privacy.py`
-`scrub_tree` to redact any user's path (its `LEAK` pattern), not only this computer's; fix the torque figure's x label
-in `studies/motor_torque.py` ("one electrical period" shows the torque's shorter period).
+To process any new run (unchanged): read its report, score it against its case header's predictions, append a
+Results block; `scripts/scrub_paths.py <run dir>`; commit the case and run with `git add -f` (leave out `*.inp`, `*.dat`,
+`__pycache__`, solver logs over about 600 KB); `tests/test_privacy.py` after committing. Reports: `.venv/Scripts/python.exe
+reports/motor/build_report.py <scratchpad>/motor_index.html`, then republish https://claude.ai/artifact/C6dNdzjs1FdP8vVb6MLaRy
+(main page = that index file; `geometry.html`, `open-circuit.html`, `torque.html` from `reports/motor/` as files; read
+the artifact first in a new session).
 
 **Waiting on the user:** whether to add an eval case for the rms/peak current trap (CLAUDE.md: ask first); whether the
 assumed 25 A/mm^2 copper limit (REQ-M2) stands; whether to run the B-H tail sensitivity above.
 
-**Study 7 after the bracket, all before the ORNL data is opened:** efficiency predictions (M330-35A loss data in
+**Study 7 next, all before the ORNL data is opened:** efficiency predictions (M330-35A loss data in
 `models/motor/materials/M330-35A_tata_2009.csv`; a three-term fit, kh 0.0202, alpha 1.791, kc 7.91e-5, ke 3.70e-4, f
 in Hz, B in T, matches it to 6.4 % rms, 13.5 % worst), the thermal network. Then open the ORNL test data once and
 compare everything (see the memory note and the blind protocol log in the reports).
@@ -302,7 +302,7 @@ back-EMF 108.04 V per 1000 rpm (+1.4 % on the radii-only machine, under the pred
   `motor_prius_ornl_oc_mesh_r2` (final machine; its back-EMF becomes the blind prediction). Each case header holds
   predictions written before its run; fill in the Results blocks, update `reports/motor/` and commit.
 
-**Study 7 status (2026-11-22, 03:30), one place.**
+**Study 7 status (2026-11-22, 04:45), one place.**
 
 | Piece | State | Result / next |
 |---|---|---|
@@ -311,7 +311,7 @@ back-EMF 108.04 V per 1000 rpm (+1.4 % on the radii-only machine, under the pred
 | Torque mesh study, 333 A (REQ-M2) | run, GCI withheld | 608 N m at 46.7 deg, spread 0.055 %, divergent classification: REQ-M2 pass (unverified), margin 52 %. Revision: measure the mesh noise, declare it, rerun |
 | Torque curve 50-350 A | done on both steels | **M330-35A (r1): 118.8-606.4 N m, the blind prediction**, 400 N m at about 168 A; M400-50A: 115.4-621.8 N m. REQ-M3 fails at 350 A only |
 | Rotor overspeed (REQ-M4) | verified | 424 MPa linearized vs 335 at 7200 rpm: FAIL (295 MPa at 6000 rpm: elastic in service) |
-| Lamination steel | M330-35A in the machine file (2bc520b); bracket M250-35A / 190Y390 running | `build_prius_ornl.py --steel` (default M330-35A; M400-50A rebuilds the old file exactly). Tata B-H to 1.8 T; above it our extrapolation (saturation polarization 2.0 T, slope-continuous). It matters more than first thought: it sets the torque above about 200 A (torque r1). The overspeed verdict stands: same density (7650), and the stress there does not depend on E |
+| Lamination steel | M330-35A in the machine file (2bc520b); bracket done: back-EMF spread 0.13 %, torque 1.8 % at 100 A | `build_prius_ornl.py --steel` (default M330-35A; M400-50A rebuilds the old file exactly). Tata B-H to 1.8 T; above it our extrapolation (saturation polarization 2.0 T, slope-continuous). It matters more than first thought: it sets the torque above about 200 A (torque r1). The overspeed verdict stands: same density (7650), and the stress there does not depend on E |
 | Efficiency map | not started | M330-35A loss data in hand (`models/motor/materials/`) |
 | Thermal network | not started | |
 | Blind comparison with ORNL | sealed until all of the above | |
@@ -339,12 +339,12 @@ against ORNL, swap lamination grades and report what each changes in efficiency,
 rough public cost indices (relative, labelled as such). That is the cost-versus-performance question a client would
 ask; it belongs after validation, not inside it.
 
-**Uncommitted at handoff (03:30):** nothing of study 7's. `scripts/make_study_renders.py`, site/ and docs/ belong to the
+**Uncommitted at handoff (04:45):** nothing of study 7's. `scripts/make_study_renders.py`, site/ and docs/ belong to the
 dashboard session.
 
-**Next, in order (03:30):** (1) the bracket runs, each scored and committed (steps in the handoff above); (2) the
-bracket in the reports, republish; (3) the deferred fixes (`scrub_tree`, the torque figure label); (4) the efficiency
-map.
+**Next, in order (04:45):** (1) the user's calls listed under "Waiting on the user" in the handoff; (2) the efficiency
+map: design the case (loss model from the M330-35A fit, copper loss, voltage limit and flux weakening above base speed,
+which operating points) and write its predictions before any run; (3) the thermal network.
 
 ## Action items
 
