@@ -140,10 +140,17 @@ Traps found while building the studies in this repo, by tool.
   frequency and keep the last block in Python.
 - The `.dat` prints 7 significant digits, so an equilibrium check closes to about 2e-7, not to
   the Newton tolerance; set its tolerance at 1e-6.
-- **The `*CONTROLS, PARAMETERS=FIELD` force criterion is relative to the time-averaged force, so a tight value
-  fails late in long runs with small steps.** At 1e-8 and dt 0.000625 s the Newton iterations crept from 2 to 12
-  per step over 9300 steps and then diverged; 0.00125 s never needed more than 4. 1e-6 is the safer setting
-  for long dynamic runs; check the answer does not move by rerunning a coarser step.
+- **Long undamped NLGEOM dynamics with small steps can diverge late: add a little HHT damping.** With `*DYNAMIC,
+  ALPHA=0` (trapezoidal) the Turek-Hron flag at dt 0.000625 s saw its Newton iterations creep from 2 to 12 per step
+  over 9300 steps, then diverge, while 0.00125 s never needed more than 4. Loosening the force criterion (1e-8 to
+  1e-6) changed nothing, to the increment, so that was NOT the cause (the first diagnosis, now corrected). The cause
+  was energy building up in the stiff high-frequency modes, which a smaller step resolves and the undamped rule never
+  removes. `ALPHA=-0.05` (CalculiX's default) fixed it and moved the 1.1 Hz swing's frequency by under 1e-4. Check
+  with a small-amplitude companion run and an energy (return-height) check. Use ALPHA = 0 only for short runs, or
+  where the energy check proves the drift harmless.
+- With HHT damping and the trapezoidal energy gain pulling in opposite directions, last-period amplitudes moved by
+  only 0.03-0.09 % between steps, not monotonically, and the GCI gave no estimate. At that level the band of the
+  published reference matters more: report the spread, and do not chase it.
 - St. Venant-Kirchhoff is plain `*ELASTIC` under `NLGEOM`; `*STATIC, DIRECT` with a fixed
   increment and `*CONTROLS, PARAMETERS=FIELD` `1.e-8, 1.e-6` converged in 2 iterations per step.
 
