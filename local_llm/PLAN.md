@@ -11,6 +11,30 @@ compaction and clearing (auto-compact set to 300k, handoff rule in CLAUDE.md). T
 rests on offline batch work that doesn't touch the limits, planning drafts if O10 shows they're good,
 and the portfolio value of this log.
 
+## Key learnings (2026-11-21)
+
+The log below has the evidence; this is the distilled version.
+
+1. **Check what hardware the engine actually sees before tuning anything.** The Unsloth build lacked
+   CUDA runtime DLLs and silently ran CPU-only; `-ngl 99` did nothing. `llama-bench --list-devices`
+   would have caught it in one second. The first trial's speed numbers measured a broken setup.
+2. **Read the model's structure; it predicts which levers work.** A stdlib GGUF header parser showed the
+   looped core (blocks 6-17 run 3× per token). Putting those experts on the GPU gave +30% generation,
+   about double the standard last-layers option. Generic advice would have missed it.
+3. **Prompt reading is limited by the PCIe copy of experts per micro-batch.** Bigger micro-batches
+   amortise it: `-ub 2048` took prompt reading from 22 to ~490 tok/s. 4096 got slower (VRAM pressure).
+4. **Generation is memory-bound, not core-bound.** Speed was flat from 3 to 12 threads (~9.3 tok/s), so
+   extra threads only steal cores from solvers.
+5. **To share the machine, separate the jobs and measure both sides.** Pinning the LLM to CCD 2 at low
+   priority cost a ~2-core solver 10%, against 26% unpinned, with no loss to the LLM. Measure the
+   solver's speed too (`solver_rate.py`), not only tok/s.
+6. **Check the value before building the integration.** The token audit showed local pre-reading could
+   save at most ~5% of Claude usage, while session length drove 66%. The cheapest, biggest win was a
+   setting (`autoCompactWindow` 300k) plus a habit (frequent handoffs and `/clear`), not new software.
+7. **Measurement hygiene:** interleave controls (control, candidate, control). Record host state with
+   every run. Relabel a run that went wrong rather than deleting it (the failed "pinned" window became
+   control 2). Keep home-folder paths out of committed logs.
+
 Method: from [inference-optimisation-skill](https://github.com/sybil-solutions/inference-optimisation-skill)
 (MIT), followed by hand, not installed:
 - compute the ceiling first ([THEORY.md](THEORY.md));
