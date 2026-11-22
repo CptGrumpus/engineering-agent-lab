@@ -1,0 +1,93 @@
+# Study 19, pipe friction, revision 1 of pipe_rans_mesh (read it for the framing, model, smoke test and the first
+# run's Results). Same model, checks and requirement; the mesh family moves one level finer.
+#
+# Why: the first mesh study (run 20261122-104218) converged slowly: f 0.017303 / 0.017834 / 0.018130 on n 40 / 80 /
+# 160, observed order 0.84, GCI 2.6 % (tolerance 1 %); n40 (axis cell about 7 mm) looked outside the asymptotic
+# range. Changes:
+# 1. n_radial 80 / 160 / 320 (first-face y+ 0.5 / 0.25 / 0.125), still a systematic refinement (each cell halved).
+# 2. numerics.axial_length_rule = "geometric_mean" (d5e385a): the axial cell length becomes sqrt(wall x axis cell),
+#    so checkMesh's aspect ratio stays near 19 on every mesh (it reached 2884 at Re 2e6 with the fixed D/50, and
+#    would be 1518 at n 640). Fully developed flow has no axial gradient, so this should not change f.
+# 3. max_iterations 80000 (was 15000): finer stretched grids converge more slowly.
+#
+# Probe (scratch run 20261122-122935, before this case was written):
+#   n80, new axial length, 60000 iterations: f -0.9037 % on Prandtl, the same as the first run's n80 to 4 digits:
+#      the axial length and the extra iterations change nothing.
+#   n640 (y+ 0.0625): after 42000 iterations (55 min) f was still falling about 2 % per 3000 iterations (0.0553 at
+#      3000, 0.0246 at 42000): on this stretched one-dimensional grid the iterations needed grow roughly with the
+#      square of the cell count. Stopped; n640 is not used.
+#
+# Predictions, written BEFORE the evidence run:
+#   P1 Every point check passes on every mesh, the iterative one included (n320 converged within 80000 iterations);
+#      first-cell y+ 0.25 / 0.12 / 0.06; log law within 5 % (3.4 / 2.5 % on n80 / n160 before).
+#   P2 n80 and n160 reproduce the first run (0.017834, 0.018130) to 1e-5 relative. n320 0.01822-0.01830 (the
+#      observed order rising from 0.84 towards 2 as the meshes enter the asymptotic range): GCI 0.5-1.5 %, so the
+#      run-level check (1 %) may still fail; extrapolated f 2.0-3.0 % above Prandtl.
+#   P3 REQ-T1 PASS on every mesh (n320 about +1.5 % on Prandtl), verified if the GCI passes.
+#   P4 About 10 / 10 / 30 min (iterations to the cap; cost per iteration grows with the cells).
+
+[case]
+name = "pipe_rans_mesh_r1"
+model = "openfoam_pipe_rans"
+description = "Fully developed turbulent pipe flow, Re 1e5 (D 0.1 m, nu 1e-6 m^2/s), axisymmetric periodic wedge, RANS k-omega SST, low-Reynolds wall treatment; mesh study on the radial cells (80 / 160 / 320, wall cell halved with them); friction factor against Prandtl's smooth-pipe law."
+assumptions = [
+  "Fully developed, steady, incompressible, axisymmetric mean flow in a hydraulically smooth pipe.",
+  "RANS with the k-omega SST model (openfoam.org v14 coefficients); its form error is what this study measures.",
+  "Hydraulic diameter of the wedge 2 R cos(2.5 deg) (its wall is a flat face): 0.1 % below D, used consistently.",
+]
+limitations = [
+  "Smooth walls only; roughness (the Colebrook range) not modelled.",
+  "The reference is a correlation of measurements (about +-2 % scatter in Nikuradse's smooth-pipe data), not the measurements themselves.",
+]
+
+[parameters]
+diameter_m = 0.1
+reynolds_number = 100000.0
+kinematic_viscosity_m2_per_s = 1e-6
+n_radial = 80
+first_cell_yplus = 0.5
+wall_treatment = "low_re"
+turbulence_model = "kOmegaSST"
+
+[[sweep.scenarios]]
+name = "n80"
+n_radial = 80
+first_cell_yplus = 0.5
+
+[[sweep.scenarios]]
+name = "n160"
+n_radial = 160
+first_cell_yplus = 0.25
+
+[[sweep.scenarios]]
+name = "n320"
+n_radial = 320
+first_cell_yplus = 0.125
+
+[numerics]
+residual_p = 1.0        # inactive: pressure is a constant in a periodic domain
+residual_U = 1e-9
+residual_turb = 1e-9
+max_iterations = 80000
+axial_length_rule = "geometric_mean"
+solver_timeout_s = 7200
+
+[verification]
+mesh_study = true
+force_balance_rel_tol = 1e-4   # exact in steady periodic flow; above this means unconverged or a sampling error
+bulk_velocity_rel_tol = 1e-6
+iterative_rel_tol = 1e-6
+yplus_max_low_re = 1.0
+yplus_min_wall_function = 30.0
+yplus_max_wall_function = 300.0
+log_law_rel_tol = 0.05         # model form: the log law's constants scatter by a few per cent
+mesh_noise_rel = 1e-6
+gci_max = 0.01
+
+[[requirements]]
+id = "REQ-T1"
+text = "The predicted friction factor shall be within 5 % of Prandtl's smooth-pipe law (the Moody chart's smooth curve), a usable accuracy for pressure-drop budgets."
+metric = "friction_abs_dev_prandtl_pct"
+operator = "<="
+limit = 5.0
+units = "%"
