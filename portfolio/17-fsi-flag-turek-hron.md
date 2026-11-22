@@ -8,7 +8,7 @@
 
 | | |
 |---|---|
-| **Answer so far** | Both single-physics halves reproduce the published Turek-Hron benchmark before any coupling. Solid, static (CSM1, CSM2): the tip displacement extrapolates to within 0.015 % of the published values. Fluid (CFD1): drag within 0.07 %, lift within 0.6 % on every mesh. Solid, dynamic (CSM3): frequency 1.0946 Hz, 0.09 % from the published band (verified). Fluid at Re 100 (CFD2): drag within 0.014 % when extrapolated, lift within 0.7 % on the finer meshes. Coupled, steady (FSI1): drag converges to 0.03 % of the published value; the tip displacement is within 1 % but drifts with refinement, and lift carries coupling noise, so FSI1 is not yet verified (a revision is running). FSI2 and FSI3: *pending*. |
+| **Answer so far** | Both single-physics halves reproduce the published Turek-Hron benchmark before any coupling. Solid, static (CSM1, CSM2): the tip displacement extrapolates to within 0.015 % of the published values. Fluid (CFD1): drag within 0.07 %, lift within 0.6 % on every mesh. Solid, dynamic (CSM3): frequency 1.0946 Hz, 0.09 % from the published band (verified). Fluid at Re 100 (CFD2): drag within 0.014 % when extrapolated, lift within 0.7 % on the finer meshes. Coupled, steady (FSI1): drag and lift verified (0.03 % and 0.18 % from the published values on the finest mesh, mesh uncertainty 0.03 % and 0.3 %); the tip displacement is within 1 % on every mesh, but scatters by about ±0.5 % between meshes, so its mesh uncertainty can't be estimated. FSI2 and FSI3: *pending*. |
 | **Discipline** | Structures (large deflection, dynamics), fluids, fluid-structure interaction |
 | **Tools** | CalculiX (solid), OpenFOAM 14 with Gmsh (fluid), Python; preCICE 3.4.1 with OpenFOAM v2512 for the coupled stage |
 | **Methods** | Geometrically nonlinear static and dynamic FE, a large-deflection elastica as an independent reference, steady laminar CFD, mesh and time-step refinement with GCI, published benchmark values as the acceptance requirement |
@@ -48,7 +48,11 @@ published results first, and only then are they coupled.
   coupling tolerance cut it 72 times and left every mean unchanged to five digits), and a finer solid moves the tip
   only 0.035 %, so the solid is not the cause of the drift. The revision (running) averages over the last 2 s,
   judges steadiness by drift, tightens the coupling, and uses fluid meshes of 2.5 / 1.77 / 1.25 mm: the 5 mm mesh
-  was too coarse to belong in the sequence (+5.8 %). *Result pending.*
+  was too coarse to belong in the sequence (+5.8 %). Revision result (5 h): every check passes on every mesh; drag
+  14.298 N/m and lift 0.762 N/m verified; the tip displacement reads 0.8175 / 0.8212 / 0.8130 mm against the
+  published 0.8209, within 1 % each time but up and then down. The "drift away" was scatter: the new middle mesh sits
+  on the benchmark. Three regenerated meshes cannot separate a ±0.5 % scatter from a trend, so that verdict stays
+  unverified (it passes its 3 % limit on every mesh).
 - **Coupled, periodic (FSI2, FSI3)**: *pending*.
 
 ## How it works
@@ -121,7 +125,7 @@ published results first, and only then are they coupled.
 - solid, static: [CSM1 mesh study](../runs/20261121-131111_flag_csm1_mesh/report.md),
   [CSM2 mesh study](../runs/20261121-131133_flag_csm2_mesh/report.md) (both verification PASS)
 - solid, dynamic: [CSM3, final](../runs/20261121-184353_flag_csm3_dt_r3/report.md) (frequency and ux verified), with the [first run](../runs/20261121-132448_flag_csm3_dt/report.md) (energy drift), [r1](../runs/20261121-142836_flag_csm3_dt_r1/report.md) and [r2](../runs/20261121-164522_flag_csm3_dt_r2/report.md) (the divergence and the wrong diagnosis) kept as evidence
-- coupled, steady: [FSI1 first mesh study](../runs/20261121-203031_turek_hron_fsi1_mesh/report.md) (drag converged; lift noise and the tip drift withheld it); revision `cases/turek_hron_fsi1_mesh_r1.toml` (predictions written before the run)
+- coupled, steady: [FSI1 first mesh study](../runs/20261121-203031_turek_hron_fsi1_mesh/report.md) (drag converged; lift noise and the tip drift withheld it); [revision 1](../runs/20261122-125809_turek_hron_fsi1_mesh_r1/report.md) (drag and lift verified; tip within 1 %, its mesh uncertainty not estimable), with its predictions and Results in `cases/turek_hron_fsi1_mesh_r1.toml`
 - fluid: [CFD1 first mesh study](../runs/20261121-140245_turek_hron_cfd1_mesh/report.md) (lift verified), [CFD1 refined](../runs/20261121-140657_turek_hron_cfd1_mesh_r1/report.md) (drag verified), [CFD2](../runs/20261121-151947_turek_hron_cfd2_mesh/report.md) (drag verified, lift withheld on mesh noise)
 - case files: `cases/flag_csm1_mesh.toml`, `cases/flag_csm2_mesh.toml`, `cases/flag_csm3_dt.toml`,
   `cases/flag_csm3_dt_r1.toml`, `cases/turek_hron_cfd1_mesh.toml`, `cases/turek_hron_cfd1_mesh_r1.toml`,
