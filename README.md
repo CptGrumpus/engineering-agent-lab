@@ -51,6 +51,7 @@ The intended user is an automotive engineer with a master's degree in mechanical
 - `studies/`: one module per study: backends, metrics, checks, plots.
 - `harness/`: generic run, verify, report, compare, and rerun tooling (`python -m harness`).
 - `runs/`: evidence from individual executions; see [runs/README.md](runs/README.md). Git-ignored except curated example runs (without bulky result CSVs).
+- `local_llm/`: running a local open-weight LLM (Inkling 2 Mini) on this workstation next to the solvers: action list and experiment log ([local_llm/PLAN.md](local_llm/PLAN.md)), speed ceilings, benchmark wrapper and run ledger. Separate from the studies; nothing in `harness/` depends on it yet.
 - `.claude/skills/`: executable Claude Code skills.
 - `tests/`: pytest suite (67 tests), including negative tests showing that the checks catch wrong models and invalid assumptions.
 

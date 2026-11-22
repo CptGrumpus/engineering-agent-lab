@@ -221,7 +221,9 @@ back-EMF 108.04 V per 1000 rpm (+1.4 % on the radii-only machine, under the pred
 
 ## Action items
 
-- **Local model (Inkling 2 Mini), parked 2026-11-21: follow up later.**
+- **Local model (Inkling 2 Mini): optimisation under way 2026-11-21.** The action list and experiment log
+  are in [local_llm/PLAN.md](local_llm/PLAN.md). The first finding: the GPU had never been used (missing
+  CUDA runtime DLLs), so the numbers below are CPU-only and out of date.
   - **Status:** it runs through Unsloth's llama.cpp build at about 4.4 tokens/s on the RTX 3070, with
     the experts in RAM. On a six-task trial it got the calculation, extraction, report reading and tool
     call right, and was only partly right on diagnosis and planning.
