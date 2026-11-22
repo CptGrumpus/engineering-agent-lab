@@ -166,7 +166,7 @@
       <span class="label">Study 13 · CalculiX, linear and nonlinear buckling</span>
       <h2>Strut buckling, with an imperfect strut</h2>
     </div>
-    <figure><div class="plate"><img src="v2/vp_strut.webp" alt="The 500 mm strut bowing under 21.5 kN, von Mises stress, with the straight strut as a ghost" loading="lazy"></div><figcaption>The 500 mm strut at 21.5 kN, just before first yield, with its bow drawn five times larger over the straight strut. The highest stress is on the inside of the curve at mid-span.</figcaption></figure>
+    
     <p><strong>The question.</strong> A 6061-T6 strut with a solid 25 × 16 mm section, pinned at both ends, carries 8 kN in compression. It has to reach twice that, 16 kN, before any fibre yields, allowing for an initial bow of L/1000, a typical straightness tolerance. How long can it be?</p>
     <div class="answer">
       <div class="chips"><span class="chip pass">Longest about 587 mm</span><span class="chip pass">Two routes to the buckling load agree to 0.04 %</span><span class="chip pass">Mesh uncertainty 0.003 %</span></div>
@@ -199,7 +199,7 @@
       <span class="label">Study 14 · CadQuery, Gmsh and CalculiX, plasticity</span>
       <h2>Strap proof test, notch plasticity</h2>
     </div>
-    <figure><div class="plate"><img src="v2/vp_strap_proof.webp" alt="Axial stress around the hole at the 15 kN proof load; the top bands mark the yielded material" loading="lazy"></div><figcaption>Axial stress at the 15 kN proof load. The bands are set so the top three are the material past yield: a small zone at each side of the hole.</figcaption></figure>
+    
     <p><strong>The question.</strong> The aluminium strap from studies 2 and 3 (40 × 4 mm, 16 mm hole, 5 kN in service) is proof tested at 15 kN before it's installed. On an elastic model the hole edge would see about 350 MPa, well past yield, while the rest of the section stays elastic. Does the hole edge stay within 1 % strain during the test, and does the test leave compressive stress behind, which helps fatigue?</p>
     <div class="answer">
       <div class="chips"><span class="chip pass">0.58 % strain against a 1 % limit</span><span class="chip pass">−77 MPa left at the hole edge</span><span class="chip pass">Mesh uncertainty 0.05 %</span></div>
@@ -228,7 +228,7 @@
       <span class="label">Study 16 · CalculiX, friction contact</span>
       <h2>Bolted joint, slip and opening</h2>
     </div>
-    <figure><div class="plate"><img src="v2/vp_bolted_joint.webp" alt="Contact pressure on the bottom plate's face after clamping, a ring around the bolt hole" loading="lazy"></div><figcaption>Where the plates press together after clamping: the contact pressure on the bottom plate's face, highest at the hole and gone about 21 mm across, well inside the plate. The friction that resists slip acts over this ring.</figcaption></figure>
+    
     <p><strong>The question.</strong> Two 6 mm steel plates are clamped by an M8 class 8.8 bolt tightened to 15 kN. The joint has to carry a 2 kN side load by friction alone, with a safety factor of 1.25 against slip, so 2.5 kN. It also mustn't open under a 10 kN axial load. Both have to hold after the joint settles. Does it, and if not, what fixes it?</p>
     <div class="answer">
       <div class="chips"><span class="chip fail">Slips at 2.39 kN, 4.4 % short</span><span class="chip pass">15.6 kN preload fixes it</span><span class="chip pass">Stays closed to 13.1 kN</span></div>
@@ -363,7 +363,6 @@
       <span class="label">Study 11 · OpenFOAM heat transfer</span>
       <h2>Cold-plate channel heat transfer</h2>
     </div>
-    <figure><div class="plate"><img src="v2/heat_response.webp" alt="Wall and bulk temperature along the heated channel, OpenFOAM against the Graetz reference" loading="lazy"></div><figcaption>Wall and bulk temperature along the heated channel, and the local Nusselt number, against the independent Graetz thermal-entry solution.</figcaption></figure>
     <p><strong>The question.</strong> A cold-plate passage, 1 mm deep, carries water at 25 °C and 0.1 m/s. Electronics heat both walls at 30 kW/m² over 50 mm. Does the wall stay at or under 45 °C, does the coolant warm up by no more than 10 K, and how much heat flux could the passage take?</p>
     <div class="answer">
       <div class="chips"><span class="chip pass">Coolant rise 7.2 K: verified</span><span class="chip pass">Wall 44.03 °C: verified</span><span class="chip pass">Rated about 31 kW/m²</span></div>
@@ -390,7 +389,7 @@
       <span class="label">Study 15 · OpenFOAM → CalculiX, coupled</span>
       <h2>Cold plate, the full thermal chain</h2>
     </div>
-    <figure><div class="plate"><img src="v2/vp_cold_plate.webp" alt="Temperature in a slice of the aluminium cold plate, rising along the coolant flow" loading="lazy"></div><figcaption>Temperature in the plate with the coolant and the plate's own conduction coupled. The coolant runs left to right underneath; the hottest point is inside the footprint at 41 mm, not at its end.</figcaption></figure>
+    
     <p><strong>The question.</strong> Electronics put 30 kW/m² into an aluminium cold plate over a 50 mm footprint. The 3 mm 6061-T6 plate sits on a 1 mm water channel (25 °C inlet, 0.1 m/s) and is bolted at both ends to a rigid frame, assembled at 20 °C. Does the component face stay at or under 45 °C, does the coolant warm by no more than 10 K, and does the thermal stress in the plate stay under 60 MPa? It builds on <a href="#heat">study 11</a>, which applied the heat straight to the channel wall.</p>
     <div class="answer">
       <div class="chips"><span class="chip pass">Component face 40.99 °C, limit 45</span><span class="chip pass">Coolant rise 7.20 K, limit 10</span><span class="chip pass">Thermal stress 46.8 MPa, limit 60</span></div>
@@ -423,7 +422,6 @@
       <span class="label">Study 7 · Python (SciPy) and OpenModelica</span>
       <h2>Quarter-car ride and road holding</h2>
     </div>
-    <figure><div class="plate"><img src="img/anim_quarter_car.webp" alt="Animation of the quarter car crossing the bump" loading="lazy"></div><figcaption>Drawn from the simulation at 36 km/h and 600 N·s/m. The wheel leaves the road twice, with the tire load and body acceleration plotted alongside.</figcaption></figure>
     <p><strong>The question.</strong> For a compact car's front corner, which damper rates between 600 and 3500 N·s/m meet the targets for ride comfort, suspension travel and tire load? I tested it over a speed bump and over a rough road.</p>
     <div class="answer">
       <div class="chips"><span class="chip pass">Speed bump: 600 to 1000 N·s/m</span><span class="chip fail">36 km/h: wheel leaves the road</span><span class="chip warn">Bump stop: harsher at light damping</span><span class="chip fail">Rough road: comfort not met</span><span class="chip pass">Two tools agree to one part in a million</span></div>
@@ -493,7 +491,6 @@
       <span class="label">Study 9 · Python and OpenModelica</span>
       <h2>Mass-spring-damper baseline</h2>
     </div>
-    <figure><div class="plate"><img src="img/anim_msd.webp" alt="Animation of the mass-spring-damper at three damping ratios" loading="lazy"></div><figcaption>The same step force at three damping ratios, drawn from the runs, with the exact solution dotted underneath.</figcaption></figure>
     <div class="answer">
       <div class="chips"><span class="chip pass">All 72 checks pass</span><span class="chip pass">Two tools agree to a few parts per million</span></div>
       <p>This was the first study, and its job was to prove the workflow on a problem with a known answer. It's a single mass on a spring and damper, hit with a step force, at six levels of damping. The results are checked against the exact textbook solution, an energy balance, the final resting position and the solver's own convergence.</p>

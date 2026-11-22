@@ -99,6 +99,12 @@ code { font-family: var(--font-data); font-size: 0.85em; }
 .hero h1 em { font-style: normal; color: var(--accent); }
 .lede { font-size: clamp(1.08rem, 1.6vw, 1.28rem); color: var(--ink-2); max-width: 62ch; line-height: 1.55; }
 .lede b { color: var(--ink); font-weight: 600; }
+.hero-cta { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 14px; }
+.cta-ghost { display: inline-block; padding: 10px 20px; border-radius: var(--radius); border: 1px solid var(--accent); color: var(--accent); font-weight: 700; font-size: 1.02rem; text-decoration: none; }
+.cta-ghost:hover { background: var(--accent-soft); }
+.hero-links { display: flex; flex-wrap: wrap; gap: 6px 18px; margin-left: 8px; font-size: 0.93rem; font-weight: 600; }
+.hero-links a.ext::after { content: " ↗"; }
+@media (max-width: 560px) { .hero-links { margin-left: 0; flex-basis: 100%; } }
 .stats { display: grid; grid-template-columns: repeat(2, auto); gap: 18px 40px; margin: 0; padding: 0 0 6px; }
 @media (max-width: 900px) { .stats { grid-template-columns: repeat(4, auto); justify-content: start; } }
 @media (max-width: 560px) { .stats { grid-template-columns: repeat(2, auto); } }
@@ -147,6 +153,10 @@ code { font-family: var(--font-data); font-size: 0.85em; }
 .vp.is-3d .vp-canvas { display: block; }
 .vp-canvas:focus-visible { outline: 2px solid var(--vp-ink); outline-offset: -4px; border-radius: 4px; }
 .vp.is-3d .stage img, .vp.is-3d .triad { visibility: hidden; }
+.vp.is-figure .legend, .vp.is-plain .legend, .vp.is-figure .triad, .vp.is-plain .triad { display: none; }
+.vp.is-figure .stage, .vp.is-plain .stage { grid-column: 1 / -1; padding: 20px 24px 12px; }
+.vp.is-figure .stage img { background: var(--plate); border-radius: 4px; padding: 10px; filter: none; max-height: clamp(260px, 40vw, 480px); }
+.vp { scroll-margin-top: 64px; }
 .triad { position: absolute; left: 4px; bottom: 6px; width: 54px; height: 54px; opacity: 0.85; }
 .status {
   grid-column: 1 / -1; position: relative; z-index: 1;
@@ -156,17 +166,7 @@ code { font-family: var(--font-data); font-size: 0.85em; }
 }
 .status b { color: var(--vp-ink); font-weight: 500; }
 .status .chk { color: #9fe3b9; }
-.tabs { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 8px; }
-@media (max-width: 1100px) { .tabs { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
-.tabs button {
-  font: inherit; text-align: left; cursor: pointer; display: grid; gap: 2px; min-width: 0;
-  padding: 10px 14px; border-radius: var(--radius); border: 1px solid var(--rule); background: var(--surface); color: var(--ink);
-}
-.tabs button:hover { border-color: var(--accent); }
-.tabs button[aria-selected="true"] { border-color: var(--accent); box-shadow: inset 0 -3px 0 var(--accent); }
-.tab-k { font-family: var(--font-data); font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); }
-.tab-v { font-size: 0.92rem; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.vp-note { font-size: 0.9rem; color: var(--ink-2); max-width: 80ch; }
+.vp-note p { font-size: 0.92rem; color: var(--ink-2); max-width: 80ch; }
 @media (max-width: 720px) {
   .vp { grid-template-columns: 1fr; grid-template-rows: auto minmax(0, 1fr) auto; min-height: 0; }
   .legend { padding: 16px 16px 0; }
@@ -181,7 +181,6 @@ code { font-family: var(--font-data); font-size: 0.85em; }
   .stage { padding: 8px 12px 12px; }
   .stage img { max-height: 300px; }
   .triad { display: none; }
-  .tabs { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
 /* ------------------------------------------------------------- sections */
@@ -189,6 +188,14 @@ code { font-family: var(--font-data); font-size: 0.85em; }
 .band-head { display: grid; gap: 10px; max-width: 760px; }
 .band-head h2 { font-size: clamp(1.9rem, 3.6vw, 2.8rem); font-weight: 750; font-stretch: 108%; letter-spacing: -0.015em; }
 .band-head p { color: var(--ink-2); font-size: 1.06rem; max-width: 64ch; }
+
+/* how I work: sub-parts */
+h3.sub { font-family: var(--font-data); font-size: 0.8rem; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); display: flex; align-items: center; gap: 14px; margin-top: 12px; }
+h3.sub::after { content: ""; flex: 1; height: 1px; background: var(--rule); }
+.sub-lede { color: var(--ink-2); max-width: 70ch; margin-top: -12px; }
+.code-facts { color: var(--ink-2); font-size: 0.95rem; max-width: 80ch; }
+.skills.now { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+@media (max-width: 760px) { .skills.now { grid-template-columns: 1fr; } }
 
 /* task loop */
 .loop { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: 28px; align-items: start; }
@@ -240,32 +247,25 @@ code { font-family: var(--font-data); font-size: 0.85em; }
 .filters button { font: inherit; font-size: 0.9rem; cursor: pointer; padding: 6px 14px; border-radius: 999px; border: 1px solid var(--rule); background: var(--surface); color: var(--ink-2); }
 .filters button:hover { color: var(--ink); border-color: var(--ink-3); }
 .filters button[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: var(--bg); }
-.gallery { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
+.gallery { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
 .card { display: grid; grid-template-rows: auto 1fr; background: var(--surface); border: 1px solid var(--rule); border-radius: 6px; overflow: hidden; color: var(--ink); text-decoration: none; transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s; }
 .card[hidden] { display: none; }
 .card:hover { transform: translateY(-3px); border-color: var(--accent); box-shadow: 0 18px 32px -24px rgba(20, 40, 90, 0.5); }
+.card[aria-current="true"] { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
 .thumb { display: block; aspect-ratio: 16 / 10; background: var(--plate); border-bottom: 1px solid var(--rule); }
 .thumb img { width: 100%; height: 100%; object-fit: contain; display: block; }
-.card-body { display: grid; gap: 8px; padding: 16px 18px 18px; align-content: start; }
-.meta { display: flex; gap: 10px; font-family: var(--font-data); font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-3); }
+.card-body { display: grid; gap: 6px; padding: 12px 14px 14px; align-content: start; }
+.meta { display: flex; gap: 10px; font-family: var(--font-data); font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-3); }
 .meta .no { color: var(--accent); }
-.card-title { font-family: var(--font-display); font-weight: 700; font-stretch: 104%; font-size: 1.2rem; line-height: 1.2; }
-.card-answer { color: var(--ink-2); font-size: 0.97rem; line-height: 1.5; }
-.card-foot { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px; margin-top: 4px; }
+.card-title { font-family: var(--font-display); font-weight: 700; font-stretch: 104%; font-size: 1.02rem; line-height: 1.25; }
+.card-foot { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 6px; margin-top: 2px; }
 .tools { font-family: var(--font-data); font-size: 0.72rem; color: var(--ink-3); }
-.v { font-family: var(--font-data); font-size: 0.72rem; padding: 2px 8px; border-radius: 999px; }
+.v { font-family: var(--font-data); font-size: 0.72rem; padding: 2px 8px; border-radius: 999px; white-space: nowrap; }
 .v-pass { color: var(--pass); background: var(--pass-bg); }
 .v-fail { color: var(--fail); background: var(--fail-bg); }
 .v-mixed { color: var(--warn); background: var(--warn-bg); }
-.card.featured { grid-column: 1 / -1; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); grid-template-rows: auto; }
-.card.featured .thumb { border-bottom: 0; border-right: 1px solid var(--rule); }
-.card.featured .card-body { align-content: center; padding: 24px 28px; gap: 10px; }
-.card.featured .card-title { font-size: 1.6rem; }
-.card.featured .card-answer { font-size: 1.05rem; }
-.card.featured .meta .no + span { color: var(--hot); }
-@media (max-width: 960px) { .gallery { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-@media (max-width: 700px) { .card.featured { grid-template-columns: 1fr; } .card.featured .thumb { border-right: 0; border-bottom: 1px solid var(--rule); } }
-@media (max-width: 600px) { .gallery { grid-template-columns: 1fr; } }
+@media (max-width: 1000px) { .gallery { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 420px) { .card .tools { display: none; } .card-title { font-size: 0.95rem; } }
 
 /* findings */
 .findings { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
@@ -286,13 +286,14 @@ th { font-family: var(--font-data); font-weight: 500; font-size: 0.72rem; letter
 td:nth-child(2) { font-family: var(--font-data); font-size: 0.8rem; color: var(--ink-2); }
 
 /* ------------------------------------------------------------- study sheets (existing content) */
-.studies { display: grid; gap: 28px; }
+.picks { display: grid; }
+.picks > .pick[hidden] { display: none !important; }
 h2.discipline {
   font-family: var(--font-data); font-size: 0.8rem; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase;
   color: var(--accent); display: flex; align-items: center; gap: 14px; margin-top: 28px;
 }
 h2.discipline::after { content: ""; flex: 1; height: 1px; background: var(--rule); }
-.studies .study {
+.picks .study {
   background: var(--surface); border: 1px solid var(--rule); border-radius: 6px;
   padding: clamp(20px, 3.5vw, 36px); display: grid; gap: 18px; scroll-margin-top: 68px; min-width: 0;
 }
@@ -357,12 +358,14 @@ details.more .note { margin-top: 12px; color: var(--ink-2); font-size: 0.95rem; 
 details.study > summary { list-style: none; cursor: pointer; }
 details.study > summary::-webkit-details-marker { display: none; }
 details.study:not([open]) > .study-head { border-bottom: 0; padding-bottom: 0; }
-.study-sum { color: var(--ink-2); font-size: 0.98rem; max-width: 70ch; }
+.study-sum { color: var(--ink-2); font-size: 1rem; max-width: 72ch; }
+.study-head .v { justify-self: start; }
+.study-toggle-link { font-family: var(--font-data); font-size: 0.74rem; letter-spacing: 0.06em; }
 .study-toggle { font-family: var(--font-data); font-size: 0.74rem; letter-spacing: 0.06em; color: var(--accent); }
-.study-toggle::after { content: "Open the full study ▾"; }
+.study-toggle::after { content: "Read the full study ▾"; }
 details.study[open] .study-toggle::after { content: "Close ▴"; }
 details.study > summary:hover .study-toggle { text-decoration: underline; }
-.studies .study, .study-body { grid-template-columns: minmax(0, 1fr); }
+.picks .study, .study-body { grid-template-columns: minmax(0, 1fr); }
 .study-body { display: grid; gap: 18px; min-width: 0; }
 .study-body > p { max-width: 70ch; }
 
@@ -381,14 +384,11 @@ details.study > summary:hover .study-toggle { text-decoration: underline; }
     <a class="brand" href="#top"><span class="brand-mark" aria-hidden="true"><i style="background:#30123b"></i><i style="background:#4686fb"></i><i style="background:#1ae4b6"></i><i style="background:#a2fc3c"></i><i style="background:#fb8022"></i><i style="background:#7a0403"></i></span>Verified Simulation</a>
     <div class="navgroup">
     <div class="topnav">
+      <a href="#work">Work</a>
       <a href="#bracket_opt">Optimiser</a>
-      <a href="#studies">Studies</a>
       <a href="#findings">Lessons</a>
-      <a href="#loop">Method</a>
-      <a href="#agent">Agent</a>
+      <a href="#how">How I work</a>
       <a href="#tasks">Grading</a>
-      <a href="#next">Harder</a>
-      <a href="#capabilities">Capabilities</a>
     </div>
     <a class="nav-contact" href="#get-in-touch">Contact</a>
     </div>
@@ -400,19 +400,24 @@ details.study > summary:hover .study-toggle { text-decoration: underline; }
     <div class="hero-text">
     <p class="eyebrow">Mechanical engineering · simulation portfolio</p>
     <h1>Simulation results <em>I can back up.</em></h1>
-    <p class="lede">Sixteen studies covering <b>structures, contact, vibration, fatigue, buckling, plasticity, fluids, heat transfer, vehicle dynamics and design optimisation</b>. In each one I start from written requirements, build the model, run a real solver, and compare the result against something independent before I call it a pass or a fail. It's all open-source software, and a coding agent does most of the legwork using procedures I wrote.</p>
+    <p class="lede">I'm an automotive mechanical engineer with a master's in ME, and in my day job I use AI agents to run virtual models. Here are {{STUDY_COUNT_WORD}} studies covering <b>structures, contact, vibration, fatigue, buckling, plasticity, fluids, heat transfer, vehicle dynamics and design optimisation</b>. Each one starts from written requirements, runs a real open-source solver, and is checked against something independent before I call it a pass or a fail.</p>
+    <div class="hero-cta"><a class="cta" href="#work">See the work</a><a class="cta-ghost" href="#get-in-touch">Contact</a><span class="hero-links"><a href="#tasks">Try grading an answer</a><a class="ext" href="{{MEMO_URL}}">A sample client memo</a></span></div>
     </div>
     <dl class="stats">
+      <div><dt>studies</dt><dd>{{STUDY_COUNT}}</dd></div>
       <div><dt>automated checks</dt><dd>{{CHECKS}}</dd></div>
       <div><dt>saved runs</dt><dd>{{RUNS}}</dd></div>
-      <div><dt>open-source tools</dt><dd>8</dd></div>
       <div><dt>paid licences</dt><dd>0</dd></div>
     </dl>
   </header>
 
-{{TLDR}}
-  <section class="viewport wrap" aria-label="Result viewer">
-    <div class="vp" id="vp" role="tabpanel" aria-labelledby="tab-bracket_opt">
+  <section class="band wrap" id="work" aria-labelledby="work-title">
+    <div class="band-head">
+      <p class="eyebrow">The work</p>
+      <h2 id="work-title">{{STUDY_COUNT_TITLE}} studies</h2>
+      <p>Pick any study to see its result here and read how I checked it. The problems are made up, so there's no client data, but every number comes from a saved run that can be repeated from its recorded inputs with one command.</p>
+    </div>
+    <div class="vp" id="vp" role="region" aria-label="Result viewer">
       <div class="legend">
         <div class="legend-title" id="lg-title">S, Mises<small>MPa</small></div>
         <div class="legend-body"><div class="swatches" id="lg-sw"></div><div class="ticks" id="lg-ticks"></div></div>
@@ -429,18 +434,8 @@ details.study > summary:hover .study-toggle { text-decoration: underline; }
       </div>
       <div class="status" id="vp-status" aria-live="polite"></div>
     </div>
-    <div class="tabs" role="tablist" aria-label="Choose a result">
-{{TABS}}
-    </div>
-    <p class="vp-note">These images are rendered in Blender straight from the solver output. Before one goes on the page it has to pass three checks. The rendered surface has to enclose the part's actual volume, which catches missing or flipped faces. Every coloured pixel has to match a colour in the legend, which catches a shader that has shifted the contours. And the lit image has to read as the right band, which catches a shaded face that looks like a different value. Most results can also be turned in 3D: that view uses the same surface and colour bands, and it's checked the same way from four angles.</p>
-  </section>
-
-{{FEATURED}}
-  <section class="band wrap" id="studies" aria-labelledby="studies-title">
-    <div class="band-head">
-      <p class="eyebrow">Case studies</p>
-      <h2 id="studies-title">Sixteen studies</h2>
-      <p>The problems are made up, so there's no client data here. Every number on this page comes from a saved run, and each run can be repeated from its recorded inputs with one command.</p>
+    <div class="picks" id="picks">
+{{PICKS}}
     </div>
     <div class="filters" role="group" aria-label="Filter by discipline">
       <button type="button" aria-pressed="true" data-f="all">All</button>
@@ -454,8 +449,10 @@ details.study > summary:hover .study-toggle { text-decoration: underline; }
 {{CARDS}}
     </div>
 {{REQS}}
+    <details class="more vp-note"><summary>How these images are checked</summary><p>These images are rendered in Blender straight from the solver output. Before one goes on the page it has to pass three checks. The rendered surface has to enclose the part's actual volume, which catches missing or flipped faces. Every coloured pixel has to match a colour in the legend, which catches a shader that has shifted the contours. And the lit image has to read as the right band, which catches a shaded face that looks like a different value. Most results can also be turned in 3D: that view uses the same surface and colour bands, and it's checked the same way from four angles.</p></details>
   </section>
 
+{{FEATURED}}
   <section class="band wrap" id="findings" aria-labelledby="findings-title">
     <div class="band-head">
       <p class="eyebrow">Lessons</p>
@@ -472,12 +469,13 @@ details.study > summary:hover .study-toggle { text-decoration: underline; }
     </div>
   </section>
 
-  <section class="band wrap" id="loop" aria-labelledby="loop-title">
+  <section class="band wrap" id="how" aria-labelledby="how-title">
     <div class="band-head">
-      <p class="eyebrow">Method</p>
-      <h2 id="loop-title">How each study works</h2>
-      <p>Every study goes through the same four steps. I write down the tolerances and what I expect to see before the first run, so I can't quietly move the goalposts afterwards.</p>
+      <p class="eyebrow">How I work</p>
+      <h2 id="how-title">The same method for every study</h2>
+      <p>I write down the tolerances and what I expect to see before the first run, so I can't quietly move the goalposts afterwards. A coding agent does the hands-on work, following procedures I wrote, and I review the engineering.</p>
     </div>
+    <h3 class="sub">Four steps</h3>
     <div class="loop">
       <ol class="steps">
         <li><b>Set up</b><span>Turn the question into requirements I can measure, along with the input ranges, the assumptions that need checking and the acceptance tolerances. All of it goes in a case file.</span></li>
@@ -496,14 +494,8 @@ details.study > summary:hover .study-toggle { text-decoration: underline; }
 <span class="p">      </span>verdict: <span class="verdict">FAIL</span>, pending human review</pre>
       </div>
     </div>
-  </section>
-
-  <section class="band wrap" id="agent" aria-labelledby="agent-title">
-    <div class="band-head">
-      <p class="eyebrow">Agent workflow</p>
-      <h2 id="agent-title">How the agent fits in</h2>
-      <p>I use Claude Code for the hands-on work, guided by six skills I wrote and tested. The skills set the order of the work and which checks have to pass. The agent writes and runs the code, and I review the engineering.</p>
-    </div>
+    <h3 class="sub">Where the agent fits</h3>
+    <p class="sub-lede">I use Claude Code, guided by six skills I wrote and tested. The skills set the order of the work and which checks have to pass. The agent writes and runs the code.</p>
     <div class="skills">
       <div class="skill"><code>frame-requirements</code><b>Requirements first</b><p>Pins down the decision, the metrics, the input ranges, the assumptions and how to check them, the tolerances and my predictions, all before anything runs.</p></div>
       <div class="skill"><code>build-model</code><b>Model preparation</b><p>Covers file layout, choosing the checks, a quick smoke test and diagnosing failures, plus notes on solver traps I found the hard way.</p></div>
@@ -519,6 +511,9 @@ details.study > summary:hover .study-toggle { text-decoration: underline; }
       <li>No verdict if an assumption breaks</li>
       <li>A person signs off, not the agent</li>
     </ul>
+    <h3 class="sub">What I can model, and with what</h3>
+    {{CAPS}}
+    <p class="code-facts">{{CODE_FACTS}}</p>
   </section>
 
   <section class="band wrap" id="tasks" aria-labelledby="tasks-title">
@@ -532,77 +527,27 @@ details.study > summary:hover .study-toggle { text-decoration: underline; }
 
   <section class="band wrap" id="next" aria-labelledby="next-title">
     <div class="band-head">
-      <p class="eyebrow">Harder studies</p>
-      <h2 id="next-title">Six harder studies: five done, one in progress</h2>
-      <p>Each of these covers something the earlier studies don't: friction contact, plasticity, buckling, chained multiphysics, a design loop run by the agent, and coupled fluid and structure. Five are finished and verified, and each has its full write-up on this page. The fluid-structure study is under way. As with the others, I picked the independent check before I started modelling.</p>
+      <p class="eyebrow">Now working on</p>
+      <h2 id="next-title">Two studies in progress</h2>
+      <p>Five harder studies are finished and in the work above: friction contact, plasticity, buckling, a chained thermal model, and the optimisation loop. These two come next. As with the others, I pick the independent check before I start modelling.</p>
     </div>
-    <div class="skills plan">
+    <div class="skills plan now">
       <article class="skill">
-        <span class="plan-meta"><span class="no">01 · Contact</span><span class="plan-tag done">Done · study 16</span></span>
-        <b>Bolted joint with preload, a side load and friction</b>
-        <p><b>Why it's harder</b>Friction contact plus preload. The question is when the joint starts to slip or open up.</p>
-        <p><b>The result</b>It fails, narrowly. Once the joint settles it slips at 2.39 kN, 4.4 % short of the 2.5 kN it must carry. A preload of about 15.6 kN fixes it. It stays closed up to 13.1 kN, against 10 kN required.</p>
-        <p><b>How I checked it</b>The VDI 2230 hand method for the clamp and the settling loss, and slip load = μ × clamp force taken straight from the contact model. Mesh uncertainty 0.01 %. <a href="#bolted_joint">Read the study</a></p>
-        <span class="tools">CalculiX</span>
-      </article>
-      <article class="skill">
-        <span class="plan-meta"><span class="no">02 · Multiphysics</span><span class="plan-tag done">Done · study 15</span></span>
-        <b>Cold plate, the full thermal chain</b>
-        <p><b>Why it's harder</b>Three kinds of physics in a chain: coolant flow, then conduction through the aluminium plate, then thermal stress. Each step is verified before it hands its results to the next. It builds on the <a href="#heat">heated-channel study</a>.</p>
-        <p><b>The result</b>It passes on all three counts: the component face peaks at 40.99 °C (limit 45 °C), the coolant warms by 7.20 K (limit 10 K) and the thermal stress peaks at 46.8 MPa (limit 60 MPa).</p>
-        <p><b>How I checked it</b>An exact series solution for the plate, beam theory for the thermal stress, and an energy balance at every handoff. Mesh uncertainty 0.035 % or less on every answer. <a href="#cold_plate">Read the study</a></p>
-        <span class="tools">OpenFOAM → CalculiX</span>
-      </article>
-      <article class="skill">
-        <span class="plan-meta"><span class="no">03 · Automation</span><span class="plan-tag done">Done · study 12</span></span>
-        <b>Bracket optimisation loop</b>
-        <p><b>Why it's harder</b>The agent changes the geometry, meshes, solves and checks, then goes round again to bring the mass down while staying inside the stress and stiffness limits. Here it's driving a design instead of running one case.</p>
-        <p><b>How I checked it</b>Every candidate went through the full set of checks, and the chosen design has its own mesh study at the stress peak: 98.9 MPa with the uncertainty added, against 100. <a href="#bracket_opt">See the results.</a></p>
-        <span class="tools">CadQuery · Gmsh · CalculiX</span>
-      </article>
-      <article class="skill">
-        <span class="plan-meta"><span class="no">04 · Nonlinear material</span><span class="plan-tag done">Done · study 14</span></span>
-        <b>Strap proof test with plasticity</b>
-        <p><b>Why it's harder</b>During the proof test the hole edge goes past yield, and residual stress is left behind after unloading.</p>
-        <p><b>The result</b>A 15 kN proof test, three times the service load, strains the hole edge to 0.58 %, inside a 1 % limit. It leaves −77 MPa of compressive residual stress there, which helps fatigue.</p>
-        <p><b>How I checked it</b>The strain sits between Glinka's estimate (0.53 %) and Neuber's (0.64 %), and the residual stress matches exact elastic unloading to 2 × 10⁻⁶. <a href="#strap_proof">Read the study</a></p>
-        <span class="tools">CadQuery · Gmsh · CalculiX</span>
-      </article>
-      <article class="skill">
-        <span class="plan-meta"><span class="no">05 · Stability</span><span class="plan-tag done">Done · study 13</span></span>
-        <b>Buckling of an imperfect strut</b>
-        <p><b>Why it's harder</b>It's a stability problem rather than a stress problem: a linear buckling analysis, then the same strut with a small initial bow.</p>
-        <p><b>The result</b>The longest acceptable strut is about 587 mm. The bow costs 4 to 7 % of the elastic buckling load, so checking buckling alone would overstate the capacity.</p>
-        <p><b>How I checked it</b>The linear analysis and a Southwell plot of the nonlinear run agree to 0.04 %, both within 0.1 % of Euler with a shear correction. First yield is within 1.3 % of the Perry-Robertson formula. <a href="#strut">Read the study</a></p>
-        <span class="tools">CalculiX</span>
-      </article>
-      <article class="skill">
-        <span class="plan-meta"><span class="no">06 · Coupled FSI</span><span class="plan-tag">In progress</span></span>
+        <span class="plan-meta"><span class="no">Fluid-structure interaction</span><span class="plan-tag">In progress</span></span>
         <b>Flexible flag behind a cylinder</b>
         <p><b>Why it's harder</b>Two-way fluid-structure interaction, where the flow bends the flag and the bent flag changes the flow.</p>
         <p><b>So far</b>Each half has to reproduce the published Turek-Hron benchmark before the two are coupled. The solid's sag matches to 0.01 %, and it swings at 1.095 Hz against the published 1.096 to 1.100. The fluid's drag matches to 0.07 % and 0.014 % at the two flow speeds. Lift is within 0.7 % but scatters from mesh to mesh, so I'm holding that verdict back. The coupling is now set up: a trial of the first coupled case came within 0.7 % of the benchmark, and the recorded runs come next.</p>
         <p><b>How I'll check it</b>The benchmark's published values, for each half and for the coupled runs.</p>
         <span class="tools">OpenFOAM · CalculiX · preCICE</span>
       </article>
-    </div>
-  </section>
-
-  <section class="band wrap" id="capabilities" aria-labelledby="caps-title">
-    <div class="band-head">
-      <p class="eyebrow">Capabilities</p>
-      <h2 id="caps-title">What I can model, and with what</h2>
-    </div>
-    {{CAPS}}
-  </section>
-
-  <section class="band wrap" aria-label="Case study details">
-    <div class="band-head">
-      <p class="eyebrow">In detail</p>
-      <h2>Each study in full</h2>
-      <p>One write-up per study: the question, the answer up front, how I checked it, and what went wrong along the way. Click a study to open it; the gallery cards and the lesson links open the right one for you.</p>
-    </div>
-    <div class="studies">
-{{STUDIES}}
+      <article class="skill">
+        <span class="plan-meta"><span class="no">Electromagnetics · test data</span><span class="plan-tag">In progress</span></span>
+        <b>A production traction motor, checked blind against test data</b>
+        <p><b>Why it's harder</b>Three kinds of physics on one machine: torque, back-EMF and efficiency from the electromagnetics, a thermal network, and rotor stress at overspeed. It's modelled on the 2004 Toyota Prius motor.</p>
+        <p><b>How I'll check it</b>Internal checks first: an analytic air-gap field, the power balance at every operating point, and mesh convergence. Then the portfolio's first comparison with measured data, Oak Ridge National Laboratory's tests, opened only after my predictions are written down.</p>
+        <p><b>So far</b>The design inputs are spot-checked against Oak Ridge's design report, the first electromagnetic solve has run, and the first blind prediction is written down.</p>
+        <span class="tools">Pyleecan · FEMM · CalculiX</span>
+      </article>
     </div>
   </section>
 
@@ -658,36 +603,39 @@ details.study > summary:hover .study-toggle { text-decoration: underline; }
   const vp = document.getElementById("vp"), img = document.getElementById("vp-img");
   const sw = document.getElementById("lg-sw"), ticks = document.getElementById("lg-ticks");
   const title = document.getElementById("lg-title"), status = document.getElementById("vp-status");
-  const tabs = [...document.querySelectorAll('.viewport .tabs [role="tab"]')];
+  const cards = [...document.querySelectorAll("#gallery .card")];
+  const picks = new Map([...document.querySelectorAll("#picks > .pick")].map(p => [p.dataset.study, p]));
+  const byStudy = new Map(VP.map((v, i) => [v.study, i]));
+  const reduce = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const sci = v => (v < 0 ? "-" : "+") + Math.abs(v).toExponential(3).replace(/e([+-])(\d)$/, "e$10$2");
   const esc = s => s.replace(/[&<>]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]));
-  VP.forEach(v => { const p = new Image(); p.src = v.img; });
+  window.addEventListener("load", () => VP.forEach(v => { const p = new Image(); p.src = v.img; }));
 
-  // the 3D view listens for tab changes; the current tab is also kept on the element for late listeners
+  // the 3D view listens for changes; the current entry is also kept on the element for late listeners
   const announce = v => { vp.vpEntry = v; vp.dispatchEvent(new CustomEvent("vpchange", { detail: v })); };
   function paint(v) {
-    const n = v.bands.length;
-    sw.innerHTML = v.bands.slice().reverse().map(c => `<i style="background:${c}"></i>`).join("");
-    ticks.innerHTML = Array.from({ length: n + 1 }, (_, i) => {
-      const val = v.vmax - (v.vmax - v.vmin) * i / n;
-      return `<span style="top:${(100 * i / n).toFixed(3)}%">${sci(val)}</span>`;
-    }).join("");
-    title.innerHTML = `${esc(v.legend)}<small>${esc(v.unit)}</small>`;
+    vp.classList.toggle("is-figure", v.kind === "figure");
+    vp.classList.toggle("is-plain", v.kind === "plain");
+    if (v.bands) {
+      const n = v.bands.length;
+      sw.innerHTML = v.bands.slice().reverse().map(c => `<i style="background:${c}"></i>`).join("");
+      ticks.innerHTML = Array.from({ length: n + 1 }, (_, i) => {
+        const val = v.vmax - (v.vmax - v.vmin) * i / n;
+        return `<span style="top:${(100 * i / n).toFixed(3)}%">${sci(val)}</span>`;
+      }).join("");
+      title.innerHTML = `${esc(v.legend)}<small>${esc(v.unit)}</small>`;
+    } else { sw.innerHTML = ""; ticks.innerHTML = ""; title.innerHTML = ""; }
     status.innerHTML = `<b>${esc(v.model)}</b>` + v.lines.map(l => `<span>${esc(l)}</span>`).join("") +
-      `<span class="chk">${esc(v.check)}</span>`;
+      (v.check ? `<span class="chk">${esc(v.check)}</span>` : "");
     img.alt = v.model;
   }
 
-  let current = 0;
-  function show(i, focus) {
-    if (i === current && img.getAttribute("src") === VP[i].img) { paint(VP[i]); return; }
+  let current = -1;
+  function show(i) {
+    if (i === current) return;
     current = i;
     announce(VP[i]);
-    tabs.forEach((t, k) => { t.setAttribute("aria-selected", k === i ? "true" : "false"); t.tabIndex = k === i ? 0 : -1; });
-    vp.setAttribute("aria-labelledby", tabs[i].id);
-    if (focus) tabs[i].focus();
-    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (reduce) { img.src = VP[i].img; paint(VP[i]); return; }
+    if (reduce() || !img.getAttribute("src")) { img.src = VP[i].img; paint(VP[i]); return; }
     vp.classList.add("switching");
     setTimeout(() => {
       img.src = VP[i].img; paint(VP[i]);
@@ -695,39 +643,55 @@ details.study > summary:hover .study-toggle { text-decoration: underline; }
       if (img.complete) done(); else img.onload = done;
     }, 220);
   }
-  tabs.forEach((t, k) => {
-    t.tabIndex = k === 0 ? 0 : -1;
-    t.addEventListener("click", () => show(k));
-    t.addEventListener("keydown", e => {
-      if (e.key === "ArrowRight" || e.key === "ArrowLeft") {
-        e.preventDefault();
-        show((current + (e.key === "ArrowRight" ? 1 : tabs.length - 1)) % tabs.length, true);
-      }
-    });
+
+  // one study at a time: the viewer shows its result, the panel below it its answer and full write-up
+  function select(key, how = {}) {
+    const pick = picks.get(key);
+    if (!pick) return false;
+    if (byStudy.has(key)) show(byStudy.get(key));
+    picks.forEach((p, k) => { p.hidden = k !== key; });
+    cards.forEach(c => c.setAttribute("aria-current", c.dataset.study === key ? "true" : "false"));
+    if (how.open && pick.tagName === "DETAILS") pick.open = true;
+    if (how.scroll) (how.open ? pick : vp).scrollIntoView({ block: "start", behavior: reduce() ? "auto" : "smooth" });
+    return true;
+  }
+  cards.forEach(c => c.addEventListener("click", e => {
+    e.preventDefault();
+    select(c.dataset.study, { scroll: true });
+    history.replaceState(null, "", "#" + c.dataset.study);
+  }));
+  // links elsewhere to a study (lessons, tables): select it and open its write-up. The optimiser's own
+  // link goes to its featured section as usual.
+  const isStudy = key => picks.has(key) && key !== "bracket_opt";
+  document.addEventListener("click", e => {
+    const a = e.target.closest('a[href^="#"]');
+    if (!a || a.closest("#gallery")) return;
+    const key = decodeURIComponent(a.getAttribute("href").slice(1));
+    if (!isStudy(key)) return;
+    e.preventDefault();
+    select(key, { open: true, scroll: true });
+    history.replaceState(null, "", "#" + key);
   });
-  paint(VP[0]);
-  announce(VP[0]);
+  const fromHash = () => {
+    const key = decodeURIComponent(location.hash.slice(1));
+    if (isStudy(key)) select(key, { open: true, scroll: true });
+  };
+  window.addEventListener("hashchange", fromHash);
 
   const btns = [...document.querySelectorAll(".filters button")];
-  const cards = [...document.querySelectorAll("#gallery .card")];
   btns.forEach(b => b.addEventListener("click", () => {
     btns.forEach(x => x.setAttribute("aria-pressed", x === b ? "true" : "false"));
     const f = b.dataset.f;
     cards.forEach(c => { c.hidden = !(f === "all" || c.dataset.group === f); });
   }));
-  // a link to a study sheet (gallery card, lesson, nav) opens it before the browser scrolls to it
-  const openSheet = id => { const el = document.getElementById(id); if (el && el.tagName === "DETAILS") el.open = true; };
-  document.addEventListener("click", e => {
-    const a = e.target.closest('a[href^="#"]');
-    if (a) openSheet(decodeURIComponent(a.getAttribute("href").slice(1)));
-  });
-  const fromHash = () => {
-    const id = decodeURIComponent(location.hash.slice(1));
-    const el = id && document.getElementById(id);
-    if (el && el.tagName === "DETAILS") { el.open = true; requestAnimationFrame(() => el.scrollIntoView({ block: "start" })); }
-  };
-  window.addEventListener("hashchange", fromHash);
+
+  select(VP[0].study);
   fromHash();
+  // images above a deep-linked study can load after the first scroll and push it down: settle once more
+  window.addEventListener("load", () => {
+    const key = decodeURIComponent(location.hash.slice(1));
+    if (isStudy(key)) picks.get(key).scrollIntoView({ block: "start" });
+  });
 })();
 </script>
 <script>

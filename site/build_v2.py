@@ -20,71 +20,105 @@ for l in pick:
 
 # --- viewport scenes ------------------------------------------------------------
 VP = [
-    {"id": "bracket_opt", "tab": "Optimised", "legend": "S, Mises", "unit": "MPa",
+    {"id": "bracket_opt", "study": "bracket_opt", "tab": "Optimised", "legend": "S, Mises", "unit": "MPa",
      "model": "Optimised clevis bracket · 6061-T6, 100 × 100 mm base, (1.5, 1.0, 4.5) kN on the pin",
      "lines": ["Solver: CalculiX 2.22 · C3D10 · design D on the finest of its three meshes",
                "Deformation scale factor: +1.000e+02",
                "Peak 98.3 MPa against 100, at the lug fillet · 372 g, 4 % lighter than the start"]},
-    {"id": "cantilever", "tab": "Stress", "legend": "S, Mises", "unit": "MPa",
+    {"id": "cantilever", "study": "fea", "tab": "Stress", "legend": "S, Mises", "unit": "MPa",
      "model": "Cantilever bracket · steel, 200 × 20 × 20 mm, 1 kN at the tip",
      "lines": ["Solver: CalculiX 2.22 · C3D10 · 5 758 surface nodes",
                "Deformation scale factor: +2.500e+01",
                "Range capped at the 150 MPa beam-theory stress; the clamp corners are singular"]},
-    {"id": "contact_detail", "tab": "Contact", "legend": "S, Mises", "unit": "MPa",
+    {"id": "contact_detail", "study": "contact", "tab": "Contact", "legend": "S, Mises", "unit": "MPa",
      "model": "Roller on plate · steel, R = 50 mm, 501 N/mm · section through the contact",
      "lines": ["Solver: CalculiX 2.22 · surface-to-surface penalty contact",
                "Peak contact pressure +6.092e+02 · Hertz exact +6.067e+02",
                "Highest stress 0.41 mm below the surface, where Hertz puts it"]},
-    {"id": "bolted_joint", "tab": "Joint", "legend": "CPRESS", "unit": "MPa",
+    {"id": "bolted_joint", "study": "bolted_joint", "tab": "Joint", "legend": "CPRESS", "unit": "MPa",
      "model": "Bolted joint · two 6 mm steel plates, M8 at 15 kN, half model mirrored",
      "lines": ["Solver: CalculiX 2.22 · C3D8I, surface-to-surface contact with friction",
                "Contact pressure on the bottom plate after clamping, before any side load",
                "Peak 162 MPa at the hole · contact patch 21.1 mm across"]},
-    {"id": "strap_proof", "tab": "Plasticity", "legend": "S11", "unit": "MPa",
+    {"id": "strap_proof", "study": "strap_proof", "tab": "Plasticity", "legend": "S11", "unit": "MPa",
      "model": "Strap at its proof load · 6061-T6, 40 × 4 mm, 16 mm hole, 15 kN",
      "lines": ["Solver: CalculiX 2.22 · elastic-plastic, quarter model mirrored",
                "The top three bands, from 225 MPa, are past yield: 1.8 mm deep",
                "Hole edge 274 MPa and 0.58 % strain · left at −77 MPa after unloading"]},
-    {"id": "strut", "tab": "Buckling", "legend": "S, Mises", "unit": "MPa",
+    {"id": "strut", "study": "strut", "tab": "Buckling", "legend": "S, Mises", "unit": "MPa",
      "model": "Strut · 6061-T6, 500 mm, 25 × 16 mm, pinned, bowed L/1000",
      "lines": ["Solver: CalculiX 2.22 · C3D8I, geometrically nonlinear, increment 19 of 20",
                "Deformation scale factor: +5.000e+00",
                "21.54 kN, 1 % under first yield · buckling load 23.14 kN"]},
-    {"id": "fatigue", "tab": "Fatigue", "legend": "S11 amplitude", "unit": "MPa",
+    {"id": "fatigue", "study": "fatigue", "tab": "Fatigue", "legend": "S11 amplitude", "unit": "MPa",
      "model": "Strap with a 16 mm hole · 160 × 40 × 4 mm, 0 → 5 kN cyclic",
      "lines": ["Solver: CalculiX 2.22 · plane stress, quarter model mirrored",
                "Peak amplitude +5.85e+01 at the sides of the hole",
                "Life about 8 × 10⁹ cycles against 3 × 10⁷ required"]},
-    {"id": "fin", "tab": "Thermal", "legend": "NT11", "unit": "°C",
+    {"id": "fin", "study": "thermal", "tab": "Thermal", "legend": "NT11", "unit": "°C",
      "model": "Heat-sink fin · 6061-T6, 40 × 20 × 2 mm, h = 25 W/m²K",
      "lines": ["Solver: CalculiX 2.22 · steady heat transfer",
                "Tip 73.2 °C against a 60 °C minimum",
                "Energy balance: base heat in equals convection out"]},
-    {"id": "cold_plate", "tab": "Cold plate", "legend": "NT11", "unit": "°C",
+    {"id": "cold_plate", "study": "cold_plate", "tab": "Cold plate", "legend": "NT11", "unit": "°C",
      "model": "Cold plate · 3 mm 6061-T6 on a 1 mm water channel, 30 kW/m²",
      "lines": ["Solver: OpenFOAM 14 → CalculiX 2.22 · coupled, 28 passes",
                "A 30 mm slice of the plane-strain section · coolant left to right",
                "Component face 40.99 °C against 45 · coolant rise 7.20 K"]},
-    {"id": "duct", "tab": "Flow", "legend": "U, axial", "unit": "m/s",
+    {"id": "duct", "study": "cfd", "tab": "Flow", "legend": "U, axial", "unit": "m/s",
      "model": "Coolant passage · 20 × 1 mm, water at 0.1 m/s mean, Re 199",
      "lines": ["Solver: OpenFOAM 14 · 3D laminar, quarter section mirrored",
                "Height = velocity; gap direction drawn 5× wider",
                "Pressure gradient within 0.03 % of the exact rectangular-duct solution"],
      "check_text": "Render check: the volume under the surface equals the imposed flow rate to {err} · {col} of pixels on the legend"},
-    {"id": "mode1", "tab": "Modal", "legend": "U, Magnitude", "unit": "normalised",
+    {"id": "mode1", "study": "modal", "tab": "Modal", "legend": "U, Magnitude", "unit": "normalised",
      "model": "Bracket arm · steel, 150 × 25 × 7 mm, clamped",
      "lines": ["Solver: CalculiX 2.22 · *FREQUENCY, mode 1 of 4",
                "261.7 Hz flapwise · requirement ≥ 250 Hz (engine 2nd order + 25 %)",
                "Within 0.9 % of an independent Timoshenko beam model"]},
 ]
+VP += [
+    {"id": "strap_detail", "study": "strap", "legend": "S11", "unit": "MPa",
+     "model": "Strap with a cable hole · 6061-T6, 40 × 4 mm, 5 kN",
+     "lines": ["Solver: CalculiX 2.22 · plane stress, quarter model mirrored",
+               "The 10 mm hole of the mesh study, 0.125 mm elements at its edge",
+               "Peak at the two sides of the hole · Kt within 0.6 % of Peterson's handbook"]},
+    {"id": "cad_plate", "study": "cad", "kind": "plain",
+     "model": "Mounting plate · generated by a CadQuery script",
+     "lines": ["One script, every hole size: the CAD is a function of the inputs",
+               "Only the 9 mm (M8 clearance) hole meets both the weight and edge-distance rules"]},
+    {"id": "heat", "study": "heat", "kind": "figure", "img": "v2/heat_response.webp",
+     "model": "Cold-plate channel · water in a 1 mm gap, 30 kW/m² on both walls",
+     "lines": ["Solver: OpenFOAM 14 · laminar flow with heat transfer",
+               "Wall and bulk temperature, and the local Nusselt number, against the Graetz thermal-entry solution",
+               "Wall peak 44.03 °C against 45 · coolant rise 7.2 K"]},
+    {"id": "suspension", "study": "suspension", "kind": "figure", "img": "img/anim_quarter_car.webp",
+     "model": "Quarter car over a bump · SciPy and OpenModelica",
+     "lines": ["Drawn from the simulation at 36 km/h and 600 N·s/m, with the tire load and body acceleration",
+               "The wheel leaves the road twice",
+               "600 to 1000 N·s/m passes at 18 km/h; at 36 km/h no damping rate does"]},
+    {"id": "baseline", "study": "baseline", "kind": "figure", "img": "img/anim_msd.webp",
+     "model": "Mass-spring-damper · SciPy against OpenModelica",
+     "lines": ["The same step force at three damping ratios, with the exact solution dotted underneath",
+               "All 72 checks pass",
+               "The two tools agree to a few parts per million"]},
+]
 import make_mesh3d
 mesh3d = make_mesh3d.index()
 for v in VP:
+    if v.get("kind") == "figure":
+        v["check"] = ""
+        continue
     if v["id"] in mesh3d:          # interactive 3D view: same surface and bands as the render
         m = mesh3d[v["id"]]
         v.update(mesh=m["file"], mesh_kb=m["kb"], elev=m["elev"], azim=m["azim"])
     s = scenes[v["id"]]
     vol, col = s["volume"], s["color"]
+    v["img"] = f"v2/vp_{v['id']}.webp"
+    if v.get("kind") == "plain":                 # a CAD render: geometry check only, no field
+        v["check"] = (f"Render check: encloses {vol['enclosed_mm3']:,.1f} mm³ of {vol['design_mm3']:,.1f} design"
+                      ).replace(",", " ")
+        continue
     v["bands"] = [("#%02x%02x%02x" % tuple(round(c * 255) for c in rgb)) for rgb in s["band_colors"]]
     v["vmin"], v["vmax"] = s["vmin"], s["vmax"]
     v["check"] = (f"Render check: encloses {vol['enclosed_mm3']:,.1f} mm³ of {vol['design_mm3']:,.1f} design · "
@@ -115,20 +149,19 @@ CARDS = [
 ]
 VERDICT = {"pass": "Passes", "fail": "Fails", "mixed": "Depends on speed", "held": "One result on hold"}
 cards_html = "\n".join(
-    f'''      <a class="card" href="#{k}" data-group="{g}">
+    f'''      <a class="card" href="#{k}" data-study="{k}" data-group="{g}">
         <span class="thumb"><img src="v2/th_{k}.webp" alt="" loading="lazy" width="800" height="500"></span>
         <span class="card-body">
-          <span class="meta"><span class="no">{n}</span><span>{d}</span></span>
+          <span class="meta"><span class="no">{n}</span><span>{html.escape(d.replace("New · ", "").replace("Featured · ", ""))}</span></span>
           <span class="card-title">{html.escape(t)}</span>
-          <span class="card-answer">{html.escape(a)}</span>
           <span class="card-foot"><span class="v v-{v}">{VERDICT[v]}</span><span class="tools">{tools}</span></span>
         </span>
       </a>''' for k, n, g, d, t, a, v, tools in CARDS)
 
-tabs_html = "\n".join(
-    f'<button type="button" role="tab" id="tab-{v["id"]}" aria-controls="vp" aria-selected="{"true" if i == 0 else "false"}" data-i="{i}">'
-    f'<span class="tab-k">{v["tab"]}</span><span class="tab-v">{html.escape(v["model"].split(" · ")[0])}</span></button>'
-    for i, v in enumerate(VP))
+# the viewer follows the gallery's order
+order = [c[0] for c in CARDS]
+VP.sort(key=lambda v: order.index(v["study"]))
+assert [v["study"] for v in VP] == order, "every study needs exactly one viewer entry"
 
 term_html = "".join(
     f'<span class="t-row"><span class="t-id">{cid}</span><span class="t-{st.lower()}">{st}</span><span class="t-num">{val}</span><span class="t-tol">tol {tol}</span></span>'
@@ -145,22 +178,30 @@ if not th_heat.exists():
     canvas.save(th_heat, "WEBP", quality=88)
 
 
-def collapse_studies(text: str) -> str:
-    """Each study sheet becomes a closed <details>: the summary keeps its head (label and title) and
-    adds the gallery card's one-line answer; the body opens on a click or a link to the study."""
-    answers = {c[0]: c[5] for c in CARDS}
+def study_panels(text: str) -> str:
+    """Each study sheet becomes a closed <details>, hidden until its card is chosen: the summary keeps its
+    head (label and title) and adds the verdict and the one-line answer; the body opens on a click or a
+    link to the study. The optimiser's panel points to its featured section."""
+    answers = {c[0]: c for c in CARDS}
+    text = re.sub(r'\n  <h2 class="discipline">[^<]*</h2>\n', "\n", text)
     pat = re.compile(r'  <section class="study" id="(\w+)">\s*<div class="study-head">(.*?)</div>(.*?)\n  </section>', re.S)
-
-    def rep(m):
+    panels = {}
+    for m in pat.finditer(text):
         k, head, body = m.group(1), m.group(2), m.group(3)
-        summ = html.escape(answers.get(k, ""))
-        return (f'  <details class="study" id="{k}">\n    <summary class="study-head">{head}'
-                f'<span class="study-sum">{summ}</span><span class="study-toggle"></span></summary>\n'
-                f'    <div class="study-body">{body}\n{extras.evidence_html(k)}    </div>\n  </details>')
-
-    out, n = pat.subn(rep, text)
-    assert n == text.count('<section class="study"'), "every study sheet must collapse"
-    return out
+        c = answers[k]
+        panels[k] = (f'  <details class="study pick" id="{k}" data-study="{k}" hidden>\n    <summary class="study-head">{head}'
+                     f'<span class="v v-{c[6]}">{VERDICT[c[6]]}</span><span class="study-sum">{html.escape(c[5])}</span>'
+                     f'<span class="study-toggle"></span></summary>\n'
+                     f'    <div class="study-body">{body}\n{extras.evidence_html(k)}    </div>\n  </details>')
+    assert len(panels) == text.count('<section class="study"'), "every study sheet must become a panel"
+    c = answers["bracket_opt"]
+    panels["bracket_opt"] = (f'  <div class="study pick" id="pick-bracket_opt" data-study="bracket_opt" hidden>\n'
+                             f'    <div class="study-head"><span class="label">Study 12 · {c[7]}</span><h2>{html.escape(c[4])}</h2>'
+                             f'<span class="v v-{c[6]}">{VERDICT[c[6]]}</span><span class="study-sum">{html.escape(c[5])}</span>'
+                             f'<a class="study-toggle-link" href="#bracket_opt">Read the full study, just below ↓</a></div>\n  </div>')
+    missing = [c[0] for c in CARDS if c[0] not in panels]
+    assert not missing, f"no write-up for {missing}"
+    return "\n".join(panels[c[0]] for c in CARDS)
 
 def featured_with_evidence() -> str:
     """The featured study gets the same evidence line as the others, once its files are committed."""
@@ -170,6 +211,8 @@ def featured_with_evidence() -> str:
     return text[:end] + ev + text[end:] if ev else text
 
 
+WORDS = {15: ("fifteen", "Fifteen"), 16: ("sixteen", "Sixteen"), 17: ("seventeen", "Seventeen"),
+         18: ("eighteen", "Eighteen")}
 import extras
 import make_og
 facts = extras.repo_facts()
@@ -180,18 +223,21 @@ grader_body, grader_js = extras.grader_html(gdata)
 
 page = (HERE / "v2_template.html").read_text(encoding="utf-8")
 page = (page.replace("{{EXTRA_CSS}}", extras.CSS)
-            .replace("{{TLDR}}", extras.summary_html(facts))
+            .replace("{{STUDY_COUNT_WORD}}", WORDS[len(CARDS)][0])
+            .replace("{{STUDY_COUNT_TITLE}}", WORDS[len(CARDS)][1])
+            .replace("{{STUDY_COUNT}}", str(len(CARDS)))
+            .replace("{{MEMO_URL}}", extras.gh(extras.MEMO))
+            .replace("{{CODE_FACTS}}", extras.code_facts(facts))
             .replace("{{GRADER}}", grader_body)
             .replace("{{GRADER_JS}}", grader_js)
             .replace("{{REQS}}", extras.reqs_html())
             .replace("{{CHECKS}}", f"{facts['checks']:,}")
             .replace("{{RUNS}}", str(facts["runs"])))
 page = (page.replace("{{VP_JSON}}", json.dumps(VP, ensure_ascii=False))
-            .replace("{{TABS}}", tabs_html)
             .replace("{{CARDS}}", cards_html)
             .replace("{{TERMINAL}}", term_html)
             .replace("{{FEATURED}}", featured_with_evidence())
-            .replace("{{STUDIES}}", collapse_studies(studies))
+            .replace("{{PICKS}}", study_panels(studies))
             .replace("{{CAPS}}", extras.CAPS)
             .replace("{{VIEWER3D_JS}}", (HERE / "viewer3d.js").read_text(encoding="utf-8")))
 (HERE / "index.html").write_text(page, encoding="utf-8")
@@ -202,5 +248,12 @@ dupes = sorted({i for i in ids if ids.count(i) > 1})
 assert not dupes, f"duplicate ids on the page: {dupes}"
 missing = sorted(set(re.findall(r'href="#([^"]+)"', page)) - set(ids))
 assert not missing, f"links to ids that don't exist: {missing}"
+# an unclosed brace makes the browser drop every style rule after it, silently
+css = page[page.index("<style>"):page.index("</style>")]
+depth = 0
+for line_no, line in enumerate(css.splitlines(), 1):
+    depth += line.count("{") - line.count("}")
+    assert depth >= 0, f"stray closing brace in the page styles, line {line_no}"
+assert depth == 0, "unclosed brace in the page styles"
 print("written", len(page) // 1024, "KB;", len(term_lines), "terminal lines;", facts,
       f"; page grader matches Python on {gcheck['checked']} answers")

@@ -1,5 +1,5 @@
 // Drives headless Chrome through the page's 3D view and prints, as JSON, a lit and an unlit frame of
-// every tab that has a mesh, from four angles. Used by check_viewer3d.py.
+// every study whose viewer entry has a mesh, from four angles. Used by check_viewer3d.py.
 // usage: node check_viewer3d.mjs <page url> <chrome.exe>
 import { spawn } from "node:child_process";
 import { mkdtempSync } from "node:fs";
@@ -33,7 +33,7 @@ const script = `(async () => {
   document.getElementById("vp-3d").click();
   for (let i = 0; i < 50 && !document.getElementById("vp").classList.contains("is-3d"); i++) await wait(100);
   const out = {};
-  for (const t of document.querySelectorAll('.viewport .tabs [role="tab"]')) {
+  for (const t of document.querySelectorAll("#gallery .card")) {
     t.click(); await wait(2400);
     if (!document.getElementById("vp").classList.contains("is-3d")) continue;
     const views = [];
@@ -42,7 +42,7 @@ const script = `(async () => {
       views.push({ lit: window.__m3d.snap(1), flat: window.__m3d.snap(0) });
       window.__m3d.turn(-da, -de);
     }
-    out[t.id.replace("tab-", "")] = views;
+    out[document.getElementById("vp").vpEntry.id] = views;
   }
   return out;
 })()`;

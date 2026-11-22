@@ -94,18 +94,11 @@ def repo_facts() -> dict:
     return {"py_files": len(files), "py_lines": lines, "tests": int(m.group(1)), "checks": checks, "runs": len(ver)}
 
 
-def summary_html(facts: dict) -> str:
+def code_facts(facts: dict) -> str:
     k = facts["py_lines"] // 1000
-    return f'''  <section class="tldr wrap" aria-label="The short version">
-    <span class="label">The short version</span>
-    <div class="tldr-grid">
-      <div><b>About me</b><p>I'm an automotive mechanical engineer with a master's in ME. In my day job I use AI agents to run virtual models and to turn functional requirements into tools that automate engineering work.</p></div>
-      <div><b>What's here</b><p>Sixteen studies, each taken from written requirements through to a checked answer using open-source solvers. There are also four evaluation tasks, and their graders are tested as well.</p></div>
-      <div><b>The code</b><p>It's all Python, about {k},000 lines across {facts["py_files"]} files. That covers the harness that runs and checks everything, the models, the independent reference solutions and the graders, with {facts["tests"]} automated tests that run on every push.</p></div>
-    </div>
-    <p class="tldr-links"><a href="#tasks">Grade an answer yourself</a><a href="#reqs">All the requirements in one table</a><a href="#bracket_opt">The newest study, an optimisation loop</a><a class="ext" href="{gh(MEMO)}">A sample client memo</a><a href="#get-in-touch">Get in touch</a></p>
-  </section>
-'''
+    return (f"It's all Python, about {k},000 lines across {facts['py_files']} files: the harness that runs and checks "
+            f"everything, the models, the independent reference solutions and the graders, with {facts['tests']} "
+            f"automated tests that run on every push.")
 
 
 # --------------------------------------------------------------------------- grader demo
@@ -538,14 +531,6 @@ def reqs_html() -> str:
 
 CSS = r"""
 /* 30-second summary */
-.tldr { display: grid; gap: 12px; padding: 18px 22px 20px; margin-bottom: 28px; background: var(--surface); border: 1px solid var(--rule); border-left: 3px solid var(--accent); border-radius: 6px; }
-.tldr .label { color: var(--accent); }
-.tldr-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px 28px; }
-.tldr-grid b { font-family: var(--font-display); font-weight: 700; font-size: 1.02rem; display: block; margin-bottom: 2px; }
-.tldr-grid p { color: var(--ink-2); font-size: 0.96rem; line-height: 1.5; }
-.tldr-links { display: flex; flex-wrap: wrap; gap: 6px 22px; font-size: 0.93rem; font-weight: 600; }
-.tldr-links a::after { content: " ↓"; }
-.tldr-links a.ext::after { content: " ↗"; }
 
 /* evidence links under each study */
 .study-body > p.evidence { max-width: none; }
@@ -555,11 +540,19 @@ CSS = r"""
 .evidence a.ev-doc::after, .evidence a.ev-memo::after { content: " ↗"; }
 .ev-runs { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; color: var(--ink-2); flex-basis: 100%; }
 .ev-runs a { font-family: var(--font-data); font-size: 0.78rem; font-weight: 400; }
-@media (max-width: 820px) { .tldr-grid { grid-template-columns: 1fr; } }
-
 /* grader demo */
 .grader { display: grid; gap: 14px; grid-template-columns: minmax(0, 1fr); }
-.g-tabs { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.tabs { display: grid; gap: 8px; }
+.tabs button {
+  font: inherit; text-align: left; cursor: pointer; display: grid; gap: 2px; min-width: 0;
+  padding: 10px 14px; border-radius: var(--radius); border: 1px solid var(--rule); background: var(--surface); color: var(--ink);
+}
+.tabs button:hover { border-color: var(--accent); }
+.tabs button[aria-selected="true"] { border-color: var(--accent); box-shadow: inset 0 -3px 0 var(--accent); }
+.tab-k { font-family: var(--font-data); font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); }
+.tab-v { font-size: 0.92rem; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.g-tabs { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+@media (max-width: 820px) { .g-tabs { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 .g-body { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); grid-template-areas: "pick term" "edit term"; gap: 18px 24px; align-items: start; }
 .g-pick { grid-area: pick; display: grid; gap: 18px; min-width: 0; }
 .g-edit { grid-area: edit; min-width: 0; }
@@ -594,7 +587,7 @@ CSS = r"""
 .g-meter i.low { background: var(--term-fail); }
 .g-note { padding: 4px 16px 16px; font-family: var(--font-body); font-size: 0.92rem; line-height: 1.5; color: var(--term-ink); }
 @media (max-width: 900px) { .g-body { grid-template-columns: minmax(0, 1fr); grid-template-areas: "pick" "term" "edit"; } .g-term { position: static; grid-row: auto; } }
-@media (max-width: 520px) { .g-fields { grid-template-columns: 1fr; } .g-tabs { grid-template-columns: 1fr; } }
+@media (max-width: 520px) { .g-fields { grid-template-columns: 1fr; } }
 
 /* requirements table */
 .reqs { border: 1px solid var(--rule); border-radius: 6px; background: var(--surface); }
@@ -622,12 +615,6 @@ CSS = r"""
 .reqs-note { padding: 12px 18px 16px; font-size: 0.88rem; color: var(--ink-2); border-top: 1px solid var(--rule); }
 .v-held { color: var(--warn); background: var(--warn-bg); }
 .findings .finding:last-child:nth-child(even) { grid-column: 1 / -1; }
-/* gallery: one featured card and the rest; the last spans two columns so no row has a gap */
-@media (min-width: 601px) {
-  .gallery .card:last-child { grid-column: span 2; grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr); grid-template-rows: auto; }
-  .gallery .card:last-child .thumb { border-bottom: 0; border-right: 1px solid var(--rule); aspect-ratio: auto; height: 100%; }
-  .gallery .card:last-child .card-body { align-content: center; padding: 22px 28px; }
-}
 """
 
 
@@ -637,14 +624,18 @@ CAPS = """<div class="table-wrap">
         <tbody>
           <tr><td>Structural FEA with 3D solids and plane stress, including mesh convergence and telling real stress peaks from singularities</td><td>FreeCAD, Gmsh, CalculiX</td><td><a href="#fea">1</a>, <a href="#strap">2</a></td></tr>
           <tr><td>Contact between separate parts, with the contact pressure and the stress below the surface checked against Hertz</td><td>Gmsh, CalculiX</td><td><a href="#contact">10</a></td></tr>
+          <tr><td>Friction contact and preloaded bolted joints, checked against the VDI 2230 joint diagram</td><td>CalculiX</td><td><a href="#bolted_joint">16</a></td></tr>
+          <tr><td>Buckling: linear eigenvalue and geometrically nonlinear with imperfections, checked against Euler, Southwell and Perry-Robertson</td><td>CalculiX</td><td><a href="#strut">13</a></td></tr>
+          <tr><td>Plasticity with loading and unloading, and the residual stress left behind, checked against Neuber and Glinka</td><td>CadQuery, Gmsh, CalculiX</td><td><a href="#strap_proof">14</a></td></tr>
           <tr><td>Vibration and modal analysis, including identifying the modes and keeping clear of engine orders</td><td>CadQuery, Gmsh, CalculiX</td><td><a href="#modal">4</a></td></tr>
           <tr><td>Fatigue life using notch factors, mean-stress correction and S-N curves fitted to published test data</td><td>CalculiX, Python</td><td><a href="#fatigue">3</a></td></tr>
+          <tr><td>Chained multiphysics: coolant flow, then conduction through the part, then thermal stress, with an energy balance at every handoff</td><td>OpenFOAM, CalculiX</td><td><a href="#cold_plate">15</a></td></tr>
           <tr><td>Design optimisation, with an optimiser driving the CAD-to-FEA pipeline and every candidate checked before it counts</td><td>SciPy, CadQuery, Gmsh, CalculiX</td><td><a href="#bracket_opt">12</a></td></tr>
-          <tr><td>Scripted pipelines from parametric CAD through STEP export, meshing and solving</td><td>CadQuery, Gmsh, CalculiX</td><td><a href="#strap">2</a>, <a href="#modal">4</a>, <a href="#cad">8</a></td></tr>
+          <tr><td>Scripted pipelines from parametric CAD through STEP export, meshing and solving</td><td>CadQuery, Gmsh, CalculiX</td><td><a href="#strap">2</a>, <a href="#modal">4</a>, <a href="#cad">8</a>, <a href="#bracket_opt">12</a>, <a href="#strap_proof">14</a></td></tr>
           <tr><td>Internal laminar flow and pressure budgets, in 2D and 3D</td><td>OpenFOAM</td><td><a href="#cfd">5</a></td></tr>
           <tr><td>Heat transfer, from conduction with surface convection to convection in a heated coolant channel</td><td>CalculiX, OpenFOAM</td><td><a href="#thermal">6</a>, <a href="#heat">11</a></td></tr>
           <tr><td>Ride, road holding and frequency response, including ISO 2631 comfort weighting</td><td>Python (SciPy), OpenModelica</td><td><a href="#suspension">7</a>, <a href="#baseline">9</a></td></tr>
-          <tr><td>Renders of FE results and CAD parts in Blender, with the legend colours and geometry checked automatically</td><td>Blender (Cycles), Python</td><td><a href="#fea">1</a>, <a href="#strap">2</a>, <a href="#modal">4</a>, <a href="#thermal">6</a>, <a href="#cad">8</a></td></tr>
+          <tr><td>Renders of FE results and CAD parts in Blender, with the legend colours and geometry checked automatically</td><td>Blender (Cycles), Python</td><td><a href="#fea">1</a>, <a href="#strap">2</a>, <a href="#modal">4</a>, <a href="#thermal">6</a>, <a href="#cad">8</a>, <a href="#bracket_opt">12</a>, <a href="#strut">13</a>, <a href="#strap_proof">14</a>, <a href="#cold_plate">15</a>, <a href="#bolted_joint">16</a></td></tr>
           <tr><td>Verification against exact and handbook solutions, the Grid Convergence Index, and tolerance and sensitivity studies</td><td>Python</td><td>All</td></tr>
         </tbody>
       </table>
