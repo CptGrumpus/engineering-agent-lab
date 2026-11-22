@@ -73,6 +73,12 @@ def write_case(params: dict, numerics: dict, case: Path) -> dict:
     R, Ub, L = g["R_m"], g["Ub_m_per_s"], float(numerics.get("axial_length_m", 0.0)) or g["length_m"]
     nu = float(params["kinematic_viscosity_m2_per_s"])
     n = int(params["n_radial"])
+    if numerics.get("axial_length_rule") == "geometric_mean":
+        # checkMesh's aspect ratio on a wedge (a 2D mesh) is about axial length / radial height, so a fixed D/50 is
+        # thousands of times the sub-micron wall cells at high Re. The geometric mean of the wall and axis cell
+        # heights makes both ends' ratio sqrt(axis / wall cell). Fully developed flow has no axial gradient, so the
+        # length should not change the answer (checked against the D/50 length in the case that adopts this).
+        L = math.sqrt(g["h1_m"] * g["h1_m"] * g["growth"] ** (n - 1))
     a = math.radians(WEDGE_HALF_ANGLE_DEG)
     c, s = math.cos(a), math.sin(a)
     nx = int(numerics.get("axial_cells", 1))
