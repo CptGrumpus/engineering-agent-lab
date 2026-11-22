@@ -2,8 +2,9 @@
 
 [Portfolio index](../PORTFOLIO.md) · Fluids and structures (coupled)
 
-> **Draft, in progress (2026-11-21).** The solid and fluid stages are being verified; the coupled stage
-> waits on installing preCICE. Numbers marked *pending* are filled in as their runs finish.
+> **Draft, in progress (updated 2026-11-22).** The solid and fluid stages are verified. The coupled stage
+> runs (preCICE); its steady case is on its second mesh study. Numbers marked *pending* are filled in as their
+> runs finish.
 
 | | |
 |---|---|
@@ -43,8 +44,11 @@ published results first, and only then are they coupled.
   Drag converges at order 2.75 to 14.299 N/m against the published 14.294 (0.03 %). The tip's vertical
   displacement is 0.4 % and then 1.0 % below the published value as the mesh refines, moving away from it, which is
   not explained yet; lift jitters by about 2 % from one time step to the next (coupling noise on a force 5 % the
-  size of drag). Not verified: the next run judges steadiness by drift, averages the forces, and refines the solid
-  mesh to test the tip drift.
+  size of drag). Not verified. Two cheap probes before the revision: lift's jitter is zero-mean coupling noise (a tighter
+  coupling tolerance cut it 72 times and left every mean unchanged to five digits), and a finer solid moves the tip
+  only 0.035 %, so the solid is not the cause of the drift. The revision (running) averages over the last 2 s,
+  judges steadiness by drift, tightens the coupling, and uses fluid meshes of 2.5 / 1.77 / 1.25 mm: the 5 mm mesh
+  was too coarse to belong in the sequence (+5.8 %). *Result pending.*
 - **Coupled, periodic (FSI2, FSI3)**: *pending*.
 
 ## How it works
@@ -93,6 +97,14 @@ published results first, and only then are they coupled.
   lift is a small difference of large pressure forces, so it scatters by about ±0.6 % from mesh to mesh.
   One CFD1 mesh study verified it and the next withheld it; CFD2 shows the same. The fix (nested meshes, or measuring that scatter
   first) is the next revision; the tolerance stays.
+- **A jittering force that wasn't unsteady flow.** In the coupled steady case lift changed sign about 600 times in
+  800 steps, ±2 % peak to peak, with no drift. At Re 20 the flow can't shed vortices, so a steadiness check that
+  measured peak to peak was measuring coupling noise. Judging steadiness by drift (the mean of each half of the last
+  2 s) and reporting window means fixed the check without loosening it; a tighter coupling tolerance shrank the noise
+  itself.
+- **A suspect ruled out cheaply.** The tip displacement moved away from the benchmark as the fluid mesh refined. The
+  obvious suspect, the solid mesh held at 2.5 mm, was tested on one point first: halving it moved the tip 0.035 % and
+  took four times as long. The six-hour revision went to the fluid side instead.
 - **Smaller finds.** CalculiX uses one print frequency for every request in a step, so one request
   silently thinned another's output. The `.dat` file's seven digits limit how well equilibrium can close.
 
@@ -109,6 +121,7 @@ published results first, and only then are they coupled.
 - solid, static: [CSM1 mesh study](../runs/20261121-131111_flag_csm1_mesh/report.md),
   [CSM2 mesh study](../runs/20261121-131133_flag_csm2_mesh/report.md) (both verification PASS)
 - solid, dynamic: [CSM3, final](../runs/20261121-184353_flag_csm3_dt_r3/report.md) (frequency and ux verified), with the [first run](../runs/20261121-132448_flag_csm3_dt/report.md) (energy drift), [r1](../runs/20261121-142836_flag_csm3_dt_r1/report.md) and [r2](../runs/20261121-164522_flag_csm3_dt_r2/report.md) (the divergence and the wrong diagnosis) kept as evidence
+- coupled, steady: [FSI1 first mesh study](../runs/20261121-203031_turek_hron_fsi1_mesh/report.md) (drag converged; lift noise and the tip drift withheld it); revision `cases/turek_hron_fsi1_mesh_r1.toml` (predictions written before the run)
 - fluid: [CFD1 first mesh study](../runs/20261121-140245_turek_hron_cfd1_mesh/report.md) (lift verified), [CFD1 refined](../runs/20261121-140657_turek_hron_cfd1_mesh_r1/report.md) (drag verified), [CFD2](../runs/20261121-151947_turek_hron_cfd2_mesh/report.md) (drag verified, lift withheld on mesh noise)
 - case files: `cases/flag_csm1_mesh.toml`, `cases/flag_csm2_mesh.toml`, `cases/flag_csm3_dt.toml`,
   `cases/flag_csm3_dt_r1.toml`, `cases/turek_hron_cfd1_mesh.toml`, `cases/turek_hron_cfd1_mesh_r1.toml`,
