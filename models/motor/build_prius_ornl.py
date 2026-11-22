@@ -126,9 +126,55 @@ def _m330_35a():
     }
 
 
+TAIL_H = [12e3, 15e3, 20e3, 30e3, 45e3, 70e3, 100e3, 150e3, 220e3, 300e3]
+
+
+def _m250_35a():
+    """M250-35A, Tata Steel 'Typical data' sheet (June 2008), models/motor/materials/M250-35A_tata_2008.csv. Bracketing
+    grade (lower loss, higher Si: lower permeability above 1.3 T than M330-35A)."""
+    csv_name = "M250-35A_tata_2008.csv"
+    rows = _csv_rows(HERE / "materials" / csv_name)
+    bh = [(0.0, 0.0)] + [(float(r["H_50Hz_A_per_m"]), float(r["B_T"])) for r in rows if r["H_50Hz_A_per_m"]]
+    h_last, b_last = bh[-1]
+    bh += _tail(h_last, b_last, 2.0, TAIL_H)  # 1.7-1.8 T secant gives k = 1.17 here; the k = 1 form is kept for all
+    return {
+        "name": "M250-35A",
+        "path": csv_name,
+        "bh": bh,
+        "bh_source": (f"Tata Steel M250-35A typical data (June 2008), H at 50 Hz, 0.1-{b_last:.1f} T; above {b_last:.1f} T "
+                      "extrapolated (build_prius_ornl._tail, saturation polarization 2.0 T)"),
+        "Wlam": 0.35e-3,
+        "rho": 7600.0,  # kg/m^3, EN 10106 conventional density for M250-35A (not on the sheet)
+        "elec_rho": 0.55e-6,  # ohm m, Tata sheet (55 uOhm cm)
+        "Ex": 185e9,  # Pa, Tata sheet, rolling direction (200 GPa transverse)
+    }
+
+
+def _powercore_190y390():
+    """thyssenkrupp powercore traction 035-190Y390 (Aug 2025), models/motor/materials/powercore_035-190Y390_tk_2025.csv.
+    Bracketing grade (high strength). The sheet gives the polarization J, so B = J + mu0 H."""
+    csv_name = "powercore_035-190Y390_tk_2025.csv"
+    rows = _csv_rows(HERE / "materials" / csv_name)
+    bh = [(0.0, 0.0)] + [(float(r["H_50Hz_A_per_m"]), float(r["J_T"]) + MU0 * float(r["H_50Hz_A_per_m"]))
+                         for r in rows if r["H_50Hz_A_per_m"]]
+    h_last, b_last = bh[-1]
+    bh += _tail(h_last, b_last, 2.0, TAIL_H)
+    return {
+        "name": "powercore 035-190Y390",
+        "path": csv_name,
+        "bh": bh,
+        "bh_source": (f"thyssenkrupp powercore 035-190Y390 typical data (Aug 2025), J at 50 Hz, 0.5-1.8 T, B = J + mu0 H; "
+                      f"above B = {b_last:.3f} T extrapolated (build_prius_ornl._tail, saturation polarization 2.0 T)"),
+        "Wlam": 0.35e-3,
+        "rho": 7600.0,  # kg/m^3, on the sheet
+        "elec_rho": None,  # not on the sheet: Pyleecan's value is kept (unused by the magnetostatic solve)
+        "Ex": None,  # not on the sheet: Pyleecan's value is kept (the overspeed stress does not depend on E)
+    }
+
+
 # lamination grades: name -> function returning the data. Grades without an entry keep Pyleecan's file data (only
 # M400-50A, which came with it).
-LAMINATIONS = {"M330-35A": _m330_35a}
+LAMINATIONS = {"M330-35A": _m330_35a, "M250-35A": _m250_35a, "190Y390": _powercore_190y390}
 
 
 def _set_lamination(m, grade):
@@ -152,7 +198,11 @@ def _set_lamination(m, grade):
         mat.mag.Wlam = data["Wlam"]
         # mur_lin is used only by linear models; take the curve's secant at 1.0 T
         mat.mag.mur_lin = float(1.0 / np.interp(1.0, bs, hs) / MU0)
-        mat.struct.rho, mat.struct.Ex, mat.elec.rho = data["rho"], data["Ex"], data["elec_rho"]
+        mat.struct.rho = data["rho"]
+        if data["Ex"] is not None:
+            mat.struct.Ex = data["Ex"]
+        if data["elec_rho"] is not None:
+            mat.elec.rho = data["elec_rho"]
         rows.append((f"{'stator' if lam is m.stator else 'rotor'}.mat_type", old_name, data["name"], data["bh_source"]))
     return rows
 
