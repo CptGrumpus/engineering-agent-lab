@@ -28,6 +28,25 @@
 #      high speed, and the magnets bind. REQ-TH1 30.2 kW nominal, now verified PASS; 26.2-34.3 kW over the scenarios.
 #   P4 The FE logs (geo, gmsh and ccx logs, sta) appear under each point's solver/ folder; no temp folder left behind.
 #
+# Results (run 20261122-174925_motor_prius_thermal_r1, 5 min): verification PASS in four scenarios (jacket_h1000,
+# interface_0p08, end_space_half, air_gap_x3), FAIL in six on section_wind_peak, by 0.1-2.2 points (nominal -5.25 %),
+# plus section_wind_mean in interface_0p01 (-6.4 %). REQ-TH1 30.2 kW nominal, PASS but unverified; verified PASS in the
+# four passing scenarios (28.0 / 26.2 / 27.6 / 29.6 kW).
+#   P1 MISSED: the top-of-slot estimate halved the peak shortfall (-10.4 to -5.25 % nominal; -3.8 to -7.2 % over the
+#      scenarios) but did not bring it within 3 %. Mean, teeth and yoke errors unchanged (held); every GCI passes
+#      (converged regime, held). What is left: the wall at the slot top is hotter than the tooth's bore face alone, and
+#      the narrow top is not a long slab; the remaining 3-4 K is the 2D field the lumped model leaves out.
+#   P2 MISSED: four scenarios pass, not nine (the peak still fails in six).
+#   P3 HELD for the envelope and every metric (unchanged to 1e-3 in all ten scenarios); the winding hotspot moved by up
+#      to 6.7 K (8.2 K at teeth 0.75), at high speed where the slot sets it, against the 1-6 K predicted.
+#   P4 HELD: FE logs under points/*/solver/fe_0..2; no temp folders left.
+# Does the remaining shortfall matter? Bound: scale every envelope point's slot hotspot rise by its scenario's FE
+# shortfall (1 / (1 + err), conservative: it applies the cross-section's error to the whole rise). The slot hotspot then
+# stays under the end-turn hotspot and under 180 C at every speed in every scenario but one: winding k 0.5x at 750 rpm
+# (181.6 C), below REQ-TH1's range. So the envelope from 1250 rpm, REQ-TH1 and the hot-corner result do not depend on
+# it; the network's slot hotspot is reported as about 5 % low on its rise. Not revised further: the decision does not
+# move, and a better slot hotspot needs a 2D model of the slot, which is what the check is.
+#
 # Requirements and tolerances were fixed BEFORE the first run (motor_prius_thermal) and are unchanged.
 
 [case]
