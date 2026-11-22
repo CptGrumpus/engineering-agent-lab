@@ -1,6 +1,6 @@
 # Dashboard backlog
 
-Open work on the portfolio dashboard. Three items are open: adding the four new studies, a small menu fix, and a verdict that waits on a run. Studies themselves are tracked in [BACKLOG.md](BACKLOG.md).
+Open work on the portfolio dashboard. One item is open, keeping the fluid-structure card current; the rest are ideas. Studies themselves are tracked in [BACKLOG.md](BACKLOG.md).
 
 ## Where the dashboard lives
 
@@ -37,9 +37,9 @@ Decided 2026-11-21:
 
 | # | Item | What it involves | Waits on | Status |
 |---|---|---|---|---|
-| 9 | New studies on the page | Studies 13 to 16 (strut buckling, strap proof test, cold-plate thermal chain, bolted joint) each get a gallery card, a collapsible write-up, requirements rows and checked visuals, and some a viewer tab. The page's "twelve studies" wording and the preview card's count change with them | Nothing | Ready to start. The "Harder studies" section already lists their results and links their write-ups on GitHub. `scripts/make_clevis_visuals.py` is the template for the renders |
-| 10 | Heat-transfer wall verdict | Study 11's wall temperature is withheld until a finer mesh shows the peak converging. Once that run passes, flip the verdict on the page | Nothing: run `20261121-151154_heated_channel_mesh_r2` verified REQ-T1 (44.03 °C, uncertainty 0.23 %); portfolio/11 and PORTFOLIO.md updated | Ready for the page |
-| 12 | Menu label | The top menu still says "Next" for the section now called "Harder studies" | Nothing | Fold into item 9 |
+| 9 | New studies on the page | Studies 13 to 16 each get a gallery card, a collapsible write-up, requirements rows and checked renders | Nothing | Done 2026-11-21. Viewer tabs for all four; the strut and bolted joint also rotate in 3D |
+| 10 | Heat-transfer wall verdict | Study 11's wall temperature was withheld until a finer mesh showed the peak converging | Nothing | Done 2026-11-21: verified at 44.03 °C (uncertainty 0.23 %) and shown as a pass on the card, the write-up and the requirements table |
+| 12 | Menu label | The top menu said "Next" for the section now called "Harder studies" | Nothing | Done: now "Harder" |
 | 13 | Keep the fluid-structure card current | The flexible-flag card in "Harder studies" describes where study 6 stands; the coupled stage has started since it was written | Study 6's progress (2026-11-21 evening): solid CSM1/CSM2 and fluid CFD1/CFD2 drag verified; the coupled FSI1 prototype matched the benchmark (tip -0.34 %, drag -0.006 %); the FSI1 mesh study and CSM3 r3 finish tonight. Draft write-up: `portfolio/17-fsi-flag-turek-hron.md` (not in the index yet) | Update with item 9, and again when the coupled runs finish |
 | 14 | Fourth graded task | `tasks/sagging_strip_clearance` (new 2026-11-21): a sagging strip's clearance, where plane strain and large deflection each flip the verdict. Add it to the grader demo and the tasks list beside the other three | Nothing (grader tested in `tests/test_tasks.py`) | Ready for the page |
 | 11 | Interactive 3D viewer | Rotate the parts in the browser | Nothing | Done for five of the seven viewer tabs. The contact close-up and the flow height field stay as images |
@@ -61,6 +61,7 @@ Aim: better visuals and more "wow", without loosening any check. Every new visua
 
 | Date | Item | What changed |
 |---|---|---|
+| 2026-11-21 | Studies 13 to 16 on the page; study 11 verified; a fourth grading task | Strut buckling, strap proof test, cold-plate chain and bolted joint each have a gallery card, a write-up, requirements rows and a viewer tab. New `scripts/make_study_renders.py` re-solves each recorded deck (adding only output requests), requires the solver's printed results to match the evidence run byte for byte and the headline value read from the new field to match the record, then renders through the three checks. The checks caught four things on the way: a strap render that read as the wrong band (6.3 % misread), a 20-band cold-plate scale too fine to read (5.4 %), an inside-out plate (volume −200 %), and a bolted-joint pressure surface whose volume came out 2.6 % over the clamp force because the solver's nodal contact pressures are extrapolated (the study 10 trap); that view was replaced. Study 11's wall verdict is now a pass. The page says sixteen studies and four grading tasks; the sagging-strip task joined the grading demo, with its traps |
 | 2026-11-21 | Study 12 rebuilt around the clevis bracket | The write-up had moved from the tapered cantilever to a machined clevis, so the featured section, viewer tab, 3D view, gallery card, requirements, lesson and preview card now show the clevis: 372 g, 4 % lighter, 98.3 MPa (98.9 with mesh uncertainty) against 100. New `scripts/make_clevis_visuals.py` renders all 27 candidates and design D from the saved runs (meshes regenerated and matched node for node); every render passed all three checks. New figures: the search animation, before and after, and why the optimiser stalled in mesh noise. The tapered version is credited in the notes with a link to its runs |
 | 2026-11-21 | "What's next" brought up to date | Now "Six harder studies: five done, one in progress", with each finished study's result, its check and a link to its write-up, and where the fluid-structure study stands |
 | 2026-11-21 | Contact section | "Get in touch" closes the showcase, with an email button and a "show the address" link; a Contact button stays in the top bar at every width. Checked at 360, 390, 768 and 1280 px in light and dark |

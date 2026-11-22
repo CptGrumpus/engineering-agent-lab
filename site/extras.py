@@ -32,6 +32,8 @@ STUDY_DOCS = {
     "modal": "04-bracket-modal", "cfd": "05-coolant-channel", "thermal": "06-heat-sink-fin",
     "suspension": "07-quarter-car", "cad": "08-mounting-plate", "baseline": "09-mass-spring-damper",
     "contact": "10-roller-contact", "heat": "11-cold-plate-heat-transfer", "bracket_opt": "12-bracket-optimisation",
+    "strut": "13-strut-buckling", "strap_proof": "14-strap-proof-plasticity", "cold_plate": "15-cold-plate-thermal-chain",
+    "bolted_joint": "16-bolted-joint-slip",
 }
 _RUN = re.compile(r"runs/(\d{8}-(\d{2})(\d{2})\d{2}_[A-Za-z0-9_]+)")
 _tracked: set[str] | None = None
@@ -98,7 +100,7 @@ def summary_html(facts: dict) -> str:
     <span class="label">The short version</span>
     <div class="tldr-grid">
       <div><b>About me</b><p>I'm an automotive mechanical engineer with a master's in ME. In my day job I use AI agents to run virtual models and to turn functional requirements into tools that automate engineering work.</p></div>
-      <div><b>What's here</b><p>Twelve studies, each taken from written requirements through to a checked answer using open-source solvers. There are also three evaluation tasks, and their graders are tested as well.</p></div>
+      <div><b>What's here</b><p>Sixteen studies, each taken from written requirements through to a checked answer using open-source solvers. There are also four evaluation tasks, and their graders are tested as well.</p></div>
       <div><b>The code</b><p>It's all Python, about {k},000 lines across {facts["py_files"]} files. That covers the harness that runs and checks everything, the models, the independent reference solutions and the graders, with {facts["tests"]} automated tests that run on every push.</p></div>
     </div>
     <p class="tldr-links"><a href="#tasks">Grade an answer yourself</a><a href="#reqs">All the requirements in one table</a><a href="#bracket_opt">The newest study, an optimisation loop</a><a class="ext" href="{gh(MEMO)}">A sample client memo</a><a href="#contact">Get in touch</a></p>
@@ -150,6 +152,10 @@ LABELS = {
     "deflection_limit_met": ("Deflection limit met?", "", 0),
     "stress_limit_met": ("Stress limit met?", "", 0),
     "peak_fe_stress_is_singular": ("FE peak stress is an artifact?", "", 0),
+    "tip_drop_mm": ("Drop of the free edge", "mm", 2),
+    "tip_pull_in_mm": ("Pull-in towards the wall", "mm", 2),
+    "bending_modulus_MPa": ("Bending modulus used", "MPa", 2),
+    "clearance_met": ("Clears the belt?", "", 0),
 }
 
 
@@ -208,6 +214,22 @@ def _presets_cantilever(ref):
     ]
 
 
+def _presets_strip(ref):
+    # traps from tasks/sagging_strip_clearance/solution.md; the plane-stress pull-in is from the same
+    # elastica (validation/elastica.py) with E in place of E / (1 - nu^2)
+    return [
+        ("Large deflection, plane strain", "Uses the plane-strain modulus E / (1 − ν²) because the strip is 15 times wider than it is thick, and a large-deflection analysis because it sags by a fifth of its length.", dict(ref)),
+        ("Elastica, a second method", "Solves the large-deflection beam equation directly instead of using finite elements. It lands inside every tolerance.",
+         ref | {"tip_drop_mm": 86.71, "tip_pull_in_mm": 10.90}),
+        ("Cantilever formula q L⁴ / 8EI", "The textbook small-deflection formula. It ignores that the weight moves inwards as the strip sags, so the drop comes out too big and the verdict flips.",
+         ref | {"tip_drop_mm": 90.13, "tip_pull_in_mm": 0.0, "clearance_met": False}),
+        ("Plane stress: E instead of E / (1 − ν²)", "Treats the strip as a narrow beam. It's too soft by 25 %, so it sags far past the belt.",
+         ref | {"bending_modulus_MPa": 10.0, "tip_drop_mm": 106.52, "tip_pull_in_mm": 16.59, "clearance_met": False}),
+        ("Both mistakes", "The narrow-beam modulus and the small-deflection formula together.",
+         ref | {"bending_modulus_MPa": 10.0, "tip_drop_mm": 113.01, "tip_pull_in_mm": 0.0, "clearance_met": False}),
+    ]
+
+
 TASK_DEFS = [
     ("heated_channel_wall_temperature", "Cold-plate wall", "Heat transfer",
      "Water at 25 °C and 0.1 m/s flows through a 1 mm gap. Both walls take 30 kW/m² over 50 mm. Find the coolant rise, the peak wall temperature and the Nusselt number at the end of the heating. Limit: wall at or under 45 °C.",
@@ -218,6 +240,9 @@ TASK_DEFS = [
     ("cantilever_root_stress", "Bracket stress", "3D FEA",
      "A steel bar, 200 mm long and 20 × 20 mm, is clamped at one end with 1 kN at the tip. Report the tip deflection and the design root stress against 1.0 mm and 213 MPa, and say whether the FE peak stress is real.",
      _presets_cantilever),
+    ("sagging_strip_clearance", "Sagging strip", "Large deflection",
+     "A polyurethane strip, 400 mm long, 20 mm thick and 300 mm wide, is clamped along one edge and hangs under its own weight (E = 10 MPa, ν = 0.45, 1200 kg/m³). Find how far the free edge drops and pulls back, and the bending modulus you used. Limit: a drop of at most 89 mm, to clear a conveyor belt.",
+     _presets_strip),
 ]
 
 # The same function is embedded in the page and run under node against the Python graders.
@@ -469,7 +494,19 @@ REQS = [
         ("Max shear below the surface", "≤ 200 MPa", "184 MPa", "met")]),
     ("heat", "11", "Cold-plate heat transfer", [
         ("Coolant temperature rise", "≤ 10 K", "7.2 K", "met"),
-        ("Peak wall temperature", "≤ 45 °C", "44.0–44.1 °C on every mesh, but the mesh uncertainty can't be estimated yet", "held")]),
+        ("Peak wall temperature", "≤ 45 °C", "44.03 °C, mesh uncertainty 0.23 % of the rise", "met")]),
+    ("strut", "13", "Strut buckling", [
+        ("Load before first yield, 500 mm strut with an L/1000 bow", "≥ 16 kN", "21.8 kN (the longest that passes is about 587 mm)", "met")]),
+    ("strap_proof", "14", "Strap proof test", [
+        ("Hole-edge strain during the 15 kN proof test", "≤ 1.0 %", "0.58 %", "met"),
+        ("Residual stress at the hole edge after unloading", "≤ 0 MPa (compressive)", "−77 MPa", "met")]),
+    ("cold_plate", "15", "Cold-plate thermal chain", [
+        ("Component face temperature", "≤ 45 °C", "40.99 °C", "met"),
+        ("Coolant temperature rise", "≤ 10 K", "7.20 K", "met"),
+        ("Thermal stress away from the supports", "≤ 60 MPa", "46.8 MPa", "met")]),
+    ("bolted_joint", "16", "Bolted joint", [
+        ("Side load carried by friction after settling", "≥ 2.5 kN", "2.39 kN, 4.4 % short; a 15.6 kN preload fixes it", "fail"),
+        ("Axial load before the joint opens, after settling", "≥ 10 kN", "13.1 kN", "met")]),
 ]
 CHIP = {"met": ("pass", "Met"), "fail": ("fail", "Not met"), "held": ("warn", "Withheld")}
 
@@ -585,7 +622,7 @@ CSS = r"""
 .reqs-note { padding: 12px 18px 16px; font-size: 0.88rem; color: var(--ink-2); border-top: 1px solid var(--rule); }
 .v-held { color: var(--warn); background: var(--warn-bg); }
 .findings .finding:last-child:nth-child(even) { grid-column: 1 / -1; }
-/* gallery: one featured card and eleven more; the last spans two columns so no row has a gap */
+/* gallery: one featured card and the rest; the last spans two columns so no row has a gap */
 @media (min-width: 601px) {
   .gallery .card:last-child { grid-column: span 2; grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr); grid-template-rows: auto; }
   .gallery .card:last-child .thumb { border-bottom: 0; border-right: 1px solid var(--rule); aspect-ratio: auto; height: 100%; }

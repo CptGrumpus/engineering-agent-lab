@@ -161,6 +161,98 @@
     </div>
   </section>
 
+  <section class="study" id="strut">
+    <div class="study-head">
+      <span class="label">Study 13 · CalculiX, linear and nonlinear buckling</span>
+      <h2>Strut buckling, with an imperfect strut</h2>
+    </div>
+    <figure><div class="plate"><img src="v2/vp_strut.webp" alt="The 500 mm strut bowing under 21.5 kN, von Mises stress, with the straight strut as a ghost" loading="lazy"></div><figcaption>The 500 mm strut at 21.5 kN, just before first yield, with its bow drawn five times larger over the straight strut. The highest stress is on the inside of the curve at mid-span.</figcaption></figure>
+    <p><strong>The question.</strong> A 6061-T6 strut with a solid 25 × 16 mm section, pinned at both ends, carries 8 kN in compression. It has to reach twice that, 16 kN, before any fibre yields, allowing for an initial bow of L/1000, a typical straightness tolerance. How long can it be?</p>
+    <div class="answer">
+      <div class="chips"><span class="chip pass">Longest about 587 mm</span><span class="chip pass">Two routes to the buckling load agree to 0.04 %</span><span class="chip pass">Mesh uncertainty 0.003 %</span></div>
+      <p><strong>About 587 mm.</strong> Before first yield, the bowed strut reaches 33.4 kN at 400 mm, 21.8 kN at 500 mm, 15.3 kN at 600 mm and 11.4 kN at 700 mm, so 400 and 500 mm pass and 600 and 700 mm fail.</p>
+      <p>The bow costs 4 to 7 %. First yield arrives at 93 to 96 % of the elastic buckling load, so a check on the buckling load alone would overstate what the strut can carry.</p>
+    </div>
+    <h3>How I checked it</h3>
+    <ul class="proof">
+      <li>Two independent routes give the buckling load. The linear eigenvalue analysis and a Southwell plot of the nonlinear run, which reads the critical load from the load-deflection curve alone, agree to 0.04 %. Both sit 0.06 to 0.1 % below Euler with the shear correction.</li>
+      <li>The first mode is an exact half sine, and the nonlinear response follows the amplification law e₀ / (1 − P/P<sub>cr</sub>) to 0.2 % up to 80 % of the critical load. The Southwell fit recovers the imposed bow to 0.3 %.</li>
+      <li>First yield is within 1.3 % of the Perry-Robertson formula at every length.</li>
+      <li>Every length is in the Euler range, where elastic buckling governs. A shorter strut would fall in the Johnson range, and the check would flag the elastic analysis as the wrong tool. Mesh refinement at 600 mm leaves 0.003 % uncertainty.</li>
+    </ul>
+    <div class="figs-2">
+      <figure><div class="plate"><img src="img/strut_response.png" alt="Load against deflection, the Southwell plot and first yield for the 500 mm strut" loading="lazy"></div><figcaption>The 500 mm strut: load against mid-span deflection, the Southwell plot, and the stress climbing to first yield.</figcaption></figure>
+      <figure><div class="plate"><img src="img/strut_sweep.png" alt="First-yield load against strut length, with the 16 kN requirement" loading="lazy"></div><figcaption>First-yield load at each length against the 16 kN requirement.</figcaption></figure>
+    </div>
+    <div class="caught">
+      <h3>What I caught along the way</h3>
+      <ul>
+        <li>The mode-shape check failed at first. CalculiX prints the static solution before the first eigenvector, and my parser was reading it as mode 1. Two wrong explanations came first; the record says which one was the cause.</li>
+        <li>The nonlinear solver's default convergence left the global balance 3 × 10⁻⁶ out. Tighter solver settings brought it to 2 × 10⁻⁷ without touching the tolerance.</li>
+      </ul>
+    </div>
+    <p class="note">Capacity is defined as first yield, so the plastic reserve beyond it isn't used. No residual stresses or load eccentricity beyond the bow.</p>
+  </section>
+
+  <section class="study" id="strap_proof">
+    <div class="study-head">
+      <span class="label">Study 14 · CadQuery, Gmsh and CalculiX, plasticity</span>
+      <h2>Strap proof test, notch plasticity</h2>
+    </div>
+    <figure><div class="plate"><img src="v2/vp_strap_proof.webp" alt="Axial stress around the hole at the 15 kN proof load; the top bands mark the yielded material" loading="lazy"></div><figcaption>Axial stress at the 15 kN proof load. The bands are set so the top three are the material past yield: a small zone at each side of the hole.</figcaption></figure>
+    <p><strong>The question.</strong> The aluminium strap from studies 2 and 3 (40 × 4 mm, 16 mm hole, 5 kN in service) is proof tested at 15 kN before it's installed. On an elastic model the hole edge would see about 350 MPa, well past yield, while the rest of the section stays elastic. Does the hole edge stay within 1 % strain during the test, and does the test leave compressive stress behind, which helps fatigue?</p>
+    <div class="answer">
+      <div class="chips"><span class="chip pass">0.58 % strain against a 1 % limit</span><span class="chip pass">−77 MPa left at the hole edge</span><span class="chip pass">Mesh uncertainty 0.05 %</span></div>
+      <p><strong>Yes on both counts.</strong> The hole edge reaches 0.58 % strain during the test, and the yielding stays local: a plastic zone 1.8 mm deep on a 12 mm ligament. After unloading, the hole edge is left at −77 MPa, squeezed by the elastic material around it.</p>
+    </div>
+    <h3>How I checked it</h3>
+    <ul class="proof">
+      <li>The notch strain sits between the two classical estimates, Glinka's (0.53 %) and Neuber's (0.64 %), 8 % below Neuber, as expected in plane stress.</li>
+      <li>The residual stress equals the proof-load stress minus the elastic peak from a separate elastic run, to 2 × 10⁻⁶. That only holds if the unloading is purely elastic, so it checks the solver and the assumption together. It's within 1.6 % of the Neuber-based estimate.</li>
+      <li>The elastic peak matches Peterson's stress concentration factor to 0.5 %, and the forces balance at the proof load and after unloading.</li>
+      <li>The net section stays below yield, the plastic zone is contained, and the unloading doesn't yield in reverse.</li>
+    </ul>
+    <figure><div class="plate"><img src="img/proof_response.png" alt="Notch root stress and strain against Neuber and Glinka, and the stress along the ligament before and after unloading" loading="lazy"></div><figcaption>The hole edge against Neuber and Glinka, and the stress across the ligament at the proof load and after unloading.</figcaption></figure>
+    <div class="caught">
+      <h3>What I caught along the way</h3>
+      <ul>
+        <li>The first mesh study converged faster than the method allows (order 3.3 against 2), so the convergence check refused to give an uncertainty and the verdict was held back. Dropping the coarsest mesh and adding a finer one gave order 2.1 and 0.05 %.</li>
+        <li>On the finer set the notch strain barely moves (0.5834 to 0.5835 %), but the differences don't shrink, so the formal check gives no estimate on that run. I left its threshold where I'd set it before the runs. Every mesh of both sets gives 0.581 to 0.584 %.</li>
+      </ul>
+    </div>
+    <p class="note">The material curve is synthetic, a Ramberg-Osgood fit with the 0.2 % proof stress at 276 MPa; a real test would use the batch certificate. Isotropic hardening, which is fine here because nothing yields in reverse.</p>
+  </section>
+
+  <section class="study" id="bolted_joint">
+    <div class="study-head">
+      <span class="label">Study 16 · CalculiX, friction contact</span>
+      <h2>Bolted joint, slip and opening</h2>
+    </div>
+    <figure><div class="plate"><img src="v2/vp_bolted_joint.webp" alt="Contact pressure on the bottom plate's face after clamping, a ring around the bolt hole" loading="lazy"></div><figcaption>Where the plates press together after clamping: the contact pressure on the bottom plate's face, highest at the hole and gone about 21 mm across, well inside the plate. The friction that resists slip acts over this ring.</figcaption></figure>
+    <p><strong>The question.</strong> Two 6 mm steel plates are clamped by an M8 class 8.8 bolt tightened to 15 kN. The joint has to carry a 2 kN side load by friction alone, with a safety factor of 1.25 against slip, so 2.5 kN. It also mustn't open under a 10 kN axial load. Both have to hold after the joint settles. Does it, and if not, what fixes it?</p>
+    <div class="answer">
+      <div class="chips"><span class="chip fail">Slips at 2.39 kN, 4.4 % short</span><span class="chip pass">15.6 kN preload fixes it</span><span class="chip pass">Stays closed to 13.1 kN</span></div>
+      <p><strong>No, narrowly.</strong> Clamped at 15 kN the interface carries 3.0 kN of friction, but settling (9.5 µm of embedding) costs 3.03 kN of clamp force. That leaves 11.97 kN and a slip load of 2.39 kN, 4.4 % short.</p>
+      <p>A preload of about 15.6 kN fixes it, keeping 12.5 kN after settling and loading the bolt to 71 % of its proof stress. The joint doesn't open below 13.1 kN.</p>
+    </div>
+    <h3>How I checked it</h3>
+    <ul class="proof">
+      <li>The friction check is exact where the reference is exact. Each mesh is solved twice, at the real stiffness and with the plates 100 times stiffer. Extrapolating to a rigid interface recovers μ × clamp force to 1 × 10⁻⁷ or better.</li>
+      <li>The clamp forces balance and the side forces on the two plates cancel, to round-off.</li>
+      <li>Against VDI 2230's pressure cone, which is an approximation: plate compliance within 18 % and contact diameter within 11 % at the finest mesh.</li>
+      <li>Mesh refinement at 1.0, 0.75 and 0.5 mm leaves 0.01 % uncertainty on the slip load and 0.035 % on the opening load. The bolt stays within its proof stress, and the plates slide less than the hole clearance.</li>
+    </ul>
+    <figure><div class="plate"><img src="img/joint_response.png" alt="Side load against displacement until the joint slips, and the interface pressure against radius" loading="lazy"></div><figcaption>The side load until the joint slips, and where the plates press together, against the VDI cone limit.</figcaption></figure>
+    <div class="caught">
+      <h3>What I caught along the way</h3>
+      <ul>
+        <li>The slip load came out 0.13 % under μ × clamp force on every mesh, against a 0.1 % tolerance. The friction law, the applied load and the solver's friction all checked out exactly. The decisive test was making the plates stiffer: the shortfall fell exactly in proportion, 1.3 × 10⁻³, then 10⁻⁴, then 10⁻⁵. CalculiX works on the deformed surfaces, and under the side load the interface tilts by about the strain, while the hand formula assumes a rigid, flat interface. So the exact check now uses the rigid-limit extrapolation. Raising the tolerance would have hidden all of this.</li>
+        <li>One mesh level stalled for four hours while a finer one finished in 22 minutes. It was a convergence stall on that mesh, not cost, and another level replaced it.</li>
+      </ul>
+    </div>
+    <p class="note">The bolt is represented by its clamp force on the washer areas; the shank and threads aren't modelled. The friction coefficient (0.2) and the embedding (9.5 µm) are synthetic and dominate the answer: ±20 % on μ moves the slip load by the same 20 %.</p>
+  </section>
+
   <h2 class="discipline">Thermal and fluids</h2>
 
   <section class="study" id="cfd">
@@ -274,9 +366,9 @@
     <figure><div class="plate"><img src="v2/heat_response.webp" alt="Wall and bulk temperature along the heated channel, OpenFOAM against the Graetz reference" loading="lazy"></div><figcaption>Wall and bulk temperature along the heated channel, and the local Nusselt number, against the independent Graetz thermal-entry solution.</figcaption></figure>
     <p><strong>The question.</strong> A cold-plate passage, 1 mm deep, carries water at 25 °C and 0.1 m/s. Electronics heat both walls at 30 kW/m² over 50 mm. Does the wall stay at or under 45 °C, does the coolant warm up by no more than 10 K, and how much heat flux could the passage take?</p>
     <div class="answer">
-      <div class="chips"><span class="chip pass">Coolant rise 7.2 K: verified</span><span class="chip warn">Wall 44.0–44.1 °C: mesh uncertainty open</span><span class="chip pass">Rated about 31 kW/m²</span></div>
+      <div class="chips"><span class="chip pass">Coolant rise 7.2 K: verified</span><span class="chip pass">Wall 44.03 °C: verified</span><span class="chip pass">Rated about 31 kW/m²</span></div>
       <p><strong>The coolant warms up by 7.2 K</strong>, inside its 10 K budget, and that result is verified. The energy balance closes to about one part in a trillion on every mesh.</p>
-      <p><strong>The wall peaks at 44.0 to 44.1 °C</strong> on all three meshes, 0.86 to 0.97 K under the limit, and it matches the independent reference within 0.6 %. The trouble is that the peak isn't settling smoothly as the mesh gets finer, so the mesh check can't put a number on its uncertainty. Until it can, I'm not calling that one a pass. With 40 cells across the gap, the wall reaches 45 °C at about 31 kW/m².</p>
+      <p><strong>The wall peaks at 44.03 °C, 0.97 K under the limit,</strong> and it matches the independent reference within 0.6 %. My first mesh study couldn't put a number on the peak's uncertainty, so I held that verdict back. A rerun on finer meshes (40, 80 and 160 cells across the gap) settled it: 44.097, 44.029 and 44.029 °C, an uncertainty of 0.23 % of the temperature rise. With 40 cells across the gap, the wall reaches 45 °C at about 31 kW/m².</p>
     </div>
     <h3>How I checked it</h3>
     <ul class="proof">
@@ -287,10 +379,41 @@
     <div class="caught">
       <h3>What I caught along the way</h3>
       <ul>
-        <li>The standard scheme overshoots by 0.06 to 0.11 K at the last heated cell, which is exactly where the peak is. It errs on the safe side, but it's the reason the peak doesn't converge smoothly.</li>
+        <li>The standard scheme overshoots by 0.06 to 0.11 K at the last heated cell, which is exactly where the peak is. It errs on the safe side, but it's why the first mesh study couldn't settle the peak. On finer meshes the overshoot shrinks and the peak moves upstream, which is why it took 160 cells across the gap to settle.</li>
         <li>I tried four bounded schemes that get rid of the overshoot. All of them flip-flopped from one iteration to the next and never closed the energy balance, and under-relaxation just hid the problem. I went back to the scheme that converges exactly and let the checks bound its error. I kept every failed run and didn't change any tolerances.</li>
       </ul>
     </div>
+  </section>
+
+  <section class="study" id="cold_plate">
+    <div class="study-head">
+      <span class="label">Study 15 · OpenFOAM → CalculiX, coupled</span>
+      <h2>Cold plate, the full thermal chain</h2>
+    </div>
+    <figure><div class="plate"><img src="v2/vp_cold_plate.webp" alt="Temperature in a slice of the aluminium cold plate, rising along the coolant flow" loading="lazy"></div><figcaption>Temperature in the plate with the coolant and the plate's own conduction coupled. The coolant runs left to right underneath; the hottest point is inside the footprint at 41 mm, not at its end.</figcaption></figure>
+    <p><strong>The question.</strong> Electronics put 30 kW/m² into an aluminium cold plate over a 50 mm footprint. The 3 mm 6061-T6 plate sits on a 1 mm water channel (25 °C inlet, 0.1 m/s) and is bolted at both ends to a rigid frame, assembled at 20 °C. Does the component face stay at or under 45 °C, does the coolant warm by no more than 10 K, and does the thermal stress in the plate stay under 60 MPa? It builds on <a href="#heat">study 11</a>, which applied the heat straight to the channel wall.</p>
+    <div class="answer">
+      <div class="chips"><span class="chip pass">Component face 40.99 °C, limit 45</span><span class="chip pass">Coolant rise 7.20 K, limit 10</span><span class="chip pass">Thermal stress 46.8 MPa, limit 60</span></div>
+      <p><strong>Yes, on all three counts,</strong> with mesh uncertainty of 0.035 % or less on every answer. The plate spreads heat sideways, so 16.8 % of it reaches the coolant outside the footprint. Held at both ends, the plate can't expand, which puts it in compression at −44 MPa with some bending on top.</p>
+    </div>
+    <h3>How it works</h3>
+    <p>Three solvers run in a chain, and each stage is checked before the next one uses its result. OpenFOAM solves the coolant flow and temperature. CalculiX solves the plate's conduction, and the two are iterated until the temperature and heat flux at the wall agree (26 to 28 passes). Then CalculiX computes the thermal stress with the plate clamped at its ends. One command runs the whole chain at three mesh densities.</p>
+    <h3>How I checked it</h3>
+    <ul class="proof">
+      <li>The coolant's wall temperature matches the thermal-entry solution with the same heat-flux profile to 0.08 %, and its energy balance is exact to 2 × 10⁻¹².</li>
+      <li>Every plate node is within 0.012 % of an exact Fourier-series solution, using the film data the plate actually had.</li>
+      <li>A uniform temperature rise through the same stress deck gives the exact restrained stress to 5 × 10⁻⁸, and the peak stress matches beam theory to 0.06 %.</li>
+      <li>The heat crossing each handoff balances to 4 × 10⁻⁹ or better, and the whole chain is refined together, not one stage at a time.</li>
+    </ul>
+    <figure><div class="plate"><img src="img/coldplate_response.png" alt="Heat flux into the coolant, temperatures through the chain against the references, the plate temperature field and the thermal stress" loading="lazy"></div><figcaption>How the heat spreads before reaching the coolant, the temperatures through the chain against both references, and the thermal stress against beam theory.</figcaption></figure>
+    <div class="caught">
+      <h3>What I caught along the way</h3>
+      <ul>
+        <li>In the first mesh study the error against the reference peaked at 5.5, 2.8 and 6.3 % and didn't shrink. It sat exactly at the plate edges, where the heat flux steps from zero and no mesh or reference resolves the wall temperature. Two gap heights away from each edge it converged at second order, so the check now leaves out that band and keeps its 1 % tolerance.</li>
+        <li>The coupling loop hit its pass limit on the finer meshes. It was converging, just slowly, because OpenFOAM was solving every inner step to machine precision. Loosening that changed the answers by under 5 × 10⁻⁷ and made each pass three times faster.</li>
+      </ul>
+    </div>
+    <p class="note">It's a 2D slice through the plate and channel, with no side walls or manifolds, constant fluid properties and laminar flow. The plate ends are rigidly clamped; a real bolted end has some give, which would lower the stress.</p>
   </section>
 
   <h2 class="discipline">Vehicle and system dynamics</h2>

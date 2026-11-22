@@ -25,15 +25,15 @@ HEAD = """<!doctype html>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="description" content="Twelve open-source simulation studies, each checked against an independent reference, with a live grader demo and every requirement in one table.">
+<meta name="description" content="Sixteen open-source simulation studies, each checked against an independent reference, with a live grader demo and every requirement in one table.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://cptgrumpus.github.io/engineering-agent-lab/">
 <meta property="og:title" content="Simulation results I can back up">
-<meta property="og:description" content="Twelve open-source simulation studies, from FEA and CFD to an optimisation loop. Every result is checked against an independent reference before it's called a pass or a fail.">
+<meta property="og:description" content="Sixteen open-source simulation studies, from FEA, CFD and coupled multiphysics to an optimisation loop. Every result is checked against an independent reference before it's called a pass or a fail.">
 <meta property="og:image" content="https://cptgrumpus.github.io/engineering-agent-lab/v2/og_card.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="A tapered steel bracket rendered with its stress contours, beside the page headline and its counts of studies, checks and runs">
+<meta property="og:image:alt" content="A machined clevis bracket rendered with its stress contours, beside the page headline and its counts of studies, checks and runs">
 <meta name="twitter:card" content="summary_large_image">
 """
 OG_CARD = "v2/og_card.png"      # referenced by absolute URL in the head, so copied explicitly

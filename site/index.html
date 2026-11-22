@@ -460,7 +460,7 @@ details.study > summary:hover .study-toggle { text-decoration: underline; }
 .reqs-note { padding: 12px 18px 16px; font-size: 0.88rem; color: var(--ink-2); border-top: 1px solid var(--rule); }
 .v-held { color: var(--warn); background: var(--warn-bg); }
 .findings .finding:last-child:nth-child(even) { grid-column: 1 / -1; }
-/* gallery: one featured card and eleven more; the last spans two columns so no row has a gap */
+/* gallery: one featured card and the rest; the last spans two columns so no row has a gap */
 @media (min-width: 601px) {
   .gallery .card:last-child { grid-column: span 2; grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr); grid-template-rows: auto; }
   .gallery .card:last-child .thumb { border-bottom: 0; border-right: 1px solid var(--rule); aspect-ratio: auto; height: 100%; }
@@ -479,7 +479,7 @@ details.study > summary:hover .study-toggle { text-decoration: underline; }
       <a href="#loop">Method</a>
       <a href="#agent">Agent</a>
       <a href="#tasks">Grading</a>
-      <a href="#next">Next</a>
+      <a href="#next">Harder</a>
       <a href="#capabilities">Capabilities</a>
     </div>
     <a class="nav-contact" href="#contact">Contact</a>
@@ -492,11 +492,11 @@ details.study > summary:hover .study-toggle { text-decoration: underline; }
     <div class="hero-text">
     <p class="eyebrow">Mechanical engineering · simulation portfolio</p>
     <h1>Simulation results <em>I can back up.</em></h1>
-    <p class="lede">Twelve studies covering <b>structures, contact, vibration, fatigue, fluids, heat transfer, vehicle dynamics and design optimisation</b>. In each one I start from written requirements, build the model, run a real solver, and compare the result against something independent before I call it a pass or a fail. It's all open-source software, and a coding agent does most of the legwork using procedures I wrote.</p>
+    <p class="lede">Sixteen studies covering <b>structures, contact, vibration, fatigue, buckling, plasticity, fluids, heat transfer, vehicle dynamics and design optimisation</b>. In each one I start from written requirements, build the model, run a real solver, and compare the result against something independent before I call it a pass or a fail. It's all open-source software, and a coding agent does most of the legwork using procedures I wrote.</p>
     </div>
     <dl class="stats">
-      <div><dt>automated checks</dt><dd>2,555</dd></div>
-      <div><dt>saved runs</dt><dd>60</dd></div>
+      <div><dt>automated checks</dt><dd>2,613</dd></div>
+      <div><dt>saved runs</dt><dd>63</dd></div>
       <div><dt>open-source tools</dt><dd>8</dd></div>
       <div><dt>paid licences</dt><dd>0</dd></div>
     </dl>
@@ -506,8 +506,8 @@ details.study > summary:hover .study-toggle { text-decoration: underline; }
     <span class="label">The short version</span>
     <div class="tldr-grid">
       <div><b>About me</b><p>I'm an automotive mechanical engineer with a master's in ME. In my day job I use AI agents to run virtual models and to turn functional requirements into tools that automate engineering work.</p></div>
-      <div><b>What's here</b><p>Twelve studies, each taken from written requirements through to a checked answer using open-source solvers. There are also three evaluation tasks, and their graders are tested as well.</p></div>
-      <div><b>The code</b><p>It's all Python, about 29,000 lines across 197 files. That covers the harness that runs and checks everything, the models, the independent reference solutions and the graders, with 229 automated tests that run on every push.</p></div>
+      <div><b>What's here</b><p>Sixteen studies, each taken from written requirements through to a checked answer using open-source solvers. There are also four evaluation tasks, and their graders are tested as well.</p></div>
+      <div><b>The code</b><p>It's all Python, about 30,000 lines across 205 files. That covers the harness that runs and checks everything, the models, the independent reference solutions and the graders, with 237 automated tests that run on every push.</p></div>
     </div>
     <p class="tldr-links"><a href="#tasks">Grade an answer yourself</a><a href="#reqs">All the requirements in one table</a><a href="#bracket_opt">The newest study, an optimisation loop</a><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/portfolio/deliverables/coolant-channel-memo.md">A sample client memo</a><a href="#contact">Get in touch</a></p>
   </section>
@@ -534,10 +534,14 @@ details.study > summary:hover .study-toggle { text-decoration: underline; }
 <button type="button" role="tab" id="tab-bracket_opt" aria-controls="vp" aria-selected="true" data-i="0"><span class="tab-k">Optimised</span><span class="tab-v">Optimised clevis bracket</span></button>
 <button type="button" role="tab" id="tab-cantilever" aria-controls="vp" aria-selected="false" data-i="1"><span class="tab-k">Stress</span><span class="tab-v">Cantilever bracket</span></button>
 <button type="button" role="tab" id="tab-contact_detail" aria-controls="vp" aria-selected="false" data-i="2"><span class="tab-k">Contact</span><span class="tab-v">Roller on plate</span></button>
-<button type="button" role="tab" id="tab-fatigue" aria-controls="vp" aria-selected="false" data-i="3"><span class="tab-k">Fatigue</span><span class="tab-v">Strap with a 16 mm hole</span></button>
-<button type="button" role="tab" id="tab-fin" aria-controls="vp" aria-selected="false" data-i="4"><span class="tab-k">Thermal</span><span class="tab-v">Heat-sink fin</span></button>
-<button type="button" role="tab" id="tab-duct" aria-controls="vp" aria-selected="false" data-i="5"><span class="tab-k">Flow</span><span class="tab-v">Coolant passage</span></button>
-<button type="button" role="tab" id="tab-mode1" aria-controls="vp" aria-selected="false" data-i="6"><span class="tab-k">Modal</span><span class="tab-v">Bracket arm</span></button>
+<button type="button" role="tab" id="tab-bolted_joint" aria-controls="vp" aria-selected="false" data-i="3"><span class="tab-k">Joint</span><span class="tab-v">Bolted joint</span></button>
+<button type="button" role="tab" id="tab-strap_proof" aria-controls="vp" aria-selected="false" data-i="4"><span class="tab-k">Plasticity</span><span class="tab-v">Strap at its proof load</span></button>
+<button type="button" role="tab" id="tab-strut" aria-controls="vp" aria-selected="false" data-i="5"><span class="tab-k">Buckling</span><span class="tab-v">Strut</span></button>
+<button type="button" role="tab" id="tab-fatigue" aria-controls="vp" aria-selected="false" data-i="6"><span class="tab-k">Fatigue</span><span class="tab-v">Strap with a 16 mm hole</span></button>
+<button type="button" role="tab" id="tab-fin" aria-controls="vp" aria-selected="false" data-i="7"><span class="tab-k">Thermal</span><span class="tab-v">Heat-sink fin</span></button>
+<button type="button" role="tab" id="tab-cold_plate" aria-controls="vp" aria-selected="false" data-i="8"><span class="tab-k">Cold plate</span><span class="tab-v">Cold plate</span></button>
+<button type="button" role="tab" id="tab-duct" aria-controls="vp" aria-selected="false" data-i="9"><span class="tab-k">Flow</span><span class="tab-v">Coolant passage</span></button>
+<button type="button" role="tab" id="tab-mode1" aria-controls="vp" aria-selected="false" data-i="10"><span class="tab-k">Modal</span><span class="tab-v">Bracket arm</span></button>
     </div>
     <p class="vp-note">These images are rendered in Blender straight from the solver output. Before one goes on the page it has to pass three checks. The rendered surface has to enclose the part's actual volume, which catches missing or flipped faces. Every coloured pixel has to match a colour in the legend, which catches a shader that has shifted the contours. And the lit image has to read as the right band, which catches a shaded face that looks like a different value. Most results can also be turned in 3D: that view uses the same surface and colour bands, and it's checked the same way from four angles.</p>
   </section>
@@ -597,7 +601,7 @@ details.study > summary:hover .study-toggle { text-decoration: underline; }
   <section class="band wrap" id="studies" aria-labelledby="studies-title">
     <div class="band-head">
       <p class="eyebrow">Case studies</p>
-      <h2 id="studies-title">Twelve studies</h2>
+      <h2 id="studies-title">Sixteen studies</h2>
       <p>The problems are made up, so there's no client data here. Every number on this page comes from a saved run, and each run can be repeated from its recorded inputs with one command.</p>
     </div>
     <div class="filters" role="group" aria-label="Filter by discipline">
@@ -612,10 +616,37 @@ details.study > summary:hover .study-toggle { text-decoration: underline; }
       <a class="card" href="#bracket_opt" data-group="struct">
         <span class="thumb"><img src="v2/th_bracket_opt.webp" alt="" loading="lazy" width="800" height="500"></span>
         <span class="card-body">
-          <span class="meta"><span class="no">12</span><span>New · Design automation</span></span>
+          <span class="meta"><span class="no">12</span><span>Featured · Design automation</span></span>
           <span class="card-title">Bracket optimisation loop, driven by the agent</span>
           <span class="card-answer">The agent searched 78 designs over three runs for the lightest machined clevis bracket that stays under 100 MPa. The checks threw out its first two answers. The final one is 372 g, 4 % lighter than the start, at 98.3 MPa, and its own mesh study confirms it.</span>
           <span class="card-foot"><span class="v v-pass">Passes</span><span class="tools">CadQuery · Gmsh · CalculiX · SciPy</span></span>
+        </span>
+      </a>
+      <a class="card" href="#bolted_joint" data-group="struct">
+        <span class="thumb"><img src="v2/th_bolted_joint.webp" alt="" loading="lazy" width="800" height="500"></span>
+        <span class="card-body">
+          <span class="meta"><span class="no">16</span><span>New · Friction contact</span></span>
+          <span class="card-title">Bolted joint, slip and opening</span>
+          <span class="card-answer">Fails narrowly: once the joint settles it slips at 2.39 kN, 4.4 % short of the 2.5 kN it must carry. A 15.6 kN preload fixes it, and it stays closed to 13.1 kN.</span>
+          <span class="card-foot"><span class="v v-fail">Fails</span><span class="tools">CalculiX</span></span>
+        </span>
+      </a>
+      <a class="card" href="#strap_proof" data-group="struct">
+        <span class="thumb"><img src="v2/th_strap_proof.webp" alt="" loading="lazy" width="800" height="500"></span>
+        <span class="card-body">
+          <span class="meta"><span class="no">14</span><span>New · Plasticity</span></span>
+          <span class="card-title">Strap proof test, notch plasticity</span>
+          <span class="card-answer">A 15 kN proof test strains the hole edge to 0.58 %, inside a 1 % limit, and leaves −77 MPa of compression behind, which helps fatigue.</span>
+          <span class="card-foot"><span class="v v-pass">Passes</span><span class="tools">CadQuery · Gmsh · CalculiX</span></span>
+        </span>
+      </a>
+      <a class="card" href="#strut" data-group="struct">
+        <span class="thumb"><img src="v2/th_strut.webp" alt="" loading="lazy" width="800" height="500"></span>
+        <span class="card-body">
+          <span class="meta"><span class="no">13</span><span>New · Stability</span></span>
+          <span class="card-title">Strut buckling, with an imperfect strut</span>
+          <span class="card-answer">The longest acceptable strut is about 587 mm. The bow costs 4 to 7 % of the buckling load, so a buckling check alone would overstate the capacity.</span>
+          <span class="card-foot"><span class="v v-pass">Passes</span><span class="tools">CalculiX</span></span>
         </span>
       </a>
       <a class="card" href="#contact" data-group="struct">
@@ -663,6 +694,15 @@ details.study > summary:hover .study-toggle { text-decoration: underline; }
           <span class="card-foot"><span class="v v-pass">Passes</span><span class="tools">CadQuery · Gmsh · CalculiX</span></span>
         </span>
       </a>
+      <a class="card" href="#cold_plate" data-group="fluid">
+        <span class="thumb"><img src="v2/th_cold_plate.webp" alt="" loading="lazy" width="800" height="500"></span>
+        <span class="card-body">
+          <span class="meta"><span class="no">15</span><span>New · Multiphysics</span></span>
+          <span class="card-title">Cold plate, the full thermal chain</span>
+          <span class="card-answer">Passes on all three counts, from the coolant flow through the plate&#x27;s conduction to its thermal stress: 40.99 °C, a 7.20 K coolant rise and 46.8 MPa.</span>
+          <span class="card-foot"><span class="v v-pass">Passes</span><span class="tools">OpenFOAM · CalculiX</span></span>
+        </span>
+      </a>
       <a class="card" href="#cfd" data-group="fluid">
         <span class="thumb"><img src="v2/th_cfd.webp" alt="" loading="lazy" width="800" height="500"></span>
         <span class="card-body">
@@ -686,8 +726,8 @@ details.study > summary:hover .study-toggle { text-decoration: underline; }
         <span class="card-body">
           <span class="meta"><span class="no">11</span><span>Heat transfer</span></span>
           <span class="card-title">Cold-plate channel heat transfer</span>
-          <span class="card-answer">The coolant warms 7.2 K, verified. The wall stays under 45 °C, but I haven&#x27;t pinned down its mesh uncertainty yet.</span>
-          <span class="card-foot"><span class="v v-held">One result on hold</span><span class="tools">OpenFOAM</span></span>
+          <span class="card-answer">Passes, verified: the wall peaks at 44.03 °C against 45, and the coolant warms 7.2 K. A finer mesh study was needed to settle the peak.</span>
+          <span class="card-foot"><span class="v v-pass">Passes</span><span class="tools">OpenFOAM</span></span>
         </span>
       </a>
       <a class="card" href="#suspension" data-group="vehicle">
@@ -719,7 +759,7 @@ details.study > summary:hover .study-toggle { text-decoration: underline; }
       </a>
     </div>
     <details class="reqs" id="reqs">
-      <summary><span class="reqs-title">All the requirements in one table</span><span class="reqs-count">23 requirements · <b class="c-pass">17 met</b> · <b class="c-fail">5 not met</b> · <b class="c-warn">1 withheld</b></span></summary>
+      <summary><span class="reqs-title">All the requirements in one table</span><span class="reqs-count">31 requirements · <b class="c-pass">25 met</b> · <b class="c-fail">6 not met</b> · <b class="c-warn">0 withheld</b></span></summary>
       <div class="table-wrap">
         <table>
           <thead><tr><th>Study</th><th>Requirement</th><th>Limit</th><th>Result</th><th>Verdict</th></tr></thead>
@@ -746,7 +786,15 @@ details.study > summary:hover .study-toggle { text-decoration: underline; }
           <tr class="r-first"><td><a href="#contact"><span class="r-no">10</span> Roller contact</a></td><td>Peak contact pressure</td><td class="num">≤ 650 MPa</td><td>609 MPa</td><td><span class="chip pass">Met</span></td></tr>
           <tr><td></td><td>Max shear below the surface</td><td class="num">≤ 200 MPa</td><td>184 MPa</td><td><span class="chip pass">Met</span></td></tr>
           <tr class="r-first"><td><a href="#heat"><span class="r-no">11</span> Cold-plate heat transfer</a></td><td>Coolant temperature rise</td><td class="num">≤ 10 K</td><td>7.2 K</td><td><span class="chip pass">Met</span></td></tr>
-          <tr><td></td><td>Peak wall temperature</td><td class="num">≤ 45 °C</td><td>44.0–44.1 °C on every mesh, but the mesh uncertainty can&#x27;t be estimated yet</td><td><span class="chip warn">Withheld</span></td></tr>
+          <tr><td></td><td>Peak wall temperature</td><td class="num">≤ 45 °C</td><td>44.03 °C, mesh uncertainty 0.23 % of the rise</td><td><span class="chip pass">Met</span></td></tr>
+          <tr class="r-first"><td><a href="#strut"><span class="r-no">13</span> Strut buckling</a></td><td>Load before first yield, 500 mm strut with an L/1000 bow</td><td class="num">≥ 16 kN</td><td>21.8 kN (the longest that passes is about 587 mm)</td><td><span class="chip pass">Met</span></td></tr>
+          <tr class="r-first"><td><a href="#strap_proof"><span class="r-no">14</span> Strap proof test</a></td><td>Hole-edge strain during the 15 kN proof test</td><td class="num">≤ 1.0 %</td><td>0.58 %</td><td><span class="chip pass">Met</span></td></tr>
+          <tr><td></td><td>Residual stress at the hole edge after unloading</td><td class="num">≤ 0 MPa (compressive)</td><td>−77 MPa</td><td><span class="chip pass">Met</span></td></tr>
+          <tr class="r-first"><td><a href="#cold_plate"><span class="r-no">15</span> Cold-plate thermal chain</a></td><td>Component face temperature</td><td class="num">≤ 45 °C</td><td>40.99 °C</td><td><span class="chip pass">Met</span></td></tr>
+          <tr><td></td><td>Coolant temperature rise</td><td class="num">≤ 10 K</td><td>7.20 K</td><td><span class="chip pass">Met</span></td></tr>
+          <tr><td></td><td>Thermal stress away from the supports</td><td class="num">≤ 60 MPa</td><td>46.8 MPa</td><td><span class="chip pass">Met</span></td></tr>
+          <tr class="r-first"><td><a href="#bolted_joint"><span class="r-no">16</span> Bolted joint</a></td><td>Side load carried by friction after settling</td><td class="num">≥ 2.5 kN</td><td>2.39 kN, 4.4 % short; a 15.6 kN preload fixes it</td><td><span class="chip fail">Not met</span></td></tr>
+          <tr><td></td><td>Axial load before the joint opens, after settling</td><td class="num">≥ 10 kN</td><td>13.1 kN</td><td><span class="chip pass">Met</span></td></tr>
           </tbody>
         </table>
       </div>
@@ -823,13 +871,14 @@ details.study > summary:hover .study-toggle { text-decoration: underline; }
     <div class="band-head">
       <p class="eyebrow">Evaluation tasks</p>
       <h2 id="tasks-title">Try grading an answer</h2>
-      <p>I wrote three engineering tasks based on the studies, set up the way an AI-training pipeline would use them. Each has a problem statement, a reference solution backed by one of my simulations, an automated grader, and a list of the mistakes it's designed to catch. Pick a task and an answer below and the page will grade it using the same criteria and tolerances as the Python grader. You can also change any of the values yourself.</p>
+      <p>I wrote four engineering tasks based on the studies, set up the way an AI-training pipeline would use them. Each has a problem statement, a reference solution backed by one of my simulations, an automated grader, and a list of the mistakes it's designed to catch. Pick a task and an answer below and the page will grade it using the same criteria and tolerances as the Python grader. You can also change any of the values yourself.</p>
     </div>
     <div class="grader" id="grader">
       <div class="tabs g-tabs" role="tablist" aria-label="Choose a task">
         <button type="button" role="tab" id="gt-0" aria-selected="true" data-t="0"><span class="tab-k">Heat transfer</span><span class="tab-v">Cold-plate wall</span></button>
         <button type="button" role="tab" id="gt-1" aria-selected="false" data-t="1"><span class="tab-k">Contact stress</span><span class="tab-v">Roller contact</span></button>
         <button type="button" role="tab" id="gt-2" aria-selected="false" data-t="2"><span class="tab-k">3D FEA</span><span class="tab-v">Bracket stress</span></button>
+        <button type="button" role="tab" id="gt-3" aria-selected="false" data-t="3"><span class="tab-k">Large deflection</span><span class="tab-v">Sagging strip</span></button>
       </div>
       <div class="g-body" role="tabpanel" aria-labelledby="gt-0" id="g-panel">
         <div class="g-pick">
@@ -857,7 +906,7 @@ details.study > summary:hover .study-toggle { text-decoration: underline; }
     <div class="band-head">
       <p class="eyebrow">Harder studies</p>
       <h2 id="next-title">Six harder studies: five done, one in progress</h2>
-      <p>Each of these covers something the earlier studies don't: friction contact, plasticity, buckling, chained multiphysics, a design loop run by the agent, and coupled fluid and structure. Five are finished and verified. The optimisation loop is on this page as <a href="#bracket_opt">study 12</a>; the other four are written up on GitHub, and I'll add them here next. The fluid-structure study is under way. As with the others, I picked the independent check before I started modelling.</p>
+      <p>Each of these covers something the earlier studies don't: friction contact, plasticity, buckling, chained multiphysics, a design loop run by the agent, and coupled fluid and structure. Five are finished and verified, and each has its full write-up on this page. The fluid-structure study is under way. As with the others, I picked the independent check before I started modelling.</p>
     </div>
     <div class="skills plan">
       <article class="skill">
@@ -865,7 +914,7 @@ details.study > summary:hover .study-toggle { text-decoration: underline; }
         <b>Bolted joint with preload, a side load and friction</b>
         <p><b>Why it's harder</b>Friction contact plus preload. The question is when the joint starts to slip or open up.</p>
         <p><b>The result</b>It fails, narrowly. Once the joint settles it slips at 2.39 kN, 4.4 % short of the 2.5 kN it must carry. A preload of about 15.6 kN fixes it. It stays closed up to 13.1 kN, against 10 kN required.</p>
-        <p><b>How I checked it</b>The VDI 2230 hand method for the clamp and the settling loss, and slip load = μ × clamp force taken straight from the contact model. Mesh uncertainty 0.01 %. <a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/portfolio/16-bolted-joint-slip.md">Read the write-up</a></p>
+        <p><b>How I checked it</b>The VDI 2230 hand method for the clamp and the settling loss, and slip load = μ × clamp force taken straight from the contact model. Mesh uncertainty 0.01 %. <a href="#bolted_joint">Read the study</a></p>
         <span class="tools">CalculiX</span>
       </article>
       <article class="skill">
@@ -873,7 +922,7 @@ details.study > summary:hover .study-toggle { text-decoration: underline; }
         <b>Cold plate, the full thermal chain</b>
         <p><b>Why it's harder</b>Three kinds of physics in a chain: coolant flow, then conduction through the aluminium plate, then thermal stress. Each step is verified before it hands its results to the next. It builds on the <a href="#heat">heated-channel study</a>.</p>
         <p><b>The result</b>It passes on all three counts: the component face peaks at 40.99 °C (limit 45 °C), the coolant warms by 7.20 K (limit 10 K) and the thermal stress peaks at 46.8 MPa (limit 60 MPa).</p>
-        <p><b>How I checked it</b>An exact series solution for the plate, beam theory for the thermal stress, and an energy balance at every handoff. Mesh uncertainty 0.035 % or less on every answer. <a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/portfolio/15-cold-plate-thermal-chain.md">Read the write-up</a></p>
+        <p><b>How I checked it</b>An exact series solution for the plate, beam theory for the thermal stress, and an energy balance at every handoff. Mesh uncertainty 0.035 % or less on every answer. <a href="#cold_plate">Read the study</a></p>
         <span class="tools">OpenFOAM → CalculiX</span>
       </article>
       <article class="skill">
@@ -888,7 +937,7 @@ details.study > summary:hover .study-toggle { text-decoration: underline; }
         <b>Strap proof test with plasticity</b>
         <p><b>Why it's harder</b>During the proof test the hole edge goes past yield, and residual stress is left behind after unloading.</p>
         <p><b>The result</b>A 15 kN proof test, three times the service load, strains the hole edge to 0.58 %, inside a 1 % limit. It leaves −77 MPa of compressive residual stress there, which helps fatigue.</p>
-        <p><b>How I checked it</b>The strain sits between Glinka's estimate (0.53 %) and Neuber's (0.64 %), and the residual stress matches exact elastic unloading to 2 × 10⁻⁶. <a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/portfolio/14-strap-proof-plasticity.md">Read the write-up</a></p>
+        <p><b>How I checked it</b>The strain sits between Glinka's estimate (0.53 %) and Neuber's (0.64 %), and the residual stress matches exact elastic unloading to 2 × 10⁻⁶. <a href="#strap_proof">Read the study</a></p>
         <span class="tools">CadQuery · Gmsh · CalculiX</span>
       </article>
       <article class="skill">
@@ -896,14 +945,14 @@ details.study > summary:hover .study-toggle { text-decoration: underline; }
         <b>Buckling of an imperfect strut</b>
         <p><b>Why it's harder</b>It's a stability problem rather than a stress problem: a linear buckling analysis, then the same strut with a small initial bow.</p>
         <p><b>The result</b>The longest acceptable strut is about 587 mm. The bow costs 4 to 7 % of the elastic buckling load, so checking buckling alone would overstate the capacity.</p>
-        <p><b>How I checked it</b>The linear analysis and a Southwell plot of the nonlinear run agree to 0.04 %, both within 0.1 % of Euler with a shear correction. First yield is within 1.3 % of the Perry-Robertson formula. <a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/portfolio/13-strut-buckling.md">Read the write-up</a></p>
+        <p><b>How I checked it</b>The linear analysis and a Southwell plot of the nonlinear run agree to 0.04 %, both within 0.1 % of Euler with a shear correction. First yield is within 1.3 % of the Perry-Robertson formula. <a href="#strut">Read the study</a></p>
         <span class="tools">CalculiX</span>
       </article>
       <article class="skill">
         <span class="plan-meta"><span class="no">06 · Coupled FSI</span><span class="plan-tag">In progress</span></span>
         <b>Flexible flag behind a cylinder</b>
         <p><b>Why it's harder</b>Two-way fluid-structure interaction, where the flow bends the flag and the bent flag changes the flow.</p>
-        <p><b>So far</b>Each half has to reproduce the published Turek-Hron benchmark before the two are coupled. The solid's sag matches to 0.01 %, and it swings at 1.095 Hz against the published 1.096 to 1.100. The fluid's drag matches to 0.07 % and 0.014 % at the two flow speeds. Lift is within 0.7 % but scatters from mesh to mesh, so I'm holding that verdict back. The coupled runs come next.</p>
+        <p><b>So far</b>Each half has to reproduce the published Turek-Hron benchmark before the two are coupled. The solid's sag matches to 0.01 %, and it swings at 1.095 Hz against the published 1.096 to 1.100. The fluid's drag matches to 0.07 % and 0.014 % at the two flow speeds. Lift is within 0.7 % but scatters from mesh to mesh, so I'm holding that verdict back. The coupling is now set up: a trial of the first coupled case came within 0.7 % of the benchmark, and the recorded runs come next.</p>
         <p><b>How I'll check it</b>The benchmark's published values, for each half and for the coupled runs.</p>
         <span class="tools">OpenFOAM · CalculiX · preCICE</span>
       </article>
@@ -1120,6 +1169,107 @@ details.study > summary:hover .study-toggle { text-decoration: underline; }
     </div>
   </details>
 
+  <details class="study" id="strut">
+    <summary class="study-head">
+      <span class="label">Study 13 · CalculiX, linear and nonlinear buckling</span>
+      <h2>Strut buckling, with an imperfect strut</h2>
+    <span class="study-sum">The longest acceptable strut is about 587 mm. The bow costs 4 to 7 % of the buckling load, so a buckling check alone would overstate the capacity.</span><span class="study-toggle"></span></summary>
+    <div class="study-body">
+    <figure><div class="plate"><img src="v2/vp_strut.webp" alt="The 500 mm strut bowing under 21.5 kN, von Mises stress, with the straight strut as a ghost" loading="lazy"></div><figcaption>The 500 mm strut at 21.5 kN, just before first yield, with its bow drawn five times larger over the straight strut. The highest stress is on the inside of the curve at mid-span.</figcaption></figure>
+    <p><strong>The question.</strong> A 6061-T6 strut with a solid 25 × 16 mm section, pinned at both ends, carries 8 kN in compression. It has to reach twice that, 16 kN, before any fibre yields, allowing for an initial bow of L/1000, a typical straightness tolerance. How long can it be?</p>
+    <div class="answer">
+      <div class="chips"><span class="chip pass">Longest about 587 mm</span><span class="chip pass">Two routes to the buckling load agree to 0.04 %</span><span class="chip pass">Mesh uncertainty 0.003 %</span></div>
+      <p><strong>About 587 mm.</strong> Before first yield, the bowed strut reaches 33.4 kN at 400 mm, 21.8 kN at 500 mm, 15.3 kN at 600 mm and 11.4 kN at 700 mm, so 400 and 500 mm pass and 600 and 700 mm fail.</p>
+      <p>The bow costs 4 to 7 %. First yield arrives at 93 to 96 % of the elastic buckling load, so a check on the buckling load alone would overstate what the strut can carry.</p>
+    </div>
+    <h3>How I checked it</h3>
+    <ul class="proof">
+      <li>Two independent routes give the buckling load. The linear eigenvalue analysis and a Southwell plot of the nonlinear run, which reads the critical load from the load-deflection curve alone, agree to 0.04 %. Both sit 0.06 to 0.1 % below Euler with the shear correction.</li>
+      <li>The first mode is an exact half sine, and the nonlinear response follows the amplification law e₀ / (1 − P/P<sub>cr</sub>) to 0.2 % up to 80 % of the critical load. The Southwell fit recovers the imposed bow to 0.3 %.</li>
+      <li>First yield is within 1.3 % of the Perry-Robertson formula at every length.</li>
+      <li>Every length is in the Euler range, where elastic buckling governs. A shorter strut would fall in the Johnson range, and the check would flag the elastic analysis as the wrong tool. Mesh refinement at 600 mm leaves 0.003 % uncertainty.</li>
+    </ul>
+    <div class="figs-2">
+      <figure><div class="plate"><img src="img/strut_response.png" alt="Load against deflection, the Southwell plot and first yield for the 500 mm strut" loading="lazy"></div><figcaption>The 500 mm strut: load against mid-span deflection, the Southwell plot, and the stress climbing to first yield.</figcaption></figure>
+      <figure><div class="plate"><img src="img/strut_sweep.png" alt="First-yield load against strut length, with the 16 kN requirement" loading="lazy"></div><figcaption>First-yield load at each length against the 16 kN requirement.</figcaption></figure>
+    </div>
+    <div class="caught">
+      <h3>What I caught along the way</h3>
+      <ul>
+        <li>The mode-shape check failed at first. CalculiX prints the static solution before the first eigenvector, and my parser was reading it as mode 1. Two wrong explanations came first; the record says which one was the cause.</li>
+        <li>The nonlinear solver's default convergence left the global balance 3 × 10⁻⁶ out. Tighter solver settings brought it to 2 × 10⁻⁷ without touching the tolerance.</li>
+      </ul>
+    </div>
+    <p class="note">Capacity is defined as first yield, so the plastic reserve beyond it isn't used. No residual stresses or load eccentricity beyond the bow.</p>
+      <p class="evidence"><span class="label">Evidence on GitHub</span><a class="ev-doc" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/portfolio/13-strut-buckling.md">Full write-up</a><span class="ev-runs">Run reports: <a href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261120-232856_strut_length/report.md">strut_length</a><a href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261120-233637_strut_mesh/report.md">strut_mesh</a></span></p>
+    </div>
+  </details>
+
+  <details class="study" id="strap_proof">
+    <summary class="study-head">
+      <span class="label">Study 14 · CadQuery, Gmsh and CalculiX, plasticity</span>
+      <h2>Strap proof test, notch plasticity</h2>
+    <span class="study-sum">A 15 kN proof test strains the hole edge to 0.58 %, inside a 1 % limit, and leaves −77 MPa of compression behind, which helps fatigue.</span><span class="study-toggle"></span></summary>
+    <div class="study-body">
+    <figure><div class="plate"><img src="v2/vp_strap_proof.webp" alt="Axial stress around the hole at the 15 kN proof load; the top bands mark the yielded material" loading="lazy"></div><figcaption>Axial stress at the 15 kN proof load. The bands are set so the top three are the material past yield: a small zone at each side of the hole.</figcaption></figure>
+    <p><strong>The question.</strong> The aluminium strap from studies 2 and 3 (40 × 4 mm, 16 mm hole, 5 kN in service) is proof tested at 15 kN before it's installed. On an elastic model the hole edge would see about 350 MPa, well past yield, while the rest of the section stays elastic. Does the hole edge stay within 1 % strain during the test, and does the test leave compressive stress behind, which helps fatigue?</p>
+    <div class="answer">
+      <div class="chips"><span class="chip pass">0.58 % strain against a 1 % limit</span><span class="chip pass">−77 MPa left at the hole edge</span><span class="chip pass">Mesh uncertainty 0.05 %</span></div>
+      <p><strong>Yes on both counts.</strong> The hole edge reaches 0.58 % strain during the test, and the yielding stays local: a plastic zone 1.8 mm deep on a 12 mm ligament. After unloading, the hole edge is left at −77 MPa, squeezed by the elastic material around it.</p>
+    </div>
+    <h3>How I checked it</h3>
+    <ul class="proof">
+      <li>The notch strain sits between the two classical estimates, Glinka's (0.53 %) and Neuber's (0.64 %), 8 % below Neuber, as expected in plane stress.</li>
+      <li>The residual stress equals the proof-load stress minus the elastic peak from a separate elastic run, to 2 × 10⁻⁶. That only holds if the unloading is purely elastic, so it checks the solver and the assumption together. It's within 1.6 % of the Neuber-based estimate.</li>
+      <li>The elastic peak matches Peterson's stress concentration factor to 0.5 %, and the forces balance at the proof load and after unloading.</li>
+      <li>The net section stays below yield, the plastic zone is contained, and the unloading doesn't yield in reverse.</li>
+    </ul>
+    <figure><div class="plate"><img src="img/proof_response.png" alt="Notch root stress and strain against Neuber and Glinka, and the stress along the ligament before and after unloading" loading="lazy"></div><figcaption>The hole edge against Neuber and Glinka, and the stress across the ligament at the proof load and after unloading.</figcaption></figure>
+    <div class="caught">
+      <h3>What I caught along the way</h3>
+      <ul>
+        <li>The first mesh study converged faster than the method allows (order 3.3 against 2), so the convergence check refused to give an uncertainty and the verdict was held back. Dropping the coarsest mesh and adding a finer one gave order 2.1 and 0.05 %.</li>
+        <li>On the finer set the notch strain barely moves (0.5834 to 0.5835 %), but the differences don't shrink, so the formal check gives no estimate on that run. I left its threshold where I'd set it before the runs. Every mesh of both sets gives 0.581 to 0.584 %.</li>
+      </ul>
+    </div>
+    <p class="note">The material curve is synthetic, a Ramberg-Osgood fit with the 0.2 % proof stress at 276 MPa; a real test would use the batch certificate. Isotropic hardening, which is fine here because nothing yields in reverse.</p>
+      <p class="evidence"><span class="label">Evidence on GitHub</span><a class="ev-doc" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/portfolio/14-strap-proof-plasticity.md">Full write-up</a><span class="ev-runs">Run reports: <a href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261120-233440_strap_proof/report.md">strap_proof</a><a href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261120-233830_strap_proof_r1/report.md">strap_proof_r1</a></span></p>
+    </div>
+  </details>
+
+  <details class="study" id="bolted_joint">
+    <summary class="study-head">
+      <span class="label">Study 16 · CalculiX, friction contact</span>
+      <h2>Bolted joint, slip and opening</h2>
+    <span class="study-sum">Fails narrowly: once the joint settles it slips at 2.39 kN, 4.4 % short of the 2.5 kN it must carry. A 15.6 kN preload fixes it, and it stays closed to 13.1 kN.</span><span class="study-toggle"></span></summary>
+    <div class="study-body">
+    <figure><div class="plate"><img src="v2/vp_bolted_joint.webp" alt="Contact pressure on the bottom plate's face after clamping, a ring around the bolt hole" loading="lazy"></div><figcaption>Where the plates press together after clamping: the contact pressure on the bottom plate's face, highest at the hole and gone about 21 mm across, well inside the plate. The friction that resists slip acts over this ring.</figcaption></figure>
+    <p><strong>The question.</strong> Two 6 mm steel plates are clamped by an M8 class 8.8 bolt tightened to 15 kN. The joint has to carry a 2 kN side load by friction alone, with a safety factor of 1.25 against slip, so 2.5 kN. It also mustn't open under a 10 kN axial load. Both have to hold after the joint settles. Does it, and if not, what fixes it?</p>
+    <div class="answer">
+      <div class="chips"><span class="chip fail">Slips at 2.39 kN, 4.4 % short</span><span class="chip pass">15.6 kN preload fixes it</span><span class="chip pass">Stays closed to 13.1 kN</span></div>
+      <p><strong>No, narrowly.</strong> Clamped at 15 kN the interface carries 3.0 kN of friction, but settling (9.5 µm of embedding) costs 3.03 kN of clamp force. That leaves 11.97 kN and a slip load of 2.39 kN, 4.4 % short.</p>
+      <p>A preload of about 15.6 kN fixes it, keeping 12.5 kN after settling and loading the bolt to 71 % of its proof stress. The joint doesn't open below 13.1 kN.</p>
+    </div>
+    <h3>How I checked it</h3>
+    <ul class="proof">
+      <li>The friction check is exact where the reference is exact. Each mesh is solved twice, at the real stiffness and with the plates 100 times stiffer. Extrapolating to a rigid interface recovers μ × clamp force to 1 × 10⁻⁷ or better.</li>
+      <li>The clamp forces balance and the side forces on the two plates cancel, to round-off.</li>
+      <li>Against VDI 2230's pressure cone, which is an approximation: plate compliance within 18 % and contact diameter within 11 % at the finest mesh.</li>
+      <li>Mesh refinement at 1.0, 0.75 and 0.5 mm leaves 0.01 % uncertainty on the slip load and 0.035 % on the opening load. The bolt stays within its proof stress, and the plates slide less than the hole clearance.</li>
+    </ul>
+    <figure><div class="plate"><img src="img/joint_response.png" alt="Side load against displacement until the joint slips, and the interface pressure against radius" loading="lazy"></div><figcaption>The side load until the joint slips, and where the plates press together, against the VDI cone limit.</figcaption></figure>
+    <div class="caught">
+      <h3>What I caught along the way</h3>
+      <ul>
+        <li>The slip load came out 0.13 % under μ × clamp force on every mesh, against a 0.1 % tolerance. The friction law, the applied load and the solver's friction all checked out exactly. The decisive test was making the plates stiffer: the shortfall fell exactly in proportion, 1.3 × 10⁻³, then 10⁻⁴, then 10⁻⁵. CalculiX works on the deformed surfaces, and under the side load the interface tilts by about the strain, while the hand formula assumes a rigid, flat interface. So the exact check now uses the rigid-limit extrapolation. Raising the tolerance would have hidden all of this.</li>
+        <li>One mesh level stalled for four hours while a finer one finished in 22 minutes. It was a convergence stall on that mesh, not cost, and another level replaced it.</li>
+      </ul>
+    </div>
+    <p class="note">The bolt is represented by its clamp force on the washer areas; the shank and threads aren't modelled. The friction coefficient (0.2) and the embedding (9.5 µm) are synthetic and dominate the answer: ±20 % on μ moves the slip load by the same 20 %.</p>
+      <p class="evidence"><span class="label">Evidence on GitHub</span><a class="ev-doc" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/portfolio/16-bolted-joint-slip.md">Full write-up</a><span class="ev-runs">Run reports: <a href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261120-235041_bolted_joint_mesh/report.md">bolted_joint_mesh</a><a href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261121-110554_bolted_joint_mesh_r1/report.md">bolted_joint_mesh_r1</a></span></p>
+    </div>
+  </details>
+
   <h2 class="discipline">Thermal and fluids</h2>
 
   <details class="study" id="cfd">
@@ -1235,14 +1385,14 @@ details.study > summary:hover .study-toggle { text-decoration: underline; }
     <summary class="study-head">
       <span class="label">Study 11 · OpenFOAM heat transfer</span>
       <h2>Cold-plate channel heat transfer</h2>
-    <span class="study-sum">The coolant warms 7.2 K, verified. The wall stays under 45 °C, but I haven&#x27;t pinned down its mesh uncertainty yet.</span><span class="study-toggle"></span></summary>
+    <span class="study-sum">Passes, verified: the wall peaks at 44.03 °C against 45, and the coolant warms 7.2 K. A finer mesh study was needed to settle the peak.</span><span class="study-toggle"></span></summary>
     <div class="study-body">
     <figure><div class="plate"><img src="v2/heat_response.webp" alt="Wall and bulk temperature along the heated channel, OpenFOAM against the Graetz reference" loading="lazy"></div><figcaption>Wall and bulk temperature along the heated channel, and the local Nusselt number, against the independent Graetz thermal-entry solution.</figcaption></figure>
     <p><strong>The question.</strong> A cold-plate passage, 1 mm deep, carries water at 25 °C and 0.1 m/s. Electronics heat both walls at 30 kW/m² over 50 mm. Does the wall stay at or under 45 °C, does the coolant warm up by no more than 10 K, and how much heat flux could the passage take?</p>
     <div class="answer">
-      <div class="chips"><span class="chip pass">Coolant rise 7.2 K: verified</span><span class="chip warn">Wall 44.0–44.1 °C: mesh uncertainty open</span><span class="chip pass">Rated about 31 kW/m²</span></div>
+      <div class="chips"><span class="chip pass">Coolant rise 7.2 K: verified</span><span class="chip pass">Wall 44.03 °C: verified</span><span class="chip pass">Rated about 31 kW/m²</span></div>
       <p><strong>The coolant warms up by 7.2 K</strong>, inside its 10 K budget, and that result is verified. The energy balance closes to about one part in a trillion on every mesh.</p>
-      <p><strong>The wall peaks at 44.0 to 44.1 °C</strong> on all three meshes, 0.86 to 0.97 K under the limit, and it matches the independent reference within 0.6 %. The trouble is that the peak isn't settling smoothly as the mesh gets finer, so the mesh check can't put a number on its uncertainty. Until it can, I'm not calling that one a pass. With 40 cells across the gap, the wall reaches 45 °C at about 31 kW/m².</p>
+      <p><strong>The wall peaks at 44.03 °C, 0.97 K under the limit,</strong> and it matches the independent reference within 0.6 %. My first mesh study couldn't put a number on the peak's uncertainty, so I held that verdict back. A rerun on finer meshes (40, 80 and 160 cells across the gap) settled it: 44.097, 44.029 and 44.029 °C, an uncertainty of 0.23 % of the temperature rise. With 40 cells across the gap, the wall reaches 45 °C at about 31 kW/m².</p>
     </div>
     <h3>How I checked it</h3>
     <ul class="proof">
@@ -1253,11 +1403,45 @@ details.study > summary:hover .study-toggle { text-decoration: underline; }
     <div class="caught">
       <h3>What I caught along the way</h3>
       <ul>
-        <li>The standard scheme overshoots by 0.06 to 0.11 K at the last heated cell, which is exactly where the peak is. It errs on the safe side, but it's the reason the peak doesn't converge smoothly.</li>
+        <li>The standard scheme overshoots by 0.06 to 0.11 K at the last heated cell, which is exactly where the peak is. It errs on the safe side, but it's why the first mesh study couldn't settle the peak. On finer meshes the overshoot shrinks and the peak moves upstream, which is why it took 160 cells across the gap to settle.</li>
         <li>I tried four bounded schemes that get rid of the overshoot. All of them flip-flopped from one iteration to the next and never closed the energy balance, and under-relaxation just hid the problem. I went back to the scheme that converges exactly and let the checks bound its error. I kept every failed run and didn't change any tolerances.</li>
       </ul>
     </div>
-      <p class="evidence"><span class="label">Evidence on GitHub</span><a class="ev-doc" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/portfolio/11-cold-plate-heat-transfer.md">Full write-up</a><span class="ev-runs">Run reports: <a href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261120-124736_heated_channel_mesh/report.md">heated_channel_mesh · 12:47</a><a href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261120-130606_heated_channel_flux/report.md">heated_channel_flux · 13:06</a><a href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261120-131818_heated_channel_mesh/report.md">heated_channel_mesh · 13:18</a><a href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261120-150722_heated_channel_flux/report.md">heated_channel_flux · 15:07</a><a href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261120-150722_heated_channel_mesh/report.md">heated_channel_mesh · 15:07</a></span></p>
+      <p class="evidence"><span class="label">Evidence on GitHub</span><a class="ev-doc" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/portfolio/11-cold-plate-heat-transfer.md">Full write-up</a><span class="ev-runs">Run reports: <a href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261120-124736_heated_channel_mesh/report.md">heated_channel_mesh · 12:47</a><a href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261120-130606_heated_channel_flux/report.md">heated_channel_flux · 13:06</a><a href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261120-131818_heated_channel_mesh/report.md">heated_channel_mesh · 13:18</a><a href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261120-150722_heated_channel_flux/report.md">heated_channel_flux · 15:07</a><a href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261120-150722_heated_channel_mesh/report.md">heated_channel_mesh · 15:07</a><a href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261121-151154_heated_channel_mesh_r2/report.md">heated_channel_mesh_r2</a></span></p>
+    </div>
+  </details>
+
+  <details class="study" id="cold_plate">
+    <summary class="study-head">
+      <span class="label">Study 15 · OpenFOAM → CalculiX, coupled</span>
+      <h2>Cold plate, the full thermal chain</h2>
+    <span class="study-sum">Passes on all three counts, from the coolant flow through the plate&#x27;s conduction to its thermal stress: 40.99 °C, a 7.20 K coolant rise and 46.8 MPa.</span><span class="study-toggle"></span></summary>
+    <div class="study-body">
+    <figure><div class="plate"><img src="v2/vp_cold_plate.webp" alt="Temperature in a slice of the aluminium cold plate, rising along the coolant flow" loading="lazy"></div><figcaption>Temperature in the plate with the coolant and the plate's own conduction coupled. The coolant runs left to right underneath; the hottest point is inside the footprint at 41 mm, not at its end.</figcaption></figure>
+    <p><strong>The question.</strong> Electronics put 30 kW/m² into an aluminium cold plate over a 50 mm footprint. The 3 mm 6061-T6 plate sits on a 1 mm water channel (25 °C inlet, 0.1 m/s) and is bolted at both ends to a rigid frame, assembled at 20 °C. Does the component face stay at or under 45 °C, does the coolant warm by no more than 10 K, and does the thermal stress in the plate stay under 60 MPa? It builds on <a href="#heat">study 11</a>, which applied the heat straight to the channel wall.</p>
+    <div class="answer">
+      <div class="chips"><span class="chip pass">Component face 40.99 °C, limit 45</span><span class="chip pass">Coolant rise 7.20 K, limit 10</span><span class="chip pass">Thermal stress 46.8 MPa, limit 60</span></div>
+      <p><strong>Yes, on all three counts,</strong> with mesh uncertainty of 0.035 % or less on every answer. The plate spreads heat sideways, so 16.8 % of it reaches the coolant outside the footprint. Held at both ends, the plate can't expand, which puts it in compression at −44 MPa with some bending on top.</p>
+    </div>
+    <h3>How it works</h3>
+    <p>Three solvers run in a chain, and each stage is checked before the next one uses its result. OpenFOAM solves the coolant flow and temperature. CalculiX solves the plate's conduction, and the two are iterated until the temperature and heat flux at the wall agree (26 to 28 passes). Then CalculiX computes the thermal stress with the plate clamped at its ends. One command runs the whole chain at three mesh densities.</p>
+    <h3>How I checked it</h3>
+    <ul class="proof">
+      <li>The coolant's wall temperature matches the thermal-entry solution with the same heat-flux profile to 0.08 %, and its energy balance is exact to 2 × 10⁻¹².</li>
+      <li>Every plate node is within 0.012 % of an exact Fourier-series solution, using the film data the plate actually had.</li>
+      <li>A uniform temperature rise through the same stress deck gives the exact restrained stress to 5 × 10⁻⁸, and the peak stress matches beam theory to 0.06 %.</li>
+      <li>The heat crossing each handoff balances to 4 × 10⁻⁹ or better, and the whole chain is refined together, not one stage at a time.</li>
+    </ul>
+    <figure><div class="plate"><img src="img/coldplate_response.png" alt="Heat flux into the coolant, temperatures through the chain against the references, the plate temperature field and the thermal stress" loading="lazy"></div><figcaption>How the heat spreads before reaching the coolant, the temperatures through the chain against both references, and the thermal stress against beam theory.</figcaption></figure>
+    <div class="caught">
+      <h3>What I caught along the way</h3>
+      <ul>
+        <li>In the first mesh study the error against the reference peaked at 5.5, 2.8 and 6.3 % and didn't shrink. It sat exactly at the plate edges, where the heat flux steps from zero and no mesh or reference resolves the wall temperature. Two gap heights away from each edge it converged at second order, so the check now leaves out that band and keeps its 1 % tolerance.</li>
+        <li>The coupling loop hit its pass limit on the finer meshes. It was converging, just slowly, because OpenFOAM was solving every inner step to machine precision. Loosening that changed the answers by under 5 × 10⁻⁷ and made each pass three times faster.</li>
+      </ul>
+    </div>
+    <p class="note">It's a 2D slice through the plate and channel, with no side walls or manifolds, constant fluid properties and laminar flow. The plate ends are rigidly clamped; a real bolted end has some give, which would lower the stress.</p>
+      <p class="evidence"><span class="label">Evidence on GitHub</span><a class="ev-doc" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/portfolio/15-cold-plate-thermal-chain.md">Full write-up</a><span class="ev-runs">Run reports: <a href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261120-224255_cold_plate_mesh/report.md">cold_plate_mesh</a><a href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261121-093029_cold_plate_solver_check/report.md">cold_plate_solver_check</a><a href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261121-094235_cold_plate_mesh_r1/report.md">cold_plate_mesh_r1</a></span></p>
     </div>
   </details>
 
@@ -1387,7 +1571,7 @@ details.study > summary:hover .study-toggle { text-decoration: underline; }
           <li>The parameters and limits are made up. None of it is calibrated to a real product.</li>
           <li>The checks show the equations were solved correctly and each model was used where it's valid. Showing that a model matches real hardware would take test data, and I don't have any for these.</li>
           <li>The peak acceleration over the bump is unweighted. Only the rough-road ride level uses ISO 2631-1 weighting.</li>
-          <li>The cold-plate study applies the heat flux directly at the channel wall. I haven't modelled conduction through the plate itself (conjugate heat transfer) yet. The fin study takes the air-side heat-transfer coefficient as a given.</li>
+          <li>Study 11 applies the heat flux directly at the channel wall. Study 15 adds the plate's own conduction, but as a 2D slice with no side walls or manifolds. The fin study takes the air-side heat-transfer coefficient as a given.</li>
           <li>Every report ends with "pending human review", because accepting a design is a person's call.</li>
         </ul>
       </div>
@@ -1411,7 +1595,7 @@ details.study > summary:hover .study-toggle { text-decoration: underline; }
 
 <script>
 (() => {
-  const VP = [{"id": "bracket_opt", "tab": "Optimised", "legend": "S, Mises", "unit": "MPa", "model": "Optimised clevis bracket · 6061-T6, 100 × 100 mm base, (1.5, 1.0, 4.5) kN on the pin", "lines": ["Solver: CalculiX 2.22 · C3D10 · design D on the finest of its three meshes", "Deformation scale factor: +1.000e+02", "Peak 98.3 MPa against 100, at the lug fillet · 372 g, 4 % lighter than the start"], "mesh": "v2/m3d_bracket_opt.bin", "mesh_kb": 272, "elev": 24, "azim": -128, "bands": ["#3c3286", "#4771e9", "#33adf7", "#18dec0", "#4ef97d", "#a4fc3c", "#dde037", "#fcb136", "#f76f1a", "#d63506", "#9e1001"], "vmin": 0.0, "vmax": 110.0, "check": "Render check: encloses 137 773.5 mm³ of 137 774.5 design · 100.0 % of pixels on the legend", "img": "v2/vp_bracket_opt.webp"}, {"id": "cantilever", "tab": "Stress", "legend": "S, Mises", "unit": "MPa", "model": "Cantilever bracket · steel, 200 × 20 × 20 mm, 1 kN at the tip", "lines": ["Solver: CalculiX 2.22 · C3D10 · 5 758 surface nodes", "Deformation scale factor: +2.500e+01", "Range capped at the 150 MPa beam-theory stress; the clamp corners are singular"], "mesh": "v2/m3d_cantilever.bin", "mesh_kb": 135, "elev": 20, "azim": -58, "bands": ["#3b2f80", "#466be3", "#3ba0fd", "#1ad2d2", "#32f298", "#80ff53", "#bef434", "#eecf3a", "#fe9e2f", "#f26014", "#d02f05", "#9b0f01"], "vmin": 0.0, "vmax": 150.0, "check": "Render check: encloses 80 000.0 mm³ of 80 000.0 design · 100.0 % of pixels on the legend", "img": "v2/vp_cantilever.webp"}, {"id": "contact_detail", "tab": "Contact", "legend": "S, Mises", "unit": "MPa", "model": "Roller on plate · steel, R = 50 mm, 501 N/mm · section through the contact", "lines": ["Solver: CalculiX 2.22 · surface-to-surface penalty contact", "Peak contact pressure +6.092e+02 · Hertz exact +6.067e+02", "Highest stress 0.41 mm below the surface, where Hertz puts it"], "bands": ["#3a2d79", "#455ed3", "#458cfd", "#28bceb", "#18e0bd", "#3ff68a", "#84ff51", "#bcf534", "#e5d938", "#fcb336", "#fb7e21", "#e84b0c", "#c82803", "#980e01"], "vmin": 0.0, "vmax": 350.0, "check": "Render check: encloses 59 544.3 mm³ of 59 561.9 design · 100.0 % of pixels on the legend", "img": "v2/vp_contact_detail.webp"}, {"id": "fatigue", "tab": "Fatigue", "legend": "S11 amplitude", "unit": "MPa", "model": "Strap with a 16 mm hole · 160 × 40 × 4 mm, 0 → 5 kN cyclic", "lines": ["Solver: CalculiX 2.22 · plane stress, quarter model mirrored", "Peak amplitude +5.85e+01 at the sides of the hole", "Life about 8 × 10⁹ cycles against 3 × 10⁷ required"], "mesh": "v2/m3d_fatigue.bin", "mesh_kb": 905, "elev": 36, "azim": -64, "bands": ["#3b2f80", "#466be3", "#3ba0fd", "#1ad2d2", "#32f298", "#80ff53", "#bef434", "#eecf3a", "#fe9e2f", "#f26014", "#d02f05", "#9b0f01"], "vmin": -6.0, "vmax": 66.0, "check": "Render check: encloses 24 795.8 mm³ of 24 795.8 design · 100.0 % of pixels on the legend", "img": "v2/vp_fatigue.webp"}, {"id": "fin", "tab": "Thermal", "legend": "NT11", "unit": "°C", "model": "Heat-sink fin · 6061-T6, 40 × 20 × 2 mm, h = 25 W/m²K", "lines": ["Solver: CalculiX 2.22 · steady heat transfer", "Tip 73.2 °C against a 60 °C minimum", "Energy balance: base heat in equals convection out"], "mesh": "v2/m3d_fin.bin", "mesh_kb": 633, "elev": 22, "azim": -125, "bands": ["#3a2d79", "#455ed3", "#458cfd", "#28bceb", "#18e0bd", "#3ff68a", "#84ff51", "#bcf534", "#e5d938", "#fcb336", "#fb7e21", "#e84b0c", "#c82803", "#980e01"], "vmin": 73.0, "vmax": 80.0, "check": "Render check: encloses 1 600.0 mm³ of 1 600.0 design · 100.0 % of pixels on the legend", "img": "v2/vp_fin.webp"}, {"id": "duct", "tab": "Flow", "legend": "U, axial", "unit": "m/s", "model": "Coolant passage · 20 × 1 mm, water at 0.1 m/s mean, Re 199", "lines": ["Solver: OpenFOAM 14 · 3D laminar, quarter section mirrored", "Height = velocity; gap direction drawn 5× wider", "Pressure gradient within 0.03 % of the exact rectangular-duct solution"], "check_text": "Render check: the volume under the surface equals the imposed flow rate to {err} · {col} of pixels on the legend", "bands": ["#4040a2", "#4294ff", "#18ddc2", "#6dfe62", "#cdec34", "#fdac34", "#eb500e", "#a91601"], "vmin": 0.0, "vmax": 0.16, "check": "Render check: the volume under the surface equals the imposed flow rate to 0.03 % · 100.0 % of pixels on the legend", "img": "v2/vp_duct.webp"}, {"id": "mode1", "tab": "Modal", "legend": "U, Magnitude", "unit": "normalised", "model": "Bracket arm · steel, 150 × 25 × 7 mm, clamped", "lines": ["Solver: CalculiX 2.22 · *FREQUENCY, mode 1 of 4", "261.7 Hz flapwise · requirement ≥ 250 Hz (engine 2nd order + 25 %)", "Within 0.9 % of an independent Timoshenko beam model"], "mesh": "v2/m3d_mode1.bin", "mesh_kb": 75, "elev": 24, "azim": -60, "bands": ["#3d358b", "#477bf2", "#28bceb", "#20eaac", "#79fe59", "#c3f134", "#f6c33a", "#fb7e21", "#dd3d08", "#a11201"], "vmin": 0.0, "vmax": 1.0, "check": "Render check: encloses 26 250.0 mm³ of 26 250.0 design · 100.0 % of pixels on the legend", "img": "v2/vp_mode1.webp"}];
+  const VP = [{"id": "bracket_opt", "tab": "Optimised", "legend": "S, Mises", "unit": "MPa", "model": "Optimised clevis bracket · 6061-T6, 100 × 100 mm base, (1.5, 1.0, 4.5) kN on the pin", "lines": ["Solver: CalculiX 2.22 · C3D10 · design D on the finest of its three meshes", "Deformation scale factor: +1.000e+02", "Peak 98.3 MPa against 100, at the lug fillet · 372 g, 4 % lighter than the start"], "mesh": "v2/m3d_bracket_opt.bin", "mesh_kb": 272, "elev": 24, "azim": -128, "bands": ["#3c3286", "#4771e9", "#33adf7", "#18dec0", "#4ef97d", "#a4fc3c", "#dde037", "#fcb136", "#f76f1a", "#d63506", "#9e1001"], "vmin": 0.0, "vmax": 110.0, "check": "Render check: encloses 137 773.5 mm³ of 137 774.5 design · 100.0 % of pixels on the legend", "img": "v2/vp_bracket_opt.webp"}, {"id": "cantilever", "tab": "Stress", "legend": "S, Mises", "unit": "MPa", "model": "Cantilever bracket · steel, 200 × 20 × 20 mm, 1 kN at the tip", "lines": ["Solver: CalculiX 2.22 · C3D10 · 5 758 surface nodes", "Deformation scale factor: +2.500e+01", "Range capped at the 150 MPa beam-theory stress; the clamp corners are singular"], "mesh": "v2/m3d_cantilever.bin", "mesh_kb": 135, "elev": 20, "azim": -58, "bands": ["#3b2f80", "#466be3", "#3ba0fd", "#1ad2d2", "#32f298", "#80ff53", "#bef434", "#eecf3a", "#fe9e2f", "#f26014", "#d02f05", "#9b0f01"], "vmin": 0.0, "vmax": 150.0, "check": "Render check: encloses 80 000.0 mm³ of 80 000.0 design · 100.0 % of pixels on the legend", "img": "v2/vp_cantilever.webp"}, {"id": "contact_detail", "tab": "Contact", "legend": "S, Mises", "unit": "MPa", "model": "Roller on plate · steel, R = 50 mm, 501 N/mm · section through the contact", "lines": ["Solver: CalculiX 2.22 · surface-to-surface penalty contact", "Peak contact pressure +6.092e+02 · Hertz exact +6.067e+02", "Highest stress 0.41 mm below the surface, where Hertz puts it"], "bands": ["#3a2d79", "#455ed3", "#458cfd", "#28bceb", "#18e0bd", "#3ff68a", "#84ff51", "#bcf534", "#e5d938", "#fcb336", "#fb7e21", "#e84b0c", "#c82803", "#980e01"], "vmin": 0.0, "vmax": 350.0, "check": "Render check: encloses 59 544.3 mm³ of 59 561.9 design · 100.0 % of pixels on the legend", "img": "v2/vp_contact_detail.webp"}, {"id": "bolted_joint", "tab": "Joint", "legend": "CPRESS", "unit": "MPa", "model": "Bolted joint · two 6 mm steel plates, M8 at 15 kN, half model mirrored", "lines": ["Solver: CalculiX 2.22 · C3D8I, surface-to-surface contact with friction", "Contact pressure on the bottom plate after clamping, before any side load", "Peak 162 MPa at the hole · contact patch 21.1 mm across"], "mesh": "v2/m3d_bolted_joint.bin", "mesh_kb": 100, "elev": 38, "azim": -58, "bands": ["#3b2f80", "#466be3", "#3ba0fd", "#1ad2d2", "#32f298", "#80ff53", "#bef434", "#eecf3a", "#fe9e2f", "#f26014", "#d02f05", "#9b0f01"], "vmin": 0.0, "vmax": 180.0, "check": "Render check: encloses 7 150.8 mm³ of 7 158.1 design · 100.0 % of pixels on the legend", "img": "v2/vp_bolted_joint.webp"}, {"id": "strap_proof", "tab": "Plasticity", "legend": "S11", "unit": "MPa", "model": "Strap at its proof load · 6061-T6, 40 × 4 mm, 16 mm hole, 15 kN", "lines": ["Solver: CalculiX 2.22 · elastic-plastic, quarter model mirrored", "The top three bands, from 225 MPa, are past yield: 1.8 mm deep", "Hole edge 274 MPa and 0.58 % strain · left at −77 MPa after unloading"], "bands": ["#3b2f80", "#466be3", "#3ba0fd", "#1ad2d2", "#32f298", "#80ff53", "#bef434", "#eecf3a", "#fe9e2f", "#f26014", "#d02f05", "#9b0f01"], "vmin": 0.0, "vmax": 300.0, "check": "Render check: encloses 24 795.8 mm³ of 24 795.8 design · 100.0 % of pixels on the legend", "img": "v2/vp_strap_proof.webp"}, {"id": "strut", "tab": "Buckling", "legend": "S, Mises", "unit": "MPa", "model": "Strut · 6061-T6, 500 mm, 25 × 16 mm, pinned, bowed L/1000", "lines": ["Solver: CalculiX 2.22 · C3D8I, geometrically nonlinear, increment 19 of 20", "Deformation scale factor: +5.000e+00", "21.54 kN, 1 % under first yield · buckling load 23.14 kN"], "mesh": "v2/m3d_strut.bin", "mesh_kb": 119, "elev": 22, "azim": -74, "bands": ["#3b2f80", "#466be3", "#3ba0fd", "#1ad2d2", "#32f298", "#80ff53", "#bef434", "#eecf3a", "#fe9e2f", "#f26014", "#d02f05", "#9b0f01"], "vmin": 0.0, "vmax": 300.0, "check": "Render check: encloses 200 000.0 mm³ of 200 000.0 design · 100.0 % of pixels on the legend", "img": "v2/vp_strut.webp"}, {"id": "fatigue", "tab": "Fatigue", "legend": "S11 amplitude", "unit": "MPa", "model": "Strap with a 16 mm hole · 160 × 40 × 4 mm, 0 → 5 kN cyclic", "lines": ["Solver: CalculiX 2.22 · plane stress, quarter model mirrored", "Peak amplitude +5.85e+01 at the sides of the hole", "Life about 8 × 10⁹ cycles against 3 × 10⁷ required"], "mesh": "v2/m3d_fatigue.bin", "mesh_kb": 905, "elev": 36, "azim": -64, "bands": ["#3b2f80", "#466be3", "#3ba0fd", "#1ad2d2", "#32f298", "#80ff53", "#bef434", "#eecf3a", "#fe9e2f", "#f26014", "#d02f05", "#9b0f01"], "vmin": -6.0, "vmax": 66.0, "check": "Render check: encloses 24 795.8 mm³ of 24 795.8 design · 100.0 % of pixels on the legend", "img": "v2/vp_fatigue.webp"}, {"id": "fin", "tab": "Thermal", "legend": "NT11", "unit": "°C", "model": "Heat-sink fin · 6061-T6, 40 × 20 × 2 mm, h = 25 W/m²K", "lines": ["Solver: CalculiX 2.22 · steady heat transfer", "Tip 73.2 °C against a 60 °C minimum", "Energy balance: base heat in equals convection out"], "mesh": "v2/m3d_fin.bin", "mesh_kb": 633, "elev": 22, "azim": -125, "bands": ["#3a2d79", "#455ed3", "#458cfd", "#28bceb", "#18e0bd", "#3ff68a", "#84ff51", "#bcf534", "#e5d938", "#fcb336", "#fb7e21", "#e84b0c", "#c82803", "#980e01"], "vmin": 73.0, "vmax": 80.0, "check": "Render check: encloses 1 600.0 mm³ of 1 600.0 design · 100.0 % of pixels on the legend", "img": "v2/vp_fin.webp"}, {"id": "cold_plate", "tab": "Cold plate", "legend": "NT11", "unit": "°C", "model": "Cold plate · 3 mm 6061-T6 on a 1 mm water channel, 30 kW/m²", "lines": ["Solver: OpenFOAM 14 → CalculiX 2.22 · coupled, 28 passes", "A 30 mm slice of the plane-strain section · coolant left to right", "Component face 40.99 °C against 45 · coolant rise 7.20 K"], "bands": ["#3c3286", "#4771e9", "#33adf7", "#18dec0", "#4ef97d", "#a4fc3c", "#dde037", "#fcb136", "#f76f1a", "#d63506", "#9e1001"], "vmin": 30.5, "vmax": 41.5, "check": "Render check: encloses 5 400.0 mm³ of 5 400.0 design · 100.0 % of pixels on the legend", "img": "v2/vp_cold_plate.webp"}, {"id": "duct", "tab": "Flow", "legend": "U, axial", "unit": "m/s", "model": "Coolant passage · 20 × 1 mm, water at 0.1 m/s mean, Re 199", "lines": ["Solver: OpenFOAM 14 · 3D laminar, quarter section mirrored", "Height = velocity; gap direction drawn 5× wider", "Pressure gradient within 0.03 % of the exact rectangular-duct solution"], "check_text": "Render check: the volume under the surface equals the imposed flow rate to {err} · {col} of pixels on the legend", "bands": ["#4040a2", "#4294ff", "#18ddc2", "#6dfe62", "#cdec34", "#fdac34", "#eb500e", "#a91601"], "vmin": 0.0, "vmax": 0.16, "check": "Render check: the volume under the surface equals the imposed flow rate to 0.03 % · 100.0 % of pixels on the legend", "img": "v2/vp_duct.webp"}, {"id": "mode1", "tab": "Modal", "legend": "U, Magnitude", "unit": "normalised", "model": "Bracket arm · steel, 150 × 25 × 7 mm, clamped", "lines": ["Solver: CalculiX 2.22 · *FREQUENCY, mode 1 of 4", "261.7 Hz flapwise · requirement ≥ 250 Hz (engine 2nd order + 25 %)", "Within 0.9 % of an independent Timoshenko beam model"], "mesh": "v2/m3d_mode1.bin", "mesh_kb": 75, "elev": 24, "azim": -60, "bands": ["#3d358b", "#477bf2", "#28bceb", "#20eaac", "#79fe59", "#c3f134", "#f6c33a", "#fb7e21", "#dd3d08", "#a11201"], "vmin": 0.0, "vmax": 1.0, "check": "Render check: encloses 26 250.0 mm³ of 26 250.0 design · 100.0 % of pixels on the legend", "img": "v2/vp_mode1.webp"}];
   const vp = document.getElementById("vp"), img = document.getElementById("vp-img");
   const sw = document.getElementById("lg-sw"), ticks = document.getElementById("lg-ticks");
   const title = document.getElementById("lg-title"), status = document.getElementById("vp-status");
@@ -1502,7 +1686,7 @@ function gradeAnswer(criteria, ans) {
   const n = rows.filter(r => r.passed).length;
   return { rows, n, score: n / rows.length };
 }
-  const GT = [{"name": "heated_channel_wall_temperature", "tab": "Cold-plate wall", "statement": "Water at 25 °C and 0.1 m/s flows through a 1 mm gap. Both walls take 30 kW/m² over 50 mm. Find the coolant rise, the peak wall temperature and the Nusselt number at the end of the heating. Limit: wall at or under 45 °C.", "criteria": [{"key": "coolant_rise_K", "kind": "num", "ref": 7.1986, "rel": 0.005, "abs": null, "label": "Coolant rise", "unit": "K", "dec": 3}, {"key": "peak_wall_temperature_C", "kind": "num", "ref": 44.047, "rel": null, "abs": 0.1, "label": "Peak wall temperature", "unit": "°C", "dec": 2}, {"key": "nusselt_at_end_of_heating", "kind": "num", "ref": 8.343, "rel": null, "abs": 0.05, "label": "Nusselt number, end of heating", "unit": "", "dec": 3}, {"key": "wall_limit_met", "kind": "bool", "ref": true, "label": "Wall limit met?", "unit": "", "dec": 0}], "presets": [{"name": "Thermal-entry (Graetz) solution", "note": "Checks the entry length first. It's 137 mm against 50 mm of heating, so the flow is still developing and Nu has to come from the Graetz solution.", "answer": {"coolant_rise_K": 7.1986, "peak_wall_temperature_C": 44.047, "nusselt_at_end_of_heating": 8.343, "wall_limit_met": true}}, {"name": "Fully developed shortcut", "note": "Uses the textbook Nu = 8.235 without checking the entry length. The verdict happens to be right but the method isn't, so it gets half marks.", "answer": {"coolant_rise_K": 7.1986, "peak_wall_temperature_C": 44.2, "nusselt_at_end_of_heating": 8.235, "wall_limit_met": true}}, {"name": "Constant-wall-temperature Nu", "note": "Uses Nu = 7.54, which is for a wall held at a constant temperature rather than a constant heat flux. The wall verdict flips.", "answer": {"coolant_rise_K": 7.1986, "peak_wall_temperature_C": 45.31, "nusselt_at_end_of_heating": 7.541, "wall_limit_met": false}}, {"name": "Only one wall heated", "note": "Uses Nu = 5.385, the value for one heated wall. The wall comes out about 6.5 K too hot and the verdict flips.", "answer": {"coolant_rise_K": 7.1986, "peak_wall_temperature_C": 50.55, "nusselt_at_end_of_heating": 5.385, "wall_limit_met": false}}, {"name": "One wall in the energy balance", "note": "Only counts the heat from one wall, so the coolant rise comes out at half the real value.", "answer": {"coolant_rise_K": 3.599, "peak_wall_temperature_C": 44.047, "nusselt_at_end_of_heating": 8.343, "wall_limit_met": true}}]}, {"name": "hertz_roller_contact", "tab": "Roller contact", "statement": "A steel track roller, 100 mm diameter, carries 500 N per mm on a steel plate. Find the contact half-width, peak pressure, and the largest shear below the surface and its depth. Limits: 650 MPa pressure, 200 MPa shear.", "criteria": [{"key": "contact_half_width_mm", "kind": "num", "ref": 0.5252, "rel": 0.02, "abs": null, "label": "Contact half-width", "unit": "mm", "dec": 4}, {"key": "peak_contact_pressure_MPa", "kind": "num", "ref": 606.04, "rel": 0.02, "abs": null, "label": "Peak contact pressure", "unit": "MPa", "dec": 1}, {"key": "max_subsurface_shear_MPa", "kind": "num", "ref": 181.98, "rel": 0.03, "abs": null, "label": "Max subsurface shear", "unit": "MPa", "dec": 1}, {"key": "max_shear_depth_mm", "kind": "num", "ref": 0.4129, "rel": 0.05, "abs": null, "label": "Depth of max shear", "unit": "mm", "dec": 4}, {"key": "pressure_limit_met", "kind": "bool", "ref": true, "label": "Pressure limit met?", "unit": "", "dec": 0}, {"key": "shear_limit_met", "kind": "bool", "ref": true, "label": "Shear limit met?", "unit": "", "dec": 0}], "presets": [{"name": "Hertz line contact", "note": "Uses the combined modulus E*, works out the half-width and peak pressure, and puts the maximum shear 0.786 a below the surface.", "answer": {"contact_half_width_mm": 0.5252, "peak_contact_pressure_MPa": 606.04, "max_subsurface_shear_MPa": 181.98, "max_shear_depth_mm": 0.4129, "pressure_limit_met": true, "shear_limit_met": true}}, {"name": "CalculiX contact model", "note": "My finite-element answer from study 10, on the finest mesh, at the 501 N/mm the model actually carried. It's a different method and it lands inside every tolerance.", "answer": {"contact_half_width_mm": 0.5258, "peak_contact_pressure_MPa": 609.2, "max_subsurface_shear_MPa": 184.3, "max_shear_depth_mm": 0.413, "pressure_limit_met": true, "shear_limit_met": true}}, {"name": "Plain E instead of E*", "note": "Uses the plain steel modulus where Hertz needs the combined one. Everything after that is wrong and both verdicts flip.", "answer": {"contact_half_width_mm": 0.3893, "peak_contact_pressure_MPa": 817.6, "max_subsurface_shear_MPa": 245.3, "max_shear_depth_mm": 0.306, "pressure_limit_met": false, "shear_limit_met": false}}, {"name": "Shear taken at the surface", "note": "Gets the numbers right but puts the maximum shear at the surface. Rolling-contact cracks start below it.", "answer": {"contact_half_width_mm": 0.5252, "peak_contact_pressure_MPa": 606.04, "max_subsurface_shear_MPa": 181.98, "max_shear_depth_mm": 0.0, "pressure_limit_met": true, "shear_limit_met": true}}, {"name": "Pressure from element stresses", "note": "Reads the pressure from element stresses instead of the contact output, which comes out 3.5 % high. I made this exact mistake in study 10.", "answer": {"contact_half_width_mm": 0.5252, "peak_contact_pressure_MPa": 627.3, "max_subsurface_shear_MPa": 181.98, "max_shear_depth_mm": 0.4129, "pressure_limit_met": true, "shear_limit_met": true}}]}, {"name": "cantilever_root_stress", "tab": "Bracket stress", "statement": "A steel bar, 200 mm long and 20 × 20 mm, is clamped at one end with 1 kN at the tip. Report the tip deflection and the design root stress against 1.0 mm and 213 MPa, and say whether the FE peak stress is real.", "criteria": [{"key": "tip_deflection_mm", "kind": "num", "ref": 0.955, "rel": null, "abs": 0.01, "label": "Tip deflection", "unit": "mm", "dec": 3}, {"key": "root_bending_stress_MPa", "kind": "num", "ref": 150.0, "rel": 0.03, "abs": null, "label": "Root bending stress", "unit": "MPa", "dec": 1}, {"key": "deflection_limit_met", "kind": "bool", "ref": true, "label": "Deflection limit met?", "unit": "", "dec": 0}, {"key": "stress_limit_met", "kind": "bool", "ref": true, "label": "Stress limit met?", "unit": "", "dec": 0}, {"key": "peak_fe_stress_is_singular", "kind": "bool", "ref": true, "label": "FE peak stress is an artifact?", "unit": "", "dec": 0}], "presets": [{"name": "3D FE, stress from the smooth beam", "note": "My quadratic-element model from study 1. It gives 0.953 mm, with the design stress taken from the smooth part of the beam and extrapolated to the root.", "answer": {"tip_deflection_mm": 0.953, "root_bending_stress_MPa": 150.0, "deflection_limit_met": true, "stress_limit_met": true, "peak_fe_stress_is_singular": true}}, {"name": "Beam theory by hand", "note": "Euler-Bernoulli by hand, P L³ / 3 E I and M c / I. It's a valid method, so it gets full marks too.", "answer": {"tip_deflection_mm": 0.952, "root_bending_stress_MPa": 150.0, "deflection_limit_met": true, "stress_limit_met": true, "peak_fe_stress_is_singular": true}}, {"name": "Peak stress at the clamped corner", "note": "Reports the FE peak at the sharp clamped corner as the design stress. That's 217 MPa and still climbing as the mesh is refined.", "answer": {"tip_deflection_mm": 0.953, "root_bending_stress_MPa": 217.0, "deflection_limit_met": true, "stress_limit_met": false, "peak_fe_stress_is_singular": false}}, {"name": "Full depth used as c", "note": "Uses the full 20 mm depth for c instead of the 10 mm to the outer fibre. The stress doubles and the verdict flips.", "answer": {"tip_deflection_mm": 0.952, "root_bending_stress_MPa": 300.0, "deflection_limit_met": true, "stress_limit_met": false, "peak_fe_stress_is_singular": true}}, {"name": "Linear tetrahedra, coarse mesh", "note": "The real 5 mm linear-tet run from study 1. It deflects 17 % too little and the stress reads 26 % low, but both verdicts still look like passes.", "answer": {"tip_deflection_mm": 0.788, "root_bending_stress_MPa": 110.8, "deflection_limit_met": true, "stress_limit_met": true, "peak_fe_stress_is_singular": true}}]}];
+  const GT = [{"name": "heated_channel_wall_temperature", "tab": "Cold-plate wall", "statement": "Water at 25 °C and 0.1 m/s flows through a 1 mm gap. Both walls take 30 kW/m² over 50 mm. Find the coolant rise, the peak wall temperature and the Nusselt number at the end of the heating. Limit: wall at or under 45 °C.", "criteria": [{"key": "coolant_rise_K", "kind": "num", "ref": 7.1986, "rel": 0.005, "abs": null, "label": "Coolant rise", "unit": "K", "dec": 3}, {"key": "peak_wall_temperature_C", "kind": "num", "ref": 44.047, "rel": null, "abs": 0.1, "label": "Peak wall temperature", "unit": "°C", "dec": 2}, {"key": "nusselt_at_end_of_heating", "kind": "num", "ref": 8.343, "rel": null, "abs": 0.05, "label": "Nusselt number, end of heating", "unit": "", "dec": 3}, {"key": "wall_limit_met", "kind": "bool", "ref": true, "label": "Wall limit met?", "unit": "", "dec": 0}], "presets": [{"name": "Thermal-entry (Graetz) solution", "note": "Checks the entry length first. It's 137 mm against 50 mm of heating, so the flow is still developing and Nu has to come from the Graetz solution.", "answer": {"coolant_rise_K": 7.1986, "peak_wall_temperature_C": 44.047, "nusselt_at_end_of_heating": 8.343, "wall_limit_met": true}}, {"name": "Fully developed shortcut", "note": "Uses the textbook Nu = 8.235 without checking the entry length. The verdict happens to be right but the method isn't, so it gets half marks.", "answer": {"coolant_rise_K": 7.1986, "peak_wall_temperature_C": 44.2, "nusselt_at_end_of_heating": 8.235, "wall_limit_met": true}}, {"name": "Constant-wall-temperature Nu", "note": "Uses Nu = 7.54, which is for a wall held at a constant temperature rather than a constant heat flux. The wall verdict flips.", "answer": {"coolant_rise_K": 7.1986, "peak_wall_temperature_C": 45.31, "nusselt_at_end_of_heating": 7.541, "wall_limit_met": false}}, {"name": "Only one wall heated", "note": "Uses Nu = 5.385, the value for one heated wall. The wall comes out about 6.5 K too hot and the verdict flips.", "answer": {"coolant_rise_K": 7.1986, "peak_wall_temperature_C": 50.55, "nusselt_at_end_of_heating": 5.385, "wall_limit_met": false}}, {"name": "One wall in the energy balance", "note": "Only counts the heat from one wall, so the coolant rise comes out at half the real value.", "answer": {"coolant_rise_K": 3.599, "peak_wall_temperature_C": 44.047, "nusselt_at_end_of_heating": 8.343, "wall_limit_met": true}}]}, {"name": "hertz_roller_contact", "tab": "Roller contact", "statement": "A steel track roller, 100 mm diameter, carries 500 N per mm on a steel plate. Find the contact half-width, peak pressure, and the largest shear below the surface and its depth. Limits: 650 MPa pressure, 200 MPa shear.", "criteria": [{"key": "contact_half_width_mm", "kind": "num", "ref": 0.5252, "rel": 0.02, "abs": null, "label": "Contact half-width", "unit": "mm", "dec": 4}, {"key": "peak_contact_pressure_MPa", "kind": "num", "ref": 606.04, "rel": 0.02, "abs": null, "label": "Peak contact pressure", "unit": "MPa", "dec": 1}, {"key": "max_subsurface_shear_MPa", "kind": "num", "ref": 181.98, "rel": 0.03, "abs": null, "label": "Max subsurface shear", "unit": "MPa", "dec": 1}, {"key": "max_shear_depth_mm", "kind": "num", "ref": 0.4129, "rel": 0.05, "abs": null, "label": "Depth of max shear", "unit": "mm", "dec": 4}, {"key": "pressure_limit_met", "kind": "bool", "ref": true, "label": "Pressure limit met?", "unit": "", "dec": 0}, {"key": "shear_limit_met", "kind": "bool", "ref": true, "label": "Shear limit met?", "unit": "", "dec": 0}], "presets": [{"name": "Hertz line contact", "note": "Uses the combined modulus E*, works out the half-width and peak pressure, and puts the maximum shear 0.786 a below the surface.", "answer": {"contact_half_width_mm": 0.5252, "peak_contact_pressure_MPa": 606.04, "max_subsurface_shear_MPa": 181.98, "max_shear_depth_mm": 0.4129, "pressure_limit_met": true, "shear_limit_met": true}}, {"name": "CalculiX contact model", "note": "My finite-element answer from study 10, on the finest mesh, at the 501 N/mm the model actually carried. It's a different method and it lands inside every tolerance.", "answer": {"contact_half_width_mm": 0.5258, "peak_contact_pressure_MPa": 609.2, "max_subsurface_shear_MPa": 184.3, "max_shear_depth_mm": 0.413, "pressure_limit_met": true, "shear_limit_met": true}}, {"name": "Plain E instead of E*", "note": "Uses the plain steel modulus where Hertz needs the combined one. Everything after that is wrong and both verdicts flip.", "answer": {"contact_half_width_mm": 0.3893, "peak_contact_pressure_MPa": 817.6, "max_subsurface_shear_MPa": 245.3, "max_shear_depth_mm": 0.306, "pressure_limit_met": false, "shear_limit_met": false}}, {"name": "Shear taken at the surface", "note": "Gets the numbers right but puts the maximum shear at the surface. Rolling-contact cracks start below it.", "answer": {"contact_half_width_mm": 0.5252, "peak_contact_pressure_MPa": 606.04, "max_subsurface_shear_MPa": 181.98, "max_shear_depth_mm": 0.0, "pressure_limit_met": true, "shear_limit_met": true}}, {"name": "Pressure from element stresses", "note": "Reads the pressure from element stresses instead of the contact output, which comes out 3.5 % high. I made this exact mistake in study 10.", "answer": {"contact_half_width_mm": 0.5252, "peak_contact_pressure_MPa": 627.3, "max_subsurface_shear_MPa": 181.98, "max_shear_depth_mm": 0.4129, "pressure_limit_met": true, "shear_limit_met": true}}]}, {"name": "cantilever_root_stress", "tab": "Bracket stress", "statement": "A steel bar, 200 mm long and 20 × 20 mm, is clamped at one end with 1 kN at the tip. Report the tip deflection and the design root stress against 1.0 mm and 213 MPa, and say whether the FE peak stress is real.", "criteria": [{"key": "tip_deflection_mm", "kind": "num", "ref": 0.955, "rel": null, "abs": 0.01, "label": "Tip deflection", "unit": "mm", "dec": 3}, {"key": "root_bending_stress_MPa", "kind": "num", "ref": 150.0, "rel": 0.03, "abs": null, "label": "Root bending stress", "unit": "MPa", "dec": 1}, {"key": "deflection_limit_met", "kind": "bool", "ref": true, "label": "Deflection limit met?", "unit": "", "dec": 0}, {"key": "stress_limit_met", "kind": "bool", "ref": true, "label": "Stress limit met?", "unit": "", "dec": 0}, {"key": "peak_fe_stress_is_singular", "kind": "bool", "ref": true, "label": "FE peak stress is an artifact?", "unit": "", "dec": 0}], "presets": [{"name": "3D FE, stress from the smooth beam", "note": "My quadratic-element model from study 1. It gives 0.953 mm, with the design stress taken from the smooth part of the beam and extrapolated to the root.", "answer": {"tip_deflection_mm": 0.953, "root_bending_stress_MPa": 150.0, "deflection_limit_met": true, "stress_limit_met": true, "peak_fe_stress_is_singular": true}}, {"name": "Beam theory by hand", "note": "Euler-Bernoulli by hand, P L³ / 3 E I and M c / I. It's a valid method, so it gets full marks too.", "answer": {"tip_deflection_mm": 0.952, "root_bending_stress_MPa": 150.0, "deflection_limit_met": true, "stress_limit_met": true, "peak_fe_stress_is_singular": true}}, {"name": "Peak stress at the clamped corner", "note": "Reports the FE peak at the sharp clamped corner as the design stress. That's 217 MPa and still climbing as the mesh is refined.", "answer": {"tip_deflection_mm": 0.953, "root_bending_stress_MPa": 217.0, "deflection_limit_met": true, "stress_limit_met": false, "peak_fe_stress_is_singular": false}}, {"name": "Full depth used as c", "note": "Uses the full 20 mm depth for c instead of the 10 mm to the outer fibre. The stress doubles and the verdict flips.", "answer": {"tip_deflection_mm": 0.952, "root_bending_stress_MPa": 300.0, "deflection_limit_met": true, "stress_limit_met": false, "peak_fe_stress_is_singular": true}}, {"name": "Linear tetrahedra, coarse mesh", "note": "The real 5 mm linear-tet run from study 1. It deflects 17 % too little and the stress reads 26 % low, but both verdicts still look like passes.", "answer": {"tip_deflection_mm": 0.788, "root_bending_stress_MPa": 110.8, "deflection_limit_met": true, "stress_limit_met": true, "peak_fe_stress_is_singular": true}}]}, {"name": "sagging_strip_clearance", "tab": "Sagging strip", "statement": "A polyurethane strip, 400 mm long, 20 mm thick and 300 mm wide, is clamped along one edge and hangs under its own weight (E = 10 MPa, ν = 0.45, 1200 kg/m³). Find how far the free edge drops and pulls back, and the bending modulus you used. Limit: a drop of at most 89 mm, to clear a conveyor belt.", "criteria": [{"key": "tip_drop_mm", "kind": "num", "ref": 86.5, "rel": 0.015, "abs": null, "label": "Drop of the free edge", "unit": "mm", "dec": 2}, {"key": "tip_pull_in_mm", "kind": "num", "ref": 10.85, "rel": 0.03, "abs": null, "label": "Pull-in towards the wall", "unit": "mm", "dec": 2}, {"key": "bending_modulus_MPa", "kind": "num", "ref": 12.54, "rel": 0.01, "abs": null, "label": "Bending modulus used", "unit": "MPa", "dec": 2}, {"key": "clearance_met", "kind": "bool", "ref": true, "label": "Clears the belt?", "unit": "", "dec": 0}], "presets": [{"name": "Large deflection, plane strain", "note": "Uses the plane-strain modulus E / (1 − ν²) because the strip is 15 times wider than it is thick, and a large-deflection analysis because it sags by a fifth of its length.", "answer": {"tip_drop_mm": 86.5, "tip_pull_in_mm": 10.85, "bending_modulus_MPa": 12.54, "clearance_met": true}}, {"name": "Elastica, a second method", "note": "Solves the large-deflection beam equation directly instead of using finite elements. It lands inside every tolerance.", "answer": {"tip_drop_mm": 86.71, "tip_pull_in_mm": 10.9, "bending_modulus_MPa": 12.54, "clearance_met": true}}, {"name": "Cantilever formula q L⁴ / 8EI", "note": "The textbook small-deflection formula. It ignores that the weight moves inwards as the strip sags, so the drop comes out too big and the verdict flips.", "answer": {"tip_drop_mm": 90.13, "tip_pull_in_mm": 0.0, "bending_modulus_MPa": 12.54, "clearance_met": false}}, {"name": "Plane stress: E instead of E / (1 − ν²)", "note": "Treats the strip as a narrow beam. It's too soft by 25 %, so it sags far past the belt.", "answer": {"tip_drop_mm": 106.52, "tip_pull_in_mm": 16.59, "bending_modulus_MPa": 10.0, "clearance_met": false}}, {"name": "Both mistakes", "note": "The narrow-beam modulus and the small-deflection formula together.", "answer": {"tip_drop_mm": 113.01, "tip_pull_in_mm": 0.0, "bending_modulus_MPa": 10.0, "clearance_met": false}}]}];
 
   (() => {
     const tabs = [...document.querySelectorAll('.g-tabs [role="tab"]')];

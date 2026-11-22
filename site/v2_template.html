@@ -387,7 +387,7 @@ details.study > summary:hover .study-toggle { text-decoration: underline; }
       <a href="#loop">Method</a>
       <a href="#agent">Agent</a>
       <a href="#tasks">Grading</a>
-      <a href="#next">Next</a>
+      <a href="#next">Harder</a>
       <a href="#capabilities">Capabilities</a>
     </div>
     <a class="nav-contact" href="#contact">Contact</a>
@@ -400,7 +400,7 @@ details.study > summary:hover .study-toggle { text-decoration: underline; }
     <div class="hero-text">
     <p class="eyebrow">Mechanical engineering · simulation portfolio</p>
     <h1>Simulation results <em>I can back up.</em></h1>
-    <p class="lede">Twelve studies covering <b>structures, contact, vibration, fatigue, fluids, heat transfer, vehicle dynamics and design optimisation</b>. In each one I start from written requirements, build the model, run a real solver, and compare the result against something independent before I call it a pass or a fail. It's all open-source software, and a coding agent does most of the legwork using procedures I wrote.</p>
+    <p class="lede">Sixteen studies covering <b>structures, contact, vibration, fatigue, buckling, plasticity, fluids, heat transfer, vehicle dynamics and design optimisation</b>. In each one I start from written requirements, build the model, run a real solver, and compare the result against something independent before I call it a pass or a fail. It's all open-source software, and a coding agent does most of the legwork using procedures I wrote.</p>
     </div>
     <dl class="stats">
       <div><dt>automated checks</dt><dd>{{CHECKS}}</dd></div>
@@ -439,7 +439,7 @@ details.study > summary:hover .study-toggle { text-decoration: underline; }
   <section class="band wrap" id="studies" aria-labelledby="studies-title">
     <div class="band-head">
       <p class="eyebrow">Case studies</p>
-      <h2 id="studies-title">Twelve studies</h2>
+      <h2 id="studies-title">Sixteen studies</h2>
       <p>The problems are made up, so there's no client data here. Every number on this page comes from a saved run, and each run can be repeated from its recorded inputs with one command.</p>
     </div>
     <div class="filters" role="group" aria-label="Filter by discipline">
@@ -525,7 +525,7 @@ details.study > summary:hover .study-toggle { text-decoration: underline; }
     <div class="band-head">
       <p class="eyebrow">Evaluation tasks</p>
       <h2 id="tasks-title">Try grading an answer</h2>
-      <p>I wrote three engineering tasks based on the studies, set up the way an AI-training pipeline would use them. Each has a problem statement, a reference solution backed by one of my simulations, an automated grader, and a list of the mistakes it's designed to catch. Pick a task and an answer below and the page will grade it using the same criteria and tolerances as the Python grader. You can also change any of the values yourself.</p>
+      <p>I wrote four engineering tasks based on the studies, set up the way an AI-training pipeline would use them. Each has a problem statement, a reference solution backed by one of my simulations, an automated grader, and a list of the mistakes it's designed to catch. Pick a task and an answer below and the page will grade it using the same criteria and tolerances as the Python grader. You can also change any of the values yourself.</p>
     </div>
 {{GRADER}}
   </section>
@@ -534,7 +534,7 @@ details.study > summary:hover .study-toggle { text-decoration: underline; }
     <div class="band-head">
       <p class="eyebrow">Harder studies</p>
       <h2 id="next-title">Six harder studies: five done, one in progress</h2>
-      <p>Each of these covers something the earlier studies don't: friction contact, plasticity, buckling, chained multiphysics, a design loop run by the agent, and coupled fluid and structure. Five are finished and verified. The optimisation loop is on this page as <a href="#bracket_opt">study 12</a>; the other four are written up on GitHub, and I'll add them here next. The fluid-structure study is under way. As with the others, I picked the independent check before I started modelling.</p>
+      <p>Each of these covers something the earlier studies don't: friction contact, plasticity, buckling, chained multiphysics, a design loop run by the agent, and coupled fluid and structure. Five are finished and verified, and each has its full write-up on this page. The fluid-structure study is under way. As with the others, I picked the independent check before I started modelling.</p>
     </div>
     <div class="skills plan">
       <article class="skill">
@@ -542,7 +542,7 @@ details.study > summary:hover .study-toggle { text-decoration: underline; }
         <b>Bolted joint with preload, a side load and friction</b>
         <p><b>Why it's harder</b>Friction contact plus preload. The question is when the joint starts to slip or open up.</p>
         <p><b>The result</b>It fails, narrowly. Once the joint settles it slips at 2.39 kN, 4.4 % short of the 2.5 kN it must carry. A preload of about 15.6 kN fixes it. It stays closed up to 13.1 kN, against 10 kN required.</p>
-        <p><b>How I checked it</b>The VDI 2230 hand method for the clamp and the settling loss, and slip load = μ × clamp force taken straight from the contact model. Mesh uncertainty 0.01 %. <a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/portfolio/16-bolted-joint-slip.md">Read the write-up</a></p>
+        <p><b>How I checked it</b>The VDI 2230 hand method for the clamp and the settling loss, and slip load = μ × clamp force taken straight from the contact model. Mesh uncertainty 0.01 %. <a href="#bolted_joint">Read the study</a></p>
         <span class="tools">CalculiX</span>
       </article>
       <article class="skill">
@@ -550,7 +550,7 @@ details.study > summary:hover .study-toggle { text-decoration: underline; }
         <b>Cold plate, the full thermal chain</b>
         <p><b>Why it's harder</b>Three kinds of physics in a chain: coolant flow, then conduction through the aluminium plate, then thermal stress. Each step is verified before it hands its results to the next. It builds on the <a href="#heat">heated-channel study</a>.</p>
         <p><b>The result</b>It passes on all three counts: the component face peaks at 40.99 °C (limit 45 °C), the coolant warms by 7.20 K (limit 10 K) and the thermal stress peaks at 46.8 MPa (limit 60 MPa).</p>
-        <p><b>How I checked it</b>An exact series solution for the plate, beam theory for the thermal stress, and an energy balance at every handoff. Mesh uncertainty 0.035 % or less on every answer. <a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/portfolio/15-cold-plate-thermal-chain.md">Read the write-up</a></p>
+        <p><b>How I checked it</b>An exact series solution for the plate, beam theory for the thermal stress, and an energy balance at every handoff. Mesh uncertainty 0.035 % or less on every answer. <a href="#cold_plate">Read the study</a></p>
         <span class="tools">OpenFOAM → CalculiX</span>
       </article>
       <article class="skill">
@@ -565,7 +565,7 @@ details.study > summary:hover .study-toggle { text-decoration: underline; }
         <b>Strap proof test with plasticity</b>
         <p><b>Why it's harder</b>During the proof test the hole edge goes past yield, and residual stress is left behind after unloading.</p>
         <p><b>The result</b>A 15 kN proof test, three times the service load, strains the hole edge to 0.58 %, inside a 1 % limit. It leaves −77 MPa of compressive residual stress there, which helps fatigue.</p>
-        <p><b>How I checked it</b>The strain sits between Glinka's estimate (0.53 %) and Neuber's (0.64 %), and the residual stress matches exact elastic unloading to 2 × 10⁻⁶. <a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/portfolio/14-strap-proof-plasticity.md">Read the write-up</a></p>
+        <p><b>How I checked it</b>The strain sits between Glinka's estimate (0.53 %) and Neuber's (0.64 %), and the residual stress matches exact elastic unloading to 2 × 10⁻⁶. <a href="#strap_proof">Read the study</a></p>
         <span class="tools">CadQuery · Gmsh · CalculiX</span>
       </article>
       <article class="skill">
@@ -573,14 +573,14 @@ details.study > summary:hover .study-toggle { text-decoration: underline; }
         <b>Buckling of an imperfect strut</b>
         <p><b>Why it's harder</b>It's a stability problem rather than a stress problem: a linear buckling analysis, then the same strut with a small initial bow.</p>
         <p><b>The result</b>The longest acceptable strut is about 587 mm. The bow costs 4 to 7 % of the elastic buckling load, so checking buckling alone would overstate the capacity.</p>
-        <p><b>How I checked it</b>The linear analysis and a Southwell plot of the nonlinear run agree to 0.04 %, both within 0.1 % of Euler with a shear correction. First yield is within 1.3 % of the Perry-Robertson formula. <a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/portfolio/13-strut-buckling.md">Read the write-up</a></p>
+        <p><b>How I checked it</b>The linear analysis and a Southwell plot of the nonlinear run agree to 0.04 %, both within 0.1 % of Euler with a shear correction. First yield is within 1.3 % of the Perry-Robertson formula. <a href="#strut">Read the study</a></p>
         <span class="tools">CalculiX</span>
       </article>
       <article class="skill">
         <span class="plan-meta"><span class="no">06 · Coupled FSI</span><span class="plan-tag">In progress</span></span>
         <b>Flexible flag behind a cylinder</b>
         <p><b>Why it's harder</b>Two-way fluid-structure interaction, where the flow bends the flag and the bent flag changes the flow.</p>
-        <p><b>So far</b>Each half has to reproduce the published Turek-Hron benchmark before the two are coupled. The solid's sag matches to 0.01 %, and it swings at 1.095 Hz against the published 1.096 to 1.100. The fluid's drag matches to 0.07 % and 0.014 % at the two flow speeds. Lift is within 0.7 % but scatters from mesh to mesh, so I'm holding that verdict back. The coupled runs come next.</p>
+        <p><b>So far</b>Each half has to reproduce the published Turek-Hron benchmark before the two are coupled. The solid's sag matches to 0.01 %, and it swings at 1.095 Hz against the published 1.096 to 1.100. The fluid's drag matches to 0.07 % and 0.014 % at the two flow speeds. Lift is within 0.7 % but scatters from mesh to mesh, so I'm holding that verdict back. The coupling is now set up: a trial of the first coupled case came within 0.7 % of the benchmark, and the recorded runs come next.</p>
         <p><b>How I'll check it</b>The benchmark's published values, for each half and for the coupled runs.</p>
         <span class="tools">OpenFOAM · CalculiX · preCICE</span>
       </article>
@@ -630,7 +630,7 @@ details.study > summary:hover .study-toggle { text-decoration: underline; }
           <li>The parameters and limits are made up. None of it is calibrated to a real product.</li>
           <li>The checks show the equations were solved correctly and each model was used where it's valid. Showing that a model matches real hardware would take test data, and I don't have any for these.</li>
           <li>The peak acceleration over the bump is unweighted. Only the rough-road ride level uses ISO 2631-1 weighting.</li>
-          <li>The cold-plate study applies the heat flux directly at the channel wall. I haven't modelled conduction through the plate itself (conjugate heat transfer) yet. The fin study takes the air-side heat-transfer coefficient as a given.</li>
+          <li>Study 11 applies the heat flux directly at the channel wall. Study 15 adds the plate's own conduction, but as a 2D slice with no side walls or manifolds. The fin study takes the air-side heat-transfer coefficient as a given.</li>
           <li>Every report ends with "pending human review", because accepting a design is a person's call.</li>
         </ul>
       </div>

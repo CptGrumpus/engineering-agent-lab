@@ -31,9 +31,10 @@ OUT = HERE / "v2"
 INDEX = OUT / "m3d.json"
 MAGIC = 0x3144334D                                   # "M3D1" little-endian
 
-# viewer tab id -> render scene; the section close-up (contact) and the flow height field stay as images
+# viewer tab id -> render scene; the section close-up (contact), the flow height field and the two
+# heaviest meshes (strap proof test, cold plate) stay as images
 SCENES = {"bracket_opt": "opt/bracket_opt_hero", "cantilever": "cantilever", "fatigue": "fatigue",
-          "fin": "fin", "mode1": "mode1"}
+          "fin": "fin", "mode1": "mode1", "strut": "strut", "bolted_joint": "bolted_joint"}
 
 
 def feature_edges(pts: np.ndarray, tris: np.ndarray, angle_deg: float) -> np.ndarray:
@@ -94,8 +95,17 @@ def decode(blob: bytes) -> dict:
 
 
 def main() -> dict:
+    """Encode every scene whose render data is in build/render; a scene without it keeps its committed
+    file and index entry (its source script rebuilds the data: make_renders.py, make_clevis_visuals.py,
+    make_study_renders.py)."""
+    old = json.loads(INDEX.read_text(encoding="utf-8")) if INDEX.exists() else {}
     out = {}
     for vid, scene in SCENES.items():
+        if not (BUILD / f"{scene}.npz").exists():
+            if vid not in old or not (HERE / old[vid]["file"]).exists():
+                raise FileNotFoundError(f"{vid}: no render data in build/render and no committed 3D file")
+            out[vid] = old[vid]
+            continue
         blob, src = encode(scene)
         back = decode(blob)
         err = np.abs(back["xyz"] - src["xyz"]).max(axis=0)
@@ -112,8 +122,8 @@ def main() -> dict:
 
 
 def index() -> dict:
-    """The meshes for the page: rebuilt from build/render when it exists, else the committed index."""
-    if all((BUILD / f"{s}.npz").exists() for s in SCENES.values()):
+    """The meshes for the page: rebuilt from build/render where the data is there, else the committed files."""
+    if any((BUILD / f"{s}.npz").exists() for s in SCENES.values()):
         return main()
     return json.loads(INDEX.read_text(encoding="utf-8")) if INDEX.exists() else {}
 
