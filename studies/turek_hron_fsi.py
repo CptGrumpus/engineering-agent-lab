@@ -24,7 +24,6 @@ from harness.checks import check
 from harness.convergence import describe, discretization_uncertainty
 from harness.study import Study
 from studies.strut_buckling import read_dat_blocks
-from studies.turek_hron_cfd import read_forces
 
 WRITER = "models/fsi/turek_hron_fsi.py"
 RUNNER = "models/fsi/run_turek_hron_fsi.sh"
@@ -46,6 +45,23 @@ _W = _load(Path(__file__).resolve().parent.parent / WRITER, "turek_hron_fsi_save
 
 def _p(params, k):
     return float(params[k])
+
+
+def read_forces(path: Path) -> np.ndarray:
+    """OpenFOAM v2512 force.dat rows: (time, Fx_pressure, Fy_pressure, Fx_viscous, Fy_viscous).
+
+    v2512 writes `time total_xyz pressure_xyz viscous_xyz` as plain columns. The openfoam.org v14 parser in
+    studies/turek_hron_cfd.py reads `((pressure) (viscous))` instead: applied to a v2512 file it summed total +
+    pressure and reported 21.6 N/m for a 14.3 N/m drag (FSI1, first evidence run)."""
+    rows = []
+    for line in Path(path).read_text(encoding="utf-8").splitlines():
+        if not line.strip() or line.startswith("#"):
+            continue
+        v = [float(x) for x in line.split()]
+        if len(v) != 10:
+            raise ValueError(f"{path}: expected 10 columns (time, total, pressure, viscous), got {len(v)}")
+        rows.append([v[0], v[4], v[5], v[7], v[8]])
+    return np.array(rows)
 
 
 def read_watchpoint(path: Path) -> np.ndarray:

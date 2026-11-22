@@ -7,7 +7,7 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-from studies.turek_hron_fsi import STUDY, read_iterations, read_watchpoint
+from studies.turek_hron_fsi import STUDY, read_forces, read_iterations, read_watchpoint
 
 ROOT = Path(__file__).resolve().parent.parent
 _spec = importlib.util.spec_from_file_location("fsi_t", ROOT / "models/fsi/turek_hron_fsi.py")
@@ -84,3 +84,15 @@ def test_metrics_and_deviations():
     m = STUDY.compute_metrics(s, FSI1, {}, {})
     assert m["uy_A_deviation_pct"] == pytest.approx(100 * abs(8.2e-4 - 8.208773e-04) / 8.208773e-04)
     assert m["drag_deviation_pct"] == pytest.approx(100 * abs(14.3 - 14.29426) / 14.29426)
+
+
+def test_read_forces_v2512_columns(tmp_path):
+    # a real line from the FSI1 prototype's force.dat (OpenFOAM v2512): time, total, pressure, viscous
+    f = tmp_path / "force.dat"
+    header = "# Time total_x total_y total_z pressure_x pressure_y pressure_z viscous_x viscous_y viscous_z"
+    line = ("20 1.4293411941e-01 7.6400687906e-03 3.2651933942e-16 7.4303797201e-02 7.4777669948e-03 "
+            "7.8861320633e-21 6.8630322211e-02 1.6230179579e-04 3.2651145329e-16")
+    f.write_text(header + chr(10) + line + chr(10), encoding="utf-8")
+    F = read_forces(f)
+    assert (F[-1, 1] + F[-1, 3]) / 0.01 == pytest.approx(14.293411941, rel=1e-9)   # drag = pressure + viscous = total
+    assert (F[-1, 2] + F[-1, 4]) / 0.01 == pytest.approx(0.76400687906, rel=1e-9)
