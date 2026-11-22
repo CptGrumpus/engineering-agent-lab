@@ -128,7 +128,7 @@ def build():
               "unchanged.")
     m.stator.slot.check()
     m.rotor.hole[0].check()
-    # Pyleecan's bundled file carries absolute material paths from its authors' computer (C:/Users/...); keep the file
+    # Pyleecan's bundled file carries absolute material paths from its authors' computer; keep the file
     # names only, so no personal path is committed (tests/test_privacy.py)
     for mat in {id(x): x for x in _materials(m)}.values():
         if mat.path and ("/" in mat.path or "\\" in mat.path):

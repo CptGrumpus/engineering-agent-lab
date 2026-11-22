@@ -252,7 +252,7 @@ back-EMF 108.04 V per 1000 rpm (+1.4 % on the radii-only machine, under the pred
   gap (10.65 against 10.96 mm). Machine: H0 10.65, H3 6.80, W0 41.21 mm (keeps the 17.4 deg arm), bridge 1.45 mm,
   Br 1.243 T, mu_r 1.129. Overlay: `portfolio/img/motor_pocket_vs_ornl_fig21.png`. The stator measurements used the
   isotropic bore fit; their adopted values come from the drawing's labels, so the stretch does not change them.
-- **Privacy:** the committed machine file (e060598) and its run input carried Pyleecan's own `C:/Users/LAP10/...`
+- **Privacy:** the committed machine file (e060598) and its run input carried absolute material paths from Pyleecan's authors' computer
   material paths (upstream metadata, not ours); the build script now keeps file names only. Scrub
   `runs/20261121-215053_motor_prius_ornl_oc_mesh/inputs/Toyota_Prius_ORNL.json` before the next commit.
 - **Torque against current (new study `motor_torque`, model `pyleecan_femm_load`):** the runner sweeps the current
