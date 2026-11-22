@@ -26,6 +26,27 @@
 #   P2 f converges monotonically, GCI under 0.5 %; finest within 0.1 % of the smoke test's 0.01783.
 #   P3 f within 2 % of Prandtl on every mesh (about -0.9 %): REQ-T1 verified PASS.
 #   P4 About 1 / 2 / 5 min.
+#
+# Results (run 20261122-104218_pipe_rans_mesh): verification FAIL (the run-level GCI, and one log-law check on n40).
+#   P1 MISSED: 20/21 point checks. n40's log-law deviation is 5.08 % against 5 %; everything else passes on all three
+#      (force balance <= 3e-12, bulk velocity <= 2e-13, wall shear uniform). First-cell y+ 0.49 / 0.25 / 0.13 as
+#      predicted. All three runs stopped at the 15000-iteration cap with the U, k and omega residuals above 1e-9, but
+#      the pressure gradient had stopped moving (change <= 3e-11 over the last 10 %), so f is iteratively converged.
+#   P2 MISSED: f 0.017303 / 0.017834 / 0.018130. Monotone, but slow: observed order 0.84 where the scheme is formally
+#      second order; GCI 2.6 % against the 1 % tolerance; extrapolated f 0.018504. n80 reproduced the smoke test
+#      exactly (0.017834 against 0.01783), but the finest mesh moved +1.7 % from it, not within 0.1 %. The three
+#      meshes are a true systematic refinement (growth 1.160 / 1.076 / 1.037, each about the square root of the one
+#      before: every cell split in two), so the low order is not a grid-family artefact. Hypothesis, not yet tested:
+#      SST's wall value of omega is set from the first-cell distance, so f keeps moving as the wall cell shrinks,
+#      even below y+ 1; and n40 (axis cell about 7 mm) is outside the asymptotic range.
+#   P3 MISSED on n40 (-3.85 %); held on n80 and n160 (-0.90 / +0.74 %). REQ-T1 is PASS (unverified) at every point,
+#      because the failed GCI withholds it. The verdict is not in doubt (even the extrapolated f is +2.8 % on Prandtl,
+#      inside 5 %), but the sign of the agreement is: the "about -0.9 %" was the n80 mesh's error, and the
+#      mesh-converged SST answer looks likely to be 2-3 % ABOVE Prandtl.
+#   P4 HELD roughly: 1.7 / 1.7 / 1.9 min, 5 min 20 s in all (time set by the iteration cap, not the mesh).
+# Consequence: the Reynolds sweep (pipe_rans_reynolds, low_re points on the n80 mesh) carries about -3.6 % mesh error
+# at Re 1e5 against the extrapolated value; its agreement with Prandtl is partly mesh error cancelling model error.
+# Next: a revision on finer meshes (n 80 / 160 / 320, and 640 if still outside the asymptotic range), predictions first.
 
 [case]
 name = "pipe_rans_mesh"
