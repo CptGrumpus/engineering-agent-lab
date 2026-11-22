@@ -78,7 +78,8 @@ A run is finished when its `runs/<timestamp>_<case>/report.md` exists. Logs are 
 | Job | Run dir (log) | Done about | When it finishes |
 |---|---|---|---|
 | Study 7 dq table, hot (the cold one is done: 2bf53fc, PASS) | `runs/20261122-115824_motor_prius_lut_hot` (`motor_prius_lut_hot.log`) | 13:36 | Score against its case header (P1-P4), Results block, commit. Then the efficiency case below. |
-| Study 6 FSI1 prototype B: solid 1.25 mm at the 2.5 mm fluid mesh (scratch, not a case of record) | `runs/20261122-091140_scratch_fsi1_solid125` (`fsi_scratch/solid125.log`) | 13:10 (time window 3568 of about 4800 at 12:05) | Compare uy(A) (window mean) with the original 2.5 mm point, 0.817489 mm: does the solid mesh explain the drift away from the benchmark? Then write `turek_hron_fsi1_mesh_r1` (below). Do not commit scratch runs. |
+| Study 6 FSI1 r1 mesh study (fluid 2.5 / 1.77 / 1.25 mm, coupling 1e-6) | `runs/20261122-125809_turek_hron_fsi1_mesh_r1` (this session's scratchpad, `$TEMP/claude/cb67dd1e648f8970/2466259e-97df-49dc-993b-d474fed5635d/scratchpad/fsi1_r1.log`) | about 19:00 | Score against the case header (P1-P5), Results block, commit. |
+| Study 19 pipe probe (scratch: n80 and n640 low_re with the new axial length; wf Re 2e6 n160) | `runs/20261122-122935_scratch_pipe_r1_probe` (same scratchpad, `pipe/probe.log`) | about 13:20 | Its numbers go in the headers of `pipe_rans_mesh_r1` and `pipe_rans_wf_mesh` (to write, predictions first). Do not commit scratch runs. |
 
 ### Study 7 (motor): state and next steps
 
@@ -124,9 +125,11 @@ A run is finished when its `runs/<timestamp>_<case>/report.md` exists. Logs are 
   `verification.steady_measure = "drift"`.
 - Prototype A (5 mm fluid, coupling tolerance 1e-6): lift jitter 72 x smaller, means unchanged to 5 digits, iterations
   +19 %, every point check passes. The jitter was zero-mean coupling noise.
-- **Next:** when prototype B is in, write `cases/turek_hron_fsi1_mesh_r1.toml` (coupling_rel_tol 1e-6,
-  coupling_max_iterations 100, metric_average_s 2.0, steady_measure "drift"; solid mesh per prototype B; fluid
-  5 / 2.5 / 1.25 mm), predictions first, run (about 1 / 1 / 3 h; more at 1e-6). Then FSI2 and FSI3 (periodic).
+- Prototype B (solid 1.25 mm at the 2.5 mm fluid mesh): uy(A) +0.035 % against the 2.5 mm solid, about 1/16 of the
+  drift; cost 3 h 45 min against 51 min. The solid mesh does not explain the drift; it stays at 2.5 mm.
+- **FSI1 r1 running** (8ddf816): fluid 2.5 / 1.77 / 1.25 mm (the 5 mm mesh was outside the asymptotic range). Still
+  unexplained: uy(A) moving away from the benchmark; candidates the fluid mesh motion near the tip and the RBF force
+  mapping (bending moment not checked). Then FSI2 and FSI3 (periodic).
   The portfolio page `portfolio/17-fsi-flag-turek-hron.md` stays a draft until study 6 is complete.
 
 ### Study 18 (pressure vessel with a nozzle): two cases done
