@@ -36,6 +36,10 @@ BRACKET_OC = ["motor_prius_ornl_oc_m250", "motor_prius_ornl_oc_y390"]
 BRACKET_TQ = ["motor_prius_torque_m250", "motor_prius_torque_y390"]
 ORNL_THERMAL = "https://info.ornl.gov/sites/publications/Files/Pub57487.pdf"
 ORNL_DESIGN = "https://info.ornl.gov/sites/publications/Files/Pub57348.pdf"
+#: copper per slot after the 2026-11-22 correction: ORNL's 0.84 fill is on the squares of the insulated wires, so the
+#: bare copper is Pyleecan's 13 strands of 0.912 mm per turn x 9 turns (76.4 mm^2), not 0.84 x 143.0 = 120.1 mm^2
+COPPER_MM2_PER_SLOT, TURNS_PER_SLOT, J_LIMIT = 76.4, 9, 25.0
+I_LIMIT = J_LIMIT * COPPER_MM2_PER_SLOT / TURNS_PER_SLOT  # 212 A rms
 E = html.escape
 
 
@@ -416,7 +420,11 @@ def build_index(cases, runs, full=True):
         ["Design inputs: magnet width", "Still Pyleecan's (18.9 mm)", pill("OPEN"), ""],
         ["Electromagnetics, open circuit", "FEMM via Pyleecan; phase symmetry, winding theory, zero cogging mean, mesh GCI",
          pill("PASS") + " verified", '<a href="open-circuit.html">Open circuit</a>'],
-        ["Electromagnetics, torque against current: mesh study at 333 A",
+        ["Design limit: copper current density (REQ-M2, REQ-M3)",
+         "25 A/mm² on 76.4 mm² of bare copper per slot: 212 A rms (corrected from 333 A on 2026-11-22, before any test "
+         "data was opened)", pill("PASS") + " REQ-M2: 400 N m at 168 A, 19.8 A/mm² · " + pill("FAIL")
+         + " REQ-M3 from 250 A", '<a href="torque.html">Torque</a>'],
+        ["Electromagnetics, torque against current: mesh study at 333 A (the limit as first computed)",
          "Current-angle sweep, MTPA; power balance, current amplitude, symmetry, GCI", torque_status(tm),
          '<a href="torque.html">Torque</a>'],
         ["Electromagnetics, torque against current: 50-350 A curve, inherited M400-50A steel", "Same checks at every current",
@@ -524,6 +532,12 @@ inputs, hashes and tool versions with every run.</li>
 <li><time>03:56</time><span>Bracket, torque on M250-35A: −1.8 % at 100 A, −1.0 % at 300 A.</span></li>
 <li><time>04:05</time><span>Bracket, open circuit on 190Y390: 111.0 V per 1000 rpm, +0.12 %. The three grades span 0.13 % in back-EMF.</span></li>
 <li><time>04:29</time><span>Bracket, torque on 190Y390: −0.9 % at 100 A, −0.6 % at 300 A. Across the three grades the torque spans 1.8 % at 100 A and 1.0 % at 300 A, the stand-in M330-35A at the top: the unknown grade does not limit the blind comparison.</span></li>
+<li><time>09:16</time><span>B-H tail sensitivity, saturation polarization 2.05 T instead of 2.0: back-EMF −0.35 %.</span></li>
+<li><time>09:20</time><span>Correction: ORNL's 0.84 slot fill is on the squares of the insulated wires, so the bare copper is 76.4 mm² per slot, not 120.1. The 25 A/mm² limit is 212 A rms, not 333. REQ-M2 still passes (margin about 19 %); REQ-M3 now fails from 250 A. Torques unchanged.</span></li>
+<li><time>09:42</time><span>Tail sensitivity, torque: +1.75 % at 300 A, +1.96 % at 350 A. The high-current prediction carries about ±2 % from the unmeasured deep-saturation tail; it stays on 2.0 T.</span></li>
+<li><time>12:06</time><span>dq look-up table, magnets at 20 °C (169 FEMM solves): verified; the dq torque equation within 0.37 % of FEMM's torque.</span></li>
+<li><time>13:34</time><span>The same table with magnets at 80 °C: open-circuit flux −7.0 % against Br's −6 % (the saturated bridges keep their leakage flux); torque −5.1 to −5.4 % at id = 0.</span></li>
+<li><time>13:38</time><span>First efficiency map: peak 97.4 % cold, 97.0 % hot; rated 50 kW holds to 6000 rpm (58.6 / 53.7 kW). Not verified: the 25 A table does not resolve light load at high speed. Low-current tables (6.25 A steps) started.</span></li>
 </ol>
 
 <h2>Blind protocol log</h2>
@@ -535,6 +549,7 @@ inputs, hashes and tool versions with every run.</li>
         ["22:20", "ORNL/TM-2004/120 read with a line filter. Values from its Tables 5.4-5.5 slipped through because their labels are abbreviations or sit on separate lines. They are ORNL's lumped-parameter <b>model</b> results, not measurements, at operating points that were not identified.",
          "Recorded in full. The measured data stays sealed. The torque cases declare it as prior knowledge. Extraction is whitelist-only from here on."],
         ["22:30", "ORNL/TM-2004/137 Fig. 14 opened by the user's decision: ORNL's measured B-H line of a magnet sample", "A material input, like a datasheet; not motor performance"],
+        ["2026-11-22 09:20", "ORNL/TM-2004/137, the winding paragraph re-read by whitelist (the slot-fill definition and the conductor description)", "None: design text. It corrected our copper area (see the timeline)."],
         ["sealed", "ORNL/TM-2004/137 Fig. 13 (measured no-load air-gap flux density); ORNL/TM-2004/247 and ORNL/TM-2006/423 (test reports); ORNL/TM-2005/33 pages 20-30", "Opened only when the study is complete"],
     ])}
 
@@ -933,8 +948,9 @@ TORQUE_NOTES = {
                                "1.8 times the field.",
     "motor_prius_torque_y390": "Lamination bracket: powercore 035-190Y390 at 100 and 300 A. -0.9 % and -0.6 % on "
                                "M330-35A, the same pattern as M250-35A.",
-    "motor_prius_torque_mesh": "Mesh study at 333 A rms, the 25 A/mm² copper limit, fineness 2 / 4 / 8. REQ-M2: does "
-                               "the MTPA torque reach the rated 400 N m within that limit?",
+    "motor_prius_torque_mesh": "Mesh study at 333 A rms, the 25 A/mm² copper limit as first computed (corrected to "
+                               "212 A, see the callout above), fineness 2 / 4 / 8. At 333 A the corrected current "
+                               "density is 39 A/mm².",
     "motor_prius_torque_current": "The MTPA torque curve from 50 to 350 A rms at fineness 4, on Pyleecan's inherited "
                                   "M400-50A steel: the other side of the steel sensitivity.",
     "motor_prius_torque_current_r1": "The same curve with M330-35A laminations, the study's stand-in steel: the blind "
@@ -955,12 +971,12 @@ def torque_section(case, run):
         m, p = pt.get("metrics", {}), pt["parameters"]
         ok, n = point_pass(pt)
         rows.append([f'{float(p["current_rms_A"]):g}', f'{float(p["mesh_fineness"]):g}',
-                     fmt(m.get("current_density_rms_A_per_mm2"), 4), fmt(m.get("torque_mtpa_Nm"), 5),
+                     fmt(TURNS_PER_SLOT * float(p["current_rms_A"]) / COPPER_MM2_PER_SLOT, 3), fmt(m.get("torque_mtpa_Nm"), 5),
                      fmt(m.get("mtpa_angle_deg"), 3), fmt(m.get("torque_per_amp_Nm_per_A"), 4),
                      fmt(m.get("torque_ripple_pp_at_mtpa_Nm"), 3),
                      f'{pt.get("solver_outputs", {}).get("wall_s", 0):.0f} s',
                      pill(f"{ok}/{n} PASS") if n and ok == n else pill(f"{ok}/{n}")])
-    pts_table = table(["Current (A rms)", "Mesh", "J (A/mm²)", "MTPA torque (N m)", "Angle (°)", "N m per A",
+    pts_table = table(["Current (A rms)", "Mesh", "J, bare copper (A/mm²)", "MTPA torque (N m)", "Angle (°)", "N m per A",
                        "Ripple p-p (N m)", "Solve", "Checks"], rows, "num")
     rc, _ = run_checks(run)
     rc_table = table(["Run-level check", "Description", "Value", "Limit", "Status"],
@@ -1013,12 +1029,12 @@ def build_torque(tcases, runs):
             X0, X1 = 0, 375
             L, Rr, T, B, Wd, Hd = 64, 150, 16, 46, 760, 330
             W, H = Wd - L - Rr, Hd - T - B
-            xlim = L + (333 - X0) / (X1 - X0) * W
+            xlim = L + (I_LIMIT - X0) / (X1 - X0) * W
             y400 = T + (1 - 400 / ymax) * H
             extra = (f'<line x1="{L}" x2="{L + W}" y1="{y400:.1f}" y2="{y400:.1f}" stroke="var(--ink-3)" stroke-width="1"/>'
                      f'<text x="{L + 6}" y="{y400 - 6:.1f}">rated 400 N m</text>'
                      f'<line x1="{xlim:.1f}" x2="{xlim:.1f}" y1="{T}" y2="{T + H}" stroke="var(--ink-3)" stroke-width="1"/>'
-                     f'<text x="{xlim - 6:.1f}" y="{T + 14}" text-anchor="end">25 A/mm² limit</text>')
+                     f'<text x="{xlim - 6:.1f}" y="{T + 14}" text-anchor="end">25 A/mm² limit, {I_LIMIT:.0f} A</text>')
             chart = line_chart(series,
                                xlabel="phase current (A rms)", ylabel="MTPA torque (N m)",
                                xticks=[(v, str(v)) for v in range(0, 376, 50)], xpos=lambda v: (v - X0) / (X1 - X0),
@@ -1044,8 +1060,13 @@ current-density limit? Each point sweeps the current angle and takes the maximum
 
 <div class="callout">
 <p><b>Assumed design limit:</b> 25 A/mm² rms in the copper, a common short-time limit for an oil-cooled traction
-motor. With a fill of 0.84 (ORNL's design report) on our slot's 143.0 mm² and 9 turns per slot, that is 333 A rms. No
-published inverter current rating is used: searching for one risks ORNL's measured torque-current data.</p>
+motor. With 76.4 mm² of bare copper per slot (13 strands of 0.912 mm per turn, 9 turns) that is <b>212 A rms</b>.
+No published inverter current rating is used: searching for one risks ORNL's measured torque-current data.</p>
+<p><b>Corrected on 2026-11-22, before any test data was opened.</b> The first version applied ORNL's 0.84 slot fill
+to the whole slot (120.1 mm², 333 A). ORNL defines that fill on the <i>squares</i> of the insulated wires; the bare
+copper is about 0.59 of the slot, 1.57 times less. Torques are unchanged; only the current-density verdicts move:
+REQ-M2 still passes (400 N m at about 168 A, 19.8 A/mm², margin about 19 % instead of 52 %), and REQ-M3 now fails
+from 250 A. The mesh study below still runs at 333 A, the limit as first computed.</p>
 <p><b>Prior knowledge declared:</b> the 400 N m rating, and ORNL lumped-parameter model values seen in the filter
 incident (see the overview's blind protocol log).</p>
 </div>
