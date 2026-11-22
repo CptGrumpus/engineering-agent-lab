@@ -148,9 +148,11 @@ CARDS = [
     ("baseline", "09", "workflow", "Workflow", "Mass-spring-damper baseline", "All 72 checks pass, and the two tools agree to a few parts per million.", "pass", "SciPy · OpenModelica"),
 ]
 VERDICT = {"pass": "Passes", "fail": "Fails", "mixed": "Depends on speed", "held": "One result on hold"}
+_lp = HERE / "v2" / "loops.json"
+LOOPS = json.loads(_lp.read_text(encoding="utf-8")) if _lp.exists() else {}
 cards_html = "\n".join(
     f'''      <a class="card" href="#{k}" data-study="{k}" data-group="{g}">
-        <span class="thumb"><img src="v2/th_{k}.webp" alt="" loading="lazy" width="800" height="500"></span>
+        <span class="thumb"><img src="v2/th_{k}.webp" alt="" loading="lazy" width="800" height="500"{f' data-loop="{LOOPS[k]}"' if k in LOOPS else ""}></span>
         <span class="card-body">
           <span class="meta"><span class="no">{n}</span><span>{html.escape(d.replace("New · ", "").replace("Featured · ", ""))}</span></span>
           <span class="card-title">{html.escape(t)}</span>

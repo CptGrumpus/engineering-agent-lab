@@ -276,6 +276,7 @@ h3.sub::after { content: ""; flex: 1; height: 1px; background: var(--rule); }
 .card[hidden] { display: none; }
 .card:hover { transform: translateY(-3px); border-color: var(--accent); box-shadow: 0 18px 32px -24px rgba(20, 40, 90, 0.5); }
 .card[aria-current="true"] { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
+.card:has(img[data-loop]) .meta::after { content: "▶ moves"; margin-left: auto; color: var(--ink-3); letter-spacing: 0.04em; }
 .thumb { display: block; aspect-ratio: 16 / 10; background: var(--plate); border-bottom: 1px solid var(--rule); }
 .thumb img { width: 100%; height: 100%; object-fit: contain; display: block; }
 .card-body { display: grid; gap: 6px; padding: 12px 14px 14px; align-content: start; }
@@ -535,8 +536,8 @@ details.study > summary:hover .study-toggle { text-decoration: underline; }
     </div>
     <dl class="stats">
       <div><dt>studies</dt><dd>16</dd></div>
-      <div><dt>automated checks</dt><dd>2,694</dd></div>
-      <div><dt>saved runs</dt><dd>68</dd></div>
+      <div><dt>automated checks</dt><dd>2,721</dd></div>
+      <div><dt>saved runs</dt><dd>70</dd></div>
       <div><dt>paid licences</dt><dd>0</dd></div>
     </dl>
   </header>
@@ -1127,7 +1128,7 @@ details.study > summary:hover .study-toggle { text-decoration: underline; }
         </span>
       </a>
       <a class="card" href="#strap_proof" data-study="strap_proof" data-group="struct">
-        <span class="thumb"><img src="v2/th_strap_proof.webp" alt="" loading="lazy" width="800" height="500"></span>
+        <span class="thumb"><img src="v2/th_strap_proof.webp" alt="" loading="lazy" width="800" height="500" data-loop="v2/loop_strap_proof.webp"></span>
         <span class="card-body">
           <span class="meta"><span class="no">14</span><span>Plasticity</span></span>
           <span class="card-title">Strap proof test, notch plasticity</span>
@@ -1135,7 +1136,7 @@ details.study > summary:hover .study-toggle { text-decoration: underline; }
         </span>
       </a>
       <a class="card" href="#strut" data-study="strut" data-group="struct">
-        <span class="thumb"><img src="v2/th_strut.webp" alt="" loading="lazy" width="800" height="500"></span>
+        <span class="thumb"><img src="v2/th_strut.webp" alt="" loading="lazy" width="800" height="500" data-loop="v2/loop_strut.webp"></span>
         <span class="card-body">
           <span class="meta"><span class="no">13</span><span>Stability</span></span>
           <span class="card-title">Strut buckling, with an imperfect strut</span>
@@ -1175,7 +1176,7 @@ details.study > summary:hover .study-toggle { text-decoration: underline; }
         </span>
       </a>
       <a class="card" href="#modal" data-study="modal" data-group="struct">
-        <span class="thumb"><img src="v2/th_modal.webp" alt="" loading="lazy" width="800" height="500"></span>
+        <span class="thumb"><img src="v2/th_modal.webp" alt="" loading="lazy" width="800" height="500" data-loop="img/bracket_modes.webp"></span>
         <span class="card-body">
           <span class="meta"><span class="no">04</span><span>Vibration</span></span>
           <span class="card-title">Bracket arm modal analysis</span>
@@ -1215,7 +1216,7 @@ details.study > summary:hover .study-toggle { text-decoration: underline; }
         </span>
       </a>
       <a class="card" href="#suspension" data-study="suspension" data-group="vehicle">
-        <span class="thumb"><img src="v2/th_suspension.webp" alt="" loading="lazy" width="800" height="500"></span>
+        <span class="thumb"><img src="v2/th_suspension.webp" alt="" loading="lazy" width="800" height="500" data-loop="img/anim_quarter_car.webp"></span>
         <span class="card-body">
           <span class="meta"><span class="no">07</span><span>Vehicle dynamics</span></span>
           <span class="card-title">Quarter car, ride and road holding</span>
@@ -1231,7 +1232,7 @@ details.study > summary:hover .study-toggle { text-decoration: underline; }
         </span>
       </a>
       <a class="card" href="#baseline" data-study="baseline" data-group="workflow">
-        <span class="thumb"><img src="v2/th_baseline.webp" alt="" loading="lazy" width="800" height="500"></span>
+        <span class="thumb"><img src="v2/th_baseline.webp" alt="" loading="lazy" width="800" height="500" data-loop="img/anim_msd.webp"></span>
         <span class="card-body">
           <span class="meta"><span class="no">09</span><span>Workflow</span></span>
           <span class="card-title">Mass-spring-damper baseline</span>
@@ -1423,7 +1424,7 @@ details.study > summary:hover .study-toggle { text-decoration: underline; }
         </tbody>
       </table>
     </div>
-    <p class="code-facts">It's all Python, about 34,000 lines across 221 files: the harness that runs and checks everything, the models, the independent reference solutions and the graders, with 249 automated tests that run on every push.</p>
+    <p class="code-facts">It's all Python, about 35,000 lines across 228 files: the harness that runs and checks everything, the models, the independent reference solutions and the graders, with 253 automated tests that run on every push.</p>
   </section>
 
   <section class="band wrap" id="tasks" aria-labelledby="tasks-title">
@@ -1631,6 +1632,16 @@ details.study > summary:hover .study-toggle { text-decoration: underline; }
     if (isStudy(key)) select(key, { open: true, scroll: true });
   };
   window.addEventListener("hashchange", fromHash);
+
+  // looping thumbnails: a card with motion plays it while hovered or focused (fetched only then)
+  if (!reduce()) cards.forEach(c => {
+    const im = c.querySelector("img[data-loop]");
+    if (!im) return;
+    const still = im.getAttribute("src");
+    const on = () => { im.src = im.dataset.loop; }, off = () => { im.src = still; };
+    c.addEventListener("mouseenter", on); c.addEventListener("focus", on);
+    c.addEventListener("mouseleave", off); c.addEventListener("blur", off);
+  });
 
   const btns = [...document.querySelectorAll(".filters button")];
   btns.forEach(b => b.addEventListener("click", () => {
