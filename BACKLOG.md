@@ -73,13 +73,13 @@ predictions go into a case header and get committed BEFORE its evidence run; Res
 
 Check with `ps -ef | grep "[h]arness pipeline"` (WSL jobs: `wsl.exe -e bash -lc "ps -eo etime,cmd | grep -E 'Foam|ccx' | grep -v grep"`).
 A run is finished when its `runs/<timestamp>_<case>/report.md` exists. Logs are in the 10:50 session's scratchpad,
-`C:/Users/mrstego/AppData/Local/Temp/claude/cb67dd1e648f8970/4c94c999-0080-4004-9acc-817969cda447/scratchpad/`.
+`$TEMP/claude/cb67dd1e648f8970/4c94c999-0080-4004-9acc-817969cda447/scratchpad/` ($TEMP = the user's AppData/Local/Temp).
 
 | Job | Run dir (log) | Done about | When it finishes |
 |---|---|---|---|
 | Study 7 dq table, cold (FEMM, 169 solves), then the hot one starts by itself | `runs/20261122-102002_motor_prius_lut_cold` (`motor_prius_lut_cold.log`), then `runs/*_motor_prius_lut_hot` (`motor_prius_lut_hot.log`) | cold 12:05, hot 13:50 | Score each against its case header (P1-P4), Results block, commit (curated). Then the efficiency case below. |
 | Study 6 FSI1 prototype B: solid 1.25 mm at the 2.5 mm fluid mesh (scratch, not a case of record) | `runs/20261122-091140_scratch_fsi1_solid125` (`fsi_scratch/solid125.log`) | 13:15 | Compare uy(A) (window mean) with the original 2.5 mm point, 0.817489 mm: does the solid mesh explain the drift away from the benchmark? Then write `turek_hron_fsi1_mesh_r1` (below). Do not commit scratch runs. |
-| Study 19 pipe friction: mesh study, then the Reynolds sweep starts by itself | `runs/20261122-104218_pipe_rans_mesh` (`pipe_rans_mesh.log`), then `runs/*_pipe_rans_reynolds` (`pipe_rans_reynolds.log`) | 11:00, 11:35 | Score against the headers (mesh: P1-P4; Reynolds: P1-P5), Results blocks, commit. |
+| Study 19 pipe friction: Reynolds sweep (the mesh study is done, b18fada) | `runs/20261122-104744_pipe_rans_reynolds` (`pipe_rans_reynolds.log`) | 11:35 | Score against the header (P1-P5), Results block, commit. Read its low_re points knowing the n80 mesh carries about -3.6 % mesh error at Re 1e5 (see the mesh case's Results). |
 
 ### Study 7 (motor): state and next steps
 
@@ -140,7 +140,10 @@ A run is finished when its `runs/<timestamp>_<case>/report.md` exists. Logs are 
 
 ### Study 19 (turbulent flow)
 
-- Part 1, pipe friction (2f076cf): running (above). Smoke test: f -0.9 % on Prandtl at Re 1e5.
+- Part 1, pipe friction (2f076cf). Mesh study done (b18fada), verification FAIL: f 0.01730 / 0.01783 / 0.01813 on
+  n 40 / 80 / 160, observed order 0.84, GCI 2.6 % (tolerance 1 %), extrapolated +2.8 % on Prandtl. REQ-T1 PASS but
+  unverified. The smoke test's -0.9 % was the n80 mesh's error. **Next:** `pipe_rans_mesh_r1` on n 80 / 160 / 320 (640
+  if needed), predictions first; Reynolds sweep running (above).
 - Part 2, the backward-facing step against Driver & Seegmiller's measurements: **waiting on data.** On 2026-11-22
   ~10:20 turbmodels.larc.nasa.gov had a TLS certificate fault and the ERCOFTAC classic database
   (cfd.mace.manchester.ac.uk) refused connections; the KB wiki (UFR 3-15) gives only secondary values (Re_H 37500,
