@@ -10,7 +10,7 @@ The intended user is an automotive engineer with a master's degree in mechanical
 
 ## Start here
 
-- **[PORTFOLIO.md](PORTFOLIO.md)**: capabilities and the nine case studies, grouped by discipline (for reviewers). Each case study has its own page in [portfolio/](portfolio/), and [a sample client memo](portfolio/deliverables/coolant-channel-memo.md) shows the deliverable format.
+- **[PORTFOLIO.md](PORTFOLIO.md)**: capabilities and the case studies, grouped by discipline (for reviewers). Each case study has its own page in [portfolio/](portfolio/), and [a sample client memo](portfolio/deliverables/coolant-channel-memo.md) shows the deliverable format.
 - [CAD-TOOLS.md](CAD-TOOLS.md): the tool stack, installed versions, how the harness drives each tool, and hardware context.
 - [skills/README.md](skills/README.md): agent skills and their status.
 
@@ -53,15 +53,14 @@ The intended user is an automotive engineer with a master's degree in mechanical
 - `runs/`: evidence from individual executions; see [runs/README.md](runs/README.md). Git-ignored except curated example runs (without bulky result CSVs).
 - `local_llm/`: running a local open-weight LLM (Inkling 2 Mini) on this workstation next to the solvers: action list and experiment log ([local_llm/PLAN.md](local_llm/PLAN.md)), speed ceilings, benchmark wrapper and run ledger. Separate from the studies; nothing in `harness/` depends on it yet.
 - `.claude/skills/`: executable Claude Code skills.
-- `tests/`: pytest suite (67 tests), including negative tests showing that the checks catch wrong models and invalid assumptions.
+- `tests/`: pytest suite, including negative tests showing that the checks catch wrong models and invalid assumptions.
 
 ## Reading it on another machine
 
 Nothing needs installing to read the work. The portfolio pages, figures, renders and evidence reports are all committed.
 
 ```powershell
-gh auth login                                         # the repository is private
-gh repo clone CptGrumpus/engineering-agent-lab
+git clone https://github.com/CptGrumpus/engineering-agent-lab.git
 code engineering-agent-lab                            # open PORTFOLIO.md, then Ctrl+Shift+V for the preview
 ```
 
@@ -85,7 +84,7 @@ winget install --id FreeCAD.FreeCAD                       # bundles CalculiX and
 .venv\Scripts\python.exe -m pytest -q        # Modelica/FreeCAD/OpenFOAM tests skip if the tool is absent
 ```
 
-Not yet done: conjugate heat transfer (conduction in the plate), 3D developing flow, structural contact with friction or plasticity, any physical validation data.
+Since added: friction contact (the bolted joint), plasticity (the strap proof test), buckling (the strut) and a chained coolant-to-conduction-to-stress model (the cold plate). In progress: two-way fluid-structure coupling (the Turek-Hron flag) and the first comparison with measured test data (the traction motor, against Oak Ridge's published tests). Not yet done: fully conjugate heat transfer, where the fluid and solid temperatures are solved together.
 
 ## First implementation milestone (done)
 

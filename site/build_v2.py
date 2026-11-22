@@ -35,11 +35,11 @@ VP = [
      "lines": ["Solver: CalculiX 2.22 · surface-to-surface penalty contact",
                "Peak contact pressure +6.092e+02 · Hertz exact +6.067e+02",
                "Highest stress 0.41 mm below the surface, where Hertz puts it"]},
-    {"id": "bolted_joint", "study": "bolted_joint", "tab": "Joint", "legend": "CPRESS", "unit": "MPa",
-     "model": "Bolted joint · two 6 mm steel plates, M8 at 15 kN, half model mirrored",
+    {"id": "bolted_joint", "study": "bolted_joint", "tab": "Joint", "legend": "Friction used", "unit": "%",
+     "model": "Bolted joint · two 6 mm steel plates, M8 at 15 kN, μ = 0.2, half model mirrored",
      "lines": ["Solver: CalculiX 2.22 · C3D8I, surface-to-surface contact with friction",
-               "Contact pressure on the bottom plate after clamping, before any side load",
-               "Peak 162 MPa at the hole · contact patch 21.1 mm across"]},
+               "Share of the available friction (μ × local pressure) in use on the bottom plate's face; outside the 21 mm contact patch the plates don't touch",
+               "Drag the slider to push the top plate sideways: the stuck region shrinks until the whole joint slides"]},
     {"id": "strap_proof", "study": "strap_proof", "tab": "Plasticity", "legend": "S11", "unit": "MPa",
      "model": "Strap through its proof test · 6061-T6, 40 × 4 mm, 16 mm hole, loaded to 15 kN and back",
      "lines": ["Solver: CalculiX 2.22 · elastic-plastic, quarter model mirrored",
@@ -137,7 +137,7 @@ CARDS = [
     ("contact", "10", "struct", "Contact", "Roller-on-plate contact, nonlinear FEA", "A track roller carrying 500 N/mm. The contact pressure peaks at 609 MPa against a 650 MPa limit, and the shear under the surface reaches 184 MPa against 200. The CalculiX model lands within 0.4 % of the exact Hertz solution.", "pass", "Gmsh · CalculiX"),
     ("fea", "01", "struct", "Structures", "Cantilever bracket, 3D FEA", "Passes with room to spare at 0.953 mm and 150 MPa.", "pass", "FreeCAD · Gmsh · CalculiX"),
     ("strap", "02", "struct", "Structures", "Cable hole in a strap, CAD to FEA", "The hole can go up to about 16.7 mm. 16 mm passes at 117 MPa and 18 mm fails.", "pass", "CadQuery · Gmsh · CalculiX"),
-    ("fatigue", "03", "struct", "Fatigue", "Strap fatigue life, chained analysis", "Lasts easily, and could be rated to 7.8 kN cyclic for 3 × 10⁷ cycles.", "pass", "CalculiX · Python"),
+    ("fatigue", "03", "struct", "Fatigue", "Strap fatigue life, chained analysis", "Predicted to last with a wide margin; rated 7.8 kN cyclic for 3 × 10⁷ cycles, the lower of two data sets, extrapolated past the test data.", "pass", "CalculiX · Python"),
     ("modal", "04", "struct", "Vibration", "Bracket arm modal analysis", "7 mm thick puts the first mode at 261.7 Hz and the weight at 206 g.", "pass", "CadQuery · Gmsh · CalculiX"),
     ("cold_plate", "15", "fluid", "New · Multiphysics", "Cold plate, the full thermal chain", "Passes on all three counts, from the coolant flow through the plate's conduction to its thermal stress: 40.99 °C, a 7.20 K coolant rise and 46.8 MPa.", "pass", "OpenFOAM · CalculiX"),
     ("cfd", "05", "fluid", "CFD", "Coolant channel pressure budget", "Fails. It needs 33.4 Pa against a 30 Pa budget, and no gap size fixes it.", "fail", "OpenFOAM"),
@@ -156,8 +156,9 @@ GROUPS = {
                   d="Three studies", title="Aluminium strap: cable hole, fatigue life and proof test",
                   label="Studies 2, 3 and 14 · CadQuery, Gmsh, CalculiX and Python", verdict="pass",
                   tools="CadQuery · Gmsh · CalculiX · Python",
-                  answer="One strap, three questions. A 16 mm cable hole passes at 117 MPa against 120. The strap lasts "
-                         "easily at its 5 kN service load and could be rated to 7.8 kN cyclic. A 15 kN proof test strains "
+                  answer="One strap, three questions. A 16 mm cable hole passes at 117 MPa against 120. At its 5 kN "
+                         "service load the strap is predicted to last with a wide margin, and it's rated 7.8 kN cyclic, "
+                         "an extrapolation on the more cautious of two data sets. A 15 kN proof test strains "
                          "the hole edge to 0.58 % and leaves −77 MPa of compression behind, which helps fatigue."),
     "cold_plate": dict(parts=["heat", "cold_plate"], main="cold_plate", no="11 · 15",
                        d="Two studies", title="Cold plate: the coolant channel, then the full thermal chain",

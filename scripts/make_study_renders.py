@@ -268,7 +268,7 @@ def scene_bolted_joint():
     tris = np.vstack([tris, remap[tris][:, ::-1]])
     val = np.concatenate([val, val[idx]])
     R, rh = p["plate_outer_diameter_mm"] / 2, p["hole_diameter_mm"] / 2
-    return write_scene(BUILD / "bolted_joint", xyz, tris, val, field="contact pressure", units="MPa",
+    return write_scene(BUILD / "bolted_joint_pressure", xyz, tris, val, field="contact pressure", units="MPa",
                        vmin=0.0, vmax=180.0, bands=12, band_colors=mr.bands(12), elev=38, azim=-58,
                        sharp_angle_deg=50, distance_factor=3.0, resolution=[1400, 900],
                        expected_volume_mm3=np.pi * (R ** 2 - rh ** 2) * p["bottom_thickness_mm"],
@@ -413,7 +413,7 @@ def scene_cold_plate_3d():
     return scene_cold_plate(thin=4, name="cold_plate_3d")
 
 
-SCENES = {"cold_plate_3d": scene_cold_plate_3d, "strap_proof": scene_strap_proof, "bolted_joint": scene_bolted_joint, "joint_section": scene_joint_section, "cold_plate": scene_cold_plate,
+SCENES = {"cold_plate_3d": scene_cold_plate_3d, "strap_proof": scene_strap_proof, "bolted_joint_pressure": scene_bolted_joint, "joint_section": scene_joint_section, "cold_plate": scene_cold_plate,
           "strut": scene_strut}
 
 
@@ -566,6 +566,177 @@ def make_strap_frames(blender, samples: int, skip_render: bool) -> dict:
                           extra={"label": "Proof test", "recorded_zone_mm": rec["metrics"]["plastic_zone_mm"]})
 
 
+SLIP_INC = 30            # the slip run's increments, to SLIP_TO_MM
+SLIP_TO_MM = 0.006
+
+
+def slip_solve() -> Path:
+    """The joint's side-load step again with 30 increments instead of 6, so the slip can be watched.
+
+    The evidence run reaches full slip within its first two increments (0.002 mm each), which leaves one
+    in-between state. This run is the same deck with step 2 ramped to 0.006 mm in increments of at most
+    0.0002 mm and contact stresses written at every increment. A first try fixed the increment (DIRECT) and
+    stalled at its second increment: 411 iterations with the force residual bouncing between about 240 and
+    270 % and never converging. So the solver may cut an increment back where slip starts. That changes the solution path, not just the output, so
+    it is checked against the evidence run instead of being taken on trust: step 1 (the clamp, unchanged)
+    must print exactly what the evidence run printed, and the rim force at the evidence run's displacements
+    (interpolated between this run's neighbouring increments, at most 0.0002 mm apart) must agree, to 1 % at 0.002 mm (partly stuck, so the path matters a little) and to
+    0.1 % at 0.004 and 0.006 mm (full slip, where friction caps the force at mu times the clamp)."""
+    work = BUILD / "bolted_joint_slip_solve"
+    work.mkdir(parents=True, exist_ok=True)
+    src = (JOINT / "solver" / "job.inp").read_text(encoding="latin-1")
+    old = ("*STATIC, DIRECT\n0.16666666666666666, 1.0\n*CONTROLS, PARAMETERS=FIELD\n1.e-7, 1.e-5\n"
+           "*BOUNDARY\nNRIMTOP, 1, 1, 0.012\n")
+    if src.count(old) != 1:
+        raise RuntimeError("the evidence deck's side-load step is not the one this run was written for")
+    deck = src.replace(old, f"*STATIC\n{1 / SLIP_INC!r}, 1.0, 1.e-6, {1 / SLIP_INC!r}\n*CONTROLS, PARAMETERS=FIELD\n1.e-7, 1.e-5\n"
+                            f"*BOUNDARY\nNRIMTOP, 1, 1, {SLIP_TO_MM!r}\n")
+    i = deck.upper().rindex("*END STEP")
+    deck = deck[:i] + "*CONTACT FILE, FREQUENCY=1\nCSTR\n" + deck[i:]
+    if not (work / "job.inp").exists() or (work / "job.inp").read_text(encoding="latin-1") != deck:
+        (work / "job.inp").write_text(deck, encoding="latin-1")
+        (work / "job.frd").unlink(missing_ok=True)
+    if not (work / "job.frd").exists() or (work / "job.frd").stat().st_size < 1000:
+        subprocess.run([str(ccx()), "-i", "job"], cwd=work, capture_output=True, text=True, timeout=7200, check=True)
+    new, old_dat = (work / "job.dat").read_text(), (JOINT / "solver" / "job.dat").read_text()
+    cut = lambda s: s[:s.index(" total force (fx,fy,fz) for set NRIMTOP")]
+    if cut(new) != cut(old_dat):
+        raise RuntimeError("the slip run's clamp step prints differently from the evidence run's")
+    return work
+
+
+def rim_forces(dat: str) -> tuple[np.ndarray, np.ndarray]:
+    """Step time and the top rim's x reaction at each printed increment of the side-load step."""
+    t, f, lines = [], [], dat.splitlines()
+    for k, ln in enumerate(lines):
+        if "for set NRIMTOP" in ln:
+            t.append(float(ln.split()[-1]) - 1.0)
+            f.append(float(next(x for x in lines[k + 1:] if x.strip()).split()[0]))
+    return np.array(t), np.array(f)
+
+
+def make_joint_frames(blender, samples: int, skip_render: bool) -> dict:
+    """The bottom plate's face as the side load builds: how much of the friction available at each point
+    (mu times the local contact pressure) is in use. Where it reaches 100 % the plates slide."""
+    import re
+
+    from harness.calculix import read_frd
+    from harness.femesh import compact, read_inp
+
+    work = slip_solve()
+    rec = read_json(JOINT / "point.json")
+    p, so = rec["parameters"], rec["solver_outputs"]
+    mu = p["friction_coefficient"]
+    T, F = rim_forces((work / "job.dat").read_text())
+    D = np.concatenate([[0.0], T * SLIP_TO_MM])                     # applied displacement, from the solver's own times
+    # the .dat prints times to 7 significant figures (1.033333), so an increment can read 2e-5 over its cap
+    if abs(T[-1] - 1) > 1e-6 or np.diff(D).max() > SLIP_TO_MM / SLIP_INC * (1 + 1e-4):
+        raise RuntimeError("the slip run didn't reach the end of its step in increments of at most 0.0002 mm")
+    for j, tol in ((0, 0.01), (1, 0.001), (2, 0.001)):
+        a, b = float(np.interp(so["slip_displacement_mm"][j], D[1:], F)), so["rim_force_top_N"][j]
+        if abs(a / b - 1) > tol:
+            raise RuntimeError(f"rim force at {so['slip_displacement_mm'][j]:.3f} mm: {a:.2f} N against the evidence "
+                               f"run's {b:.2f} N, outside {tol:.1%}")
+    frd = read_frd(work / "job.frd")
+    C = [b for n, b in frd["blocks"] if n == "CONTACT"]
+    if len(C) != len(F) + 1:
+        raise RuntimeError(f"{len(C)} contact blocks; expected the clamp and {len(F)} increments")
+    coords = dict(zip(frd["nodes"].tolist(), frd["coords"]))
+    key = lambda q: (round(float(q[0]), 3), round(float(q[1]), 3))
+    view = work / "view.inp"
+    view.write_text(re.sub(r"TYPE=C3D8I", "TYPE=C3D8", (work / "job.inp").read_text(encoding="latin-1")), encoding="latin-1")
+    nodes, elems = read_inp(view)
+    elems = [e for e in elems if min(e[1]) >= OFFSET]
+    ids = np.array(sorted({n for e in elems for n in e[1]}))
+    tris0 = mr.surface({int(n): nodes[int(n)] for n in ids}, elems, ids)
+    xyz0 = np.array([nodes[int(n)] for n in ids])
+    on_face = np.abs(xyz0[:, 2]) < 1e-9
+    # each face node's share of the face area, for the share of the contact patch that is stuck
+    ftri = tris0[np.all(on_face[tris0], axis=1)]
+    a = 0.5 * np.abs(np.cross(xyz0[ftri[:, 1]] - xyz0[ftri[:, 0]], xyz0[ftri[:, 2]] - xyz0[ftri[:, 0]])[:, 2])
+    area = np.zeros(len(ids))
+    np.add.at(area, ftri.ravel(), np.repeat(a / 3, 3))
+
+    def used(Cb):
+        cid = np.array([int(n) for n in Cb["ids"]])
+        slave = np.array([abs(coords[n][2]) < 1e-9 and n < OFFSET for n in cid])
+        cp = np.asarray(Cb["CPRESS"], float)[slave]
+        tau = np.hypot(np.asarray(Cb["CSHEAR1"], float), np.asarray(Cb["CSHEAR2"], float))[slave]
+        face = {key(coords[n]): (pp, tt) for n, pp, tt in zip(cid[slave], cp, tau)}
+        pt = np.array([face[key(coords[int(n)])] if f else (0.0, 0.0) for n, f in zip(ids, on_face)])
+        ratio = np.where(pt[:, 0] > 0, pt[:, 1] / np.maximum(mu * pt[:, 0], 1e-30), 0.0)
+        return pt[:, 0], ratio
+
+    cp0, _ = used(C[0])
+    touching = on_face & (cp0 > 0)
+    # local element size at each face node: the distance to its fourth-nearest face node
+    fxy = xyz0[on_face, :2]
+    h = np.zeros(len(ids))
+    h[on_face] = [np.sort(np.hypot(*(fxy - q).T))[4] for q in fxy]
+    states = [0] + list(range(1, len(F) + 1))
+    data = []
+    for s in states:
+        cp, r = used(C[s])
+        # CalculiX caps the shear at mu p at its integration points; these are nodal values extrapolated from
+        # them, which overshoot where shear and pressure change sharply: at the edge of the stuck region (first
+        # run: up to 1.84 mu p, all within 1.63 local element sizes of a stuck node). Nodal averaging spreads
+        # an element's error to the nodes of its neighbours, so an overshoot is accepted only within two local
+        # element sizes of a stuck node; anywhere else, and on any step with nothing stuck, the shear must stay
+        # within 2 % of mu p.
+        over = np.nonzero(r > 1.02)[0]
+        held = np.nonzero(touching & (r < 0.98))[0]
+        for i in over:
+            gap = np.min(np.hypot(*(xyz0[held, :2] - xyz0[i, :2]).T)) if len(held) else np.inf
+            if gap > 2 * h[i]:
+                raise RuntimeError(f"increment {s}: shear {r[i]:.3f} times mu p, {gap:.2f} mm from the stuck region; "
+                                   f"friction can't exceed its limit away from the slip front")
+        stuck = float(area[touching & (r < 0.98)].sum() / area[touching].sum())
+        data.append((s, np.clip(r, 0, 1) * 100, stuck))
+    # frames: the clamp, every increment until the whole face slides, then the last
+    full = next(k for k, (_, _, st) in enumerate(data) if st == 0.0)
+    picks = list(range(0, full + 1)) + ([len(data) - 1] if full < len(data) - 1 else [])
+    main = next(k for k, s in enumerate(picks) if data[s][2] <= 0.5)
+    tris = tris0
+    scenes, gates, frames = [], [], []
+    R, rh = p["plate_outer_diameter_mm"] / 2, p["hole_diameter_mm"] / 2
+    for n, k in enumerate(picks):
+        s, val, stuck = data[k]
+        xyz, tt, vv = compact(xyz0, tris, val)
+        tt = tt[~np.all(np.abs(xyz[tt][:, :, 1]) < 1e-9, axis=1)]
+        off = np.abs(xyz[:, 1]) > 1e-9
+        idx = np.nonzero(off)[0]
+        remap = np.arange(len(xyz))
+        remap[idx] = len(xyz) + np.arange(len(idx))
+        xyz = np.vstack([xyz, xyz[idx] * [1, -1, 1]])
+        tt = np.vstack([tt, remap[tt][:, ::-1]])
+        vv = np.concatenate([vv, vv[idx]])
+        d = D[s]
+        force = 2 * F[s - 1] if s else 0.0
+        sc = write_scene(BUILD / f"frames/bolted_joint_{n:02d}", xyz, tt, vv, field="friction in use", units="%",
+                         vmin=0.0, vmax=100.0, bands=10, band_colors=mr.bands(10), elev=38, azim=-58,
+                         sharp_angle_deg=50, distance_factor=3.0, resolution=[1400, 900],
+                         expected_volume_mm3=np.pi * (R ** 2 - rh ** 2) * p["bottom_thickness_mm"],
+                         title=f"Bolted joint, side load {force:.0f} N", caption="")
+        if not skip_render:
+            mr.render(blender, sc, samples)
+        gates.append(gate(sc))
+        scenes.append(sc)
+        if s == 0:
+            text = "Clamped, no side load · every point holds by friction with all of it to spare"
+        elif stuck > 0:
+            text = (f"Side load {force:.0f} N, {100 * force / (mu * 15000):.0f} % of μ × preload · plate moved "
+                    f"{1000 * d:.1f} µm · {100 * stuck:.0f} % of the contact still stuck")
+        else:
+            text = (f"Side load {force:.0f} N · plate moved {1000 * d:.1f} µm · the whole contact slides: "
+                    f"friction is used up everywhere")
+        frames.append({"text": text, "side_load_N": round(force, 1), "moved_um": round(1000 * d, 2),
+                       "stuck_share": round(stuck, 4)})
+        print(f"joint frame {n + 1}: {text}, misread {gates[-1]['legibility']['misread']:.2%}", flush=True)
+    return publish_frames("bolted_joint", scenes, gates, frames, main=main,
+                          extra={"label": "Side load", "slip_load_N": round(2 * F[-1], 1),
+                                 "evidence_rim_force_N": so["rim_force_top_N"]})
+
+
 def make_strut_frames(blender, samples: int, skip_render: bool) -> dict:
     """The strut at each load step up to first yield, for the viewer's load slider: one camera, one
     stress scale, one crop for every frame, each frame through the three gates. The last frame is also
@@ -598,11 +769,11 @@ def main():
     ap.add_argument("--only", nargs="*")
     ap.add_argument("--samples", type=int, default=128)
     ap.add_argument("--skip-render", action="store_true")
-    ap.add_argument("--frames", nargs="+", choices=["strut", "strap_proof"], help="load-step frames for the viewer slider")
+    ap.add_argument("--frames", nargs="+", choices=["strut", "strap_proof", "bolted_joint"], help="load-step frames for the viewer slider")
     args = ap.parse_args()
     blender = mr.find_blender()
     if args.frames:
-        makers = {"strut": make_strut_frames, "strap_proof": make_strap_frames}
+        makers = {"strut": make_strut_frames, "strap_proof": make_strap_frames, "bolted_joint": make_joint_frames}
         for name in args.frames:
             f = makers[name](blender, args.samples, args.skip_render)
             print(f"{len(f['frames'])} {name} frames; worst misread {f['worst_misread']:.2%}, "
