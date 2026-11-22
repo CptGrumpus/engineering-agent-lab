@@ -50,23 +50,34 @@ each part on its own: CSM1 to CSM3 (solid only, CalculiX, nothing new needed), C
 only, OpenFOAM 14, nothing new needed), then FSI1 to FSI3 coupled through preCICE. Each part is
 verified before the coupled run, as in study 2.
 
-## Session handoff (2026-11-21, 23:10)
+## Session handoff (2026-11-22, 01:00; first written 2026-11-21, 23:10)
 
 Read this first in a new session. The dashboard is maintained by another session; files under site/
 and docs/ belong to it. Study 7's own HTML reports live in `reports/motor/`, apart from the dashboard.
 
-**Runs still going at handoff.** They write to `runs/`. The motor chain and the r2 waiter were started as background
-shells of the 23:10 session: if that session has closed and a run has no report.md and no solver process
-(`tasklist | grep -i femm`, `wsl -e pgrep -a pimpleFoam`), rerun it with
-`.venv/Scripts/python.exe -m harness pipeline cases/<case>.toml`. Never run two FEMM cases at once.
+**Runs still going at handoff.** They write to `runs/`. Three background shells, one after another (all survive a
+`/clear`; they show in `ps -ef | grep -i "harness pipeline\|sleep 60"`):
+1. the 23:10 session's motor chain (pid 27378), now on `motor_prius_torque_current`, about 15 min per current, so done
+   about 01:55 (not 01:25);
+2. its r2 waiter (pid 27589): starts `motor_prius_ornl_oc_mesh_r2` (M400-50A) when the chain ends, about 02:05;
+3. the 01:00 session's M330 chain (`<scratchpad>/m330_chain.sh`, output in task `boio26z61`): waits for pid 27589 and
+   any harness pipeline to end, then regenerates `models/motor/Toyota_Prius_ORNL.json` with M330-35A
+   (`~/.venvs/pyleecan/Scripts/python.exe models/motor/build_prius_ornl.py`), then runs `motor_prius_ornl_oc_mesh_r3`
+   (about 11 min) and `motor_prius_torque_current_r1` (about 1 h 45 min): done about 04:00.
+If a shell has died, a run has no report.md and no solver is running (`tasklist | grep -i femm`), redo the remaining
+steps by hand in that order: the machine file must be regenerated only after r2 has started (r2 copies it, and must
+run on M400-50A). Rerun a case with `.venv/Scripts/python.exe -m harness pipeline cases/<case>.toml`. Never run two
+FEMM cases at once.
 
 | Case | Run | State at 23:06 | Expected |
 |---|---|---|---|
 | `turek_hron_fsi1_mesh` (study 6 FSI1, rerun) | `20261121-203031_turek_hron_fsi1_mesh` | DONE 00:35, committed (f8934a8): verification FAIL. Drag 0.031 % from the benchmark (GCI 6.5e-5). 'steady' fails from lift step noise (+-2 % per step, no drift); uy(A) drifts away from the benchmark with refinement (-0.41 then -0.96 %, order 3.5) | revision listed in the case header: drift-based steadiness, averaged forces, tighter coupling on forces, solid 1.25 mm |
 | `motor_prius_torque_mesh` | `20261121-224707_motor_prius_torque_mesh` | DONE, committed: 608.07 / 607.96 / 607.73 N m; verification FAIL on the GCI only (spread 0.055 %, differences growing); REQ-M2 PASS (unverified), margin 52 % | revision: measure the mesh noise, declare `mesh_noise_rel`, rerun |
 | `motor_prius_rotor_overspeed_mesh` (new study `rotor_stress`) | `20261122-001104_motor_prius_rotor_overspeed_mesh` | DONE, committed: verification PASS; REQ-M4 VERIFIED FAIL, 424 MPa linearized against 335 at 7200 rpm (295 MPa at 6000) | sensitivity: 412 MPa grade, pocket corner radii |
-| `motor_prius_torque_current` (50-350 A, fineness 4) | started 00:08 (`20261122-000853_motor_prius_torque_current`) | | about 01:25 |
-| `motor_prius_ornl_oc_mesh_r2` (final machine) | queued by a waiter after the torque curve | | about 01:45; its finest-mesh back-EMF is the blind prediction |
+| `motor_prius_torque_current` (50-350 A, fineness 4, M400-50A) | started 00:08 (`20261122-000853_motor_prius_torque_current`) | 00:48: 115.4 N m at 50 A (predicted 122, -5.4 %, outside its 3 %), 246 at 100 A (+1.7 %) | about 01:55 |
+| `motor_prius_ornl_oc_mesh_r2` (final machine, M400-50A) | queued by a waiter after the torque curve | | about 02:05; the "inherited steel" side of the steel sensitivity |
+| `motor_prius_ornl_oc_mesh_r3` (final machine, M330-35A) | queued by the M330 chain | | about 02:20; its finest-mesh back-EMF is the blind prediction (P2: +2.0 % on r2, range +1.0 to +3.5 %) |
+| `motor_prius_torque_current_r1` (50-350 A, M330-35A) | queued by the M330 chain | | about 04:00; the blind torque curve (P2: +3 % at low current falling to +1 % at 350 A, against the M400-50A curve) |
 
 When each finishes:
 1. Read its report; compare with the predictions in its case header; append a Results block (the torque cases also
@@ -297,7 +308,7 @@ back-EMF 108.04 V per 1000 rpm (+1.4 % on the radii-only machine, under the pred
 | Torque mesh study, 333 A (REQ-M2) | run, GCI withheld | 608 N m at 46.7 deg, spread 0.055 %, divergent classification: REQ-M2 pass (unverified), margin 52 %. Revision: measure the mesh noise, declare it, rerun |
 | Torque curve 50-350 A | running (~01:25) | the blind torque-against-current prediction |
 | Rotor overspeed (REQ-M4) | verified | 424 MPa linearized vs 335 at 7200 rpm: FAIL (295 MPa at 6000 rpm: elastic in service) |
-| Lamination steel | decided, not yet applied | see the decision below |
+| Lamination steel | applied in the build (259cffe), machine file regenerated by the M330 chain | `build_prius_ornl.py --steel` (default M330-35A; M400-50A rebuilds the old file exactly). Tata B-H to 1.8 T; above it our extrapolation (saturation polarization 2.0 T, slope-continuous), an assumption that matters only in tooth tips at high current. The overspeed verdict stands: same density (7650), and the stress there does not depend on E |
 | Efficiency map | not started | M330-35A loss data in hand (`models/motor/materials/`) |
 | Thermal network | not started | |
 | Blind comparison with ORNL | sealed until all of the above | |
@@ -325,7 +336,16 @@ against ORNL, swap lamination grades and report what each changes in efficiency,
 rough public cost indices (relative, labelled as such). That is the cost-versus-performance question a client would
 ask; it belongs after validation, not inside it.
 
-**Uncommitted at handoff:** nothing settled. Running cases and their runs are committed once they finish.
+**Uncommitted at handoff (01:00):** nothing of study 7's. The committed `Toyota_Prius_ORNL.json` is still M400-50A
+(the build script's default is already M330-35A); commit the regenerated file with r3's run. Running cases and their
+runs are committed once they finish. `scripts/make_study_renders.py`, site/ and docs/ belong to the dashboard session.
+
+**Next, in order (01:00):** (1) process the torque curve and r2 when they finish (steps above); (2) then r3 and the
+torque curve r1, scoring each against its predictions and against its M400-50A twin; (3) the deferred fixes
+(`scrub_tree`, the torque figure label) once no run is loading them; (4) the bracket: find published B-H, loss and
+yield data for M250-35A and a Y390-type rotor grade (material searches only), add each to `LAMINATIONS` in
+`build_prius_ornl.py` (it writes `Toyota_Prius_ORNL_<grade>.json`; `studies/motor_em.py` `MACHINES` must list it);
+(5) the efficiency map.
 
 ## Action items
 
