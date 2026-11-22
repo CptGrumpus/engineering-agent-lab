@@ -5,7 +5,8 @@ usage: .venv/Scripts/python.exe reports/motor/build_report.py [artifact-index-pa
 Reads the motor cases (their header comments are the study's written record: predictions before each run, results
 after), the runs they produced (report.json, verification.json, manifest.json, point.json, figures), and the two
 machine definitions (Pyleecan's bundled Toyota_Prius.json and ours, models/motor/Toyota_Prius_ORNL.json). Writes
-self-contained pages (figures embedded) to reports/motor/: index.html, geometry.html, open-circuit.html, torque.html.
+self-contained pages (figures embedded) to reports/motor/: index.html, geometry.html, open-circuit.html, torque.html,
+efficiency.html, thermal.html.
 
 Numbers that came from scratch runs (not harness runs) are typed in below with the BACKLOG entry they come from.
 """
@@ -233,7 +234,7 @@ document.querySelectorAll('.chart').forEach(function (box) {
 """
 
 PAGES = [("index.html", "Overview"), ("geometry.html", "Design inputs"), ("open-circuit.html", "Open circuit"),
-         ("torque.html", "Torque"), ("efficiency.html", "Efficiency")]
+         ("torque.html", "Torque"), ("efficiency.html", "Efficiency"), ("thermal.html", "Thermal")]
 
 
 def page(fname, title, body, description, full=True):
@@ -407,6 +408,14 @@ def build_index(cases, runs, full=True):
         if not r["complete"]:
             return pill("RUNNING")
         return pill(r["report"]["verification_status"]) + " verification"
+    def thermal_status(runs):
+        r = runs.get("motor_prius_thermal_r1")
+        if not (r and r["complete"]):
+            return torque_status(r)
+        nom = next(pt for pt in r["points"] if pt["label"].endswith("nominal"))
+        return (pill("PASS") + f' REQ-TH1 {nom["metrics"]["min_continuous_power_kW"]:.1f} kW · '
+                + pill(r["report"]["verification_status"]) + " verification (slot hotspot check, see the page)")
+
     def eff_status(runs):
         r = runs.get("motor_prius_efficiency_r1") or runs.get("motor_prius_efficiency")
         return torque_status(r)
@@ -441,7 +450,10 @@ def build_index(cases, runs, full=True):
         ["Rotor bridge stress at overspeed (REQ-M4)", "CalculiX, plane stress, centrifugal and magnet loads, 7200 rpm; "
          "linearized bridge stress against M330-35A's yield (335 MPa)",
          (torque_status(so) + ": REQ-M4 fail, 424 MPa") if so and so["complete"] else torque_status(so), ""],
-        ["Thermal network", "Lumped network checked against CalculiX on a stator section", pill("NOT STARTED"), ""],
+        ["Thermal network: continuous envelope (REQ-TH1) and the hot corner",
+         "Lumped network from the geometry, coupled to the dq tables' losses; CalculiX conduction on half a slot pitch; "
+         "synthetic 65 °C jacket, 180 °C winding hotspot and 150 °C magnet limits",
+         thermal_status(runs), '<a href="thermal.html">Thermal</a>'],
         ["Blind comparison with ORNL test data", "Opened only after every prediction above is written down", pill("SEALED"), ""],
     ]
 
@@ -449,8 +461,8 @@ def build_index(cases, runs, full=True):
 <div class="col">
 <div class="eyebrow">Study 7 · electric machine · 2004 Toyota Prius traction motor</div>
 <h1>Prius motor study</h1>
-<p class="lede">Can an open-source toolchain (Pyleecan and FEMM for the electromagnetics, CalculiX for the rotor, later
-a thermal network) predict a production traction motor well enough for early design screening? The test case is the
+<p class="lede">Can an open-source toolchain (Pyleecan and FEMM for the electromagnetics, CalculiX for the rotor and
+the slot heat check, a lumped thermal network) predict a production traction motor well enough for early design screening? The test case is the
 2004 Prius motor, which Oak Ridge National Laboratory (ORNL) took apart and measured.</p>
 </div>
 
@@ -549,6 +561,9 @@ inputs, hashes and tool versions with every run.</li>
 <li><time>14:38</time><span>Low-current table, cold: its repeated 25 A row is bit-identical to the main table. The dq torque equation drifts up to 1 % at 6.25-12.5 A deep in field weakening (small torque, large ripple); the map uses FEMM's own torque.</span></li>
 <li><time>15:34</time><span>The same for the hot magnets (up to 1.1 %).</span></li>
 <li><time>15:34</time><span>Efficiency map, revision 1, on the merged tables: cold verified, every check passing (the map from the half table within 0.9 point of the full one); rated 50 kW verified to 6000 rpm (58.6 kW). Hot: one cell (4500 rpm, 10 N m) fails the map check. Peaks 97.41 / 97.05 %. The 10 N m row above 4000 rpm stays unresolved.</span></li>
+<li><time>17:20</time><span>Thermal network framed with the user: the continuous envelope under a 180 °C winding hotspot and 150 °C magnets, and whether the efficiency map's hot corner is a real operating state; water jacket 65 °C, all synthetic. Predictions written before the first run.</span></li>
+<li><time>17:46</time><span>Thermal network, first run: about 230 N m continuous to 2000 rpm, 42-48 kW above; the magnets, not the winding, bind at every speed. REQ-TH1 (25 kW from 1250 rpm) 30.2 kW. CalculiX's slot-pitch check puts the slot hotspot 10 % higher on its rise than the network's slab estimate.</span></li>
+<li><time>17:54</time><span>Revision 1 reads the slot hotspot at the top of the slot, by the tooth tips (where CalculiX put it): the shortfall halves to 4-7 %, still over the 5 % tolerance in six of ten scenarios; a bound shows it cannot move the envelope from 1250 rpm. At a winding mean of 100 °C the magnets are at 93-105 °C, not 80.</span></li>
 </ol>
 
 <h2>Blind protocol log</h2>
@@ -1241,13 +1256,98 @@ geometry: 59.6 mΩ per phase at 20 °C, 78.4 mΩ at 100 °C.</li>
     return page("efficiency.html", "Prius Efficiency Map", body, "Study 7: motor-only efficiency map of the Prius motor.")
 
 
+THERMAL_CASES = ["motor_prius_thermal", "motor_prius_thermal_r1"]
+
+
+def build_thermal(runs):
+    tcases = [case_record(c) for c in THERMAL_CASES]
+    best = runs.get("motor_prius_thermal_r1")
+    figs, scen, fe_rows = "", "", []
+    if best and best["complete"]:
+        nom = next(pt for pt in best["points"] if pt["label"].endswith("nominal"))
+        figs = (f'<figure>{img64(nom["dir"] / "response.png", "Continuous envelope")}<figcaption>Nominal scenario: the '
+                "continuous torque and power over speed (left), and the winding hotspot, winding mean and magnet "
+                "temperatures along the envelope, with the magnet temperature where the winding mean reaches 100 °C "
+                f'(right). Run {E(best["id"])}.</figcaption></figure>')
+        speeds = (1250, 2000, 3000, 4000, 5000, 6000)
+        rows = []
+        for pt in best["points"]:
+            m = pt["metrics"]
+            ok, n = point_pass(pt)
+            rows.append([E(pt["label"].split("_", 1)[1])] + [f'{m[f"continuous_torque_{v}rpm_Nm"]:.0f}' for v in speeds]
+                        + [f'{m["min_continuous_power_kW"]:.1f}',
+                           f'{m["magnet_at_winding_100C_min_C"]:.0f}-{m["magnet_at_winding_100C_max_C"]:.0f}',
+                           pill("PASS") if ok == n else pill(f"{ok}/{n}")])
+            fe = pt["solver_outputs"]["section_fe"]
+            fe_rows.append([E(pt["label"].split("_", 1)[1])] + [f'{100 * fe[f"rise_err_{k}"]:+.1f} %' for k in
+                                                                ("wind_mean", "wind_peak", "teeth_mean", "yoke_mean")])
+        scen = table(["Scenario"] + [f"{v} rpm (N m)" for v in speeds] + ["Least power from 1250 rpm (kW)",
+                     "Magnets at winding mean 100 °C (°C)", "Checks"], rows, "num")
+    fe_table = table(["Scenario", "Winding mean", "Winding hotspot", "Teeth mean", "Yoke mean"], fe_rows, "num")         if fe_rows else ""
+    sections = "".join(eff_section(c, runs.get(c["name"])) for c in tcases)
+    body = f"""
+<div class="col">
+<div class="eyebrow">Study 7 · thermal</div>
+<h1>Thermal network and continuous rating</h1>
+<p class="lede">What torque can the motor carry continuously at each speed without the winding passing class H or the
+magnets passing 150 °C, and is the efficiency map's hot corner (windings 100 °C, magnets 80 °C) a state the motor
+actually reaches? A lumped network built from the geometry, with the losses recomputed at its own temperatures.</p>
+</div>
+
+<div class="callout">
+<p><b>Framing (user's decision, 2026-11-22):</b> continuous (steady) envelope from 500 to 6000 rpm; limits 180 °C
+winding hotspot (class H) and 150 °C magnets; a water-glycol jacket at 65 °C with h = 3000 W/m² K. All three are
+synthetic: cooling, insulation class and magnet grade are not in the design data we may read. REQ-TH1 (25 kW
+continuous from 1250 rpm) is our own limit, half the 50 kW peak rating.</p>
+<p><b>Not part of the validation:</b> thermal is outside the agreed ORNL comparison; no ORNL thermal data was opened.</p>
+</div>
+
+<h2>Method</h2>
+<div class="col">
+<ul>
+<li><b>Network.</b> Yoke, teeth, slot winding, liner, end windings, end-space air, housing and rotor, each a node at
+its mean temperature, joined by T-equivalent circuits (Mellor et al. 1991), which are exact for 1D conduction (unit
+tests against the closed form).</li>
+<li><b>Losses.</b> At each speed and torque, the lowest-loss current from the dq tables, with the copper resistance
+at the network's winding temperatures and the tables blended in magnet temperature between 20 and 80 °C; iterated
+until the temperatures settle (to under 0.001 K).</li>
+<li><b>Inputs from measured machines.</b> The stator-housing interface as a 0.037 mm air gap (Staton et al. 2005, the
+average of measured machines); end-space convection h = k₁ + k₂ v<sup>k₃</sup> (Boglietti and Cavagnino 2007; Micallef's
+constants); air-gap conduction only (no vortex enhancement, the lower bound); no heat path through the shaft.</li>
+<li><b>Check.</b> CalculiX steady conduction on half a slot pitch with the same losses, conductivities and boundary
+conditions as the network's cross-section, on three meshes.</li>
+</ul>
+</div>
+
+<h2>Result</h2>
+{figs or '<p class="muted">The envelope appears when the thermal run has finished.</p>'}
+<div class="col"><p>The magnets, not the winding, set the continuous rating at every speed in the nominal case: with no
+shaft path and only conduction across the 0.77 mm gap, the rotor floats at the temperature of the tooth tips, the
+hottest iron. Where the winding mean reaches 100 °C the magnets are at 93-105 °C, so the efficiency map's hot corner
+(80 °C) is optimistic for them by 13-25 K.</p></div>
+{scen}
+
+<h2>The CalculiX check</h2>
+<div class="col"><p>Network against CalculiX, rise above the coolant on the stator cross-section (tolerance 5 %, model
+form). The slot hotspot reads 4-7 % low after revision 1 placed it at the top of the slot, by the tooth tips; a bound
+in the case record shows the remaining error cannot move the envelope from 1250 rpm.</p></div>
+{fe_table}
+
+<h2>Runs</h2>
+{sections}
+
+<p class="muted">Generated by <code>reports/motor/build_report.py</code>.</p>
+"""
+    return page("thermal.html", "Prius Thermal Rating", body, "Study 7: thermal network and continuous rating of the Prius motor.")
+
+
 def main():
     cases = [case_record(c) for c in CASES]
     tcases = [case_record(c) for c in TORQUE_CASES]
     bcases = [case_record(c) for c in BRACKET_OC]
     btcases = [case_record(c) for c in BRACKET_TQ]
     runs = {c: load_run(c) for c in CASES + TORQUE_CASES + BRACKET_OC + BRACKET_TQ + EFF_CASES + LUT_CASES
-            + ["motor_prius_rotor_overspeed_mesh"]}
+            + ["motor_prius_rotor_overspeed_mesh"] + THERMAL_CASES}
     (OUT / "index.html").write_text(build_index(cases, runs), encoding="utf-8")
     if len(sys.argv) > 1:  # also write the artifact's main page (no document skeleton) to the given path
         Path(sys.argv[1]).write_text(build_index(cases, runs, full=False), encoding="utf-8")
@@ -1255,6 +1355,7 @@ def main():
     (OUT / "open-circuit.html").write_text(build_open_circuit(cases + bcases, runs), encoding="utf-8")
     (OUT / "torque.html").write_text(build_torque(tcases + btcases, runs), encoding="utf-8")
     (OUT / "efficiency.html").write_text(build_efficiency(runs), encoding="utf-8")
+    (OUT / "thermal.html").write_text(build_thermal(runs), encoding="utf-8")
     for f, _ in PAGES:
         print(f"wrote {OUT / f} ({(OUT / f).stat().st_size / 1e3:.0f} kB)")
 
