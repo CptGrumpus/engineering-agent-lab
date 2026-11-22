@@ -357,6 +357,10 @@ td.num { font-family: var(--font-data); font-variant-numeric: tabular-nums; whit
 .feature figcaption b { color: var(--ink); font-weight: 600; }
 .opt-caught { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .opt-caught .finding:first-child { grid-column: auto; }
+/* a single figure with its caption beside it */
+.section-fig { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px 24px; align-items: center; }
+.section-fig .wipe-legend { margin-top: 12px; }
+@media (max-width: 760px) { .section-fig { grid-template-columns: 1fr; } }
 /* before-and-after wipe */
 .wipe { position: relative; padding: 0; overflow: hidden; touch-action: pan-y; }
 .wipe img { display: block; width: 100%; height: auto; }

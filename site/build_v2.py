@@ -217,6 +217,14 @@ def featured_with_evidence() -> str:
     """The featured study gets the same evidence line as the others, once its files are committed."""
     text = (HERE / "featured.html").read_text(encoding="utf-8")
     w = json.loads((HERE / "v2" / "wipe.json").read_text(encoding="utf-8"))
+    sec = json.loads((HERE / "v2" / "clevis_section.json").read_text(encoding="utf-8"))
+    scols = ["#%02x%02x%02x" % tuple(round(c * 255) for c in rgb) for rgb in sec["band_colors"]]
+    slegend = ('<span class="wipe-legend" aria-label="von Mises stress, MPa"><span class="wl-bar">'
+               + "".join(f'<i style="background:{c}"></i>' for c in scols) + '</span><span class="wl-ticks">'
+               + "".join(f'<span style="left:{100 * (v - sec["vmin"]) / (sec["vmax"] - sec["vmin"]):.3f}%">{lab}</span>'
+                         for v, lab in ((0, "0"), (20, "20"), (40, "40 MPa"), (55, "55+")))
+               + '</span></span>')
+    text = text.replace("{{SECTION_MAX}}", f'{sec["cut_max_MPa"]:.0f}').replace("{{SECTION_LEGEND}}", slegend)
     s = scenes["bracket_opt"]                      # the same 0-110 MPa scale and bands as the pair
     cols = ["#%02x%02x%02x" % tuple(round(c * 255) for c in rgb) for rgb in s["band_colors"]]
     legend = ('<div class="wipe-legend" aria-label="von Mises stress, MPa"><span class="wl-bar">'

@@ -132,6 +132,92 @@ def gate(scene: Path, ghost: bool = False) -> dict:
             "design_mm3": round(meta["expected_volume_mm3"], 1), "color_check": chk, "legibility_check": leg}
 
 
+# --------------------------------------------------------------------------- section through the lug
+
+def cut_solid(xyz, val, surf, tets, axis: int, keep_below: bool = True):
+    """Exact plane cut of a tetrahedral solid at coordinate 0 along `axis`, keeping one side.
+
+    The outer surface is clipped triangle by triangle; the cut face comes from slicing every tet that
+    crosses the plane. Points on a cut edge are shared through the edge's node pair, so the result is a
+    closed surface (the volume check proves it) and the field is interpolated linearly along each edge."""
+    d = xyz[:, axis] if keep_below else -xyz[:, axis]          # keep d <= 0
+    pts, vals, key = list(xyz), list(val), {}
+
+    def on_edge(a, b):
+        k = (min(a, b), max(a, b))
+        if k not in key:
+            t = d[a] / (d[a] - d[b])
+            pts.append(xyz[a] + t * (xyz[b] - xyz[a])); vals.append(val[a] + t * (val[b] - val[a]))
+            key[k] = len(pts) - 1
+        return key[k]
+
+    out = []
+    for tri in surf:                                          # Sutherland-Hodgman on each surface triangle
+        poly = []
+        for i in range(3):
+            a, b = tri[i], tri[(i + 1) % 3]
+            if d[a] <= 0:
+                poly.append(a)
+            if (d[a] <= 0) != (d[b] <= 0) and d[a] != 0 and d[b] != 0:
+                poly.append(on_edge(a, b))
+        out += [[poly[0], poly[k], poly[k + 1]] for k in range(1, len(poly) - 1)]
+    n = np.zeros(3); n[axis] = 1.0 if keep_below else -1.0   # the cut face looks out of the kept side
+    for tet in tets:
+        s = d[tet] <= 0
+        if s.all() or not s.any():
+            continue
+        ring = [on_edge(tet[i], tet[j]) for i in range(4) for j in range(i + 1, 4) if s[i] != s[j]]
+        P = np.array([pts[r] for r in ring])
+        c = P.mean(axis=0)
+        u, w = [k for k in range(3) if k != axis]
+        ring = [r for _, r in sorted(zip(np.arctan2(P[:, w] - c[w], P[:, u] - c[u]), ring))]
+        for k in range(1, len(ring) - 1):
+            t = [ring[0], ring[k], ring[k + 1]]
+            if np.dot(np.cross(pts[t[1]] - pts[t[0]], pts[t[2]] - pts[t[0]]), n) < 0:
+                t = [t[0], t[2], t[1]]
+            out.append(t)
+    return np.array(pts), np.array(vals), np.array(out)
+
+
+def make_section(blender, samples):
+    """Design D on its finest mesh, cut through the lug's mid-plane (y = 0, a plane of symmetry of the
+    part): where the stress runs from the pin into the base. Published as site/v2/clevis_section.webp."""
+    from PIL import Image
+
+    s = read_series(D_FINE / "nodal_results.csv")
+    nodes, elems = mesh_for(D_FINE, s)
+    ids = s["node_id"].astype(int)
+    index = {int(n): k for k, n in enumerate(ids)}
+    xyz = np.column_stack([s["x_mm"], s["y_mm"], s["z_mm"]])
+    vm = von_mises(s)
+    surf = mr.surface(nodes, elems, ids)
+    tets = np.array([[index[n] for n in e[1][:4]] for e in elems])
+    pts, vals, tris = cut_solid(xyz, vm, surf, tets, axis=1, keep_below=True)
+    pts, tris, vals = compact(pts, tris, vals)
+    # its own finer scale (5 MPa bands, the top one 55 MPa and over): the mid-plane carries the in-plane
+    # load path at 10 to 50 MPa, while the peak sits on the lug's faces, where the sideways load bends it
+    cut = np.isclose(pts[:, 1], 0.0, atol=1e-9)
+    sc = write_scene(BUILD / "clevis_section", pts, tris, vals, field="von Mises stress", units="MPa",
+                     vmin=0.0, vmax=60.0, bands=12, band_colors=mr.bands(12), elev=14, azim=90,
+                     resolution=[1200, 1000], fill=0.9, distance_factor=3.6,
+                     expected_volume_mm3=point(D_FINE)["solver_outputs"]["cad_volume_mm3"] / 2,
+                     title="Design D cut through the lug's mid-plane", caption="")
+    if blender is not None:
+        mr.render(blender, sc, samples)
+    g = gate(sc)
+    im = Image.fromarray((np.clip(mr.beauty(sc), 0, 1) * 255).astype(np.uint8), "RGBA")
+    ys, xs = np.nonzero(np.asarray(im)[..., 3] > 60)
+    pad = int(0.06 * max(np.ptp(xs), np.ptp(ys)))
+    im = im.crop((max(0, xs.min() - pad), max(0, ys.min() - pad), xs.max() + pad, ys.max() + pad))
+    im.thumbnail((1200, 1000), Image.LANCZOS)
+    im.save(REPO / "site/v2/clevis_section.webp", quality=90, method=6)
+    print("section:", g["volume_rel_error"], g["color_check"]["fraction_on_legend"], g["legibility_check"]["misread"],
+          "cut-face max", round(float(vals[cut].max()), 1), "part max", round(float(vals.max()), 1))
+    (REPO / "site/v2/clevis_section.json").write_text(json.dumps({"vmin": 0.0, "vmax": 60.0, "band_colors": mr.bands(12).tolist() if hasattr(mr.bands(12), "tolist") else list(mr.bands(12)),
+        "cut_max_MPa": round(float(vals[cut].max()), 1), "gate": g}, indent=1), encoding="utf-8")
+    return g
+
+
 # --------------------------------------------------------------------------- the numbers
 
 def peak(lab_or_pt) -> float:
@@ -417,7 +503,11 @@ def main():
     ap.add_argument("--skip-render", action="store_true")
     ap.add_argument("--only", nargs="*")
     ap.add_argument("--wipe", action="store_true", help="only the before-and-after pair for the page's wipe")
+    ap.add_argument("--section", action="store_true", help="only the cut through the lug")
     args = ap.parse_args()
+    if args.section:
+        make_section(None if args.skip_render else mr.find_blender(), 128)
+        return
     if args.wipe:
         make_wipe(None if args.skip_render else mr.find_blender(), 128)
         return
