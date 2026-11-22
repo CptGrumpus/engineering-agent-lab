@@ -62,7 +62,7 @@ shells of the 23:10 session: if that session has closed and a run has no report.
 
 | Case | Run | State at 23:06 | Expected |
 |---|---|---|---|
-| `turek_hron_fsi1_mesh` (study 6 FSI1, rerun) | `20261121-203031_turek_hron_fsi1_mesh` | 5 mm: drag 14.27 (parser fix took), uy(A) +5.8 %. 2.5 mm: drag 14.29 (0.003 %), uy(A) -0.41 %, lift +0.16 %. 1.25 mm at t = 2 of 12 s | done about 03:00-03:30. P5 (wall time) already missed: 53 min for 5 mm against 15 |
+| `turek_hron_fsi1_mesh` (study 6 FSI1, rerun) | `20261121-203031_turek_hron_fsi1_mesh` | DONE 00:35, committed (f8934a8): verification FAIL. Drag 0.031 % from the benchmark (GCI 6.5e-5). 'steady' fails from lift step noise (+-2 % per step, no drift); uy(A) drifts away from the benchmark with refinement (-0.41 then -0.96 %, order 3.5) | revision listed in the case header: drift-based steadiness, averaged forces, tighter coupling on forces, solid 1.25 mm |
 | `motor_prius_torque_mesh` | `20261121-224707_motor_prius_torque_mesh` | DONE, committed: 608.07 / 607.96 / 607.73 N m; verification FAIL on the GCI only (spread 0.055 %, differences growing); REQ-M2 PASS (unverified), margin 52 % | revision: measure the mesh noise, declare `mesh_noise_rel`, rerun |
 | `motor_prius_rotor_overspeed_mesh` (new study `rotor_stress`) | `20261122-001104_motor_prius_rotor_overspeed_mesh` | DONE, committed: verification PASS; REQ-M4 VERIFIED FAIL, 424 MPa linearized against 335 at 7200 rpm (295 MPa at 6000) | sensitivity: 412 MPa grade, pocket corner radii |
 | `motor_prius_torque_current` (50-350 A, fineness 4) | started 00:08 (`20261122-000853_motor_prius_torque_current`) | | about 01:25 |
