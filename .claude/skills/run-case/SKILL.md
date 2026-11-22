@@ -43,6 +43,7 @@ is the `verify-against-reference` skill.
 | `pyleecan_femm_lut` | electric-machine dq look-up table (study 7, efficiency map input): one d-axis current per point, a q-axis sweep inside, dq flux linkages, torque and iron-loss coefficients (P = A f + B f^2 + C f^1.5) | same runner in its dq-grid mode | `models/motor/pyleecan_em.py` |
 | `lut_efficiency` | electric-machine efficiency map (study 7) from a `motor_lut` run: lowest-loss feasible current at each speed and torque under the bus voltage and a current limit; scenarios for temperatures | numpy/scipy, no solver | `models/motor/efficiency_map.py` |
 | `cadquery_ccx_vessel` | pressure vessel shell with a radial nozzle (study 18): quarter model, internal pressure with closed-end thrusts, stresses linearised along classification lines (Pm, PL, P + Q) | CadQuery + Gmsh C3D10 + CalculiX | `models/fea/pressure_vessel.py` |
+| `openfoam_pipe_rans` | fully developed turbulent pipe flow (study 19): axisymmetric periodic wedge, RANS (k-omega SST), bulk velocity held by meanVelocityForce; low-Reynolds or wall-function wall treatment; friction factor | OpenFOAM v14 in WSL | `models/cfd/pipe_openfoam.py`, `models/cfd/run_pipe.sh` |
 | `pyleecan_gmsh_ccx_rotor` | IPM rotor lamination at overspeed (study 7): half a pole in plane stress, linearized bridge stress | Pyleecan export (its own environment) + Gmsh + CalculiX | `models/motor/export_rotor_pole.py`, `models/fea/rotor_ccx.py` |
 
 A case with an `[optimization]` section runs with `python -m harness optimize <case>`
