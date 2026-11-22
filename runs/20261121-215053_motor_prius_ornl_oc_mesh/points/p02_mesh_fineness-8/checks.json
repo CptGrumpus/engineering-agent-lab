@@ -1,0 +1,51 @@
+{
+  "label": "p02_mesh_fineness-8",
+  "status": "PASS",
+  "checks": [
+    {
+      "id": "phase_symmetry",
+      "description": "spread of the three phases' fundamental flux linkage / mean",
+      "kind": "numerical",
+      "value": 9.265870018955246e-05,
+      "tolerance": 0.001,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "phase_shift",
+      "description": "max |phase shift between phases - 120 deg| (deg)",
+      "kind": "numerical",
+      "value": 0.008572538623866421,
+      "tolerance": 0.5,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "winding_theory",
+      "description": "|2 N k_w1 B_1 R L / p from the air-gap field - FEMM coil flux linkage| / FEMM (model form: mid-gap sampling, slot openings, leakage)",
+      "kind": "numerical",
+      "value": 0.0030093855853885413,
+      "tolerance": 0.02,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "open_circuit_torque",
+      "description": "|mean torque at zero current| / rated torque (no net torque without current)",
+      "kind": "numerical",
+      "value": 4.881168250393461e-07,
+      "tolerance": 0.001,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "time_resolution",
+      "description": "48 / steps per electrical period (below 1: at least 48)",
+      "kind": "validity",
+      "value": 1.0,
+      "tolerance": 1.0,
+      "comparison": "<=",
+      "status": "PASS"
+    }
+  ]
+}

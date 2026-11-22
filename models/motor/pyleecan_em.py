@@ -2,7 +2,8 @@
 
 usage: <pyleecan python> pyleecan_em.py <params.json> <out.json>
 
-Params: machine (a file in Pyleecan's data/Machine, e.g. Toyota_Prius.json), speed_rpm, id_A and iq_A (peak dq
+Params: machine (a file in Pyleecan's data/Machine, e.g. Toyota_Prius.json, or the absolute path of one of our own
+machine files, which the backend resolves from the run's inputs), speed_rpm, id_A and iq_A (peak dq
 currents, Pyleecan's convention), mesh_fineness (MagFEMM Kmesh_fineness), steps_per_period (time steps per ELECTRICAL period;
 Pyleecan's Nt_tot counts a whole mechanical revolution, so Nt_tot = steps_per_period x pole pairs: 24 for the
 Prius gave only 6 samples per electrical period), angle_points (Na_tot).
@@ -19,6 +20,7 @@ import json
 import sys
 import time
 from os.path import join
+from pathlib import Path
 
 import numpy as np
 
@@ -33,7 +35,8 @@ def main(params_path: str, out_path: str) -> None:
     import pyleecan
 
     p = json.loads(open(params_path, encoding="utf-8").read())
-    m = load(join(DATA_DIR, "Machine", p["machine"]))
+    mp = Path(p["machine"])
+    m = load(str(mp) if mp.is_absolute() else join(DATA_DIR, "Machine", p["machine"]))
     simu = Simu1(name="em", machine=m)
     nt = int(p["steps_per_period"]) * int(m.get_pole_pair_number())
     simu.input = InputCurrent(OP=OPdq(N0=float(p["speed_rpm"]), Id_ref=float(p["id_A"]), Iq_ref=float(p["iq_A"])),

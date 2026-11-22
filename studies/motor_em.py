@@ -25,6 +25,8 @@ from harness.convergence import describe, discretization_uncertainty
 from harness.study import Study
 
 RUNNER = "models/motor/pyleecan_em.py"
+#: our own machine definitions (built by models/motor/build_prius_ornl.py); a case names one by file name
+MACHINES = ("models/motor/Toyota_Prius_ORNL.json",)
 PARAMS = ("machine", "speed_rpm", "id_A", "iq_A", "mesh_fineness", "steps_per_period", "angle_points",
           "max_speed_rpm", "bus_voltage_V", "rated_torque_Nm")
 NUMERIC = PARAMS[1:]
@@ -58,7 +60,7 @@ def line_emf_peak(t, phi_a, phi_b, scale):
 
 
 class PyleecanFEMM(Backend):
-    sources = (RUNNER,)
+    sources = (RUNNER, *MACHINES)
 
     def __init__(self):
         self.python = pyleecan_python()
@@ -66,6 +68,7 @@ class PyleecanFEMM(Backend):
 
     def prepare(self, source_dir=None, log_dir=None):
         self.runner = self.source_path(RUNNER, source_dir)
+        self.machines = {Path(m).name: self.source_path(m, source_dir) for m in MACHINES}
         r = subprocess.run([str(self.python), "-c", "import pyleecan, SciDataTool, numpy; "
                             "print(getattr(pyleecan, '__version__', '?'), SciDataTool.__version__, numpy.__version__)"],
                            capture_output=True, text=True, timeout=120, env=os.environ | {"PYTHONUTF8": "1"})
@@ -74,7 +77,10 @@ class PyleecanFEMM(Backend):
 
     def solve(self, params, numerics, tolerance_scale=1.0):
         work = Path(tempfile.mkdtemp(prefix="motor_"))
-        (work / "params.json").write_text(json.dumps({k: params[k] for k in PARAMS}), encoding="utf-8")
+        run_params = {k: params[k] for k in PARAMS}
+        if run_params["machine"] in self.machines:  # ours, from the run's inputs (hashed), not Pyleecan's data folder
+            run_params["machine"] = str(self.machines[run_params["machine"]])
+        (work / "params.json").write_text(json.dumps(run_params), encoding="utf-8")
         r = subprocess.run([str(self.python), str(self.runner), "params.json", "out.json"], cwd=work,
                            capture_output=True, text=True, timeout=float(numerics.get("solver_timeout_s", 3600)),
                            env=os.environ | {"PYTHONUTF8": "1"})
