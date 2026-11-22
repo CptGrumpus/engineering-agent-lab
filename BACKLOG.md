@@ -78,7 +78,6 @@ A run is finished when its `runs/<timestamp>_<case>/report.md` exists. Logs are 
 | Job | Run dir (log) | Done about | When it finishes |
 |---|---|---|---|
 | Study 6 FSI1 r1 mesh study (fluid 2.5 / 1.77 / 1.25 mm, coupling 1e-6) | `runs/20261122-125809_turek_hron_fsi1_mesh_r1` (`fsi1_r1.log`) | about 19:00 | Score against the case header (P1-P5), Results block, commit. |
-| Study 19 pipe mesh r2 (n 80 / 160 / 320, default 2 mm axial length; b4c3ee5) | `runs/*_pipe_rans_mesh_r2` (`pipe_rans_mesh_r2.log`) | about 16:15 | Score (P1-P4), Results block, commit; then write `portfolio/19-...` with `scripts/make_pipe_figure.py` (point it at r2: it reads the latest r1; update RUNS/latest()) and the PORTFOLIO row. |
 
 ### Study 7 (motor): state and next steps
 
@@ -140,7 +139,9 @@ A run is finished when its `runs/<timestamp>_<case>/report.md` exists. Logs are 
   unverified. The smoke test's -0.9 % was the n80 mesh's error. Reynolds sweep done (587dadd): low_re within 2 % of
   Prandtl at Re 2e4-2e6 (on those under-resolved meshes); wall functions -5.2 % at every Re (REQ-T1 FAIL); Re 2e6
   flagged by checkMesh on aspect ratio (the axial length floor D/50 in `grading()`). `pipe_rans_mesh_r1` (3b5c91b): n320 never converged; cause the
-  geometric-mean axial length (it stalls SIMPLE; the n640 probe used it too). r2 with the default length running. Axial-length option d5e385a. Wall functions done (877b7b3): at Re 2e6 the core
+  geometric-mean axial length (it stalls SIMPLE; the n640 probe used it too). r2 (dd29fbb): all converged, f 0.017834 / 0.018130 / 0.018280,
+  first order, extrapolated +2.4 % on Prandtl, GCI 1.05 % (run-level fails by 0.05 point). **Part 1 done; page
+  `portfolio/19-turbulent-pipe-friction.md` (6454d5e).** Optional: n640 with a 1 mm axial length (aspect ratio 760). Axial-length option d5e385a. Wall functions done (877b7b3): at Re 2e6 the core
   mesh does not matter (GCI 0.024 %) and the first-cell placement moves f only from -5.23 to -4.75 % (y+ 29-196): the
   -5 % is the wall treatment; REQ-T1 fails or passes by under 0.25 point. Low-Re is the usable setup.
 - Part 2, the backward-facing step against Driver & Seegmiller's measurements: **waiting on data.** On 2026-11-22
@@ -180,14 +181,15 @@ elements, probabilistic uncertainty). Each with its tools and independent refere
 ### For the dashboard session (from the study session)
 
 - 2026-11-22 ~16:00: new portfolio pages `portfolio/18-pressure-vessel-nozzle.md` (complete), `portfolio/20-prius-traction-motor.md`
-  and `portfolio/17-fsi-flag-turek-hron.md` (drafts, now in PORTFOLIO.md); new task `tasks/nozzle_stress_linearisation`.
+  and `portfolio/17-fsi-flag-turek-hron.md` (drafts, now in PORTFOLIO.md); `portfolio/19-turbulent-pipe-friction.md` (part 1
+  complete, with `portfolio/img/pipe_friction.png`); new task `tasks/nozzle_stress_linearisation`.
   PORTFOLIO.md no longer states a study count. The site's study list and counts may be stale.
 
 ### Waiting on the user
 
 Nothing blocking. For review when convenient: study 18's 14 mm recommendation. (User, 2026-11-22 ~15:00: "keep working
 on our studies, updating docs and skills and building out the portfolio": study 18's page is published (0feac56); study
-19's page waits on pipe_rans_mesh_r1; `scripts/make_pipe_figure.py` draws its figure. New evaluation task
+19's page is published (6454d5e). New evaluation task
 `tasks/nozzle_stress_linearisation` (ea159d0). Skills updated (6eadf71). README study table (4d484d3). Next ideas: a
 skill eval on quoting one mesh's agreement with a correlation (after pipe r1), FSI page when r1 is in.)
 
