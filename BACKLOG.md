@@ -71,7 +71,19 @@ added; study 6 FSI1 reproduces the benchmark within 1 % (drag and lift verified)
 or study 6 status are stale.
 **Open for the user:** (a) study 7 diagnostic: may I open ORNL/TM-2004/137 Fig. 13 (measured air-gap flux density) to
 split the 24 % between magnets and winding? Then a documented revision with predictions first, the blind verdicts kept.
-(b) the skill eval's no-skills baseline (not run).
+(b) the skill eval's no-skills baseline (not run). (c) study C framing, drafted 19:00 for your approval (frame-requirements: the decision is yours; nothing run):
+  *Decision:* does the study-4 steel bracket arm (150 x 25 x 7 mm cantilever, first mode about 262 Hz, portfolio 04)
+  survive a random-vibration qualification at its clamp: 1 h per axis of a base PSD, flat 0.04 g^2/Hz from 20 to 2000 Hz
+  (about 8.9 g rms; synthetic, a typical engine-mounted component level), with 2 % modal damping (synthetic)?
+  *Requirements (proposed):* REQ-RV1 3-sigma von Mises at the clamp (smooth-region extrapolated, not the corner
+  singularity) below yield / 1.5; REQ-RV2 fatigue damage (Steinberg three-band with Miner's rule; Dirlik as a second
+  estimate) below 0.5 for the test duration (safety factor 2 on life); REQ-RV3 tip relative displacement 3-sigma under
+  a stated clearance. *Model:* CalculiX *FREQUENCY, then *MODAL DYNAMIC or *STEADY STATE DYNAMICS base excitation for
+  the transfer functions; response PSD and moments in Python. *Checks:* Miles' equation for the first mode (exact for
+  one mode in a flat PSD), modal effective mass above 90 % of the mass in the excited direction, the response rms by
+  two integrations (frequency bins and modal sums), mesh study on the 3-sigma stress. *Questions for you:* the PSD
+  level (or a standard profile such as ISO 16750-3), the damping, the steel grade (for yield and the S-N curve), and
+  whether the clearance requirement applies.
 
 Read this first in a new session. Files under site/, docs/, DASHBOARD.md and `scripts/make_study_renders.py` belong
 to the dashboard session (it commits in this clone: add and commit only your own paths, in one command; never leave
@@ -115,8 +127,8 @@ Logs of the 17:15 session (thermal runs): `$TEMP/claude/cb67dd1e648f8970/4abd5a9
 
 | Job | Run dir (log) | Done about | When it finishes |
 |---|---|---|---|
-| Study 6 FSI2 (2.5 mm, dt 0.001, 15 s, periodic) | started ~19:35; run dir `runs/<ts>_turek_hron_fsi2` (log `fsi2.log` in the 17:15 session's scratchpad) | early morning (predicted 4-7 h) | Score P1-P7 in `cases/turek_hron_fsi2.toml`, Results block, commit evidence (curate as FSI1 r1: no postProcessing, .sta, .dat, logs > 600 kB), update `portfolio/17-...` (draft) and PORTFOLIO row. If the mesh motion failed: the log and `points/*/solver/fluid/log.*` show where; that is P1's named risk. |
-| Study 6 FSI3 (2.5 mm, dt 0.0005, 8 s, periodic) | started ~19:40; `runs/<ts>_turek_hron_fsi3` (log `fsi3.log`, same scratchpad) | morning (predicted 6-10 h) | Same as FSI2 with `cases/turek_hron_fsi3.toml`. |
+| Study 6 FSI2 (2.5 mm, dt 0.001, 15 s, periodic) | started 18:48 (system clock); run dir `runs/<ts>_turek_hron_fsi2` (log `fsi2.log` in the 17:15 session's scratchpad) | about 1.2 s per window at 18:51: about 23:30-00:30 | Score P1-P7 in `cases/turek_hron_fsi2.toml`, Results block, commit evidence (curate as FSI1 r1: no postProcessing, .sta, .dat, logs > 600 kB), update `portfolio/17-...` (draft) and PORTFOLIO row. If the mesh motion failed: the log and `points/*/solver/fluid/log.*` show where; that is P1's named risk. |
+| Study 6 FSI3 (2.5 mm, dt 0.0005, 8 s, periodic) | started 18:50; `runs/<ts>_turek_hron_fsi3` (log `fsi3.log`, same scratchpad) | morning (predicted 6-10 h) | Same as FSI2 with `cases/turek_hron_fsi3.toml`. |
 
 Alive check: `ps -ef | grep "[h]arness pipeline"`; WSL: `wsl.exe -e bash -lc "ps -eo etime,cmd | grep -E 'Foam|ccx' | grep -v grep"` (two pimpleFoam + two ccx_preCICE while both run). Progress: the newest `$TEMP/fsi_*/case/fluid/precice-Fluid-iterations.log` (one line per window; 15000 for FSI2, 16000 for FSI3).
 
