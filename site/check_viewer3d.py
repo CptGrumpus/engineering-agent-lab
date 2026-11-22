@@ -1,7 +1,7 @@
 """Check the page's interactive 3D view the same way the Blender renders are checked.
 
-Serves docs/ locally, opens the page in headless Chrome (check_viewer3d.mjs), turns on the 3D view
-and, for every tab with a mesh, takes a lit and an unlit frame from four angles. Each pair then goes
+Serves docs/ locally, opens every page in headless Chrome (check_viewer3d.mjs), turns on the 3D view
+on each study page and, for every result with a mesh, takes a lit and an unlit frame from four angles. Each pair then goes
 through the render pipeline's own checks (scripts/make_renders.py): the unlit frame's part pixels must
 be legend colours (99.5 %, away from anti-aliased edges), and the lit frame must read as the right band (check_legibility, the same 2 %
 limit). Fails on any page error. Needs node and Chrome; run after build_v2.py and export_docs.py:
@@ -60,8 +60,10 @@ def main() -> int:
     srv = http.server.ThreadingHTTPServer(("127.0.0.1", 0), handler)
     threading.Thread(target=srv.serve_forever, daemon=True).start()
     try:
-        out = subprocess.run(["node", str(HERE / "check_viewer3d.mjs"), f"http://127.0.0.1:{srv.server_port}/index.html",
-                              str(CHROME)], capture_output=True, text=True, timeout=600, check=True).stdout
+        pages = json.loads((REPO / "docs" / "pages.json").read_text(encoding="utf-8"))
+        out = subprocess.run(["node", str(HERE / "check_viewer3d.mjs"), f"http://127.0.0.1:{srv.server_port}/",
+                              str(CHROME), ",".join(pages["viewer"]), ",".join(pages["all"])],
+                             capture_output=True, text=True, timeout=1500, check=True).stdout
     finally:
         srv.shutdown()
     res = json.loads(out)

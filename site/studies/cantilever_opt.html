@@ -1,0 +1,55 @@
+  <section class="study" id="cantilever_opt">
+    <div class="study-head">
+      <span class="label">Study 1b · CadQuery, Gmsh, CalculiX and SciPy, driven by the agent</span>
+      <h2>The same cantilever, optimised</h2>
+    </div>
+    <h3>The question</h3>
+    <p>Take the steel bracket from study 1 (200 mm long, 20 mm wide, 1 kN at the tip) and put it in a vibrating assembly. Now its bending stress is limited to 100 MPa for fatigue, not 213 MPa, and the tip can still move at most 1.0 mm. Study 1's 20 × 20 mm bar reaches 150 MPa at the root, so it no longer passes. The width is fixed by the mounting. Which linear taper, meaning which root and tip heights, makes it as light as possible?</p>
+    <h3>The answer</h3>
+    <div class="answer">
+      <div class="chips"><span class="chip pass">546 g, 30 % lighter</span><span class="chip pass">Peak stress 99.5 MPa</span><span class="chip pass">Tip 0.917 mm</span><span class="chip pass">Beam-theory optimum within 0.13 %</span></div>
+      <p><strong>A 26.0 mm root tapering to 8.7 mm at the tip, at 546 g.</strong> The lightest straight bar that meets both limits is 20 × 25 mm and weighs 785 g, so the taper saves 30 %. Stress is the limit that governs, and it peaks partway along the span at 99.5 MPa, not at the root, where it's 88 MPa. The tip moves 0.917 mm, so deflection isn't what sizes it.</p>
+      <p>Switch between the two results in the viewer at the top of the page. On the same colour scale, most of study 1's straight bar is lightly loaded, while the taper keeps its surface close to the limit along most of the span, so nearly all of the steel is doing work.</p>
+      <p>The answer holds once mesh error is included. At the optimum, going from 4.5 mm to 2 mm elements moves the peak stress by 0.013 MPa. I had the optimiser work to a 0.5 % margin on each limit, and the converged stress sits 0.49 % under 100 MPa.</p>
+    </div>
+    <h3>Why it matters</h3>
+    <p>Checking one design is the easy half of design work. The harder half is finding a better one, and that means running the model many times with nobody looking at each result. An optimiser will happily exploit any weakness in the model: if a wrong answer looks light and strong, that's the one it will pick. So this study is a test of whether the checks from study 1 are strong enough to run unattended, inside a loop, and still be trusted at the end.</p>
+    <h3>The model</h3>
+    <dl class="spec">
+      <dt>Part</dt><dd>A steel bar 200 mm long and 20 mm wide. Its height tapers in a straight line from the root to the tip. Those two heights are what the optimiser chooses.</dd>
+      <dt>Material</dt><dd>Steel, linear elastic: Young's modulus 210 GPa, Poisson's ratio 0.3, density 7850 kg/m³.</dd>
+      <dt>Load and support</dt><dd>1 kN at the tip, spread over the tip face. The root face is fully fixed.</dd>
+      <dt>Limits</dt><dd>Peak bending stress at most 100 MPa and tip deflection at most 1.0 mm, each with a 0.5 % margin held back for mesh error.</dd>
+      <dt>Mesh</dt><dd>Quadratic tetrahedra, 3 mm during the search. The chosen design is solved again at 4.5, 3 and 2 mm.</dd>
+      <dt>Optimiser</dt><dd>COBYLA from SciPy. It needs no gradients and handles limits directly. It starts from a straight 20 × 25 mm bar.</dd>
+      <dt>What's measured</dt><dd>The mass, the tip deflection, and the peak of the bending stress along the whole span, read from the smooth surface and not from the clamped corner.</dd>
+    </dl>
+    {{CASE}}
+    <h3>How it works</h3>
+    <p>The optimiser proposes a root and tip height. For each candidate the harness builds the solid in CadQuery, meshes it in Gmsh, solves it in CalculiX and runs every check of the study, exactly as it would for any other case. A candidate that fails a check counts as infeasible whatever its numbers say, so a result the checks have rejected can't steer the optimiser. The whole search is one command, and it converged in 32 candidates. Study 12 takes the same loop to a 3D machined part.</p>
+    <figure><div class="plate"><img src="img/anim_bracket_opt.webp" alt="Animation of the optimiser's search: each candidate's stress render, its place in the design space, and the mass so far" loading="lazy"></div><figcaption>The search as it happened. Each frame is one candidate, with its CalculiX stress, where it sits in the design space and the mass so far. Candidate 8 went too thin, deflected beyond what a linear model can handle, and was thrown out by the checks.</figcaption></figure>
+    <h3>Why measuring the stress properly matters</h3>
+    <p>Once the taper is steeper than 2 to 1, the bending stress peaks inside the span and not at the root. An optimiser that only checked the root would have kept thinning the tip and handed back a bracket that fails partway along. The peak right at the clamped corner can't be used either, because it grows without limit as the mesh gets finer, which is the trap from study 1. So the study measures the surface stress against the beam-theory value in the smooth part of the span and takes the peak along the whole length.</p>
+    <figure><div class="plate"><img src="img/bracket_stress_span.png" alt="Bending stress along the span for the straight bar, a candidate that passes a root-only check, and the optimum" loading="lazy"></div><figcaption>Candidate 12 is the trap. Its root stress is 90 MPa, comfortably under the limit, but it peaks at 101 MPa partway along the span.</figcaption></figure>
+    <h3>How I checked it</h3>
+    <ul class="proof">
+      <li><strong>Every candidate goes through the full set of checks.</strong> The CAD volume is compared with the exact formula, the applied load and tip area are read back from the mesh, and the reactions have to balance. The tip deflection has to match tapered beam theory, which it does within 0.6 %, and the surface stress has to match the beam-theory stress along the span, within 0.7 % as a fit and 1.5 % point by point.</li>
+      <li><strong>A separate mesh study at the optimum.</strong> It puts the mesh uncertainty at 0.005 % on the stress and 0.016 % on the deflection, and the requirement is still met with that added.</li>
+      <li><strong>An independent optimum.</strong> I optimised the same bracket with beam theory alone, using the same limits and margin. It lands at 545.2 g against the finite-element optimum's 546.0 g, a 0.13 % difference, with the heights within 0.7 %.</li>
+      <li><strong>Predictions written first.</strong> Before running it I wrote down the heights, the mass, which limit would govern and where the stress would peak. They all held.</li>
+    </ul>
+    <div class="caught">
+      <h3>What I caught along the way</h3>
+      <ul>
+        <li>Candidate 8 took a long step to a 390 g design that deflected 2.7 mm, 1.35 % of the span. That's past the small-deflection limit of a linear analysis, so the checks rejected it, and the optimiser treated it as infeasible and stepped back. The run is kept as evidence.</li>
+        <li>The optimiser drives the stress right onto the limit at whatever mesh size it's using, so without a reserve, a finer mesh could tip the answer over. I set the 0.5 % margin before running, and the confirmation mesh study measured the actual error at 0.005 %.</li>
+      </ul>
+    </div>
+    <h3>Limits, and what I'd do next</h3>
+    <ul>
+      <li>It's a straight-line taper only. A curved profile would be lighter still.</li>
+      <li>The joint at the root (a weld or bolts) needs its own assessment, and there's no lateral-torsional buckling check. The bar is short and deep and loaded in its stiff direction, so that's unlikely to govern, but it isn't shown here.</li>
+      <li>The limits and the fixed width are made up for the study, and there's no test data.</li>
+      <li>The viewer's render was made from the confirmation run's finest mesh, generated again from its saved CAD file and Gmsh script. It reproduces every node of the saved results.</li>
+    </ul>
+  </section>

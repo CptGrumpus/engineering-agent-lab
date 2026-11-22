@@ -1,0 +1,64 @@
+  <div class="wrap band" style="padding-top:0">
+
+    <div class="page-head">
+      <p class="eyebrow">How I work</p>
+      <h1>The same method for every study</h1>
+      <p>I write down the tolerances and what I expect to see before the first run, so I can't quietly move the goalposts afterwards. A coding agent does the hands-on work, following procedures I wrote, and I review the engineering.</p>
+    </div>
+    <h3 class="sub">Four steps</h3>
+    <div class="loop">
+      <ol class="steps">
+        <li><b>Set up</b><span>Turn the question into requirements I can measure, along with the input ranges, the assumptions that need checking and the acceptance tolerances. All of it goes in a case file.</span></li>
+        <li><b>Build</b><span>Write the geometry, mesh, materials, loads and solver inputs as code, using CadQuery, Gmsh, CalculiX, OpenFOAM, SciPy or Modelica.</span></li>
+        <li><b>Check</b><span>Compare every number I report with something independent. That might be an exact solution, a conservation law, a handbook value or a second tool, plus a mesh or time-step convergence study.</span></li>
+        <li><b>Report</b><span>Link each requirement to its result, the checks behind it and the saved files. If an assumption broke along the way, I hold the verdict back instead of guessing.</span></li>
+      </ol>
+      <div class="term" role="figure" aria-label="Real output from the quarter-car lift-off run">
+        <div class="term-bar"><i></i><i></i><i></i><span>python -m harness pipeline cases/qc_bump_liftoff.toml</span></div>
+<pre><span class="p">run   </span>p00 · damping 600 N·s/m · tire_model = liftoff
+<span class="p">solve </span>DOP853 · 2 lift-offs, 2 touchdowns located exactly
+<span class="p">verify</span>
+{{TERMINAL}}<span class="p">req   </span>REQ-QB1 peak body accel   5.188 m/s²  ≤ 4.0   <span class="verdict">FAIL</span>
+<span class="p">req   </span>REQ-QB3 tire load swing   1.595       ≤ 0.7   <span class="verdict">FAIL</span>
+<span class="p">      </span><span class="ok">VERIFICATION PASS</span> · 30/30 checks across the sweep
+<span class="p">      </span>verdict: <span class="verdict">FAIL</span>, pending human review</pre>
+      </div>
+    </div>
+    <h3 class="sub">Where the agent fits</h3>
+    <p class="sub-lede">I use Claude Code, guided by six skills I wrote and tested. The skills set the order of the work and which checks have to pass. The agent writes and runs the code.</p>
+    <div class="skills">
+      <div class="skill"><code>frame-requirements</code><b>Requirements first</b><p>Pins down the decision, the metrics, the input ranges, the assumptions and how to check them, the tolerances and my predictions, all before anything runs.</p></div>
+      <div class="skill"><code>build-model</code><b>Model preparation</b><p>Covers file layout, choosing the checks, a quick smoke test and diagnosing failures, plus notes on solver traps I found the hard way.</p></div>
+      <div class="skill"><code>run-case</code><b>Simulation execution</b><p>Runs a case file and saves the inputs, tool versions, solver logs and results, including the runs that fail.</p></div>
+      <div class="skill"><code>verify-against-reference</code><b>Verification</b><p>Compares against independent references, conservation and reaction balance, runs mesh convergence with the Grid Convergence Index, and cross-checks between tools.</p></div>
+      <div class="skill"><code>requirements-report</code><b>Review report</b><p>Links each requirement to its result, checks and saved files, and ends with "pending human review".</p></div>
+      <div class="skill"><code>render-results</code><b>Result renders</b><p>Renders solver output in Blender, and only keeps an image if it passes a geometry check, a pixel-by-pixel legend colour check and a check that the lit image reads as the right band.</p></div>
+    </div>
+    <ul class="rules" aria-label="Rules the agent works under">
+      <li>No loosening a tolerance to get a pass</li>
+      <li>Failed runs are kept</li>
+      <li>Predictions are written down before the run</li>
+      <li>No verdict if an assumption breaks</li>
+      <li>A person signs off, not the agent</li>
+    </ul>
+    <h3 class="sub">What I can model, and with what</h3>
+    {{CAPS}}
+    <p class="code-facts">{{CODE_FACTS}}</p>
+      <h3 class="sub" id="images">How the images are checked</h3>
+    <p class="sub-lede">These images are rendered in Blender straight from the solver output. Before one goes on the page it has to pass three checks. The rendered surface has to enclose the part's actual volume, which catches missing or flipped faces. Every coloured pixel has to match a colour in the legend, which catches a shader that has shifted the contours. And the lit image has to read as the right band, which catches a shaded face that looks like a different value. Most results can also be turned in 3D: that view uses the same surface and colour bands, and it's checked the same way from four angles.</p>
+  </div>
+  <section class="band wrap" id="lessons" aria-labelledby="lessons-title">
+    <div class="band-head">
+      <p class="eyebrow">Lessons</p>
+      <h2 id="lessons-title">Mistakes the checks caught</h2>
+      <p>In several studies my first model gave an answer that looked reasonable and turned out to be wrong. These are the ones where the checks earned their keep.</p>
+    </div>
+    <div class="findings">
+      <article class="finding"><span class="label">Bracket optimisation · design automation</span><h3>Two answers that failed their own checks</h3><p>The optimiser's first pick read 94 MPa, but its mesh study put it at 101.7 MPa once the uncertainty was added: a peak in a fillet needs far more margin than a smooth bending stress. The second pick failed because the mesh study wasn't refining the fillet at all. The design on the page passed only once the peak itself was refined.</p><a href="#bracket_opt">Read the study</a></article>
+      <article class="finding"><span class="label">Strap · stress concentration</span><h3>A model that converged neatly to the wrong answer</h3><p>The mesh study looked textbook, but it settled 2 % away from the handbook value. Running a case with a known exact answer through the same pipeline showed the problem was in how the solver's elements behaved, which no amount of mesh refinement would have revealed.</p><a href="#strap">Read the study</a></article>
+      <article class="finding"><span class="label">Coolant channel · CFD</span><h3>A simplified inlet that flipped the answer</h3><p>The simple model said the channel passed. It never converged at the sharp inlet corner, though, and once I modelled the inlet properly the channel failed its pressure budget.</p><a href="#cfd">Read the study</a></article>
+      <article class="finding"><span class="label">Quarter car · vehicle dynamics</span><h3>A wheel that left the road</h3><p>Every numerical check passed, but the tire was leaving the ground, which the simple model can't represent, so I held the verdict back. When I built a tire model that can lift off, it showed the simple one had overstated the peak body acceleration by up to 29 %.</p><a href="#suspension">Read the study</a></article>
+      <article class="finding"><span class="label">Roller contact · nonlinear FEA</span><h3>The right model, read from the wrong output</h3><p>Taking the contact pressure from the element stresses at the surface gave numbers 3.5 to 6.5 % too high, and they added up to more than the applied load. The solver's own contact pressure output matched the exact Hertz solution within 0.2 % on the same mesh.</p><a href="#contact">Read the study</a></article>
+      <article class="finding"><span class="label">Cantilever · finite elements</span><h3>Elements that made the bracket look too stiff</h3><p>With the simplest element type, the bracket came out up to a third too stiff and the stress up to 45 % too low. The checks held back every one of those results.</p><a href="#fea">Read the study</a></article>
+    </div>
+  </section>

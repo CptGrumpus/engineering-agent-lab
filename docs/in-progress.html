@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>In progress · Justin Smith</title>
+<meta name="description" content="A flexible flag behind a cylinder (fluid-structure interaction) and a production traction motor checked blind against a laboratory&#x27;s test data.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://cptgrumpus.github.io/engineering-agent-lab/in-progress.html">
+<meta property="og:title" content="Two studies in progress">
+<meta property="og:description" content="A flexible flag behind a cylinder (fluid-structure interaction) and a production traction motor checked blind against a laboratory&#x27;s test data.">
+<meta property="og:image" content="https://cptgrumpus.github.io/engineering-agent-lab/v2/og_card.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Simulation portfolio">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="assets/site.css?v=8faeeb46bc">
+</head>
+<body>
+<nav class="topbar" aria-label="Site">
+  <div class="wrap">
+    <a class="brand" href="index.html"><span class="brand-mark" aria-hidden="true"><i style="background:#30123b"></i><i style="background:#4686fb"></i><i style="background:#1ae4b6"></i><i style="background:#a2fc3c"></i><i style="background:#fb8022"></i><i style="background:#7a0403"></i></span>Justin Smith <small>Simulation portfolio</small></a>
+    <div class="navgroup">
+      <div class="topnav">
+        <a href="index.html#work">Studies</a>
+        <a href="how-i-work.html">How I work</a>
+        <a href="grading.html">Grading</a>
+        <a href="in-progress.html" aria-current="page">In progress</a>
+        <a href="requirements.html">Requirements</a>
+      </div>
+      <a class="nav-contact" href="#contact">Contact</a>
+      <details class="menu">
+        <summary>Menu</summary>
+        <div class="menu-panel">
+        <a href="index.html#work">Studies</a>
+        <a href="how-i-work.html">How I work</a>
+        <a href="grading.html">Grading</a>
+        <a href="in-progress.html" aria-current="page">In progress</a>
+        <a href="requirements.html">Requirements</a>
+          <a href="#contact">Contact</a>
+        </div>
+      </details>
+    </div>
+  </div>
+</nav>
+
+<main id="top">
+  <div class="wrap band" style="padding-top:0">
+
+    <div class="page-head">
+      <p class="eyebrow">Now working on</p>
+      <h1>Two studies in progress</h1>
+      <p>Seven harder studies are finished and have their own pages: friction contact, plasticity, buckling, a chained thermal model, the optimisation loop, a design-code pressure vessel check and turbulent pipe flow. These two are still running. As with the others, I pick the independent check before I start modelling, and I write down my predictions before each run.</p>
+    </div>
+    <div class="skills plan now">
+      <article class="skill">
+        <span class="plan-meta"><span class="no">Study 17 · Fluid-structure interaction</span><span class="plan-tag">In progress</span></span>
+        <b>Flexible flag behind a cylinder</b>
+        <p><b>Why it's harder</b>Two-way fluid-structure interaction, where the flow bends the flag and the bent flag changes the flow.</p>
+        <p><b>So far</b>Each half has to reproduce the published Turek-Hron benchmark before the two are coupled. The solid's sag matches to 0.01 %, and it swings at 1.095 Hz against the published 1.096 to 1.100. The fluid's drag matches to 0.07 % and 0.014 % at the two flow speeds. Lift is within 0.7 % but scatters from mesh to mesh, so I'm holding that verdict back. The first coupled case has run: its drag converges to within 0.03 % of the benchmark, and the flag tip lands within 1 %, but the tip still drifts as the mesh is refined and the lift carries noise from the coupling, so it isn't verified yet. A revision is running.</p>
+        <p class="plan-link"><a href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/portfolio/17-fsi-flag-turek-hron.md">Read the draft write-up</a></p>
+        <p><b>How I'll check it</b>The benchmark's published values, for each half and for the coupled runs.</p>
+        <span class="tools">OpenFOAM · CalculiX · preCICE</span>
+      </article>
+      <article class="skill">
+        <span class="plan-meta"><span class="no">Study 20 · Electromagnetics · test data</span><span class="plan-tag">In progress</span></span>
+        <b>A production traction motor, checked blind against test data</b>
+        <p><b>Why it's harder</b>Three kinds of physics on one machine: torque, back-EMF and efficiency from the electromagnetics, a thermal network, and rotor stress at overspeed. It's modelled on the 2004 Toyota Prius motor.</p>
+        <p><b>How I'll check it</b>Internal checks first: an analytic air-gap field, the power balance at every operating point, and mesh convergence. Then the portfolio's first comparison with measured data, Oak Ridge National Laboratory's tests, opened only after my predictions are written down.</p>
+        <p><b>So far</b>Every blind prediction is now written down: back-EMF 110.9 V per 1,000 rpm, the torque curve from 119 to 606 N m (50 to 350 A), and an efficiency map peaking at 97.4 %. The real steel grade isn't published, so I ran three candidates; they move the back-EMF by 0.13 % and the torque by under 2 %, so the unknown grade won't decide the comparison.</p>
+        <p><b>Design checks</b>The rated 400 N m fits inside the copper's current limit, and the rated 50 kW holds all the way to 6,000 rpm (58.6 kW). Two results are failures a designer needs to know about. If the inverter stops switching at top speed, the magnets alone would drive about 1,040 V against the 500 V supply. And at 20 % overspeed the thin steel bridges that hold the magnets reach 424 MPa against the lamination's 335 MPa yield. Next, the test data is opened once and every prediction is scored against it.</p>
+        <p class="plan-link"><a href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/portfolio/20-prius-traction-motor.md">Read the draft write-up</a></p>
+        <span class="tools">Pyleecan · FEMM · CalculiX</span>
+      </article>
+    </div>
+    </div>
+
+</main>
+
+<footer class="site-foot">
+  <div class="wrap">
+    <section class="contact" id="contact" aria-labelledby="contact-title">
+      <div class="band-head">
+        <p class="eyebrow">Contact</p>
+        <h2 id="contact-title">Get in touch</h2>
+        <p class="contact-name"><b>Justin Smith</b>, mechanical engineer (MS), with a background in automotive.</p>
+        <p>If something here is close to what you need, or you have a model that needs building or checking, send me a note and tell me about it. I'm available for remote contract work.</p>
+      </div>
+      <div class="contact-actions">
+        <!-- the address is stored reversed and base64-encoded so scrapers reading the page or the repository don't pick it up; site.js decodes it -->
+        <a class="cta" id="contact-mail" href="#contact" data-m="bW9jLmxpYW1nQDg1MW5pdHN1amh0aW1z">Email me</a>
+        <button class="cta-2" id="contact-show" type="button">Show the address</button>
+        <span class="contact-addr" id="contact-addr" hidden></span>
+      </div>
+    </section>
+    <div class="foot-nav">
+      <a href="index.html#work">All studies</a>
+      <a href="requirements.html">Every requirement</a>
+      <a href="how-i-work.html">How I work</a>
+      <a href="grading.html">Grading tasks</a>
+      <a href="in-progress.html">In progress</a>
+      <a href="https://github.com/CptGrumpus/engineering-agent-lab">Source on GitHub ↗</a>
+      <span>Open-source tools throughout: CalculiX, OpenFOAM, Gmsh, CadQuery, OpenModelica, Blender.</span>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/site.js?v=8faeeb46bc"></script>
+</body>
+</html>

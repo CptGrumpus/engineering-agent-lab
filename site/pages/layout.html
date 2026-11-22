@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>{{TITLE}}</title>
+<meta name="description" content="{{DESC}}">
+<meta property="og:type" content="website">
+<meta property="og:url" content="{{URL}}">
+<meta property="og:title" content="{{OG_TITLE}}">
+<meta property="og:description" content="{{DESC}}">
+<meta property="og:image" content="{{OG_IMAGE}}">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="{{OG_ALT}}">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="assets/site.css?v={{ASSET_V}}">
+</head>
+<body>
+<nav class="topbar" aria-label="Site">
+  <div class="wrap">
+    <a class="brand" href="index.html"><span class="brand-mark" aria-hidden="true"><i style="background:#30123b"></i><i style="background:#4686fb"></i><i style="background:#1ae4b6"></i><i style="background:#a2fc3c"></i><i style="background:#fb8022"></i><i style="background:#7a0403"></i></span>Justin Smith <small>Simulation portfolio</small></a>
+    <div class="navgroup">
+      <div class="topnav">
+{{NAV}}
+      </div>
+      <a class="nav-contact" href="#contact">Contact</a>
+      <details class="menu">
+        <summary>Menu</summary>
+        <div class="menu-panel">
+{{NAV}}
+          <a href="#contact">Contact</a>
+        </div>
+      </details>
+    </div>
+  </div>
+</nav>
+
+<main id="top">
+{{MAIN}}
+</main>
+
+<footer class="site-foot">
+  <div class="wrap">
+    <section class="contact" id="contact" aria-labelledby="contact-title">
+      <div class="band-head">
+        <p class="eyebrow">Contact</p>
+        <h2 id="contact-title">Get in touch</h2>
+        <p class="contact-name"><b>Justin Smith</b>, mechanical engineer (MS), with a background in automotive.</p>
+        <p>If something here is close to what you need, or you have a model that needs building or checking, send me a note and tell me about it. I'm available for remote contract work.</p>
+      </div>
+      <div class="contact-actions">
+        <!-- the address is stored reversed and base64-encoded so scrapers reading the page or the repository don't pick it up; site.js decodes it -->
+        <a class="cta" id="contact-mail" href="#contact" data-m="bW9jLmxpYW1nQDg1MW5pdHN1amh0aW1z">Email me</a>
+        <button class="cta-2" id="contact-show" type="button">Show the address</button>
+        <span class="contact-addr" id="contact-addr" hidden></span>
+      </div>
+    </section>
+    <div class="foot-nav">
+      <a href="index.html#work">All studies</a>
+      <a href="requirements.html">Every requirement</a>
+      <a href="how-i-work.html">How I work</a>
+      <a href="grading.html">Grading tasks</a>
+      <a href="in-progress.html">In progress</a>
+      <a href="https://github.com/CptGrumpus/engineering-agent-lab">Source on GitHub ↗</a>
+      <span>Open-source tools throughout: CalculiX, OpenFOAM, Gmsh, CadQuery, OpenModelica, Blender.</span>
+    </div>
+  </div>
+</footer>
+{{SCRIPTS}}
+<script src="assets/site.js?v={{ASSET_V}}"></script>
+</body>
+</html>

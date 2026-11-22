@@ -1,0 +1,49 @@
+  <section class="study" id="strap_proof">
+    <div class="study-head">
+      <span class="label">Study 14 · CadQuery, Gmsh and CalculiX, plasticity</span>
+      <h2>Strap proof test, notch plasticity</h2>
+    </div>
+    <h3>The question</h3>
+    <p>The aluminium strap from studies 2 and 3 (40 × 4 mm, 16 mm hole, 5 kN in service) is proof tested at 15 kN before it's installed. On an elastic model the hole edge would see about 350 MPa, well past yield, while the rest of the section stays elastic. Does the hole edge stay within 1 % strain during the test, and does the test leave compressive stress behind, which helps fatigue?</p>
+    <h3>The answer</h3>
+    <div class="answer">
+      <div class="chips"><span class="chip pass">0.58 % strain against a 1 % limit</span><span class="chip pass">−77 MPa left at the hole edge</span><span class="chip pass">Mesh uncertainty 0.05 %</span></div>
+      <p><strong>Yes on both counts.</strong> The hole edge reaches 0.58 % strain during the test, and the yielding stays local: a plastic zone 1.8 mm deep on a 12 mm ligament. After unloading, the hole edge is left at −77 MPa, squeezed by the elastic material around it.</p>
+      <p>Play the test through in the viewer at the top of the page to watch the hole edge yield on the way up and go into compression on the way down.</p>
+    </div>
+    <h3>Why it matters</h3>
+    <p>A proof test loads a part well beyond its service load once, to show it can take it. At a hole, that overload yields a small pocket of material. When the load comes off, the elastic material around the pocket springs back and squeezes it, leaving it in compression. Fatigue cracks grow under tension, so that leftover compression is a benefit, and it's the reason overloading and cold-working holes are used on purpose.</p>
+    <p>An elastic model can't show any of this: it would report 350 MPa at the hole edge, a stress the material can't carry, and nothing left behind after unloading. This study uses a material model that yields.</p>
+    <h3>The model</h3>
+    <dl class="spec">
+      <dt>Part</dt><dd>The 160 × 40 × 4 mm strap with a 16 mm hole, as a quarter model.</dd>
+      <dt>Material</dt><dd>6061-T6 with a stress-strain curve that yields and hardens: first yield at 223.8 MPa, 0.2 % proof stress 276 MPa, rising to 357 MPa at 8 % plastic strain. The curve is a Ramberg-Osgood fit, not a certified one.</dd>
+      <dt>Loading</dt><dd>Up to 15 kN, three times the service load, then back to zero, in 40 increments.</dd>
+      <dt>Mesh</dt><dd>Elements at the hole edge of 2.5, 1.25 and 0.625 % of the hole diameter.</dd>
+      <dt>Analysis</dt><dd>Elastic-plastic with isotropic hardening, plane stress, small strain, in CalculiX 2.22.</dd>
+      <dt>What's measured</dt><dd>The strain and stress at the hole edge at the proof load, the depth of the yielded zone, and the stress left at the hole edge after unloading.</dd>
+    </dl>
+    {{CASE}}
+    <h3>How I checked it</h3>
+    <ul class="proof">
+      <li><strong>Against two classical estimates.</strong> Neuber's and Glinka's rules each estimate the strain at a yielding notch from the elastic solution. They give 0.64 % and 0.53 %, and the model's 0.58 % sits between them, 8 % below Neuber, as expected for a thin plate.</li>
+      <li><strong>An exact check on the unloading.</strong> If the unloading is purely elastic, the stress left behind must equal the stress at the proof load minus the elastic stress for the same load. A separate elastic run confirms that to 2 × 10⁻⁶. It checks the solver and the assumption together. The result is also within 1.6 % of the Neuber-based estimate.</li>
+      <li><strong>The elastic part is right.</strong> The elastic peak matches Peterson's stress concentration factor to 0.5 %, and the forces balance at the proof load and after unloading.</li>
+      <li><strong>The assumptions hold.</strong> The net section stays below yield, the plastic zone is contained, and nothing yields in reverse on the way down.</li>
+    </ul>
+    <figure><div class="plate"><img src="img/proof_response.png" alt="Notch root stress and strain against Neuber and Glinka, and the stress along the ligament before and after unloading" loading="lazy"></div><figcaption>The hole edge against Neuber and Glinka, and the stress across the ligament at the proof load and after unloading.</figcaption></figure>
+    <div class="caught">
+      <h3>What I caught along the way</h3>
+      <ul>
+        <li>The first mesh study converged faster than the method allows (order 3.3 against 2), so the convergence check refused to give an uncertainty and the verdict was held back. Dropping the coarsest mesh and adding a finer one gave order 2.1 and 0.05 %.</li>
+        <li>On the finer set the notch strain barely moves (0.5834 to 0.5835 %), but the differences don't shrink, so the formal check gives no estimate on that run. I left its threshold where I'd set it before the runs. Every mesh of both sets gives 0.581 to 0.584 %.</li>
+      </ul>
+    </div>
+    <h3>Limits, and what I'd do next</h3>
+    <ul>
+      <li>The material curve is synthetic. A real proof test would use the certified curve for the batch.</li>
+      <li>Isotropic hardening, which ignores the way yielding in one direction lowers the yield in the other. That's fine here because nothing yields in reverse; if it did, a kinematic hardening model would be needed.</li>
+      <li>Neuber and Glinka are estimates, so agreement with them is a sanity check. The exact checks are the force balance and the unloading superposition.</li>
+      <li>There's no test data. A strain gauge beside the hole during a real proof test would be the direct comparison.</li>
+    </ul>
+  </section>

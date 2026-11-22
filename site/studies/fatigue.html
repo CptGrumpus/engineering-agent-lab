@@ -1,0 +1,52 @@
+  <section class="study" id="fatigue">
+    <div class="study-head">
+      <span class="label">Study 3 · CalculiX feeding a stress-life calculation</span>
+      <h2>Strap fatigue life, chained analysis</h2>
+    </div>
+    <h3>The question</h3>
+    <p>Take the strap from study 2 with its 16 mm hole. In service it sees a load from zero up to 5 kN and back, roughly ten million times. With a scatter factor of 3 on life, does it last, and what cyclic load could I rate it for?</p>
+    <h3>The answer</h3>
+    <div class="answer">
+      <div class="chips"><span class="chip pass">Predicted life about 8 × 10⁹ cycles</span><span class="chip pass">Rated to 7.8 kN cyclic</span><span class="chip warn">Extrapolated past the test data</span><span class="chip warn">Data sets give 7.8 to 9.9 kN</span></div>
+      <p><strong>Predicted to last, with a wide margin, on the stated assumptions.</strong> At the 0 to 5 kN service cycle the predicted life is about 8 × 10⁹ cycles, around 270 times what's needed. The highest cyclic load that still gives 3 × 10⁷ cycles is about 7.8 kN.</p>
+      <p>Two things limit how far that can be trusted. The published test data is all short-life, so these lives are extrapolated beyond it. And the two data sets disagree: on its own, each gives 7.8 or 9.9 kN. So I'd quote the lower figure, and confirm it with a test before relying on it near the limit.</p>
+    </div>
+    <h3>Why it matters</h3>
+    <p>Study 2 held the hole-edge stress under a single allowable number. That's a shortcut. A part under repeated load doesn't fail when the stress passes a line; it accumulates damage every cycle, and the real question is how many cycles it survives. Answering that takes more than a stress model: it needs material test data, a correction for the notch and one for the mean load. Each of those brings its own uncertainty, and a fatigue answer is only honest if it says how big that uncertainty is.</p>
+    <h3>The model</h3>
+    <dl class="spec">
+      <dt>Part and material</dt><dd>The 160 × 40 × 4 mm 6061-T6 strap from study 2, with a 16 mm hole.</dd>
+      <dt>Load cycle</dt><dd>From zero up to a peak and back, never reversing. The peak is swept from 5 to 10 kN.</dd>
+      <dt>Requirement</dt><dd>10 million cycles in service, times a scatter factor of 3: a computed life of at least 3 × 10⁷ cycles.</dd>
+      <dt>Stress at the hole</dt><dd>From the verified finite-element model of study 2, rerun for each load.</dd>
+      <dt>Notch correction</dt><dd>Peterson's notch sensitivity. A notch is a little less harmful in fatigue than its peak stress suggests; here the fatigue notch factor is 2.15.</dd>
+      <dt>Mean-stress correction</dt><dd>Smith-Watson-Topper, which accounts for the load pulling in one direction only.</dd>
+      <dt>Material curve</dt><dd>A Basquin stress-life (S-N) curve fitted to 25 published test points for 6061-T6.</dd>
+    </dl>
+    {{CASE}}
+    <h3>How it works</h3>
+    <p>It's a chain of four steps. Each load case reruns the strap model to get the stress at the hole edge, and that model's own checks come along with it. The notch correction turns that peak stress into the stress that matters for fatigue. The mean-stress correction converts the one-directional cycle into the equivalent fully reversed one, which is how material data is tabulated. The S-N curve then gives the number of cycles to failure.</p>
+    <p>The S-N curve is fitted to published test points (Chung and Abel 1988, and Brodrick and Spiering 1972, from the University of Waterloo fatigue database). It isn't a number copied out of a table.</p>
+    <div class="figs-2">
+      <figure><div class="plate"><img src="img/fatigue_sn.png" alt="S-N curve with test data, fit, independent value and the service cycle" loading="lazy"></div><figcaption>The published test data, the fitted curve, ASM's long-life value and the service cycle.</figcaption></figure>
+      <figure><div class="plate"><img src="img/fatigue_sweep.png" alt="Fatigue life against peak cyclic load" loading="lazy"></div><figcaption>Fatigue life against peak cyclic load, with the required 3 × 10⁷ cycles.</figcaption></figure>
+    </div>
+    <h3>How I checked it</h3>
+    <ul class="proof">
+      <li><strong>The stress it starts from is verified.</strong> Every load case carries the strap model's own checks: equilibrium, and agreement with the handbook stress concentration to 0.5 %.</li>
+      <li><strong>An independent check on the extrapolation.</strong> All of the test data is short-life, under 50,000 reversals, so ten million cycles is an extrapolation. As a cross-check, the fitted curve extended to 10⁹ reversals lands within 2.4 % of ASM's separately published value of 96.5 MPa at 5 × 10⁸ cycles.</li>
+      <li><strong>The arithmetic.</strong> Every life converts back to its stress amplitude exactly.</li>
+      <li><strong>The method is valid here.</strong> The notch stays elastic at every load, reaching at most 81 % of yield, so no plasticity correction is needed.</li>
+    </ul>
+    <div class="caught">
+      <h3>What I caught along the way</h3>
+      <ul><li>The two published data sets predict lives about 100 times apart at the service load. That's normal in fatigue, where a 10 % change in stress shifts the life by a factor of about 3.4. It's why I give a load rating with its spread and not a single life number.</li></ul>
+    </div>
+    <h3>Limits, and what I'd do next</h3>
+    <ul>
+      <li>The hole is smooth and machined. No surface treatment, corrosion or fretting.</li>
+      <li>The S-N data comes from smooth specimens, extrapolated to long life and cross-checked at one point only.</li>
+      <li>The load has a constant amplitude. A real load history would need cycle counting and damage summation.</li>
+      <li>There's no fatigue test of the part itself. Near the rating, that's the check I'd want before relying on it.</li>
+    </ul>
+  </section>

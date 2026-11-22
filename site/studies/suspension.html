@@ -1,0 +1,70 @@
+  <section class="study" id="suspension">
+    <div class="study-head">
+      <span class="label">Study 7 · Python (SciPy) and OpenModelica</span>
+      <h2>Quarter-car ride and road holding</h2>
+    </div>
+    <h3>The question</h3>
+    <p>For a compact car's front corner, which damper rates between 600 and 3500 N·s/m meet the targets for ride comfort, suspension travel and tire load? I tested it over a speed bump and over a rough road.</p>
+    <h3>The answer</h3>
+    <div class="answer">
+      <div class="chips"><span class="chip pass">Speed bump: 600 to 1000 N·s/m</span><span class="chip fail">36 km/h: wheel leaves the road</span><span class="chip warn">Bump stop: harsher at light damping</span><span class="chip fail">Rough road: comfort not met</span><span class="chip pass">Two tools agree to one part in a million</span></div>
+      <p><strong>Over a 40 mm speed bump at 18 km/h,</strong> anything from 600 to 1000 N·s/m meets all three targets. At 1500 it just misses the comfort limit, 4.18 against 4.0 m/s², and at 3500 the tire load goes over.</p>
+      <p><strong>Over the same bump at 36 km/h, nothing works.</strong> The wheel leaves the road at every damper setting, for 32 to 59 ms, and comfort and road holding fail across the board. A damper change can't fix that. It needs a lower speed, a softer tire or a gentler bump.</p>
+      <p><strong>Adding a bump stop makes light damping worse.</strong> At 600 N·s/m the suspension compresses past the 40 mm gap to the bump stop. With the stop in the model, the peak body acceleration more than doubles, from 5.2 to 11.3 m/s², and the stop still runs past its 8 mm of stroke at 2.8 kN against a 2.5 kN rating. From 1000 N·s/m up, it stays within its rating.</p>
+      <p><strong>On a rough road at 72 km/h,</strong> no damper rate meets the comfort target, while travel and tire load need at least about 1500. Those pull in opposite directions, so the real fix is a different spring rate.</p>
+      <p><strong>Weighted the way people actually feel vibration (ISO 2631-1),</strong> the rough-road ride rates as uncomfortable at 1000 N·s/m (1.01 m/s²) and gets worse with more damping, up to very uncomfortable at 3500 (1.64 m/s²). The raw, unweighted acceleration overstates it by 10 to 29 %.</p>
+    </div>
+    <h3>Why it matters</h3>
+    <p>A damper has two jobs that pull against each other. A soft one lets the body float over bumps, which is comfortable, but lets the wheel bounce, which hurts grip and uses up suspension travel. A stiff one holds the wheel on the road but passes every bump into the body. Choosing a rate means finding the range where comfort, travel and tire load are all acceptable, and sometimes finding that there isn't one.</p>
+    <p>The quarter-car model is the standard first tool for this: one corner of the car, with the body on a spring and damper, on a wheel, on a tire. It's simple enough to check exactly, which makes it a good place to show what happens when a model is pushed outside what it can represent.</p>
+    <h3>The model</h3>
+    <dl class="spec">
+      <dt>Vehicle corner</dt><dd>350 kg of body on the suspension, a 45 kg wheel assembly, a 22 kN/m spring and a 220 kN/m tire. All values are at the wheel.</dd>
+      <dt>Damper</dt><dd>Five rates from 600 to 3500 N·s/m.</dd>
+      <dt>Speed bump</dt><dd>40 mm high and 1.0 m long, smoothly rounded, crossed at 18 km/h and at 36 km/h.</dd>
+      <dt>Rough road</dt><dd>An ISO 8608 class C road (an average-quality surface) at 72 km/h, built from 198 sine waves covering 0.2 to 20 Hz.</dd>
+      <dt>Tire models</dt><dd>A linear spring that can pull as well as push (valid only while the wheel stays down), and one that can lift off the road.</dd>
+      <dt>Bump stop</dt><dd>A 300 kN/m stop that engages after 40 mm of compression.</dd>
+      <dt>Targets</dt><dd>Peak body acceleration at most 4.0 m/s², suspension travel at most 40 mm, tire load within ±70 % of static. On the rough road, an average (RMS) body acceleration of at most 1.0 m/s².</dd>
+      <dt>Tools</dt><dd>My own Python model solved with SciPy, and the same car built from standard library components in OpenModelica.</dd>
+    </dl>
+    {{CASE}}
+    <h3>How it works</h3>
+    <p>The model is two masses and three springs and dampers, solved in time as the wheel crosses the bump or runs along the road. For the lift-off cases the solver stops exactly at the instant the tire load reaches zero, switches to the airborne equations, and stops again at the instant of landing.</p>
+    <p>The same car is built a second time in OpenModelica, a different tool with a different solver, from its standard library of masses, springs and dampers. Two tools that share no code agreeing is strong evidence neither has a bug in how the equations are set up.</p>
+    <div class="figs-2">
+      <figure>
+        <div class="plate"><img src="img/qc_bump_sweep.png" alt="Comfort, travel, and tire load against damper rate over the speed bump" loading="lazy"></div>
+        <figcaption>Each requirement against damper rate over the speed bump.</figcaption>
+      </figure>
+      <figure>
+        <div class="plate"><img src="img/qc_iso_response.png" alt="Rough-road response compared with the frequency-response prediction" loading="lazy"></div>
+        <figcaption>The rough-road simulation against the frequency-response prediction.</figcaption>
+      </figure>
+    </div>
+    <figure><div class="plate"><img src="img/qc_liftoff_response.png" alt="At 36 km/h with light damping the wheel leaves the road twice" loading="lazy"></div><figcaption>At 36 km/h and 600 N·s/m, the tire load sits at zero twice while the wheel is in the air, and the landing spikes it to 2.6 times static. The simulation follows the exact solution the whole way.</figcaption></figure>
+    <h3>How I checked it</h3>
+    <ul class="proof">
+      <li><strong>Against an exact solution.</strong> Over the speed bump, the simulation matches an independent exact solution of the same equations, and the energy going in balances the energy stored and dissipated. All 30 checks pass.</li>
+      <li><strong>Against a second tool.</strong> The OpenModelica model agrees with the Python model to about one part in a million.</li>
+      <li><strong>The lift-off.</strong> I built an exact solution for the tire that can leave the road independently, using matrix exponentials within each phase and root-finding for the switch times. It agrees on those times within a tenth of a nanosecond and on the motion to about two parts per billion of the bump height.</li>
+      <li><strong>The bump stop.</strong> It's one more switch in the same exact solution. The model and the reference agree on every time the stop engages and releases, and on the motion to a few parts per billion of the bump height.</li>
+      <li><strong>The comfort weighting.</strong> My ISO 2631-1 weighting filter matches the standard's own table within 0.1 %. My first version came out at exactly double the table, and that comparison is what caught it.</li>
+      <li><strong>The rough road.</strong> The simulated vibration levels match the prediction from the frequency response within one part in ten billion.</li>
+    </ul>
+    <div class="caught">
+      <h3>What I caught along the way</h3>
+      <ul>
+        <li><strong>A wheel that left the road.</strong> I first ran the bump at 36 km/h. Every numerical check passed, but the check on whether the wheel stays on the road failed at every damper rate, with the tire load swinging to as much as 1.7 times static. A linear tire model can't handle a wheel leaving the ground, so I didn't report any of those results as a pass or a fail. I kept that run and added a case at 18 km/h.</li>
+        <li><strong>What the better model showed.</strong> Then I built the model that check was asking for, a tire that can leave the road, and wrote down five predictions first. It turned out the linear model had overstated the peak body acceleration by up to 29 %. After the crest, the linear tire pulls the wheel back down, which a real tire can't do, and a stiff damper passes that pull straight into the body. The other surprise was that the worst moment for the tire is the landing. With light damping the wheel bounces twice and comes down hard enough to load the tire to 2.6 times its static load.</li>
+      </ul>
+    </div>
+    <h3>Limits, and what I'd do next</h3>
+    <ul>
+      <li>The tire touches the road at a single point and follows the profile exactly. A real tire's footprint smooths a short bump, so the lift-off here is probably overstated.</li>
+      <li>The bump stop is linear and undamped. Real rubber stops stiffen progressively and absorb energy.</li>
+      <li>One corner of the car only: no pitch or roll, and no seat or occupant.</li>
+      <li>The peak body acceleration over the bump is the raw, unweighted peak, which is what the 4.0 m/s² comfort limit is written against. Only the rough-road ride level is frequency-weighted.</li>
+      <li>The vehicle parameters are made up, not taken from a real car, and there's no test data.</li>
+    </ul>
+  </section>

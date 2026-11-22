@@ -1,0 +1,84 @@
+  <section class="study" id="cfd">
+    <div class="study-head">
+      <span class="label">Study 5 · OpenFOAM</span>
+      <h2>Coolant channel pressure budget</h2>
+    </div>
+    <h3>The question</h3>
+    <p>A cold-plate passage is a 1 mm gap between two plates, 20 mm long, with water flowing at about 0.1 m/s. It gets a 30 Pa share of the pump's pressure budget, and it needs at least 0.5 Pa of shear on the walls to keep fouling down. Does it meet both if the gap can vary by ±0.05 mm and the coolant can be anywhere from 15 to 40 °C?</p>
+    <h3>The answer</h3>
+    <div class="answer">
+      <div class="chips"><span class="chip fail">Over budget at nominal</span><span class="chip fail">No gap meets both requirements</span><span class="chip pass">Mesh uncertainty 0.04 %</span></div>
+      <p><strong>No.</strong> At nominal conditions it needs 33.4 Pa, 11 % over budget. Across the tolerance range it needs anywhere from 28 to 42 Pa, and with warm coolant the wall shear drops to 0.43 Pa.</p>
+      <p>The two requirements pull against each other. To stay inside the pressure budget with cold coolant, the gap has to be at least 1.078 mm. To keep enough wall shear with warm coolant, it can't be more than 0.885 mm. No gap does both. I predicted those two limits before running them, and the confirmation runs came back at 30.02 Pa and 0.500 Pa.</p>
+      <p>So the fix has to come from the design side. The options are a narrower coolant temperature range, a bigger pressure budget, a different flow split between channels, or a second look at the shear guideline.</p>
+    </div>
+    <h3>Why it matters</h3>
+    <p>A pump can only supply so much pressure, and every passage in a cooling circuit gets a share of it. A passage that needs more than its share starves the others of flow. At the same time the water has to move fast enough along the walls to stop deposits building up, and that sets a minimum wall shear. A narrow gap helps the shear and hurts the pressure; a wide gap does the opposite.</p>
+    <p>The useful result here is a failure. Showing that no gap size satisfies both requirements moves the problem from "tune the gap" to "change the requirements or the layout", which is a much cheaper thing to learn from a model than from a prototype.</p>
+    <h3>The model</h3>
+    <dl class="spec">
+      <dt>Geometry</dt><dd>A 3 mm high supply header, a smooth 3 mm contraction, then the channel: a 1 mm gap, 20 mm long. Modelled in 2D, as a slice through a wide passage.</dd>
+      <dt>Fluid</dt><dd>Water at 20 °C: density 998.2 kg/m³, viscosity 1.0016 mPa·s. Properties at 15 and 40 °C for the tolerance cases, from the IAPWS tables.</dd>
+      <dt>Flow</dt><dd>A fixed flow rate, set by the pump: 0.1 m/s mean velocity at the nominal gap. Reynolds number about 200, so the flow is laminar.</dd>
+      <dt>Mesh</dt><dd>20 to 80 cells across the gap. The tolerance cases use 80.</dd>
+      <dt>Analysis</dt><dd>Steady, incompressible, laminar flow in OpenFOAM 14.</dd>
+      <dt>What's measured</dt><dd>The supply pressure needed, counting the kinetic energy of the flow at the exit as lost, and the wall shear where the flow has settled.</dd>
+      <dt>Tolerance cases</dt><dd>The four corners of gap (0.95 and 1.05 mm) and coolant temperature (15 and 40 °C), plus nominal.</dd>
+    </dl>
+    {{CASE}}
+    <h3>How it works</h3>
+    <p>The model includes the supply header and a smooth contraction into the channel, not just the channel. That matters: the flow speeds up as it enters, and the pressure that takes is part of the budget. I count the flow's kinetic energy at the exit as lost, which is the usual cautious assumption. That exit loss is 7.7 Pa of the 33.4.</p>
+    <figure>
+      <div class="plate"><img src="img/cfd_field.png" alt="Water velocity through the supply header, contraction, and channel" loading="lazy"></div>
+      <figcaption>Water velocity through the supply header, the contraction and the 1 mm channel. The height is stretched so you can see the channel.</figcaption>
+    </figure>
+    <figure>
+      <div class="plate"><img src="img/cfd_response.png" alt="Velocity profile, pressure, and centreline velocity compared with the exact solution" loading="lazy"></div>
+      <figcaption>On the left, the velocity across the gap sits on the exact solution. On the right, the pressure drops through the contraction and then follows the exact slope, and the flow settles within the predicted entrance length.</figcaption>
+    </figure>
+    <h3>How I checked it</h3>
+    <ul class="proof">
+      <li><strong>Against the exact solution.</strong> Once the flow has settled, the velocity profile, pressure gradient and wall shear match the textbook solution for flow between parallel plates within 0.02 %.</li>
+      <li><strong>Conservation.</strong> Mass is conserved to about one part in a hundred million, and wall friction balances the pressure force within a few parts in a hundred thousand.</li>
+      <li><strong>Mesh refinement.</strong> Going from 20 to 80 cells across the gap converges at exactly the expected rate, leaving 0.04 % mesh uncertainty.</li>
+      <li><strong>A hand calculation.</strong> Lubrication theory for the header and the Shah and London correlation for the developing flow in the channel agree with the model within 0.3 % in every case.</li>
+      <li><strong>The 2D assumption.</strong> A separate 3D model includes the side walls of a 20 mm wide channel. The side walls add 3.2 % friction, and the exact rectangular-duct solution says 3.25 %. That's about 0.8 Pa more, which only makes it a clearer fail.</li>
+    </ul>
+    <h4>Where the uncertainty comes from</h4>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Source of uncertainty</th><th>How big it is</th></tr></thead>
+        <tbody>
+          <tr><td>The mesh</td><td class="num">0.04 %</td></tr>
+          <tr><td>Iteration and conservation</td><td>Negligible, well under one part in ten thousand</td></tr>
+          <tr><td>Simplifications in the model</td><td>0.3 % or less against the hand calculation, plus about 3 % from the side walls</td></tr>
+          <tr><td>Manufacturing tolerance and coolant temperature</td><td><b>16 % below to 27 % above nominal. This outweighs everything else.</b></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="figs-2">
+      <figure>
+        <div class="plate"><img src="img/cfd_tolerance.png" alt="Required pressure and wall shear across the tolerance cases" loading="lazy"></div>
+        <figcaption>Both requirements across the tolerance cases. The grey cross is a case the checks held back because the flow hadn't fully settled.</figcaption>
+      </figure>
+      <figure>
+        <div class="plate"><img src="img/cfd_duct.png" alt="3D side-wall check compared with the exact rectangular-duct solution" loading="lazy"></div>
+        <figcaption>The 3D side-wall check, with velocity across the width and across the gap compared against the exact rectangular-duct solution.</figcaption>
+      </figure>
+    </div>
+    <div class="caught">
+      <h3>What I caught along the way</h3>
+      <ul>
+        <li><strong>A simplified inlet that flipped the answer.</strong> My first model pushed a perfectly uniform flow straight into the channel, which is a common shortcut, and it said the channel passed at 28.6 Pa. But the pressure kept creeping up as I refined the mesh and never settled, which usually means there's a sharp corner the solver can't resolve. The mesh check failed, so that answer was never reported as verified. Adding the supply header fixed it, and once I counted the exit loss the answer went from a pass to a fail.</li>
+        <li><strong>A case that wasn't settled.</strong> With warm water and the widest gap, the flow was still developing slightly where I take the measurements. That case is marked unverified, and the conclusion stands on the other four.</li>
+        <li><strong>An average that hid a local error.</strong> My first 3D mesh was coarsest right where it needed to be finest, next to the side walls. The overall friction still looked fine, but comparing the whole velocity field point by point failed every time, always next to the wall. Averages can hide local errors, so I compare the full field too.</li>
+      </ul>
+    </div>
+    <h3>Limits, and what I'd do next</h3>
+    <ul>
+      <li>The flow is laminar and at one temperature throughout. Heat transfer isn't modelled here; studies 11 and 15 add it.</li>
+      <li>The 20 mm channel width used for the 3D check is assumed. The side-wall effect grows roughly with gap over width.</li>
+      <li>Only the corners of the tolerance range are run. A statistical combination of tolerances would say how often the worst case happens.</li>
+      <li>The pressure budget and the shear guideline are made up for the study, and there's no test data.</li>
+    </ul>
+  </section>

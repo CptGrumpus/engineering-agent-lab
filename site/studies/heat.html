@@ -1,0 +1,52 @@
+  <section class="study" id="heat">
+    <div class="study-head">
+      <span class="label">Study 11 · OpenFOAM heat transfer</span>
+      <h2>Cold-plate channel heat transfer</h2>
+    </div>
+    <h3>The question</h3>
+    <p>A cold-plate passage, 1 mm deep, carries water at 25 °C and 0.1 m/s. Electronics heat both walls at 30 kW/m² over 50 mm. Does the wall stay at or under 45 °C, does the coolant warm up by no more than 10 K, and how much heat flux could the passage take?</p>
+    <h3>The answer</h3>
+    <div class="answer">
+      <div class="chips"><span class="chip pass">Coolant rise 7.2 K: verified</span><span class="chip pass">Wall 44.03 °C: verified</span><span class="chip pass">Rated about 31 kW/m²</span></div>
+      <p><strong>The coolant warms up by 7.2 K</strong>, inside its 10 K budget, and that result is verified. The energy balance closes to about one part in a trillion on every mesh.</p>
+      <p><strong>The wall peaks at 44.03 °C, 0.97 K under the limit,</strong> and it matches the independent reference within 0.6 %. My first mesh study couldn't put a number on the peak's uncertainty, so I held that verdict back. A rerun on finer meshes (40, 80 and 160 cells across the gap) settled it: 44.097, 44.029 and 44.029 °C, an uncertainty of 0.23 % of the temperature rise. With 40 cells across the gap, the wall reaches 45 °C at about 31 kW/m².</p>
+    </div>
+    <h3>Why it matters</h3>
+    <p>Liquid cooling works by two things happening at once. The coolant warms as it picks up heat, which a simple energy balance gives. And the wall has to be hotter than the coolant to push the heat in, by an amount that depends on how well the flow carries heat away from the wall. That second part is the hard one, and it's what limits the electronics.</p>
+    <p>There's a textbook number for it, but it assumes the temperature profile in the flow has fully settled. In a short passage it hasn't, and using the textbook number anyway gives a slightly wrong wall temperature. With under 1 K of margin, slightly wrong is enough to matter.</p>
+    <h3>The model</h3>
+    <dl class="spec">
+      <dt>Geometry</dt><dd>A 1 mm gap between two walls, in 2D: a 5 mm unheated entry, 50 mm heated, 5 mm exit.</dd>
+      <dt>Fluid</dt><dd>Water with constant properties at 25 °C: density 997 kg/m³, viscosity 0.89 mPa·s, specific heat 4180 J/kgK, conductivity 0.607 W/mK.</dd>
+      <dt>Flow</dt><dd>0.1 m/s mean, laminar, entering with its velocity profile already settled.</dd>
+      <dt>Heating</dt><dd>A uniform 30 kW/m² into the water through both walls.</dd>
+      <dt>Mesh</dt><dd>40, 80 and 160 cells across the gap.</dd>
+      <dt>Analysis</dt><dd>Steady laminar flow, then the temperature carried by it, in OpenFOAM 14.</dd>
+      <dt>What's measured</dt><dd>The rise in the mean coolant temperature, and the highest wall temperature, which is at the end of the heated length.</dd>
+    </dl>
+    {{CASE}}
+    <h3>How it works</h3>
+    <p>OpenFOAM solves the flow first, then the temperature field the flow carries. Because the water warms by less than 20 K, its properties are held constant, so the temperature doesn't change the flow and the two can be solved one after the other.</p>
+    <p>The reference is the Graetz problem, the classical solution for heat transfer into a flow whose temperature profile is still developing. I solved it separately and checked that solution too, against the textbook fully developed value and the energy balance, before comparing the simulation with it.</p>
+    <h3>How I checked it</h3>
+    <ul class="proof">
+      <li><strong>Against the thermal-entry solution.</strong> The simulated wall temperature matches it within 0.03 to 0.6 % of the temperature rise along the heated length.</li>
+      <li><strong>Energy balance.</strong> Heat in equals heat carried out to about one part in a trillion, and the temperature field stops changing to within 10⁻¹¹ of the rise.</li>
+      <li><strong>Why the separate reference matters.</strong> The flow is still thermally developing at the end of the heated section. The Nusselt number there, the measure of how well the flow takes heat from the wall, is 8.34 and not the textbook 8.24. A hand calculation that assumed developed flow would be slightly off.</li>
+      <li><strong>Mesh refinement.</strong> Three meshes, each twice as fine, with the peak wall temperature settled to 0.23 % of the rise.</li>
+    </ul>
+    <div class="caught">
+      <h3>What I caught along the way</h3>
+      <ul>
+        <li><strong>A verdict held back, then settled.</strong> The standard numerical scheme overshoots by 0.06 to 0.11 K at the last heated cell, which is exactly where the peak is. It errs on the safe side, but it's why the first mesh study couldn't settle the peak. On finer meshes the overshoot shrinks and the peak moves upstream, which is why it took 160 cells across the gap to settle.</li>
+        <li><strong>A fix that made it worse.</strong> I tried four bounded schemes that get rid of the overshoot. All of them flip-flopped from one iteration to the next and never closed the energy balance, and damping the iterations just hid the problem. I went back to the scheme that converges exactly and let the checks bound its error. I kept every failed run and didn't change any tolerances.</li>
+      </ul>
+    </div>
+    <h3>Limits, and what I'd do next</h3>
+    <ul>
+      <li>The heat is applied as a fixed flux straight at the channel wall, so the plate's own conduction isn't in this model. In a real plate that conduction smooths the wall temperature along the length. <a href="#cold_plate">Study 15</a>, the next one on this page, adds it.</li>
+      <li>2D: the passage is much wider than it is deep, so the side walls are left out. The 3D check in study 5 showed a 3 % effect on the flow.</li>
+      <li>Constant water properties, reasonable for a rise under 20 K.</li>
+      <li>The geometry and loads are made up, and there's no test data.</li>
+    </ul>
+  </section>

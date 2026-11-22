@@ -66,6 +66,59 @@ def make(facts: dict) -> Path:
     return OUT
 
 
+def _wrap(d: ImageDraw.ImageDraw, text: str, font, width: int) -> list[str]:
+    lines, line = [], ""
+    for word in text.split():
+        trial = f"{line} {word}".strip()
+        if d.textlength(trial, font=font) <= width or not line:
+            line = trial
+        else:
+            lines.append(line)
+            line = word
+    return lines + [line]
+
+
+def study(slug: str, eyebrow: str, title: str, verdict: str, image: Path, figure: bool = False) -> Path:
+    """A study page's own preview card: its result image on the viewer's background, with its number, title and
+    verdict, so a link to one study previews as that study. Writes site/v2/og_<slug>.png."""
+    img = Image.new("RGB", (W, H))
+    px = ImageDraw.Draw(img)
+    for y in range(H):
+        t = y / (H - 1)
+        px.line([(0, y), (W, y)], fill=tuple(round(a + (b - a) * t) for a, b in zip(TOP, BOT)))
+    img = img.convert("RGBA")
+    part = Image.open(image).convert("RGBA")
+    if figure:                                           # a plot: keep its light plate behind it
+        plate = Image.new("RGBA", part.size, (252, 252, 251, 255))
+        plate.alpha_composite(part)
+        part = plate
+    else:
+        part = part.crop(part.getbbox())
+    box_w, box_h = 560, 420
+    scale = min(box_w / part.width, box_h / part.height)
+    part = part.resize((round(part.width * scale), round(part.height * scale)), Image.LANCZOS)
+    img.alpha_composite(part, (W - 40 - box_w + (box_w - part.width) // 2, 60 + (box_h - part.height) // 2))
+    d = ImageDraw.Draw(img)
+    mono = _font(["segoeuib.ttf", "arialbd.ttf"], 19)
+    big = _font(["segoeuib.ttf", "arialbd.ttf"], 50)
+    body = _font(["segoeui.ttf", "arial.ttf"], 25)
+    x, y = 64, 96
+    d.text((x, y), eyebrow.upper(), font=mono, fill=INK2)
+    y += 44
+    for line in _wrap(d, title, big, 500)[:4]:
+        d.text((x, y), line, font=big, fill=INK)
+        y += 60
+    y += 18
+    tw = d.textlength(verdict, font=body)
+    d.rounded_rectangle([(x, y), (x + tw + 36, y + 46)], radius=23, outline=INK2, width=2)
+    d.text((x + 18, y + 6), verdict, font=body, fill=INK)
+    d.rectangle([(0, H - 72), (W, H)], fill=(8, 14, 26, 150))
+    d.text((x, H - 50), "Justin Smith  ·  simulation portfolio  ·  every result checked against an independent reference", font=body, fill=INK)
+    out = OUT.with_name(f"og_{slug}.png")
+    img.convert("RGB").save(out, optimize=True)
+    return out
+
+
 if __name__ == "__main__":
     import extras
     print(make(extras.repo_facts()))

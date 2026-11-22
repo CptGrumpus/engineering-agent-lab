@@ -1,0 +1,45 @@
+  <section class="study" id="baseline">
+    <div class="study-head">
+      <span class="label">Study 9 · Python and OpenModelica</span>
+      <h2>Mass-spring-damper baseline</h2>
+    </div>
+    <h3>The question</h3>
+    <p>A 1 kg mass on a spring and damper is hit with a sudden 10 N force. How much damping does it need to overshoot by no more than 20 %, settle within 0.5 s and deflect no more than 12 mm? And, more to the point, does the workflow that answers it get a known answer right?</p>
+    <h3>The answer</h3>
+    <div class="answer">
+      <div class="chips"><span class="chip pass">All 72 checks pass</span><span class="chip pass">Two tools agree to a few parts per million</span></div>
+      <p><strong>A damping ratio of 0.5 or more meets all three requirements.</strong> Below that the mass overshoots too far and rings for too long.</p>
+      <p>This was the first study, and its real job was to prove the workflow on a problem with a known answer. Every result is checked against the exact textbook solution, and a second tool, OpenModelica, solves the same problem independently.</p>
+    </div>
+    <h3>Why it matters</h3>
+    <p>Before trusting a workflow on a problem nobody knows the answer to, it has to get a problem everybody knows the answer to exactly right. The mass-spring-damper is that problem: its response to a step force has a closed-form solution found in any vibration textbook.</p>
+    <p>Everything the later studies rely on was built and tested here first: a case file that records the question and the tolerances before the run, a solver, a set of automatic checks, a second tool for cross-checking, and a report that ties each requirement to its evidence. If any of that were wrong, this is where it would show.</p>
+    <h3>The model</h3>
+    <dl class="spec">
+      <dt>System</dt><dd>One mass, 1 kg, on a 1000 N/m spring and a viscous damper. It moves in one direction only.</dd>
+      <dt>Load</dt><dd>A 10 N force applied suddenly at time zero, from rest.</dd>
+      <dt>Damping</dt><dd>Six damping ratios from 0.1 (lightly damped, rings for a long time) to 2.0 (heavily damped, creeps to its final position).</dd>
+      <dt>Requirements</dt><dd>Overshoot at most 20 %, settling time at most 0.5 s, peak deflection at most 12 mm.</dd>
+      <dt>Tools</dt><dd>A Python model solved with SciPy, and the same system in OpenModelica.</dd>
+    </dl>
+    {{CASE}}
+    <h3>How I checked it</h3>
+    <ul class="proof">
+      <li><strong>Against the exact solution.</strong> The simulated motion is compared with the textbook formula at every damping ratio.</li>
+      <li><strong>Energy balance.</strong> The work done by the force equals the energy stored in the spring plus the energy the damper has dissipated.</li>
+      <li><strong>The final position.</strong> The mass has to come to rest where the spring force equals the applied force: 10 N on a 1000 N/m spring is 10 mm.</li>
+      <li><strong>The solver's own convergence.</strong> Tightening the solver's tolerance has to stop changing the answer.</li>
+      <li><strong>A second tool.</strong> OpenModelica agrees with the Python model to a few parts per million.</li>
+    </ul>
+    <div class="caught">
+      <h3>What I caught along the way</h3>
+      <ul>
+        <li>When I was hooking up OpenModelica, the check that results land on the requested time points failed. OpenModelica was quietly ignoring some of the settings I passed it. I changed how the settings get passed, and that check has been watching for it ever since.</li>
+      </ul>
+    </div>
+    <h3>Limits, and what I'd do next</h3>
+    <ul>
+      <li>It's a textbook problem used to prove the workflow, not a design study.</li>
+      <li>The parameters are made up, and there's nothing to validate against beyond the exact solution.</li>
+    </ul>
+  </section>

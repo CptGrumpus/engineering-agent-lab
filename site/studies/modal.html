@@ -1,0 +1,51 @@
+  <section class="study" id="modal">
+    <div class="study-head">
+      <span class="label">Study 4 · CadQuery, Gmsh and CalculiX, modal analysis</span>
+      <h2>Bracket arm vibration, modal analysis</h2>
+    </div>
+    <h3>The question</h3>
+    <p>A steel bracket arm, 150 by 25 mm, bolts on near an engine whose second order reaches 200 Hz at 6000 rpm. Its first natural frequency needs to stay above 250 Hz for 25 % separation, and it has to weigh 220 g or less. How thin can it be?</p>
+    <h3>The answer</h3>
+    <div class="answer">
+      <div class="chips"><span class="chip pass">7 mm: first mode 261.7 Hz</span><span class="chip pass">206 g, within budget</span><span class="chip pass">Mesh uncertainty 0.03 %</span></div>
+      <p><strong>7 mm.</strong> At 6 mm the first mode drops to 224 Hz, right in the band I'm trying to stay out of. At 8 mm it's 299 Hz, but the arm weighs 236 g and goes over budget. 7 mm is the only whole-millimetre thickness that does both.</p>
+    </div>
+    <h3>Why it matters</h3>
+    <p>Every part has natural frequencies at which it likes to vibrate. If something nearby shakes it at one of them, the motion builds up, and a bracket that is strong enough for its static load can still crack from fatigue. An engine is a strong source. Its second order, two pulses per revolution, reaches 200 Hz at 6000 rpm, and it shakes everything bolted nearby. The usual rule is to keep a part's first natural frequency well clear of that, here 25 % above it.</p>
+    <p>Making the arm thicker raises the frequency but adds mass, so the two requirements pull against each other and only a narrow range of thickness satisfies both.</p>
+    <h3>The model</h3>
+    <dl class="spec">
+      <dt>Part</dt><dd>A flat steel arm, 150 × 25 mm, clamped at one end. Thicknesses from 5 to 9 mm are tried.</dd>
+      <dt>Material</dt><dd>Steel: Young's modulus 210 GPa, Poisson's ratio 0.3, density 7850 kg/m³.</dd>
+      <dt>Support</dt><dd>The whole root face is fixed, an ideal clamp. No mass is attached at the tip.</dd>
+      <dt>Mesh</dt><dd>Quadratic tetrahedra of 1.95 mm for the thickness sweep; 5 mm down to 1.2 mm for the mesh study.</dd>
+      <dt>Analysis</dt><dd>Modal (natural frequency) analysis in CalculiX 2.22, first six modes.</dd>
+      <dt>What's measured</dt><dd>The first natural frequency and the arm's mass. Each mode is identified automatically as flapwise bending, in-plane bending or torsion from how its mass moves.</dd>
+    </dl>
+    {{CASE}}
+    <h3>How it works</h3>
+    <p>CadQuery builds the arm, Gmsh meshes it and CalculiX extracts the first six modes. A modal analysis has no load: it solves for the shapes and frequencies the part would vibrate at if disturbed.</p>
+    <p>The order of the modes isn't assumed. For each one the model works out how much of the arm's mass moves in each direction (the effective modal mass), which says whether it's the arm flapping, bending sideways or twisting. That matters because the order changes with thickness, and a requirement on "the first bending mode" has to follow the right one.</p>
+    <figure><div class="plate"><img src="img/bracket_modes.webp" alt="First four mode shapes, animated" loading="lazy"></div><figcaption>The first four mode shapes from CalculiX. Each one is identified automatically from its effective mass.</figcaption></figure>
+    <div class="figs-2">
+      <figure><div class="plate"><img src="img/render_bracket_modes.png" alt="First four mode shapes, rendered in Blender" loading="lazy"></div><figcaption>The same four modes rendered in Blender. The colour shows how far each point moves.</figcaption></figure>
+      <figure><div class="plate"><img src="img/bracket_render.png" alt="Bracket arm, CadQuery geometry" loading="lazy"></div><figcaption>The arm as CadQuery builds it.</figcaption></figure>
+    </div>
+    <h3>How I checked it</h3>
+    <ul class="proof">
+      <li><strong>Against an independent beam model.</strong> I built a separate 1D Timoshenko beam model, which includes shear deformation and rotary inertia, and tested it against the textbook frequencies first. It agrees with the 3D bending modes within 0.9 % and with the in-plane mode within 0.4 %. The 3D arm is slightly stiffer, as a wide, fully clamped solid should be.</li>
+      <li><strong>Mode shape and mass.</strong> The first mode shape matches the beam model almost perfectly, with a modal assurance criterion of 0.99999 (1 is a perfect match). Its effective mass is within 0.002 of the textbook 61.4 % of the arm's mass.</li>
+      <li><strong>Torsion.</strong> The torsion mode comes out 3.3 % above the simple twisting formula. I expected that, because the clamp stops the root from warping, and I'd predicted it before running.</li>
+      <li><strong>Predictions.</strong> Every thickness landed within 0.7 to 0.9 % of the values I wrote down before running.</li>
+    </ul>
+    <div class="caught">
+      <h3>What I caught along the way</h3>
+      <ul><li>One of my predictions was wrong. The frequencies converged more slowly than the textbook rate, because the clamped corners are singular and that slows convergence everywhere. Slower convergence still gives an honest uncertainty, 0.03 % here. Convergence much faster than the textbook rate would have been the real warning sign, and the checks now flag that automatically.</li></ul>
+    </div>
+    <h3>Limits, and what I'd do next</h3>
+    <ul>
+      <li>The clamp is perfectly rigid. A real bolted joint is softer and lowers the frequencies. The margin is 4.7 %, so the joint stiffness is the main risk, and I'd measure or model it before signing this off.</li>
+      <li>No attached component mass, damping or prestress. A component hung on the arm would lower the frequency.</li>
+      <li>The geometry, the excitation and the mass budget are made up, and there's no test data. A tap test with an accelerometer would check it directly.</li>
+    </ul>
+  </section>

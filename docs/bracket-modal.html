@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Bracket arm modal analysis · Justin Smith</title>
+<meta name="description" content="7 mm thick puts the first mode at 261.7 Hz and the weight at 206 g.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://cptgrumpus.github.io/engineering-agent-lab/bracket-modal.html">
+<meta property="og:title" content="Bracket arm modal analysis">
+<meta property="og:description" content="7 mm thick puts the first mode at 261.7 Hz and the weight at 206 g.">
+<meta property="og:image" content="https://cptgrumpus.github.io/engineering-agent-lab/v2/og_bracket-modal.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Bracket arm modal analysis: result render">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="assets/site.css?v=8faeeb46bc">
+</head>
+<body>
+<nav class="topbar" aria-label="Site">
+  <div class="wrap">
+    <a class="brand" href="index.html"><span class="brand-mark" aria-hidden="true"><i style="background:#30123b"></i><i style="background:#4686fb"></i><i style="background:#1ae4b6"></i><i style="background:#a2fc3c"></i><i style="background:#fb8022"></i><i style="background:#7a0403"></i></span>Justin Smith <small>Simulation portfolio</small></a>
+    <div class="navgroup">
+      <div class="topnav">
+        <a href="index.html#work" aria-current="page">Studies</a>
+        <a href="how-i-work.html">How I work</a>
+        <a href="grading.html">Grading</a>
+        <a href="in-progress.html">In progress</a>
+        <a href="requirements.html">Requirements</a>
+      </div>
+      <a class="nav-contact" href="#contact">Contact</a>
+      <details class="menu">
+        <summary>Menu</summary>
+        <div class="menu-panel">
+        <a href="index.html#work" aria-current="page">Studies</a>
+        <a href="how-i-work.html">How I work</a>
+        <a href="grading.html">Grading</a>
+        <a href="in-progress.html">In progress</a>
+        <a href="requirements.html">Requirements</a>
+          <a href="#contact">Contact</a>
+        </div>
+      </details>
+    </div>
+  </div>
+</nav>
+
+<main id="top">
+  <div class="wrap">
+    <nav class="crumbs" aria-label="Breadcrumb"><a href="index.html#work">All studies</a><span>/</span><span>Structures and vibration</span></nav>
+    <header class="study-hero">
+      <p class="eyebrow">Study 4 · CadQuery, Gmsh and CalculiX, modal analysis</p>
+      <h1>Bracket arm modal analysis</h1>
+      <span class="v v-pass">Passes</span>
+      <p class="study-lede">7 mm thick puts the first mode at 261.7 Hz and the weight at 206 g.</p>
+    </header>
+    <div class="vp" id="vp" role="region" aria-label="Result viewer">
+      <div class="legend">
+        <div class="legend-title" id="lg-title"></div>
+        <div class="legend-body"><div class="swatches" id="lg-sw"></div><div class="ticks" id="lg-ticks"></div></div>
+      </div>
+      <div class="stage"><div class="vp-parts" id="vp-parts" role="group" aria-label="Results on this page" hidden></div><button class="vp-3d" id="vp-3d" type="button" aria-pressed="false" hidden>Rotate in 3D</button>
+      <p class="vp-hint" id="vp-hint" hidden><span class="long">Same surface and colour bands as the render · </span>Drag to turn · <span class="long">scroll or </span>pinch to zoom<span class="long"> · double-click to reset</span></p>
+      <img id="vp-img" src="v2/vp_mode1.webp" alt="Bracket arm · steel, 150 × 25 × 7 mm, clamped">
+      <svg class="triad" viewBox="0 0 54 54" aria-hidden="true">
+        <g stroke-width="1.6" fill="none" stroke-linecap="round">
+          <line x1="14" y1="40" x2="44" y2="46" stroke="#ff8f6b"/><line x1="14" y1="40" x2="34" y2="28" stroke="#8fe3a8"/><line x1="14" y1="40" x2="14" y2="8" stroke="#8fb4ff"/>
+        </g>
+        <g font-family="JetBrains Mono, monospace" font-size="8" fill="#edf1f8"><text x="46" y="50">X</text><text x="36" y="27">Y</text><text x="11" y="6">Z</text></g>
+      </svg>
+      </div>
+      <div class="vp-scrub" id="vp-scrub" hidden>
+        <button type="button" class="vp-play" id="vp-play" aria-label="Play the analysis step by step">▶</button>
+        <input type="range" id="vp-range" min="0" max="0" step="1" value="0" aria-label="Load step">
+        <output id="vp-step" for="vp-range"></output>
+      </div>
+      <div class="status" id="vp-status" aria-live="polite"></div>
+    </div>
+
+    <div class="study-layout">
+      <article class="study-main">
+
+    <h2 id="the-question">The question</h2>
+    <p>A steel bracket arm, 150 by 25 mm, bolts on near an engine whose second order reaches 200 Hz at 6000 rpm. Its first natural frequency needs to stay above 250 Hz for 25 % separation, and it has to weigh 220 g or less. How thin can it be?</p>
+    <h2 id="the-answer">The answer</h2>
+    <div class="answer">
+      <div class="chips"><span class="chip pass">7 mm: first mode 261.7 Hz</span><span class="chip pass">206 g, within budget</span><span class="chip pass">Mesh uncertainty 0.03 %</span></div>
+      <p><strong>7 mm.</strong> At 6 mm the first mode drops to 224 Hz, right in the band I'm trying to stay out of. At 8 mm it's 299 Hz, but the arm weighs 236 g and goes over budget. 7 mm is the only whole-millimetre thickness that does both.</p>
+    </div>
+    <h2 id="why-it-matters">Why it matters</h2>
+    <p>Every part has natural frequencies at which it likes to vibrate. If something nearby shakes it at one of them, the motion builds up, and a bracket that is strong enough for its static load can still crack from fatigue. An engine is a strong source. Its second order, two pulses per revolution, reaches 200 Hz at 6000 rpm, and it shakes everything bolted nearby. The usual rule is to keep a part's first natural frequency well clear of that, here 25 % above it.</p>
+    <p>Making the arm thicker raises the frequency but adds mass, so the two requirements pull against each other and only a narrow range of thickness satisfies both.</p>
+    <h2 id="the-model">The model</h2>
+    <dl class="spec">
+      <dt>Part</dt><dd>A flat steel arm, 150 × 25 mm, clamped at one end. Thicknesses from 5 to 9 mm are tried.</dd>
+      <dt>Material</dt><dd>Steel: Young's modulus 210 GPa, Poisson's ratio 0.3, density 7850 kg/m³.</dd>
+      <dt>Support</dt><dd>The whole root face is fixed, an ideal clamp. No mass is attached at the tip.</dd>
+      <dt>Mesh</dt><dd>Quadratic tetrahedra of 1.95 mm for the thickness sweep; 5 mm down to 1.2 mm for the mesh study.</dd>
+      <dt>Analysis</dt><dd>Modal (natural frequency) analysis in CalculiX 2.22, first six modes.</dd>
+      <dt>What's measured</dt><dd>The first natural frequency and the arm's mass. Each mode is identified automatically as flapwise bending, in-plane bending or torsion from how its mass moves.</dd>
+    </dl>
+    <details class="record"><summary>The case file: recorded assumptions, limits and inputs</summary><div class="record-body"><p>This is the study's own record, written before the run and saved with it, in the shorthand of the case file.</p><p class="case"><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/cases/bracket_modal_thickness.toml">cases/bracket_modal_thickness.toml ↗</a></p><p>Steel bracket arm, 150 x 25 mm, clamped at one end, thickness swept from 5 to 9 mm on 1.95 mm quadratic tetrahedra (the mesh study level). Finds the thinnest arm that keeps the first natural frequency above 250 Hz within a 220 g mass budget.</p><h3>Assumptions, and how each is checked</h3><ul><li>Linear elastic steel (E = 210 GPa, nu = 0.3, density 7850 kg/m^3); small-amplitude vibration.</li><li>Ideal rigid clamp over the whole root face. A real bolted joint is softer and lowers the frequencies; this is the main model-form risk.</li><li>No attached mass at the tip (the carried component is light or mounted at the root).</li><li>The beam references assume a slender arm; checked: thickness / length below 0.2.</li></ul><h3>Limits</h3><ul><li>Synthetic geometry and requirement.</li><li>Beam theory is a model-form reference for a 3D clamped solid, especially for in-plane bending (length / width = 6) and torsion (warping restraint).</li><li>No damping, no prestress, no physical test data.</li></ul><h3>Inputs</h3><div class="table-wrap"><table><thead><tr><th>Input</th><th>Value</th></tr></thead><tbody><tr><td>length_mm</td><td>150</td></tr><tr><td>width_mm</td><td>25</td></tr><tr><td>thickness_mm</td><td>7</td></tr><tr><td>youngs_modulus_MPa</td><td>210000</td></tr><tr><td>poisson_ratio</td><td>0.3</td></tr><tr><td>density_t_per_mm3</td><td>7.85e-09</td></tr><tr><td>element_size_mm</td><td>1.95312</td></tr><tr><td>n_modes</td><td>6</td></tr></tbody></table></div></div></details>
+    <h2 id="how-it-works">How it works</h2>
+    <p>CadQuery builds the arm, Gmsh meshes it and CalculiX extracts the first six modes. A modal analysis has no load: it solves for the shapes and frequencies the part would vibrate at if disturbed.</p>
+    <p>The order of the modes isn't assumed. For each one the model works out how much of the arm's mass moves in each direction (the effective modal mass), which says whether it's the arm flapping, bending sideways or twisting. That matters because the order changes with thickness, and a requirement on "the first bending mode" has to follow the right one.</p>
+    <figure><div class="plate"><img src="img/bracket_modes.webp" alt="First four mode shapes, animated" loading="lazy"></div><figcaption>The first four mode shapes from CalculiX. Each one is identified automatically from its effective mass.</figcaption></figure>
+    <div class="figs-2">
+      <figure><div class="plate"><img src="img/render_bracket_modes.png" alt="First four mode shapes, rendered in Blender" loading="lazy"></div><figcaption>The same four modes rendered in Blender. The colour shows how far each point moves.</figcaption></figure>
+      <figure><div class="plate"><img src="img/bracket_render.png" alt="Bracket arm, CadQuery geometry" loading="lazy"></div><figcaption>The arm as CadQuery builds it.</figcaption></figure>
+    </div>
+    <h2 id="how-i-checked-it">How I checked it</h2>
+    <ul class="proof">
+      <li><strong>Against an independent beam model.</strong> I built a separate 1D Timoshenko beam model, which includes shear deformation and rotary inertia, and tested it against the textbook frequencies first. It agrees with the 3D bending modes within 0.9 % and with the in-plane mode within 0.4 %. The 3D arm is slightly stiffer, as a wide, fully clamped solid should be.</li>
+      <li><strong>Mode shape and mass.</strong> The first mode shape matches the beam model almost perfectly, with a modal assurance criterion of 0.99999 (1 is a perfect match). Its effective mass is within 0.002 of the textbook 61.4 % of the arm's mass.</li>
+      <li><strong>Torsion.</strong> The torsion mode comes out 3.3 % above the simple twisting formula. I expected that, because the clamp stops the root from warping, and I'd predicted it before running.</li>
+      <li><strong>Predictions.</strong> Every thickness landed within 0.7 to 0.9 % of the values I wrote down before running.</li>
+    </ul>
+    <div class="caught">
+      <h2 id="what-i-caught-along-the-way">What I caught along the way</h2>
+      <ul><li>One of my predictions was wrong. The frequencies converged more slowly than the textbook rate, because the clamped corners are singular and that slows convergence everywhere. Slower convergence still gives an honest uncertainty, 0.03 % here. Convergence much faster than the textbook rate would have been the real warning sign, and the checks now flag that automatically.</li></ul>
+    </div>
+    <h2 id="limits-and-what-i-d-do-next">Limits, and what I'd do next</h2>
+    <ul>
+      <li>The clamp is perfectly rigid. A real bolted joint is softer and lowers the frequencies. The margin is 4.7 %, so the joint stiffness is the main risk, and I'd measure or model it before signing this off.</li>
+      <li>No attached component mass, damping or prestress. A component hung on the arm would lower the frequency.</li>
+      <li>The geometry, the excitation and the mass budget are made up, and there's no test data. A tap test with an accelerometer would check it directly.</li>
+    </ul>
+    <h2 id="evidence">Evidence</h2>
+    <div class="side-card"><ul class="ev-list"><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/portfolio/04-bracket-modal.md">Full write-up on GitHub</a></li></ul><p class="label">Run reports, with every check and the saved inputs</p><ul class="ev-list ev-runs"><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261120-010318_bracket_modal_mesh/report.md">bracket_modal_mesh</a></li><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261120-010521_bracket_modal_thickness/report.md">bracket_modal_thickness</a></li></ul></div>
+      </article>
+      <aside class="study-side" aria-label="Summary of this study">
+        <div class="side-card"><h2>At a glance</h2><dl><div><dt>Study</dt><dd>04</dd></div><div><dt>Discipline</dt><dd>Structures and vibration</dd></div><div><dt>Tools</dt><dd>CadQuery · Gmsh · CalculiX</dd></div><div><dt>Verdict</dt><dd><span class="v v-pass">Passes</span></dd></div></dl></div><div class="side-card"><h2>Requirements</h2><ul class="side-reqs"><li><span class="r-what">First natural frequency, 7 mm arm</span><span class="r-num">≥ 250 Hz · 261.7 Hz</span><span class="chip pass">Met</span></li><li><span class="r-what">Arm mass</span><span class="r-num">≤ 220 g · 206 g</span><span class="chip pass">Met</span></li></ul></div><div class="side-card side-toc"><h2>On this page</h2><ul class="toc"><li><a href="#the-question">The question</a></li><li><a href="#the-answer">The answer</a></li><li><a href="#why-it-matters">Why it matters</a></li><li><a href="#the-model">The model</a></li><li><a href="#how-it-works">How it works</a></li><li><a href="#how-i-checked-it">How I checked it</a></li><li><a href="#what-i-caught-along-the-way">What I caught along the way</a></li><li><a href="#limits-and-what-i-d-do-next">Limits, and what I&#x27;d do next</a></li><li><a href="#evidence">Evidence</a></li></ul></div>
+      </aside>
+    </div>
+    <nav class="pager" aria-label="More studies"><a class="prev" href="cantilever-bracket.html"><small>← Previous study</small><b>Cantilever bracket: stress check, then optimised</b></a><a class="next" href="cold-plate.html"><small>Next study →</small><b>Cold plate: the coolant channel, then the full thermal chain</b></a></nav>
+  </div>
+
+</main>
+
+<footer class="site-foot">
+  <div class="wrap">
+    <section class="contact" id="contact" aria-labelledby="contact-title">
+      <div class="band-head">
+        <p class="eyebrow">Contact</p>
+        <h2 id="contact-title">Get in touch</h2>
+        <p class="contact-name"><b>Justin Smith</b>, mechanical engineer (MS), with a background in automotive.</p>
+        <p>If something here is close to what you need, or you have a model that needs building or checking, send me a note and tell me about it. I'm available for remote contract work.</p>
+      </div>
+      <div class="contact-actions">
+        <!-- the address is stored reversed and base64-encoded so scrapers reading the page or the repository don't pick it up; site.js decodes it -->
+        <a class="cta" id="contact-mail" href="#contact" data-m="bW9jLmxpYW1nQDg1MW5pdHN1amh0aW1z">Email me</a>
+        <button class="cta-2" id="contact-show" type="button">Show the address</button>
+        <span class="contact-addr" id="contact-addr" hidden></span>
+      </div>
+    </section>
+    <div class="foot-nav">
+      <a href="index.html#work">All studies</a>
+      <a href="requirements.html">Every requirement</a>
+      <a href="how-i-work.html">How I work</a>
+      <a href="grading.html">Grading tasks</a>
+      <a href="in-progress.html">In progress</a>
+      <a href="https://github.com/CptGrumpus/engineering-agent-lab">Source on GitHub ↗</a>
+      <span>Open-source tools throughout: CalculiX, OpenFOAM, Gmsh, CadQuery, OpenModelica, Blender.</span>
+    </div>
+  </div>
+</footer>
+<script>window.VP = [{"id": "mode1", "study": "modal", "tab": "Modal", "legend": "U, Magnitude", "unit": "normalised", "model": "Bracket arm · steel, 150 × 25 × 7 mm, clamped", "lines": ["Solver: CalculiX 2.22 · *FREQUENCY, mode 1 of 4", "261.7 Hz flapwise · requirement ≥ 250 Hz (engine 2nd order + 25 %)", "Within 0.9 % of an independent Timoshenko beam model · in 3D, the mode can be animated (motion exaggerated)"], "mesh": "v2/m3d_mode1.bin", "mesh_kb": 93, "elev": 24, "azim": -60, "img": "v2/vp_mode1.webp", "bands": ["#3d358b", "#477bf2", "#28bceb", "#20eaac", "#79fe59", "#c3f134", "#f6c33a", "#fb7e21", "#dd3d08", "#a11201"], "vmin": 0.0, "vmax": 1.0, "check": "Render check: encloses 26 250.0 mm³ of 26 250.0 design · 100.0 % of pixels on the legend", "card": "modal"}];</script>
+<script src="assets/viewer.js?v=8faeeb46bc"></script>
+<script src="assets/viewer3d.js?v=8faeeb46bc"></script>
+<script src="assets/site.js?v=8faeeb46bc"></script>
+</body>
+</html>

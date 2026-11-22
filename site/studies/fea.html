@@ -1,0 +1,62 @@
+  <section class="study" id="fea">
+    <div class="study-head">
+      <span class="label">Study 1 · FreeCAD, Gmsh and CalculiX</span>
+      <h2>Cantilever bracket, 3D finite elements</h2>
+    </div>
+    <h3>The question</h3>
+    <p>A steel bracket, 200 mm long and 20 × 20 mm in section, is clamped at one end and takes a 1 kN load at the tip. Does it stay under 1.0 mm of deflection and 213 MPa of stress, and how far can I trust the model?</p>
+    <h3>The answer</h3>
+    <div class="answer">
+      <div class="chips"><span class="chip pass">Deflection 0.953 mm</span><span class="chip pass">Root stress 150 MPa</span><span class="chip pass">Mesh uncertainty 0.02 %</span></div>
+      <p><strong>Yes, with room to spare.</strong> The tip moves 0.953 mm against a 1.0 mm limit, and the bending stress at the root is 150 MPa against 213 MPa. The mesh uncertainty is about 0.02 %, so the mesh isn't what decides either number.</p>
+    </div>
+    <h3>Why it matters</h3>
+    <p>A cantilever is about the simplest structural check there is, and that's the point of starting here. Beam theory gives the answer by hand, so any mistake in the chain from geometry to mesh to solver shows up straight away.</p>
+    <p>It also contains the most common trap in stress analysis. Where the bar meets its support there's a perfectly sharp corner, and the stress a model computes there keeps rising as the mesh gets finer. It never settles on a value. A report that quotes "the maximum stress in the model" is quoting a number that depends on how fine the mesh happened to be. Knowing which numbers from a model can be held against a requirement, and which can't, is what this study is about.</p>
+    <h3>The model</h3>
+    <dl class="spec">
+      <dt>Part</dt><dd>A straight steel bar, 200 mm long with a 20 × 20 mm section.</dd>
+      <dt>Material</dt><dd>Steel, linear elastic: Young's modulus 210 GPa, Poisson's ratio 0.3. The 213 MPa stress limit is the 355 MPa yield strength divided by 1.67.</dd>
+      <dt>Load</dt><dd>1 kN downward at the tip, spread evenly over the end face.</dd>
+      <dt>Support</dt><dd>The whole root face is fixed, an ideal clamp. A real bolted or welded root is softer.</dd>
+      <dt>Mesh</dt><dd>10-node (quadratic) tetrahedra at four sizes, from 8 mm down to 1.95 mm, each 1.6 times finer than the last.</dd>
+      <dt>Analysis</dt><dd>Linear static, small deflection, in CalculiX 2.22. Geometry and setup in FreeCAD, meshing in Gmsh.</dd>
+      <dt>What's reported</dt><dd>The tip deflection, and the bending stress on the top face extrapolated to the root from the smooth middle of the span.</dd>
+    </dl>
+    {{CASE}}
+    <h3>How it works</h3>
+    <p>FreeCAD builds the bar, assigns the material, fixes the root face and applies the load. Gmsh fills the solid with tetrahedral elements, and CalculiX solves for the displacements and stresses. I read the results straight from the solver's output files, and the FreeCAD model is saved with every run so the run can be repeated.</p>
+    <p>The same model is solved four times on finer and finer meshes. If the answer stops changing as the elements shrink, the mesh isn't deciding it. A standard method, the Grid Convergence Index, turns the last three solutions into an uncertainty figure, which is where the 0.02 % comes from.</p>
+    <p>For the stress, I don't take the highest value in the model. That value sits in the clamped corner and climbs from 150 to 217 MPa across the four meshes. Instead the stress along the top face is read over the middle half of the span, where it rises in a straight line towards the root, and that line is extended to the root. The result is 150 MPa on every mesh, which is also what beam theory gives.</p>
+    <div class="figs-2">
+      <figure>
+        <div class="plate"><img src="img/fea_response.png" alt="Deflection and stress along the beam compared with beam theory" loading="lazy"></div>
+        <figcaption>Deflection and stress along the beam, next to beam theory.</figcaption>
+      </figure>
+      <figure><div class="plate"><img src="img/turntable_cantilever.webp" alt="The cantilever result turning, rendered in Blender" loading="lazy"></div><figcaption>The result from all sides. At the clamped end you can see the bending stress across the section, highest at the top and bottom faces and zero along the middle.</figcaption></figure>
+    </div>
+    <h3>How I checked it</h3>
+    <ul class="proof">
+      <li><strong>Against beam theory.</strong> The hand calculation gives 0.952 mm if shear deformation is ignored and 0.960 mm if it's included. The model's 0.953 mm falls between the two, which is where a fully clamped solid bar should land.</li>
+      <li><strong>Equilibrium.</strong> The support reactions add up to the applied 1 kN, to within rounding.</li>
+      <li><strong>Mesh refinement.</strong> As the mesh is refined, the answer converges at the rate these elements are designed to give. A rate that's far off, in either direction, would mean something other than the mesh is wrong.</li>
+      <li><strong>The stress that's reported.</strong> The corner peak is recorded for information and never used for a requirement. The extrapolated bending stress matches beam theory at 150 MPa.</li>
+    </ul>
+    <div class="caught">
+      <h3>What I caught along the way</h3>
+      <ul>
+        <li>I also ran the study with the simplest element type, linear tetrahedra. The bracket came out 4 to 33 % too stiff and the stress 7 to 45 % too low, so at face value it would have looked comfortably safe. The beam-theory and mesh checks both failed, and none of those results were reported as verified. The run is kept as evidence.</li>
+      </ul>
+    </div>
+    <figure>
+      <div class="plate"><img src="img/fea_tet4_sweep.png" alt="Linear-element results, all held back by the checks" loading="lazy"></div>
+      <figcaption>The same study run with linear tetrahedra. The checks held back every result.</figcaption>
+    </figure>
+    <h3>Limits, and what I'd do next</h3>
+    <ul>
+      <li>The clamp is perfectly rigid. A real bolted or welded root gives a little, which adds deflection. The margin on deflection is under 5 %, so the joint's stiffness is the first thing I'd check on a real part.</li>
+      <li>Beam theory is an approximate reference for a short, solid bar (ten times longer than it is deep), so agreement within about 1 % is what to expect, not an exact match.</li>
+      <li>The geometry, load and limits are made up for the study, and there's no test data.</li>
+      <li>The next study on this page takes the same bar and asks the opposite question: under a tighter stress limit, what shape makes it lightest?</li>
+    </ul>
+  </section>

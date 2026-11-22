@@ -1,0 +1,57 @@
+  <section class="study" id="strut">
+    <div class="study-head">
+      <span class="label">Study 13 · CalculiX, linear and nonlinear buckling</span>
+      <h2>Strut buckling, with an imperfect strut</h2>
+    </div>
+    <h3>The question</h3>
+    <p>A 6061-T6 strut with a solid 25 × 16 mm section, pinned at both ends, carries 8 kN in compression. It has to reach twice that, 16 kN, before any fibre yields, allowing for an initial bow of L/1000, a typical straightness tolerance. How long can it be?</p>
+    <h3>The answer</h3>
+    <div class="answer">
+      <div class="chips"><span class="chip pass">Longest about 587 mm</span><span class="chip pass">Two routes to the buckling load agree to 0.04 %</span><span class="chip pass">Mesh uncertainty 0.003 %</span></div>
+      <p><strong>About 587 mm.</strong> Before first yield, the bowed strut reaches 33.4 kN at 400 mm, 21.8 kN at 500 mm, 15.3 kN at 600 mm and 11.4 kN at 700 mm, so 400 and 500 mm pass and 600 and 700 mm fail.</p>
+      <p>The bow costs 4 to 7 %. First yield arrives at 93 to 96 % of the elastic buckling load, so a check on the buckling load alone would overstate what the strut can carry.</p>
+      <p>Drag the slider in the viewer at the top of the page to load the 500 mm strut step by step and watch the bow grow.</p>
+    </div>
+    <h3>Why it matters</h3>
+    <p>A slender part in compression doesn't fail by crushing. At a certain load it bows sideways and gives way, usually well below the load its material could carry. The textbook buckling load, Euler's, is for a perfectly straight strut. No real strut is straight, and the small bow it starts with grows as the load rises, slowly at first and then very quickly near the buckling load. The bending that goes with that bow yields the material before the textbook load is reached.</p>
+    <p>So there are two questions: what's the buckling load, and how much of it can actually be used given a realistic imperfection? A linear buckling analysis answers only the first.</p>
+    <h3>The model</h3>
+    <dl class="spec">
+      <dt>Part</dt><dd>A solid strut, 25 × 16 mm in section, at lengths of 400, 500, 600 and 700 mm.</dd>
+      <dt>Material</dt><dd>6061-T6 aluminium: Young's modulus 68.9 GPa, Poisson's ratio 0.33, yield 276 MPa. Elastic up to first yield, where the analysis stops.</dd>
+      <dt>Supports</dt><dd>Pinned at both ends: a line support across the width at mid-thickness, so the ends are free to rotate.</dd>
+      <dt>Imperfection</dt><dd>An initial bow of L/1000 at mid-length, in the weak direction, shaped as a half sine wave.</dd>
+      <dt>Load</dt><dd>Compression along the axis, spread evenly over the end face.</dd>
+      <dt>Mesh</dt><dd>3 mm hexahedral elements.</dd>
+      <dt>Analysis</dt><dd>Two analyses in CalculiX 2.22: a linear buckling (eigenvalue) analysis of the straight strut, and a geometrically nonlinear analysis of the bowed one, loaded in steps until the first fibre yields.</dd>
+    </dl>
+    {{CASE}}
+    <h3>How it works</h3>
+    <p>The linear analysis gives the buckling load and the shape the strut buckles into. The second model starts with a bow of L/1000 in that same half-sine shape. The nonlinear analysis then loads the bowed strut in small steps, updating the geometry as it deflects, and records the load at which the stress first reaches yield.</p>
+    <p>The nonlinear run also gives a second, independent route to the buckling load. A Southwell plot takes the measured load and deflection alone and reads the critical load from the slope of a straight line. It's the method used on real test rigs, where the strut can't be loaded to failure.</p>
+    <div class="figs-2">
+      <figure><div class="plate"><img src="img/strut_response.png" alt="Load against deflection, the Southwell plot and first yield for the 500 mm strut" loading="lazy"></div><figcaption>The 500 mm strut: load against mid-span deflection, the Southwell plot, and the stress climbing to first yield.</figcaption></figure>
+      <figure><div class="plate"><img src="img/strut_sweep.png" alt="First-yield load against strut length, with the 16 kN requirement" loading="lazy"></div><figcaption>First-yield load at each length against the 16 kN requirement.</figcaption></figure>
+    </div>
+    <h3>How I checked it</h3>
+    <ul class="proof">
+      <li><strong>Two routes to the buckling load.</strong> The linear eigenvalue analysis and the Southwell plot of the nonlinear run agree to 0.04 %. Both sit 0.06 to 0.1 % below Euler's formula with the shear correction.</li>
+      <li><strong>The shape and the growth of the bow.</strong> The first mode is an exact half sine, and the nonlinear response follows the amplification law e₀ / (1 − P/P<sub>cr</sub>) to 0.2 % up to 80 % of the critical load. The Southwell fit recovers the bow that was put in to 0.3 %.</li>
+      <li><strong>First yield.</strong> It's within 1.3 % of the Perry-Robertson formula at every length. That formula is the basis of the column curves in steel design codes.</li>
+      <li><strong>The method is valid for these lengths.</strong> Every length is in the range where elastic buckling governs. A shorter strut would yield before it buckled, and the check would flag the elastic analysis as the wrong tool. Mesh refinement at 600 mm leaves 0.003 % uncertainty.</li>
+    </ul>
+    <div class="caught">
+      <h3>What I caught along the way</h3>
+      <ul>
+        <li>The mode-shape check failed at first. CalculiX prints the static solution before the first eigenvector, and my parser was reading it as mode 1. Two wrong explanations came first; the record says which one was the cause.</li>
+        <li>The nonlinear solver's default convergence left the global force balance 3 × 10⁻⁶ out. Tighter solver settings brought it to 2 × 10⁻⁷ without touching the tolerance.</li>
+      </ul>
+    </div>
+    <h3>Limits, and what I'd do next</h3>
+    <ul>
+      <li>Capacity is defined as first yield, so the plastic reserve beyond it isn't used. That's the cautious choice.</li>
+      <li>No residual stresses, and no load eccentricity or misalignment beyond the bow. Each of those would lower the capacity further.</li>
+      <li>The references are beam-column theory, except the Southwell plot, which uses the model's own response.</li>
+      <li>The L/1000 bow is a typical tolerance, not a measured one, and there's no test data.</li>
+    </ul>
+  </section>

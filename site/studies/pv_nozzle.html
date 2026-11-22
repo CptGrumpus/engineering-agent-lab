@@ -1,0 +1,56 @@
+  <section class="study" id="pv_nozzle">
+    <div class="study-head">
+      <span class="label">Study 18 · CadQuery, Gmsh, CalculiX, design by analysis</span>
+      <h2>Pressure vessel nozzle, design code check</h2>
+    </div>
+    <h3>The question</h3>
+    <p>A 200 mm bore nozzle with a 12 mm wall goes into a 1000 mm bore shell with a 16 mm wall, at 3.5 MPa. Can it go in without a reinforcing pad?</p>
+    <p>It's judged the way ASME's design-by-analysis rules (Section VIII, Division 2, Part 5) judge it: the stress through the wall is split into a membrane part and a bending part, and each is held to its own limit. The allowable stress, S = 138 MPa, is a typical carbon-steel value, not taken from the code's tables.</p>
+    <h3>The answer</h3>
+    <div class="answer">
+      <div class="chips"><span class="chip pass">PL 205.1 MPa against 207</span><span class="chip pass">P + Q 240 against 414</span><span class="chip warn">0.9 % margin</span></div>
+      <p><strong>Yes, but only just.</strong> The membrane stress at the junction is 205.1 MPa against a 207 MPa limit. The mesh uncertainty is 0.03 %, so the pass is real for this model, but the margin is thin against the judgement calls behind it: where the lines through the wall sit, the weld size, and the sharp inner corner.</p>
+      <p>The wall needs about 11.7 mm. A simpler pressure-area rule, the kind a design-by-rule check uses, asks for about 16 mm. I'd recommend 14 mm: about 6 % margin, without the rule's full thickness.</p>
+    </div>
+    <h3>Why it matters</h3>
+    <p>Cutting a hole in a pressure vessel removes material that was carrying the pressure, and the wall around the hole has to carry more. Design codes offer two ways to deal with it. Design by rule uses simple formulas with generous margins: quick, safe and often heavier than needed. Design by analysis uses a stress model of the actual shape and can justify a thinner wall, but it demands more care, because a finite-element model reports stresses the simple rules never see.</p>
+    <p>The care is in how the stress is read. Right at a sharp corner the computed stress is very high and depends on the mesh. The codes don't ask for that number. They ask what the wall carries on average through its thickness (membrane) and how much it bends (bending), because those are what decide whether the wall bursts or yields through. Getting from a field of stresses to those two numbers is called linearisation, and it's easy to do wrong in ways that flip the verdict.</p>
+    <h3>The model</h3>
+    <dl class="spec">
+      <dt>Vessel</dt><dd>A cylindrical shell, 1000 mm bore with a 16 mm wall, modelled for 1000 mm each side of the nozzle.</dd>
+      <dt>Nozzle</dt><dd>A radial nozzle, 200 mm bore with a 12 mm wall, standing 350 mm, set through the shell wall. A 10 mm weld fillet on the outside; the inner corner is left sharp.</dd>
+      <dt>Material</dt><dd>Steel, linear elastic: Young's modulus 200 GPa, Poisson's ratio 0.3. Allowable stress S = 138 MPa.</dd>
+      <dt>Load</dt><dd>3.5 MPa on every inside surface. The pull of the closed ends is applied on the cut ends of the shell and nozzle, so far from the nozzle the shell behaves exactly like a closed cylinder.</dd>
+      <dt>Symmetry</dt><dd>A quarter of the vessel, cut on the two planes through the nozzle axis.</dd>
+      <dt>Mesh</dt><dd>Quadratic tetrahedra: 6, 4 and 2.67 mm within 140 mm of the junction, growing to 14 mm. The finest has 284,554 nodes.</dd>
+      <dt>Limits</dt><dd>General membrane away from the nozzle, Pm ≤ S. Local membrane at the junction, PL ≤ 1.5 S = 207 MPa. Membrane plus bending at the junction, P + Q ≤ 3 S = 414 MPa.</dd>
+      <dt>Analysis</dt><dd>Linear static in CalculiX 2.22, then stress linearisation along lines through the wall.</dd>
+    </dl>
+    {{CASE}}
+    <h3>How it works</h3>
+    <p>CadQuery builds the quarter vessel, Gmsh meshes it with small elements at the junction, and CalculiX solves it. The stresses are then read along straight lines through the wall, called stress classification lines. There are four at the junction, at the toes of the weld fillet on the shell side and the nozzle side, in each of the two symmetry planes, plus one far from the nozzle.</p>
+    <p>On each line the six stress components are averaged through the wall to give the membrane stress, and the straight-line variation gives the bending. Whatever is left over is the local peak that a sharp corner produces, and the limits leave it out by design. The governing line is on the shell side of the junction, in the plane along the vessel.</p>
+    <figure><div class="plate"><img src="v2/pv_nozzle_response.webp" alt="Left: von Mises stress through the shell wall at the junction, with its linearised fit and the membrane value of 205.1 MPa just under the 207 MPa limit. Right: the membrane stress falling from 238.6 MPa at 8 mm to 182.6 MPa at 16 mm, crossing the limit at 11.7 mm" loading="lazy"></div><figcaption><b>Left: the governing line, through the shell wall beside the weld.</b> Linearising replaces the curved stress profile with its average (the membrane, PL) and a straight-line bending part. The peaks at the two surfaces don't count against the membrane limit. <b>Right: the same check at four nozzle walls.</b> 8 and 10 mm fail; the limit is reached at 11.7 mm.</figcaption></figure>
+    <h3>How I checked it</h3>
+    <ul class="proof">
+      <li><strong>Equilibrium is exact.</strong> The pressure on every wetted surface balances the reactions on both symmetry planes to 3 × 10⁻⁷. If a loaded face had been missed, this would show it.</li>
+      <li><strong>Far from the nozzle, an exact solution.</strong> There the shell is a plain thick cylinder, which has an exact (Lamé) solution. The model matches it to within 0.03 %.</li>
+      <li><strong>Mesh refinement.</strong> At 6, 4 and 2.67 mm, PL is 205.04, 205.13 and 205.13 MPa. The linearised values converge even though the stress at the sharp inner corner doesn't, which is why the code linearises.</li>
+      <li><strong>A second route to the same decision.</strong> The simplified pressure-area rule, worked independently from the geometry, points the same way and is more cautious, as a rule should be.</li>
+    </ul>
+    <div class="caught">
+      <h3>What I caught along the way</h3>
+      <ul>
+        <li><strong>A prediction that was too pessimistic.</strong> I predicted about 3 % mesh uncertainty on PL, more than the 1 % margin, so I expected an "it can't tell, thicken it" answer. It converged to 0.03 %, which turned the answer into a verified pass with a thin margin, and the thickness sweep then shows how fast that margin goes.</li>
+        <li><strong>A result reported as unverified.</strong> P + Q moved by 0.08 % and then 0.27 % as the mesh was refined. The convergence check rightly calls that divergent: the surface bending picks up the sharp corner. With a 42 % margin the verdict stands, but it's reported as unverified and not as a clean pass.</li>
+        <li><strong>A tolerance that was wrong on paper.</strong> The sample points on the curved surfaces sit 0.1 % outside the straight-sided elements, so a check that every point lies inside the mesh failed in the first trial. The tolerance was corrected, with the reason written in the case file, before any evidence run.</li>
+      </ul>
+    </div>
+    <h3>Limits, and what I'd do next</h3>
+    <ul>
+      <li>Pressure only. No piping loads on the nozzle, no thermal gradients and no fatigue screening. Piping loads would add directly to the junction stress and could use up the thin margin, so they're the first thing I'd add.</li>
+      <li>Where the classification lines are placed is a judgement call, and I haven't yet measured how much the answer moves with it.</li>
+      <li>The allowable is synthetic and the pressure-area rule is a simplified form, so this follows the structure of a code calculation without being a stamped one.</li>
+      <li>The viewer's render comes from solving the finest mesh again, because the run didn't keep its full 3D results. The re-solve reproduces the run's membrane and bending stresses on every line to nine digits.</li>
+    </ul>
+  </section>

@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Grading tasks · Justin Smith</title>
+<meta name="description" content="Five engineering evaluation tasks built from verified simulation studies, each with a reference solution and an automated grader you can try on the page.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://cptgrumpus.github.io/engineering-agent-lab/grading.html">
+<meta property="og:title" content="Try grading an engineering answer">
+<meta property="og:description" content="Five engineering evaluation tasks built from verified simulation studies, each with a reference solution and an automated grader you can try on the page.">
+<meta property="og:image" content="https://cptgrumpus.github.io/engineering-agent-lab/v2/og_card.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Simulation portfolio">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="assets/site.css?v=8faeeb46bc">
+</head>
+<body>
+<nav class="topbar" aria-label="Site">
+  <div class="wrap">
+    <a class="brand" href="index.html"><span class="brand-mark" aria-hidden="true"><i style="background:#30123b"></i><i style="background:#4686fb"></i><i style="background:#1ae4b6"></i><i style="background:#a2fc3c"></i><i style="background:#fb8022"></i><i style="background:#7a0403"></i></span>Justin Smith <small>Simulation portfolio</small></a>
+    <div class="navgroup">
+      <div class="topnav">
+        <a href="index.html#work">Studies</a>
+        <a href="how-i-work.html">How I work</a>
+        <a href="grading.html" aria-current="page">Grading</a>
+        <a href="in-progress.html">In progress</a>
+        <a href="requirements.html">Requirements</a>
+      </div>
+      <a class="nav-contact" href="#contact">Contact</a>
+      <details class="menu">
+        <summary>Menu</summary>
+        <div class="menu-panel">
+        <a href="index.html#work">Studies</a>
+        <a href="how-i-work.html">How I work</a>
+        <a href="grading.html" aria-current="page">Grading</a>
+        <a href="in-progress.html">In progress</a>
+        <a href="requirements.html">Requirements</a>
+          <a href="#contact">Contact</a>
+        </div>
+      </details>
+    </div>
+  </div>
+</nav>
+
+<main id="top">
+  <div class="wrap band" style="padding-top:0">
+
+    <div class="page-head">
+      <p class="eyebrow">Evaluation tasks</p>
+      <h1>Try grading an answer</h1>
+      <p>I wrote five engineering tasks based on the studies, set up the way an AI-training pipeline would use them. Each has a problem statement, a reference solution backed by one of my simulations, an automated grader, and a list of the mistakes it's designed to catch. Pick a task and an answer below and the page will grade it using the same criteria and tolerances as the Python grader. You can also change any of the values yourself.</p>
+    </div>
+    <div class="grader" id="grader">
+      <div class="tabs g-tabs" role="tablist" aria-label="Choose a task">
+        <button type="button" role="tab" id="gt-0" aria-selected="true" data-t="0"><span class="tab-k">Heat transfer</span><span class="tab-v">Cold-plate wall</span></button>
+        <button type="button" role="tab" id="gt-1" aria-selected="false" data-t="1"><span class="tab-k">Contact stress</span><span class="tab-v">Roller contact</span></button>
+        <button type="button" role="tab" id="gt-2" aria-selected="false" data-t="2"><span class="tab-k">3D FEA</span><span class="tab-v">Bracket stress</span></button>
+        <button type="button" role="tab" id="gt-3" aria-selected="false" data-t="3"><span class="tab-k">Large deflection</span><span class="tab-v">Sagging strip</span></button>
+        <button type="button" role="tab" id="gt-4" aria-selected="false" data-t="4"><span class="tab-k">Pressure vessel</span><span class="tab-v">Vessel nozzle</span></button>
+      </div>
+      <div class="g-body" role="tabpanel" aria-labelledby="gt-0" id="g-panel">
+        <div class="g-pick">
+          <p class="g-task" id="g-task"></p>
+          <div class="g-group">
+            <span class="label">Answers to try</span>
+            <div class="g-presets" id="g-presets"></div>
+          </div>
+        </div>
+        <div class="g-group g-edit">
+          <span class="label">The answer being graded <small>(edit any value)</small></span>
+          <div class="g-fields" id="g-fields"></div>
+        </div>
+        <div class="term g-term" role="figure" aria-label="Grader output">
+          <div class="term-bar"><i></i><i></i><i></i><span id="g-cmd">grade(answer)</span></div>
+<pre id="g-out" aria-live="polite"></pre>
+          <div class="g-score"><div class="g-meter"><i id="g-bar"></i></div><span id="g-pct"></span></div>
+          <p class="g-note" id="g-note"></p>
+        </div>
+      </div>
+    </div>
+    <p class="sub-lede" style="margin-top:0">Each task has a problem statement, a reference solution with its evidence, and a grader, all in the repository: <a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/tree/main/tasks">tasks on GitHub ↗</a></p>
+    </div>
+
+</main>
+
+<footer class="site-foot">
+  <div class="wrap">
+    <section class="contact" id="contact" aria-labelledby="contact-title">
+      <div class="band-head">
+        <p class="eyebrow">Contact</p>
+        <h2 id="contact-title">Get in touch</h2>
+        <p class="contact-name"><b>Justin Smith</b>, mechanical engineer (MS), with a background in automotive.</p>
+        <p>If something here is close to what you need, or you have a model that needs building or checking, send me a note and tell me about it. I'm available for remote contract work.</p>
+      </div>
+      <div class="contact-actions">
+        <!-- the address is stored reversed and base64-encoded so scrapers reading the page or the repository don't pick it up; site.js decodes it -->
+        <a class="cta" id="contact-mail" href="#contact" data-m="bW9jLmxpYW1nQDg1MW5pdHN1amh0aW1z">Email me</a>
+        <button class="cta-2" id="contact-show" type="button">Show the address</button>
+        <span class="contact-addr" id="contact-addr" hidden></span>
+      </div>
+    </section>
+    <div class="foot-nav">
+      <a href="index.html#work">All studies</a>
+      <a href="requirements.html">Every requirement</a>
+      <a href="how-i-work.html">How I work</a>
+      <a href="grading.html">Grading tasks</a>
+      <a href="in-progress.html">In progress</a>
+      <a href="https://github.com/CptGrumpus/engineering-agent-lab">Source on GitHub ↗</a>
+      <span>Open-source tools throughout: CalculiX, OpenFOAM, Gmsh, CadQuery, OpenModelica, Blender.</span>
+    </div>
+  </div>
+</footer>
+<script>
+function gradeAnswer(criteria, ans) {
+  const rows = criteria.map(c => {
+    const v = ans[c.key];
+    if (c.kind === "num") {
+      const tol = c.rel !== null ? Math.abs(c.ref) * c.rel : c.abs;
+      const x = (v === null || v === undefined || typeof v === "boolean" || String(v).trim() === "") ? NaN : Number(v);
+      if (!Number.isFinite(x)) return { key: c.key, passed: false, value: null, tol };
+      return { key: c.key, passed: Math.abs(x - c.ref) <= tol, value: x, tol };
+    }
+    if (c.kind === "choice") {
+      const s = String(v).trim().toLowerCase();
+      return { key: c.key, passed: c.prefix.some(x => s.startsWith(x)) || c.exact.includes(s), value: v === undefined ? null : v };
+    }
+    return { key: c.key, passed: v === c.ref, value: v === undefined ? null : v };
+  });
+  const n = rows.filter(r => r.passed).length;
+  return { rows, n, score: n / rows.length };
+}
+  const GT = [{"name": "heated_channel_wall_temperature", "tab": "Cold-plate wall", "statement": "Water at 25 °C and 0.1 m/s flows through a 1 mm gap. Both walls take 30 kW/m² over 50 mm. Find the coolant rise, the peak wall temperature and the Nusselt number at the end of the heating. Limit: wall at or under 45 °C.", "criteria": [{"key": "coolant_rise_K", "kind": "num", "ref": 7.1986, "rel": 0.005, "abs": null, "label": "Coolant rise", "unit": "K", "dec": 3}, {"key": "peak_wall_temperature_C", "kind": "num", "ref": 44.047, "rel": null, "abs": 0.1, "label": "Peak wall temperature", "unit": "°C", "dec": 2}, {"key": "nusselt_at_end_of_heating", "kind": "num", "ref": 8.343, "rel": null, "abs": 0.05, "label": "Nusselt number, end of heating", "unit": "", "dec": 3}, {"key": "wall_limit_met", "kind": "bool", "ref": true, "label": "Wall limit met?", "unit": "", "dec": 0}], "presets": [{"name": "Thermal-entry (Graetz) solution", "note": "Checks the entry length first. It's 137 mm against 50 mm of heating, so the flow is still developing and Nu has to come from the Graetz solution.", "answer": {"coolant_rise_K": 7.1986, "peak_wall_temperature_C": 44.047, "nusselt_at_end_of_heating": 8.343, "wall_limit_met": true}}, {"name": "Fully developed shortcut", "note": "Uses the textbook Nu = 8.235 without checking the entry length. The verdict happens to be right but the method isn't, so it gets half marks.", "answer": {"coolant_rise_K": 7.1986, "peak_wall_temperature_C": 44.2, "nusselt_at_end_of_heating": 8.235, "wall_limit_met": true}}, {"name": "Constant-wall-temperature Nu", "note": "Uses Nu = 7.54, which is for a wall held at a constant temperature rather than a constant heat flux. The wall verdict flips.", "answer": {"coolant_rise_K": 7.1986, "peak_wall_temperature_C": 45.31, "nusselt_at_end_of_heating": 7.541, "wall_limit_met": false}}, {"name": "Only one wall heated", "note": "Uses Nu = 5.385, the value for one heated wall. The wall comes out about 6.5 K too hot and the verdict flips.", "answer": {"coolant_rise_K": 7.1986, "peak_wall_temperature_C": 50.55, "nusselt_at_end_of_heating": 5.385, "wall_limit_met": false}}, {"name": "One wall in the energy balance", "note": "Only counts the heat from one wall, so the coolant rise comes out at half the real value.", "answer": {"coolant_rise_K": 3.599, "peak_wall_temperature_C": 44.047, "nusselt_at_end_of_heating": 8.343, "wall_limit_met": true}}]}, {"name": "hertz_roller_contact", "tab": "Roller contact", "statement": "A steel track roller, 100 mm diameter, carries 500 N per mm on a steel plate. Find the contact half-width, peak pressure, and the largest shear below the surface and its depth. Limits: 650 MPa pressure, 200 MPa shear.", "criteria": [{"key": "contact_half_width_mm", "kind": "num", "ref": 0.5252, "rel": 0.02, "abs": null, "label": "Contact half-width", "unit": "mm", "dec": 4}, {"key": "peak_contact_pressure_MPa", "kind": "num", "ref": 606.04, "rel": 0.02, "abs": null, "label": "Peak contact pressure", "unit": "MPa", "dec": 1}, {"key": "max_subsurface_shear_MPa", "kind": "num", "ref": 181.98, "rel": 0.03, "abs": null, "label": "Max subsurface shear", "unit": "MPa", "dec": 1}, {"key": "max_shear_depth_mm", "kind": "num", "ref": 0.4129, "rel": 0.05, "abs": null, "label": "Depth of max shear", "unit": "mm", "dec": 4}, {"key": "pressure_limit_met", "kind": "bool", "ref": true, "label": "Pressure limit met?", "unit": "", "dec": 0}, {"key": "shear_limit_met", "kind": "bool", "ref": true, "label": "Shear limit met?", "unit": "", "dec": 0}], "presets": [{"name": "Hertz line contact", "note": "Uses the combined modulus E*, works out the half-width and peak pressure, and puts the maximum shear 0.786 a below the surface.", "answer": {"contact_half_width_mm": 0.5252, "peak_contact_pressure_MPa": 606.04, "max_subsurface_shear_MPa": 181.98, "max_shear_depth_mm": 0.4129, "pressure_limit_met": true, "shear_limit_met": true}}, {"name": "CalculiX contact model", "note": "My finite-element answer from study 10, on the finest mesh, at the 501 N/mm the model actually carried. It's a different method and it lands inside every tolerance.", "answer": {"contact_half_width_mm": 0.5258, "peak_contact_pressure_MPa": 609.2, "max_subsurface_shear_MPa": 184.3, "max_shear_depth_mm": 0.413, "pressure_limit_met": true, "shear_limit_met": true}}, {"name": "Plain E instead of E*", "note": "Uses the plain steel modulus where Hertz needs the combined one. Everything after that is wrong and both verdicts flip.", "answer": {"contact_half_width_mm": 0.3893, "peak_contact_pressure_MPa": 817.6, "max_subsurface_shear_MPa": 245.3, "max_shear_depth_mm": 0.306, "pressure_limit_met": false, "shear_limit_met": false}}, {"name": "Shear taken at the surface", "note": "Gets the numbers right but puts the maximum shear at the surface. Rolling-contact cracks start below it.", "answer": {"contact_half_width_mm": 0.5252, "peak_contact_pressure_MPa": 606.04, "max_subsurface_shear_MPa": 181.98, "max_shear_depth_mm": 0.0, "pressure_limit_met": true, "shear_limit_met": true}}, {"name": "Pressure from element stresses", "note": "Reads the pressure from element stresses instead of the contact output, which comes out 3.5 % high. I made this exact mistake in study 10.", "answer": {"contact_half_width_mm": 0.5252, "peak_contact_pressure_MPa": 627.3, "max_subsurface_shear_MPa": 181.98, "max_shear_depth_mm": 0.4129, "pressure_limit_met": true, "shear_limit_met": true}}]}, {"name": "cantilever_root_stress", "tab": "Bracket stress", "statement": "A steel bar, 200 mm long and 20 × 20 mm, is clamped at one end with 1 kN at the tip. Report the tip deflection and the design root stress against 1.0 mm and 213 MPa, and say whether the FE peak stress is real.", "criteria": [{"key": "tip_deflection_mm", "kind": "num", "ref": 0.955, "rel": null, "abs": 0.01, "label": "Tip deflection", "unit": "mm", "dec": 3}, {"key": "root_bending_stress_MPa", "kind": "num", "ref": 150.0, "rel": 0.03, "abs": null, "label": "Root bending stress", "unit": "MPa", "dec": 1}, {"key": "deflection_limit_met", "kind": "bool", "ref": true, "label": "Deflection limit met?", "unit": "", "dec": 0}, {"key": "stress_limit_met", "kind": "bool", "ref": true, "label": "Stress limit met?", "unit": "", "dec": 0}, {"key": "peak_fe_stress_is_singular", "kind": "bool", "ref": true, "label": "FE peak stress is an artifact?", "unit": "", "dec": 0}], "presets": [{"name": "3D FE, stress from the smooth beam", "note": "My quadratic-element model from study 1. It gives 0.953 mm, with the design stress taken from the smooth part of the beam and extrapolated to the root.", "answer": {"tip_deflection_mm": 0.953, "root_bending_stress_MPa": 150.0, "deflection_limit_met": true, "stress_limit_met": true, "peak_fe_stress_is_singular": true}}, {"name": "Beam theory by hand", "note": "Euler-Bernoulli by hand, P L³ / 3 E I and M c / I. It's a valid method, so it gets full marks too.", "answer": {"tip_deflection_mm": 0.952, "root_bending_stress_MPa": 150.0, "deflection_limit_met": true, "stress_limit_met": true, "peak_fe_stress_is_singular": true}}, {"name": "Peak stress at the clamped corner", "note": "Reports the FE peak at the sharp clamped corner as the design stress. That's 217 MPa and still climbing as the mesh is refined.", "answer": {"tip_deflection_mm": 0.953, "root_bending_stress_MPa": 217.0, "deflection_limit_met": true, "stress_limit_met": false, "peak_fe_stress_is_singular": false}}, {"name": "Full depth used as c", "note": "Uses the full 20 mm depth for c instead of the 10 mm to the outer fibre. The stress doubles and the verdict flips.", "answer": {"tip_deflection_mm": 0.952, "root_bending_stress_MPa": 300.0, "deflection_limit_met": true, "stress_limit_met": false, "peak_fe_stress_is_singular": true}}, {"name": "Linear tetrahedra, coarse mesh", "note": "The real 5 mm linear-tet run from study 1. It deflects 17 % too little and the stress reads 26 % low, but both verdicts still look like passes.", "answer": {"tip_deflection_mm": 0.788, "root_bending_stress_MPa": 110.8, "deflection_limit_met": true, "stress_limit_met": true, "peak_fe_stress_is_singular": true}}]}, {"name": "sagging_strip_clearance", "tab": "Sagging strip", "statement": "A polyurethane strip, 400 mm long, 20 mm thick and 300 mm wide, is clamped along one edge and hangs under its own weight (E = 10 MPa, ν = 0.45, 1200 kg/m³). Find how far the free edge drops and pulls back, and the bending modulus you used. Limit: a drop of at most 89 mm, to clear a conveyor belt.", "criteria": [{"key": "tip_drop_mm", "kind": "num", "ref": 86.5, "rel": 0.015, "abs": null, "label": "Drop of the free edge", "unit": "mm", "dec": 2}, {"key": "tip_pull_in_mm", "kind": "num", "ref": 10.85, "rel": 0.03, "abs": null, "label": "Pull-in towards the wall", "unit": "mm", "dec": 2}, {"key": "bending_modulus_MPa", "kind": "num", "ref": 12.54, "rel": 0.01, "abs": null, "label": "Bending modulus used", "unit": "MPa", "dec": 2}, {"key": "clearance_met", "kind": "bool", "ref": true, "label": "Clears the belt?", "unit": "", "dec": 0}], "presets": [{"name": "Large deflection, plane strain", "note": "Uses the plane-strain modulus E / (1 − ν²) because the strip is 15 times wider than it is thick, and a large-deflection analysis because it sags by a fifth of its length.", "answer": {"tip_drop_mm": 86.5, "tip_pull_in_mm": 10.85, "bending_modulus_MPa": 12.54, "clearance_met": true}}, {"name": "Elastica, a second method", "note": "Solves the large-deflection beam equation directly instead of using finite elements. It lands inside every tolerance.", "answer": {"tip_drop_mm": 86.71, "tip_pull_in_mm": 10.9, "bending_modulus_MPa": 12.54, "clearance_met": true}}, {"name": "Cantilever formula q L⁴ / 8EI", "note": "The textbook small-deflection formula. It ignores that the weight moves inwards as the strip sags, so the drop comes out too big and the verdict flips.", "answer": {"tip_drop_mm": 90.13, "tip_pull_in_mm": 0.0, "bending_modulus_MPa": 12.54, "clearance_met": false}}, {"name": "Plane stress: E instead of E / (1 − ν²)", "note": "Treats the strip as a narrow beam. It's too soft by 25 %, so it sags far past the belt.", "answer": {"tip_drop_mm": 106.52, "tip_pull_in_mm": 16.59, "bending_modulus_MPa": 10.0, "clearance_met": false}}, {"name": "Both mistakes", "note": "The narrow-beam modulus and the small-deflection formula together.", "answer": {"tip_drop_mm": 113.01, "tip_pull_in_mm": 0.0, "bending_modulus_MPa": 10.0, "clearance_met": false}}]}, {"name": "nozzle_stress_linearisation", "tab": "Vessel nozzle", "statement": "A 16 mm shell wall at a nozzle junction, 3.5 MPa inside. You get the finite-element stresses at 21 points through the wall, all six components. Linearise them to the membrane stress PL and the membrane-plus-bending stress P + Q, say which surface governs P + Q, and check PL ≤ 207 MPa and P + Q ≤ 414 MPa. The margin on PL is under 1 %.", "criteria": [{"key": "pl_MPa", "kind": "num", "ref": 205.13, "rel": 0.003, "abs": null, "label": "PL, local membrane", "unit": "MPa", "dec": 2}, {"key": "pq_MPa", "kind": "num", "ref": 239.57, "rel": 0.005, "abs": null, "label": "P + Q, membrane plus bending", "unit": "MPa", "dec": 2}, {"key": "pq_governing_surface", "kind": "choice", "ref": "inner", "options": ["inner", "outer"], "prefix": ["inner"], "exact": ["s = 0", "s=0"], "label": "Surface where P + Q governs", "unit": "", "dec": 0}, {"key": "pl_limit_met", "kind": "bool", "ref": true, "label": "PL limit met?", "unit": "", "dec": 0}, {"key": "pq_limit_met", "kind": "bool", "ref": true, "label": "P + Q limit met?", "unit": "", "dec": 0}], "presets": [{"name": "Linearise the components", "note": "Averages each stress component through the wall, then takes von Mises of the averages. This is the method of ASME VIII-2 Annex 5-A.", "answer": {"pl_MPa": 205.13, "pq_MPa": 239.57, "pq_governing_surface": "inner", "pl_limit_met": true, "pq_limit_met": true}}, {"name": "Average the von Mises stress", "note": "Takes von Mises at every point first and averages that through the wall. It looks reasonable, comes out 3 % high, and the PL verdict flips to a fail.", "answer": {"pl_MPa": 211.8, "pq_MPa": 239.57, "pq_governing_surface": "inner", "pl_limit_met": false, "pq_limit_met": true}}, {"name": "Surface peak against the membrane limit", "note": "Compares the largest surface stress with the membrane limit. A membrane limit needs a membrane stress, so this fails a nozzle that passes.", "answer": {"pl_MPa": 239.4, "pq_MPa": 239.57, "pq_governing_surface": "inner", "pl_limit_met": false, "pq_limit_met": true}}, {"name": "Shear stresses left out", "note": "Linearises only the normal stresses. The verdict survives here, but the number is 0.5 % low, outside the tolerance.", "answer": {"pl_MPa": 204.1, "pq_MPa": 239.57, "pq_governing_surface": "inner", "pl_limit_met": true, "pq_limit_met": true}}, {"name": "Through-wall position measured from outside", "note": "Gets every number right but measures the position from the outer surface, so it names the wrong surface for P + Q.", "answer": {"pl_MPa": 205.13, "pq_MPa": 239.57, "pq_governing_surface": "outer", "pl_limit_met": true, "pq_limit_met": true}}]}];
+
+  (() => {
+    const tabs = [...document.querySelectorAll('.g-tabs [role="tab"]')];
+    const panel = document.getElementById("g-panel"), taskEl = document.getElementById("g-task");
+    const presetsEl = document.getElementById("g-presets"), fieldsEl = document.getElementById("g-fields");
+    const out = document.getElementById("g-out"), cmd = document.getElementById("g-cmd");
+    const bar = document.getElementById("g-bar"), pct = document.getElementById("g-pct"), note = document.getElementById("g-note");
+    const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+    const fmt = (x, d) => (x === null ? "—" : Number(x).toFixed(d));
+    const pad = (s, n) => s + " ".repeat(Math.max(1, n - s.length));
+    let t = 0, p = 0, ans = {};
+
+    function renderFields() {
+      const task = GT[t];
+      fieldsEl.innerHTML = task.criteria.map(c => {
+        const id = "gf-" + c.key, unit = c.unit ? ` <small>${esc(c.unit)}</small>` : "";
+        if (c.kind === "num") {
+          const v = ans[c.key] === undefined ? "" : String(ans[c.key]);
+          return `<label class="g-field" for="${id}"><span>${esc(c.label)}${unit}</span>` +
+                 `<input id="${id}" data-k="${c.key}" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" value="${esc(v)}"></label>`;
+        }
+        const v = ans[c.key];
+        if (c.kind === "choice")
+          return `<div class="g-field"><span>${esc(c.label)}</span><span class="g-yn" role="group" aria-label="${esc(c.label)}">` +
+                 c.options.map(o => `<button type="button" data-k="${c.key}" data-s="${esc(o)}" aria-pressed="${v === o}">${esc(o[0].toUpperCase() + o.slice(1))}</button>`).join("") + `</span></div>`;
+        return `<div class="g-field"><span>${esc(c.label)}</span><span class="g-yn" role="group" aria-label="${esc(c.label)}">` +
+               `<button type="button" data-k="${c.key}" data-v="true" aria-pressed="${v === true}">Yes</button>` +
+               `<button type="button" data-k="${c.key}" data-v="false" aria-pressed="${v === false}">No</button></span></div>`;
+      }).join("");
+    }
+
+    function renderPresets() {
+      presetsEl.innerHTML = GT[t].presets.map((q, i) =>
+        `<button type="button" class="g-preset" data-p="${i}" aria-pressed="${i === p}"><b>${esc(q.name)}</b><span>${esc(q.note)}</span></button>`).join("");
+    }
+
+    function grade() {
+      const task = GT[t], r = gradeAnswer(task.criteria, ans);
+      const name = p >= 0 ? task.presets[p].name : "your edited answer";
+      cmd.textContent = `grade(answer)  # ${task.name}`;
+      out.innerHTML = `<span class="p">answer </span>${esc(name)}\n` + r.rows.map((row, i) => {
+        const c = task.criteria[i];
+        const val = c.kind === "num" ? fmt(row.value, c.dec) : (row.value === null ? "—" : String(row.value));
+        const ref = c.kind === "num"
+          ? `ref ${fmt(c.ref, c.dec)} ±${c.rel !== null ? (100 * c.rel).toFixed(c.rel < 0.01 ? 1 : 0) + " %" : fmt(c.abs, c.dec)}`
+          : `ref ${c.ref}`;
+        return `<span class="t-row"><span class="t-id">${esc(c.key)}</span><span class="${row.passed ? "t-pass" : "t-fail"}">${row.passed ? "PASS" : "FAIL"}</span>` +
+               `<span class="t-num">${esc(val)}</span><span class="t-tol">${esc(ref)}</span></span>`;
+      }).join("");
+      const s = Math.round(100 * r.score);
+      bar.style.width = s + "%";
+      bar.className = s === 100 ? "full" : s >= 50 ? "part" : "low";
+      pct.innerHTML = `<b>${s} %</b> · ${r.n} of ${r.rows.length} criteria`;
+      if (p >= 0) note.textContent = task.presets[p].note;
+      else {
+        const failed = r.rows.filter(x => !x.passed).map(x => task.criteria.find(c => c.key === x.key).label.replace("?", ""));
+        note.textContent = failed.length ? "This answer fails on " + failed.join(", ").toLowerCase() + "." : "Full marks. Every value is inside its tolerance and every verdict is right.";
+      }
+    }
+
+    function pickPreset(i) {
+      p = i; ans = JSON.parse(JSON.stringify(GT[t].presets[i].answer));
+      renderPresets(); renderFields(); grade();
+    }
+
+    function edited() {
+      if (p !== -1) { p = -1; presetsEl.querySelectorAll(".g-preset").forEach(b => b.setAttribute("aria-pressed", "false")); }
+      grade();
+    }
+
+    function show(i, focus) {
+      t = i;
+      tabs.forEach((b, k) => { b.setAttribute("aria-selected", k === i ? "true" : "false"); b.tabIndex = k === i ? 0 : -1; });
+      panel.setAttribute("aria-labelledby", tabs[i].id);
+      if (focus) tabs[i].focus();
+      taskEl.textContent = GT[t].statement;
+      pickPreset(0);
+    }
+
+    presetsEl.addEventListener("click", e => { const b = e.target.closest(".g-preset"); if (b) pickPreset(+b.dataset.p); });
+    fieldsEl.addEventListener("input", e => { const k = e.target.dataset.k; if (!k) return; ans[k] = e.target.value; edited(); });
+    fieldsEl.addEventListener("click", e => {
+      const b = e.target.closest(".g-yn button"); if (!b) return;
+      ans[b.dataset.k] = b.dataset.s !== undefined ? b.dataset.s : b.dataset.v === "true";
+      b.parentElement.querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", x === b ? "true" : "false"));
+      edited();
+    });
+    tabs.forEach((b, k) => {
+      b.tabIndex = k === 0 ? 0 : -1;
+      b.addEventListener("click", () => show(k));
+      b.addEventListener("keydown", e => {
+        if (e.key === "ArrowRight" || e.key === "ArrowLeft") {
+          e.preventDefault(); show((t + (e.key === "ArrowRight" ? 1 : tabs.length - 1)) % tabs.length, true);
+        }
+      });
+    });
+    show(0);
+  })();
+
+</script>
+<script src="assets/site.js?v=8faeeb46bc"></script>
+</body>
+</html>

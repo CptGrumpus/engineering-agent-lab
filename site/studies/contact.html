@@ -1,0 +1,54 @@
+  <section class="study" id="contact">
+    <div class="study-head">
+      <span class="label">Study 10 · Gmsh and CalculiX, nonlinear contact</span>
+      <h2>Roller-on-plate contact</h2>
+    </div>
+    <h3>The question</h3>
+    <p>A hardened steel track roller, 100 mm in diameter, runs on a steel plate and carries 500 N for every millimetre of its width. Does the peak contact pressure stay at or under 650 MPa? And does the maximum shear stress below the surface, where rolling-contact fatigue cracks start, stay at or under 200 MPa?</p>
+    <h3>The answer</h3>
+    <div class="answer">
+      <div class="chips"><span class="chip pass">Peak pressure 609 MPa</span><span class="chip pass">Subsurface shear 184 MPa</span><span class="chip pass">Matches Hertz to 0.4 %</span></div>
+      <p><strong>Yes on both.</strong> The peak contact pressure is 609 MPa and the maximum shear below the surface is 184 MPa, about 0.4 mm down. That leaves 6 % and 8 % of margin. The contact patch is 1.05 mm wide.</p>
+    </div>
+    <h3>Why it matters</h3>
+    <p>When a curved part presses on a flat one, they touch over a strip far narrower than either part: here about 1 mm on a 100 mm roller. All of the load passes through that strip, so the local stresses are several times anything else in the part. The highest shear stress isn't at the surface. It sits a fraction of a millimetre below it, which is why rolling-contact fatigue starts as cracks under the surface that later break out as pits.</p>
+    <p>Contact is also where finite-element models stop being linear. The solver doesn't know in advance where the parts touch, so it has to find the contact area as part of the solution. That makes it a good test of whether a nonlinear model can be trusted.</p>
+    <h3>The model</h3>
+    <dl class="spec">
+      <dt>Parts</dt><dd>A roller of 50 mm radius on a flat block, modelled as two separate bodies that can only touch. Half of each is modelled, about the vertical centre line.</dd>
+      <dt>Material</dt><dd>Steel in both, linear elastic: Young's modulus 210 GPa, Poisson's ratio 0.3.</dd>
+      <dt>Loading</dt><dd>The roller is pushed down by 0.015 mm, and the force it takes is read from the reactions: 501.1 N per mm of width.</dd>
+      <dt>Contact</dt><dd>Frictionless surface-to-surface contact in CalculiX. The surfaces may overlap by a tiny, checked amount (penalty contact).</dd>
+      <dt>Mesh</dt><dd>Hexahedral elements of 0.08, 0.04 and 0.02 mm in a 1.6 mm zone around the contact, growing to 4 mm far away.</dd>
+      <dt>Analysis</dt><dd>Nonlinear static, plane strain (a long roller, so nothing moves along its axis), in CalculiX 2.22.</dd>
+      <dt>What's measured</dt><dd>The contact half-width, the peak contact pressure, and the largest shear stress below the surface and its depth.</dd>
+    </dl>
+    {{CASE}}
+    <h3>How it works</h3>
+    <p>I push the roller down a set distance and read the force from the reactions, which is more reliable than applying a force before the parts are touching. CalculiX works out where the two surfaces are in contact as it solves.</p>
+    <p>The reference is Hertz's solution from 1882, which gives the exact contact width, pressure distribution and stresses underneath for two elastic cylinders. Because the load isn't an input here, the comparison is made at the load the model actually carried.</p>
+    <figure><div class="plate"><img src="img/render_contact.png" alt="Von Mises stress at the contact: whole roller and a section through the contact" loading="lazy"></div><figcaption>Von Mises stress from the CalculiX results. The highest stress sits just under the surface in both parts.</figcaption></figure>
+    <figure><div class="plate"><img src="v2/contact_response.webp" alt="Contact pressure and subsurface shear from CalculiX against the exact Hertz solution" loading="lazy"></div><figcaption>Contact pressure across the patch and shear stress below its centre, both sitting on the exact Hertz curves.</figcaption></figure>
+    <h3>How I checked it</h3>
+    <ul class="proof">
+      <li><strong>Against Hertz.</strong> At 501.1 N/mm, the contact half-width matches to 0.005 %, the peak pressure to 0.4 %, and the depth of maximum shear to within 2 % of one element.</li>
+      <li><strong>Equilibrium.</strong> The force on the roller and the reaction under the plate balance exactly. The pressure added up across the patch accounts for the load within 2.2 %.</li>
+      <li><strong>The contact itself.</strong> The surfaces overlap by less than a ten-thousandth of how far the roller was pushed, so the penalty method isn't softening the answer.</li>
+      <li><strong>Mesh refinement.</strong> The two coarser meshes fail some of the Hertz checks, as you'd expect, so the answer comes from the finest one. Mesh uncertainty is 1.2 % on the pressure and 0.15 % on the shear.</li>
+    </ul>
+    <div class="caught">
+      <h3>What I caught along the way</h3>
+      <ul>
+        <li><strong>The right model, read from the wrong output.</strong> My first try read the pressure from the element stresses at the surface. That came out 3.5 to 6.5 % high, and it added up to more than the load I'd applied. CalculiX's own contact pressure output was within 0.2 % of Hertz on the same mesh, so that's what the study uses.</li>
+        <li><strong>A convergence check that failed for a good reason.</strong> The maximum shear agreed across the meshes to 0.06 %, yet the convergence check said it was diverging. I was taking the largest value at any node, and which node lands closest to the true peak changes from mesh to mesh. I left the tolerance alone, changed the measurement to find the peak between nodes, wrote down what I expected first, and kept the failed run. It now passes at 0.15 %.</li>
+        <li><strong>A mesh eight times too big.</strong> The first mesh spread the fine region across the whole model: 70,820 nodes and 3.5 minutes per solve. Keeping the fine mesh near the contact brought it down to 9,334 nodes and 20 seconds, with the same answer to 0.2 %.</li>
+      </ul>
+    </div>
+    <h3>Limits, and what I'd do next</h3>
+    <ul>
+      <li>Frictionless and elastic. Friction, surface roughness, residual stress and plasticity aren't modelled, and a fatigue life isn't worked out.</li>
+      <li>Plane strain, so a long roller with no end effects. Real rollers are crowned or relieved at the ends because the edges load up.</li>
+      <li>The shear below the surface sits 1.2 % above Hertz on every mesh. Because it doesn't change with refinement, it comes from the model (bodies of finite size, where Hertz assumes infinite ones), not from the mesh.</li>
+      <li>The geometry, load and limits are made up, and there's no test data.</li>
+    </ul>
+  </section>

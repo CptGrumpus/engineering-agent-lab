@@ -53,25 +53,18 @@ def gh(path: str) -> str:
     return f"{REPO_URL}/blob/main/{path}"
 
 
-def evidence_html(key: str) -> str:
-    """Links to the study's write-up and to each run report it cites, on the public repository.
-    Only committed files are linked, so the page never points at a file GitHub doesn't have."""
+def evidence(key: str) -> dict | None:
+    """The study's write-up and each run report it cites, on the public repository. Only committed files
+    are linked, so the site never points at a file GitHub doesn't have."""
     doc = f"portfolio/{STUDY_DOCS[key]}.md"
     if not tracked(doc):
-        return ""
+        return None
     runs = sorted(set(m.group(1) for m in _RUN.finditer((REPO / doc).read_text(encoding="utf-8"))))
     runs = [r for r in runs if tracked(f"runs/{r}/report.md")]
     names = [r.split("_", 1)[1] for r in runs]
-    links = []
-    for r, name in zip(runs, names):
-        label = name if names.count(name) == 1 else f"{name} · {r[9:11]}:{r[11:13]}"
-        links.append(f'<a href="{gh(f"runs/{r}/report.md")}">{html.escape(label)}</a>')
-    memo = (f'<a class="ev-memo" href="{gh(MEMO)}">Sample client memo from this study</a>'
-            if key == "cfd" and tracked(MEMO) else "")
-    return (f'      <p class="evidence"><span class="label">Evidence on GitHub</span>'
-            f'<a class="ev-doc" href="{gh(doc)}">Full write-up</a>{memo}'
-            + (f'<span class="ev-runs">Run reports: {"".join(links)}</span>' if links else "")
-            + "</p>\n")
+    links = [(name if names.count(name) == 1 else f"{name} · {r[9:11]}:{r[11:13]}", gh(f"runs/{r}/report.md"))
+             for r, name in zip(runs, names)]
+    return {"doc": gh(doc), "memo": gh(MEMO) if key == "cfd" and tracked(MEMO) else None, "runs": links}
 
 
 def repo_facts() -> dict:
@@ -688,14 +681,16 @@ CAPS = """<div class="table-wrap">
           <tr><td>Structural FEA with 3D solids and plane stress, including mesh convergence and telling real stress peaks from singularities</td><td>FreeCAD, Gmsh, CalculiX</td><td><a href="#fea">1</a>, <a href="#strap">2</a></td></tr>
           <tr><td>Contact between separate parts, with the contact pressure and the stress below the surface checked against Hertz</td><td>Gmsh, CalculiX</td><td><a href="#contact">10</a></td></tr>
           <tr><td>Friction contact and preloaded bolted joints, checked against the VDI 2230 joint diagram</td><td>CalculiX</td><td><a href="#bolted_joint">16</a></td></tr>
+          <tr><td>Pressure equipment: design by analysis with stress linearisation on classification lines, in the manner of ASME VIII-2 Part 5, against a design-by-rule check</td><td>CadQuery, Gmsh, CalculiX</td><td><a href="#pv_nozzle">18</a></td></tr>
           <tr><td>Buckling: linear eigenvalue and geometrically nonlinear with imperfections, checked against Euler, Southwell and Perry-Robertson</td><td>CalculiX</td><td><a href="#strut">13</a></td></tr>
           <tr><td>Plasticity with loading and unloading, and the residual stress left behind, checked against Neuber and Glinka</td><td>CadQuery, Gmsh, CalculiX</td><td><a href="#strap_proof">14</a></td></tr>
           <tr><td>Vibration and modal analysis, including identifying the modes and keeping clear of engine orders</td><td>CadQuery, Gmsh, CalculiX</td><td><a href="#modal">4</a></td></tr>
           <tr><td>Fatigue life using notch factors, mean-stress correction and S-N curves fitted to published test data</td><td>CalculiX, Python</td><td><a href="#fatigue">3</a></td></tr>
           <tr><td>Chained multiphysics: coolant flow, then conduction through the part, then thermal stress, with an energy balance at every handoff</td><td>OpenFOAM, CalculiX</td><td><a href="#cold_plate">15</a></td></tr>
-          <tr><td>Design optimisation, with an optimiser driving the CAD-to-FEA pipeline and every candidate checked before it counts</td><td>SciPy, CadQuery, Gmsh, CalculiX</td><td><a href="#bracket_opt">12</a></td></tr>
+          <tr><td>Design optimisation, with an optimiser driving the CAD-to-FEA pipeline and every candidate checked before it counts</td><td>SciPy, CadQuery, Gmsh, CalculiX</td><td><a href="#cantilever_opt">1b</a>, <a href="#bracket_opt">12</a></td></tr>
           <tr><td>Scripted pipelines from parametric CAD through STEP export, meshing and solving</td><td>CadQuery, Gmsh, CalculiX</td><td><a href="#strap">2</a>, <a href="#modal">4</a>, <a href="#cad">8</a>, <a href="#bracket_opt">12</a>, <a href="#strap_proof">14</a></td></tr>
           <tr><td>Internal laminar flow and pressure budgets, in 2D and 3D</td><td>OpenFOAM</td><td><a href="#cfd">5</a></td></tr>
+          <tr><td>Turbulent flow (RANS, k-omega SST) with resolved and wall-function wall treatments, checked against measured pipe friction</td><td>OpenFOAM</td><td><a href="#pipe">19</a></td></tr>
           <tr><td>Heat transfer, from conduction with surface convection to convection in a heated coolant channel</td><td>CalculiX, OpenFOAM</td><td><a href="#thermal">6</a>, <a href="#heat">11</a></td></tr>
           <tr><td>Ride, road holding and frequency response, including ISO 2631 comfort weighting</td><td>Python (SciPy), OpenModelica</td><td><a href="#suspension">7</a>, <a href="#baseline">9</a></td></tr>
           <tr><td>Renders of FE results and CAD parts in Blender, with the legend colours and geometry checked automatically</td><td>Blender (Cycles), Python</td><td><a href="#fea">1</a>, <a href="#strap">2</a>, <a href="#modal">4</a>, <a href="#thermal">6</a>, <a href="#cad">8</a>, <a href="#bracket_opt">12</a>, <a href="#strut">13</a>, <a href="#strap_proof">14</a>, <a href="#cold_plate">15</a>, <a href="#bolted_joint">16</a></td></tr>

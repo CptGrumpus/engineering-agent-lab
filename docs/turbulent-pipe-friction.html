@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Turbulent pipe friction, against measured data · Justin Smith</title>
+<meta name="description" content="Passes: converged, the turbulence model lands 2.4 % above Prandtl&#x27;s law against a 5 % limit. The first mesh agreed to 0.9 %, with the wrong sign. Wall functions sit 5 % low on every mesh.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://cptgrumpus.github.io/engineering-agent-lab/turbulent-pipe-friction.html">
+<meta property="og:title" content="Turbulent pipe friction, against measured data">
+<meta property="og:description" content="Passes: converged, the turbulence model lands 2.4 % above Prandtl&#x27;s law against a 5 % limit. The first mesh agreed to 0.9 %, with the wrong sign. Wall functions sit 5 % low on every mesh.">
+<meta property="og:image" content="https://cptgrumpus.github.io/engineering-agent-lab/v2/og_turbulent-pipe-friction.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Turbulent pipe friction, against measured data: result render">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="assets/site.css?v=8faeeb46bc">
+</head>
+<body>
+<nav class="topbar" aria-label="Site">
+  <div class="wrap">
+    <a class="brand" href="index.html"><span class="brand-mark" aria-hidden="true"><i style="background:#30123b"></i><i style="background:#4686fb"></i><i style="background:#1ae4b6"></i><i style="background:#a2fc3c"></i><i style="background:#fb8022"></i><i style="background:#7a0403"></i></span>Justin Smith <small>Simulation portfolio</small></a>
+    <div class="navgroup">
+      <div class="topnav">
+        <a href="index.html#work" aria-current="page">Studies</a>
+        <a href="how-i-work.html">How I work</a>
+        <a href="grading.html">Grading</a>
+        <a href="in-progress.html">In progress</a>
+        <a href="requirements.html">Requirements</a>
+      </div>
+      <a class="nav-contact" href="#contact">Contact</a>
+      <details class="menu">
+        <summary>Menu</summary>
+        <div class="menu-panel">
+        <a href="index.html#work" aria-current="page">Studies</a>
+        <a href="how-i-work.html">How I work</a>
+        <a href="grading.html">Grading</a>
+        <a href="in-progress.html">In progress</a>
+        <a href="requirements.html">Requirements</a>
+          <a href="#contact">Contact</a>
+        </div>
+      </details>
+    </div>
+  </div>
+</nav>
+
+<main id="top">
+  <div class="wrap">
+    <nav class="crumbs" aria-label="Breadcrumb"><a href="index.html#work">All studies</a><span>/</span><span>Thermal and fluids</span></nav>
+    <header class="study-hero">
+      <p class="eyebrow">Study 19, part 1 · OpenFOAM, turbulence modelling</p>
+      <h1>Turbulent pipe friction, against measured data</h1>
+      <span class="v v-pass">Passes</span>
+      <p class="study-lede">Passes: converged, the turbulence model lands 2.4 % above Prandtl&#x27;s law against a 5 % limit. The first mesh agreed to 0.9 %, with the wrong sign. Wall functions sit 5 % low on every mesh.</p>
+    </header>
+    <div class="vp" id="vp" role="region" aria-label="Result viewer">
+      <div class="legend">
+        <div class="legend-title" id="lg-title"></div>
+        <div class="legend-body"><div class="swatches" id="lg-sw"></div><div class="ticks" id="lg-ticks"></div></div>
+      </div>
+      <div class="stage"><div class="vp-parts" id="vp-parts" role="group" aria-label="Results on this page" hidden></div><button class="vp-3d" id="vp-3d" type="button" aria-pressed="false" hidden>Rotate in 3D</button>
+      <p class="vp-hint" id="vp-hint" hidden><span class="long">Same surface and colour bands as the render · </span>Drag to turn · <span class="long">scroll or </span>pinch to zoom<span class="long"> · double-click to reset</span></p>
+      <img id="vp-img" src="v2/pipe_friction.webp" alt="Smooth pipe, fully developed turbulent flow · 100 mm bore, Re 2 × 10⁴ to 2 × 10⁶">
+      <svg class="triad" viewBox="0 0 54 54" aria-hidden="true">
+        <g stroke-width="1.6" fill="none" stroke-linecap="round">
+          <line x1="14" y1="40" x2="44" y2="46" stroke="#ff8f6b"/><line x1="14" y1="40" x2="34" y2="28" stroke="#8fe3a8"/><line x1="14" y1="40" x2="14" y2="8" stroke="#8fb4ff"/>
+        </g>
+        <g font-family="JetBrains Mono, monospace" font-size="8" fill="#edf1f8"><text x="46" y="50">X</text><text x="36" y="27">Y</text><text x="11" y="6">Z</text></g>
+      </svg>
+      </div>
+      <div class="vp-scrub" id="vp-scrub" hidden>
+        <button type="button" class="vp-play" id="vp-play" aria-label="Play the analysis step by step">▶</button>
+        <input type="range" id="vp-range" min="0" max="0" step="1" value="0" aria-label="Load step">
+        <output id="vp-step" for="vp-range"></output>
+      </div>
+      <div class="status" id="vp-status" aria-live="polite"></div>
+    </div>
+
+    <div class="study-layout">
+      <article class="study-main">
+
+    <h2 id="the-question">The question</h2>
+    <p>Can this OpenFOAM turbulence setup (the k-omega SST model) be trusted for pressure-drop budgets, such as a coolant line? The requirement: the pipe friction factor within 5 % of Prandtl's smooth-pipe law, the fit to Nikuradse's measurements behind the Moody chart. It's the portfolio's first comparison with measured data, through that correlation.</p>
+    <h2 id="the-answer">The answer</h2>
+    <div class="answer">
+      <div class="chips"><span class="chip pass">+2.4 % when converged</span><span class="chip pass">Passes from Re 2 × 10⁴ to 2 × 10⁶</span><span class="chip fail">Wall functions: 5 % low</span></div>
+      <p><strong>Yes, with the thin layer of flow at the wall resolved.</strong> Converged, the friction factor at a Reynolds number of 10⁵ is 2.4 % above Prandtl's law, with about 1 % mesh uncertainty, well inside the 5 %.</p>
+      <p>The cheaper option, wall functions, sits about 5 % low whatever the mesh and wherever the first cell is placed, so it can't be used to 5 %.</p>
+    </div>
+    <h2 id="why-it-matters">Why it matters</h2>
+    <p>Every study before this one has laminar flow, where the equations can be solved exactly and the model either matches or it doesn't. Most real flows are turbulent, and turbulence can't be solved directly at engineering scale. A turbulence model stands in for it, and a model is an approximation with its own error, separate from the mesh error. So the question changes from "did I solve the equations right?" to "are these the right equations?", and only measured data can answer that.</p>
+    <p>Pipe friction is the place to start because it has been measured more carefully than almost anything else in fluid mechanics. If a setup can't reproduce it, there's no reason to trust it on a harder flow.</p>
+    <h2 id="the-model">The model</h2>
+    <dl class="spec">
+      <dt>Geometry</dt><dd>A smooth pipe, 100 mm bore, modelled as a thin 5° wedge one cell thick, with its two ends joined so the flow repeats. That gives fully developed flow with no inlet to model.</dd>
+      <dt>Fluid and flow</dt><dd>Kinematic viscosity 10⁻⁶ m²/s (water). The mean velocity is held fixed, and the solver reports the pressure gradient needed. Reynolds numbers from 2 × 10⁴ to 2 × 10⁶.</dd>
+      <dt>Turbulence model</dt><dd>k-omega SST, a widely used two-equation model, as implemented in OpenFOAM 14.</dd>
+      <dt>Wall treatment</dt><dd>Two options, compared. Resolved: cells fine enough to capture the thin viscous layer at the wall (first cell at y+ below 1). Wall functions: a coarser mesh that bridges that layer with a formula (first cell at y+ 30 to 200).</dd>
+      <dt>Mesh</dt><dd>80, 160 and 320 cells across the radius, graded towards the wall. Every level halves every cell.</dd>
+      <dt>Analysis</dt><dd>Steady Reynolds-averaged (RANS) flow.</dd>
+      <dt>What's measured</dt><dd>The Darcy friction factor, the number a pressure-drop calculation uses.</dd>
+    </dl>
+    <details class="record"><summary>The case file: recorded assumptions, limits and inputs</summary><div class="record-body"><p>This is the study's own record, written before the run and saved with it, in the shorthand of the case file.</p><p class="case"><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/cases/pipe_rans_mesh_r2.toml">cases/pipe_rans_mesh_r2.toml ↗</a></p><p>Fully developed turbulent pipe flow, Re 1e5 (D 0.1 m, nu 1e-6 m^2/s), axisymmetric periodic wedge, RANS k-omega SST, low-Reynolds wall treatment; mesh study on the radial cells (80 / 160 / 320, wall cell halved with them); friction factor against Prandtl&#x27;s smooth-pipe law.</p><h3>Assumptions, and how each is checked</h3><ul><li>Fully developed, steady, incompressible, axisymmetric mean flow in a hydraulically smooth pipe.</li><li>RANS with the k-omega SST model (openfoam.org v14 coefficients); its form error is what this study measures.</li><li>Hydraulic diameter of the wedge 2 R cos(2.5 deg) (its wall is a flat face): 0.1 % below D, used consistently.</li></ul><h3>Limits</h3><ul><li>Smooth walls only; roughness (the Colebrook range) not modelled.</li><li>The reference is a correlation of measurements (about +-2 % scatter in Nikuradse&#x27;s smooth-pipe data), not the measurements themselves.</li></ul><h3>Inputs</h3><div class="table-wrap"><table><thead><tr><th>Input</th><th>Value</th></tr></thead><tbody><tr><td>diameter_m</td><td>0.1</td></tr><tr><td>reynolds_number</td><td>100000</td></tr><tr><td>kinematic_viscosity_m2_per_s</td><td>1e-06</td></tr><tr><td>n_radial</td><td>80</td></tr><tr><td>first_cell_yplus</td><td>0.5</td></tr><tr><td>wall_treatment</td><td>low_re</td></tr><tr><td>turbulence_model</td><td>kOmegaSST</td></tr></tbody></table></div></div></details>
+    <h2 id="how-it-works">How it works</h2>
+    <p>Because the wedge's ends are joined, the flow that comes out is the flow that goes in, and the solution settles into the fully developed state a long pipe would reach. A momentum source holds the mean velocity at the requested value and reports the pressure gradient it had to apply. The friction factor follows directly from that gradient.</p>
+    <p>Three studies make up the answer: a mesh study at one Reynolds number, a sweep across Reynolds numbers, and a wall-function study that moves the first cell in and out to see whether its placement can fix the offset.</p>
+    <h2 id="how-i-checked-it">How I checked it</h2>
+    <ul class="proof">
+      <li><strong>An exact force balance.</strong> In steady flow the friction on the wall and the applied pressure gradient must balance exactly, which gives the friction factor two independent ways. They agree to 10⁻⁹ or better on every converged mesh, and they disagree on an unconverged one, so the same check catches runs that haven't finished.</li>
+      <li><strong>The reported value isn't one mesh.</strong> Every mesh level halves every cell, and the reported value is the one extrapolated to an infinitely fine mesh.</li>
+      <li><strong>The model is used where it's valid.</strong> The first cell sits where each wall treatment needs it, and the velocity profile follows the log law, the standard shape of a turbulent profile near a wall, within 2.5 to 3.4 %.</li>
+      <li><strong>The flow is settled.</strong> The mean velocity is held to 10⁻¹³, the wall shear is uniform along the wall, and the pressure gradient changes by under 10⁻⁸ over the last tenth of the run.</li>
+    </ul>
+    <div class="caught">
+      <h2 id="what-i-caught-along-the-way">What I caught along the way</h2>
+      <ul>
+        <li><strong>A good agreement that was mesh error.</strong> The first mesh agreed with Prandtl to 0.9 %, which looked reassuring and was wrong. Refining moved it to +0.7 % and then +1.6 %, converging at only first order, and the converged answer is 2.4 % <em>above</em> the law. Quoting the first mesh would have got the sign of the error wrong.</li>
+        <li><strong>A fix that broke convergence.</strong> At the highest Reynolds number the mesh checker flagged very long, thin cells. Shortening them removed the warning and left the converged answer unchanged, but it slowed the solver by orders of magnitude: a mesh that had converged in 15,000 iterations no longer converged in 80,000, and its unconverged result even looked plausible. The force balance exposed it, and I went back to the original mesh, which converged in minutes.</li>
+        <li><strong>A suspect that wasn't guilty.</strong> The wall-function offset first looked like a coarse mesh in the core of the pipe. Four times the cells moved the answer by 0.1 %, and a placement sweep confirmed the wall treatment itself is the cause.</li>
+      </ul>
+    </div>
+    <h2 id="limits-and-what-i-d-do-next">Limits, and what I'd do next</h2>
+    <ul>
+      <li>Smooth walls only. Rough pipes, the Colebrook range of the Moody chart, aren't modelled.</li>
+      <li>The reference is a correlation of measurements, with about ±2 % scatter, not the raw measurements.</li>
+      <li>One turbulence model. Others would give somewhat different offsets.</li>
+      <li>The mesh uncertainty (1.05 %) is just over the 1 % I set for it, so the pass is formally unverified, though the margin to 5 % is clear. A finer mesh would need the shorter cells that stall the solver.</li>
+      <li>Part 2 compares the same setup against measured velocity profiles behind a backward-facing step, a flow that separates and reattaches. It's waiting on the data source, whose servers were unreachable on 22 November.</li>
+    </ul>
+    <h2 id="evidence">Evidence</h2>
+    <div class="side-card"><ul class="ev-list"><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/portfolio/19-turbulent-pipe-friction.md">Full write-up on GitHub</a></li></ul><p class="label">Run reports, with every check and the saved inputs</p><ul class="ev-list ev-runs"><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261122-104218_pipe_rans_mesh/report.md">pipe_rans_mesh</a></li><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261122-104744_pipe_rans_reynolds/report.md">pipe_rans_reynolds</a></li><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261122-134230_pipe_rans_mesh_r1/report.md">pipe_rans_mesh_r1</a></li><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261122-135114_pipe_rans_wf_mesh/report.md">pipe_rans_wf_mesh</a></li><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261122-140211_pipe_rans_wf_yplus/report.md">pipe_rans_wf_yplus</a></li><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261122-153857_pipe_rans_mesh_r2/report.md">pipe_rans_mesh_r2</a></li></ul></div>
+      </article>
+      <aside class="study-side" aria-label="Summary of this study">
+        <div class="side-card"><h2>At a glance</h2><dl><div><dt>Study</dt><dd>19</dd></div><div><dt>Discipline</dt><dd>Thermal and fluids</dd></div><div><dt>Tools</dt><dd>OpenFOAM</dd></div><div><dt>Verdict</dt><dd><span class="v v-pass">Passes</span></dd></div></dl></div><div class="side-card"><h2>Requirements</h2><ul class="side-reqs"><li><span class="r-what">Friction factor against Prandtl&#x27;s law, Re 10⁵</span><span class="r-num">within 5 % · +2.4 % when converged, mesh uncertainty 1.05 %</span><span class="chip pass">Met</span></li><li><span class="r-what">Same, with wall functions</span><span class="r-num">within 5 % · 5.0 to 5.4 % low at every Reynolds number</span><span class="chip fail">Not met</span></li></ul></div><div class="side-card side-toc"><h2>On this page</h2><ul class="toc"><li><a href="#the-question">The question</a></li><li><a href="#the-answer">The answer</a></li><li><a href="#why-it-matters">Why it matters</a></li><li><a href="#the-model">The model</a></li><li><a href="#how-it-works">How it works</a></li><li><a href="#how-i-checked-it">How I checked it</a></li><li><a href="#what-i-caught-along-the-way">What I caught along the way</a></li><li><a href="#limits-and-what-i-d-do-next">Limits, and what I&#x27;d do next</a></li><li><a href="#evidence">Evidence</a></li></ul></div>
+      </aside>
+    </div>
+    <nav class="pager" aria-label="More studies"><a class="prev" href="cold-plate.html"><small>← Previous study</small><b>Cold plate: the coolant channel, then the full thermal chain</b></a><a class="next" href="coolant-channel.html"><small>Next study →</small><b>Coolant channel pressure budget</b></a></nav>
+  </div>
+
+</main>
+
+<footer class="site-foot">
+  <div class="wrap">
+    <section class="contact" id="contact" aria-labelledby="contact-title">
+      <div class="band-head">
+        <p class="eyebrow">Contact</p>
+        <h2 id="contact-title">Get in touch</h2>
+        <p class="contact-name"><b>Justin Smith</b>, mechanical engineer (MS), with a background in automotive.</p>
+        <p>If something here is close to what you need, or you have a model that needs building or checking, send me a note and tell me about it. I'm available for remote contract work.</p>
+      </div>
+      <div class="contact-actions">
+        <!-- the address is stored reversed and base64-encoded so scrapers reading the page or the repository don't pick it up; site.js decodes it -->
+        <a class="cta" id="contact-mail" href="#contact" data-m="bW9jLmxpYW1nQDg1MW5pdHN1amh0aW1z">Email me</a>
+        <button class="cta-2" id="contact-show" type="button">Show the address</button>
+        <span class="contact-addr" id="contact-addr" hidden></span>
+      </div>
+    </section>
+    <div class="foot-nav">
+      <a href="index.html#work">All studies</a>
+      <a href="requirements.html">Every requirement</a>
+      <a href="how-i-work.html">How I work</a>
+      <a href="grading.html">Grading tasks</a>
+      <a href="in-progress.html">In progress</a>
+      <a href="https://github.com/CptGrumpus/engineering-agent-lab">Source on GitHub ↗</a>
+      <span>Open-source tools throughout: CalculiX, OpenFOAM, Gmsh, CadQuery, OpenModelica, Blender.</span>
+    </div>
+  </div>
+</footer>
+<script>window.VP = [{"id": "pipe", "study": "pipe", "kind": "figure", "img": "v2/pipe_friction.webp", "model": "Smooth pipe, fully developed turbulent flow · 100 mm bore, Re 2 × 10⁴ to 2 × 10⁶", "lines": ["Solver: OpenFOAM 14 · k-omega SST on a periodic 5° wedge", "Friction factor against Prandtl's law: the mesh study, the Reynolds sweep and the wall-function placement", "+2.4 % when converged against a 5 % limit · one mesh alone gave the wrong sign"], "check": "", "card": "pipe"}];</script>
+<script src="assets/viewer.js?v=8faeeb46bc"></script>
+<script src="assets/site.js?v=8faeeb46bc"></script>
+</body>
+</html>

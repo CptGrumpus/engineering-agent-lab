@@ -1,0 +1,64 @@
+  <section class="study" id="strap">
+    <div class="study-head">
+      <span class="label">Study 2 · CadQuery, Gmsh and CalculiX</span>
+      <h2>Cable hole in a strap, CAD to FEA</h2>
+    </div>
+    <h3>The question</h3>
+    <p>A 6061 aluminium strap, 40 mm wide and 4 mm thick, carries a 5 kN pull, and a cable needs to pass through a hole drilled in the middle. How big can the hole be before the stress at its edge goes over a 120 MPa fatigue allowable?</p>
+    <h3>The answer</h3>
+    <div class="answer">
+      <div class="chips"><span class="chip pass">Largest hole about 16.7 mm</span><span class="chip pass">Within 0.6 % of the handbook</span><span class="chip pass">Mesh uncertainty 0.08 %</span></div>
+      <p><strong>About 16.7 mm.</strong> A 16 mm hole passes at 117 MPa and an 18 mm hole fails at 125 MPa. I'd call out 16 mm, or 14 mm if there's any doubt about the allowable, which gives 8 % margin.</p>
+    </div>
+    <h3>Why it matters</h3>
+    <p>A hole concentrates stress. The material beside it carries the load the missing material would have carried, and at the two sides of the hole the stress is two to three times the average. That's where a fatigue crack starts, so the size of a hole is a real design decision.</p>
+    <p>It also makes a useful contrast with the cantilever in study 1. The peak at a smooth hole edge is a real number that settles down as the mesh gets finer, while the peak at a sharp corner never settles. Telling those two apart is a big part of doing a stress check well.</p>
+    <h3>The model</h3>
+    <dl class="spec">
+      <dt>Part</dt><dd>A flat strap, 160 × 40 × 4 mm, with a round hole in the centre. Hole sizes from 6 to 18 mm are tried.</dd>
+      <dt>Material</dt><dd>6061-T6 aluminium, linear elastic: Young's modulus 68.9 GPa, Poisson's ratio 0.33, yield 276 MPa.</dd>
+      <dt>Load</dt><dd>5 kN pulling along the strap, applied evenly at the end, at least 70 mm from the hole.</dd>
+      <dt>Symmetry</dt><dd>The strap is symmetric about both centre lines, so only a quarter is modelled.</dd>
+      <dt>Mesh</dt><dd>Quadratic triangles, 4 mm far from the hole and as small as 0.125 mm at its edge.</dd>
+      <dt>Analysis</dt><dd>Linear static, plane stress (the strap is thin, so stress through the thickness is taken as zero), in CalculiX 2.22.</dd>
+      <dt>What's measured</dt><dd>The peak stress at the hole edge, and the stress concentration factor: that peak divided by the average stress in the section beside the hole.</dd>
+    </dl>
+    {{CASE}}
+    <h3>How it works</h3>
+    <p>The whole chain is scripted. CadQuery builds the strap and writes a STEP file, the neutral CAD format. Gmsh meshes it with small elements around the hole, and CalculiX solves it. Trying a new hole size means changing one number, so the seven hole sizes are one command.</p>
+    <figure><div class="plate"><img src="img/render_strap.png" alt="Axial stress over the whole strap and a close-up of the hole" loading="lazy"></div><figcaption>Stress along the strap, over the whole part and up close at the hole. The peak sits on the two sides of the hole, at right angles to the load.</figcaption></figure>
+    <div class="figs-2">
+      <figure><div class="plate"><img src="img/strap_render.png" alt="Strap with a 16 mm cable hole, CadQuery geometry" loading="lazy"></div><figcaption>The CadQuery geometry with a 16 mm hole.</figcaption></figure>
+      <figure><div class="plate"><img src="img/strap_mesh.png" alt="Gmsh mesh of the quarter model, refined at the hole edge" loading="lazy"></div><figcaption>The quarter-model mesh, refined at the hole edge.</figcaption></figure>
+    </div>
+    <h3>How I checked it</h3>
+    <ul class="proof">
+      <li><strong>Against the handbook.</strong> The stress concentration factor converges to 2.436, within 0.6 % of the value in Peterson's handbook. I'd written down what I expected before running, and all seven hole sizes came in within about 0.6 % of those numbers.</li>
+      <li><strong>Against an exact solution.</strong> A hole in a very wide plate has an exact answer: the peak is three times the remote stress. Run through the same pipeline, that case comes out within 0.1 %. It now runs as an automatic test.</li>
+      <li><strong>Equilibrium.</strong> The reactions balance the load, and the stress across the section next to the hole adds up to the full load within 0.2 %.</li>
+      <li><strong>Mesh refinement.</strong> Going from 1 mm down to 0.125 mm elements at the hole edge converges at the expected rate, with 0.08 % uncertainty left.</li>
+    </ul>
+    <div class="figs-2">
+      <figure>
+        <div class="plate"><img src="img/strap_response.png" alt="Stress around the hole and along the section beside it" loading="lazy"></div>
+        <figcaption>Stress around the hole, and across the section beside it, against the handbook peak.</figcaption>
+      </figure>
+      <figure>
+        <div class="plate"><img src="img/strap_sweep.png" alt="Peak hole-edge stress against hole size" loading="lazy"></div>
+        <figcaption>Peak stress at the hole edge for each hole size, with the 120 MPa allowable.</figcaption>
+      </figure>
+    </div>
+    <div class="caught">
+      <h3>What I caught along the way</h3>
+      <ul>
+        <li><strong>A model that converged neatly to the wrong answer.</strong> My first version converged beautifully, with a tiny mesh uncertainty, to a number 2 % above the handbook. The wide-plate test case should have been exact, but through the same pipeline it came out 1.5 % high. It turned out the solver's plane-stress elements behave partly like a thick 3D slab at this thickness. Modelling a thin slice with the load scaled to match fixed it. A clean mesh study on its own would never have shown that: it only says the mesh is fine, not that the model is.</li>
+        <li><strong>Three setup problems in the first trial run.</strong> The solver couldn't read the number format I was writing, one CAD face pointed the wrong way so every element got rejected, and a remeshed model was still pointing at the old node numbers. That last one would have run and balanced its forces anyway, which is exactly why it's worth checking for.</li>
+      </ul>
+    </div>
+    <h3>Limits, and what I'd do next</h3>
+    <ul>
+      <li>Plane stress. In the real 4 mm plate the peak at mid-thickness runs a few percent higher.</li>
+      <li>A smooth, central hole. No surface finish, burrs or residual stress from drilling.</li>
+      <li>The 120 MPa allowable is made up for the study. The next study on this page replaces it with a fatigue life worked out from published test data.</li>
+    </ul>
+  </section>
