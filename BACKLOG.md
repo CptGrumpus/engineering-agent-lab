@@ -66,8 +66,7 @@ alive. Check with `ls -td runs/*` and, if one is still solving, `wsl -e pgrep -a
 
 | Case | Run directory prefix | Expected |
 |---|---|---|
-| `cases/flag_csm3_dt_r1.toml` (CSM3 revision) | `*_flag_csm3_dt_r1` | dt 0.0025 and 0.00125 done, matching P1-P4. The 0.000625 level was running |
-| `cases/heated_channel_mesh_r2.toml` (study 11 wall verdict) | `*_heated_channel_mesh_r2` | 40 and 80 cells done. The 160-cell flow takes about 7 s per iteration over 1200 iterations, finishing around 18:00-19:00. If REQ-T1 is verified, update portfolio/11, the PORTFOLIO index, and DASHBOARD.md item 10 |
+| `cases/flag_csm3_dt_r3.toml` (CSM3, HHT damping; r1 and r2 diverged at 0.000625 s) | `*_flag_csm3_dt_r3` | dt 0.0025 and 0.00125 done, matching P1-P4. The 0.000625 level was running |
 
 **Study 6 (FSI) status.**
 - **CSM1, CSM2:** verified and committed (e72d395).

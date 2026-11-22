@@ -1,0 +1,345 @@
+{
+  "run_id": "20261121-151154_heated_channel_mesh_r2",
+  "verified_utc": "2026-11-22T00:00:23+00:00",
+  "tolerances": {
+    "temperature_change_rel_max": 1e-05,
+    "flow_residual_max": 1e-06,
+    "flow_rel_tol": 1e-06,
+    "profile_rel_tol": 0.01,
+    "energy_rel_tol": 1e-06,
+    "wall_rel_tol": 0.01,
+    "peak_rel_tol": 0.01,
+    "gci_max": 0.01
+  },
+  "points": [
+    {
+      "label": "p00_cells_across_gap-40",
+      "status": "PASS",
+      "checks": [
+        {
+          "id": "mesh",
+          "description": "checkMesh reports Mesh OK (1 = failed)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.5,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "temperature_converged",
+          "description": "max |T change| anywhere over the last write interval (iterations 2600 to 2700) / outlet bulk rise",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 1e-05,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "flow_converged",
+          "description": "max final initial residual of Ux, Uy, p in the flow stage (inf if not logged)",
+          "kind": "numerical",
+          "value": 1.71900317873e-12,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "flow_rate",
+          "description": "|inlet flow - U H| / (U H)",
+          "kind": "numerical",
+          "value": 2.600729961249604e-13,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "developed_inflow",
+          "description": "|peak velocity at the start of heating - 1.5 U| / 1.5 U (parabolic)",
+          "kind": "numerical",
+          "value": 0.0016028359400001762,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "energy_balance",
+          "description": "|outlet bulk rise - 2 q L / (rho cp U H)| / exact rise",
+          "kind": "numerical",
+          "value": 1.3518922047002964e-12,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "wall_temperature_reference",
+          "description": "max |T_wall CFD - Graetz| / (T_wall - T_in) at 0.2, 0.5, 0.9 of the heated length",
+          "kind": "numerical",
+          "value": 0.0013365045939746107,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "peak_vs_reference",
+          "description": "|peak wall temperature - Graetz at the end of heating| / rise (model form: the reference has no axial conduction)",
+          "kind": "numerical",
+          "value": 0.0031686725361978942,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "laminar",
+          "description": "Reynolds number (Dh) / 2000",
+          "kind": "validity",
+          "value": 0.11202247191011237,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "reference_assumption",
+          "description": "100 / Peclet (the reference neglects axial conduction)",
+          "kind": "validity",
+          "value": 0.07282613390410465,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p01_cells_across_gap-80",
+      "status": "PASS",
+      "checks": [
+        {
+          "id": "mesh",
+          "description": "checkMesh reports Mesh OK (1 = failed)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.5,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "temperature_converged",
+          "description": "max |T change| anywhere over the last write interval (iterations 2600 to 2700) / outlet bulk rise",
+          "kind": "numerical",
+          "value": 1.389178124591182e-11,
+          "tolerance": 1e-05,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "flow_converged",
+          "description": "max final initial residual of Ux, Uy, p in the flow stage (inf if not logged)",
+          "kind": "numerical",
+          "value": 4.06025220212e-10,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "flow_rate",
+          "description": "|inlet flow - U H| / (U H)",
+          "kind": "numerical",
+          "value": 2.9802007216195303e-13,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "developed_inflow",
+          "description": "|peak velocity at the start of heating - 1.5 U| / 1.5 U (parabolic)",
+          "kind": "numerical",
+          "value": 0.00048517597333356616,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "energy_balance",
+          "description": "|outlet bulk rise - 2 q L / (rho cp U H)| / exact rise",
+          "kind": "numerical",
+          "value": 1.050841097693933e-12,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "wall_temperature_reference",
+          "description": "max |T_wall CFD - Graetz| / (T_wall - T_in) at 0.2, 0.5, 0.9 of the heated length",
+          "kind": "numerical",
+          "value": 0.0003238903385427071,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "peak_vs_reference",
+          "description": "|peak wall temperature - Graetz at the end of heating| / rise (model form: the reference has no axial conduction)",
+          "kind": "numerical",
+          "value": 0.0006994265056568279,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "laminar",
+          "description": "Reynolds number (Dh) / 2000",
+          "kind": "validity",
+          "value": 0.11202247191011237,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "reference_assumption",
+          "description": "100 / Peclet (the reference neglects axial conduction)",
+          "kind": "validity",
+          "value": 0.07282613390410465,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p02_cells_across_gap-160",
+      "status": "PASS",
+      "checks": [
+        {
+          "id": "mesh",
+          "description": "checkMesh reports Mesh OK (1 = failed)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.5,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "temperature_converged",
+          "description": "max |T change| anywhere over the last write interval (iterations 2600 to 2700) / outlet bulk rise",
+          "kind": "numerical",
+          "value": 1.3891781245930742e-11,
+          "tolerance": 1e-05,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "flow_converged",
+          "description": "max final initial residual of Ux, Uy, p in the flow stage (inf if not logged)",
+          "kind": "numerical",
+          "value": 9.98416704813e-07,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "flow_rate",
+          "description": "|inlet flow - U H| / (U H)",
+          "kind": "numerical",
+          "value": 9.405453846311751e-14,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "developed_inflow",
+          "description": "|peak velocity at the start of heating - 1.5 U| / 1.5 U (parabolic)",
+          "kind": "numerical",
+          "value": 0.00016336418000010655,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "energy_balance",
+          "description": "|outlet bulk rise - 2 q L / (rho cp U H)| / exact rise",
+          "kind": "numerical",
+          "value": 3.11291779908629e-13,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "wall_temperature_reference",
+          "description": "max |T_wall CFD - Graetz| / (T_wall - T_in) at 0.2, 0.5, 0.9 of the heated length",
+          "kind": "numerical",
+          "value": 7.028294271925233e-05,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "peak_vs_reference",
+          "description": "|peak wall temperature - Graetz at the end of heating| / rise (model form: the reference has no axial conduction)",
+          "kind": "numerical",
+          "value": 0.0007815190441682155,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "laminar",
+          "description": "Reynolds number (Dh) / 2000",
+          "kind": "validity",
+          "value": 0.11202247191011237,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "reference_assumption",
+          "description": "100 / Peclet (the reference neglects axial conduction)",
+          "kind": "validity",
+          "value": 0.07282613390410465,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ]
+    }
+  ],
+  "run_checks": [
+    {
+      "id": "discretization_max_wall_temperature_C",
+      "description": "relative discretization uncertainty of max_wall_temperature_C (rise above inlet), oscillatory (R = -0.012): 1.25 x half-range of the 3 finest solutions",
+      "kind": "numerical",
+      "value": 0.002259496779008019,
+      "tolerance": 0.01,
+      "comparison": "<=",
+      "status": "PASS",
+      "metric": "max_wall_temperature_C"
+    },
+    {
+      "id": "discretization_outlet_bulk_rise_K",
+      "description": "relative discretization uncertainty of outlet_bulk_rise_K (rise above inlet), converged to within the noise floor (spread 1.7e-12 <= 1e-05)",
+      "kind": "numerical",
+      "value": 1.0394899903809019e-12,
+      "tolerance": 0.01,
+      "comparison": "<=",
+      "status": "PASS",
+      "metric": "outlet_bulk_rise_K"
+    }
+  ],
+  "run_check_detail": {
+    "meshes_used": [
+      "p02_cells_across_gap-160",
+      "p01_cells_across_gap-80",
+      "p00_cells_across_gap-40"
+    ],
+    "max_wall_temperature_C": {
+      "regime": "oscillatory",
+      "convergence_ratio": -0.012462441058668108,
+      "uncertainty": 0.002259496779008019
+    },
+    "outlet_bulk_rise_K": {
+      "regime": "converged",
+      "uncertainty": 1.0394899903809019e-12,
+      "relative_spread": 1.663183984609443e-12,
+      "noise_floor": 1e-05
+    }
+  },
+  "status": "PASS"
+}

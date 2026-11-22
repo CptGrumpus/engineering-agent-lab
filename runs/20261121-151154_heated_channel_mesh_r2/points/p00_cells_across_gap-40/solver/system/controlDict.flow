@@ -1,0 +1,35 @@
+FoamFile
+{
+    format      ascii;
+    class       dictionary;
+    object      controlDict;
+}
+
+solver          incompressibleFluid;
+startFrom       startTime;
+startTime       0;
+stopAt          endTime;
+endTime         1200;
+writeInterval   1200;
+deltaT          1;
+writeControl    timeStep;
+writeFormat     ascii;
+writePrecision  12;
+writeCompression off;
+timeFormat      general;
+timePrecision   8;
+runTimeModifiable false;
+
+functions
+{
+    T
+    {
+        type            scalarTransport;
+        libs            ("libsolverFunctionObjects.so");
+        field           T;
+        diffusivity     viscosity;
+        alphal          0.1631632707918929;
+        alphat          1;
+        writeControl    writeTime;
+    }
+}

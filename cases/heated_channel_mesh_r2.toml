@@ -11,6 +11,15 @@
 #
 # Predictions P1-P4 of r1 stand. Revised P5: about 1200 x 4-7 s = 1.5-2.5 h for the 160-cell flow,
 # depending on what else shares the CPU, plus about 10 min for the temperature stage.
+#
+# Results (run 20261121-151154_heated_channel_mesh_r2): every point check passes on every mesh (30/30). Peak
+#   wall temperature 44.0974 / 44.0286 / 44.0294 C at 40 / 80 / 160 cells: oscillatory (R = -0.012), uncertainty
+#   0.23 % of the rise: REQ-T1 VERIFIED PASS, 0.97 K under the 45 C limit. Coolant rise 7.1986 K at the noise
+#   floor: REQ-T2 PASS. P2 held: at 160 cells the peak sits two cells upstream of the end of heating (44.029 C,
+#   predicted 44.035 +/- 0.01), while the last heated cell drops to 43.870 C. P3 held (estimate under 0.5 %).
+#   P1 partly missed: the 160-cell flow's largest final residual was 9.98e-7, just inside flow_converged's 1e-6,
+#   not the predicted 1e-9. The cut to 1200 flow iterations left a thinner margin than estimated; the check
+#   passed as written. Revised P5 held: the 160-cell point took about 3.5 h of a shared CPU.
 
 [case]
 name = "heated_channel_mesh_r2"

@@ -1,0 +1,245 @@
+{
+  "run_id": "20261121-151154_heated_channel_mesh_r2",
+  "case_name": "heated_channel_mesh_r2",
+  "model": "openfoam_heated_channel",
+  "case_source": "cases/heated_channel_mesh_r2.toml",
+  "case_sha256": "c8ab0fa1fe0a6645e91ba514f6dfc742b4a23c339a253b17694afa7a638c9201",
+  "model_sources_sha256": {
+    "models/cfd/heated_channel_openfoam.py": "afc31527c960a710a8ca0f93e056bb247c5569b2ef355af65eaf4ad51392608b",
+    "models/cfd/run_heated.sh": "09125b7bd1bc5df1b8348144fbf6cd444c3dd7d921ced4ba581c7181346e423c"
+  },
+  "rerun_of": null,
+  "started_utc": "2026-11-21T20:11:54+00:00",
+  "environment": {
+    "python": "3.14.10",
+    "python_executable": "<repo>\\.venv\\Scripts\\python.exe",
+    "platform": "Windows-11-10.0.26100-SP0",
+    "machine": "AMD64",
+    "packages": {
+      "numpy": "2.5.5",
+      "scipy": "1.18.1",
+      "matplotlib": "3.11.2",
+      "cadquery": "2.8.0"
+    },
+    "git": {
+      "commit": "fea8e67765680000672273b44ac416863a8bbcdd",
+      "dirty": true
+    },
+    "tools": {
+      "openfoam_bashrc": "/opt/openfoam14/etc/bashrc",
+      "openfoam_version": "14",
+      "openfoam_package": "openfoam14 20261008",
+      "linux": "Ubuntu 22.04.5 LTS"
+    }
+  },
+  "numerics": {
+    "flow_iterations": 1200,
+    "solver_timeout_s": 28800,
+    "temperature_iterations": 1500,
+    "write_interval": 100,
+    "relaxation_T": 1.0
+  },
+  "points": [
+    {
+      "label": "p00_cells_across_gap-40",
+      "parameters": {
+        "gap_mm": 1.0,
+        "heated_length_mm": 50.0,
+        "entry_length_mm": 5.0,
+        "exit_length_mm": 5.0,
+        "mean_velocity_m_per_s": 0.1,
+        "density_kg_per_m3": 997.0,
+        "dynamic_viscosity_Pa_s": 0.00089,
+        "specific_heat_J_per_kgK": 4180.0,
+        "conductivity_W_per_mK": 0.607,
+        "inlet_temperature_C": 25.0,
+        "wall_heat_flux_W_per_m2": 30000.0,
+        "cells_across_gap": 40,
+        "cell_aspect_ratio": 5.0
+      },
+      "status": "completed",
+      "derived": {
+        "reynolds_Dh": 224.04494382022474,
+        "prandtl": 6.128830313014827,
+        "peclet_Dh": 1373.1334431630974,
+        "graetz_x_star_end": 0.018206533476026163,
+        "bulk_rise_exact_K": 7.198629380965865,
+        "wall_minus_bulk_fully_developed_K": 12.002824193927985
+      },
+      "solver": {
+        "success": true,
+        "message": "foamRun + scalarTransport: 19200 cells, 2700 iterations",
+        "nfev": 2700
+      },
+      "solver_outputs": {
+        "cells": 19200,
+        "blocks": [
+          [
+            40,
+            40
+          ],
+          [
+            400,
+            40
+          ],
+          [
+            40,
+            40
+          ]
+        ],
+        "prandtl": 6.128830313014827,
+        "mesh_ok": true,
+        "inlet_flow_m2_per_s": 9.9999999999974e-05,
+        "final_T_initial_residual": 8.45470284379e-14,
+        "flow_final_initial_residuals": {
+          "Ux": 1.54314895542e-15,
+          "Uy": 1.71900317873e-12,
+          "p": 7.82234450458e-13
+        },
+        "T_change_last_write_K": 0.0,
+        "previous_write": "2600",
+        "result_time": "2700"
+      },
+      "metrics": {
+        "max_wall_temperature_C": 44.09736927114629,
+        "wall_temperature_end_C": 44.09736927114629,
+        "outlet_bulk_rise_K": 7.198629380975596
+      }
+    },
+    {
+      "label": "p01_cells_across_gap-80",
+      "parameters": {
+        "gap_mm": 1.0,
+        "heated_length_mm": 50.0,
+        "entry_length_mm": 5.0,
+        "exit_length_mm": 5.0,
+        "mean_velocity_m_per_s": 0.1,
+        "density_kg_per_m3": 997.0,
+        "dynamic_viscosity_Pa_s": 0.00089,
+        "specific_heat_J_per_kgK": 4180.0,
+        "conductivity_W_per_mK": 0.607,
+        "inlet_temperature_C": 25.0,
+        "wall_heat_flux_W_per_m2": 30000.0,
+        "cells_across_gap": 80,
+        "cell_aspect_ratio": 5.0
+      },
+      "status": "completed",
+      "derived": {
+        "reynolds_Dh": 224.04494382022474,
+        "prandtl": 6.128830313014827,
+        "peclet_Dh": 1373.1334431630974,
+        "graetz_x_star_end": 0.018206533476026163,
+        "bulk_rise_exact_K": 7.198629380965865,
+        "wall_minus_bulk_fully_developed_K": 12.002824193927985
+      },
+      "solver": {
+        "success": true,
+        "message": "foamRun + scalarTransport: 76800 cells, 2700 iterations",
+        "nfev": 2700
+      },
+      "solver_outputs": {
+        "cells": 76800,
+        "blocks": [
+          [
+            80,
+            80
+          ],
+          [
+            800,
+            80
+          ],
+          [
+            80,
+            80
+          ]
+        ],
+        "prandtl": 6.128830313014827,
+        "mesh_ok": true,
+        "inlet_flow_m2_per_s": 9.99999999999702e-05,
+        "final_T_initial_residual": 2.66178976815e-13,
+        "flow_final_initial_residuals": {
+          "Ux": 2.46955314452e-14,
+          "Uy": 4.06025220212e-10,
+          "p": 1.05624693582e-12
+        },
+        "T_change_last_write_K": 1.000017846308765e-10,
+        "previous_write": "2600",
+        "result_time": "2700"
+      },
+      "metrics": {
+        "max_wall_temperature_C": 44.02857416837314,
+        "wall_temperature_end_C": 44.003048414673145,
+        "outlet_bulk_rise_K": 7.198629380973429
+      }
+    },
+    {
+      "label": "p02_cells_across_gap-160",
+      "parameters": {
+        "gap_mm": 1.0,
+        "heated_length_mm": 50.0,
+        "entry_length_mm": 5.0,
+        "exit_length_mm": 5.0,
+        "mean_velocity_m_per_s": 0.1,
+        "density_kg_per_m3": 997.0,
+        "dynamic_viscosity_Pa_s": 0.00089,
+        "specific_heat_J_per_kgK": 4180.0,
+        "conductivity_W_per_mK": 0.607,
+        "inlet_temperature_C": 25.0,
+        "wall_heat_flux_W_per_m2": 30000.0,
+        "cells_across_gap": 160,
+        "cell_aspect_ratio": 5.0
+      },
+      "status": "completed",
+      "derived": {
+        "reynolds_Dh": 224.04494382022474,
+        "prandtl": 6.128830313014827,
+        "peclet_Dh": 1373.1334431630974,
+        "graetz_x_star_end": 0.018206533476026163,
+        "bulk_rise_exact_K": 7.198629380965865,
+        "wall_minus_bulk_fully_developed_K": 12.002824193927985
+      },
+      "solver": {
+        "success": true,
+        "message": "foamRun + scalarTransport: 307200 cells, 2700 iterations",
+        "nfev": 2700
+      },
+      "solver_outputs": {
+        "cells": 307200,
+        "blocks": [
+          [
+            160,
+            160
+          ],
+          [
+            1600,
+            160
+          ],
+          [
+            160,
+            160
+          ]
+        ],
+        "prandtl": 6.128830313014827,
+        "mesh_ok": true,
+        "inlet_flow_m2_per_s": 9.99999999999906e-05,
+        "final_T_initial_residual": 1.35865879802e-12,
+        "flow_final_initial_residuals": {
+          "Ux": 8.60020029594e-10,
+          "Uy": 9.98416704813e-07,
+          "p": 6.441230892e-12
+        },
+        "T_change_last_write_K": 1.000017846308765e-10,
+        "previous_write": "2600",
+        "result_time": "2700"
+      },
+      "metrics": {
+        "max_wall_temperature_C": 44.029431523286576,
+        "wall_temperature_end_C": 43.870353789236574,
+        "outlet_bulk_rise_K": 7.198629380963624
+      }
+    }
+  ],
+  "study": "heated_channel",
+  "status": "completed",
+  "finished_utc": "2026-11-22T00:00:23+00:00"
+}

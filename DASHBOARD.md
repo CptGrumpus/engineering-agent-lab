@@ -38,7 +38,7 @@ Decided 2026-11-21:
 | # | Item | What it involves | Waits on | Status |
 |---|---|---|---|---|
 | 9 | New studies on the page | Studies 13 to 16 (strut buckling, strap proof test, cold-plate thermal chain, bolted joint) each get a gallery card, a collapsible write-up, requirements rows and checked visuals, and some a viewer tab. The page's "twelve studies" wording and the preview card's count change with them | Nothing | Ready to start. The "Harder studies" section already lists their results and links their write-ups on GitHub. `scripts/make_clevis_visuals.py` is the template for the renders |
-| 10 | Heat-transfer wall verdict | Study 11's wall temperature is withheld until a finer mesh shows the peak converging. Once that run passes, flip the verdict on the page | The finer-mesh run (`heated_channel_mesh_r2`, running on 2026-11-21) | Waiting |
+| 10 | Heat-transfer wall verdict | Study 11's wall temperature is withheld until a finer mesh shows the peak converging. Once that run passes, flip the verdict on the page | Nothing: run `20261121-151154_heated_channel_mesh_r2` verified REQ-T1 (44.03 °C, uncertainty 0.23 %); portfolio/11 and PORTFOLIO.md updated | Ready for the page |
 | 12 | Menu label | The top menu still says "Next" for the section now called "Harder studies" | Nothing | Fold into item 9 |
 | 13 | Keep the fluid-structure card current | The flexible-flag card in "Harder studies" describes where study 6 stands; the coupled stage has started since it was written | Study 6's progress | Update with item 9, and again when the coupled runs finish |
 | 11 | Interactive 3D viewer | Rotate the parts in the browser | Nothing | Done for five of the seven viewer tabs. The contact close-up and the flow height field stay as images |
