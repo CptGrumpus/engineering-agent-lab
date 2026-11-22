@@ -15,6 +15,21 @@
 #      flattens: the largest torque on the grid lies near (-300, 300) A, about 3 % below the cold table's (424 A rms, beyond r1's
 #      350 A curve, 606 N m, extrapolated along its 1.73 N m/A slope, falling).
 #   P4 About 31 s per solve: 13 columns of about 7 min, about 1 h 30 min.
+#
+# Results (run 20261122-115824_motor_prius_lut_hot): verification PASS, 65/65 point checks. Compared point by point
+# with the cold table (run 20261122-102002, same grid and mesh).
+#   P1 HELD: every check passes in every column; dq torque equation within 0.36 % of FEMM's torque at worst.
+#   P2 MISSED: the open-circuit d-axis flux (id = iq = 0) falls 7.0 % (0.1530 to 0.1423 Wb), MORE than Br's 6 %, not
+#      a little less. Likely reason, not tested: the rotor's iron bridges are saturated at open circuit and carry a
+#      roughly fixed leakage flux, so the whole drop in magnet flux comes out of the useful flux. The id = 0 torque
+#      falls 5.08 / 5.25 / 5.44 % at iq 100 / 200 / 300 A: the predicted -5 % at 100 A held, but the gap grows with
+#      current instead of shrinking to -4 / -3 %. Into field weakening the gap does shrink (-3.2 to -3.5 % at
+#      id -300 A), where reluctance torque, which does not depend on Br, carries more of the load.
+#   P3 HELD: the largest grid torque is 628.3 N m at (-300, 300) A, 3.5 % below the cold 650.8 (predicted about 3 %);
+#      at iq 100 A the torque again peaks at id -225 A (440.4 N m).
+#   P4 HELD: 1 h 36 min.
+# REQ-M3 FAIL in every column is by construction, as in the cold table (each column runs to iq 300 A); not a design
+# verdict.
 
 [case]
 name = "motor_prius_lut_hot"
