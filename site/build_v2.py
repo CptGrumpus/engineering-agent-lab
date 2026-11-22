@@ -41,10 +41,10 @@ VP = [
                "Contact pressure on the bottom plate after clamping, before any side load",
                "Peak 162 MPa at the hole · contact patch 21.1 mm across"]},
     {"id": "strap_proof", "study": "strap_proof", "tab": "Plasticity", "legend": "S11", "unit": "MPa",
-     "model": "Strap at its proof load · 6061-T6, 40 × 4 mm, 16 mm hole, 15 kN",
+     "model": "Strap through its proof test · 6061-T6, 40 × 4 mm, 16 mm hole, loaded to 15 kN and back",
      "lines": ["Solver: CalculiX 2.22 · elastic-plastic, quarter model mirrored",
                "The top three bands, from 225 MPa, are past yield: 1.8 mm deep",
-               "Hole edge 274 MPa and 0.58 % strain · left at −77 MPa after unloading"]},
+               "Hole edge 274 MPa and 0.58 % strain · play it through to see the −77 MPa left after unloading"]},
     {"id": "strut", "study": "strut", "tab": "Buckling", "legend": "S, Mises", "unit": "MPa",
      "model": "Strut · 6061-T6, 500 mm, 25 × 16 mm, pinned, bowed L/1000",
      "lines": ["Solver: CalculiX 2.22 · C3D8I, geometrically nonlinear, 19 load steps up to first yield",
@@ -164,7 +164,7 @@ for v in VP:
     f = json.loads(_fr.read_text(encoding="utf-8")).get(v["study"]) if _fr.exists() else None
     if f:
         v["frames"] = f["frames"]
-        v["frames_of"] = f["buckling_kN"]
+        v["frames_main"] = f["main"]
 
 # the viewer follows the gallery's order
 order = [c[0] for c in CARDS]

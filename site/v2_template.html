@@ -440,7 +440,7 @@ details.study > summary:hover .study-toggle { text-decoration: underline; }
       </svg>
       </div>
       <div class="vp-scrub" id="vp-scrub" hidden>
-        <button type="button" class="vp-play" id="vp-play" aria-label="Play the load steps">▶</button>
+        <button type="button" class="vp-play" id="vp-play" aria-label="Play the analysis step by step">▶</button>
         <input type="range" id="vp-range" min="0" max="0" step="1" value="0" aria-label="Load step">
         <output id="vp-step" for="vp-range"></output>
       </div>
@@ -646,8 +646,8 @@ details.study > summary:hover .study-toggle { text-decoration: underline; }
   const scrub = document.getElementById("vp-scrub"), range = document.getElementById("vp-range");
   const step = document.getElementById("vp-step"), play = document.getElementById("vp-play");
   let timer = null, loaded = false;
-  const stopPlay = () => { clearInterval(timer); timer = null; play.textContent = "▶"; play.setAttribute("aria-label", "Play the load steps"); };
-  const frameText = (v, f) => `${f.load_kN.toFixed(2)} kN, ${Math.round(100 * f.load_kN / v.frames_of)} % of buckling · mid-span moves ${f.deflection_mm.toFixed(2)} mm · peak ${f.peak_MPa.toFixed(0)} MPa`;
+  const stopPlay = () => { clearInterval(timer); timer = null; play.textContent = "▶"; play.setAttribute("aria-label", "Play the analysis step by step"); };
+  const frameText = (v, f) => f.text;
   const preload = v => { if (loaded) return; loaded = true; v.frames.forEach(f => { const p = new Image(); p.src = f.img; }); };
   function setFrame(k) {
     const v = VP[current], f = v.frames[k];
@@ -657,8 +657,8 @@ details.study > summary:hover .study-toggle { text-decoration: underline; }
     stopPlay();
     scrub.hidden = !v.frames;
     if (!v.frames) return;
-    range.max = v.frames.length - 1; range.value = v.frames.length - 1;
-    step.textContent = frameText(v, v.frames[v.frames.length - 1]);
+    range.max = v.frames.length - 1; range.value = v.frames_main;
+    step.textContent = frameText(v, v.frames[v.frames_main]);
   }
   range.addEventListener("input", () => { stopPlay(); preload(VP[current]); setFrame(+range.value); });
   play.addEventListener("click", () => {

@@ -40,7 +40,8 @@ def ccx():
     return find_ccx()
 
 
-def resolve(src: Path, deck: str, extra: tuple[str, ...], work: Path, printed: str, add_output: str = "") -> Path:
+def resolve(src: Path, deck: str, extra: tuple[str, ...], work: Path, printed: str, add_output: str = "",
+            every_increment: bool = False) -> Path:
     """Solve a saved deck again in `work` and check that its printed output file matches the saved one.
     `add_output` (field-output request lines) is inserted before the deck's last *END STEP; it changes
     what is written to the .frd, not the solution."""
@@ -51,9 +52,40 @@ def resolve(src: Path, deck: str, extra: tuple[str, ...], work: Path, printed: s
         text = (work / f"{deck}.inp").read_text(encoding="latin-1")
         i = text.upper().rindex("*END STEP")
         (work / f"{deck}.inp").write_text(text[:i] + add_output.strip() + "\n" + text[i:], encoding="latin-1")
+    if every_increment:
+        # output at every increment. CalculiX shares one frequency between a step's field (.frd) and
+        # printed (.dat) requests, the last card winning, so both are set to 1; the new .dat then holds
+        # the evidence run's end-of-step prints plus the increments between them
+        import re as _re
+        text = (work / f"{deck}.inp").read_text(encoding="latin-1")
+        text = _re.sub(r"(\*(?:NODE|EL) (?:FILE|PRINT)[^\n]*FREQUENCY=)\d+", r"\g<1>1", text, flags=_re.I)
+        (work / f"{deck}.inp").write_text(text, encoding="latin-1")
     if not (work / f"{deck}.frd").exists():
         subprocess.run([str(ccx()), "-i", deck], cwd=work, capture_output=True, text=True, timeout=7200, check=True)
-    if (work / printed).read_text() != (src / printed).read_text():
+    new, old = (work / printed).read_text(), (src / printed).read_text()
+    if every_increment:
+        # every line the evidence run printed must appear in the re-solve's output, in the same order: text
+        # lines exactly, numbers to round-off. Printing at every increment changes the solver's summation
+        # order, so components that are pure noise (1e-8 N beside a 300 N reaction) move in their last
+        # digits; the allowance is 1e-9 of the largest printed value.
+        def nums(s):
+            try:
+                return [float(x) for x in s.split()]
+            except ValueError:
+                return None
+        scale = max((abs(v) for ln in old.splitlines() for v in (nums(ln) or [])), default=1.0)
+        same = lambda a, b: a == b or (nums(a) is not None and nums(b) is not None and len(nums(a)) == len(nums(b))
+                                       and max(abs(x - y) for x, y in zip(nums(a), nums(b))) <= 1e-9 * scale)
+        lines, k = new.splitlines(), 0
+        for line in old.splitlines():
+            if not line.strip():
+                continue
+            while k < len(lines) and not same(lines[k], line):
+                k += 1
+            if k == len(lines):
+                raise RuntimeError(f"{work.name}: the evidence run's printed line {line!r} is not in the re-solve")
+            k += 1
+    elif new != old:
         raise RuntimeError(f"{work.name}: the re-solve's {printed} differs from the evidence run's")
     return work
 
@@ -91,6 +123,10 @@ def read_tri6(mesh_inp: Path):
 # --------------------------------------------------------------------------- study 14: strap proof test
 
 STRAP = REPO / "runs/20261120-233830_strap_proof_r1/points/p02_hole_element_ratio-0.00625"
+# 25 MPa bands from -100 to 300 MPa, one scale for the proof load and for the stress left after unloading;
+# a band edge at 225 MPa, within 0.6 % of the 223.8 MPa initial yield, so the top three bands are the
+# material that yielded; the 93.75 MPa nominal stress sits mid-band
+STRAP_SCALE = dict(vmin=-100.0, vmax=300.0, bands=16, band_colors=mr.bands(16))
 
 
 def scene_strap_proof():
@@ -118,10 +154,8 @@ def scene_strap_proof():
     xy, t, (sxx,) = mirror(xy, t, [sxx], 1)
     p = rec["parameters"]
     xyz, faces, val = extrude_planar(xy, t, sxx, thickness=p["thickness_mm"])
-    # 25 MPa bands with an edge at 225 MPa, within 0.6 % of the 223.8 MPa initial yield: the top three
-    # bands are the material that yielded. The 93.75 MPa nominal stress sits mid-band.
     return write_scene(BUILD / "strap_proof", xyz, faces, val, field="axial stress σxx at the proof load", units="MPa",
-                       vmin=0.0, vmax=300.0, bands=12, band_colors=mr.bands(12), elev=40, azim=-66,
+                       **STRAP_SCALE, elev=40, azim=-66,
                        sharp_angle_deg=60, distance_factor=2.8, frame_box=[[-28, -21, -3], [28, 21, 3]], fill=0.95,
                        resolution=[1400, 900],
                        expected_volume_mm3=p["length_mm"] * p["width_mm"] * p["thickness_mm"]
@@ -370,12 +404,114 @@ def publish(name: str, scene: Path, g: dict):
     path.write_text(json.dumps(scenes, indent=1), encoding="utf-8")
 
 
+def publish_frames(name: str, scenes: list, gates: list, frames: list, main: int, extra: dict) -> dict:
+    """Crop every frame with one box (the union of their silhouettes), save them, and make frame `main`
+    the viewer's main image, thumbnail and scenes.json entry, so nothing jumps when the slider moves."""
+    from PIL import Image
+
+    ims = [Image.fromarray((np.clip(mr.beauty(sc), 0, 1) * 255).astype(np.uint8), "RGBA") for sc in scenes]
+    alpha = np.max([np.asarray(im)[..., 3] for im in ims], axis=0)
+    ys, xs = np.nonzero(alpha > 60)
+    pad = int(0.10 * max(np.ptp(xs), np.ptp(ys)))
+    crop = (max(0, xs.min() - pad), max(0, ys.min() - pad), min(ims[0].width, xs.max() + pad), min(ims[0].height, ys.max() + pad))
+    for k, (im, f) in enumerate(zip(ims, frames)):
+        im = im.crop(crop)
+        im.thumbnail((1400, 900), Image.LANCZOS)
+        im.save(SITE / f"fr_{name}_{k:02d}.webp", quality=88, method=6)
+        f["img"] = f"v2/fr_{name}_{k:02d}.webp"
+    shutil.copyfile(SITE / f"fr_{name}_{main:02d}.webp", SITE / f"vp_{name}.webp")
+    th = Image.open(SITE / f"vp_{name}.webp").convert("RGBA")
+    th.thumbnail((800, 500), Image.LANCZOS)
+    canvas = Image.new("RGBA", (800, 500), (0, 0, 0, 0))
+    canvas.alpha_composite(th, ((800 - th.width) // 2, (500 - th.height) // 2))
+    canvas.save(SITE / f"th_{name}.webp", quality=88, method=6)
+    meta = json.loads(scenes[main].with_suffix(".json").read_text(encoding="utf-8"))
+    path = SITE / "scenes.json"
+    allscenes = json.loads(path.read_text(encoding="utf-8"))
+    allscenes[name] = {k: meta.get(k) for k in ("field", "units", "vmin", "vmax", "bands", "band_colors", "title",
+                                                 "caption", "data_min", "data_max")}
+    allscenes[name].update(gates[main])
+    path.write_text(json.dumps(allscenes, indent=1), encoding="utf-8")
+    for ext in (".npz", ".json"):        # the 3D view's mesh, where there is one, is the main frame
+        shutil.copyfile(scenes[main].with_suffix(ext), BUILD / f"{name}{ext}")
+    fpath = SITE / "frames.json"
+    allframes = json.loads(fpath.read_text(encoding="utf-8")) if fpath.exists() else {}
+    allframes[name] = {**extra, "main": main, "worst_misread": max(g["legibility"]["misread"] for g in gates),
+                       "worst_on_legend": min(g["color"]["fraction_on_legend"] for g in gates), "frames": frames}
+    fpath.write_text(json.dumps(allframes, indent=1), encoding="utf-8")
+    return allframes[name]
+
+
+def make_strap_frames(blender, samples: int, skip_render: bool) -> dict:
+    """The strap through its proof test: every second increment of the load to 15 kN and of the unloading,
+    on the main render's camera and colour scale."""
+    from harness.calculix import read_frd
+
+    work = resolve(STRAP / "solver", "plastic", ("mesh.inp",), BUILD / "strap_proof_frames_solve", "plastic.dat",
+                   every_increment=True)
+    rec = read_json(STRAP / "point.json")
+    p = rec["parameters"]
+    nodes, tris = read_tri6(work / "mesh.inp")
+    frd = read_frd(work / "plastic.frd")
+    stress = [b for n, b in frd["blocks"] if n == "STRESS"]
+    pe = [b for n, b in frd["blocks"] if n == "PE"]
+    if len(stress) != 40 or len(pe) != 40:
+        raise RuntimeError(f"{len(stress)} stress blocks, {len(pe)} plastic-strain blocks; the run has 40 increments")
+    used = np.unique(tris)
+    loc = {int(n): k for k, n in enumerate(used)}
+    xy0 = np.array([nodes[int(n)] for n in used])
+    t0 = np.vectorize(loc.get)(tris)
+    root = loc[int(rec["solver_outputs"]["root_node"])]
+    rh = p["hole_diameter_mm"] / 2
+    lig = (np.abs(xy0[:, 0]) < 1e-9) & (xy0[:, 1] >= rh - 1e-9)          # the ligament, on the x = 0 symmetry line
+    picks = list(range(1, 40, 2))                                         # times 0.1, 0.2, ..., 2.0
+    scenes, gates, frames = [], [], []
+    for n, k in enumerate(picks):
+        S, E = stress[k], pe[k]
+        si = {int(q): i for i, q in enumerate(S["ids"])}
+        ei = {int(q): i for i, q in enumerate(E["ids"])}
+        sxx = np.array([S["SXX"][si[int(q)]] for q in used])
+        peeq = np.array([E["PE"][ei[int(q)]] for q in used])
+        time = 0.05 * (k + 1)
+        load = p["axial_load_N"] * (time if time <= 1 else 2 - time)
+        if k == 19 and abs(sxx[root] / rec["metrics"]["notch_stress_MPa"] - 1) > 1e-4:
+            raise RuntimeError("the proof-load frame doesn't match the recorded hole-edge stress")
+        if k == 39 and abs(sxx[root] / rec["metrics"]["residual_stress_MPa"] - 1) > 1e-4:
+            raise RuntimeError("the last frame doesn't match the recorded residual stress")
+        yielded = peeq[lig] > 1e-9
+        depth = float((xy0[lig, 1][yielded] - rh).max()) if yielded.any() else 0.0
+        xy, tt, (val,) = mirror(xy0, t0, [sxx], 0)
+        xy, tt, (val,) = mirror(xy, tt, [val], 1)
+        xyz, faces, vv = extrude_planar(xy, tt, val, thickness=p["thickness_mm"])
+        sc = write_scene(BUILD / f"frames/strap_proof_{n:02d}", xyz, faces, vv, field="axial stress σxx", units="MPa",
+                         **STRAP_SCALE, elev=40, azim=-66, sharp_angle_deg=60, distance_factor=2.8,
+                         frame_box=[[-28, -21, -3], [28, 21, 3]], fill=0.95, resolution=[1400, 900],
+                         expected_volume_mm3=p["length_mm"] * p["width_mm"] * p["thickness_mm"]
+                         - np.pi * rh ** 2 * p["thickness_mm"],
+                         title=f"Strap, {'loading' if time <= 1 else 'unloading'}: {load / 1000:.1f} kN", caption="")
+        if not skip_render:
+            mr.render(blender, sc, samples)
+        gates.append(gate(sc))
+        scenes.append(sc)
+        phase = "Loading" if time <= 1 + 1e-9 else "Unloading"
+        if phase == "Loading":
+            state = f"yielded {depth:.1f} mm deep" if depth > 0 else "still elastic"
+        elif k == 39:
+            state = "the stress left behind, in compression"
+        else:
+            state = f"unloading elastically, {depth:.1f} mm stays yielded"
+        frames.append({"text": f"{phase}: {load / 1000:.1f} kN · hole edge {sxx[root]:.0f} MPa · {state}",
+                       "phase": phase, "load_kN": round(load / 1000, 2), "edge_MPa": round(float(sxx[root]), 1),
+                       "yield_depth_mm": round(depth, 2)})
+        print(f"strap frame {n + 1}: {frames[-1]['text']}, misread {gates[-1]['legibility']['misread']:.2%}", flush=True)
+    return publish_frames("strap_proof", scenes, gates, frames, main=picks.index(19),
+                          extra={"label": "Proof test", "recorded_zone_mm": rec["metrics"]["plastic_zone_mm"]})
+
+
 def make_strut_frames(blender, samples: int, skip_render: bool) -> dict:
     """The strut at each load step up to first yield, for the viewer's load slider: one camera, one
     stress scale, one crop for every frame, each frame through the three gates. The last frame is also
     the viewer's main strut image."""
-    from PIL import Image
-
     d = strut_data()
     box = strut_box(d)
     scenes, gates = [], []
@@ -386,46 +522,17 @@ def make_strut_frames(blender, samples: int, skip_render: bool) -> dict:
         gates.append(gate(sc))
         scenes.append(sc)
         print(f"strut frame {k + 1}: {d['loads_N'][k] / 1000:.2f} kN, misread {gates[-1]['legibility']['misread']:.2%}", flush=True)
-    ims = [Image.fromarray((np.clip(mr.beauty(sc), 0, 1) * 255).astype(np.uint8), "RGBA") for sc in scenes]
-    alpha = np.max([np.asarray(im)[..., 3] for im in ims], axis=0)
-    ys, xs = np.nonzero(alpha > 60)
-    pad = int(0.10 * max(np.ptp(xs), np.ptp(ys)))
-    crop = (max(0, xs.min() - pad), max(0, ys.min() - pad), min(ims[0].width, xs.max() + pad), min(ims[0].height, ys.max() + pad))
+    pcr = d["rec"]["metrics"]["critical_load_N"] / 1000
     frames = []
-    for k, im in enumerate(ims):
-        im = im.crop(crop)
-        im.thumbnail((1400, 900), Image.LANCZOS)
-        name = f"fr_strut_{k:02d}.webp"
-        im.save(SITE / name, quality=88, method=6)
+    for k in range(STRUT_FRAMES):
         mid = d["mid"]
-        frames.append({"img": f"v2/{name}", "load_kN": round(d["loads_N"][k] / 1000, 2),
-                       "deflection_mm": round(float(np.abs(d["u"][k][mid][:, 2]).max()), 2),
-                       "peak_MPa": round(float(d["vm"][k][mid].max()), 1)})
-    # the last frame is the main image (same crop as the frames, so nothing jumps at the end of the slider)
-    shutil.copyfile(SITE / frames[-1]["img"].split("/")[1], SITE / "vp_strut.webp")
-    th = Image.open(SITE / "vp_strut.webp").convert("RGBA")
-    th.thumbnail((800, 500), Image.LANCZOS)
-    canvas = Image.new("RGBA", (800, 500), (0, 0, 0, 0))
-    canvas.alpha_composite(th, ((800 - th.width) // 2, (500 - th.height) // 2))
-    canvas.save(SITE / "th_strut.webp", quality=88, method=6)
-    meta = json.loads(scenes[-1].with_suffix(".json").read_text(encoding="utf-8"))
-    path = SITE / "scenes.json"
-    allscenes = json.loads(path.read_text(encoding="utf-8"))
-    allscenes["strut"] = {k: meta.get(k) for k in ("field", "units", "vmin", "vmax", "bands", "band_colors", "title",
-                                                    "caption", "data_min", "data_max")}
-    allscenes["strut"].update(gates[-1])
-    path.write_text(json.dumps(allscenes, indent=1), encoding="utf-8")
-    # the 3D view's mesh is the main strut scene: keep build/render/strut.* as the last frame
-    for ext in (".npz", ".json"):
-        shutil.copyfile(scenes[-1].with_suffix(ext), BUILD / f"strut{ext}")
-    fpath = SITE / "frames.json"
-    allframes = json.loads(fpath.read_text(encoding="utf-8")) if fpath.exists() else {}
-    allframes["strut"] = {"label": "Load", "buckling_kN": round(d["rec"]["metrics"]["critical_load_N"] / 1000, 2),
-                          "first_yield_kN": round(d["rec"]["metrics"]["first_yield_load_N"] / 1000, 2),
-                          "worst_misread": max(g["legibility"]["misread"] for g in gates),
-                          "worst_on_legend": min(g["color"]["fraction_on_legend"] for g in gates), "frames": frames}
-    fpath.write_text(json.dumps(allframes, indent=1), encoding="utf-8")
-    return allframes["strut"]
+        load, defl, peak = d["loads_N"][k] / 1000, float(np.abs(d["u"][k][mid][:, 2]).max()), float(d["vm"][k][mid].max())
+        frames.append({"text": f"{load:.2f} kN, {round(100 * load / pcr)} % of buckling · mid-span moves {defl:.2f} mm · "
+                               f"peak {peak:.0f} MPa", "load_kN": round(load, 2), "deflection_mm": round(defl, 2),
+                       "peak_MPa": round(peak, 1)})
+    return publish_frames("strut", scenes, gates, frames, main=STRUT_FRAMES - 1,
+                          extra={"label": "Load", "buckling_kN": round(pcr, 2),
+                                 "first_yield_kN": round(d["rec"]["metrics"]["first_yield_load_N"] / 1000, 2)})
 
 
 def main():
@@ -433,12 +540,15 @@ def main():
     ap.add_argument("--only", nargs="*")
     ap.add_argument("--samples", type=int, default=128)
     ap.add_argument("--skip-render", action="store_true")
-    ap.add_argument("--frames", action="store_true", help="the strut's load-step frames for the viewer slider")
+    ap.add_argument("--frames", nargs="+", choices=["strut", "strap_proof"], help="load-step frames for the viewer slider")
     args = ap.parse_args()
     blender = mr.find_blender()
     if args.frames:
-        f = make_strut_frames(blender, args.samples, args.skip_render)
-        print(f"{len(f['frames'])} strut frames; worst misread {f['worst_misread']:.2%}, worst on legend {f['worst_on_legend']:.2%}")
+        makers = {"strut": make_strut_frames, "strap_proof": make_strap_frames}
+        for name in args.frames:
+            f = makers[name](blender, args.samples, args.skip_render)
+            print(f"{len(f['frames'])} {name} frames; worst misread {f['worst_misread']:.2%}, "
+                  f"worst on legend {f['worst_on_legend']:.2%}")
         return
     for name in args.only or SCENES:
         scene = SCENES[name]()
