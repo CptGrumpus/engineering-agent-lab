@@ -61,6 +61,8 @@ def line_emf_peak(t, phi_a, phi_b, scale):
 
 class PyleecanFEMM(Backend):
     sources = (RUNNER, *MACHINES)
+    #: parameters passed to the runner
+    runner_params = PARAMS
 
     def __init__(self):
         self.python = pyleecan_python()
@@ -77,7 +79,7 @@ class PyleecanFEMM(Backend):
 
     def solve(self, params, numerics, tolerance_scale=1.0):
         work = Path(tempfile.mkdtemp(prefix="motor_"))
-        run_params = {k: params[k] for k in PARAMS}
+        run_params = {k: params[k] for k in self.runner_params}
         if run_params["machine"] in self.machines:  # ours, from the run's inputs (hashed), not Pyleecan's data folder
             run_params["machine"] = str(self.machines[run_params["machine"]])
         (work / "params.json").write_text(json.dumps(run_params), encoding="utf-8")

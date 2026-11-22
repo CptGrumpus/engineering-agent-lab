@@ -1,0 +1,71 @@
+# Study 7, open circuit, revision 1 of our machine: the rotor and magnets now from published sources too (BACKLOG,
+# "magnet pockets and magnets, sources found"). Same model, sweep, requirement and tolerances as
+# motor_prius_ornl_oc_mesh.toml; read it for the stator rebuild and the first results (108.04 V per 1000 rpm).
+#
+# What changed in models/motor/Toyota_Prius_ORNL.json (build_prius_ornl.py records each source):
+#   - pocket (and magnet) thickness 6.50 -> 6.78 mm, measured on Fig. 21's vector outline (8 poles, sd 0.05 mm); the
+#     V angle and apex depth already matched;
+#   - bridge 1.50 -> 1.45 mm (ORNL/TM-2004/120 Table 5.3);
+#   - magnet Br 1.24 -> 1.243 T and recoil permeability 1.05 -> 1.129, digitized from ORNL/TM-2004/137 Fig. 14, ORNL's
+#     measured line of a Prius magnet sample (opened by the user's decision, 2026-11-21: a material property).
+# Scratch sensitivity at fineness 4 before the change (one at a time): pocket 6.78 mm +0.42 %; Br 1.12 T -11.3 % (the
+# reason Fig. 14 was needed); magnet 5.31 mm -2.38 % and 19.24 mm wide +2.01 % (TM-2004/120's size, not adopted).
+#
+# Predictions, written BEFORE the run (no ORNL measured data opened):
+#   P1 Every point check passes on every mesh.
+#   P2 Back-EMF 107.9 V per 1000 rpm (range 107.3-108.6): pocket +0.42 %, Br +0.24 %, bridge about +0.1 %, and the
+#      higher recoil permeability about -0.8 % (a simple magnetic circuit: B ~ Br / (1 + mu_r g_eff / l_m), with
+#      mu_r g_eff / l_m about 0.14 to 0.15).
+#   P3 GCI under 1 %, monotone; REQ-M1 a verified fail near 1003 V.
+#   P4 Solve times about 20 s / 70 s / 10 min.
+
+[case]
+name = "motor_prius_ornl_oc_mesh_r1"
+model = "pyleecan_femm"
+description = "2004 Toyota Prius traction motor rebuilt from ORNL/TM-2005/33 Fig. 21 (radii, air gap 0.775 mm, slot, pocket thickness), ORNL/TM-2004/120 (bridge) and ORNL/TM-2004/137 Fig. 14 (magnet B-H line) at open circuit, 1000 rpm; Pyleecan + FEMM 4.2 magnetostatics over one electrical period (48 steps), mesh fineness 2 / 4 / 8; back-EMF and the uncontrolled-generator voltage at top speed."
+assumptions = [
+  "2D magnetostatics (FEMM), no end effects: the stack (83.8 mm) is long against the air gap (0.775 mm), but end-winding leakage and axial fringing are not modelled.",
+  "Stator, rotor, slot and pocket thickness from ORNL/TM-2005/33 Fig. 21; bridge 1.45 mm from ORNL/TM-2004/120; magnet Br 1.243 T and recoil permeability 1.129 from ORNL/TM-2004/137 Fig. 14 (temperature not stated, taken as 20 C); magnet width, laminations (M400-50A) and winding still Pyleecan's.",
+  "Magnet temperature 20 C; Br falls about 0.1 %/K, so a hot motor has a lower back-EMF (stated, not modelled here).",
+  "Maximum speed 6000 rpm, the commonly published rating for this motor; ORNL's design report tabulates ratings only up to base speed.",
+]
+limitations = [
+  "No test data in this case: the ORNL comparison is a separate, blind step.",
+  "The magnet fills the pocket thickness (HoleM50); TM-2004/120 gives a thinner magnet (5.31 mm), not modelled.",
+  "Line-to-line peak from the phase flux linkages with their harmonics; the inverter's own clamping is not modelled.",
+]
+
+[parameters]
+machine = "Toyota_Prius_ORNL.json"
+speed_rpm = 1000.0
+id_A = 0.0
+iq_A = 0.0
+mesh_fineness = 1.0
+steps_per_period = 48
+angle_points = 2048
+max_speed_rpm = 6000.0
+bus_voltage_V = 500.0
+rated_torque_Nm = 400.0
+
+[sweep]
+parameter = "mesh_fineness"
+values = [2.0, 4.0, 8.0]
+
+[numerics]
+solver_timeout_s = 3600
+
+[verification]
+phase_symmetry_rel_tol = 1e-3
+phase_shift_deg_tol = 0.5
+winding_theory_rel_tol = 0.02
+open_circuit_torque_rel_tol = 1e-3
+mesh_noise_rel = 1e-5
+gci_max = 0.01
+
+[[requirements]]
+id = "REQ-M1"
+text = "With the inverter not switching (a fault at top speed), the line-to-line back-EMF peak at 6000 rpm shall not exceed the 500 V maximum bus voltage."
+metric = "back_emf_LL_peak_at_max_speed_V"
+operator = "<="
+limit = 500.0
+units = "V"

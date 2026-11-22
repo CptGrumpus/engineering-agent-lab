@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Prius Torque Curve</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Study 7: torque against current of the Prius motor.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=JetBrains+Mono:wght@400;500;600&family=Source+Sans+3:ital,wght@0,400;0,600;1,400&display=swap">
+<style>
+:root {
+  /* Layout: a single reading column (about 72ch) with full-width tables and figures; a slim page bar on top. */
+  --bg: #eef1f5; --surface: #ffffff; --ink: #0e1621; --ink-2: #4a5666; --ink-3: #6e7c8c; --rule: #d5dce5;
+  --accent: #2346c4; --accent-soft: #e4e9fb; --plate: #fcfcfb;
+  --pass: #157447; --pass-bg: #e0f1e7; --fail: #b0381a; --fail-bg: #fbe6df; --warn: #855f00; --warn-bg: #f9efd6;
+  --s1: #2346c4; --s2: #c9461a; --grid: #e3e8ee;
+  --font-display: "Archivo", "Arial Narrow", system-ui, sans-serif;
+  --font-body: "Source Sans 3", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --font-data: "JetBrains Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+  --radius: 4px;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #0b1016; --surface: #121a24; --ink: #e8edf3; --ink-2: #a2b0bf; --ink-3: #7d8b9b; --rule: #233041;
+  --accent: #8fa9ff; --accent-soft: #1b2645; --plate: #fcfcfb;
+  --pass: #7fd6a2; --pass-bg: #14301f; --fail: #ff9b7b; --fail-bg: #3a1e16; --warn: #e9c46a; --warn-bg: #33290f;
+  --s1: #6f8cf0; --s2: #e0683a; --grid: #1f2a38; color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --bg: #0b1016; --surface: #121a24; --ink: #e8edf3; --ink-2: #a2b0bf; --ink-3: #7d8b9b; --rule: #233041;
+  --accent: #8fa9ff; --accent-soft: #1b2645; --plate: #fcfcfb;
+  --pass: #7fd6a2; --pass-bg: #14301f; --fail: #ff9b7b; --fail-bg: #3a1e16; --warn: #e9c46a; --warn-bg: #33290f;
+  --s1: #6f8cf0; --s2: #e0683a; --grid: #1f2a38; color-scheme: dark; }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font: 17px/1.55 var(--font-body); margin: 0; }
+.bar { background: var(--surface); border-bottom: 1px solid var(--rule);
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.bar-in { max-width: 1040px; margin: 0 auto; display: flex; flex-wrap: wrap; gap: 6px 22px; align-items: baseline; padding-block: 12px; }
+.brand { font: 700 15px/1 var(--font-display); letter-spacing: .02em; color: var(--ink); text-decoration: none; }
+.bar nav { display: flex; flex-wrap: wrap; gap: 4px 18px; }
+.bar nav a { color: var(--ink-2); text-decoration: none; font-size: 15px; }
+.bar nav a[aria-current="page"] { color: var(--accent); font-weight: 600; }
+main { max-width: 1040px; margin: 0 auto; padding-block: 28px 64px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.col { max-width: 72ch; }
+h1 { font: 760 clamp(30px, 5vw, 44px)/1.08 var(--font-display); font-stretch: 88%; margin: 6px 0 14px; text-wrap: balance; }
+h2 { font: 700 25px/1.2 var(--font-display); font-stretch: 92%; margin: 46px 0 10px; text-wrap: balance;
+  padding-top: 18px; border-top: 1px solid var(--rule); }
+h3 { font: 650 19px/1.3 var(--font-display); margin: 28px 0 8px; text-wrap: balance; }
+.eyebrow { font: 600 12px/1 var(--font-data); letter-spacing: .09em; text-transform: uppercase; color: var(--ink-3); }
+.lede { font-size: 20px; color: var(--ink-2); }
+p, li { max-width: 72ch; }
+a { color: var(--accent); }
+code, .mono { font-family: var(--font-data); font-size: .86em; }
+.muted { color: var(--ink-3); }
+.facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 12px; margin: 22px 0; }
+.fact { background: var(--surface); border: 1px solid var(--rule); border-radius: var(--radius); padding: 14px 16px; min-width: 0; }
+.fact .k { font: 600 12px/1.2 var(--font-data); letter-spacing: .06em; text-transform: uppercase; color: var(--ink-3); }
+.fact .v { font: 700 24px/1.25 var(--font-display); margin-top: 6px; }
+.fact .n { font-size: 14px; color: var(--ink-2); margin-top: 4px; }
+.sealed { border-left: 3px solid var(--warn); }
+.tablewrap { overflow-x: auto; margin: 12px 0 18px; border: 1px solid var(--rule); border-radius: var(--radius); background: var(--surface); }
+table { border-collapse: collapse; width: 100%; font-size: 15px; }
+th, td { text-align: left; padding: 8px 12px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+th { font: 600 12px/1.3 var(--font-data); letter-spacing: .05em; text-transform: uppercase; color: var(--ink-3); background: var(--surface); }
+tr:last-child td { border-bottom: 0; }
+td.num, table.num td:not(:first-child) { font-family: var(--font-data); font-size: 14px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.pill { display: inline-block; font: 600 12px/1 var(--font-data); padding: 4px 7px; border-radius: 3px; white-space: nowrap; }
+.pill.pass { color: var(--pass); background: var(--pass-bg); }
+.pill.fail { color: var(--fail); background: var(--fail-bg); }
+.pill.warn { color: var(--warn); background: var(--warn-bg); }
+figure { margin: 18px 0 26px; }
+img.plate { display: block; width: 100%; max-width: 100%; background: var(--plate); border: 1px solid var(--rule); border-radius: var(--radius); }
+figcaption { font-size: 14px; color: var(--ink-2); margin-top: 8px; max-width: 80ch; }
+details { background: var(--surface); border: 1px solid var(--rule); border-radius: var(--radius); margin: 12px 0; }
+summary { cursor: pointer; padding: 10px 14px; font-weight: 600; }
+summary:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+details pre { margin: 0; padding: 4px 16px 16px; overflow-x: auto; font: 13px/1.5 var(--font-data); white-space: pre-wrap; color: var(--ink-2); }
+.callout { background: var(--accent-soft); border-radius: var(--radius); padding: 14px 18px; margin: 18px 0; max-width: 80ch; }
+.callout p { margin: 6px 0; }
+.chart { background: var(--surface); border: 1px solid var(--rule); border-radius: var(--radius); padding: 14px 14px 8px; overflow-x: auto; position: relative; }
+.chart svg { display: block; width: 100%; min-width: 520px; height: auto; }
+.chart text { fill: var(--ink-2); font: 12px var(--font-data); }
+.chart .t-ink { fill: var(--ink); }
+.chart .grid { stroke: var(--grid); stroke-width: 1; }
+.chart .axis { stroke: var(--rule); stroke-width: 1; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 14px; color: var(--ink-2); margin: 0 0 6px; }
+.legend i { display: inline-block; width: 18px; height: 3px; border-radius: 2px; vertical-align: middle; margin-right: 6px; }
+.tip { position: absolute; pointer-events: none; background: var(--ink); color: var(--surface); font: 12px/1.35 var(--font-data);
+  padding: 6px 8px; border-radius: 3px; max-width: 280px; }
+.dot { cursor: default; }
+.dot:hover, .dot:focus { stroke-width: 4; outline: none; }
+ol.timeline { list-style: none; padding: 0; margin: 12px 0; display: grid; gap: 10px; }
+ol.timeline li { display: grid; grid-template-columns: 7.5em 1fr; gap: 12px; max-width: 90ch; }
+ol.timeline time { font: 13px/1.6 var(--font-data); color: var(--ink-3); }
+@media (max-width: 560px) { ol.timeline li { grid-template-columns: 1fr; gap: 0; } body { font-size: 16px; } }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+<header class="bar"><div class="bar-in"><a class="brand" href="index.html">Prius motor study</a><nav><a href="index.html">Overview</a><a href="geometry.html">Design inputs</a><a href="open-circuit.html">Open circuit</a><a href="torque.html" aria-current="page">Torque</a></nav></div></header>
+<main>
+
+<div class="col">
+<div class="eyebrow">Study 7 · electromagnetics · under load</div>
+<h1>Torque against current</h1>
+<p class="lede">How much torque does the motor make per amp, and does it reach its rated 400 N m within a copper
+current-density limit? Each point sweeps the current angle and takes the maximum torque per amp (MTPA).</p>
+</div>
+
+<div class="callout">
+<p><b>Assumed design limit:</b> 25 A/mm² rms in the copper, a common short-time limit for an oil-cooled traction
+motor. With a fill of 0.84 (ORNL's design report) on our slot's 143.0 mm² and 9 turns per slot, that is 333 A rms. No
+published inverter current rating is used: searching for one risks ORNL's measured torque-current data.</p>
+<p><b>Prior knowledge declared:</b> the 400 N m rating, and ORNL lumped-parameter model values seen in the filter
+incident (see the overview's blind protocol log).</p>
+</div>
+
+<h2>Method</h2>
+<div class="col">
+<ul>
+<li>Pyleecan's dq currents are rms. At current I the angle γ runs from the q axis towards negative d:
+I<sub>d</sub> = −I sin γ, I<sub>q</sub> = I cos γ, from 0 to 70° in 8 steps.</li>
+<li>At each angle one FEMM simulation over one electrical period (48 steps) gives the torque and the phase flux
+linkages; the MTPA torque comes from a parabola through the best three angles.</li>
+<li>1000 rpm, below base speed, so no voltage limit applies.</li>
+</ul>
+</div>
+
+<h2>Checks on every point</h2>
+<div class="tablewrap"><table class=""><thead><tr><th>Check</th><th>What is compared</th><th>Limit</th><th>Why</th></tr></thead><tbody><tr><td>Power balance</td><td>Mean of Σ i·dφ/dt over one period against mean torque × mechanical speed, at every angle</td><td>≤ 2 %</td><td>Energy conservation in a lossless magnetostatic model: an independent route to FEMM's stress-tensor torque. Pyleecan's flux-linkage sign is opposite to the motor convention; the check applies it explicitly.</td></tr><tr><td>Current amplitude</td><td>Imposed phase-current fundamental against √2 × the requested rms</td><td>≤ 1e-3</td><td>Pyleecan's dq currents are rms; a peak/rms mix-up would be a factor √2.</td></tr><tr><td>Phase symmetry under load</td><td>Spread of the three phases' fundamental flux linkage</td><td>≤ 2e-3</td><td>Winding and periodicity under load.</td></tr><tr><td>MTPA bracketed</td><td>Maximum torque inside the angle sweep</td><td>validity</td><td>Otherwise the parabola extrapolates.</td></tr><tr><td>Mesh convergence (run level)</td><td>GCI on the MTPA torque, three meshes</td><td>≤ 1 %</td><td>At the most saturated current.</td></tr></tbody></table></div>
+
+<h2>MTPA torque against current</h2>
+<p class="muted">The curve appears when the 50-350 A run has points.</p>
+
+<h2>Runs</h2>
+<h3 id="motor_prius_torque_mesh">motor_prius_torque_mesh</h3><p>Mesh study at 333 A rms, the 25 A/mm² copper limit, fineness 2 / 4 / 8. REQ-M2: does the MTPA torque reach the rated 400 N m within that limit?</p><div class="tablewrap"><table class="num"><thead><tr><th>Current (A rms)</th><th>Mesh</th><th>J (A/mm²)</th><th>MTPA torque (N m)</th><th>Angle (°)</th><th>N m per A</th><th>Ripple p-p (N m)</th><th>Solve</th><th>Checks</th></tr></thead><tbody></tbody></table></div><details><summary>Case record: predictions before the run, results after</summary><pre>Study 7, torque against current, first case: mesh study at the current-density limit, on our machine
+(models/motor/Toyota_Prius_ORNL.json). Each point sweeps the current angle from the q axis (0-70 deg, 8 angles) and
+takes the maximum torque per amp (MTPA) from a parabola through the best three.
+
+Decision this case informs (design check, agreed framing 2026-11-21): can the motor reach its rated 400 N m peak
+torque within its current limit? No published inverter current rating is in hand, and a web search for one would
+risk returning ORNL&#x27;s measured torque-current data, so the limit is set from the copper instead: 25 A/mm^2 rms, a
+common short-time limit for an oil-cooled traction motor (stated assumption; the user may change it before the
+ORNL data is opened). Copper area per slot = fill 0.84 (ORNL/TM-2004/137: fill factor on the net slot area) x
+143.0 mm^2 (our slot&#x27;s active area) = 120.1 mm^2, carrying 9 turns of one coil side: I = 25 x 120.1 / 9 = 333.7 A
+rms. Case current 333 A rms (24.95 A/mm^2).
+
+Prior knowledge to declare: the 400 N m rating (ORNL design report: a rating, not a measurement); and some ORNL
+lumped-parameter MODEL results from ORNL/TM-2004/120 seen during the 2026-11-21 filter incident (BACKLOG), which
+include torque values at currents not identified. No ORNL measured data has been opened.
+
+Checks on every point: power balance at every angle (energy conservation, independent of FEMM&#x27;s stress-tensor
+torque), imposed current amplitude (Pyleecan&#x27;s dq currents are rms), phase symmetry under load, MTPA bracketed.
+Run level: GCI on the MTPA torque.
+
+Smoke test (scratch, 2026-11-21, before the magnet update): the runner first returned the phase currents over a
+whole mechanical revolution (Pyleecan applies no time periodicity to the electrical output), fixed by selecting the
+samples on the flux-linkage time axis. The power balance then agreed to 0.05 % in magnitude but with the opposite
+sign: Pyleecan&#x27;s flux linkage is opposite to the motor convention; the check now applies that sign explicitly
+(studies/motor_torque.py, PYLEECAN_FLUX_SIGN). Imposed current fundamental = sqrt(2) x rms exactly.
+Prototype (scratch, revised machine, fineness 1, angles 10 / 30 / 50 / 70 deg): MTPA 242 N m at 39 deg (100 A),
+453 N m at 45 deg (200 A), 605 N m at 45 deg (333 A); power balance within 1.6e-3 at every angle; ripple at 333 A
+65-102 N m peak to peak; 45 s per current.
+
+Predictions, written BEFORE the evidence run (no ORNL measured data opened):
+  P1 Every point check passes on every mesh: power balance within 2e-3 at every angle (tolerance 2 %), currents
+     exact, phases symmetric, MTPA inside the sweep.
+  P2 MTPA torque about 600 N m (590-615) at 44-47 deg; changes under 1 % from fineness 2 to 8; GCI under 1 %.
+  P3 REQ-M2 verified PASS with about 50 % margin: at the copper limit the motor makes about 1.5 x its rated torque.
+     (A margin this large says the 25 A/mm^2 limit is generous or the model is optimistic under saturation; the
+     blind comparison will tell which.)
+  P4 Ripple at MTPA 90-110 N m peak to peak (about 16 %).
+  P5 Wall time about 8 x (20 s + 70 s + 10 min), about 1.5 h.
+
+Machine change after these predictions, before the run (22:43): the pocket&#x27;s extra thickness was placed on the wrong
+side. Fig. 21 is stretched 1.1 % in x in the PDF; corrected, the drawing puts the inner edge where Pyleecan has it and
+the outer apex 0.31 mm nearer the air gap, so the machine now has H0 10.65 mm, H3 6.80 mm, W0 41.21 mm (arm angle
+kept at 17.4 deg). The prototype above used H3 6.78 mm grown inward. Expected effect on torque: well under the
+predictions&#x27; 3 % ranges, so they stand as written; the open-circuit revision r2 measures the effect on back-EMF.</pre></details><p class="muted mono">run 20261121-224707_motor_prius_torque_mesh (still running)</p><h3 id="motor_prius_torque_current">motor_prius_torque_current</h3><p>The MTPA torque curve from 50 to 350 A rms at fineness 4: the blind prediction of torque against current.</p><p class="muted">Queued: no run yet.</p><details><summary>Case record: predictions before the run, results after</summary><pre>Study 7, torque against current, second case: the MTPA torque curve on our machine, 50 to 350 A rms, the curve
+that the blind ORNL comparison will use (peak torque at several currents within 10 %). Same model, angle sweep and
+checks as motor_prius_torque_mesh.toml; read that case for the current-density limit and the prior knowledge to
+declare. Mesh fineness 4 (to be confirmed by the mesh case at the most saturated current).
+
+Requirement per point (REQ-M3): which operating points of the curve lie within the 25 A/mm^2 copper limit.
+
+Predictions, written BEFORE the evidence run, from the prototype in motor_prius_torque_mesh.toml (no ORNL measured
+data opened). This curve, once verified, is the BLIND PREDICTION of torque against current:
+  P1 Every point check passes at every current.
+  P2 MTPA torque about 122 / 242 / 350 / 453 / 525 / 570 / 615 N m at 50 / 100 / 150 / 200 / 250 / 300 / 350 A rms
+     (each within about 3 %); MTPA angle rising from about 30-35 deg at 50 A to about 45 deg from 200 A up; torque
+     per amp falling from about 2.4 to 1.75 N m/A as the iron saturates.
+  P3 400 N m is reached at about 170-175 A rms.
+  P4 REQ-M3: every point up to 300 A passes; 350 A fails (26.2 A/mm^2).
+  P5 About 8 x 70 s per current, about 65 min.
+
+Machine change after these predictions, before the run (22:43): the pocket&#x27;s extra thickness was placed on the wrong
+side. Fig. 21 is stretched 1.1 % in x in the PDF; corrected, the drawing puts the inner edge where Pyleecan has it and
+the outer apex 0.31 mm nearer the air gap, so the machine now has H0 10.65 mm, H3 6.80 mm, W0 41.21 mm (arm angle
+kept at 17.4 deg). The prototype above used H3 6.78 mm grown inward. Expected effect on torque: well under the
+predictions&#x27; 3 % ranges, so they stand as written; the open-circuit revision r2 measures the effect on back-EMF.</pre></details>
+
+<p class="muted">Generated by <code>reports/motor/build_report.py</code>.</p>
+
+</main>
+
+<script>
+document.querySelectorAll('.chart').forEach(function (box) {
+  var tip = document.createElement('div'); tip.className = 'tip'; tip.hidden = true; box.appendChild(tip);
+  function show(e) { var d = e.target.closest('.dot'); if (!d) return; tip.textContent = d.getAttribute('data-tip');
+    tip.hidden = false; var b = box.getBoundingClientRect(), r = d.getBoundingClientRect();
+    var x = r.left - b.left + box.scrollLeft + 12, y = r.top - b.top - 8;
+    tip.style.left = Math.min(x, box.scrollWidth - 290) + 'px'; tip.style.top = Math.max(0, y) + 'px'; }
+  box.addEventListener('mouseover', show); box.addEventListener('focusin', show);
+  box.addEventListener('mouseout', function () { tip.hidden = true; }); box.addEventListener('focusout', function () { tip.hidden = true; });
+});
+</script>
+
+</body>
+</html>

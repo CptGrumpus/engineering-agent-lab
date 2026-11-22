@@ -214,8 +214,56 @@ back-EMF 108.04 V per 1000 rpm (+1.4 % on the radii-only machine, under the pred
   `reports/motor/build_report.py` from the cases and runs; rerun it after each new motor run. Published privately as an
   artifact: https://claude.ai/artifact/C6dNdzjs1FdP8vVb6MLaRy (republish from a session with the generator's
   `[artifact-index-path]` argument, which writes the main page without a document skeleton).
-- Next for study 7: a published source for the magnet pockets (V angle, magnet size, bridges; Fig. 21's red 0.060 in
-  and 0.056 in labels look like the bridges), then the torque-against-current case on our machine.
+- **Decision (user, 2026-11-21 22:15): the ORNL data stays sealed until study 7 is complete**, then every quantity is
+  compared at once. No one-quantity-at-a-time unsealing.
+
+**Study 7: magnet pockets and magnets, sources found (2026-11-21, late evening).**
+- **Fig. 21 (ORNL/TM-2005/33) draws the V pockets as vector outlines**: each of the 8 bent pockets is one pole's V (two
+  magnet seats separated by stop notches, no steel at the apex; elbows at 22.5 + n x 45 deg). Measured on all 8 poles
+  with the bore-fit scale: arm angle to tangential 17.4 deg (sd 0.3; Pyleecan HoleM50 17.46), outer apex 10.83 mm
+  below the rotor OD (Pyleecan H0 10.96), pocket thickness 6.78 mm (sd 0.05; Pyleecan H3 6.50). So the V geometry
+  matches; the pocket is 4 % thicker.
+- **ORNL/TM-2004/120** (*PM Motor Parametric Design Analyses*, July 2004, https://info.ornl.gov/sites/publications/Files/Pub57320.pdf),
+  Table 5.3 and Fig. 5.2 (PDF page 41), "baseline IPM machine" (the Prius; rotor radius 80.19 mm matches Fig. 21):
+  magnet width MagWid 38.48 mm for the PAIR (the sketch labels one magnet MagWid/2, so 19.24 mm each; Pyleecan
+  18.9), magnet thickness LM 5.31 mm (Pyleecan 6.5), bridge 1.45 mm (Fig. 21's red 0.056 in = 1.42 mm; Pyleecan
+  H1 1.5), stack 83.57 mm, Br 1.12 T in its Table 5.4 (Pyleecan 1.24). It also gives Rad2 (radial distance to the end
+  of the slot) 116.5 mm, which DISAGREES with Fig. 21 (bore + 1.320 in = 114.5 mm) and Pyleecan (115.2 mm): kept
+  Fig. 21 (a dimensioned drawing whose inset and outline agree); recorded as a conflict.
+- **Blind-protocol incident, recorded in full:** reading TM-2004/120 locally, a line filter that withheld lines with
+  performance words still let through some table values from its Tables 5.4-5.5, whose labels are abbreviations
+  (e.g. RelTorq, Pmech, Eff, IWpk, IWrms) or sit on separate lines. These are ORNL's lumped-parameter MODEL results
+  for their baseline, not measured data; the validation compares against ORNL's measured data (TM-2004/247,
+  TM-2006/423), which remains unopened. They do not change any prediction already written (back-EMF). For the
+  torque and efficiency predictions still to come, this is a possible anchor: state it in those cases' headers.
+  Lesson: extract by whitelist (geometry words, numbers masked unless wanted), never by blacklist.
+- **Off limits until the study is complete:** ORNL/TM-2004/137 (the design report) Fig. 13 is the MEASURED no-load
+  air-gap flux density (2003 against 2004), a back-EMF proxy. Its Fig. 14 is ORNL's measured comparison of a Prius
+  magnet sample with other magnets: a material property (would give Br), not motor performance, but ORNL-measured.
+- **Scratch sensitivity** (open circuit, fineness 4, one change at a time on the stator-rebuilt machine, 108.09 V):
+  pocket/magnet 6.78 mm +0.42 %; magnet 5.31 mm -2.38 %; magnet 19.24 mm wide +2.01 %; **Br 1.12 T -11.3 %**.
+- **Decision (user, 2026-11-21 ~22:30): open Fig. 14 only, as the source of the magnet material.** Rendered alone
+  (page 12, image block y 447-679; Fig. 13 sits above y 367 and stayed out of the crop). Digitized from 906 pixels of
+  ORNL's fitted line for the "Toyota/Prius Perm. Magnet": Br 1.243 T (extrapolated to H = 0; the measured points span
+  -7.2 to -4.7 kOe), recoil permeability 1.129, Hcb -876 kA/m. Pyleecan's generic 1.24 T was right; its 1.05 was not.
+  TM-2004/120's 1.12 T matches 1.24 T at about 120 C with alpha_Br -0.1 %/K, so it is probably a hot value.
+- **Fig. 21 is stretched 1.1 % in x in the PDF** (the rotor OD outline is an ellipse, x/y 1.0114). Corrected, the
+  pocket is 6.80 mm thick (sd 0.03), its inner edge matches Pyleecan's and its outer apex is 0.31 mm nearer the air
+  gap (10.65 against 10.96 mm). Machine: H0 10.65, H3 6.80, W0 41.21 mm (keeps the 17.4 deg arm), bridge 1.45 mm,
+  Br 1.243 T, mu_r 1.129. Overlay: `portfolio/img/motor_pocket_vs_ornl_fig21.png`. The stator measurements used the
+  isotropic bore fit; their adopted values come from the drawing's labels, so the stretch does not change them.
+- **Privacy:** the committed machine file (e060598) and its run input carried Pyleecan's own `C:/Users/LAP10/...`
+  material paths (upstream metadata, not ours); the build script now keeps file names only. Scrub
+  `runs/20261121-215053_motor_prius_ornl_oc_mesh/inputs/Toyota_Prius_ORNL.json` before the next commit.
+- **Torque against current (new study `motor_torque`, model `pyleecan_femm_load`):** the runner sweeps the current
+  angle per point; checks are power balance (mean sum i dphi/dt = mean torque x omega_m, with Pyleecan's flux-linkage
+  sign, which is opposite to the motor convention), current amplitude (Pyleecan's dq currents are RMS), phase symmetry,
+  MTPA bracketed. Design limit assumed: 25 A/mm^2 rms copper current density = 333 A rms (stated in the cases; the
+  user may change it). Prototype: 242 / 453 / 605 N m at 100 / 200 / 333 A rms.
+- **Runs queued tonight, in order:** `motor_prius_ornl_oc_mesh_r1` (the intermediate machine, H3 grown inward),
+  `motor_prius_torque_mesh` (333 A, fineness 2/4/8), `motor_prius_torque_current` (50-350 A), then
+  `motor_prius_ornl_oc_mesh_r2` (final machine; its back-EMF becomes the blind prediction). Each case header holds
+  predictions written before its run; fill in the Results blocks, update `reports/motor/` and commit.
 
 **Uncommitted at handoff:** nothing settled. Running cases and their runs are committed once they finish.
 

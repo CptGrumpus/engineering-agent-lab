@@ -39,6 +39,7 @@ is the `verify-against-reference` skill.
 | `openfoam_turek_hron` | Turek-Hron fluid stage (cylinder + rigid flag, steady) | Gmsh .geo (FreeCAD's gmsh.exe) -> gmshToFoam -> OpenFOAM 14 incompressibleFluid in WSL, forces on the body | `models/cfd/turek_hron_openfoam.py`, `models/cfd/run_turek_hron.sh` |
 | `openfoam_ccx_precice_fsi` | Turek-Hron FSI (flag behind a cylinder, coupled) | OpenFOAM v2512 pimpleFoam (moving mesh, Gmsh mesh) + CalculiX (`ccx_preCICE`) through preCICE 3.4, both in WSL; needs the v2512 bashrc (`OPENFOAM_V2512_BASHRC` to override) | `models/fsi/turek_hron_fsi.py`, `models/fsi/run_turek_hron_fsi.sh` |
 | `pyleecan_femm` | electric-machine electromagnetics (study 7; the 2004 Prius motor) | Pyleecan master + FEMM 4.2, run as a subprocess in Pyleecan's own environment (`PYLEECAN_PYTHON`, default `~/.venvs/pyleecan`) | `models/motor/pyleecan_em.py` |
+| `pyleecan_femm_load` | electric-machine torque against current (study 7): a current-angle sweep per point, MTPA torque | same runner in its current-angle mode | `models/motor/pyleecan_em.py` |
 
 A case with an `[optimization]` section runs with `python -m harness optimize <case>`
 (harness/optimize.py): COBYLA proposes designs, each candidate is a point under

@@ -11,14 +11,16 @@ def _studies() -> list[Study]:
                          fin, mounting_plate, msd, quarter_car, strap_hole,
                          bracket_modal, strap_fatigue, hertz_contact, heated_channel,
                          cold_plate, tapered_bracket, strut_buckling,
-                         strap_plastic, bolted_joint, clevis_bracket, flag_csm, turek_hron_cfd, turek_hron_fsi, motor_em)
+                         strap_plastic, bolted_joint, clevis_bracket, flag_csm, turek_hron_cfd, turek_hron_fsi, motor_em,
+                         motor_torque)
 
     return [msd.STUDY, quarter_car.STUDY, cantilever.STUDY, mounting_plate.STUDY,
             channel_flow.STUDY, duct_flow.STUDY, fin.STUDY, strap_hole.STUDY, bracket_modal.STUDY,
             strap_fatigue.STUDY, hertz_contact.STUDY, heated_channel.STUDY, cold_plate.STUDY,
             tapered_bracket.STUDY, strut_buckling.STUDY,
             strap_plastic.STUDY, bolted_joint.STUDY,
-            clevis_bracket.STUDY, flag_csm.STUDY, flag_csm.STUDY_CSM3, turek_hron_cfd.STUDY, turek_hron_fsi.STUDY, motor_em.STUDY]
+            clevis_bracket.STUDY, flag_csm.STUDY, flag_csm.STUDY_CSM3, turek_hron_cfd.STUDY, turek_hron_fsi.STUDY, motor_em.STUDY,
+            motor_torque.STUDY]
 
 
 def models() -> dict[str, tuple[Study, type[Backend]]]:

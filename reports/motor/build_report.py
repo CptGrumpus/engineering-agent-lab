@@ -5,7 +5,7 @@ usage: .venv/Scripts/python.exe reports/motor/build_report.py [artifact-index-pa
 Reads the motor cases (their header comments are the study's written record: predictions before each run, results
 after), the runs they produced (report.json, verification.json, manifest.json, point.json, figures), and the two
 machine definitions (Pyleecan's bundled Toyota_Prius.json and ours, models/motor/Toyota_Prius_ORNL.json). Writes
-self-contained pages (figures embedded) to reports/motor/: index.html, geometry.html, open-circuit.html.
+self-contained pages (figures embedded) to reports/motor/: index.html, geometry.html, open-circuit.html, torque.html.
 
 Numbers that came from scratch runs (not harness runs) are typed in below with the BACKLOG entry they come from.
 """
@@ -25,10 +25,12 @@ REPO = Path(__file__).resolve().parents[2]
 OUT = Path(__file__).resolve().parent
 sys.path.insert(0, str(REPO))
 
-from models.motor.build_prius_ornl import CHANGES, IN, SOURCE  # noqa: E402  (plain data; Pyleecan imported lazily)
+from models.motor.build_prius_ornl import CHANGES, IN, MAGNET_CHANGES, ROTOR_CHANGES, SOURCE  # noqa: E402  (plain data; Pyleecan imported lazily)
 from studies.motor_em import pyleecan_python  # noqa: E402
 
-CASES = ["motor_prius_oc_mesh", "motor_prius_oc_mesh_r1", "motor_prius_ornl_oc_mesh"]
+CASES = ["motor_prius_oc_mesh", "motor_prius_oc_mesh_r1", "motor_prius_ornl_oc_mesh", "motor_prius_ornl_oc_mesh_r1",
+         "motor_prius_ornl_oc_mesh_r2"]
+TORQUE_CASES = ["motor_prius_torque_mesh", "motor_prius_torque_current"]
 ORNL_THERMAL = "https://info.ornl.gov/sites/publications/Files/Pub57487.pdf"
 ORNL_DESIGN = "https://info.ornl.gov/sites/publications/Files/Pub57348.pdf"
 E = html.escape
@@ -84,7 +86,7 @@ def pyleecan_machine_path():
 
 def dig(d, path):
     for k in path.split("."):
-        d = d[k]
+        d = d[int(k)] if k.isdigit() else d[k]
     return d
 
 
@@ -223,7 +225,8 @@ document.querySelectorAll('.chart').forEach(function (box) {
 </script>
 """
 
-PAGES = [("index.html", "Overview"), ("geometry.html", "Design inputs"), ("open-circuit.html", "Open circuit")]
+PAGES = [("index.html", "Overview"), ("geometry.html", "Design inputs"), ("open-circuit.html", "Open circuit"),
+         ("torque.html", "Torque")]
 
 
 def page(fname, title, body, description, full=True):
@@ -307,10 +310,13 @@ def point_pass(pt):
 # --------------------------------------------------------------------------- page: overview
 
 def build_index(cases, runs, full=True):
-    r0, r1, r2 = (runs[c] for c in CASES)
-    f0, f1, f2 = (finest(r) if r else None for r in (r0, r1, r2))
+    r0, r1, r2, r3, r4 = (runs[c] for c in CASES)
+    f0, f1, f2, f3, f4 = (finest(r) if r else None for r in (r0, r1, r2, r3, r4))
     emf = lambda p: p["metrics"]["back_emf_LL_rms_per_krpm_V"] if p else None  # noqa: E731
     ornl_done = r2 is not None and r2["complete"]
+    done = [(r, f) for r, f in ((r4, f4), (r3, f3), (r2, f2), (r1, f1)) if r is not None and r["complete"] and f]
+    latest_run, latest_pt = done[0]
+    tm, tc = runs.get("motor_prius_torque_mesh"), runs.get("motor_prius_torque_current")
 
     ledger = [
         ("19:14", "Smoke solve, Pyleecan machine", 107.253, "case motor_prius_oc_mesh, smoke test (fineness 1)"),
@@ -322,6 +328,11 @@ def build_index(cases, runs, full=True):
         ledger.append(("21:50", "Our machine: ORNL radii and slot", emf(f2),
                        f"run {r2['id']} (fineness {f2['parameters']['mesh_fineness']:g})"
                        + ("" if ornl_done else ", run still going")))
+    for tstamp, lab, r, f in (("22:36", "Rotor and magnets sourced (pocket grown inward)", r3, f3),
+                              ("late", "Pocket placed as drawn (final machine)", r4, f4)):
+        if f:
+            ledger.append((tstamp, lab, emf(f), f"run {r['id']} (fineness {f['parameters']['mesh_fineness']:g})"
+                           + ("" if r["complete"] else ", run still going")))
     ys = [v for _, _, v, _ in ledger if v]
     lo, hi = math.floor(min(ys) - 0.6), math.ceil(max(ys) + 0.6)
     n = len(ledger)
@@ -335,14 +346,28 @@ def build_index(cases, runs, full=True):
     ledger_rows = [[f'<span class="mono">{t}</span>', E(lab), f'<span class="mono">{v:.3f} V</span>' if v else "–",
                     f'<span class="muted">{E(src)}</span>'] for t, lab, v, src in ledger]
 
-    current = emf(f2) if ornl_done else emf(f1)
+    current = emf(latest_pt)
+
+    def torque_status(r):
+        if r is None:
+            return pill("QUEUED")
+        if not r["complete"]:
+            return pill("RUNNING")
+        return pill(r["report"]["verification_status"]) + " verification"
     status_rows = [
         ["Design inputs: stator, rotor, slot", "ORNL/TM-2005/33 Fig. 21, read from the PDF's vector text and outline",
          pill("PASS") + " rebuilt and compared", '<a href="geometry.html">Design inputs</a>'],
-        ["Design inputs: magnet pockets, materials", "Still Pyleecan's: no dimensioned source in hand", pill("OPEN"), ""],
+        ["Design inputs: magnet pockets, bridge, magnet material",
+         "Fig. 21 pocket outline (stretch corrected), ORNL/TM-2004/120 bridge, ORNL/TM-2004/137 Fig. 14 magnet B-H line",
+         pill("PASS") + " sourced", '<a href="geometry.html#rotor">Design inputs</a>'],
+        ["Design inputs: lamination steel, magnet width", "Still Pyleecan's (M400-50A; 18.9 mm)", pill("OPEN"), ""],
         ["Electromagnetics, open circuit", "FEMM via Pyleecan; phase symmetry, winding theory, zero cogging mean, mesh GCI",
          pill("PASS") + " verified", '<a href="open-circuit.html">Open circuit</a>'],
-        ["Electromagnetics, torque against current", "FEMM via Pyleecan, dq current sweep, power balance", pill("NOT STARTED"), ""],
+        ["Electromagnetics, torque against current: mesh study at 333 A",
+         "Current-angle sweep, MTPA; power balance, current amplitude, symmetry, GCI", torque_status(tm),
+         '<a href="torque.html">Torque</a>'],
+        ["Electromagnetics, torque against current: 50-350 A curve", "Same checks at every current", torque_status(tc),
+         '<a href="torque.html">Torque</a>'],
         ["Efficiency map", "Copper and iron losses on the torque-speed plane", pill("NOT STARTED"), ""],
         ["Rotor bridge stress at overspeed", "CalculiX, plane stress, centrifugal load", pill("NOT STARTED"), ""],
         ["Thermal network", "Lumped network checked against CalculiX on a stator section", pill("NOT STARTED"), ""],
@@ -360,8 +385,8 @@ a thermal network) predict a production traction motor well enough for early des
 
 <div class="facts">
   <div class="fact"><div class="k">Machine</div><div class="v">48 slots · 8 poles</div><div class="n">Interior V magnets, 83.8 mm stack, 50 kW, 400 N m to base speed</div></div>
-  <div class="fact"><div class="k">Back-EMF, current prediction</div><div class="v">{fmt(current, 4)} V</div><div class="n">rms line-to-line per 1000 rpm at 20 °C{"" if ornl_done else " (our rebuilt machine's run is still going)"}</div></div>
-  <div class="fact"><div class="k">REQ-M1, uncontrolled generator</div><div class="v">{pill("FAIL")} ≈ {fmt(f2["metrics"]["back_emf_LL_peak_at_max_speed_V"] if f2 else f1["metrics"]["back_emf_LL_peak_at_max_speed_V"], 4)} V</div><div class="n">Line-to-line peak at 6000 rpm against the 500 V bus</div></div>
+  <div class="fact"><div class="k">Back-EMF, current prediction</div><div class="v">{fmt(current, 4)} V</div><div class="n">rms line-to-line per 1000 rpm at 20 °C, run {E(latest_run["id"][:15])}</div></div>
+  <div class="fact"><div class="k">REQ-M1, uncontrolled generator</div><div class="v">{pill("FAIL")} ≈ {fmt(latest_pt["metrics"]["back_emf_LL_peak_at_max_speed_V"], 4)} V</div><div class="n">Line-to-line peak at 6000 rpm against the 500 V bus</div></div>
   <div class="fact sealed"><div class="k">ORNL performance data</div><div class="v">Sealed</div><div class="n">No test value has been opened. Only design drawings and text have been read.</div></div>
 </div>
 
@@ -418,7 +443,23 @@ inputs, hashes and tool versions with every run.</li>
 <li><time>21:45</time><span>The drawing's radii widen the air gap from 0.750 to 0.775 mm: back-EMF −0.41 %.</span></li>
 <li><time>21:49</time><span>The drawing's slot is much narrower than Pyleecan's (145 against 218 mm²). Our machine definition is committed with its sources.</span></li>
 <li><time>21:50</time><span>Open-circuit mesh study on our machine{" verified: back-EMF 108.0 V per 1000 rpm (+1.4 %), REQ-M1 fail at 1004 V. Our machine becomes the design input." if ornl_done else " started."}</span></li>
+<li><time>22:15</time><span>Decision: the ORNL data stays sealed until the whole study is complete.</span></li>
+<li><time>22:20</time><span>Magnet pockets: Fig. 21 draws each pole's V as a vector outline; ORNL/TM-2004/120 gives the bridge and a magnet size. A scratch sensitivity shows remanence dominates (1.12 T would cut back-EMF 11 %).</span></li>
+<li><time>22:30</time><span>Decision: open the design report's Fig. 14 only (ORNL's measured B-H line of a Prius magnet sample). Br 1.243 T, recoil permeability 1.129.</span></li>
+<li><time>22:40</time><span>Fig. 21 found stretched 1.1 % in x; corrected, the pocket's extra thickness sits on the air-gap side. Torque study added; evidence runs queued overnight.</span></li>
 </ol>
+
+<h2>Blind protocol log</h2>
+<div class="col">
+<p>Everything that touched ORNL material, in order. "Sealed" means not opened by anyone working on the study.</p>
+</div>
+{table(["When", "What", "Effect on the blind comparison"], [
+        ["evening", "ORNL/TM-2004/137 design report and ORNL/TM-2005/33 Fig. 21 read for design content", "None: design data"],
+        ["22:20", "ORNL/TM-2004/120 read with a line filter. Values from its Tables 5.4-5.5 slipped through because their labels are abbreviations or sit on separate lines. They are ORNL's lumped-parameter <b>model</b> results, not measurements, at operating points that were not identified.",
+         "Recorded in full. The measured data stays sealed. The torque cases declare it as prior knowledge. Extraction is whitelist-only from here on."],
+        ["22:30", "ORNL/TM-2004/137 Fig. 14 opened by the user's decision: ORNL's measured B-H line of a magnet sample", "A material input, like a datasheet; not motor performance"],
+        ["sealed", "ORNL/TM-2004/137 Fig. 13 (measured no-load air-gap flux density); ORNL/TM-2004/247 and ORNL/TM-2006/423 (test reports); ORNL/TM-2005/33 pages 20-30", "Opened only when the study is complete"],
+    ])}
 
 <p class="muted">Generated from the case files and runs by <code>reports/motor/build_report.py</code>.</p>
 """
@@ -427,6 +468,80 @@ inputs, hashes and tool versions with every run.</li>
 
 
 # --------------------------------------------------------------------------- page: design inputs
+
+def rotor_section(ours, pyl):
+    rows = []
+    for path, attr, value, label, note in ROTOR_CHANGES:
+        key = f"{path}.{attr}"
+        old = dig(pyl, key) * 1e3 if pyl else None
+        new = dig(ours, key) * 1e3
+        rows.append([f"<code>{E(key)}</code>", f"{new:.3f} mm", f"{old:.3f} mm" if old is not None else "–",
+                     f"{100 * (new - old) / old:+.1f} %" if old else "", E(note)])
+    for attr, value, label, note in MAGNET_CHANGES:
+        key = f"rotor.hole.0.magnet_0.mat_type.mag.{attr}"
+        old = dig(pyl, key) if pyl else None
+        new = dig(ours, key)
+        rows.append([f"<code>magnet {E(attr)}</code>", f"{new:.4g}", f"{old:.4g}" if old is not None else "–",
+                     f"{100 * (new - old) / old:+.1f} %" if old else "", E(note)])
+    pocket = [
+        ["Arm angle to tangential", "17.4° (sd 0.13°)", "17.46°", "kept (W0 re-solved so it stays 17.4° with the new H0)"],
+        ["Pocket thickness", "6.80 mm (sd 0.03)", "6.50 mm", "adopted"],
+        ["Outer apex depth below the OD", "10.65 mm (sd 0.03)", "10.96 mm", "adopted (H0)"],
+        ["Inner apex depth below the OD", "17.76 mm", "17.78 mm", "follows: 17.78 mm with H0 and H3 above"],
+    ]
+    sens = [
+        ["Pocket and magnet 6.78 mm (Fig. 21)", "+0.42 %"], ["Magnet 5.31 mm thick (ORNL/TM-2004/120)", "−2.38 %"],
+        ["Magnet 19.24 mm wide (ORNL/TM-2004/120)", "+2.01 %"], ["Br 1.12 T (ORNL/TM-2004/120)", "<b>−11.3 %</b>"],
+    ]
+    conflicts = [
+        ["Radial distance to the slot end", "116.5 mm (TM-2004/120 Rad2)", "114.5 mm (Fig. 21: bore + 1.320 in)",
+         "Fig. 21 kept: a dimensioned drawing whose inset and outline agree. Pyleecan's file had 115.2 mm."],
+        ["Magnet size", "19.24 × 5.31 mm (TM-2004/120)", "pocket 6.80 mm thick (Fig. 21)",
+         "Magnet fills the drawn pocket; TM-2004/120's size recorded as an alternative (net about −0.4 %)."],
+        ["Remanence", "1.12 T (TM-2004/120 Table 5.4)", "1.243 T (TM-2004/137 Fig. 14, measured)",
+         "Fig. 14 adopted. 1.12 T matches 1.24 T at about 120 °C with −0.1 %/K, so it is probably a hot value."],
+        ["Stack length", "83.57 mm (TM-2004/120)", "83.82 mm = 3.3 in (TM-2004/137)", "3.3 in kept."],
+    ]
+    return f"""
+<h2 id="rotor">Rotor pockets and magnets</h2>
+<div class="col">
+<p>Fig. 21 also draws each pole's V-shaped magnet pocket as a vector outline: two magnet seats in one bent pocket,
+separated only by stop notches, with the elbow on the pole axis. The figure is not dimensioned there, so the outline
+was measured. One correction came first: the figure is stretched 1.1 % horizontally in the PDF (its rotor outline is an
+ellipse, x/y = 1.0114), so x and y were scaled separately to the labelled 6.314 in diameter. Measured on all 8 poles:</p>
+</div>
+{table(["Pocket feature", "Fig. 21 (8 poles)", "Pyleecan's file", "Use"], pocket, "num")}
+<div class="col"><p>The inner edge matches Pyleecan's; the extra thickness is on the air-gap side.</p></div>
+<figure>
+{img64(REPO / "portfolio/img/motor_pocket_vs_ornl_fig21.png", "Pocket overlay: ORNL drawing, our machine and Pyleecan's file")}
+<figcaption>One pole's pocket: the drawing's vector outline (black, stretch corrected), our pocket (blue) and Pyleecan's
+(orange, dashed). Our pocket follows both edges of the drawing; Pyleecan's outer edge sits 0.3 mm inside it.</figcaption>
+</figure>
+
+<h3>Magnet material</h3>
+<div class="col">
+<p>A scratch sensitivity showed which magnet input matters. Changing one at a time from the stator-rebuilt machine
+(108.09 V per 1000 rpm at fineness 4):</p>
+</div>
+{table(["Change", "Back-EMF"], sens, "num")}
+<div class="col">
+<p>Remanence dominates: the 1.12 T in ORNL/TM-2004/120 would move the back-EMF more than twice the 5 % validation
+limit. The only Prius-specific source was Fig. 14 of the 2004 design report, ORNL's measured B-H line of a Prius magnet
+sample against other magnets. It is a material property, not motor performance, but it is ORNL-measured, so opening it
+was the user's decision (22:30). Only that figure was rendered; the measured air-gap flux density (Fig. 13) above it on
+the same page stayed out of the crop.</p>
+<p>Digitized from 906 pixels of ORNL's fitted line: <b>Br 1.243 T</b> (the line extrapolated to H = 0; the measured
+points span −7.2 to −4.7 kOe), <b>recoil permeability 1.129</b>, Hcb −876 kA/m. Pyleecan's generic 1.24 T was right;
+its permeability of 1.05 was not. The temperature is not stated, so 20 °C is assumed.</p>
+</div>
+
+<h3>Every rotor and magnet change</h3>
+{table(["Parameter", "Ours", "Pyleecan", "Difference", "Source"], rows, "num")}
+
+<h3>Where sources disagree</h3>
+{table(["Quantity", "One source", "Other source", "Decision"], conflicts)}
+"""
+
 
 def build_geometry():
     ours = machine_json(REPO / "models/motor/Toyota_Prius_ORNL.json")
@@ -531,6 +646,8 @@ is the circle fit's error, not a shape difference, so the absolute depth comes f
 notches at the shoulder (probably for slot wedges) cannot be represented by SlotW11 and are left out.</figcaption>
 </figure>
 
+{rotor_section(ours, pyl)}
+
 <h2>Why the slot matters</h2>
 <div class="col">
 <p>The verified open-circuit run on Pyleecan's machine gives an air-gap field fundamental of 0.893 T. Spread over a
@@ -542,10 +659,8 @@ back-EMF.</p>
 <h2>Still Pyleecan's</h2>
 <div class="col">
 <ul>
-<li><b>Magnet pockets</b> (HoleM50). Fig. 21 draws them but gives no dimensions, apart from two red labels, 0.060 in and
-0.056 in, that look like the bridges beside the magnets. Pyleecan's bridge is 1.5 mm (0.059 in), close, but what the
-labels measure is not certain.</li>
-<li><b>Magnet material</b>: generic NdFeB, Br 1.24 T at 20 °C, recoil permeability 1.05.</li>
+<li><b>Magnet width</b>: 18.9 mm. ORNL/TM-2004/120 gives 19.24 mm with a 5.31 mm thickness, which does not fit the
+drawn 6.80 mm pocket in this pocket model; together they would move the back-EMF about −0.4 %.</li>
 <li><b>Lamination material</b>: M400-50A, a 0.5 mm grade. The real laminations are 0.36 mm (0.014 in), which matters for
 iron loss and efficiency more than for the field.</li>
 <li><b>Winding</b>: 9 turns per coil, one parallel path, consistent with the 9 conductor bundles per slot in ORNL's text.</li>
@@ -569,6 +684,11 @@ RUN_NOTES = {
                                 "predicted, while the peak at 6000 rpm fell 2.3 % because the narrower slots cut the "
                                 "harmonics. REQ-M1 is verified fail on this run. This machine is now the design input, and "
                                 "108.0 V per 1000 rpm is the blind prediction.",
+    "motor_prius_ornl_oc_mesh_r1": "Rotor and magnets from published sources: pocket 6.78 mm (grown inward, later "
+                                   "corrected), bridge 1.45 mm, magnet Br 1.243 T and recoil permeability 1.129 from "
+                                   "ORNL's Fig. 14.",
+    "motor_prius_ornl_oc_mesh_r2": "Final machine: the pocket placed as drawn (outer apex 10.65 mm, 6.80 mm thick). Its "
+                                   "finest-mesh back-EMF is the blind prediction.",
 }
 
 
@@ -632,14 +752,16 @@ def build_open_circuit(cases, runs):
                 "label_dy": dy}
 
     s_pyl = series(["motor_prius_oc_mesh", "motor_prius_oc_mesh_r1"], "--s1", "Pyleecan's machine (2 runs)", -2)
-    s_orn = series(["motor_prius_ornl_oc_mesh"], "--s2", "Our machine (ORNL Fig. 21)", 4)
+    s_orn = series(["motor_prius_ornl_oc_mesh"], "--s2", "Our machine, stator rebuilt (ORNL Fig. 21)", 4)
+    final = "motor_prius_ornl_oc_mesh_r2" if runs.get("motor_prius_ornl_oc_mesh_r2") else "motor_prius_ornl_oc_mesh_r1"
+    s_fin = series([final], "--accent", "Our machine, rotor and magnets sourced (latest)", -6)
     scratch = {"name": "ORNL radii only, Pyleecan's slot (scratch)", "color_var": "--ink-3", "hollow": True,
                "points": [(4.0, 106.591, "fineness 4: 106.591 V (scratch run, BACKLOG 21:45)")], "label": "radii only"}
-    ys = [y for s in (s_pyl, s_orn, scratch) for _, y, _ in s["points"]]
+    ys = [y for s in (s_pyl, s_orn, s_fin, scratch) for _, y, _ in s["points"]]
     lo, hi = math.floor(min(ys) - 0.4), math.ceil(max(ys) + 0.4)
     step = 0.5 if hi - lo <= 4 else 1
     yt = [lo + i * step for i in range(int((hi - lo) / step) + 1)]
-    chart = line_chart([s_pyl, s_orn, scratch], xlabel="mesh fineness (Pyleecan Kmesh_fineness, log scale)",
+    chart = line_chart([s_pyl, s_orn, s_fin, scratch], xlabel="mesh fineness (Pyleecan Kmesh_fineness, log scale)",
                        ylabel="back-EMF, V rms LL per 1000 rpm",
                        xticks=[(1, "1"), (2, "2"), (4, "4"), (8, "8")], xpos=lambda v: (math.log2(v) + 0.25) / 3.5,
                        ylim=(lo, hi), yticks=yt)
@@ -705,14 +827,138 @@ slot raises it 1.4 %, because the wider teeth saturate less.</p></div>
     return page("open-circuit.html", "Prius Open Circuit", body, "Study 7: open-circuit electromagnetics of the Prius motor.")
 
 
+TORQUE_NOTES = {
+    "motor_prius_torque_mesh": "Mesh study at 333 A rms, the 25 A/mm² copper limit, fineness 2 / 4 / 8. REQ-M2: does "
+                               "the MTPA torque reach the rated 400 N m within that limit?",
+    "motor_prius_torque_current": "The MTPA torque curve from 50 to 350 A rms at fineness 4: the blind prediction of "
+                                  "torque against current.",
+}
+
+
+def torque_section(case, run):
+    name = case["name"]
+    head = f'<h3 id="{name}">{E(name)}</h3><p>{E(TORQUE_NOTES.get(name, case["toml"]["case"]["description"]))}</p>'
+    record = f'<details><summary>Case record: predictions before the run, results after</summary><pre>{E(case["header"])}</pre></details>'
+    if run is None:
+        return head + '<p class="muted">Queued: no run yet.</p>' + record
+    rows = []
+    for pt in run["points"]:
+        m, p = pt.get("metrics", {}), pt["parameters"]
+        ok, n = point_pass(pt)
+        rows.append([f'{float(p["current_rms_A"]):g}', f'{float(p["mesh_fineness"]):g}',
+                     fmt(m.get("current_density_rms_A_per_mm2"), 4), fmt(m.get("torque_mtpa_Nm"), 5),
+                     fmt(m.get("mtpa_angle_deg"), 3), fmt(m.get("torque_per_amp_Nm_per_A"), 4),
+                     fmt(m.get("torque_ripple_pp_at_mtpa_Nm"), 3),
+                     f'{pt.get("solver_outputs", {}).get("wall_s", 0):.0f} s',
+                     pill(f"{ok}/{n} PASS") if n and ok == n else pill(f"{ok}/{n}")])
+    pts_table = table(["Current (A rms)", "Mesh", "J (A/mm²)", "MTPA torque (N m)", "Angle (°)", "N m per A",
+                       "Ripple p-p (N m)", "Solve", "Checks"], rows, "num")
+    rc, _ = run_checks(run)
+    rc_table = table(["Run-level check", "Description", "Value", "Limit", "Status"],
+                     [[f'<code>{E(c["id"])}</code>', E(c["description"]), fmt(c["value"], 3), fmt(c["tolerance"], 3),
+                       pill(c["status"])] for c in rc]) if rc else ""
+    req = ""
+    if run["report"]:
+        req = "<p>Requirement verdicts: " + ", ".join(
+            f'{E(pt["label"].split("_", 1)[1])} {pill(pt["requirements"][0]["verdict"])}'
+            for pt in run["report"]["points"] if pt.get("requirements")) + "</p>"
+    figs = ""
+    pick = max((pt for pt in run["points"] if pt.get("status") == "completed"),
+               key=lambda pt: (float(pt["parameters"]["mesh_fineness"]), float(pt["parameters"]["current_rms_A"])),
+               default=None)
+    if pick is not None:
+        figs = (f'<figure>{img64(pick["dir"] / "response.png", "Torque against current angle")}<figcaption>{E(pick["label"])}: '
+                "mean torque against current angle with the MTPA point, and the torque over one electrical period at the "
+                "best sampled angle.</figcaption></figure>")
+    prov = f'<p class="muted mono">run {E(run["id"])}' + ("" if run["complete"] else " (still running)") + "</p>"
+    return head + pts_table + rc_table + req + figs + record + prov
+
+
+def build_torque(tcases, runs):
+    tc = runs.get("motor_prius_torque_current")
+    chart = ""
+    if tc and tc["points"]:
+        pts = [(float(pt["parameters"]["current_rms_A"]), pt["metrics"]["torque_mtpa_Nm"],
+                f'{float(pt["parameters"]["current_rms_A"]):g} A rms: {pt["metrics"]["torque_mtpa_Nm"]:.1f} N m at '
+                f'{pt["metrics"]["mtpa_angle_deg"]:.1f} deg') for pt in tc["points"] if pt.get("status") == "completed"]
+        if pts:
+            ymax = max(500, math.ceil(max(y for _, y, _ in pts) / 100) * 100)
+            X0, X1 = 0, 375
+            L, Rr, T, B, Wd, Hd = 64, 150, 16, 46, 760, 330
+            W, H = Wd - L - Rr, Hd - T - B
+            xlim = L + (333 - X0) / (X1 - X0) * W
+            y400 = T + (1 - 400 / ymax) * H
+            extra = (f'<line x1="{L}" x2="{L + W}" y1="{y400:.1f}" y2="{y400:.1f}" stroke="var(--ink-3)" stroke-width="1"/>'
+                     f'<text x="{L + 6}" y="{y400 - 6:.1f}">rated 400 N m</text>'
+                     f'<line x1="{xlim:.1f}" x2="{xlim:.1f}" y1="{T}" y2="{T + H}" stroke="var(--ink-3)" stroke-width="1"/>'
+                     f'<text x="{xlim - 6:.1f}" y="{T + 14}" text-anchor="end">25 A/mm² limit</text>')
+            chart = line_chart([{"name": "MTPA torque", "color_var": "--s1", "points": pts, "legend": False,
+                                 "label": f"{pts[-1][1]:.0f} N m"}],
+                               xlabel="phase current (A rms)", ylabel="MTPA torque (N m)",
+                               xticks=[(v, str(v)) for v in range(0, 376, 50)], xpos=lambda v: (v - X0) / (X1 - X0),
+                               ylim=(0, ymax), yticks=list(range(0, ymax + 1, 100)), extra=extra)
+    checks_rows = [
+        ["Power balance", "Mean of Σ i·dφ/dt over one period against mean torque × mechanical speed, at every angle", "≤ 2 %",
+         "Energy conservation in a lossless magnetostatic model: an independent route to FEMM's stress-tensor torque. "
+         "Pyleecan's flux-linkage sign is opposite to the motor convention; the check applies it explicitly."],
+        ["Current amplitude", "Imposed phase-current fundamental against √2 × the requested rms", "≤ 1e-3",
+         "Pyleecan's dq currents are rms; a peak/rms mix-up would be a factor √2."],
+        ["Phase symmetry under load", "Spread of the three phases' fundamental flux linkage", "≤ 2e-3", "Winding and periodicity under load."],
+        ["MTPA bracketed", "Maximum torque inside the angle sweep", "validity", "Otherwise the parabola extrapolates."],
+        ["Mesh convergence (run level)", "GCI on the MTPA torque, three meshes", "≤ 1 %", "At the most saturated current."],
+    ]
+    sections = "".join(torque_section(c, runs.get(c["name"])) for c in tcases)
+    body = f"""
+<div class="col">
+<div class="eyebrow">Study 7 · electromagnetics · under load</div>
+<h1>Torque against current</h1>
+<p class="lede">How much torque does the motor make per amp, and does it reach its rated 400 N m within a copper
+current-density limit? Each point sweeps the current angle and takes the maximum torque per amp (MTPA).</p>
+</div>
+
+<div class="callout">
+<p><b>Assumed design limit:</b> 25 A/mm² rms in the copper, a common short-time limit for an oil-cooled traction
+motor. With a fill of 0.84 (ORNL's design report) on our slot's 143.0 mm² and 9 turns per slot, that is 333 A rms. No
+published inverter current rating is used: searching for one risks ORNL's measured torque-current data.</p>
+<p><b>Prior knowledge declared:</b> the 400 N m rating, and ORNL lumped-parameter model values seen in the filter
+incident (see the overview's blind protocol log).</p>
+</div>
+
+<h2>Method</h2>
+<div class="col">
+<ul>
+<li>Pyleecan's dq currents are rms. At current I the angle γ runs from the q axis towards negative d:
+I<sub>d</sub> = −I sin γ, I<sub>q</sub> = I cos γ, from 0 to 70° in 8 steps.</li>
+<li>At each angle one FEMM simulation over one electrical period (48 steps) gives the torque and the phase flux
+linkages; the MTPA torque comes from a parabola through the best three angles.</li>
+<li>1000 rpm, below base speed, so no voltage limit applies.</li>
+</ul>
+</div>
+
+<h2>Checks on every point</h2>
+{table(["Check", "What is compared", "Limit", "Why"], checks_rows)}
+
+<h2>MTPA torque against current</h2>
+{chart or '<p class="muted">The curve appears when the 50-350 A run has points.</p>'}
+
+<h2>Runs</h2>
+{sections}
+
+<p class="muted">Generated by <code>reports/motor/build_report.py</code>.</p>
+"""
+    return page("torque.html", "Prius Torque Curve", body, "Study 7: torque against current of the Prius motor.")
+
+
 def main():
     cases = [case_record(c) for c in CASES]
-    runs = {c: load_run(c) for c in CASES}
+    tcases = [case_record(c) for c in TORQUE_CASES]
+    runs = {c: load_run(c) for c in CASES + TORQUE_CASES}
     (OUT / "index.html").write_text(build_index(cases, runs), encoding="utf-8")
     if len(sys.argv) > 1:  # also write the artifact's main page (no document skeleton) to the given path
         Path(sys.argv[1]).write_text(build_index(cases, runs, full=False), encoding="utf-8")
     (OUT / "geometry.html").write_text(build_geometry(), encoding="utf-8")
     (OUT / "open-circuit.html").write_text(build_open_circuit(cases, runs), encoding="utf-8")
+    (OUT / "torque.html").write_text(build_torque(tcases, runs), encoding="utf-8")
     for f, _ in PAGES:
         print(f"wrote {OUT / f} ({(OUT / f).stat().st_size / 1e3:.0f} kB)")
 
