@@ -27,6 +27,28 @@
 #      between neighbouring speeds, against 47 A before: -39 A at 5500 rpm, -86 A at 5750 rpm, 10 N m).
 #   P4 REQ-M5 unchanged (58.6 / 53.7 kW, high-current points), now verified PASS; 400 N m reachable to 1750 rpm.
 #   P5 Under a minute per scenario (the extra half-table map doubles the search).
+#
+# Results (run 20261122-153450_motor_prius_efficiency_r1): verification FAIL in the hot scenario only (interp_map);
+# the cold scenario passes all 8 checks.
+#   P1 PARTLY. Held: back-EMF 111.006 V (1.3e-6); MTPA 251.58 / 455.95 N m (unchanged); merged rows bit-identical
+#      (0); node checks 0.73 / 0.84 % for torque and 3.0 / 4.2 % for the 6000 rpm iron loss (cold / hot). Half-table
+#      map against the full one: cold 0.87 point at worst (held), hot 6.23 points (MISSED), from one cell, 4500 rpm /
+#      10 N m; every other hot cell is within 0.34 point, median 0.02.
+#   P2 HELD: the main 25 A table, interpolated at the 78 new nodes, misses FEMM's torque by 1.04 % (cold) / 1.23 %
+#      (hot) at worst, both at id -25 A, iq 6.25 A. (This scores P3 of both low-iq cases: HELD.)
+#   P3 PARTLY. Held: peaks 97.41 % (cold, 2500 rpm, 80 N m) and 97.05 % (hot, 2750 rpm, 60 N m), unchanged within
+#      0.01; reference points above 30 N m within 0.25 point of the first run; 6000 rpm / 30 N m 91.67 / 90.84 %
+#      (+0.41 / +0.43). Missed: the 10 N m row still jumps. Above 4000 rpm the optimum id moves by up to 47 A between
+#      neighbouring speeds (cold, 5750 to 6000 rpm) and 19 A (hot, 4250 to 4500 rpm, where efficiency drops from
+#      90.05 to 83.56 % in one speed step). At 20 and 30 N m the jumps are 11-16 A. At 10 N m (2.5 % of rated torque)
+#      the optimum uses iq 2-4 A, still inside the first 6.25 A cell, and switches between field-weakening branches.
+#   P4 PARTLY: REQ-M5 unchanged, 58.62 kW cold (verified PASS) and 53.72 kW hot (PASS, unverified: the hot map
+#      check withholds it, though the REQ-M5 envelope is at 212 A, far from the 10 N m row). 400 N m to 1750 rpm.
+#   P5 HELD: seconds.
+# Engineering reading: the map is resolved to about 0.5 efficiency point everywhere from 20 N m up, in both scenarios;
+# the 10 N m row above 4000 rpm is not resolved and is reported as such. Resolving it would need table rows below
+# 6.25 A of q-axis current and a finer current search; at 2.5 % of rated torque that is not worth a revision before
+# the blind comparison unless ORNL's sample points turn out to lie there.
 
 [case]
 name = "motor_prius_efficiency_r1"
