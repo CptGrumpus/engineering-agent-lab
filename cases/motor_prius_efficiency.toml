@@ -35,6 +35,36 @@
 #      speed to 6000 rpm 60-80 kW cold, about 5 % less hot. 400 N m reachable at 212 A up to 1750-2500 rpm cold
 #      (base_speed_rated_torque_rpm), within 250 rpm of that hot.
 #   P5 Under 5 minutes for both scenarios (interpolation and a search over currents, no field solves).
+#
+# Results (run 20261122-133642_motor_prius_efficiency): verification FAIL, the two interpolation checks.
+#   P1 PARTLY. Held: the table's back-EMF 111.006 V (2.7e-6 from the reference); MTPA 251.59 / 455.95 N m at 100 / 200 A
+#      (0.00 / -0.21 %). Missed: the half-grid interpolation error is 5.6 % (cold) / 6.4 % (hot) for torque and
+#      14.3 / 15.7 % for the 6000 rpm iron loss, against 3 % and 5 % predicted and the 5 % tolerance. Every one of
+#      the worst nodes is on the iq 25 A row, which on the half grid sits between the iq = 0 edge and 50 A, where
+#      torque and iron loss bend sharply; median errors elsewhere 0.03 % (torque) and 0.2 % (iron).
+#      Diagnostic after the run (not a check of this case): the whole map recomputed from the half grid differs from
+#      the full-grid map by a median 0.07 / 0.08 efficiency points, at most 0.9 / 1.1 points above 60 N m, but by up
+#      to 10.6 points below 30 N m at 4000-6000 rpm. There the optimum lies deep in field weakening with iq 2-5 A,
+#      inside the first 25 A cell of the full table too, and the full-grid optimum jumps between neighbouring speeds
+#      (at 10 N m: id -33 A at 5500 rpm, -86 A at 5750 rpm). The 25 A table does not resolve the low-torque,
+#      high-speed corner; the rest of the map is interpolation-limited to about 0.1 point.
+#   P2 PARTLY: cold peak 97.41 % at 2500 rpm and 79.5 N m (predicted 95.5-96.5 % at 100-250 N m: MISSED, higher and
+#      at lower torque); hot peak 97.04 %, 0.37 point lower (held). My iron-loss estimate came from the 300 A column; at
+#      low current the iron loss is about a third of it (348 W at 3000 rpm / 50 N m). No mechanical loss is included:
+#      it would lower these peaks.
+#   P3 PARTLY, cold (hot): 1000 rpm / 300 N m 92.0 % (89.4 %), held (119.5 A, copper 2.6 kW); 3000 / 150 96.2 %
+#      (95.5 %), close; 3000 / 50 97.1 % (96.9 %), missed (predicted 92 %: the same iron-loss overestimate);
+#      6000 / 30 91.3 % (90.4 %), missed (predicted 80 % at about 115 A; the optimum is 51 A: the flux only has to come
+#      down to the voltage limit, not to zero). 6000 / 30 lies in the unresolved corner (iq 8 A).
+#   P4 PARTLY: REQ-M5 PASS (unverified: the interpolation checks withhold it) at 58.6 kW cold and 53.7 kW hot, the
+#      lowest power in the range being at 6000 rpm (93 / 85 N m at 212 A); margins 8.6 and 3.7 kW, not the predicted
+#      10 kW or more, and the hot value is 8 % below cold, not 5 %. The REQ-M5 envelope is a high-current quantity
+#      (212 A), outside the unresolved corner, but formally it stays unverified. 400 N m is reachable at 212 A up to
+#      1750 rpm in both scenarios (held). Torque at 212 A: 474 / 460 N m up to 1500 rpm.
+#   P5 HELD: 2 s per scenario.
+# Next: refine the tables at low q-axis current (iq 0-50 A in finer steps, both temperatures) and replace the half-grid
+# node check with one on the output (the map from the half table against the full one, in efficiency points), then
+# rerun this case as r1.
 
 [case]
 name = "motor_prius_efficiency"

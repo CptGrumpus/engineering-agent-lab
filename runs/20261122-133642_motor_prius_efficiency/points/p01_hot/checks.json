@@ -1,0 +1,33 @@
+{
+  "label": "p01_hot",
+  "status": "FAIL",
+  "checks": [
+    {
+      "id": "interp_torque",
+      "description": "max over the left-out nodes (|T| >= 20 N m) of the torque error of the table on every second node: bounds the full table's interpolation error (cubic: about 1/16 of this)",
+      "kind": "numerical",
+      "value": 0.06418896510462023,
+      "tolerance": 0.05,
+      "comparison": "<=",
+      "status": "FAIL"
+    },
+    {
+      "id": "interp_iron_loss",
+      "description": "the same for the iron loss at 6000 rpm",
+      "kind": "numerical",
+      "value": 0.15682963075193973,
+      "tolerance": 0.05,
+      "comparison": "<=",
+      "status": "FAIL"
+    },
+    {
+      "id": "magnet_temperature",
+      "description": "|table's magnet temperature - this scenario's| (K)",
+      "kind": "validity",
+      "value": 0.0,
+      "tolerance": 0.0,
+      "comparison": "<=",
+      "status": "PASS"
+    }
+  ]
+}

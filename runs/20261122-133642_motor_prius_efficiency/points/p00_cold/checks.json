@@ -1,0 +1,60 @@
+{
+  "label": "p00_cold",
+  "status": "FAIL",
+  "checks": [
+    {
+      "id": "lut_back_emf",
+      "description": "|table open-circuit back-EMF (sqrt 3 w phi_d at id = iq = 0) - open-circuit study| / open-circuit study (same mesh fineness)",
+      "kind": "numerical",
+      "value": 2.65859457762151e-06,
+      "tolerance": 0.001,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "lut_mtpa_100A",
+      "description": "|table MTPA torque at 100 A rms - torque-curve study| / torque-curve study (cubic interpolation against an angle sweep with a parabola)",
+      "kind": "numerical",
+      "value": 4.4674714317645466e-05,
+      "tolerance": 0.01,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "lut_mtpa_200A",
+      "description": "|table MTPA torque at 200 A rms - torque-curve study| / torque-curve study (cubic interpolation against an angle sweep with a parabola)",
+      "kind": "numerical",
+      "value": 0.0020890743101148078,
+      "tolerance": 0.01,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "interp_torque",
+      "description": "max over the left-out nodes (|T| >= 20 N m) of the torque error of the table on every second node: bounds the full table's interpolation error (cubic: about 1/16 of this)",
+      "kind": "numerical",
+      "value": 0.056292508654209664,
+      "tolerance": 0.05,
+      "comparison": "<=",
+      "status": "FAIL"
+    },
+    {
+      "id": "interp_iron_loss",
+      "description": "the same for the iron loss at 6000 rpm",
+      "kind": "numerical",
+      "value": 0.14338403002797173,
+      "tolerance": 0.05,
+      "comparison": "<=",
+      "status": "FAIL"
+    },
+    {
+      "id": "magnet_temperature",
+      "description": "|table's magnet temperature - this scenario's| (K)",
+      "kind": "validity",
+      "value": 0.0,
+      "tolerance": 0.0,
+      "comparison": "<=",
+      "status": "PASS"
+    }
+  ]
+}
