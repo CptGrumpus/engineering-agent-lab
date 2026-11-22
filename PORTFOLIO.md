@@ -31,7 +31,7 @@ All problems are synthetic, so no client data is involved. Every number comes fr
 
 ## Evaluation tasks
 
-[Three engineering tasks with reference solutions and automated graders](tasks/README.md), written the way an AI-training or assessment pipeline needs them: a problem statement with a required answer format, a verified reference solution, a grader that scores an answer criterion by criterion, and the traps each task is built to expose, such as assuming fully developed flow, reporting a mesh singularity as a design stress, or using the wrong modulus in Hertz contact. The graders are tested too: each one gives the reference full marks and fails every trap answer on the criterion that trap should break.
+[Five engineering tasks with reference solutions and automated graders](tasks/README.md), written the way an AI-training or assessment pipeline needs them: a problem statement with a required answer format, a verified reference solution, a grader that scores an answer criterion by criterion, and the traps each task is built to expose, such as assuming fully developed flow, reporting a mesh singularity as a design stress, using the wrong modulus in Hertz contact, or averaging von Mises stress through a pressure-vessel wall. The graders are tested too: each one gives the reference full marks and fails every trap answer on the criterion that trap should break.
 
 ## Case studies
 
