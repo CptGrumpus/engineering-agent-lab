@@ -28,7 +28,7 @@ HEAD = """<!doctype html>
 <meta name="description" content="Sixteen open-source simulation studies, each checked against an independent reference, with a live grader demo and every requirement in one table.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://cptgrumpus.github.io/engineering-agent-lab/">
-<meta property="og:title" content="Simulation results I can back up">
+<meta property="og:title" content="Simulation, proof attached">
 <meta property="og:description" content="Sixteen open-source simulation studies, from FEA, CFD and coupled multiphysics to an optimisation loop. Every result is checked against an independent reference before it's called a pass or a fail.">
 <meta property="og:image" content="https://cptgrumpus.github.io/engineering-agent-lab/v2/og_card.png">
 <meta property="og:image:width" content="1200">

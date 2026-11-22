@@ -54,8 +54,8 @@ def make(facts: dict) -> Path:
     body = _font(["segoeui.ttf", "arial.ttf"], 25)
     x = 64
     d.text((x, 272), "MECHANICAL ENGINEERING  ·  SIMULATION PORTFOLIO", font=mono, fill=INK2)
-    d.text((x, 300), "Simulation results", font=title, fill=INK)
-    d.text((x, 370), "I can back up.", font=title, fill=ACCENT)
+    d.text((x, 300), "Simulation,", font=title, fill=INK)
+    d.text((x, 370), "proof attached.", font=title, fill=ACCENT)
     d.text((x, 462), "Featured: an agent-driven bracket optimisation,", font=body, fill=INK2)
     d.text((x, 494), "with all 78 candidate designs solved and checked", font=body, fill=INK2)
     stats = f"16 studies  ·  {facts['checks']:,} automated checks  ·  {facts['runs']} saved runs  ·  open-source solvers"
