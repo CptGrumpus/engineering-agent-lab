@@ -1,6 +1,6 @@
 # Engineering Modeling Portfolio
 
-Eleven worked case studies in structural analysis, contact, vibration, fatigue, fluids and heat transfer, vehicle dynamics, and CAD automation. Each one starts from a written question and measurable requirements, builds a model to answer it, and checks the result against something independent: an exact solution, a conservation law, a handbook value, a second tool, or a mesh-convergence study. Each ends with a clear answer and a statement of how sure that answer is.
+Worked case studies in structural analysis, contact, vibration, fatigue, pressure equipment, fluids and heat transfer, vehicle dynamics, and CAD automation. Each one starts from a written question and measurable requirements, builds a model to answer it, and checks the result against something independent: an exact solution, a conservation law, a handbook value, a second tool, or a mesh-convergence study. Each ends with a clear answer and a statement of how sure that answer is.
 
 I also show what the checks caught along the way. In several studies the first version of the model gave an answer that looked reasonable and was wrong, and the checks are what exposed it.
 
@@ -15,9 +15,10 @@ All problems are synthetic, so no client data is involved. Every number comes fr
 | Structural finite element analysis: 3D solids and plane stress, mesh convergence, stress-concentration and singularity judgement | FreeCAD, Gmsh, CalculiX | [1](portfolio/01-cantilever-bracket.md), [2](portfolio/02-strap-cable-hole.md) |
 | Contact: nonlinear surface-to-surface contact, contact pressure and subsurface stress, verified against Hertz; friction contact and bolted joints against VDI 2230 | Gmsh, CalculiX | [10](portfolio/10-roller-contact.md), [16](portfolio/16-bolted-joint-slip.md) |
 | Stability and nonlinear material: eigenvalue and imperfect-strut buckling, plasticity with residual stress | CalculiX | [13](portfolio/13-strut-buckling.md), [14](portfolio/14-strap-proof-plasticity.md) |
+| Pressure equipment, design by analysis: stress linearisation on classification lines, membrane and bending limits, design by analysis against a pressure-area rule | CadQuery, Gmsh, CalculiX | [18](portfolio/18-pressure-vessel-nozzle.md) |
 | Vibration: modal analysis, mode identification, frequency targets against engine orders | CadQuery, Gmsh, CalculiX | [4](portfolio/04-bracket-modal.md) |
 | Fatigue: notch factors, mean-stress correction, S-N curves from published test data, life ratings | CalculiX, Python | [3](portfolio/03-strap-fatigue.md) |
-| Scripted CAD-to-analysis pipelines: parametric geometry, STEP exchange, meshing, solving; an optimiser driving the pipeline | CadQuery, Gmsh, CalculiX, SciPy | [2](portfolio/02-strap-cable-hole.md), [4](portfolio/04-bracket-modal.md), [8](portfolio/08-mounting-plate.md), [12](portfolio/12-bracket-optimisation.md) |
+| Scripted CAD-to-analysis pipelines: parametric geometry, STEP exchange, meshing, solving; an optimiser driving the pipeline | CadQuery, Gmsh, CalculiX, SciPy | [2](portfolio/02-strap-cable-hole.md), [4](portfolio/04-bracket-modal.md), [8](portfolio/08-mounting-plate.md), [12](portfolio/12-bracket-optimisation.md), [18](portfolio/18-pressure-vessel-nozzle.md) |
 | Computational fluid dynamics: internal laminar flow, pressure budgets, 2D and 3D | OpenFOAM | [5](portfolio/05-coolant-channel.md) |
 | Heat transfer: conduction with surface convection; conjugate heat transfer coupling CFD and solid conduction, then thermal stress | CalculiX, OpenFOAM | [6](portfolio/06-heat-sink-fin.md), [15](portfolio/15-cold-plate-thermal-chain.md) |
 | Vehicle and system dynamics: ride, road holding, frequency response | Python (SciPy), OpenModelica | [7](portfolio/07-quarter-car.md), [9](portfolio/09-mass-spring-damper.md) |
@@ -47,6 +48,7 @@ All problems are synthetic, so no client data is involved. Every number comes fr
 | [13. Strut buckling, with an imperfect strut](portfolio/13-strut-buckling.md) | How long can a pinned aluminium strut be and still reach 16 kN before any fibre yields, allowing for a bow of L/1000? | About 587 mm. The bow costs 4 to 7 % against the elastic buckling load. |
 | [14. Strap proof test, plasticity](portfolio/14-strap-proof-plasticity.md) | Does a 15 kN proof test keep the hole edge within 1 % strain, and does it leave a helpful residual stress? | Yes: 0.58 % strain and −77 MPa of compressive residual stress at the hole edge. |
 | [16. Bolted joint, slip and opening](portfolio/16-bolted-joint-slip.md) | Does a preloaded M8 joint carry a 2.5 kN side load by friction after it settles, and stay closed under 10 kN? | No: it slips at 2.39 kN, 4.4 % short; a 15.6 kN preload fixes it. It stays closed to 13.1 kN. |
+| [18. Pressure vessel nozzle, design by analysis](portfolio/18-pressure-vessel-nozzle.md) | Can a 200 mm nozzle with a 12 mm wall go into a 16 mm shell at 3.5 MPa without a reinforcing pad? | Yes by elastic analysis, by 0.9 %: local membrane stress 205.1 MPa against 207 (mesh uncertainty 0.03 %). The wall needs about 11.7 mm; a simplified pressure-area rule asks for about 16. Recommended for review: 14 mm. |
 
 ### Thermal and fluids
 
