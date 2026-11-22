@@ -10,6 +10,23 @@
 #      back-EMF +1.08 %; M330-35A -> M250-35A adds about 29 A (mostly the teeth), so about a third of that, negative.
 #   P3 Flux-linkage GCI under 1 %; REQ-M1 a fail near 1035-1040 V (its GCI may again be withheld, as on r2 and r3).
 #   P4 Solve times as r3 (about 20 s / 80 s / 7 min).
+#
+# Results (run 20261122-032255_motor_prius_ornl_oc_m250): verification FAIL on the REQ-M1 metric's GCI only.
+#   P1 HELD: 15/15 point checks; winding theory 0.18-0.19 %.
+#   P2 MISSED (wrong sign): back-EMF 111.149 / 111.077 / 111.024 V per 1000 rpm at fineness 2 / 4 / 8, +0.13 % on r3's
+#      finest (110.884 V) against -0.35 % (-0.7 to -0.1 %). The estimate charged the whole difference to the teeth near
+#      1.5 T, where M250-35A needs more field. Two things push the other way and outweighed it: below about 1.15 T
+#      M250-35A needs LESS field (1.0 T: 107 against 114 A/m; 0.5 T: 53 against 64), where most of the open-circuit
+#      iron runs; and in deep saturation its tail carries slightly less flux (50 kA/m: 2.011 against 2.021 T; 100 kA/m:
+#      2.101 against 2.105 T), so the saturated bridges leak a little less. Either means the open-circuit teeth run
+#      below the assumed 1.5 T, which agrees with r3's P2 landing at the low end of its range. Not separated here
+#      (no field plot per region).
+#   P3 PARTLY: flux-linkage GCI 0.16 % (monotone, order 0.45, extrapolated 0.216129 Wb, i.e. 110.88 V). The 6000 rpm
+#      peak is 1038.36 / 1039.80 / 1039.85 V: monotone at an anomalous observed order (5.1), so REQ-M1 is formally
+#      withheld, as on r3. Verdict not in doubt: 1040 V against the 500 V bus (-0.06 % on r3).
+#   P4 HELD: 21 s / 78 s / 444 s.
+# Bracket so far: back-EMF 110.88 V (M330-35A, the stand-in) to 111.02 V (M250-35A), a spread of 0.13 %, far inside
+# the 5 % validation limit; the lamination grade hardly matters at open circuit.
 
 [case]
 name = "motor_prius_ornl_oc_m250"
