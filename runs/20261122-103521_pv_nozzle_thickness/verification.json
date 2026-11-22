@@ -1,0 +1,363 @@
+{
+  "run_id": "20261122-103521_pv_nozzle_thickness",
+  "verified_utc": "2026-11-22T15:39:59+00:00",
+  "tolerances": {
+    "volume_rel_tol": 0.01,
+    "equilibrium_rel_tol": 1e-05,
+    "lame_rel_tol": 0.01,
+    "scl_violation_tol": 0.01,
+    "mesh_noise_rel": 1e-05,
+    "gci_max": 0.03
+  },
+  "points": [
+    {
+      "label": "p00_nozzle_thickness_mm-8",
+      "status": "PASS",
+      "checks": [
+        {
+          "id": "cad_valid",
+          "description": "CadQuery B-rep valid (0 = yes)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "mesh_volume",
+          "description": "|mesh volume (straight-sided tets) - CAD volume| / CAD volume",
+          "kind": "numerical",
+          "value": 7.68412728529648e-06,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "equilibrium_y",
+          "description": "|support reaction on y = 0 - exact pressure resultant (p x projected wetted area)| / resultant",
+          "kind": "numerical",
+          "value": 2.7562636090515695e-07,
+          "tolerance": 1e-05,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "equilibrium_z",
+          "description": "|support reaction on z = 0 - exact resultant (end thrust + nozzle bore)| / resultant",
+          "kind": "numerical",
+          "value": 2.961960962640968e-07,
+          "tolerance": 1e-05,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "self_balance_x",
+          "description": "|reaction at the single axial support| / quarter nozzle thrust (closed vessel: 0)",
+          "kind": "numerical",
+          "value": 1.1738431902185947e-06,
+          "tolerance": 1e-05,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "lame_bore_hoop",
+          "description": "|FE hoop stress at the bore on the far line - Lame| / Lame (exact)",
+          "kind": "numerical",
+          "value": 0.004448309144521855,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "lame_membrane",
+          "description": "|FE linearised membrane (von Mises) on the far line - the same linearisation of the Lame stresses| / Lame (exact)",
+          "kind": "numerical",
+          "value": 0.0001777740356574691,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "scl_inside_mesh",
+          "description": "max barycentric violation of the SCL sample points (0 = inside an element; points on a curved surface lie about h^2 / 8R outside the straight-sided element, where the quadratic shape functions extrapolate smoothly)",
+          "kind": "validity",
+          "value": 0.0012153901040108384,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "small_displacement",
+          "description": "max displacement / shell thickness (linear geometry)",
+          "kind": "validity",
+          "value": 0.040455241048846964,
+          "tolerance": 0.1,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p01_nozzle_thickness_mm-10",
+      "status": "PASS",
+      "checks": [
+        {
+          "id": "cad_valid",
+          "description": "CadQuery B-rep valid (0 = yes)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "mesh_volume",
+          "description": "|mesh volume (straight-sided tets) - CAD volume| / CAD volume",
+          "kind": "numerical",
+          "value": 3.372765632368416e-06,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "equilibrium_y",
+          "description": "|support reaction on y = 0 - exact pressure resultant (p x projected wetted area)| / resultant",
+          "kind": "numerical",
+          "value": 2.7562636090515695e-07,
+          "tolerance": 1e-05,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "equilibrium_z",
+          "description": "|support reaction on z = 0 - exact resultant (end thrust + nozzle bore)| / resultant",
+          "kind": "numerical",
+          "value": 2.961960962640968e-07,
+          "tolerance": 1e-05,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "self_balance_x",
+          "description": "|reaction at the single axial support| / quarter nozzle thrust (closed vessel: 0)",
+          "kind": "numerical",
+          "value": 9.648929398802883e-07,
+          "tolerance": 1e-05,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "lame_bore_hoop",
+          "description": "|FE hoop stress at the bore on the far line - Lame| / Lame (exact)",
+          "kind": "numerical",
+          "value": 0.004691218531669769,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "lame_membrane",
+          "description": "|FE linearised membrane (von Mises) on the far line - the same linearisation of the Lame stresses| / Lame (exact)",
+          "kind": "numerical",
+          "value": 0.00019073952768252706,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "scl_inside_mesh",
+          "description": "max barycentric violation of the SCL sample points (0 = inside an element; points on a curved surface lie about h^2 / 8R outside the straight-sided element, where the quadratic shape functions extrapolate smoothly)",
+          "kind": "validity",
+          "value": 0.0012151464206310544,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "small_displacement",
+          "description": "max displacement / shell thickness (linear geometry)",
+          "kind": "validity",
+          "value": 0.03860137960784441,
+          "tolerance": 0.1,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p02_nozzle_thickness_mm-12",
+      "status": "PASS",
+      "checks": [
+        {
+          "id": "cad_valid",
+          "description": "CadQuery B-rep valid (0 = yes)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "mesh_volume",
+          "description": "|mesh volume (straight-sided tets) - CAD volume| / CAD volume",
+          "kind": "numerical",
+          "value": 1.0947304925947385e-05,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "equilibrium_y",
+          "description": "|support reaction on y = 0 - exact pressure resultant (p x projected wetted area)| / resultant",
+          "kind": "numerical",
+          "value": 2.7562636090515695e-07,
+          "tolerance": 1e-05,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "equilibrium_z",
+          "description": "|support reaction on z = 0 - exact resultant (end thrust + nozzle bore)| / resultant",
+          "kind": "numerical",
+          "value": 2.961960962640968e-07,
+          "tolerance": 1e-05,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "self_balance_x",
+          "description": "|reaction at the single axial support| / quarter nozzle thrust (closed vessel: 0)",
+          "kind": "numerical",
+          "value": 8.257205819861936e-07,
+          "tolerance": 1e-05,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "lame_bore_hoop",
+          "description": "|FE hoop stress at the bore on the far line - Lame| / Lame (exact)",
+          "kind": "numerical",
+          "value": 0.004790181615322708,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "lame_membrane",
+          "description": "|FE linearised membrane (von Mises) on the far line - the same linearisation of the Lame stresses| / Lame (exact)",
+          "kind": "numerical",
+          "value": 0.00022440522537096495,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "scl_inside_mesh",
+          "description": "max barycentric violation of the SCL sample points (0 = inside an element; points on a curved surface lie about h^2 / 8R outside the straight-sided element, where the quadratic shape functions extrapolate smoothly)",
+          "kind": "validity",
+          "value": 0.0011666616628924096,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "small_displacement",
+          "description": "max displacement / shell thickness (linear geometry)",
+          "kind": "validity",
+          "value": 0.03747686698620314,
+          "tolerance": 0.1,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p03_nozzle_thickness_mm-16",
+      "status": "PASS",
+      "checks": [
+        {
+          "id": "cad_valid",
+          "description": "CadQuery B-rep valid (0 = yes)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "mesh_volume",
+          "description": "|mesh volume (straight-sided tets) - CAD volume| / CAD volume",
+          "kind": "numerical",
+          "value": 5.630475345040961e-06,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "equilibrium_y",
+          "description": "|support reaction on y = 0 - exact pressure resultant (p x projected wetted area)| / resultant",
+          "kind": "numerical",
+          "value": 2.7562636090515695e-07,
+          "tolerance": 1e-05,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "equilibrium_z",
+          "description": "|support reaction on z = 0 - exact resultant (end thrust + nozzle bore)| / resultant",
+          "kind": "numerical",
+          "value": 2.961960962640968e-07,
+          "tolerance": 1e-05,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "self_balance_x",
+          "description": "|reaction at the single axial support| / quarter nozzle thrust (closed vessel: 0)",
+          "kind": "numerical",
+          "value": 1.0953035907929696e-06,
+          "tolerance": 1e-05,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "lame_bore_hoop",
+          "description": "|FE hoop stress at the bore on the far line - Lame| / Lame (exact)",
+          "kind": "numerical",
+          "value": 0.004835164835164872,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "lame_membrane",
+          "description": "|FE linearised membrane (von Mises) on the far line - the same linearisation of the Lame stresses| / Lame (exact)",
+          "kind": "numerical",
+          "value": 0.00019262214321892637,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "scl_inside_mesh",
+          "description": "max barycentric violation of the SCL sample points (0 = inside an element; points on a curved surface lie about h^2 / 8R outside the straight-sided element, where the quadratic shape functions extrapolate smoothly)",
+          "kind": "validity",
+          "value": 0.0011363329558473634,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "small_displacement",
+          "description": "max displacement / shell thickness (linear geometry)",
+          "kind": "validity",
+          "value": 0.036109754211228196,
+          "tolerance": 0.1,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ]
+    }
+  ],
+  "status": "PASS"
+}

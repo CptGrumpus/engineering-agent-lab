@@ -14,6 +14,20 @@
 #      passes from 12 mm: the elastic analysis needs about 11.5-12 mm against the rule's about 16 mm.
 #   P4 P + Q stays under 300 MPa at every thickness: REQ-PV3 PASS throughout (margin above 25 %).
 #   P5 About 75 s per thickness.
+#
+# Results (run 20261122-103521_pv_nozzle_thickness): verification PASS (36/36 point checks).
+#   P1 HELD.  P2 HELD: Pm 96.23 MPa at every thickness.
+#   P3 HELD in its verdicts, steeper than estimated: PL on shell_long (governing everywhere) 238.6 / 219.8 / 205.1 /
+#      182.6 MPa at 8 / 10 / 12 / 16 mm (predicted about 225 / 214 / 205 / 192). REQ-PV2 FAILS at 8 and 10 mm, PASSES
+#      at 12 and 16 mm; linear interpolation puts PL = 207 MPa at about 11.7 mm (predicted 11.5-12). The nozzle-side
+#      line follows (223.6 / 200.0 / 181.7 / 156.7 MPa); the transverse lines stay at 60-96 MPa.
+#   P4 HELD: P + Q 267.8 / 253.1 / 240.2 / 215.4 MPa, REQ-PV3 PASS throughout (margin 35 % at 8 mm).
+#   P5 ROUGHLY HELD: about 6 min for the four.
+# Design answer: by elastic stress analysis the nozzle wall needs about 11.7 mm (12 mm passes with 0.9 % margin on PL);
+# by the simplified pressure-area rule, about 16 mm (137.6 MPa against 138 at 16 mm). The analysis saves about a
+# quarter of the wall, at the price of a thin margin that depends on judgement calls (where the classification lines
+# sit, the weld size, the sharp inner corner). Recommendation for review: 14 mm, a clear PL margin (about 6 %, by
+# interpolation) without the rule's full thickness. Pending human review.
 
 [case]
 name = "pv_nozzle_thickness"
