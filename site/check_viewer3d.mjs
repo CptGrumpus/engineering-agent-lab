@@ -33,8 +33,16 @@ const script = `(async () => {
   document.getElementById("vp-3d").click();
   for (let i = 0; i < 50 && !document.getElementById("vp").classList.contains("is-3d"); i++) await wait(100);
   const out = {};
+  const targets = [];
   for (const t of document.querySelectorAll("#gallery .card")) {
-    t.click(); await wait(2400);
+    t.click(); await wait(600);
+    const chips = [...document.querySelectorAll("#vp-parts button")];
+    if (chips.length) chips.forEach((_, k) => targets.push([t, k])); else targets.push([t, -1]);
+  }
+  for (const [t, k] of targets) {
+    t.click(); await wait(1200);
+    if (k >= 0) { document.querySelectorAll("#vp-parts button")[k].click(); }
+    await wait(2400);
     if (!document.getElementById("vp").classList.contains("is-3d")) continue;
     const views = [];
     for (const [da, de] of [[0, 0], [1.2, 0.3], [2.6, -0.2], [-1.9, 0.6]]) {

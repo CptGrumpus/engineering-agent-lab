@@ -261,12 +261,27 @@ h3.sub::after { content: ""; flex: 1; height: 1px; background: var(--rule); }
 .card[hidden] { display: none; }
 .card:hover { transform: translateY(-3px); border-color: var(--accent); box-shadow: 0 18px 32px -24px rgba(20, 40, 90, 0.5); }
 .card[aria-current="true"] { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
+.gallery { grid-auto-flow: dense; }
+.card.wide { grid-column: span 2; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); grid-template-rows: auto; }
+.card.wide .thumb { border-bottom: 0; border-right: 1px solid var(--rule); aspect-ratio: auto; height: 100%; min-height: 180px; }
+.card.wide .card-body { align-content: center; padding: 16px 18px; }
+@media (max-width: 560px) { .card.wide { grid-template-columns: 1fr; } .card.wide .thumb { border-right: 0; border-bottom: 1px solid var(--rule); aspect-ratio: 16 / 10; height: auto; min-height: 0; } }
+.vp-parts { position: absolute; top: 14px; left: 14px; z-index: 3; display: flex; flex-wrap: wrap; gap: 6px; max-width: calc(100% - 160px); }
+.vp-parts[hidden] { display: none; }
+.vp-parts button { font: 500 0.74rem var(--font-data); color: var(--vp-ink); background: rgba(8, 14, 26, 0.45); border: 1px solid rgba(237, 241, 248, 0.32); border-radius: 999px; padding: 5px 12px; cursor: pointer; }
+.vp-parts button[aria-pressed="true"] { background: var(--vp-ink); color: var(--vp-top); }
+.vp.is-3d .vp-parts { display: flex; }
+@media (max-width: 720px) { .vp-parts { position: static; max-width: none; padding: 0 0 8px; } }
+.part { display: grid; gap: 18px; padding-top: 18px; border-top: 1px solid var(--rule); min-width: 0; scroll-margin-top: 68px; }
+.part > .label { color: var(--accent); }
+.part-title { font-family: var(--font-display); font-size: clamp(1.25rem, 2.2vw, 1.55rem); font-weight: 750; margin-top: -10px; }
 .card:has(img[data-loop]) .meta::after { content: "▶ moves"; margin-left: auto; color: var(--ink-3); letter-spacing: 0.04em; }
 .thumb { display: block; aspect-ratio: 16 / 10; background: var(--plate); border-bottom: 1px solid var(--rule); }
 .thumb img { width: 100%; height: 100%; object-fit: contain; display: block; }
 .card-body { display: grid; gap: 6px; padding: 12px 14px 14px; align-content: start; }
 .meta { display: flex; gap: 10px; font-family: var(--font-data); font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-3); }
-.meta .no { color: var(--accent); }
+.meta .no { color: var(--accent); white-space: nowrap; }
+.meta { flex-wrap: wrap; row-gap: 2px; }
 .card-title { font-family: var(--font-display); font-weight: 700; font-stretch: 104%; font-size: 1.02rem; line-height: 1.25; }
 .card-foot { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 6px; margin-top: 2px; }
 .tools { font-family: var(--font-data); font-size: 0.72rem; color: var(--ink-3); }
@@ -453,7 +468,7 @@ details.study > summary:hover .study-toggle { text-decoration: underline; }
         <div class="legend-title" id="lg-title">S, Mises<small>MPa</small></div>
         <div class="legend-body"><div class="swatches" id="lg-sw"></div><div class="ticks" id="lg-ticks"></div></div>
       </div>
-      <div class="stage"><button class="vp-3d" id="vp-3d" type="button" aria-pressed="false">Rotate in 3D</button>
+      <div class="stage"><div class="vp-parts" id="vp-parts" role="group" aria-label="Results in this report" hidden></div><button class="vp-3d" id="vp-3d" type="button" aria-pressed="false">Rotate in 3D</button>
       <p class="vp-hint" id="vp-hint" hidden><span class="long">Same surface and colour bands as the render · </span>Drag to turn · <span class="long">scroll or </span>pinch to zoom<span class="long"> · double-click to reset</span></p>
       <img id="vp-img" src="v2/vp_bracket_opt.webp" alt="Von Mises stress on the deformed optimised bracket">
       <svg class="triad" viewBox="0 0 54 54" aria-hidden="true">
@@ -629,7 +644,11 @@ details.study > summary:hover .study-toggle { text-decoration: underline; }
   const title = document.getElementById("lg-title"), status = document.getElementById("vp-status");
   const cards = [...document.querySelectorAll("#gallery .card")];
   const picks = new Map([...document.querySelectorAll("#picks > .pick")].map(p => [p.dataset.study, p]));
-  const byStudy = new Map(VP.map((v, i) => [v.study, i]));
+  // a card can hold several studies (a report): its results, in order, and the one it opens on
+  const byCard = new Map();
+  VP.forEach((v, i) => { if (!byCard.has(v.card)) byCard.set(v.card, []); byCard.get(v.card).push(i); });
+  const partOf = new Map(VP.filter(v => v.card !== v.study).map(v => [v.study, v.card]));
+  const partsBar = document.getElementById("vp-parts");
   const reduce = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const sci = v => (v < 0 ? "-" : "+") + Math.abs(v).toExponential(3).replace(/e([+-])(\d)$/, "e$10$2");
   const esc = s => s.replace(/[&<>]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]));
@@ -698,11 +717,26 @@ details.study > summary:hover .study-toggle { text-decoration: underline; }
     }, 220);
   }
 
-  // one study at a time: the viewer shows its result, the panel below it its answer and full write-up
+  function showParts(card, i) {
+    const list = byCard.get(card) || [];
+    partsBar.hidden = list.length < 2;
+    if (partsBar.hidden) { partsBar.innerHTML = ""; return; }
+    partsBar.innerHTML = list.map(k => `<button type="button" data-i="${k}" aria-pressed="${k === i}">${esc(VP[k].part)}</button>`).join("");
+  }
+  partsBar.addEventListener("click", e => {
+    const b = e.target.closest("button[data-i]");
+    if (!b) return;
+    const i = +b.dataset.i;
+    show(i); showParts(VP[i].card, i);
+  });
+
+  // one card at a time: the viewer shows its result, the panel below it its answer and full write-up
   function select(key, how = {}) {
     const pick = picks.get(key);
     if (!pick) return false;
-    if (byStudy.has(key)) show(byStudy.get(key));
+    const list = byCard.get(key) || [];
+    const i = how.part !== undefined ? how.part : (list.find(k => VP[k].main) ?? list[0]);
+    if (i !== undefined) { show(i); showParts(key, i); }
     picks.forEach((p, k) => { p.hidden = k !== key; });
     cards.forEach(c => c.setAttribute("aria-current", c.dataset.study === key ? "true" : "false"));
     if (how.open && pick.tagName === "DETAILS") pick.open = true;
@@ -716,19 +750,28 @@ details.study > summary:hover .study-toggle { text-decoration: underline; }
   }));
   // links elsewhere to a study (lessons, tables): select it and open its write-up. The optimiser's own
   // link goes to its featured section as usual.
-  const isStudy = key => picks.has(key) && key !== "bracket_opt";
+  const isStudy = key => (picks.has(key) || partOf.has(key)) && key !== "bracket_opt";
+  // a link to a study inside a report: open the report on that study's result and scroll to its part
+  function open(key, smooth = true) {
+    const i = VP.findIndex(v => v.study === key);
+    if (i < 0 || !VP[i].part) { select(key, { open: true, scroll: true }); return; }
+    const card = VP[i].card;
+    select(card, { open: true, part: i });       // a study inside a report opens on its own result
+    (document.getElementById(key) && key !== card ? document.getElementById(key) : picks.get(card))
+      .scrollIntoView({ block: "start", behavior: smooth && !reduce() ? "smooth" : "auto" });
+  }
   document.addEventListener("click", e => {
     const a = e.target.closest('a[href^="#"]');
     if (!a || a.closest("#gallery")) return;
     const key = decodeURIComponent(a.getAttribute("href").slice(1));
     if (!isStudy(key)) return;
     e.preventDefault();
-    select(key, { open: true, scroll: true });
+    open(key);
     history.replaceState(null, "", "#" + key);
   });
   const fromHash = () => {
     const key = decodeURIComponent(location.hash.slice(1));
-    if (isStudy(key)) select(key, { open: true, scroll: true });
+    if (isStudy(key)) open(key, false);
   };
   window.addEventListener("hashchange", fromHash);
 
@@ -749,12 +792,12 @@ details.study > summary:hover .study-toggle { text-decoration: underline; }
     cards.forEach(c => { c.hidden = !(f === "all" || c.dataset.group === f); });
   }));
 
-  select(VP[0].study);
+  select(VP[0].card);
   fromHash();
   // images above a deep-linked study can load after the first scroll and push it down: settle once more
   window.addEventListener("load", () => {
     const key = decodeURIComponent(location.hash.slice(1));
-    if (isStudy(key)) picks.get(key).scrollIntoView({ block: "start" });
+    if (isStudy(key)) (document.getElementById(key) || picks.get(key)).scrollIntoView({ block: "start" });
   });
 })();
 </script>

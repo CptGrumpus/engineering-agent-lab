@@ -148,17 +148,51 @@ CARDS = [
     ("baseline", "09", "workflow", "Workflow", "Mass-spring-damper baseline", "All 72 checks pass, and the two tools agree to a few parts per million.", "pass", "SciPy · OpenModelica"),
 ]
 VERDICT = {"pass": "Passes", "fail": "Fails", "mixed": "Depends on speed", "held": "One result on hold"}
+
+# studies of the same part, shown as one card and one panel; each study keeps its own write-up, viewer
+# result, requirements rows and evidence, and links to a study land on its part of the panel
+GROUPS = {
+    "strap": dict(parts=["strap", "fatigue", "strap_proof"], main="strap_proof", no="02 · 03 · 14",
+                  d="Three studies", title="Aluminium strap: cable hole, fatigue life and proof test",
+                  label="Studies 2, 3 and 14 · CadQuery, Gmsh, CalculiX and Python", verdict="pass",
+                  tools="CadQuery · Gmsh · CalculiX · Python",
+                  answer="One strap, three questions. A 16 mm cable hole passes at 117 MPa against 120. The strap lasts "
+                         "easily at its 5 kN service load and could be rated to 7.8 kN cyclic. A 15 kN proof test strains "
+                         "the hole edge to 0.58 % and leaves −77 MPa of compression behind, which helps fatigue."),
+    "cold_plate": dict(parts=["heat", "cold_plate"], main="cold_plate", no="11 · 15",
+                       d="Two studies", title="Cold plate: the coolant channel, then the full thermal chain",
+                       label="Studies 11 and 15 · OpenFOAM and CalculiX", verdict="pass", tools="OpenFOAM · CalculiX",
+                       answer="First the coolant channel on its own: the wall peaks at 44.03 °C against 45, verified. Then "
+                              "the full chain, coolant to plate conduction to thermal stress: the component face peaks at "
+                              "40.99 °C, the coolant warms 7.20 K and the stress reaches 46.8 MPa, all inside their limits."),
+}
+PART_OF = {p: g for g, gd in GROUPS.items() for p in gd["parts"]}
+PART_LABEL = {"strap": "02 · Cable hole", "fatigue": "03 · Fatigue life", "strap_proof": "14 · Proof test",
+              "heat": "11 · Coolant channel", "cold_plate": "15 · Full thermal chain"}
+WIDE = {"bracket_opt", "strap", "cold_plate"}
+
+GALLERY, _seen = [], set()        # (key, no, group, d, title, answer, verdict, tools, thumb key)
+for k, n, g, d, title, a, v, tools in CARDS:
+    if k in PART_OF:
+        gk = PART_OF[k]
+        if gk in _seen:
+            continue
+        _seen.add(gk)
+        gd = GROUPS[gk]
+        GALLERY.append((gk, gd["no"], g, gd["d"], gd["title"], gd["answer"], gd["verdict"], gd["tools"], gd["main"]))
+    else:
+        GALLERY.append((k, n, g, d, title, a, v, tools, k))
 _lp = HERE / "v2" / "loops.json"
 LOOPS = json.loads(_lp.read_text(encoding="utf-8")) if _lp.exists() else {}
 cards_html = "\n".join(
-    f'''      <a class="card" href="#{k}" data-study="{k}" data-group="{g}">
-        <span class="thumb"><img src="v2/th_{k}.webp" alt="" loading="lazy" width="800" height="500"{f' data-loop="{LOOPS[k]}"' if k in LOOPS else ""}></span>
+    f'''      <a class="card{' wide' if k in WIDE else ''}" href="#{k}" data-study="{k}" data-group="{g}">
+        <span class="thumb"><img src="v2/th_{th}.webp" alt="" loading="lazy" width="800" height="500"{f' data-loop="{LOOPS[th]}"' if th in LOOPS else ""}></span>
         <span class="card-body">
           <span class="meta"><span class="no">{n}</span><span>{html.escape(d.replace("New · ", "").replace("Featured · ", ""))}</span></span>
           <span class="card-title">{html.escape(t)}</span>
           <span class="card-foot"><span class="v v-{v}">{VERDICT[v]}</span><span class="tools">{tools}</span></span>
         </span>
-      </a>''' for k, n, g, d, t, a, v, tools in CARDS)
+      </a>''' for k, n, g, d, t, a, v, tools, th in GALLERY)
 
 # load-step frames for the viewer's slider (scripts/make_study_renders.py --frames)
 _fr = HERE / "v2" / "frames.json"
@@ -168,10 +202,16 @@ for v in VP:
         v["frames"] = f["frames"]
         v["frames_main"] = f["main"]
 
-# the viewer follows the gallery's order
-order = [c[0] for c in CARDS]
-VP.sort(key=lambda v: order.index(v["study"]))
-assert [v["study"] for v in VP] == order, "every study needs exactly one viewer entry"
+# every study has one viewer entry; grouped studies share their card, in story order, the main one default
+assert sorted(v["study"] for v in VP) == sorted(c[0] for c in CARDS), "every study needs exactly one viewer entry"
+for v in VP:
+    v["card"] = PART_OF.get(v["study"], v["study"])
+    if v["study"] in PART_OF:
+        v["part"] = PART_LABEL[v["study"]]
+        v["main"] = GROUPS[v["card"]]["main"] == v["study"]
+corder = [c[0] for c in GALLERY]
+VP.sort(key=lambda v: (corder.index(v["card"]),
+                       GROUPS[v["card"]]["parts"].index(v["study"]) if v["card"] in GROUPS else 0))
 
 term_html = "".join(
     f'<span class="t-row"><span class="t-id">{cid}</span><span class="t-{st.lower()}">{st}</span><span class="t-num">{val}</span><span class="t-tol">tol {tol}</span></span>'
@@ -211,7 +251,24 @@ def study_panels(text: str) -> str:
                              f'<a class="study-toggle-link" href="#bracket_opt">Read the full study, just below ↓</a></div>\n  </div>')
     missing = [c[0] for c in CARDS if c[0] not in panels]
     assert not missing, f"no write-up for {missing}"
-    return "\n".join(panels[c[0]] for c in CARDS)
+    # a group: one panel, each study a part of it (the part keeps the study's id for links, unless the
+    # study shares its key with the group)
+    for gk, gd in GROUPS.items():
+        parts = []
+        for k in gd["parts"]:
+            m = pat.search(text[text.index(f'<section class="study" id="{k}">') - 2:])
+            head, body = m.group(2), m.group(3)
+            lab = re.search(r'<span class="label">(.*?)</span>', head, re.S).group(1)
+            h2 = re.search(r'<h2>(.*?)</h2>', head, re.S).group(1)
+            pid = "" if k == gk else f' id="{k}"'
+            parts.append(f'    <div class="part"{pid} data-part="{k}"><span class="label">{lab}</span><h3 class="part-title">{h2}</h3>'
+                         f'{body}\n{extras.evidence_html(k)}    </div>')
+        panels[gk] = (f'  <details class="study pick" id="{gk}" data-study="{gk}" hidden>\n    <summary class="study-head">'
+                      f'<span class="label">{gd["label"]}</span><h2>{html.escape(gd["title"])}</h2>'
+                      f'<span class="v v-{gd["verdict"]}">{VERDICT[gd["verdict"]]}</span><span class="study-sum">{html.escape(gd["answer"])}</span>'
+                      f'<span class="study-toggle"></span></summary>\n'
+                      f'    <div class="study-body">\n' + "\n".join(parts) + '\n    </div>\n  </details>')
+    return "\n".join(panels[c[0]] for c in GALLERY)
 
 def featured_with_evidence() -> str:
     """The featured study gets the same evidence line as the others, once its files are committed."""
