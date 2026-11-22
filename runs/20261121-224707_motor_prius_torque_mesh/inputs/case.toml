@@ -1,0 +1,97 @@
+# Study 7, torque against current, first case: mesh study at the current-density limit, on our machine
+# (models/motor/Toyota_Prius_ORNL.json). Each point sweeps the current angle from the q axis (0-70 deg, 8 angles) and
+# takes the maximum torque per amp (MTPA) from a parabola through the best three.
+#
+# Decision this case informs (design check, agreed framing 2026-11-21): can the motor reach its rated 400 N m peak
+# torque within its current limit? No published inverter current rating is in hand, and a web search for one would
+# risk returning ORNL's measured torque-current data, so the limit is set from the copper instead: 25 A/mm^2 rms, a
+# common short-time limit for an oil-cooled traction motor (stated assumption; the user may change it before the
+# ORNL data is opened). Copper area per slot = fill 0.84 (ORNL/TM-2004/137: fill factor on the net slot area) x
+# 143.0 mm^2 (our slot's active area) = 120.1 mm^2, carrying 9 turns of one coil side: I = 25 x 120.1 / 9 = 333.7 A
+# rms. Case current 333 A rms (24.95 A/mm^2).
+#
+# Prior knowledge to declare: the 400 N m rating (ORNL design report: a rating, not a measurement); and some ORNL
+# lumped-parameter MODEL results from ORNL/TM-2004/120 seen during the 2026-11-21 filter incident (BACKLOG), which
+# include torque values at currents not identified. No ORNL measured data has been opened.
+#
+# Checks on every point: power balance at every angle (energy conservation, independent of FEMM's stress-tensor
+# torque), imposed current amplitude (Pyleecan's dq currents are rms), phase symmetry under load, MTPA bracketed.
+# Run level: GCI on the MTPA torque.
+#
+# Smoke test (scratch, 2026-11-21, before the magnet update): the runner first returned the phase currents over a
+# whole mechanical revolution (Pyleecan applies no time periodicity to the electrical output), fixed by selecting the
+# samples on the flux-linkage time axis. The power balance then agreed to 0.05 % in magnitude but with the opposite
+# sign: Pyleecan's flux linkage is opposite to the motor convention; the check now applies that sign explicitly
+# (studies/motor_torque.py, PYLEECAN_FLUX_SIGN). Imposed current fundamental = sqrt(2) x rms exactly.
+# Prototype (scratch, revised machine, fineness 1, angles 10 / 30 / 50 / 70 deg): MTPA 242 N m at 39 deg (100 A),
+# 453 N m at 45 deg (200 A), 605 N m at 45 deg (333 A); power balance within 1.6e-3 at every angle; ripple at 333 A
+# 65-102 N m peak to peak; 45 s per current.
+#
+# Predictions, written BEFORE the evidence run (no ORNL measured data opened):
+#   P1 Every point check passes on every mesh: power balance within 2e-3 at every angle (tolerance 2 %), currents
+#      exact, phases symmetric, MTPA inside the sweep.
+#   P2 MTPA torque about 600 N m (590-615) at 44-47 deg; changes under 1 % from fineness 2 to 8; GCI under 1 %.
+#   P3 REQ-M2 verified PASS with about 50 % margin: at the copper limit the motor makes about 1.5 x its rated torque.
+#      (A margin this large says the 25 A/mm^2 limit is generous or the model is optimistic under saturation; the
+#      blind comparison will tell which.)
+#   P4 Ripple at MTPA 90-110 N m peak to peak (about 16 %).
+#   P5 Wall time about 8 x (20 s + 70 s + 10 min), about 1.5 h.
+#
+# Machine change after these predictions, before the run (22:43): the pocket's extra thickness was placed on the wrong
+# side. Fig. 21 is stretched 1.1 % in x in the PDF; corrected, the drawing puts the inner edge where Pyleecan has it and
+# the outer apex 0.31 mm nearer the air gap, so the machine now has H0 10.65 mm, H3 6.80 mm, W0 41.21 mm (arm angle
+# kept at 17.4 deg). The prototype above used H3 6.78 mm grown inward. Expected effect on torque: well under the
+# predictions' 3 % ranges, so they stand as written; the open-circuit revision r2 measures the effect on back-EMF.
+
+[case]
+name = "motor_prius_torque_mesh"
+model = "pyleecan_femm_load"
+description = "2004 Toyota Prius traction motor (our machine from ORNL Fig. 21) at 333 A rms (25 A/mm^2 in the copper), 1000 rpm; Pyleecan + FEMM 4.2 magnetostatics, current angle 0-70 deg from the q axis, MTPA torque; mesh fineness 2 / 4 / 8."
+assumptions = [
+  "2D magnetostatics (FEMM), no end effects; torque is the mean of FEMM's stress-tensor torque over one electrical period.",
+  "Magnets, magnet pockets and materials as in models/motor/Toyota_Prius_ORNL.json (see its build script for which are Pyleecan's).",
+  "Magnet temperature 20 C.",
+  "Current-density limit 25 A/mm^2 rms on 0.84 x 143.0 mm^2 of copper per slot (stated assumption, not a published rating).",
+]
+limitations = [
+  "No test data in this case: the ORNL comparison is a separate, blind step at the end of the study.",
+  "Sinusoidal currents; no inverter harmonics, no voltage limit (1000 rpm is below base speed).",
+  "MTPA from an 8-angle sweep and a local parabola.",
+]
+
+[parameters]
+machine = "Toyota_Prius_ORNL.json"
+speed_rpm = 1000.0
+current_rms_A = 333.0
+angle_min_deg = 0.0
+angle_max_deg = 70.0
+angle_steps = 8
+mesh_fineness = 4.0
+steps_per_period = 48
+angle_points = 2048
+rated_torque_Nm = 400.0
+slot_fill = 0.84
+slot_area_mm2 = 143.0
+turns_per_slot = 9
+
+[sweep]
+parameter = "mesh_fineness"
+values = [2.0, 4.0, 8.0]
+
+[numerics]
+solver_timeout_s = 14400
+
+[verification]
+power_balance_rel_tol = 0.02
+current_rel_tol = 1e-3
+phase_symmetry_rel_tol = 2e-3
+mesh_noise_rel = 1e-5
+gci_max = 0.01
+
+[[requirements]]
+id = "REQ-M2"
+text = "At the 25 A/mm^2 rms copper current-density limit, the maximum torque per amp shall reach the rated 400 N m peak torque."
+metric = "torque_mtpa_Nm"
+operator = ">="
+limit = 400.0
+units = "N m"

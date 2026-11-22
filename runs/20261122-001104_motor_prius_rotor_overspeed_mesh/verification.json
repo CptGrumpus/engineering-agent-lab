@@ -1,0 +1,179 @@
+{
+  "run_id": "20261122-001104_motor_prius_rotor_overspeed_mesh",
+  "verified_utc": "2026-11-22T05:11:58+00:00",
+  "tolerances": {
+    "ring_rel_tol": 0.002,
+    "equilibrium_rel_tol": 0.0001,
+    "beam_estimate_rel_tol": 0.3,
+    "mesh_noise_rel": 1e-05,
+    "gci_max": 0.03
+  },
+  "points": [
+    {
+      "label": "p00_bridge_element_size_mm-0.2",
+      "status": "PASS",
+      "checks": [
+        {
+          "id": "rotating_disk",
+          "description": "plain annulus through the same pipeline: max |sigma - exact| / sigma_theta at the bore (plane-stress rotating disk, free edges)",
+          "kind": "numerical",
+          "value": 0.00038185028639405966,
+          "tolerance": 0.002,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "equilibrium",
+          "description": "|steel centrifugal + magnet load + constrained reactions| / |load| (pole axis y and inter-pole normal components only)",
+          "kind": "numerical",
+          "value": 5.225769469212718e-05,
+          "tolerance": 0.0001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "beam_estimate",
+          "description": "|FE linearized - fixed-guided beam estimate (tension + end bending)| / FE (model form; estimate 423 MPa)",
+          "kind": "numerical",
+          "value": 0.01608239333555979,
+          "tolerance": 0.3,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "membrane_elastic",
+          "description": "bridge membrane von Mises / yield (below 1: the section does not yield through its thickness, so a linear-elastic model applies to the membrane)",
+          "kind": "validity",
+          "value": 0.36137499985358146,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p01_bridge_element_size_mm-0.1",
+      "status": "PASS",
+      "checks": [
+        {
+          "id": "rotating_disk",
+          "description": "plain annulus through the same pipeline: max |sigma - exact| / sigma_theta at the bore (plane-stress rotating disk, free edges)",
+          "kind": "numerical",
+          "value": 0.0003588272414557017,
+          "tolerance": 0.002,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "equilibrium",
+          "description": "|steel centrifugal + magnet load + constrained reactions| / |load| (pole axis y and inter-pole normal components only)",
+          "kind": "numerical",
+          "value": 2.8857390417158416e-05,
+          "tolerance": 0.0001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "beam_estimate",
+          "description": "|FE linearized - fixed-guided beam estimate (tension + end bending)| / FE (model form; estimate 423 MPa)",
+          "kind": "numerical",
+          "value": 0.007647537027569192,
+          "tolerance": 0.3,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "membrane_elastic",
+          "description": "bridge membrane von Mises / yield (below 1: the section does not yield through its thickness, so a linear-elastic model applies to the membrane)",
+          "kind": "validity",
+          "value": 0.3616050437609385,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p02_bridge_element_size_mm-0.05",
+      "status": "PASS",
+      "checks": [
+        {
+          "id": "rotating_disk",
+          "description": "plain annulus through the same pipeline: max |sigma - exact| / sigma_theta at the bore (plane-stress rotating disk, free edges)",
+          "kind": "numerical",
+          "value": 0.0004796507412869612,
+          "tolerance": 0.002,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "equilibrium",
+          "description": "|steel centrifugal + magnet load + constrained reactions| / |load| (pole axis y and inter-pole normal components only)",
+          "kind": "numerical",
+          "value": 1.3435296316160722e-05,
+          "tolerance": 0.0001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "beam_estimate",
+          "description": "|FE linearized - fixed-guided beam estimate (tension + end bending)| / FE (model form; estimate 423 MPa)",
+          "kind": "numerical",
+          "value": 0.0024453290630990004,
+          "tolerance": 0.3,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "membrane_elastic",
+          "description": "bridge membrane von Mises / yield (below 1: the section does not yield through its thickness, so a linear-elastic model applies to the membrane)",
+          "kind": "validity",
+          "value": 0.36150770923920966,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ]
+    }
+  ],
+  "run_checks": [
+    {
+      "id": "discretization_bridge_linearized_vm_MPa",
+      "description": "relative discretization uncertainty of bridge_linearized_vm_MPa, oscillatory (R = -0.420): 1.25 x half-range of the 3 finest solutions",
+      "kind": "numerical",
+      "value": 0.014922645009641739,
+      "tolerance": 0.03,
+      "comparison": "<=",
+      "status": "PASS",
+      "metric": "bridge_linearized_vm_MPa"
+    },
+    {
+      "id": "discretization_bridge_membrane_vm_MPa",
+      "description": "relative discretization uncertainty of bridge_membrane_vm_MPa, oscillatory (R = -0.423): 1.25 x half-range of the 3 finest solutions",
+      "kind": "numerical",
+      "value": 0.0003977161162088013,
+      "tolerance": 0.03,
+      "comparison": "<=",
+      "status": "PASS",
+      "metric": "bridge_membrane_vm_MPa"
+    }
+  ],
+  "run_check_detail": {
+    "meshes_used": [
+      "p02_bridge_element_size_mm-0.05",
+      "p01_bridge_element_size_mm-0.1",
+      "p00_bridge_element_size_mm-0.2"
+    ],
+    "bridge_linearized_vm_MPa": {
+      "regime": "oscillatory",
+      "convergence_ratio": -0.41950783174723505,
+      "uncertainty": 0.014922645009641739
+    },
+    "bridge_membrane_vm_MPa": {
+      "regime": "oscillatory",
+      "convergence_ratio": -0.4231127998436916,
+      "uncertainty": 0.0003977161162088013
+    }
+  },
+  "status": "PASS"
+}

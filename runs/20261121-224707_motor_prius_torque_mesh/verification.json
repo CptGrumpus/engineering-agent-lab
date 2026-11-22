@@ -1,0 +1,191 @@
+{
+  "run_id": "20261121-224707_motor_prius_torque_mesh",
+  "verified_utc": "2026-11-22T05:08:46+00:00",
+  "tolerances": {
+    "power_balance_rel_tol": 0.02,
+    "current_rel_tol": 0.001,
+    "phase_symmetry_rel_tol": 0.002,
+    "mesh_noise_rel": 1e-05,
+    "gci_max": 0.01
+  },
+  "points": [
+    {
+      "label": "p00_mesh_fineness-2",
+      "status": "PASS",
+      "checks": [
+        {
+          "id": "power_balance",
+          "description": "max over current angles of |mean(sum i dphi/dt) - mean torque x omega_m| / (mean torque x omega_m): energy conservation, an independent route to FEMM's stress-tensor torque",
+          "kind": "numerical",
+          "value": 0.001133399249334848,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "current_amplitude",
+          "description": "max |imposed phase current fundamental - sqrt(2) x requested rms| / peak (Pyleecan's dq currents are rms)",
+          "kind": "numerical",
+          "value": 2.414076092630909e-16,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "phase_symmetry_load",
+          "description": "max over angles of the spread of the three phases' fundamental flux linkage / mean, under load",
+          "kind": "numerical",
+          "value": 9.841628187185499e-05,
+          "tolerance": 0.002,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "mtpa_bracketed",
+          "description": "maximum torque inside the angle sweep (0 = yes)",
+          "kind": "validity",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "time_resolution",
+          "description": "48 / steps per electrical period (below 1: at least 48)",
+          "kind": "validity",
+          "value": 1.0,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p01_mesh_fineness-4",
+      "status": "PASS",
+      "checks": [
+        {
+          "id": "power_balance",
+          "description": "max over current angles of |mean(sum i dphi/dt) - mean torque x omega_m| / (mean torque x omega_m): energy conservation, an independent route to FEMM's stress-tensor torque",
+          "kind": "numerical",
+          "value": 0.0011731616049384993,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "current_amplitude",
+          "description": "max |imposed phase current fundamental - sqrt(2) x requested rms| / peak (Pyleecan's dq currents are rms)",
+          "kind": "numerical",
+          "value": 2.414076092630909e-16,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "phase_symmetry_load",
+          "description": "max over angles of the spread of the three phases' fundamental flux linkage / mean, under load",
+          "kind": "numerical",
+          "value": 9.375054866605274e-05,
+          "tolerance": 0.002,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "mtpa_bracketed",
+          "description": "maximum torque inside the angle sweep (0 = yes)",
+          "kind": "validity",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "time_resolution",
+          "description": "48 / steps per electrical period (below 1: at least 48)",
+          "kind": "validity",
+          "value": 1.0,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p02_mesh_fineness-8",
+      "status": "PASS",
+      "checks": [
+        {
+          "id": "power_balance",
+          "description": "max over current angles of |mean(sum i dphi/dt) - mean torque x omega_m| / (mean torque x omega_m): energy conservation, an independent route to FEMM's stress-tensor torque",
+          "kind": "numerical",
+          "value": 0.0009914384509954284,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "current_amplitude",
+          "description": "max |imposed phase current fundamental - sqrt(2) x requested rms| / peak (Pyleecan's dq currents are rms)",
+          "kind": "numerical",
+          "value": 2.414076092630909e-16,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "phase_symmetry_load",
+          "description": "max over angles of the spread of the three phases' fundamental flux linkage / mean, under load",
+          "kind": "numerical",
+          "value": 7.431887826309158e-05,
+          "tolerance": 0.002,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "mtpa_bracketed",
+          "description": "maximum torque inside the angle sweep (0 = yes)",
+          "kind": "validity",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "time_resolution",
+          "description": "48 / steps per electrical period (below 1: at least 48)",
+          "kind": "validity",
+          "value": 1.0,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ]
+    }
+  ],
+  "run_checks": [
+    {
+      "id": "discretization_torque_mtpa_Nm",
+      "description": "relative discretization uncertainty of torque_mtpa_Nm, divergent (R = 2.182): no estimate",
+      "kind": "numerical",
+      "value": Infinity,
+      "tolerance": 0.01,
+      "comparison": "<=",
+      "status": "FAIL",
+      "metric": "torque_mtpa_Nm"
+    }
+  ],
+  "run_check_detail": {
+    "meshes_used": [
+      "p02_mesh_fineness-8",
+      "p01_mesh_fineness-4",
+      "p00_mesh_fineness-2"
+    ],
+    "torque_mtpa_Nm": {
+      "regime": "divergent",
+      "uncertainty": Infinity,
+      "convergence_ratio": 2.1822770176662973
+    }
+  },
+  "status": "FAIL"
+}

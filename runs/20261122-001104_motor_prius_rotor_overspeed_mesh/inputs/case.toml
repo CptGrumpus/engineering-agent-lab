@@ -1,0 +1,100 @@
+# Study 7, rotor overspeed: does the rotor lamination's thinnest steel stay elastic at overspeed? Our 2004 Prius
+# machine (models/motor/Toyota_Prius_ORNL.json), half a pole in plane stress, CalculiX.
+#
+# Decision (agreed framing 2026-11-21, design check, no test data involved): the bridges (1.45 mm, between each magnet
+# pocket's end and the rotor OD) alone hold each pole's iron and magnets against the centrifugal load. If they yield at
+# overspeed, the rotor deforms (air gap closes, magnets shift). Choices made by the user before any model was built:
+#   - speed 7200 rpm: IEC 60034-1's overspeed test, 1.2 x the 6000 rpm maximum;
+#   - yield strength Rp0.2 335 MPa: the Waelzholz EN 10106 table value for M330-35A, a standard 0.35 mm grade (the
+#     Prius's 0.36 mm grade is not published; the lowest published 0.35 mm value seen was 315 MPa, Tata M330-35A, and
+#     high-strength rotor grades reach 412 MPa and more);
+#   - metric: linearized (membrane plus bending) von Mises along radial stress classification lines through the bridge,
+#     the maximum over the bridge. Pyleecan's pocket has sharp corners, so the corner peak is a singularity (it grows
+#     without bound with refinement) and is reported, not judged.
+#
+# Model: the pole exported from Pyleecan (models/motor/export_rotor_pole.py: pocket outline checked against Pyleecan's
+# own pocket area to 1e-3; magnet seat = the outer edge from the outer apex over the magnet width, 18.9 mm), meshed by
+# Gmsh (6-node triangles, refined round the bridge), CalculiX plane stress (models/fea/rotor_ccx.py).
+#
+# Prototype (scratch, 2026-11-22, 7200 rpm, before this case):
+#   - CalculiX rejected *CLOAD numbers longer than about 21 characters on the finer meshes; loads now written with 13
+#     significant digits.
+#   - CalculiX's RF totals include the external loads on free dofs at the constrained nodes (about 135 N of steel
+#     centrifugal load on each symmetry edge): the equilibrium check uses the constrained components only. Then the
+#     residual is 1e-5 to 5e-5 of the load.
+#   - Plain annulus vs the rotating-disk solution: 3.8e-4.
+#   - Bridge element 0.2 / 0.1 / 0.05 mm: linearized 430.8 / 420.0 / 424.1 MPa (oscillatory, at 17.29-17.34 deg, next to
+#     the corner where the bridge meets the inter-pole web at 17.40 deg); membrane 112 / 110 / 109 MPa; corner peak
+#     742 / 929 / 1221 MPa (the singularity, as expected).
+#   - Fixed-guided beam estimate: 57 MPa tension + 366 MPa end bending = 423 MPa (agreement this close is partly luck;
+#     the check is held to 30 %, model form).
+#
+# Verification tolerances, set before the evidence run:
+#   - ring_rel_tol 2e-3: an exact solution through the same pipeline (prototype 3.8e-4).
+#   - equilibrium_rel_tol 1e-4: force balance is exact up to the mesh's curved-edge approximation (prototype 5e-5).
+#   - beam_estimate_rel_tol 0.3: model form; guards against gross errors in load or geometry only.
+#   - gci_max 0.03: the maximum over stress classification lines next to a sharp corner is oscillatory at about +-1.3 %
+#     (prototype); the decision's margin is about 25 %, so 3 % does not change it.
+#
+# Prior knowledge to declare: ORNL/TM-2004/120 (read for design data, BACKLOG) analyses the THS and THS2 rotors' magnet
+# loading and notes the onset of plastic deformation in the bridge near the spoke; its numbers were not used.
+#
+# Predictions, written BEFORE the evidence run:
+#   P1 Every point check passes on every mesh.
+#   P2 Linearized bridge stress 420-431 MPa at 7200 rpm, oscillatory, uncertainty about 1.5 %: REQ-M4 verified FAIL by
+#      about 25 % (about 89 MPa over 335). Even a 412 MPa high-strength grade would fail, narrowly.
+#   P3 At the 6000 rpm maximum (stress scales with omega^2) about 292-299 MPa: under 335, so the lamination would yield at
+#      the IEC overspeed but not in service. Either the real Prius uses a stronger grade or larger corner radii than
+#      Pyleecan's sharp pocket, or its rotor is not designed to IEC 60034-1's 1.2 x overspeed.
+#   P4 The corner peak keeps growing with refinement (no convergence), confirming it cannot be the metric.
+#   P5 Membrane stress about 110-120 MPa, well under yield (the validity check passes).
+
+[case]
+name = "motor_prius_rotor_overspeed_mesh"
+model = "pyleecan_gmsh_ccx_rotor"
+description = "2004 Toyota Prius rotor lamination (our machine from ORNL drawings) at 7200 rpm, the IEC 60034-1 overspeed; half a pole in plane stress, CalculiX; linearized von Mises through the 1.45 mm bridges against a 335 MPa yield; bridge element size 0.2 / 0.1 / 0.05 mm."
+assumptions = [
+  "Plane stress: each 0.35 mm lamination carries its own load; the stack is uniform.",
+  "The magnets carry no stiffness: each magnet's centrifugal force acts as a uniform traction on its seat (no bonding, no friction).",
+  "Linear elastic steel (E 215 GPa, nu 0.3, density 7650 kg/m^3, Pyleecan's M400-50A data); yield 335 MPa (M330-35A, a stand-in for the unpublished grade).",
+  "Sharp pocket corners as in Pyleecan's HoleM50; the requirement uses linearized stress, so the corner radius does not enter it.",
+  "Free bore: the press fit or keyed fit on the hub is not modelled.",
+]
+limitations = [
+  "No hub fit stress, no temperature, no magnet-to-steel bonding.",
+  "The real lamination grade and corner radii are not published.",
+  "Static strength at one speed only; no fatigue from start-stop cycles.",
+]
+
+[parameters]
+machine = "Toyota_Prius_ORNL.json"
+speed_rpm = 7200.0
+max_speed_rpm = 6000.0
+yield_strength_MPa = 335.0
+bridge_element_size_mm = 0.1
+far_element_size_mm = 2.0
+refine_distance_mm = 1.0
+scl_count = 41
+scl_points = 61
+
+[sweep]
+parameter = "bridge_element_size_mm"
+values = [0.2, 0.1, 0.05]
+
+[numerics]
+solver_timeout_s = 3600
+
+[verification]
+ring_rel_tol = 2e-3
+equilibrium_rel_tol = 1e-4
+beam_estimate_rel_tol = 0.3
+mesh_noise_rel = 1e-5
+gci_max = 0.03
+
+[[requirements]]
+id = "REQ-M4"
+text = "At the IEC 60034-1 overspeed (1.2 x 6000 = 7200 rpm), the linearized von Mises stress through the rotor bridges shall not exceed the lamination's 335 MPa yield strength."
+metric = "bridge_linearized_vm_MPa"
+operator = "<="
+limit = 335.0
+units = "MPa"

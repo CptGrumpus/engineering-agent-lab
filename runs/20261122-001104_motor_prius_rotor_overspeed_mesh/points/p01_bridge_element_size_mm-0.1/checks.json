@@ -1,0 +1,42 @@
+{
+  "label": "p01_bridge_element_size_mm-0.1",
+  "status": "PASS",
+  "checks": [
+    {
+      "id": "rotating_disk",
+      "description": "plain annulus through the same pipeline: max |sigma - exact| / sigma_theta at the bore (plane-stress rotating disk, free edges)",
+      "kind": "numerical",
+      "value": 0.0003588272414557017,
+      "tolerance": 0.002,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "equilibrium",
+      "description": "|steel centrifugal + magnet load + constrained reactions| / |load| (pole axis y and inter-pole normal components only)",
+      "kind": "numerical",
+      "value": 2.8857390417158416e-05,
+      "tolerance": 0.0001,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "beam_estimate",
+      "description": "|FE linearized - fixed-guided beam estimate (tension + end bending)| / FE (model form; estimate 423 MPa)",
+      "kind": "numerical",
+      "value": 0.007647537027569192,
+      "tolerance": 0.3,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "membrane_elastic",
+      "description": "bridge membrane von Mises / yield (below 1: the section does not yield through its thickness, so a linear-elastic model applies to the membrane)",
+      "kind": "validity",
+      "value": 0.3616050437609385,
+      "tolerance": 1.0,
+      "comparison": "<=",
+      "status": "PASS"
+    }
+  ]
+}

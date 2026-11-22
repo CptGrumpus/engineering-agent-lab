@@ -42,6 +42,21 @@
 # the outer apex 0.31 mm nearer the air gap, so the machine now has H0 10.65 mm, H3 6.80 mm, W0 41.21 mm (arm angle
 # kept at 17.4 deg). The prototype above used H3 6.78 mm grown inward. Expected effect on torque: well under the
 # predictions' 3 % ranges, so they stand as written; the open-circuit revision r2 measures the effect on back-EMF.
+#
+# Results (run 20261121-224707_motor_prius_torque_mesh): verification FAIL on the run-level convergence check only.
+#   P1 HELD: 15/15 point checks; power balance 1.1e-3 / ... / 9.9e-4, imposed current exact (2e-16), phases symmetric
+#      to 1e-4, MTPA inside the sweep at every mesh.
+#   P2 PARTLY: MTPA torque 608.07 / 607.96 / 607.73 N m at 46.7 deg (fineness 2 / 4 / 8): inside 590-615 and at
+#      44-47 deg, spread 0.055 %, but the differences grow (R = 2.18), so the GCI classes it divergent and gives no
+#      estimate. Same pattern as the open-circuit back-EMF peak: mesh-to-mesh noise at the 1e-4 level from Pyleecan's
+#      regenerated FEMM meshes, above the 1e-5 noise floor.
+#   P3 NOT VERIFIED, verdict not in doubt: REQ-M2 PASS (unverified), 608 N m against 400 (margin 52 %). A revision would
+#      measure the noise first (fineness 3.9 / 4.0 / 4.1, or rotor-angle offsets) and declare it as mesh_noise_rel, as
+#      the clevis study did, then rerun.
+#   P4 HELD: ripple at MTPA 119-120 N m peak to peak (about 20 %, above the 16 % guessed; approximate, about 4 samples
+#      per slot-ripple cycle).
+#   P5 MISSED: 191 s / 667 s / 4022 s, not about 1.5 h in all at the planned split (fineness 8 took 67 min alone, and
+#      shared the CPU with FSI1).
 
 [case]
 name = "motor_prius_torque_mesh"
