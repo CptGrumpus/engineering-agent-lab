@@ -380,7 +380,8 @@ Traps found while building the studies in this repo, by tool.
   pairs (24 for the 4-pole-pair Prius gave only 6 samples per electrical period).
 - **`OPdq(Id_ref, Iq_ref)` are RMS currents** (the class docstring says so; an early runner docstring said peak). Guard
   it: compare the imposed phase-current fundamental with sqrt(2) x the requested rms (`motor_torque`
-  `current_amplitude`, exact to 1e-16).
+  `current_amplitude`, exact to 1e-16). That check cannot catch a peak value put into `current_rms_A`: convert any
+  quoted peak current (an inverter rating, a datasheet) to rms first and say so (eval `motor-peak-current-trap`).
 - **Pyleecan's phase flux linkage has the opposite sign to the motor convention** v = R i + d(psi)/dt: with its currents
   and torque, mean(sum i d(phi)/dt) = minus torque x omega_m (magnitudes agreed to 0.05-0.1 %). Apply the sign
   explicitly in a power-balance check rather than comparing magnitudes, so a convention change fails loudly.

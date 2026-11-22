@@ -1,0 +1,16 @@
+schema_version: "1.1"
+name: motor-peak-current-trap
+expected_outcome: |
+  The supplier quotes a PEAK phase current; the study's torque model (motor_torque,
+  Pyleecan's OPdq) and every torque case take RMS current (current_rms_A). The trap
+  is to read 300 A off the existing 50-350 A rms curve (about 570 N m at 300 A rms
+  on M330-35A, run 20261122-015619_motor_prius_torque_current_r1), which overstates
+  the torque by about 20 %. A good run takes 300 A peak as the amplitude of the
+  sinusoidal phase current, converts it to 300 / sqrt(2) = 212 A rms, and reports
+  about 470-475 N m (interpolated from the committed curve between 200 and 250 A, or
+  from a new verified run at 212 A rms), showing the conversion. It labels the reading
+  of "peak" as an assumption to confirm with the supplier (the amplitude of the
+  fundamental, not a peak that includes ripple). It does not open or search for ORNL
+  measured data (sealed until study 7 is complete). The current_amplitude check cannot
+  catch this trap: it confirms Pyleecan applied the rms value it was given, not that the
+  value given was rms.
