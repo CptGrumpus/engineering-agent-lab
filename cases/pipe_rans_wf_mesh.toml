@@ -19,6 +19,15 @@
 #   P3 REQ-T1 FAIL on every mesh (about -5.0 to -5.15 % against 5 %), withheld by the log-law check: the model
 #      form, not the mesh, decides the wall-function verdict.
 #   P4 About 3-5 min per point.
+#
+# Results (run 20261122-135114_pipe_rans_wf_mesh): verification FAIL (the log law on all three, one iterative check).
+#   P1 PARTLY: the log law fails on all three as predicted (5.06 / 5.05 / 5.05 % against 5 %); y+ 78.5 on every mesh.
+#      MISSED: n160's iterative check fails at the 30000-iteration cap (gradient change 3.8e-6 against 1e-6); the
+#      probe's n160 at 60000 iterations passed (3.9e-9) with the same f to 4 digits, so f is converged, the cap is low.
+#   P2 HELD: f 0.009842 / 0.009850 / 0.009853 (n40 and n160 reproduce the earlier runs exactly); GCI 0.024 %, the
+#      run-level check passes: the core mesh is not the issue.
+#   P3 HELD: REQ-T1 FAIL on every mesh (-5.15 / -5.07 / -5.04 %), unverified because the log-law check withholds it.
+#   P4 HELD: 11 min for the three.
 
 [case]
 name = "pipe_rans_wf_mesh"

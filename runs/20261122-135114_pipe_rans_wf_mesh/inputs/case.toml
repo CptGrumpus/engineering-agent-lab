@@ -1,0 +1,84 @@
+# Study 19, pipe friction with WALL FUNCTIONS, mesh study at Re 2e6: is the wall-function result's -5 % the outer mesh
+# or the wall treatment? The first-cell height is held (first-face y+ 160, cell centre about 78, inside 30-300) and
+# only the core is refined: n_radial 40 / 80 / 160. Not a similarity refinement (the growth rate changes with n), so the
+# GCI on 1/n is approximate; it measures the core's discretisation error at a fixed wall model.
+#
+# Evidence so far (runs 20261122-104744 and the scratch probe 20261122-122935): with wall functions f sits 5.2 / 5.4 /
+# 5.1 % below Prandtl at Re 1e5 / 5e5 / 2e6 (25 / 30 / 40 cells), failing REQ-T1, and the three wall-function points
+# fail the log-law check narrowly (5.06-5.40 % against 5 %). At Re 2e6 with the first face at y+ 160 (cell centre 78):
+# 40 cells (D/50 axial length) f 0.009842, -5.15 %; the probe's 160 cells (axial length tied to the cells) f 0.009853,
+# -5.04 %, every check but the log law passing. Four times the core cells moved f by 0.11 %: the offset is not the
+# outer mesh. (Re 2e6 because the radius is about 36000 wall units there; at Re 1e5 it is only about 2400, so a wall
+# cell of 100 leaves no room to refine the core.)
+#
+# Predictions, written BEFORE the evidence run:
+#   P1 Every point check passes except the log law, which fails narrowly on all three (5.0-5.2 % against 5 %);
+#      y+ 78 on every mesh; iterative convergence within 30000 iterations.
+#   P2 f 0.009842 / about 0.00985 / 0.009853 (the 40 and 160 points reproduce the earlier runs to 1e-4); GCI under
+#      0.2 %: the run-level check passes.
+#   P3 REQ-T1 FAIL on every mesh (about -5.0 to -5.15 % against 5 %), withheld by the log-law check: the model
+#      form, not the mesh, decides the wall-function verdict.
+#   P4 About 3-5 min per point.
+
+[case]
+name = "pipe_rans_wf_mesh"
+model = "openfoam_pipe_rans"
+description = "Fully developed turbulent pipe flow at Re 2e6 (D 0.1 m, nu 1e-6 m^2/s), axisymmetric periodic wedge, RANS k-omega SST with wall functions; mesh study on the core (n_radial 40 / 80 / 160) with the first-face y+ held at 160; friction factor against Prandtl's smooth-pipe law."
+assumptions = [
+  "Fully developed, steady, incompressible, axisymmetric mean flow in a hydraulically smooth pipe.",
+  "RANS with the k-omega SST model (openfoam.org v14 coefficients); its form error is what this study measures.",
+  "Hydraulic diameter of the wedge 2 R cos(2.5 deg) (its wall is a flat face): 0.1 % below D, used consistently.",
+]
+limitations = [
+  "Smooth walls only; roughness (the Colebrook range) not modelled.",
+  "The reference is a correlation of measurements (about +-2 % scatter in Nikuradse's smooth-pipe data), not the measurements themselves.",
+]
+
+[parameters]
+diameter_m = 0.1
+reynolds_number = 2000000.0
+kinematic_viscosity_m2_per_s = 1e-6
+n_radial = 80
+first_cell_yplus = 160.0
+wall_treatment = "wall_function"
+turbulence_model = "kOmegaSST"
+
+[[sweep.scenarios]]
+name = "n40"
+n_radial = 40
+
+[[sweep.scenarios]]
+name = "n80"
+n_radial = 80
+
+[[sweep.scenarios]]
+name = "n160"
+n_radial = 160
+
+[numerics]
+residual_p = 1.0        # inactive: pressure is a constant in a periodic domain
+residual_U = 1e-9
+residual_turb = 1e-9
+max_iterations = 30000
+axial_length_rule = "geometric_mean"
+solver_timeout_s = 7200
+
+[verification]
+mesh_study = true
+force_balance_rel_tol = 1e-4   # exact in steady periodic flow; above this means unconverged or a sampling error
+bulk_velocity_rel_tol = 1e-6
+iterative_rel_tol = 1e-6
+yplus_max_low_re = 1.0
+yplus_min_wall_function = 30.0
+yplus_max_wall_function = 300.0
+log_law_rel_tol = 0.05         # model form: the log law's constants scatter by a few per cent
+mesh_noise_rel = 1e-6
+gci_max = 0.01
+
+[[requirements]]
+id = "REQ-T1"
+text = "The predicted friction factor shall be within 5 % of Prandtl's smooth-pipe law (the Moody chart's smooth curve), a usable accuracy for pressure-drop budgets."
+metric = "friction_abs_dev_prandtl_pct"
+operator = "<="
+limit = 5.0
+units = "%"
