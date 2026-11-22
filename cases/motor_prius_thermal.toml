@@ -74,6 +74,40 @@
 # -3.2 %, yoke +0.7 % (P5); magnets at 93-105 C where the winding mean is 100 C (P4); about 230 N m at 1000 rpm and 67
 # N m at 6000 rpm (P1). So P1, P2, P4 and P5 are no longer blind; they stay as written and are scored as written.
 #
+# Results (run 20261122-174048_motor_prius_thermal, 6 min): verification FAIL in every scenario on section_wind_peak
+# (the network's slot hotspot), plus section_wind_mean in interface_0p01 and fe_mesh in teeth_0p75. REQ-TH1 PASS but
+# unverified in all ten: 30.2 kW nominal (at 1250 rpm), 26.2-34.3 kW over the scenarios.
+# Nominal envelope: 230.8 / 222.3 / 154.0 / 113.4 / 86.5 / 67.5 N m at 1250 / 2000 / 3000 / 4000 / 5000 / 6000 rpm; the
+# magnets (150 C) bind at all 23 speeds, with the winding hotspot at 141.7-178.0 C (end turns at low speed, slot at
+# high speed). Hot corner: where the winding mean is 100 C the magnets are at 93.4-104.6 C (low to high speed).
+#   P1 HELD (not blind: the smoke run): 230.8 N m at 1250 rpm (200-235), 67.5 at 6000 (55-75).
+#   P2 MISSED: the magnets bind everywhere, not the winding. The rotor has no shaft path and only gap conduction, so it
+#      floats at the tooth-tip temperature (the hottest iron: the winding's heat enters the teeth along their flanks
+#      and flows out to the yoke). The two limits are close: the winding hotspot is 2-38 K under 180 C on the envelope.
+#   P3 HELD: least power at 1250 rpm, 30.2 kW (25-32): PASS, unverified.
+#   P4 PARTLY: 104.6 C at 6000 rpm held (95-110); below 2000 rpm 93.4-98.4 C, 3-8 K above the 80-90 predicted. The
+#      hot corner's 80 C magnets are optimistic at every speed, by 13-25 K, not only at high speed.
+#   P5 PARTLY: winding mean -4.4 %, teeth -3.2 %, yoke +0.7 % (held); winding peak -10.4 % (MISSED: -7 to -14 % over
+#      the scenarios); GCI 0.0 / 2e-5 (held). Why the peak is missed: the FE hotspot is at the top of the slot, by the
+#      tooth tips, where the tooth is hottest (FE teeth max 134.3 C against a mean of 127.2); the slab factor puts it
+#      at the mean wall temperature. The mean is -6.4 % (fails) at interface 0.01 mm, where the interior is a larger
+#      share of the rise.
+#   P6 PARTLY: balance 1.7e-12 (predicted below 1e-12; check 1e-9 passes); convergence 8e-4 K (held); consistency
+#      2.6e-16 (held).
+#   P7 PARTLY: torque change at 1250 rpm (6000 rpm): interface 0.01 mm +13.6 % (+11.1 %), 0.08 mm -13.1 % (-11.0 %)
+#      (predicted +-15-25 %: slightly smaller); jacket 1000 -7.4 % (-5.0 %) (predicted -10-15 %), 6000 +2.0 % (+1.3 %)
+#      (3-5 %); end space 0.5x -8.8 % (-21.6 %) (predicted -3-8 %: much larger at high speed, where it beats the
+#      interface); air gap 3x -2.0 % (0 %), magnets +1.7 K at the hot corner (predicted cooler magnets: MISSED in sign:
+#      a better gap ties the rotor closer to the hotter tooth tips); winding k 0.5x -1.0 % (predicted -5-10 %: the
+#      winding does not bind); teeth fraction 0.4 / 0.75 within 0.4 % at low speed, 2.5 % at 3000 rpm (held).
+#   fe_mesh in teeth_0p75 (inf): the winding peak is a nodal maximum written with 6 significant digits in the .frd
+#   (139.363 C on all three meshes); a 0.001 K step on a 74 K rise is 1.4e-5, above the GCI routine's 1e-5 noise
+#   floor, so the identical values were classed divergent. A check-definition flaw, not a mesh problem.
+# Engineering reading: about 230 N m continuous to 2000 rpm, then about 48 kW to 4500 rpm falling to 42 kW at 6000 rpm,
+# limited by the magnets in every scenario; REQ-TH1 passes with 5 kW or more of margin except with a 0.08 mm interface
+# (1.2 kW). The binding quantity lies in the network's least-checked part (rotor: gap conduction, end-space
+# correlations, adiabatic shaft); the FE check covers the stator section only.
+#
 # Requirements and tolerances were fixed BEFORE the first run.
 
 [case]
