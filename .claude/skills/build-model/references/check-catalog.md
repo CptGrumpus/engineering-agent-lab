@@ -122,6 +122,23 @@ Fatigue life is extremely sensitive to stress (here a 10 % stress change moves l
 | Sector equilibrium: centrifugal + magnet load + constrained reaction components = 0 | numerical | `rotor_stress` `equilibrium` (1e-5) |
 | Fixed-guided beam estimate of a rotor bridge (tension F/(tL) + end bending 3Fl/(t^2 L)) | model form | `rotor_stress` `beam_estimate` |
 | Bridge membrane stress below yield (so a linear-elastic model applies through the section) | validity | `rotor_stress` `membrane_elastic` |
+| Merged dq tables: the row both runs computed agrees (same model, mesh and rotor positions) | numerical | `motor_efficiency` `lut_merge` (bit-identical in practice) |
+| Efficiency map from the half table against the map from the full table, in efficiency points: the interpolation error on the output itself | numerical | `motor_efficiency` `interp_map` |
+| The table's own back-EMF and MTPA torque against the open-circuit and torque-curve studies | numerical | `motor_efficiency` `lut_back_emf`, `lut_mtpa_100A` |
+
+## Turbulent CFD (RANS, fully developed pipe flow)
+
+| Check | Kind | Example |
+|---|---|---|
+| Force balance of periodic flow: wall shear x perimeter = applied pressure gradient x area, two routes to the friction factor | numerical (exact) | `pipe_flow` `force_balance` (1e-12) |
+| Bulk velocity held at the target by meanVelocityForce | numerical | `pipe_flow` `bulk_velocity` |
+| Iterative convergence on the pressure gradient's history (the pressure residual never falls in a periodic domain) | numerical | `pipe_flow` `iterative_convergence` |
+| Wall shear uniform along the wall (fully developed) | numerical | `pipe_flow` `wall_uniform` |
+| First-cell y+ inside the wall treatment's range (below 1 resolved; 30-300 wall functions) | validity | `pipe_flow` `yplus_range` |
+| Mean velocity against the log law, labelled model form (its constants scatter by a few per cent) | model form | `pipe_flow` `log_law` |
+| Friction factor against Prandtl's smooth-pipe law (measured data through a correlation), Blasius and Petukhov beside it | validation | REQ-T1 |
+| checkMesh passes, with the wedge's axial length tied to the cells so the aspect ratio stays low | numerical | `pipe_flow` `mesh` |
+| GCI on the friction factor over a systematic refinement (wall cell halved with the cells); for wall functions, the wall cell held and the core refined | numerical | `pipe_rans_mesh_r1`, `pipe_rans_wf_mesh` |
 
 ## Heat transfer in a flow (CFD + scalar temperature)
 

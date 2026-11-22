@@ -133,6 +133,19 @@ range). Ask for it. If the user wants to proceed anyway, choose a value, mark it
   definition or convergence criterion is wrong, it may be changed before the
   evidence run. Record that in the case header: what the smoke test showed and
   that the limit itself did not move.
+- Before an expensive revision, test the cheapest suspect with a scratch probe and
+  put its numbers in the new header (study 6: a finer solid moved the drifting
+  displacement 0.035 %, so the 6-hour revision kept the solid and changed the fluid
+  meshes). Probe the finest planned level's cost too: on stretched wall-resolved
+  grids the iterations can grow with the square of the cells (study 19 dropped 640).
+- When the coarsest level is outside the asymptotic range (an apparent order far
+  from the design order), drop it and add a finer one; do not keep it for continuity.
+- If the revision needs an input that does not exist yet (a run id), commit the
+  predictions first with a placeholder that cannot run, then fill it in a separate
+  commit that says the predictions are unchanged.
+- After the run, score every prediction in a Results block in the header: HELD,
+  PARTLY or MISSED, with the reason. Misses stay in; they are the record of what
+  the model taught you.
 
 ## Output
 

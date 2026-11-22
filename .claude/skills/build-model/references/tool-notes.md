@@ -289,6 +289,31 @@ Traps found while building the studies in this repo, by tool.
   them all `patch`: set `empty`, `wall` with `foamDictionary constant/polyMesh/boundary -entry
   entry0/<name>/type -set <type>`.
 
+### OpenFOAM turbulent pipe flow (RANS on a periodic wedge, study 19)
+
+- **checkMesh's aspect ratio on a wedge is about axial length / radial cell height.** A wedge mesh is 2D, so the
+  3D measure is skipped and the face-area ratio in the two solution directions is what counts. A fixed axial
+  length (D/50) against sub-micron wall cells at Re 2e6 gave 2884 and failed the mesh check. Tie the axial
+  length to the cells: sqrt(wall cell x axis cell) gives the same ratio at both ends, sqrt(axis / wall), about
+  19 on wall-resolved grids (`numerics.axial_length_rule = "geometric_mean"`). In fully developed flow the
+  length does not change the answer (f to 4e-8).
+- **The pressure residual never falls in a fully periodic domain** (pressure is a constant there): set its
+  residual control to 1 and judge convergence on the meanVelocityForce gradient's history and on U, k, omega.
+- **SIMPLE iterations on a stretched, wall-resolved 1-D grid grow roughly with the square of the cell count.**
+  160 radial cells converged well inside 15000 iterations; 640 was still falling 2 % per 3000 iterations at
+  42000 (55 min). Size max_iterations per level and check the gradient's change over the last 10 %; 320 is the
+  practical top level.
+- **k-omega SST with the sublayer resolved (y+ below 1) still moves with the wall cell.** f went 0.01730 /
+  0.01783 / 0.01813 on 40 / 80 / 160 cells with the first face at y+ 1 / 0.5 / 0.25 (observed order 0.84): the
+  -0.9 % agreement with Prandtl at 80 cells was mesh error. Do not quote one mesh's agreement; extrapolate.
+- **Wall functions (nutkWallFunction, kqRWallFunction, omegaWallFunction, v14) sit about 5 % below Prandtl's
+  smooth-pipe law** at Re 1e5 to 2e6, independent of the core mesh (GCI 0.02 %) and only weakly dependent on
+  where the first cell sits (-5.23 to -4.75 % over cell-centre y+ 29-196). For a 5 % pressure-drop
+  requirement, resolve the sublayer instead.
+- **A wall-function mesh study must hold the wall cell and refine the core,** which needs room: at Re 1e5 the
+  pipe radius is only about 2400 wall units, so a first cell of 100 leaves the grading uniform and refining
+  shrinks the wall cell. Use a higher Reynolds number for that study.
+
 ### OpenFOAM heat transfer (temperature as a passive scalar)
 
 - Constant properties make temperature a passive scalar: keep `incompressibleFluid` and add
@@ -401,6 +426,18 @@ Traps found while building the studies in this repo, by tool.
   (`models/motor/build_prius_ornl.py`).
 - **Pyleecan's generic magnet** (Br 1.24 T, recoil permeability 1.05) matched the Prius sample's Br but not its recoil
   permeability (1.129, ORNL's measured line). Check both, and the temperature the source assumes.
+- **FEMM through Pyleecan reproduces itself bit for bit** on the same machine, mesh fineness and rotor positions: a
+  supplementary dq table that repeats one row of the main table matched it exactly in every column (torque, dq flux,
+  all six iron-loss coefficients). That is what makes merging tables safe; keep one shared row as the check.
+- **Hot magnets lose more flux than Br.** At 80 C (Br -6 %) the open-circuit flux fell 7.0 %: the saturated rotor
+  bridges carry a roughly fixed leakage flux, so the loss comes out of the useful flux. Do not scale flux with Br.
+- **A 25 A dq grid does not resolve light load at high speed.** Below 30 N m above 4000 rpm the loss-optimal current
+  has iq 2-5 A, inside the first grid cell; the map from the half grid differed from the full one by up to 10
+  efficiency points there (0.1 point median). Check the map itself (half table against full table), and refine the
+  table's low-iq rows (6.25 A steps) rather than the whole grid.
+- **The dq torque equation drifts at low iq deep in field weakening:** at iq 6.25-12.5 A and id -175 to -300 A the
+  mean torque is 33-70 N m with 18-27 N m of ripple, and 3 p (phi_d iq - phi_q id) from the mean fluxes missed FEMM's
+  torque by up to 1 % (0.3 N m). Interpolate FEMM's torque for the map; the dq fluxes are for the voltage limit.
 
 ## Reading dimensions from published PDFs (PyMuPDF, study 7)
 
@@ -446,6 +483,13 @@ Traps found while building the studies in this repo, by tool.
 - Coupled start-up from rest: relative convergence on near-zero forces costs 5-8 iterations per window at
   first, falling to 2-3 once the flow builds. A ramped channel inflow puts large unsteady forces on the body
   (the whole channel accelerates): drag ran ahead of the ramp (13 N/m at half speed in FSI1).
+- **Lift jitter at every coupling window is coupling noise, not shedding** (FSI1, Re 20): about 600 sign changes in
+  800 steps, +-2 % peak to peak, zero mean. A peak-to-peak steadiness check and an end-of-run value both pick it up.
+  Judge steadiness by drift (the mean of each half of the last window) and report window means
+  (`numerics.metric_average_s`, `verification.steady_measure = "drift"`); a coupling tolerance of 1e-6 instead of
+  1e-4 cut the jitter 72 x for 19 % more coupling iterations and left the means unchanged to 5 digits.
+- **Refining the solid is expensive and, for FSI1, nearly irrelevant:** 1.25 mm instead of 2.5 mm moved uy(A) by
+  0.035 % and took 3 h 45 min instead of 51 min (ccx dominates once the solid has about 9500 nodes).
 
 ## Optimisation loops (harness/optimize.py)
 
