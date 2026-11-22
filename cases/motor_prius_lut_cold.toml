@@ -14,6 +14,22 @@
 #      flattens: the largest torque on the grid lies near (-300, 300) A, about 690-720 N m (424 A rms, beyond r1's
 #      350 A curve, 606 N m, extrapolated along its 1.73 N m/A slope, falling).
 #   P4 About 31 s per solve: 13 columns of about 7 min, about 1 h 30 min.
+#
+# Results (run 20261122-102002_motor_prius_lut_cold): verification PASS, 65/65 point checks.
+#   P1 HELD: every check passes in every column. dq torque equation within 0.37 % of FEMM's torque at worst
+#      (id -275 A), power balance within 0.37 %. The iron-loss coefficients' minimum is -2.9e-3 W at worst (fit noise
+#      at mW level, against watts to kilowatts of loss), passed by the check as it is written.
+#   P2 MISSED narrowly: the id = 0 column gives 170.29 / 276.88 / 349.40 N m at iq 100 / 200 / 300 A against r1's
+#      170.05 / 276.42 / 348.70 (fineness 4): +0.14 / +0.17 / +0.20 %, not within 0.1 %. Same sign throughout and
+#      growing with current, so fineness 2 reads slightly high in saturation, more than the mesh study's single point
+#      showed. Small against the 1 % tolerance the efficiency case uses for its torque references.
+#   P3 PARTLY: the largest grid torque is at (-300, 300) A as predicted, but 650.8 N m, not 690-720 (-6 to -10 %): the
+#      extrapolation along r1's slope overestimated it. At iq 100 A the torque peaks at id -225 A (453.1 N m) and falls
+#      beyond, as predicted; at iq 200 and 300 A it is still rising at -300 A, but by less each step
+#      (at iq 300 A: +25 N m per 25 A near -150 A, +12 near -300 A).
+#   P4 HELD roughly: 1 h 38 min (7.6 min per column).
+# REQ-M3 FAIL in every column is by construction (each column runs to iq 300 A, 35-50 A/mm^2); the grid deliberately
+# reaches past the 212 A copper limit, which the efficiency case applies. Not a design verdict.
 
 [case]
 name = "motor_prius_lut_cold"
