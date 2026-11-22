@@ -23,7 +23,7 @@ def failed(result):
 
 
 @pytest.mark.parametrize("name", ["hertz_roller_contact", "heated_channel_wall_temperature",
-                                  "cantilever_root_stress"])
+                                  "cantilever_root_stress", "sagging_strip_clearance"])
 def test_reference_answer_scores_full_marks_and_garbage_scores_zero(name):
     g = grader(name)
     assert g.grade(dict(g.REFERENCE))["passed"]
@@ -87,3 +87,34 @@ def test_cantilever_traps():
     for d in (0.952, 0.953, 0.960):
         assert g.grade(ref | {"tip_deflection_mm": d})["passed"]
     assert "tip_deflection_mm" in failed(g.grade(ref | {"tip_deflection_mm": 0.952 * 0.8}))   # linear tets, too stiff
+
+
+def test_sagging_strip_reference_and_traps():
+    """Reference vs the elastica; each trap computed here from first principles fails where it should."""
+    from validation import elastica as e
+
+    g = grader("sagging_strip_clearance")
+    ref = dict(g.REFERENCE)
+    assert g.grade(ref)["passed"] and g.grade({})["score"] == 0.0
+    L, h, q, E, nu = 0.40, 0.020, 1200 * 9.81 * 0.020, 10e6, 0.45
+    Ep = e.plane_strain_modulus(E, nu)
+    assert ref["bending_modulus_MPa"] == pytest.approx(Ep / 1e6, rel=1e-3)
+    right = e.elastica_tip(q, L, Ep * h**3 / 12)
+    assert ref["tip_drop_mm"] == pytest.approx(-right["uy"] * 1e3, rel=0.005)      # FE and elastica agree
+    assert ref["tip_pull_in_mm"] == pytest.approx(-right["ux"] * 1e3, rel=0.01)
+    # the elastica answer itself must pass (a beam solver is a valid method)
+    beam = {"tip_drop_mm": -right["uy"] * 1e3, "tip_pull_in_mm": -right["ux"] * 1e3,
+            "bending_modulus_MPa": Ep / 1e6, "clearance_met": True}
+    assert g.grade(beam)["passed"]
+    # trap 1: small-deflection formula, plane strain right -> drop 90.1 mm, fails the 89 mm clearance
+    lin = -e.linear_tip(q, L, Ep * h**3 / 12)["uy"] * 1e3
+    assert lin > 89.0
+    t1 = {"tip_drop_mm": lin, "tip_pull_in_mm": 0.0, "bending_modulus_MPa": Ep / 1e6, "clearance_met": False}
+    assert failed(g.grade(t1)) == {"tip_drop_mm", "tip_pull_in_mm", "clearance_met"}
+    # trap 2: plane stress, large deflection right
+    ps = e.elastica_tip(q, L, E * h**3 / 12)
+    t2 = {"tip_drop_mm": -ps["uy"] * 1e3, "tip_pull_in_mm": -ps["ux"] * 1e3, "bending_modulus_MPa": E / 1e6,
+          "clearance_met": False}
+    assert failed(g.grade(t2)) == {"tip_drop_mm", "tip_pull_in_mm", "bending_modulus_MPa", "clearance_met"}
+    # the limit sits between the right answer and the nearest trap
+    assert -right["uy"] * 1e3 < 89.0 < lin
