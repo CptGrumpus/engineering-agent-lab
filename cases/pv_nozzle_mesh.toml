@@ -1,0 +1,109 @@
+# Study 18, pressure vessel with a radial nozzle, first case: the mesh study at the nominal design.
+#
+# Decision this informs: can a 200 mm bore radial nozzle (12 mm wall) go into a 1000 mm bore shell (16 mm wall) at
+# 3.5 MPa without a reinforcing pad? Judged by elastic stress analysis with linearised stresses (the method of ASME
+# BPVC Section VIII Division 2, Part 5): general primary membrane Pm <= S far from the nozzle, local primary membrane
+# PL <= 1.5 S and primary plus secondary P + Q <= S_PS = 3 S at the junction. A simplified pressure-area balance (the
+# design-by-rule idea of EN 13445-3 clause 9, our own simplified form; studies/pressure_vessel.py) is reported beside it:
+# it gives 153 MPa mean membrane in the reinforcement zone against S = 138 MPa, so by rule this nozzle needs a pad or a
+# thicker wall (about 16 mm). Synthetic problem: S = 138 MPa is of the order of carbon-steel plate allowables, not a
+# value taken from ASME Section II.
+#
+# Model (models/fea/pressure_vessel.py): a quarter model (planes y = 0 and z = 0 through the nozzle axis), shell half
+# length 1000 mm (11 x sqrt(R t)), nozzle 350 mm long (7 x sqrt(r t_n)), outer weld fillet 10 mm, sharp inner corner;
+# closed-end thrusts as end tractions, so the far shell is the exact Lame cylinder. C3D10, refined to h_local within 140
+# mm of the junction, growing to 14 mm. Stress classification lines (SCLs) through the wall at the fillet toes in both
+# symmetry planes (shell_long, shell_trans, nozzle_long, nozzle_trans) and one on the back of the shell (far).
+#
+# Smoke test (scratch, h_local 4 mm, 2026-11-22 10:26; this case's middle mesh): equilibrium exact to 3e-7 on both
+# planes, the single axial support carried 8e-7 of the nozzle thrust (a closed vessel balances itself); Lame membrane
+# within 2e-4, bore hoop within 0.48 % (nodal extrapolation); Pm 96.2 MPa; PL 205.1 MPa on shell_long (the governing
+# line), 181.7 on nozzle_long, 66-69 on the transverse lines; P + Q 240.2 MPa (shell_long). The SCL sample points on the
+# curved surfaces fall 1.2e-3 outside the straight-sided elements (barycentric), so that validity tolerance is 1e-2, not
+# the 1e-6 first written; nothing else changed. 75 s per run.
+#
+# Predictions, written BEFORE the evidence run:
+#   P1 Every point check passes on every mesh: equilibrium within 1e-5, Lame within 1 %.
+#   P2 Pm (far) within 0.2 % of the exact Lame linearisation, 96.21 MPa, on every mesh: REQ-PV1 verified PASS (margin
+#      30 %).
+#   P3 PL on shell_long converges (linearised values converge even where the inner corner is sharp): 200-212 MPa on
+#      every mesh, GCI under 3 %. Its margin to 1.5 S = 207 MPa (about 1 %) is smaller than that uncertainty, so
+#      REQ-PV2 will NOT be decided by this case (a pass within the uncertainty band is not a verified pass): the
+#      design answer becomes "marginal; thicken the nozzle", and the thickness case finds by how much.
+#   P4 P + Q (shell_long) 230-250 MPa, GCI under 3 %: REQ-PV3 verified PASS (margin about 40 %).
+#   P5 About 40 s / 75 s / 4 min for h_local 6 / 4 / 2.67 mm.
+
+[case]
+name = "pv_nozzle_mesh"
+model = "cadquery_ccx_vessel"
+description = "Cylindrical shell (Ri 500 mm, t 16 mm) with a set-in radial nozzle (ri 100 mm, tn 12 mm, 10 mm outer weld fillet) at 3.5 MPa internal pressure; quarter model, CadQuery + Gmsh C3D10 + CalculiX static; stresses linearised along classification lines; local element size 6 / 4 / 2.67 mm at the junction."
+assumptions = [
+  "Linear elastic steel, E 200 GPa, nu 0.3; small displacement (checked).",
+  "Closed vessel: the end thrusts of the shell and the nozzle are applied as uniform axial tractions on their cut ends (the far field is then the Lame closed-end cylinder exactly).",
+  "Symmetry about the planes through the nozzle axis; no external nozzle loads (piping loads would add to the junction stresses).",
+  "Outer weld modelled as a 10 mm fillet; the inner corner of the bore is sharp (affects peak stress, not the linearised values on the toe lines).",
+  "Classification: membrane at the junction lines is local primary (PL), membrane plus bending there is primary plus secondary (P + Q); far from the nozzle the membrane is general primary (Pm). S_PS taken as 3 S.",
+  "Allowable S = 138 MPa: synthetic, of the order of carbon-steel plate values; not from ASME Section II.",
+]
+limitations = [
+  "Elastic analysis only: no limit-load or elastic-plastic route, no fatigue (peak stress reported, not assessed), no external loads, no corrosion allowance.",
+  "The SCLs sit at the weld-fillet toes; other placements (through the crotch corner) give other values and are a judgement call.",
+  "The pressure-area cross-check is a simplified form of the rule, not the standard's full procedure.",
+]
+
+[parameters]
+shell_inner_radius_mm = 500.0
+shell_thickness_mm = 16.0
+shell_half_length_mm = 1000.0
+nozzle_inner_radius_mm = 100.0
+nozzle_thickness_mm = 12.0
+nozzle_length_mm = 350.0
+weld_fillet_radius_mm = 10.0
+pressure_MPa = 3.5
+youngs_modulus_MPa = 200000.0
+poisson_ratio = 0.3
+element_size_local_mm = 4.0
+element_size_far_mm = 14.0
+refine_radius_mm = 140.0
+mesh_growth = 0.08
+allowable_stress_MPa = 138.0
+
+[sweep]
+parameter = "element_size_local_mm"
+values = [6.0, 4.0, 2.6667]
+
+[numerics]
+solver_timeout_s = 7200
+scl_points = 21
+
+[verification]
+volume_rel_tol = 0.01        # mesh volume from straight-sided tets vs the CAD volume
+equilibrium_rel_tol = 1e-5   # exact resultants: anything above solver precision means a load face was missed
+lame_rel_tol = 0.01          # exact far field; the bore hoop is a nodal extrapolation to the surface
+scl_violation_tol = 0.01     # SCL end points on curved surfaces lie about h^2/8R outside straight-sided elements
+mesh_noise_rel = 1e-5
+gci_max = 0.03
+
+[[requirements]]
+id = "REQ-PV1"
+text = "General primary membrane stress in the shell away from the nozzle shall not exceed S (138 MPa)."
+metric = "pm_general_MPa"
+operator = "<="
+limit = 138.0
+units = "MPa"
+
+[[requirements]]
+id = "REQ-PV2"
+text = "Local primary membrane stress at the nozzle junction (all classification lines) shall not exceed 1.5 S (207 MPa)."
+metric = "pl_max_MPa"
+operator = "<="
+limit = 207.0
+units = "MPa"
+
+[[requirements]]
+id = "REQ-PV3"
+text = "Primary plus secondary stress at the nozzle junction (membrane plus bending, all classification lines) shall not exceed S_PS = 3 S (414 MPa)."
+metric = "pq_max_MPa"
+operator = "<="
+limit = 414.0
+units = "MPa"

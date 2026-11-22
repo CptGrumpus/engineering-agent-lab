@@ -113,6 +113,8 @@ Fatigue life is extremely sensitive to stress (here a 10 % stress change moves l
 | Imposed current amplitude vs the requested value (catches rms/peak mix-ups) | numerical | `motor_torque` `current_amplitude` |
 | Maximum torque per amp found inside the current-angle sweep | validity | `motor_torque` `mtpa_bracketed` |
 | dq torque equation 3 p (phi_d iq - phi_q id) (rms dq) against the stress-tensor torque: checks the mean dq flux linkages a look-up table interpolates | numerical (model form: harmonics) | `motor_lut` `dq_torque` |
+| Exact pressure resultant on each symmetry plane (p x projected wetted area + end thrusts) and zero reaction at a single support of a closed vessel | numerical (exact) | `pressure_vessel` `equilibrium_y`, `equilibrium_z`, `self_balance_x` |
+| Linearised membrane of the Lame cylinder (mean hoop = p Ri / t exactly) on a classification line far from discontinuities | analytical (exact) | `pressure_vessel` `lame_membrane` |
 | Enough time steps per electrical period for the metric (48 for flux linkage and mean torque; more for ripple) | validity | `time_resolution` |
 | GCI on the flux linkage, the back-EMF peak and the MTPA torque (mesh fineness) | numerical | motor mesh studies |
 | Design inputs overlaid on the published drawing they came from | numerical | study 7 slot and pocket overlays |
