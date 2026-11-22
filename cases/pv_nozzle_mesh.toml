@@ -32,6 +32,23 @@
 #      design answer becomes "marginal; thicken the nozzle", and the thickness case finds by how much.
 #   P4 P + Q (shell_long) 230-250 MPa, GCI under 3 %: REQ-PV3 verified PASS (margin about 40 %).
 #   P5 About 40 s / 75 s / 4 min for h_local 6 / 4 / 2.67 mm.
+#
+# Results (run 20261122-102842_pv_nozzle_mesh): verification FAIL on one run-level GCI classification only.
+#   P1 HELD: 27/27 point checks. Equilibrium 3e-7 on both planes, self-balance 8e-7, Lame membrane 2-3e-4, bore hoop
+#      0.48 %; meshes of 141k / 178k / 285k nodes.
+#   P2 HELD: Pm 96.24 / 96.23 / 96.24 MPa against the exact 96.21 (0.03 %). REQ-PV1 verified PASS, margin 30 %.
+#   P3 MISSED (in the good direction): PL on shell_long 205.04 / 205.13 / 205.13 MPa, GCI 0.028 % (oscillatory),
+#      far tighter than the predicted 3 %. So REQ-PV2 IS decided: verified PASS, margin 1.87 MPa (0.9 %), more than 30
+#      times the mesh uncertainty. The margin is real for this model, but small against the judgement calls behind it
+#      (where the classification lines sit, the weld size, the sharp inner corner); the thickness case shows how
+#      fast it goes.
+#   P4 PARTLY: P + Q (shell_long) 240.4 / 240.2 / 239.6 MPa, inside 230-250, but the three values move 0.08 % then
+#      0.27 % (ratio 3.7), so the GCI calls it divergent and REQ-PV3 is PASS (unverified). Margin 42 %, the spread
+#      0.35 %: the verdict is not in doubt. (The surface bending picks up the sharp inner corner's local field more
+#      than the membrane does.)
+#   P5 ROUGHLY HELD: 5 min 20 s for the three meshes.
+# Design answer for this case: by elastic analysis the 12 mm nozzle needs no pad (PL 205 against 207 MPa); by the
+# simplified pressure-area rule it would (153 against 138 MPa; about 16 mm needed). Pending human review.
 
 [case]
 name = "pv_nozzle_mesh"
