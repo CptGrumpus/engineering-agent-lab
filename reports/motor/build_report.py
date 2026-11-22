@@ -454,7 +454,9 @@ def build_index(cases, runs, full=True):
          "Lumped network from the geometry, coupled to the dq tables' losses; CalculiX conduction on half a slot pitch; "
          "synthetic 65 °C jacket, 180 °C winding hotspot and 150 °C magnet limits",
          thermal_status(runs), '<a href="thermal.html">Thermal</a>'],
-        ["Blind comparison with ORNL test data", "Opened only after every prediction above is written down", pill("SEALED"), ""],
+        ["Blind comparison with ORNL test data (ORNL/TM-2006/423)", "Opened once, on 2026-11-22 after every prediction "
+         "was committed; limits agreed the day before", pill("FAIL") + " all three: back-EMF +23.5 %, torque +7 to +24 %, "
+         "efficiency +5.2 points (see the validation table above)", ""],
     ]
 
     body = f"""
@@ -470,7 +472,7 @@ the slot heat check, a lumped thermal network) predict a production traction mot
   <div class="fact"><div class="k">Machine</div><div class="v">48 slots · 8 poles</div><div class="n">Interior V magnets, 83.8 mm stack, 50 kW, 400 N m to base speed</div></div>
   <div class="fact"><div class="k">Back-EMF, current prediction</div><div class="v">{fmt(current, 4)} V</div><div class="n">rms line-to-line per 1000 rpm at 20 °C, run {E(latest_run["id"][:15])}</div></div>
   <div class="fact"><div class="k">REQ-M1, uncontrolled generator</div><div class="v">{pill("FAIL")} ≈ {fmt(latest_pt["metrics"]["back_emf_LL_peak_at_max_speed_V"], 4)} V</div><div class="n">Line-to-line peak at 6000 rpm against the 500 V bus</div></div>
-  <div class="fact sealed"><div class="k">ORNL performance data</div><div class="v">Sealed</div><div class="n">No test value has been opened. Only design drawings and text have been read.</div></div>
+  <div class="fact sealed"><div class="k">Blind comparison with ORNL</div><div class="v">{pill("FAIL")} 3 of 3</div><div class="n">Run once on 2026-11-22: the model carries about 24 % too much magnet flux. Cause being diagnosed.</div></div>
 </div>
 
 <h2>The question and the limits</h2>
@@ -485,12 +487,11 @@ before any data was seen:</li>
 </ul>
 </div>
 {table(["Quantity", "Agreed limit", "Status"], [
-        ["Back-EMF constant", "within 5 %", pill("SEALED") + " prediction written"],
+        ["Back-EMF constant", "within 5 %", pill("FAIL") + " +23.5 %: 110.9 predicted against 89.8 V rms per 1000 rpm measured"],
         ["Peak torque at several currents", "within 10 %",
-         pill("SEALED") + (" prediction written" if tc1 and tc1["complete"] else " stand-in steel curve still running")],
+         pill("FAIL") + " +7 % at 50 and 75 A rising to +24 % at 250 A (ORNL's DC current read as a peak; +55-65 % read as rms)"],
         ["Efficiency at sample points", "within 2 percentage points",
-         pill("SEALED") + (" prediction written" if (runs.get("motor_prius_efficiency_r1") or {}).get("complete")
-                           else " first map written; revision running")],
+         pill("FAIL") + " ours 5.2 points higher (median of 393 measured points); 3 of 393 within 2 points"],
     ])}
 <div class="col">
 <p>The limits may change only before the ORNL data is opened, and only with a written reason. After that, any change is
@@ -564,6 +565,7 @@ inputs, hashes and tool versions with every run.</li>
 <li><time>17:20</time><span>Thermal network framed with the user: the continuous envelope under a 180 °C winding hotspot and 150 °C magnets, and whether the efficiency map's hot corner is a real operating state; water jacket 65 °C, all synthetic. Predictions written before the first run.</span></li>
 <li><time>17:46</time><span>Thermal network, first run: about 230 N m continuous to 2000 rpm, 42-48 kW above; the magnets, not the winding, bind at every speed. REQ-TH1 (25 kW from 1250 rpm) 30.2 kW. CalculiX's slot-pitch check puts the slot hotspot 10 % higher on its rise than the network's slab estimate.</span></li>
 <li><time>17:54</time><span>Revision 1 reads the slot hotspot at the top of the slot, by the tooth tips (where CalculiX put it): the shortfall halves to 4-7 %, still over the 5 % tolerance in six of ten scenarios; a bound shows it cannot move the envelope from 1250 rpm. At a winding mean of 100 °C the magnets are at 93-105 °C, not 80.</span></li>
+<li><time>19:00</time><span>Blind comparison against ORNL/TM-2006/423, once, with the limits agreed the day before: back-EMF +23.5 % (limit 5 %), torque +7 to +24 % (limit 10 %), efficiency 5.2 points high (limit 2). All three fail. The model carries about 24 % too much magnet flux; the cause (magnet remanence or size, series turns, end leakage) is the next diagnostic.</span></li>
 </ol>
 
 <h2>Blind protocol log</h2>
@@ -576,7 +578,11 @@ inputs, hashes and tool versions with every run.</li>
          "Recorded in full. The measured data stays sealed. The torque cases declare it as prior knowledge. Extraction is whitelist-only from here on."],
         ["22:30", "ORNL/TM-2004/137 Fig. 14 opened by the user's decision: ORNL's measured B-H line of a magnet sample", "A material input, like a datasheet; not motor performance"],
         ["2026-11-22 09:20", "ORNL/TM-2004/137, the winding paragraph re-read by whitelist (the slot-fill definition and the conductor description)", "None: design text. It corrected our copper area (see the timeline)."],
-        ["sealed", "ORNL/TM-2004/137 Fig. 13 (measured no-load air-gap flux density); ORNL/TM-2004/247 and ORNL/TM-2006/423 (test reports); ORNL/TM-2005/33 pages 20-30", "Opened only when the study is complete"],
+        ["2026-11-22 18:36-19:00", "The blind comparison (user's go-ahead): ORNL/TM-2006/423 back-emf and locked-rotor tables, "
+         "Appendix B test data; TM-2004/247 rev. for its current label. Step by step, including a misread column caught "
+         "before any score: reports/motor/blind_comparison_log.md", "The comparison itself: all three limits missed"],
+        ["not opened", "ORNL/TM-2004/137 Fig. 13 (measured no-load air-gap flux density); ORNL/TM-2005/33 pages 20-30",
+         "Fig. 13 is the proposed next diagnostic"],
     ])}
 
 <p class="muted">Generated from the case files and runs by <code>reports/motor/build_report.py</code>.</p>

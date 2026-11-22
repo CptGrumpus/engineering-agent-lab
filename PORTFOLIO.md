@@ -66,7 +66,7 @@ All problems are synthetic, so no client data is involved. Every number comes fr
 
 | | Question | Answer so far |
 |---|---|---|
-| [20. Prius traction motor, blind](portfolio/20-prius-traction-motor.md) | Can an open-source toolchain predict a production traction motor well enough for design screening, before seeing the test data? | Blind predictions written (back-EMF 110.9 V per 1000 rpm, torque curve, efficiency map peaking at 97.4 %). Rated torque and power fit the limits; the open-circuit voltage at top speed (1040 V against 500) and the rotor bridges at overspeed fail. Continuous rating under a synthetic jacket: about 230 N m to 2000 rpm, 42-48 kW above, set by the magnets. ORNL's measurements still sealed. |
+| [20. Prius traction motor, blind](portfolio/20-prius-traction-motor.md) | Can an open-source toolchain predict a production traction motor well enough for design screening, before seeing the test data? | Blind comparison with ORNL's measurements, run once against limits agreed in advance: back-EMF +23.5 %, torque +7 to +24 %, efficiency about 5 points high: all three fail. One fault, about 24 % too much magnet flux, explains most of it; the cause is being diagnosed. |
 | [17. Flexible flag, fluid-structure interaction](portfolio/17-fsi-flag-turek-hron.md) | Does a coupled OpenFOAM-CalculiX model reproduce the Turek-Hron benchmark, each half verified first? | Solid and fluid stages verified against the benchmark; the steady coupled case reproduces it within 1 % on every quantity (drag and lift verified; the tip displacement's mesh uncertainty not estimable). The periodic cases are next. |
 
 ### Vehicle and system dynamics
