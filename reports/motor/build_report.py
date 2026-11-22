@@ -31,6 +31,9 @@ from studies.motor_em import pyleecan_python  # noqa: E402
 CASES = ["motor_prius_oc_mesh", "motor_prius_oc_mesh_r1", "motor_prius_ornl_oc_mesh", "motor_prius_ornl_oc_mesh_r1",
          "motor_prius_ornl_oc_mesh_r2", "motor_prius_ornl_oc_mesh_r3"]
 TORQUE_CASES = ["motor_prius_torque_mesh", "motor_prius_torque_current", "motor_prius_torque_current_r1"]
+#: the lamination bracket (user's decision 2026-11-22 ~00:40): the final machine on two other grades
+BRACKET_OC = ["motor_prius_ornl_oc_m250", "motor_prius_ornl_oc_y390"]
+BRACKET_TQ = ["motor_prius_torque_m250", "motor_prius_torque_y390"]
 ORNL_THERMAL = "https://info.ornl.gov/sites/publications/Files/Pub57487.pdf"
 ORNL_DESIGN = "https://info.ornl.gov/sites/publications/Files/Pub57348.pdf"
 E = html.escape
@@ -272,7 +275,7 @@ def line_chart(series, *, xlabel, ylabel, xticks, xpos, ylim, yticks, width=760,
     g.append(f'<text transform="translate(14 {T + H / 2:.1f}) rotate(-90)" text-anchor="middle">{E(ylabel)}</text>')
     for s in series:
         pts = s["points"]
-        if len(pts) > 1:
+        if len(pts) > 1 and not s.get("dots_only"):
             d = " ".join(f"{X(x):.1f},{Y(y):.1f}" for x, y, _ in pts)
             g.append(f'<polyline points="{d}" fill="none" stroke="var({s["color_var"]})" stroke-width="2" '
                      f'stroke-linejoin="round" stroke-linecap="round"/>')
@@ -305,6 +308,49 @@ def run_checks(run):
 
 def point_pass(pt):
     return sum(c["status"] == "PASS" for c in pt["checks"]), len(pt["checks"])
+
+
+def bracket_table(runs):
+    """One row per lamination grade: back-EMF, torque at 100 and 300 A, and the overspeed verdict by comparison."""
+    def emf(rn):
+        r = runs.get(rn)
+        f = finest(r) if r and r["complete"] else None
+        return f'{f["metrics"]["back_emf_LL_rms_per_krpm_V"]:.2f}' if f else "running" if r else "queued"
+
+    def torque(rn, amps):
+        r = runs.get(rn)
+        if not r:
+            return "queued"
+        for pt in r["points"]:
+            if pt.get("status") == "completed" and float(pt["parameters"]["current_rms_A"]) == amps:
+                return f'{pt["metrics"]["torque_mtpa_Nm"]:.1f}'
+        return "running"
+
+    rows = [
+        ["M400-50A (0.50 mm)", "Pyleecan's inherited curve, never chosen", emf("motor_prius_ornl_oc_mesh_r2"),
+         torque("motor_prius_torque_current", 100.0), torque("motor_prius_torque_current", 300.0), "–", "–"],
+        ["<b>M330-35A</b> (0.35 mm)", "<b>the stand-in: the blind prediction</b>", emf("motor_prius_ornl_oc_mesh_r3"),
+         torque("motor_prius_torque_current_r1", 100.0), torque("motor_prius_torque_current_r1", 300.0),
+         "335", pill("FAIL") + " run"],
+        ["M250-35A (0.35 mm)", "lower-loss bracket", emf("motor_prius_ornl_oc_m250"),
+         torque("motor_prius_torque_m250", 100.0), torque("motor_prius_torque_m250", 300.0),
+         "455 typical", pill("PASS") + " by comparison, margin 7 %"],
+        ["powercore 035-190Y390 (0.35 mm)", "high-strength bracket", emf("motor_prius_ornl_oc_y390"),
+         torque("motor_prius_torque_y390", 100.0), torque("motor_prius_torque_y390", 300.0),
+         "390 guaranteed, 407 typical", pill("FAIL") + " by comparison"],
+    ]
+    return table(["Laminations", "Role", "Back-EMF (V/krpm)", "Torque at 100 A (N m)", "Torque at 300 A (N m)",
+                  "Yield (MPa)", "REQ-M4: 424 MPa at 7200 rpm"], rows)
+
+
+BRACKET_TEXT = """<div class="col"><p>ORNL gives the lamination thickness (0.36 mm) but not the grade, so the final machine
+was also run on two other 0.35 mm grades. The back-EMF moves by 0.13 % across the three and the torque by under 2 %,
+far inside the agreed 5 % and 10 % limits: the unknown grade does not limit the blind comparison. Each grade's
+predictions were written before its run; they are in the case records on the open-circuit and torque pages.</p>
+<p>The overspeed stress (424 MPa in the bridge at 7200 rpm) is the same for every grade: it does not depend on the
+modulus, and the densities differ by 0.7 %. So only the yield changes the verdict. M250-35A, the lower-loss grade, is
+also the strongest of the three on typical values.</p></div>
+"""
 
 
 # --------------------------------------------------------------------------- page: overview
@@ -365,7 +411,7 @@ def build_index(cases, runs, full=True):
          pill("PASS") + " sourced", '<a href="geometry.html#rotor">Design inputs</a>'],
         ["Design inputs: lamination steel",
          "ORNL gives 0.36 mm but no grade: M330-35A (0.35 mm, Tata typical data) as the single stand-in for every property; "
-         "bracketed by M250-35A and powercore 035-190Y390 (open circuit and torque at 100 / 300 A, running)",
+         "bracketed by M250-35A and powercore 035-190Y390 (see the lamination bracket below)",
          pill("PASS") + " stand-in chosen", '<a href="geometry.html#steel">Design inputs</a>'],
         ["Design inputs: magnet width", "Still Pyleecan's (18.9 mm)", pill("OPEN"), ""],
         ["Electromagnetics, open circuit", "FEMM via Pyleecan; phase symmetry, winding theory, zero cogging mean, mesh GCI",
@@ -432,6 +478,10 @@ drawing), never from test data. Each one was written into the case file before t
 <h2>Work breakdown</h2>
 {table(["Piece", "Method and checks", "Status", "Report"], status_rows)}
 
+<h2>Lamination bracket</h2>
+{BRACKET_TEXT}
+{bracket_table(runs)}
+
 <h2>Toolchain</h2>
 <div class="col">
 <ul>
@@ -470,6 +520,10 @@ inputs, hashes and tool versions with every run.</li>
 <li><time>01:46</time><span>Open circuit on the final machine with M400-50A: 109.7 V per 1000 rpm (+1.1 % on revision 1, above the predicted +0.2 %).</span></li>
 <li><time>01:56</time><span>The same machine on M330-35A: 110.9 V per 1000 rpm (+1.1 %, predicted +1.0 to +3.5 %), the new blind back-EMF prediction. REQ-M1 fails at 1040 V; its mesh uncertainty is withheld (anomalous convergence order), the verdict is not in doubt.</span></li>
 <li><time>03:20</time><span>Torque curve on M330-35A verified, the blind torque prediction: 119-606 N m from 50 to 350 A rms, 400 N m at about 168 A. Against M400-50A: +3.0 % at 50 A, changing sign near 240 A, −2.5 % at 350 A, because above 1.8 T our M330-35A curve is extrapolated. Bracket runs (M250-35A, 190Y390) started.</span></li>
+<li><time>03:32</time><span>Bracket, open circuit on M250-35A: 111.0 V per 1000 rpm, +0.13 % (predicted −0.35 %: wrong sign).</span></li>
+<li><time>03:56</time><span>Bracket, torque on M250-35A: −1.8 % at 100 A, −1.0 % at 300 A.</span></li>
+<li><time>04:05</time><span>Bracket, open circuit on 190Y390: 111.0 V per 1000 rpm, +0.12 %. The three grades span 0.13 % in back-EMF.</span></li>
+<li><time>04:29</time><span>Bracket, torque on 190Y390: −0.9 % at 100 A, −0.6 % at 300 A. Across the three grades the torque spans 1.8 % at 100 A and 1.0 % at 300 A, the stand-in M330-35A at the top: the unknown grade does not limit the blind comparison.</span></li>
 </ol>
 
 <h2>Blind protocol log</h2>
@@ -728,6 +782,11 @@ RUN_NOTES = {
                                    "on Pyleecan's inherited M400-50A steel: the other side of the steel sensitivity.",
     "motor_prius_ornl_oc_mesh_r3": "Final machine with M330-35A laminations, the study's stand-in steel. Its finest-mesh "
                                    "back-EMF is the blind prediction.",
+    "motor_prius_ornl_oc_m250": "Lamination bracket: the final machine on M250-35A, the lower-loss grade. +0.13 % on "
+                                "M330-35A, against a predicted -0.35 %: below 1.15 T, where most of the open-circuit iron "
+                                "runs, this grade needs less field, not more.",
+    "motor_prius_ornl_oc_y390": "Lamination bracket: the final machine on powercore 035-190Y390, the high-strength grade. "
+                                "+0.12 % on M330-35A (predicted -0.1 %), for the same reason.",
 }
 
 
@@ -869,6 +928,11 @@ slot raises it 1.4 %, because the wider teeth saturate less.</p></div>
 
 
 TORQUE_NOTES = {
+    "motor_prius_torque_m250": "Lamination bracket: M250-35A at 100 and 300 A. -1.8 % and -1.0 % on M330-35A; the gap "
+                               "is largest at 100 A, where the loaded teeth sit at 1.4-1.6 T and this grade needs up to "
+                               "1.8 times the field.",
+    "motor_prius_torque_y390": "Lamination bracket: powercore 035-190Y390 at 100 and 300 A. -0.9 % and -0.6 % on "
+                               "M330-35A, the same pattern as M250-35A.",
     "motor_prius_torque_mesh": "Mesh study at 333 A rms, the 25 A/mm² copper limit, fineness 2 / 4 / 8. REQ-M2: does "
                                "the MTPA torque reach the rated 400 N m within that limit?",
     "motor_prius_torque_current": "The MTPA torque curve from 50 to 350 A rms at fineness 4, on Pyleecan's inherited "
@@ -938,6 +1002,12 @@ def build_torque(tcases, runs):
         if pts1:
             series.append({"name": "M330-35A (stand-in, the prediction)", "color_var": "--s2", "points": pts1,
                            "label": f"M330-35A {pts1[-1][1]:.0f} N m", "label_dy": -8})
+        for rn, steel, var in (("motor_prius_torque_m250", "M250-35A", "--s3"),
+                               ("motor_prius_torque_y390", "190Y390", "--ink-3")):
+            bp = curve(runs.get(rn), steel)
+            if bp:
+                series.append({"name": f"{steel} (bracket, 100 / 300 A)", "color_var": var, "points": bp,
+                               "hollow": True, "dots_only": True})
         if True:
             ymax = max(500, math.ceil(max(y for _, y, _ in pts + pts1) / 100) * 100)
             X0, X1 = 0, 375
@@ -996,6 +1066,8 @@ linkages; the MTPA torque comes from a parabola through the best three angles.</
 
 <h2>MTPA torque against current</h2>
 {chart or '<p class="muted">The curve appears when the 50-350 A run has points.</p>'}
+<h3>Lamination bracket</h3>
+{bracket_table(runs)}
 <div class="col"><p>The two steels differ by at most 3 %. M330-35A needs less field below 1.7 T, so it gives more torque
 at low current. Above about 240 A the teeth saturate past 1.8 T, the top of Tata Steel's table. There our M330-35A curve
 is extrapolated (saturation polarization 2.0 T), and it carries less flux than Pyleecan's M400-50A curve. The prediction
@@ -1012,13 +1084,15 @@ above 200 A therefore rests on a stated assumption about deep saturation.</p></d
 def main():
     cases = [case_record(c) for c in CASES]
     tcases = [case_record(c) for c in TORQUE_CASES]
-    runs = {c: load_run(c) for c in CASES + TORQUE_CASES + ["motor_prius_rotor_overspeed_mesh"]}
+    bcases = [case_record(c) for c in BRACKET_OC]
+    btcases = [case_record(c) for c in BRACKET_TQ]
+    runs = {c: load_run(c) for c in CASES + TORQUE_CASES + BRACKET_OC + BRACKET_TQ + ["motor_prius_rotor_overspeed_mesh"]}
     (OUT / "index.html").write_text(build_index(cases, runs), encoding="utf-8")
     if len(sys.argv) > 1:  # also write the artifact's main page (no document skeleton) to the given path
         Path(sys.argv[1]).write_text(build_index(cases, runs, full=False), encoding="utf-8")
     (OUT / "geometry.html").write_text(build_geometry(), encoding="utf-8")
-    (OUT / "open-circuit.html").write_text(build_open_circuit(cases, runs), encoding="utf-8")
-    (OUT / "torque.html").write_text(build_torque(tcases, runs), encoding="utf-8")
+    (OUT / "open-circuit.html").write_text(build_open_circuit(cases + bcases, runs), encoding="utf-8")
+    (OUT / "torque.html").write_text(build_torque(tcases + btcases, runs), encoding="utf-8")
     for f, _ in PAGES:
         print(f"wrote {OUT / f} ({(OUT / f).stat().st_size / 1e3:.0f} kB)")
 
