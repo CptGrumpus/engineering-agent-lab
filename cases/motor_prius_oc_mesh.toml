@@ -29,6 +29,16 @@
 #   1000 rpm (P2 held). The line-to-line peak at 6000 rpm is 1027 V, not 910-930: the flux-linkage harmonics add 13 %
 #   to the peak over the fundamental, more than the few percent assumed. P3 revised to about 1030 V; the verdict
 #   (REQ-M1 fails) is unchanged.
+#
+# Results (run 20261121-194454_motor_prius_oc_mesh): every point check passes on every mesh (15/15). Line-to-line peak at
+#   6000 rpm 1026.7 / 1028.3 / 1028.0 V at mesh fineness 1 / 2 / 4 (oscillatory, uncertainty 0.10 %): REQ-M1 VERIFIED
+#   FAIL, about twice the 500 V bus. The drive depends on field weakening and fault protection at high speed (P3 as
+#   revised held). Flux-linkage fundamental 0.20906 / 0.20884 / 0.20864 Wb: monotone but observed order 0.19,
+#   extrapolated 0.20722; GCI 0.85 % passes the 1 % limit, but such a low order suggests the global refinement barely
+#   reaches what matters (likely the saturated rotor bridges). P2's GCI under 0.1 % MISSED. Revised blind prediction,
+#   still before any ORNL performance data is opened: back-EMF 107.0 V rms line-to-line per 1000 rpm at the finest
+#   mesh, with up to about 1 % attributable to the mesh (about 106 V extrapolated). Next: refine the bridges locally
+#   and check the order recovers. Solve times 14 / 28 / 101 s.
 
 [case]
 name = "motor_prius_oc_mesh"
