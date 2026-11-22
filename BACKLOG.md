@@ -77,7 +77,6 @@ A run is finished when its `runs/<timestamp>_<case>/report.md` exists. Logs are 
 
 | Job | Run dir (log) | Done about | When it finishes |
 |---|---|---|---|
-| Study 7 hot low-iq dq table (cold done: c569460, iq 25 A row bit-identical; dq check fails at iq 6.25-12.5 A deep in field weakening, up to 1 %), then `motor_prius_efficiency_r1` starts by itself | `runs/20261122-143828_motor_prius_lut_hot_lowiq` (`motor_prius_lut_hot_lowiq.log`), then `runs/*_motor_prius_efficiency_r1` (`motor_eff_r1.log`) | about 15:40, then a minute | Score the hot table (P1, P2, P4), then efficiency r1 (P1-P5; it also scores both low-iq cases' P3). Note in r1's Results that it merges tables whose dq check failed at their lowest currents. |
 | Study 6 FSI1 r1 mesh study (fluid 2.5 / 1.77 / 1.25 mm, coupling 1e-6) | `runs/20261122-125809_turek_hron_fsi1_mesh_r1` (`fsi1_r1.log`) | about 19:00 | Score against the case header (P1-P5), Results block, commit. |
 | Study 19 pipe mesh r1 (n 80 / 160 / 320) | `runs/*_pipe_rans_mesh_r1` (`pipe_rans_mesh_r1.log`) | about 14:30 | Score (P1-P4), Results block, commit. |
 
@@ -106,16 +105,11 @@ A run is finished when its `runs/<timestamp>_<case>/report.md` exists. Logs are 
   2500 rpm / 80 N m, hot 97.0 %; REQ-M5 PASS but unverified (58.6 / 53.7 kW, lowest at 6000 rpm). Verification FAIL
   on the half-grid checks, all on the iq 25 A row; diagnostic: below 30 N m at 4000-6000 rpm the optimum sits at iq
   2-5 A, inside the first 25 A cell, and the map moves up to 10 points; above 60 N m within about 1 point.
-- **Fix under way:** supplementary tables at iq 6.25-43.75 A (c70e7e5, running); merge code (104b3cb: `lut_run` takes
-  "main,supplementary"; checks `lut_merge` via verification.merge_rel_tol and `interp_map` via numerics.halfgrid_map_check
-  + verification.interp_map_max_pts). **Next:** `cases/motor_prius_efficiency_r1.toml` with lut_run = the 25 A run
-  then the low-iq run for each scenario, predictions first (score the low-iq cases' P3 from
-  main_table_interp_torque_rel_at_new_nodes).
-- **Reports (5b9c966, cdc05dd):** copper correction, tail sensitivity, timeline to 13:38, protocol-log entry and a new
-  efficiency page are in `reports/motor/`. **When efficiency r1 is scored:** extend the timeline, rebuild
-  (`.venv/Scripts/python.exe reports/motor/build_report.py <scratchpad>/motor_index.html`), then read and republish
-  https://claude.ai/artifact/C6dNdzjs1FdP8vVb6MLaRy (main page = that index file; `geometry.html`, `open-circuit.html`,
-  `torque.html`, `efficiency.html` as files).
+- **Efficiency r1 done (c9a8637):** low-iq tables merged (25 A rows bit-identical; their dq check fails at iq 6.25 A deep
+  in field weakening, up to 1.1 %, model form). Cold verified, all 8 checks: REQ-M5 58.6 kW verified PASS, map resolved
+  to 0.9 point; hot fails the map check in one cell (4500 rpm, 10 N m), REQ-M5 53.7 kW PASS unverified. Peaks 97.41 /
+  97.05 %. The 10 N m row above 4000 rpm stays unresolved (stated; not worth a revision before the blind comparison).
+- **Reports rebuilt and republished** (b770fee, artifact version 4: https://claude.ai/artifact/C6dNdzjs1FdP8vVb6MLaRy).
 - **After that, before the ORNL data is opened:** the thermal network; then open the ORNL test data once and compare.
 
 ### Study 6 (FSI): FSI1 revision 1

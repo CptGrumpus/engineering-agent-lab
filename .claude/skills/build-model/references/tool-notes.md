@@ -434,7 +434,9 @@ Traps found while building the studies in this repo, by tool.
 - **A 25 A dq grid does not resolve light load at high speed.** Below 30 N m above 4000 rpm the loss-optimal current
   has iq 2-5 A, inside the first grid cell; the map from the half grid differed from the full one by up to 10
   efficiency points there (0.1 point median). Check the map itself (half table against full table), and refine the
-  table's low-iq rows (6.25 A steps) rather than the whole grid.
+  table's low-iq rows (6.25 A steps) rather than the whole grid. With 6.25 A rows the map resolved to 0.9 point from
+  20 N m up (cold, verified), but the 10 N m row above 4000 rpm still switches between field-weakening branches
+  (iq 2-4 A, id jumping up to 47 A between neighbouring speeds): report that row as unresolved rather than chase it.
 - **The dq torque equation drifts at low iq deep in field weakening:** at iq 6.25-12.5 A and id -175 to -300 A the
   mean torque is 33-70 N m with 18-27 N m of ripple, and 3 p (phi_d iq - phi_q id) from the mean fluxes missed FEMM's
   torque by up to 1 % (0.3 N m). Interpolate FEMM's torque for the map; the dq fluxes are for the voltage limit.
