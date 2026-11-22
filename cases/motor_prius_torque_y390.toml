@@ -8,6 +8,19 @@
 #      about -0.6 % at 300 A (range -1.5 to 0 %).
 #   P3 MTPA angle within 1 deg of the M330-35A curve; REQ-M3 passes at both (current density does not depend on the steel).
 #   P4 About 25 min.
+#
+# Results (run 20261122-040603_motor_prius_torque_y390): verification PASS.
+#   P1 HELD: 10/10 point checks; power balance 5.8e-4 and 7.5e-4 (tolerance 2e-2).
+#   P2 PARTLY: MTPA torque 249.30 N m at 100 A (-0.92 % on M330-35A's 251.6; predicted -0.2 %, range -0.7 to +0.2:
+#      MISSED, larger) and 566.08 N m at 300 A (-0.58 % on 569.4; predicted -0.6 %, range -1.5 to 0: HELD). Same
+#      pattern as M250-35A: the gap is largest at 100 A, where the loaded teeth sit at 1.4-1.6 T (190Y390 needs 1.3 x
+#      M330-35A's field at 1.5 T), and narrows at 300 A, where the extrapolated tails nearly meet.
+#   P3 HELD: MTPA angle 40.0 deg at 100 A (+0.12 deg) and 47.7 deg at 300 A (-0.16 deg); REQ-M3 passes at both
+#      (7.49 and 22.48 A/mm^2).
+#   P4 HELD: 23 min (04:06-04:29).
+#   Ripple at MTPA 40.9 and 115.0 N m peak to peak (approximate).
+# Bracket (three grades): torque 247.2-251.6 N m at 100 A (1.8 %) and 563.9-569.4 N m at 300 A (1.0 %), the stand-in
+# M330-35A at the top of both; far inside the 10 % validation limit.
 
 [case]
 name = "motor_prius_torque_y390"
