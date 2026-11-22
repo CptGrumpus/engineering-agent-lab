@@ -15,6 +15,24 @@
 #   P4 REQ-M3 unchanged (the current density does not depend on the steel): every point up to 300 A passes, 350 A fails.
 #   P5 About 15 min per current, about 1 h 45 min in all (the M400-50A run's pace).
 # This curve, once verified, is the BLIND PREDICTION of torque against current (with M330-35A as the stand-in steel).
+#
+# Results (run 20261122-015619_motor_prius_torque_current_r1): verification PASS.
+#   P1 HELD: 35/35 point checks; power balance 4.9e-4 to 1.5e-3 (tolerance 2e-2), phases symmetric to 2.3e-4, MTPA
+#      inside the sweep at every current.
+#   P2 PARTLY: MTPA torque 118.8 / 251.6 / 366.6 / 456.9 / 522.3 / 569.4 / 606.4 N m at 50-350 A rms, against the
+#      M400-50A curve +3.0 / +2.3 / +1.9 / +0.7 / -0.4 / -1.6 / -2.5 %. Held at 50-100 A (+1.5 to +5 %); the predicted
+#      shrinking of the gain held, but it shrank faster and changed sign at about 240 A: at 350 A -2.5 % against
+#      -1 to +3 % (missed). "Above at every current" missed from 250 A up. The direction says why: at high current the
+#      teeth and bridges run where our M330-35A tail (above Tata's 1.8 T, extrapolated with saturation polarization
+#      2.0 T) carries less flux than M400-50A's curve (100 kA/m: 2.105 against 2.20 T), and that region weighed more
+#      than estimated. So above about 200 A this blind prediction rests on the extrapolated tail, not on datasheet
+#      values: a stated assumption, to be reported with the ORNL comparison.
+#   P3 HELD: MTPA angle within 0.8 deg of the M400-50A curve (30.6 deg at 50 A, 39.9 at 100, 45.1-48.5 from 150 A up).
+#   P4 HELD: REQ-M3 passes up to 300 A (22.5 A/mm^2), fails at 350 A (26.2 A/mm^2).
+#   P5 MISSED (faster): 84 min (01:56-03:20), about 12 min per current, against about 1 h 45 min.
+#   400 N m at about 168 A rms (M400-50A: 171 A). Torque per amp 2.38 / 2.52 / 2.44 / 2.28 / 2.09 / 1.90 / 1.73 N m/A.
+#   Ripple at MTPA 27.1 / 41.7 / 60.3 / 78.8 / 96.5 / 116.3 / 125.8 N m peak to peak (approximate, as before).
+# BLIND TORQUE PREDICTION (stand-in steel M330-35A, 20 C, 1000 rpm): the MTPA values above.
 
 [case]
 name = "motor_prius_torque_current_r1"
