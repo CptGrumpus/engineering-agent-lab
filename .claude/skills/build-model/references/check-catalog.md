@@ -115,6 +115,10 @@ Fatigue life is extremely sensitive to stress (here a 10 % stress change moves l
 | Enough time steps per electrical period for the metric (48 for flux linkage and mean torque; more for ripple) | validity | `time_resolution` |
 | GCI on the flux linkage, the back-EMF peak and the MTPA torque (mesh fineness) | numerical | motor mesh studies |
 | Design inputs overlaid on the published drawing they came from | numerical | study 7 slot and pocket overlays |
+| Rotor stress pipeline on a plain annulus vs the exact rotating disk | numerical | `rotor_stress` `rotating_disk` (4e-4) |
+| Sector equilibrium: centrifugal + magnet load + constrained reaction components = 0 | numerical | `rotor_stress` `equilibrium` (1e-5) |
+| Fixed-guided beam estimate of a rotor bridge (tension F/(tL) + end bending 3Fl/(t^2 L)) | model form | `rotor_stress` `beam_estimate` |
+| Bridge membrane stress below yield (so a linear-elastic model applies through the section) | validity | `rotor_stress` `membrane_elastic` |
 
 ## Heat transfer in a flow (CFD + scalar temperature)
 

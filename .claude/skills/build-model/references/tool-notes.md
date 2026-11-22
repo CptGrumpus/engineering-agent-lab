@@ -130,10 +130,15 @@ Traps found while building the studies in this repo, by tool.
 - **Plane strain from hexes:** one layer of C3D8I with every node held in z. The flag's
   benchmark is plane strain although it does not say so; the elastica only matched it with
   E / (1 - nu^2) (plane stress missed by 17 %).
-- **Reaction totals leave out loads applied on the constrained nodes**, mechanical as well as
-  thermal: under gravity the clamp's `RF, TOTALS=ONLY` was 0.357 % short of the weight, exactly
-  the body load lumped on the clamp nodes (half the first element column). Compute that share
-  from the mesh (consistent load, 2 x 2 Gauss on the first column) and add it back.
+- **`RF` is the internal nodal force, not the reaction**, mechanical as well as thermal: at a
+  constrained dof it is the reaction minus the load applied on that node, and at a free dof it
+  equals the load applied there. So a set's `RF, TOTALS=ONLY` (1) leaves out the loads on the
+  constrained nodes: under gravity the flag clamp's total was 0.357 % short of the weight, exactly
+  the body load lumped on the clamp nodes (compute it from the mesh and add it back); and (2)
+  picks up loads in the free directions: on the rotor's symmetry edges about 135 N of centrifugal
+  load showed up as a "reaction" along the edge and broke equilibrium by 1.6 % until only the
+  constrained components were used (study 7). For nodes under `*TRANSFORM` the printed totals
+  were in global axes.
 - **`*NODE PRINT` FREQUENCY is one setting for the whole step: the last request wins.** A
   centreline print with `FREQUENCY=10` (to get only the last increment) silently cut the
   point-A history, printed every increment, down to one block. Print everything at the same
@@ -166,6 +171,20 @@ Traps found while building the studies in this repo, by tool.
   frequency jitter between time steps. Downward crossings of the mid level with a quarter-amplitude
   hysteresis gave 1.0949-1.0952 Hz at every step. Test any signal-processing metric on a synthetic
   signal with the contamination you expect before trusting it.
+
+## CalculiX plane stress under rotation (rotor overspeed, study 7)
+
+- `*DLOAD, CENTRIF, omega^2, 0,0,0, 0,0,1` works on plane-stress elements (CalculiX expands them to wedges); keep the
+  thin analysed layer of the strap study and scale concentrated loads by the same factor.
+- A symmetry line that is not a coordinate axis: `*TRANSFORM, NSET=..., TYPE=R` with the line's direction as the first
+  vector, then fix local dof 2 (the normal).
+- **`*CLOAD` rejects numbers longer than about 21 characters** ("ERROR reading *CLOAD", card image shown): Python's repr
+  of a small load (17 digits plus an exponent) crossed it only on a finer mesh. Format loads with `:.12e`.
+- Check the pipeline on a plain annulus against the exact rotating disk (plane stress, free edges) before the pocketed
+  part: 4e-4 on CPS6.
+- Sharp pocket corners make the corner peak a singularity (742 / 929 / 1221 MPa over three meshes): judge a bridge by
+  linearized stress along radial lines (`models/fea/rotor_ccx.py` `linearize`, Simpson's rule so a linear stress is
+  integrated exactly).
 
 ## CalculiX contact (surface-to-surface, penalty)
 
