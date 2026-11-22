@@ -62,6 +62,18 @@
 #      speed); air gap x3 lowers the magnets by 5-15 K and barely moves the envelope; winding k x0.5: -5-10 %; teeth
 #      fraction 0.4 / 0.75: under 3 %.
 #
+# Smoke run (scratch, 500 rpm steps, nominal only; AFTER the predictions above were committed in 1040954). It found two
+# code defects, fixed before this evidence run: (1) the hot-corner search started at 1 N m, which the operating-point
+# search cannot hit (0.5 N m band), so it returned nothing; it now starts at 10 N m, the map's lowest torque; (2) the
+# convergence and magnet-extrapolation figures counted the bisection's probes past thermal runaway (winding 383 C at
+# 1000 rpm / 300 N m, where the iteration never settles), so they read 1.97 K and 172 K; they now count the reported
+# states, and a probe past 400 C stops iterating (it fails the limits either way). Also: gmsh's element sets are read
+# from its physical-group *ELSETs, and clockwise triangles are reoriented for CalculiX. The smoke run also showed, and
+# this case does NOT act on (the model and tolerances are as committed): the magnet limit binds at every speed, not the
+# winding (P2); the CalculiX winding peak rise is about 10 % above the network's slab estimate, mean -4.4 %, teeth
+# -3.2 %, yoke +0.7 % (P5); magnets at 93-105 C where the winding mean is 100 C (P4); about 230 N m at 1000 rpm and 67
+# N m at 6000 rpm (P1). So P1, P2, P4 and P5 are no longer blind; they stay as written and are scored as written.
+#
 # Requirements and tolerances were fixed BEFORE the first run.
 
 [case]

@@ -88,17 +88,34 @@ def read_mesh(mesh_inp: Path) -> tuple[np.ndarray, np.ndarray, dict]:
     text = Path(mesh_inp).read_text(encoding="utf-8")
     nb = text.split("*NODE", 1)[1].split("*", 1)[0]
     rows = np.array([[float(v) for v in ln.split(",")] for ln in nb.strip().splitlines()])
-    regions = {r: [] for r in REGIONS}
+    conn = {}
     for blk in text.split("*ELEMENT")[1:]:
         head, body = blk.split("\n", 1)
         if "CPS6" not in head.upper():
             continue
-        name = head.upper().split("ELSET=")[1].strip().strip(",")
-        if name not in regions:
-            raise ValueError(f"unexpected element set {name}")
         for ln in body.split("*", 1)[0].strip().splitlines():
-            regions[name].append([int(v) for v in ln.split(",") if v.strip()])
-    return rows[:, 0].astype(int), rows[:, 1:3], {k: np.array(v) for k, v in regions.items()}
+            row = [int(v) for v in ln.split(",") if v.strip()]
+            conn[row[0]] = row
+    # Gmsh writes the elements per geometric surface and each physical group as an *ELSET of element ids
+    regions = {}
+    for blk in text.split("*ELSET")[1:]:
+        head, body = blk.split("\n", 1)
+        name = head.upper().split("ELSET=")[1].strip().strip(",")
+        if name in REGIONS:
+            ids_ = [int(v) for v in body.split("*", 1)[0].replace("\n", ",").split(",") if v.strip()]
+            regions[name] = np.array([conn[e] for e in ids_])
+    if set(regions) != set(REGIONS) or sum(len(v) for v in regions.values()) != len(conn):
+        raise ValueError(f"mesh regions incomplete: {sorted(regions)}, {len(conn)} elements")
+    ids, xy = rows[:, 0].astype(int), rows[:, 1:3]
+    # CalculiX needs counter-clockwise triangles (+z normal; a clockwise one has a negative Jacobian). Gmsh orients
+    # each surface by its curve loop, so flip the clockwise ones: corners 1 2 3 -> 1 3 2, midsides 4 5 6 -> 6 5 4.
+    pos = {int(n): i for i, n in enumerate(ids)}
+    for name, c in regions.items():
+        for row in c:
+            (x1, y1), (x2, y2), (x3, y3) = (xy[pos[int(n)]] for n in row[1:4])
+            if (x2 - x1) * (y3 - y1) - (x3 - x1) * (y2 - y1) < 0:
+                row[1:7] = row[[1, 3, 2, 6, 5, 4]]
+    return ids, xy, regions
 
 
 EDGES = ((0, 1, 3), (1, 2, 4), (2, 0, 5))  # corner, corner, midside (0-based within the 6 nodes); label F1..F3

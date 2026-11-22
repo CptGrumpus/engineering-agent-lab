@@ -38,6 +38,7 @@ FE = "models/motor/stator_section_ccx.py"
 EFF = "models/motor/efficiency_map.py"
 SPEEDS_REPORTED = (1250, 2000, 3000, 4000, 5000, 6000)
 BINDING = {"winding": 0, "magnet": 1, "electrical": 2}
+RUNAWAY_C = 400.0  # a probe past this is outside every limit; its iteration stops there
 
 GEOM = ("n_slots", "stack_length_mm", "stator_outer_radius_mm", "stator_bore_radius_mm", "slot_shoulder_x_mm",
         "slot_width_shoulder_mm", "slot_width_round_mm", "slot_round_centre_x_mm", "slot_opening_mm",
@@ -77,7 +78,6 @@ class Coupled:
         self.v_max = float(p["bus_voltage_V"]) / math.sqrt(6)
         self.i_max = float(p["current_limit_design_A"])
         self.max_balance = 0.0
-        self.max_extrapolation_C = -1e9
         self.n_solves = 0
 
     def fine(self, t_mag):
@@ -122,9 +122,8 @@ class Coupled:
             new = {k: st["T"][k] for k in ("W", "E", "ROT")}
             change = max(abs(new[k] - t[k]) for k in t)
             t = new
-            if change < tol:
-                break
-        self.max_extrapolation_C = max(self.max_extrapolation_C, t["ROT"] - self.th)
+            if change < tol or max(new.values()) > RUNAWAY_C:
+                break  # converged, or far past every limit (thermal runaway: copper loss rising faster than cooling)
         return {"T": st["T"], "losses": L, "last_change_K": change, "iterations": it + 1,
                 "winding_hotspot_C": st["winding_hotspot_C"], "slot_hotspot_C": st["slot_hotspot_C"],
                 "end_hotspot_C": st["end_hotspot_C"], "winding_mean_C": st["winding_mean_C"],
@@ -144,14 +143,13 @@ def envelope_at(c: Coupled, n: float, max_change: list) -> dict:
     while hi - lo > 0.05:
         mid = 0.5 * (lo + hi)
         s = c.solve(n, mid, start)
-        if s is not None:
-            max_change[0] = max(max_change[0], s["last_change_K"])
         if c.ok(s):
             lo, s_lo, start = mid, s, s["start"]
         else:
             hi = mid
     if s_lo is None:
         return {"torque": 0.0, "binding": "winding", "s": None}
+    max_change[0] = max(max_change[0], s_lo["last_change_K"])  # convergence of the reported state
     s_hi = c.solve(n, hi, start)
     if s_hi is None:
         binding = "electrical"
@@ -165,21 +163,20 @@ def envelope_at(c: Coupled, n: float, max_change: list) -> dict:
 
 def hot_corner_at(c: Coupled, n: float, target_C: float, max_change: list) -> dict | None:
     """Torque at which the copper-weighted winding mean reaches target_C (bisection), and the state there."""
-    s0 = c.solve(n, 1.0)
+    s0 = c.solve(n, 10.0)
     if s0 is None or s0["winding_mean_C"] > target_C:
         return None
-    lo, hi, s_lo, start = 1.0, 450.0, s0, s0["start"]
+    lo, hi, s_lo, start = 10.0, 450.0, s0, s0["start"]
     while hi - lo > 0.05:
         mid = 0.5 * (lo + hi)
         s = c.solve(n, mid, start)
-        if s is not None:
-            max_change[0] = max(max_change[0], s["last_change_K"])
         if s is not None and s["winding_mean_C"] <= target_C:
             lo, s_lo, start = mid, s, s["start"]
         else:
             hi = mid
     if hi >= 449.9 or c.solve(n, hi, start) is None:
         return None  # the electrical limit comes first: the winding never reaches the target at this speed
+    max_change[0] = max(max_change[0], s_lo["last_change_K"])
     return {"torque": s_lo["losses"]["torque_Nm"], "s": s_lo}
 
 
@@ -344,7 +341,7 @@ class LumpedThermal(Backend):
                    "max_balance_rel": c.max_balance, "max_last_change_K": max_change[0],
                    "efficiency_consistency_rel": cons, "efficiency_consistency_points": n_cons,
                    "section_fe": fe_out, "ref_states": ref_states, "network_solves": c.n_solves,
-                   "magnet_extrapolation_above_hot_table_K": c.max_extrapolation_C,
+                   "magnet_extrapolation_above_hot_table_K": float(np.nanmax(env["magnet_C"] + hot["magnet_C"])) - c.th,
                    "geometry_mm": {k: (v * 1e3 if isinstance(v, float) else v) for k, v in c.g.items()
                                    if not k.startswith("a_")},
                    "areas_mm2": {k: v * 1e6 for k, v in c.g.items() if k.startswith("a_")},
