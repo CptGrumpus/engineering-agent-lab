@@ -29,7 +29,8 @@
 #      the voltage by well under 1 %. The failed columns' REQ-M3 verdicts are withheld (by construction anyway).
 #   P2 HELD exactly: the iq 25 A row is bit-identical to the main table's in every column (torque, ripple, dq flux,
 #      all six iron-loss coefficients): FEMM on the same mesh and rotor positions reproduces itself.
-#   P3 (the main table's interpolation error at the new nodes) is scored by motor_prius_efficiency_r1.
+#   P3 HELD (scored by motor_prius_efficiency_r1, run 20261122-153450): the main 25 A table misses FEMM's torque at the
+#      new nodes by 1.04 % at worst, at id -25 A, iq 6.25 A (predicted 0.5-2 %, at iq 6.25-12.5 A, id -25 to -100 A).
 #   P4 MISSED a little: 58.6 min (predicted about 47; FSI1 r1 and the pipe runs shared the CPU).
 
 [case]
