@@ -40,14 +40,22 @@ Decided 2026-11-21:
 | 9 | New studies on the page | Studies 13 to 16 (strut buckling, strap proof test, cold-plate thermal chain, bolted joint) each get a gallery card, a collapsible write-up, requirements rows and checked visuals, and some a viewer tab. The page's "twelve studies" wording and the preview card's count change with them | Nothing | Ready to start. The "Harder studies" section already lists their results and links their write-ups on GitHub. `scripts/make_clevis_visuals.py` is the template for the renders |
 | 10 | Heat-transfer wall verdict | Study 11's wall temperature is withheld until a finer mesh shows the peak converging. Once that run passes, flip the verdict on the page | Nothing: run `20261121-151154_heated_channel_mesh_r2` verified REQ-T1 (44.03 °C, uncertainty 0.23 %); portfolio/11 and PORTFOLIO.md updated | Ready for the page |
 | 12 | Menu label | The top menu still says "Next" for the section now called "Harder studies" | Nothing | Fold into item 9 |
-| 13 | Keep the fluid-structure card current | The flexible-flag card in "Harder studies" describes where study 6 stands; the coupled stage has started since it was written | Study 6's progress | Update with item 9, and again when the coupled runs finish |
+| 13 | Keep the fluid-structure card current | The flexible-flag card in "Harder studies" describes where study 6 stands; the coupled stage has started since it was written | Study 6's progress (2026-11-21 evening): solid CSM1/CSM2 and fluid CFD1/CFD2 drag verified; the coupled FSI1 prototype matched the benchmark (tip -0.34 %, drag -0.006 %); the FSI1 mesh study and CSM3 r3 finish tonight. Draft write-up: `portfolio/17-fsi-flag-turek-hron.md` (not in the index yet) | Update with item 9, and again when the coupled runs finish |
+| 14 | Fourth graded task | `tasks/sagging_strip_clearance` (new 2026-11-21): a sagging strip's clearance, where plane strain and large deflection each flip the verdict. Add it to the grader demo and the tasks list beside the other three | Nothing (grader tested in `tests/test_tasks.py`) | Ready for the page |
 | 11 | Interactive 3D viewer | Rotate the parts in the browser | Nothing | Done for five of the seven viewer tabs. The contact close-up and the flow height field stay as images |
 
 ## Ideas not yet scheduled
 
+Aim: better visuals and more "wow", without loosening any check. Every new visual still goes through the volume, legend-colour and legibility checks.
+
+- **Scrub through an analysis.** A slider in the result viewer that steps through the solver's load increments, with the 3D mesh morphing and the colours updating: the strut bowing as the load climbs to buckling, the strap's yielded zone growing and then the stress left after unloading. The strut's re-solve already wrote all 20 increments.
+- **Watch the bolted joint slip.** An animation of the side-load step: the stuck region of the interface shrinking until the whole joint slides, next to the load-displacement curve. The contact output is already in the re-solve.
+- **Animated mode shapes in 3D.** An "Animate" button for the modal and buckling tabs that oscillates the 3D mesh along its mode shape.
+- **Before-and-after slider** for the optimised bracket: drag across one image to wipe from the starting design to design D.
+- **Load-ramp animations for the gallery,** like the optimiser's search animation: short loops that show the result forming, used as the card thumbnails on hover.
+- **Section views.** Cut the bolted joint through its axis to show the pressure cone inside the plates, and the clevis through the lug to show where the stress runs.
 - **3D for the contact and flow tabs.** The contact view is a section close-up and the flow view a height field; both would need their own camera handling.
-- **A colour-blind option.** The turbo scale isn't colour-blind safe. A viridis version of the renders and 3D view would help readers who need it.
-- **Mesh size on phones.** The fatigue strap's 3D mesh is 905 KB. Fine on Wi-Fi, slow on a weak mobile connection; it could be decimated away from the hole.
+- **Lighter meshes for the 3D view.** The fatigue strap (905 KB), and the strap proof test and cold plate (too heavy today), could be decimated away from the regions that matter, so they can rotate too.
 
 ## Recently done
 
