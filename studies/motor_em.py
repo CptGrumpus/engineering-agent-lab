@@ -26,7 +26,8 @@ from harness.study import Study
 
 RUNNER = "models/motor/pyleecan_em.py"
 #: our own machine definitions (built by models/motor/build_prius_ornl.py); a case names one by file name
-MACHINES = ("models/motor/Toyota_Prius_ORNL.json",)
+MACHINES = ("models/motor/Toyota_Prius_ORNL.json", "models/motor/Toyota_Prius_ORNL_M250-35A.json",
+            "models/motor/Toyota_Prius_ORNL_190Y390.json")
 PARAMS = ("machine", "speed_rpm", "id_A", "iq_A", "mesh_fineness", "steps_per_period", "angle_points",
           "max_speed_rpm", "bus_voltage_V", "rated_torque_Nm")
 NUMERIC = PARAMS[1:]
