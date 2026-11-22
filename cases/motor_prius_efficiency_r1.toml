@@ -1,0 +1,108 @@
+# Study 7, efficiency map, revision 1 of motor_prius_efficiency (read it for the model, parameters, hand estimates and
+# the first run's Results). Same model, parameters and requirement; the tables gain low-q-current rows.
+#
+# Why: the first run (20261122-133642) failed its half-grid interpolation checks, every worst node on the iq 25 A row;
+# below 30 N m at 4000-6000 rpm the optimum lies at iq 2-5 A, inside the first 25 A cell, and the map moved by up to
+# 10.6 efficiency points between the half and the full table there (about 0.1 point median, at most about 1 point
+# above 60 N m). Changes:
+# 1. Each scenario merges its 25 A table with a supplementary one at iq 6.25-43.75 A in 6.25 A steps
+#    (motor_prius_lut_cold_lowiq, motor_prius_lut_hot_lowiq; lut_run = "main,supplementary", 104b3cb). The iq 25 A row
+#    is in both; the merge check (lut_merge) requires them to agree.
+# 2. A check on the output itself (numerics.halfgrid_map_check, verification.interp_map_max_pts): the whole map from
+#    the half table against the map from the full table, in efficiency points. The half of the merged table has 12.5 A
+#    steps at low iq and 50 A above 50 A. Tolerance 2 points on the half table: with an interpolation error falling at
+#    least as h^2, the full table is then within about 0.5 point.
+# 3. The node checks stay at 5 %.
+#
+# Predictions, written BEFORE the run (and before either supplementary table had finished; no ORNL data opened):
+#   P1 Every check passes in both scenarios. Back-EMF unchanged (111.006 V); MTPA at 100 / 200 A within 0.05 % of the
+#      first run (251.59 / 455.95 N m); merged rows agree to 1e-6 (tolerance 1e-4); node checks under 3 % (torque) and
+#      5 % (iron loss), the worst left-out nodes now on the iq 75 A row; half-table map within 0.5-2 points of the full
+#      one, the largest differences still below 30 N m above 4000 rpm.
+#   P2 The main 25 A table, interpolated at the new nodes, misses FEMM's torque by 0.5-2 % at worst (|T| >= 5 N m), at
+#      iq 6.25-12.5 A and id -25 to -100 A (this scores P3 of both low-iq cases).
+#   P3 The map changes little except in the low-torque, high-speed corner: peaks within 0.1 point of 97.41 / 97.04 %;
+#      reference points above 30 N m within 0.3 point of the first run; 6000 rpm / 30 N m within 2 points of 91.3 /
+#      90.4 %; the optimum current at 10-20 N m above 4000 rpm changes smoothly with speed (no jumps in id over 15 A
+#      between neighbouring speeds, against 47 A before: -39 A at 5500 rpm, -86 A at 5750 rpm, 10 N m).
+#   P4 REQ-M5 unchanged (58.6 / 53.7 kW, high-current points), now verified PASS; 400 N m reachable to 1750 rpm.
+#   P5 Under a minute per scenario (the extra half-table map doubles the search).
+
+[case]
+name = "motor_prius_efficiency_r1"
+model = "lut_efficiency"
+description = "2004 Toyota Prius traction motor (our machine, laminations M330-35A), motor-only efficiency map from the verified dq look-up tables (25 A tables merged with low-q-current tables at 6.25 A): 500-6000 rpm, 10-400 N m, least copper + iron loss under the 500 V bus voltage limit and the current limit; cold (all 20 C) and hot (windings 100 C, magnets 80 C) scenarios."
+assumptions = [
+  "Motor-only efficiency: copper (DC resistance, end connections included) and iron loss; no mechanical, magnet eddy-current, AC copper or inverter loss (user's framing, 2026-11-22).",
+  "Voltage limit Vdc / sqrt 6 phase rms (linear modulation of a 500 V bus); the resistive drop is included, inductive coupling to the inverter is not.",
+  "Current limit 212 A rms for the design (25 A/mm^2 on 76.4 mm^2 of bare copper per slot, a stated assumption) and 300 A for the map's edge.",
+  "Iron loss from the table's coefficients, P = A f + B f^2 + C f^1.5 with f the electrical frequency, at each grid point.",
+  "Copper 1.72e-8 ohm m at 20 C, alpha 0.00393 /K; one parallel path; end connection 120.6 mm per side (geometry estimate, see header).",
+]
+limitations = [
+  "No test data in this case: the ORNL comparison is a separate, blind step at the end of the study.",
+  "The tables are 2D magnetostatic at 1000 rpm; the iron loss is scaled to speed by the fitted coefficients, not recomputed per speed.",
+  "Steady thermal corners only (cold and hot); no thermal model links temperature to the operating point yet.",
+]
+
+[parameters]
+lut_run = "20261122-102002_motor_prius_lut_cold,20261122-133946_motor_prius_lut_cold_lowiq"
+magnet_temperature_C = 20.0
+winding_temperature_C = 20.0
+series_turns_per_phase = 72
+turn_copper_area_mm2 = 8.492
+stack_length_m = 0.08382
+end_connection_length_m = 0.1206
+copper_resistivity_20C_ohm_m = 1.72e-8
+copper_alpha_per_K = 0.00393
+bus_voltage_V = 500.0
+current_limit_design_A = 212.0
+current_limit_map_A = 300.0
+speed_min_rpm = 500.0
+speed_max_rpm = 6000.0
+speed_step_rpm = 250.0
+torque_min_Nm = 10.0
+torque_max_Nm = 400.0
+torque_step_Nm = 10.0
+rated_power_kW = 50.0
+rated_torque_Nm = 400.0
+ref_back_emf_V = 111.006
+ref_mtpa_100A_Nm = 251.6
+ref_mtpa_200A_Nm = 456.9
+
+[[sweep.scenarios]]
+name = "cold"
+lut_run = "20261122-102002_motor_prius_lut_cold,20261122-133946_motor_prius_lut_cold_lowiq"
+magnet_temperature_C = 20.0
+winding_temperature_C = 20.0
+ref_back_emf_V = 111.006
+ref_mtpa_100A_Nm = 251.6
+ref_mtpa_200A_Nm = 456.9
+
+[[sweep.scenarios]]
+name = "hot"
+lut_run = "20261122-115824_motor_prius_lut_hot,HOT_LOWIQ_RUN"
+magnet_temperature_C = 80.0
+winding_temperature_C = 100.0
+ref_back_emf_V = 0.0
+ref_mtpa_100A_Nm = 0.0
+ref_mtpa_200A_Nm = 0.0
+
+[numerics]
+fine_step_A = 1.0
+halfgrid_map_check = true
+
+[verification]
+back_emf_rel_tol = 0.001
+mtpa_rel_tol = 0.01
+interp_halfgrid_rel_tol = 0.05
+merge_rel_tol = 1e-4
+interp_map_max_pts = 2.0
+
+[[requirements]]
+id = "REQ-M5"
+text = "The motor shall deliver its rated 50 kW from the rated base speed (50 kW at 400 N m: 1194 rpm) to 6000 rpm within the 500 V bus voltage limit and the 212 A rms design current limit."
+metric = "min_power_rated_speed_range_kW"
+operator = ">="
+limit = 50.0
+units = "kW"
