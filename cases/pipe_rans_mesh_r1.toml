@@ -25,6 +25,24 @@
 #      run-level check (1 %) may still fail; extrapolated f 2.0-3.0 % above Prandtl.
 #   P3 REQ-T1 PASS on every mesh (n320 about +1.5 % on Prandtl), verified if the GCI passes.
 #   P4 About 10 / 10 / 30 min (iterations to the cap; cost per iteration grows with the cells).
+#
+# Results (run 20261122-134230_pipe_rans_mesh_r1): verification FAIL; the finest mesh did not converge.
+#   f (wall shear) 0.017834 / 0.018129 / 0.018122 on n 80 / 160 / 320.
+#   P1 MISSED: n80 passes everything (iterative 1.5e-9). n160 fails the iterative check (9.0e-5 over the last 10 %),
+#      though the first run's n160 converged to 3e-11 in 15000 iterations. n320 fails the iterative check (4.2e-3)
+#      and the force balance (7.2e-3: the wall shear and the applied gradient still disagree), after 80000
+#      iterations. Log law within 5 % on all three (3.4 / 2.5 / 2.8 %).
+#   P2 MISSED: n80 reproduced exactly (0.017834); n160 0.018129 against 0.018130, 5.6e-5 (predicted 1e-5: within its
+#      own iterative error); n320 is not converged, so its 0.018122 is not a mesh-converged value. It sits at the
+#      n160 value rather than 0.4-0.9 % above it as predicted. The run-level check reads the three as oscillatory,
+#      uncertainty 1.02 % against 1 %.
+#   P3 HELD in value, not verified: REQ-T1 PASS on every mesh (-0.90 / +0.74 / +0.70 %), unverified.
+#   P4 MISSED: 19.5 / 38.7 / 56.5 min.
+# Cause, from comparing the two runs' n160 (identical meshes but for the axial length): the geometric-mean axial
+# length (0.10 mm at n160 against 2 mm) slowed SIMPLE's convergence by orders of magnitude, in iterations and in
+# time per iteration. The probe's n640 used the same rule, so its non-convergence does not show that 640 cells is
+# too many either. At Re 1e5 the fixed D/50 length keeps checkMesh's aspect ratio under 1000 up to n320 (759).
+# Next: revision 2 with the default axial length.
 
 [case]
 name = "pipe_rans_mesh_r1"

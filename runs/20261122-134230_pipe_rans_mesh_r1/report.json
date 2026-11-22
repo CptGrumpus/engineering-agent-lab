@@ -1,0 +1,301 @@
+{
+  "points": [
+    {
+      "label": "p00_n80",
+      "parameters": {
+        "diameter_m": 0.1,
+        "reynolds_number": 100000.0,
+        "kinematic_viscosity_m2_per_s": 1e-06,
+        "n_radial": 80,
+        "first_cell_yplus": 0.5,
+        "wall_treatment": "low_re",
+        "turbulence_model": "kOmegaSST",
+        "scenario": "n80"
+      },
+      "derived": {
+        "friction_prandtl": 0.01799259391769343,
+        "friction_petukhov": 0.017992027544212322,
+        "friction_blasius": 0.017792479529022645
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "mesh",
+          "description": "checkMesh reports Mesh OK (1 = failed)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.5,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "force_balance",
+          "description": "|f from the wall shear - f from the applied pressure gradient| / f (periodic flow: dp/dx A = tau_w P exactly)",
+          "kind": "numerical",
+          "value": 2.3367726617209462e-11,
+          "tolerance": 0.0001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "bulk_velocity",
+          "description": "|bulk velocity of the cell field - target| / target",
+          "kind": "numerical",
+          "value": 3.6959324489771466e-13,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "iterative_convergence",
+          "description": "max change of the pressure gradient over the last 10 % of iterations / final",
+          "kind": "numerical",
+          "value": 1.4699848130223857e-09,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "wall_uniform",
+          "description": "spread of the wall shear along the wall / mean (fully developed: 0)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.0001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "yplus_range",
+          "description": "first-cell y+ against the wall treatment's range (below 1 = inside)",
+          "kind": "validity",
+          "value": 0.2486468806075,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "log_law",
+          "description": "max |u+ - (ln y+ / 0.41 + 5.2)| / u+ for 50 <= y+ <= 0.15 Re_tau (model form: the log law's constants scatter by a few per cent between experiments)",
+          "kind": "numerical",
+          "value": 0.03412119053069271,
+          "tolerance": 0.05,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-T1",
+          "text": "The predicted friction factor shall be within 5 % of Prandtl's smooth-pipe law (the Moody chart's smooth curve), a usable accuracy for pressure-drop budgets.",
+          "metric": "friction_abs_dev_prandtl_pct",
+          "operator": "<=",
+          "limit": 5.0,
+          "units": "%",
+          "value": 0.9037255728801985,
+          "margin": 4.096274427119802,
+          "verdict": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p01_n160",
+      "parameters": {
+        "diameter_m": 0.1,
+        "reynolds_number": 100000.0,
+        "kinematic_viscosity_m2_per_s": 1e-06,
+        "n_radial": 160,
+        "first_cell_yplus": 0.25,
+        "wall_treatment": "low_re",
+        "turbulence_model": "kOmegaSST",
+        "scenario": "n160"
+      },
+      "derived": {
+        "friction_prandtl": 0.01799259391769343,
+        "friction_petukhov": 0.017992027544212322,
+        "friction_blasius": 0.017792479529022645
+      },
+      "simulation_status": "completed",
+      "verification_status": "FAIL",
+      "checks": [
+        {
+          "id": "mesh",
+          "description": "checkMesh reports Mesh OK (1 = failed)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.5,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "force_balance",
+          "description": "|f from the wall shear - f from the applied pressure gradient| / f (periodic flow: dp/dx A = tau_w P exactly)",
+          "kind": "numerical",
+          "value": 4.971730253917397e-05,
+          "tolerance": 0.0001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "bulk_velocity",
+          "description": "|bulk velocity of the cell field - target| / target",
+          "kind": "numerical",
+          "value": 3.33066907387547e-16,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "iterative_convergence",
+          "description": "max change of the pressure gradient over the last 10 % of iterations / final",
+          "kind": "numerical",
+          "value": 8.986497257787564e-05,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "FAIL"
+        },
+        {
+          "id": "wall_uniform",
+          "description": "spread of the wall shear along the wall / mean (fully developed: 0)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.0001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "yplus_range",
+          "description": "first-cell y+ against the wall treatment's range (below 1 = inside)",
+          "kind": "validity",
+          "value": 0.1253507762622,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "log_law",
+          "description": "max |u+ - (ln y+ / 0.41 + 5.2)| / u+ for 50 <= y+ <= 0.15 Re_tau (model form: the log law's constants scatter by a few per cent between experiments)",
+          "kind": "numerical",
+          "value": 0.025398761543483805,
+          "tolerance": 0.05,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-T1",
+          "text": "The predicted friction factor shall be within 5 % of Prandtl's smooth-pipe law (the Moody chart's smooth curve), a usable accuracy for pressure-drop budgets.",
+          "metric": "friction_abs_dev_prandtl_pct",
+          "operator": "<=",
+          "limit": 5.0,
+          "units": "%",
+          "value": 0.7372470516568974,
+          "margin": 4.262752948343103,
+          "verdict": "PASS (unverified)"
+        }
+      ]
+    },
+    {
+      "label": "p02_n320",
+      "parameters": {
+        "diameter_m": 0.1,
+        "reynolds_number": 100000.0,
+        "kinematic_viscosity_m2_per_s": 1e-06,
+        "n_radial": 320,
+        "first_cell_yplus": 0.125,
+        "wall_treatment": "low_re",
+        "turbulence_model": "kOmegaSST",
+        "scenario": "n320"
+      },
+      "derived": {
+        "friction_prandtl": 0.01799259391769343,
+        "friction_petukhov": 0.017992027544212322,
+        "friction_blasius": 0.017792479529022645
+      },
+      "simulation_status": "completed",
+      "verification_status": "FAIL",
+      "checks": [
+        {
+          "id": "mesh",
+          "description": "checkMesh reports Mesh OK (1 = failed)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.5,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "force_balance",
+          "description": "|f from the wall shear - f from the applied pressure gradient| / f (periodic flow: dp/dx A = tau_w P exactly)",
+          "kind": "numerical",
+          "value": 0.0071565324062158805,
+          "tolerance": 0.0001,
+          "comparison": "<=",
+          "status": "FAIL"
+        },
+        {
+          "id": "bulk_velocity",
+          "description": "|bulk velocity of the cell field - target| / target",
+          "kind": "numerical",
+          "value": 6.994405055138487e-15,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "iterative_convergence",
+          "description": "max change of the pressure gradient over the last 10 % of iterations / final",
+          "kind": "numerical",
+          "value": 0.004231010283267005,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "FAIL"
+        },
+        {
+          "id": "wall_uniform",
+          "description": "spread of the wall shear along the wall / mean (fully developed: 0)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.0001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "yplus_range",
+          "description": "first-cell y+ against the wall treatment's range (below 1 = inside)",
+          "kind": "validity",
+          "value": 0.06266475264736,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "log_law",
+          "description": "max |u+ - (ln y+ / 0.41 + 5.2)| / u+ for 50 <= y+ <= 0.15 Re_tau (model form: the log law's constants scatter by a few per cent between experiments)",
+          "kind": "numerical",
+          "value": 0.02783255798095214,
+          "tolerance": 0.05,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-T1",
+          "text": "The predicted friction factor shall be within 5 % of Prandtl's smooth-pipe law (the Moody chart's smooth curve), a usable accuracy for pressure-drop budgets.",
+          "metric": "friction_abs_dev_prandtl_pct",
+          "operator": "<=",
+          "limit": 5.0,
+          "units": "%",
+          "value": 0.7012917481209913,
+          "margin": 4.298708251879009,
+          "verdict": "PASS (unverified)"
+        }
+      ]
+    }
+  ],
+  "run_id": "20261122-134230_pipe_rans_mesh_r1",
+  "generated_utc": "2026-11-22T20:37:12+00:00",
+  "verification_status": "FAIL"
+}
