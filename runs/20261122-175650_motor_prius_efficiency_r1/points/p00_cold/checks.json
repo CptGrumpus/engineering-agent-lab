@@ -1,0 +1,78 @@
+{
+  "label": "p00_cold",
+  "status": "PASS",
+  "checks": [
+    {
+      "id": "lut_back_emf",
+      "description": "|table open-circuit back-EMF (sqrt 3 w phi_d at id = iq = 0) - open-circuit study| / open-circuit study (same mesh fineness)",
+      "kind": "numerical",
+      "value": 1.2579365074432854e-06,
+      "tolerance": 0.001,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "lut_mtpa_100A",
+      "description": "|table MTPA torque at 100 A rms - torque-curve study| / torque-curve study (cubic interpolation against an angle sweep with a parabola)",
+      "kind": "numerical",
+      "value": 7.395309881922409e-05,
+      "tolerance": 0.01,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "lut_mtpa_200A",
+      "description": "|table MTPA torque at 200 A rms - torque-curve study| / torque-curve study (cubic interpolation against an angle sweep with a parabola)",
+      "kind": "numerical",
+      "value": 0.002088971435326438,
+      "tolerance": 0.01,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "interp_torque",
+      "description": "max over the left-out nodes (|T| >= 20 N m) of the torque error of the table on every second node: bounds the full table's interpolation error (cubic: about 1/16 of this)",
+      "kind": "numerical",
+      "value": 0.007344002183600829,
+      "tolerance": 0.05,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "interp_iron_loss",
+      "description": "the same for the iron loss at 6000 rpm",
+      "kind": "numerical",
+      "value": 0.030026626109481296,
+      "tolerance": 0.05,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "magnet_temperature",
+      "description": "|table's magnet temperature - this scenario's| (K)",
+      "kind": "validity",
+      "value": 0.0,
+      "tolerance": 0.0,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "lut_merge",
+      "description": "max relative difference over the nodes two merged table runs both computed (same model, mesh and rotor positions: it must reproduce itself)",
+      "kind": "numerical",
+      "value": 0.0,
+      "tolerance": 0.0001,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "interp_map",
+      "description": "max |efficiency from the half table - from the full table| over the map (efficiency points): bounds the full table's interpolation error on the output itself",
+      "kind": "numerical",
+      "value": 0.8663128616576188,
+      "tolerance": 2.0,
+      "comparison": "<=",
+      "status": "PASS"
+    }
+  ]
+}

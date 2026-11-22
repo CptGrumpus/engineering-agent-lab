@@ -44,10 +44,10 @@ Blind predictions, for the comparison at the end: back-EMF **110.9 V** per 1000 
 **97.4 %** at 2500 rpm and 80 N m (cold), 97.0 % hot. These are motor-only efficiencies (copper and iron loss;
 mechanical, magnet and inverter losses left out), so they are upper bounds on what a dynamometer would measure.
 
-![Motor-only efficiency map, cold, with the torque limit at the 212 A design current](../runs/20261122-153450_motor_prius_efficiency_r1/points/p00_cold/response.png)
+![Motor-only efficiency map, cold, with the torque limit at the 212 A design current](../runs/20261122-175650_motor_prius_efficiency_r1/points/p00_cold/response.png)
 
-*(The white band between the map's edge and the torque-limit line is a plotting artefact of the contour fill next to
-empty cells; the map's last feasible torque equals the limit at every speed.)*
+*(One cell per computed point, 250 rpm by 10 N m; the map stops at 400 N m. Drawn from a rerun of the efficiency run
+that reproduced it bit for bit; the first figure's contour fill left a false gap under the limit line.)*
 
 ## How it works
 

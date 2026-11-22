@@ -296,7 +296,12 @@ def efficiency_figure(path, series, out, point):
     fig, ax = plt.subplots(figsize=(8, 5))
     fig.patch.set_facecolor(SURFACE)
     levels = [70, 80, 85, 88, 90, 92, 93, 94, 95, 96, 97]
-    cs = ax.contourf(speeds, torques, E, levels=levels, cmap="viridis", extend="both")
+    # cells, not a contour fill: contourf leaves a blank band between the last feasible cell and the empty (NaN) ones
+    # beyond the torque limit, which read as a gap under the limit line (the data reaches it)
+    from matplotlib.colors import BoundaryNorm
+
+    norm = BoundaryNorm(levels, ncolors=plt.get_cmap("viridis").N, extend="both")
+    cs = ax.pcolormesh(speeds, torques, np.ma.masked_invalid(E), cmap="viridis", norm=norm, shading="nearest")
     ax.contour(speeds, torques, E, levels=levels, colors="white", linewidths=0.4)
     fig.colorbar(cs, ax=ax, label="efficiency (%)")
     ax.plot(out["speeds_rpm"], out["t_max_design_Nm"], color=SERIES_1, lw=1.5, label="limit at the design current")
