@@ -21,6 +21,8 @@ All problems are synthetic, so no client data is involved. Every number comes fr
 | Scripted CAD-to-analysis pipelines: parametric geometry, STEP exchange, meshing, solving; an optimiser driving the pipeline | CadQuery, Gmsh, CalculiX, SciPy | [2](portfolio/02-strap-cable-hole.md), [4](portfolio/04-bracket-modal.md), [8](portfolio/08-mounting-plate.md), [12](portfolio/12-bracket-optimisation.md), [18](portfolio/18-pressure-vessel-nozzle.md) |
 | Computational fluid dynamics: internal laminar flow, pressure budgets, 2D and 3D | OpenFOAM | [5](portfolio/05-coolant-channel.md) |
 | Heat transfer: conduction with surface convection; conjugate heat transfer coupling CFD and solid conduction, then thermal stress | CalculiX, OpenFOAM | [6](portfolio/06-heat-sink-fin.md), [15](portfolio/15-cold-plate-thermal-chain.md) |
+| Electric machines: a production motor rebuilt from published drawings, open-circuit and loaded magnetostatics, efficiency maps from dq tables, rotor stress at overspeed, blind validation protocol | Pyleecan, FEMM, CalculiX, Python | [20](portfolio/20-prius-traction-motor.md) (draft) |
+| Fluid-structure interaction: partitioned coupling, each participant verified on its own first | OpenFOAM, CalculiX, preCICE | [17](portfolio/17-fsi-flag-turek-hron.md) (draft) |
 | Vehicle and system dynamics: ride, road holding, frequency response | Python (SciPy), OpenModelica | [7](portfolio/07-quarter-car.md), [9](portfolio/09-mass-spring-damper.md) |
 | Presentation renders: FE results and CAD parts rendered in Blender, with legend colours and geometry checked automatically | Blender (Cycles), Python | [1](portfolio/01-cantilever-bracket.md), [2](portfolio/02-strap-cable-hole.md), [4](portfolio/04-bracket-modal.md), [6](portfolio/06-heat-sink-fin.md), [8](portfolio/08-mounting-plate.md) |
 | Verification and uncertainty: exact and handbook references, Grid Convergence Index, tolerance and sensitivity studies | Python | All |
@@ -58,6 +60,13 @@ All problems are synthetic, so no client data is involved. Every number comes fr
 | [6. Heat-sink fin temperature](portfolio/06-heat-sink-fin.md) | Does the tip of an aluminium heat-sink fin stay above 60 °C, and what would make it fail? | Yes, at 73.2 °C. Even with every input at its worst it stays at 65.9 °C. |
 | [11. Cold-plate channel heat transfer](portfolio/11-cold-plate-heat-transfer.md) | Does a heated coolant passage keep its wall at or under 45 °C, and what heat flux can it take? | Yes, verified: wall 44.03 °C (limit 45, uncertainty 0.23 %), coolant rise 7.2 K. Rated about 31 kW/m². |
 | [15. Cold plate, full thermal chain](portfolio/15-cold-plate-thermal-chain.md) | With the plate's own conduction and thermal stress included, does the cold plate keep its component at or under 45 °C, its coolant rise under 10 K and its stress under 60 MPa? | Yes: 40.99 °C, 7.20 K and 46.8 MPa, with mesh uncertainty 0.035 % or less. |
+
+### Electric machines and coupled problems (drafts, in progress)
+
+| | Question | Answer so far |
+|---|---|---|
+| [20. Prius traction motor, blind](portfolio/20-prius-traction-motor.md) | Can an open-source toolchain predict a production traction motor well enough for design screening, before seeing the test data? | Blind predictions written (back-EMF 110.9 V per 1000 rpm, torque curve, efficiency map peaking at 97.4 %). Rated torque and power fit the limits; the open-circuit voltage at top speed (1040 V against 500) and the rotor bridges at overspeed fail. ORNL's measurements still sealed. |
+| [17. Flexible flag, fluid-structure interaction](portfolio/17-fsi-flag-turek-hron.md) | Does a coupled OpenFOAM-CalculiX model reproduce the Turek-Hron benchmark, each half verified first? | Solid and fluid stages verified against the benchmark; the steady coupled case converges on drag to 0.03 % and is in its second mesh study. |
 
 ### Vehicle and system dynamics
 
