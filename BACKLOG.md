@@ -162,6 +162,28 @@ covers stator OD and bore, slot shape, rotor OD and ID, V-magnet pockets and mag
   measured performance.
 - The user wants the inputs, not only the solve, to be ours, with the case study used only to check the results.
 
+**Study 7 geometry rebuild: first source found (2026-11-21).** ORNL/TM-2005/33, *Report on Toyota Prius Motor Thermal
+Management* (FY 2005), https://info.ornl.gov/sites/publications/Files/Pub57487.pdf. Fig. 21 on page 32 is a dimensioned
+stator and rotor schematic. Its labels are vector text: render the page with PyMuPDF and read them with
+`page.get_text()`. Pages 20-30 hold test data, so stay out of them to keep the comparison blind.
+
+| Feature | Drawing | mm | Pyleecan's file |
+|---|---|---|---|
+| Stator OD | 10.600 in | 269.24 | 269.24 |
+| Stator bore | 6.375 in | 161.93 | 161.90 |
+| Rotor OD | 6.314 in | 160.38 | 160.40 |
+| Rotor ID | 4.356 in | 110.64 | 110.64 |
+| Air gap | | 0.775 | **0.750 (3 % narrower)** |
+| Slot opening | 0.076 in | 1.93 | 1.93 |
+| Tooth tip height | 0.040 in | 1.02 | 1.00 |
+| Slot depth | 1.320 in | 33.53 | H0 + H2 = 34.3? (check SlotW11's convention) |
+
+Also on the drawing: slot-bottom feature 0.222 in, a width of 0.124 in, red 0.060 in and 0.056 in (likely the rotor
+bridges), and the stator's bolt ears. The magnet pockets are simplified in that model, so they still need a source.
+The thermal report's text gives 9 conductor bundles per slot (matches 9 turns per coil). Next: build our machine with
+the drawing's values (air gap 0.775 mm) and run both through the open-circuit case to measure what the differences
+change.
+
 **Uncommitted at handoff:** nothing settled. Running cases and their runs are committed once they finish.
 
 ## Action items
