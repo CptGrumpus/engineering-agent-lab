@@ -13,7 +13,7 @@ To rebuild after a change:
 | Page | Built from |
 |---|---|
 | `index.html`, the home page: intro, a viewer with five highlighted results, the gallery of study cards, links to the other pages | `pages/home.html` |
-| One page per gallery card (15): the result viewer, an "at a glance" side panel with the requirements, the write-up, the case file's record, evidence links, previous/next | `studies/<key>.html`, one hand-written file per study |
+| One page per gallery card (16): the result viewer, an "at a glance" side panel with the requirements, the write-up, the case file's record, evidence links, previous/next | `studies/<key>.html`, one hand-written file per study |
 | `how-i-work.html`: the method, the agent's skills, capabilities, how the images are checked, lessons | `pages/how.html` |
 | `grading.html`: the interactive grader demo | `pages/grading.html`, `extras.py` |
 | `in-progress.html`: the studies still running | `pages/progress.html` |

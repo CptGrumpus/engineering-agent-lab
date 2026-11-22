@@ -4,11 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Every requirement · Justin Smith</title>
-<meta name="description" content="All 39 requirements across the simulation studies, each with its limit, result and verdict.">
+<meta name="description" content="All 45 requirements across the simulation studies, each with its limit, result and verdict.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://cptgrumpus.github.io/engineering-agent-lab/requirements.html">
 <meta property="og:title" content="Every requirement in one table">
-<meta property="og:description" content="All 39 requirements across the simulation studies, each with its limit, result and verdict.">
+<meta property="og:description" content="All 45 requirements across the simulation studies, each with its limit, result and verdict.">
 <meta property="og:image" content="https://cptgrumpus.github.io/engineering-agent-lab/v2/og_card.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -17,7 +17,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
-<link rel="stylesheet" href="assets/site.css?v=8faeeb46bc">
+<link rel="stylesheet" href="assets/site.css?v=2029ee494c">
 </head>
 <body>
 <nav class="topbar" aria-label="Site">
@@ -52,7 +52,7 @@
     <div class="page-head">
       <p class="eyebrow">Requirements</p>
       <h1>Every requirement in one table</h1>
-      <p>39 requirements across the studies: <b class="c-pass">32 met</b>, <b class="c-fail">7 not met</b>, <b class="c-warn">0 withheld</b>. "Not met" is still a verified answer: the design fails, and the study explains what would fix it. "Withheld" means the checks didn't support calling it either way. Each study's name links to its page.</p>
+      <p>45 requirements across the studies: <b class="c-pass">35 met</b>, <b class="c-fail">10 not met</b>, <b class="c-warn">0 withheld</b>. "Not met" is still a verified answer: the design fails, and the study explains what would fix it. "Withheld" means the checks didn't support calling it either way. Each study's name links to its page.</p>
     </div>
     <div class="reqs open">
       <div class="table-wrap">
@@ -90,6 +90,12 @@
           <tr><td></td><td>Membrane plus bending at the junction, P + Q</td><td class="num">≤ 414 MPa</td><td>240 MPa (refinement not converged; 42 % margin)</td><td><span class="chip pass">Met</span></td></tr>
           <tr class="r-first"><td><a href="turbulent-pipe-friction.html"><span class="r-no">19</span> Turbulent pipe friction</a></td><td>Friction factor against Prandtl&#x27;s law, Re 10⁵</td><td class="num">within 5 %</td><td>+2.4 % when converged, mesh uncertainty 1.05 %</td><td><span class="chip pass">Met</span></td></tr>
           <tr><td></td><td>Same, with wall functions</td><td class="num">within 5 %</td><td>5.0 to 5.4 % low at every Reynolds number</td><td><span class="chip fail">Not met</span></td></tr>
+          <tr class="r-first"><td><a href="traction-motor.html"><span class="r-no">20</span> Traction motor</a></td><td>Open-circuit voltage at 6,000 rpm if the inverter stops switching</td><td class="num">≤ 500 V</td><td>about 1,040 V</td><td><span class="chip fail">Not met</span></td></tr>
+          <tr><td></td><td>Rated 400 N m within the copper&#x27;s current-density limit</td><td class="num">≤ 25 A/mm²</td><td>19.8 A/mm², at about 168 A</td><td><span class="chip pass">Met</span></td></tr>
+          <tr><td></td><td>Every point of the torque curve within that limit</td><td class="num">≤ 212 A</td><td>250 A and above exceed it: a short-time rating</td><td><span class="chip fail">Not met</span></td></tr>
+          <tr><td></td><td>Rotor bridge stress at 7,200 rpm overspeed</td><td class="num">≤ 335 MPa</td><td>424 MPa; elastic at 6,000 rpm (295 MPa)</td><td><span class="chip fail">Not met</span></td></tr>
+          <tr><td></td><td>Rated power from base speed to 6,000 rpm</td><td class="num">≥ 50 kW</td><td>58.6 kW cold, verified; 53.7 kW hot, unverified</td><td><span class="chip pass">Met</span></td></tr>
+          <tr><td></td><td>Continuous power from 1,250 to 6,000 rpm</td><td class="num">≥ 25 kW</td><td>30.2 kW at the worst speed; 26.2 to 34.3 kW over ten scenarios</td><td><span class="chip pass">Met</span></td></tr>
           <tr class="r-first"><td><a href="strut-buckling.html"><span class="r-no">13</span> Strut buckling</a></td><td>Load before first yield, 500 mm strut with an L/1000 bow</td><td class="num">≥ 16 kN</td><td>21.8 kN (the longest that passes is about 587 mm)</td><td><span class="chip pass">Met</span></td></tr>
           <tr class="r-first"><td><a href="aluminium-strap.html#strap_proof"><span class="r-no">14</span> Strap proof test</a></td><td>Hole-edge strain during the 15 kN proof test</td><td class="num">≤ 1.0 %</td><td>0.58 %</td><td><span class="chip pass">Met</span></td></tr>
           <tr><td></td><td>Residual stress at the hole edge after unloading</td><td class="num">≤ 0 MPa (compressive)</td><td>−77 MPa</td><td><span class="chip pass">Met</span></td></tr>
@@ -134,6 +140,6 @@
   </div>
 </footer>
 
-<script src="assets/site.js?v=8faeeb46bc"></script>
+<script src="assets/site.js?v=2029ee494c"></script>
 </body>
 </html>

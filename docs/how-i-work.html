@@ -17,7 +17,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
-<link rel="stylesheet" href="assets/site.css?v=8faeeb46bc">
+<link rel="stylesheet" href="assets/site.css?v=2029ee494c">
 </head>
 <body>
 <nav class="topbar" aria-label="Site">
@@ -102,6 +102,7 @@
           <tr><td>Pressure equipment: design by analysis with stress linearisation on classification lines, in the manner of ASME VIII-2 Part 5, against a design-by-rule check</td><td>CadQuery, Gmsh, CalculiX</td><td><a href="pressure-vessel-nozzle.html">18</a></td></tr>
           <tr><td>Buckling: linear eigenvalue and geometrically nonlinear with imperfections, checked against Euler, Southwell and Perry-Robertson</td><td>CalculiX</td><td><a href="strut-buckling.html">13</a></td></tr>
           <tr><td>Plasticity with loading and unloading, and the residual stress left behind, checked against Neuber and Glinka</td><td>CadQuery, Gmsh, CalculiX</td><td><a href="aluminium-strap.html#strap_proof">14</a></td></tr>
+          <tr><td>Electric machines: back-EMF, torque and efficiency maps from 2D magnetostatics, a lumped thermal network and rotor stress at overspeed, with predictions written blind</td><td>Pyleecan, FEMM, CalculiX</td><td><a href="traction-motor.html">20</a></td></tr>
           <tr><td>Vibration and modal analysis, including identifying the modes and keeping clear of engine orders</td><td>CadQuery, Gmsh, CalculiX</td><td><a href="bracket-modal.html">4</a></td></tr>
           <tr><td>Fatigue life using notch factors, mean-stress correction and S-N curves fitted to published test data</td><td>CalculiX, Python</td><td><a href="aluminium-strap.html#fatigue">3</a></td></tr>
           <tr><td>Chained multiphysics: coolant flow, then conduction through the part, then thermal stress, with an energy balance at every handoff</td><td>OpenFOAM, CalculiX</td><td><a href="cold-plate.html#cold_plate">15</a></td></tr>
@@ -116,7 +117,7 @@
         </tbody>
       </table>
     </div>
-    <p class="code-facts">It's all Python, about 46,000 lines across 282 files: the harness that runs and checks everything, the models, the independent reference solutions and the graders, with 294 automated tests that run on every push.</p>
+    <p class="code-facts">It's all Python, about 46,000 lines across 284 files: the harness that runs and checks everything, the models, the independent reference solutions and the graders, with 294 automated tests that run on every push.</p>
       <h3 class="sub" id="images">How the images are checked</h3>
     <p class="sub-lede">These images are rendered in Blender straight from the solver output. Before one goes on the page it has to pass three checks. The rendered surface has to enclose the part's actual volume, which catches missing or flipped faces. Every coloured pixel has to match a colour in the legend, which catches a shader that has shifted the contours. And the lit image has to read as the right band, which catches a shaded face that looks like a different value. Most results can also be turned in 3D: that view uses the same surface and colour bands, and it's checked the same way from four angles.</p>
   </div>
@@ -166,6 +167,6 @@
   </div>
 </footer>
 
-<script src="assets/site.js?v=8faeeb46bc"></script>
+<script src="assets/site.js?v=2029ee494c"></script>
 </body>
 </html>

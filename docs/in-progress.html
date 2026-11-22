@@ -4,11 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>In progress · Justin Smith</title>
-<meta name="description" content="A flexible flag behind a cylinder (fluid-structure interaction) and a production traction motor checked blind against a laboratory&#x27;s test data.">
+<meta name="description" content="A flexible flag behind a cylinder (fluid-structure interaction), still running, and the traction motor&#x27;s last step: the comparison with a laboratory&#x27;s test data.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://cptgrumpus.github.io/engineering-agent-lab/in-progress.html">
-<meta property="og:title" content="Two studies in progress">
-<meta property="og:description" content="A flexible flag behind a cylinder (fluid-structure interaction) and a production traction motor checked blind against a laboratory&#x27;s test data.">
+<meta property="og:title" content="One study running, one comparison to come">
+<meta property="og:description" content="A flexible flag behind a cylinder (fluid-structure interaction), still running, and the traction motor&#x27;s last step: the comparison with a laboratory&#x27;s test data.">
 <meta property="og:image" content="https://cptgrumpus.github.io/engineering-agent-lab/v2/og_card.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -17,7 +17,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
-<link rel="stylesheet" href="assets/site.css?v=8faeeb46bc">
+<link rel="stylesheet" href="assets/site.css?v=2029ee494c">
 </head>
 <body>
 <nav class="topbar" aria-label="Site">
@@ -52,8 +52,8 @@
 
     <div class="page-head">
       <p class="eyebrow">Now working on</p>
-      <h1>Two studies in progress</h1>
-      <p>Seven harder studies are finished and have their own pages: friction contact, plasticity, buckling, a chained thermal model, the optimisation loop, a design-code pressure vessel check and turbulent pipe flow. These two are still running. As with the others, I pick the independent check before I start modelling, and I write down my predictions before each run.</p>
+      <h1>One study running, one comparison to come</h1>
+      <p>Eight harder studies are finished and have their own pages: friction contact, plasticity, buckling, a chained thermal model, the optimisation loop, a design-code pressure vessel check, turbulent pipe flow and a production traction motor. One more is still running, and the motor has one step left.</p>
     </div>
     <div class="skills plan now">
       <article class="skill">
@@ -66,13 +66,11 @@
         <span class="tools">OpenFOAM · CalculiX · preCICE</span>
       </article>
       <article class="skill">
-        <span class="plan-meta"><span class="no">Study 20 · Electromagnetics · test data</span><span class="plan-tag">In progress</span></span>
-        <b>A production traction motor, checked blind against test data</b>
-        <p><b>Why it's harder</b>Three kinds of physics on one machine: torque, back-EMF and efficiency from the electromagnetics, a thermal network, and rotor stress at overspeed. It's modelled on the 2004 Toyota Prius motor.</p>
-        <p><b>How I'll check it</b>Internal checks first: an analytic air-gap field, the power balance at every operating point, and mesh convergence. Then the portfolio's first comparison with measured data, Oak Ridge National Laboratory's tests, opened only after my predictions are written down.</p>
-        <p><b>So far</b>Every blind prediction is now written down: back-EMF 110.9 V per 1,000 rpm, the torque curve from 119 to 606 N m (50 to 350 A), and an efficiency map peaking at 97.4 %. The real steel grade isn't published, so I ran three candidates; they move the back-EMF by 0.13 % and the torque by under 2 %, so the unknown grade won't decide the comparison.</p>
-        <p><b>Design checks</b>The rated 400 N m fits inside the copper's current limit, and the rated 50 kW holds all the way to 6,000 rpm (58.6 kW). Two results are failures a designer needs to know about. If the inverter stops switching at top speed, the magnets alone would drive about 1,040 V against the 500 V supply. And at 20 % overspeed the thin steel bridges that hold the magnets reach 424 MPa against the lamination's 335 MPa yield. Next, the test data is opened once and every prediction is scored against it.</p>
-        <p class="plan-link"><a href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/portfolio/20-prius-traction-motor.md">Read the draft write-up</a></p>
+        <span class="plan-meta"><span class="no">Study 20 · Test data</span><span class="plan-tag">Next step</span></span>
+        <b>Traction motor: the comparison with test data</b>
+        <p><b>Where it stands</b>The model is finished and has <a href="traction-motor.html">its own page</a>: the design checks, the efficiency map, the continuous rating and the rotor stress. Every prediction was written down before any measurement was opened.</p>
+        <p><b>What's left</b>Opening Oak Ridge National Laboratory's test data, once, and scoring each prediction against the limits agreed beforehand: back-EMF within 5 %, torque within 10 % and efficiency within 2 points.</p>
+        <p><b>Why it waits</b>The data stays sealed until the model can't be changed any more. That's what makes the comparison mean something.</p>
         <span class="tools">Pyleecan · FEMM · CalculiX</span>
       </article>
     </div>
@@ -108,6 +106,6 @@
   </div>
 </footer>
 
-<script src="assets/site.js?v=8faeeb46bc"></script>
+<script src="assets/site.js?v=2029ee494c"></script>
 </body>
 </html>

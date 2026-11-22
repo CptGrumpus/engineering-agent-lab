@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Traction motor, rebuilt and predicted blind · Justin Smith</title>
+<meta name="description" content="The model of the 2004 Prius motor is complete: three design limits met and three not, including 1,040 V open-circuit at top speed and rotor bridges past yield at overspeed. Its back-EMF, torque and efficiency predictions were written down blind; the comparison with the laboratory&#x27;s test data is the last step, still to come.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://cptgrumpus.github.io/engineering-agent-lab/traction-motor.html">
+<meta property="og:title" content="Traction motor, rebuilt and predicted blind">
+<meta property="og:description" content="The model of the 2004 Prius motor is complete: three design limits met and three not, including 1,040 V open-circuit at top speed and rotor bridges past yield at overspeed. Its back-EMF, torque and efficiency predictions were written down blind; the comparison with the laboratory&#x27;s test data is the last step, still to come.">
+<meta property="og:image" content="https://cptgrumpus.github.io/engineering-agent-lab/v2/og_traction-motor.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Traction motor, rebuilt and predicted blind: result render">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="assets/site.css?v=2029ee494c">
+</head>
+<body>
+<nav class="topbar" aria-label="Site">
+  <div class="wrap">
+    <a class="brand" href="index.html"><span class="brand-mark" aria-hidden="true"><i style="background:#30123b"></i><i style="background:#4686fb"></i><i style="background:#1ae4b6"></i><i style="background:#a2fc3c"></i><i style="background:#fb8022"></i><i style="background:#7a0403"></i></span>Justin Smith <small>Simulation portfolio</small></a>
+    <div class="navgroup">
+      <div class="topnav">
+        <a href="index.html#work" aria-current="page">Studies</a>
+        <a href="how-i-work.html">How I work</a>
+        <a href="grading.html">Grading</a>
+        <a href="in-progress.html">In progress</a>
+        <a href="requirements.html">Requirements</a>
+      </div>
+      <a class="nav-contact" href="#contact">Contact</a>
+      <details class="menu">
+        <summary>Menu</summary>
+        <div class="menu-panel">
+        <a href="index.html#work" aria-current="page">Studies</a>
+        <a href="how-i-work.html">How I work</a>
+        <a href="grading.html">Grading</a>
+        <a href="in-progress.html">In progress</a>
+        <a href="requirements.html">Requirements</a>
+          <a href="#contact">Contact</a>
+        </div>
+      </details>
+    </div>
+  </div>
+</nav>
+
+<main id="top">
+  <div class="wrap">
+    <nav class="crumbs" aria-label="Breadcrumb"><a href="index.html#work">All studies</a><span>/</span><span>Electric machines</span></nav>
+    <header class="study-hero">
+      <p class="eyebrow">Study 20 · Pyleecan, FEMM, CalculiX and Python</p>
+      <h1>Traction motor, rebuilt and predicted blind</h1>
+      <span class="v v-split">3 of 6 limits met</span>
+      <p class="study-lede">The model of the 2004 Prius motor is complete: three design limits met and three not, including 1,040 V open-circuit at top speed and rotor bridges past yield at overspeed. Its back-EMF, torque and efficiency predictions were written down blind; the comparison with the laboratory&#x27;s test data is the last step, still to come.</p>
+    </header>
+    <div class="vp" id="vp" role="region" aria-label="Result viewer">
+      <div class="legend">
+        <div class="legend-title" id="lg-title"></div>
+        <div class="legend-body"><div class="swatches" id="lg-sw"></div><div class="ticks" id="lg-ticks"></div></div>
+      </div>
+      <div class="stage"><div class="vp-parts" id="vp-parts" role="group" aria-label="Results on this page" hidden></div><button class="vp-3d" id="vp-3d" type="button" aria-pressed="false" hidden>Rotate in 3D</button>
+      <p class="vp-hint" id="vp-hint" hidden><span class="long">Same surface and colour bands as the render · </span>Drag to turn · <span class="long">scroll or </span>pinch to zoom<span class="long"> · double-click to reset</span></p>
+      <img id="vp-img" src="v2/motor_efficiency.webp" alt="2004 Toyota Prius traction motor · 48 slots, 8 poles, interior magnets · rebuilt from published drawings">
+      <svg class="triad" viewBox="0 0 54 54" aria-hidden="true">
+        <g stroke-width="1.6" fill="none" stroke-linecap="round">
+          <line x1="14" y1="40" x2="44" y2="46" stroke="#ff8f6b"/><line x1="14" y1="40" x2="34" y2="28" stroke="#8fe3a8"/><line x1="14" y1="40" x2="14" y2="8" stroke="#8fb4ff"/>
+        </g>
+        <g font-family="JetBrains Mono, monospace" font-size="8" fill="#edf1f8"><text x="46" y="50">X</text><text x="36" y="27">Y</text><text x="11" y="6">Z</text></g>
+      </svg>
+      </div>
+      <div class="vp-scrub" id="vp-scrub" hidden>
+        <button type="button" class="vp-play" id="vp-play" aria-label="Play the analysis step by step">▶</button>
+        <input type="range" id="vp-range" min="0" max="0" step="1" value="0" aria-label="Load step">
+        <output id="vp-step" for="vp-range"></output>
+      </div>
+      <div class="status" id="vp-status" aria-live="polite"></div>
+    </div>
+
+    <div class="study-layout">
+      <article class="study-main">
+
+    <h2 id="the-question">The question</h2>
+    <p>Can an open-source toolchain predict a production traction motor well enough for early design screening? The test case is the 2004 Toyota Prius motor: 48 slots, 8 poles, magnets buried in the rotor in a V, rated 50 kW and 400 N m. Oak Ridge National Laboratory took one apart, drew it and measured it, and published the results.</p>
+    <p>Two kinds of answer are kept apart. <strong>Design checks</strong> come from my models alone: does the rated torque fit inside the copper's current limit, does the rated power hold to top speed, does the rotor survive overspeed, how much can the motor deliver continuously, and what happens if the inverter stops switching at top speed? <strong>Validation</strong> is a comparison with the laboratory's measurements, done once, at the end, against limits agreed before any data was seen.</p>
+    <h2 id="the-answer">The answer</h2>
+    <div class="answer">
+      <div class="chips"><span class="chip pass">400 N m at 168 A, inside the copper limit</span><span class="chip pass">50 kW held to 6,000 rpm</span><span class="chip pass">30 kW continuous</span><span class="chip fail">1,040 V open-circuit at top speed</span><span class="chip fail">Rotor bridges past yield at overspeed</span><span class="chip warn">Test-data comparison still to come</span></div>
+      <p><strong>The model is complete, and it gives a mixed design verdict: three limits met, three not.</strong></p>
+      <p>What passes. The rated 400 N m needs about 168 A, 19.8 A/mm² of copper against a 25 A/mm² limit. The rated 50 kW holds from base speed all the way to 6,000 rpm: 58.6 kW at the worst speed with the motor cold. And from 1,250 to 6,000 rpm the motor can deliver at least 30 kW continuously within its temperature limits.</p>
+      <p>What doesn't, and a design review would want to know about each. If the inverter stops switching at top speed, the magnets alone drive about 1,040 V against the 500 V supply, so the drive depends on the inverter holding the voltage down. At the standard 20 % overspeed, 7,200 rpm, the thin steel bridges that hold the magnets reach 424 MPa against the stand-in steel's 335 MPa yield. And above 212 A the copper is past its current-density limit, so the top of the torque curve is a short-time rating.</p>
+      <p><strong>The predictions are written down, and the test data is still sealed.</strong> Back-EMF 110.9 V per 1,000 rpm. Torque from 119 N m at 50 A to 606 N m at 350 A. An efficiency map peaking at 97.4 %. Each was recorded before any of the laboratory's measurements was opened. The comparison is the last step and hasn't been run yet, so until it has, these are predictions and not validated results.</p>
+    </div>
+    <h2 id="why-it-matters">Why it matters</h2>
+    <p>Every other study on this site checks a model against theory: an exact solution, a handbook value, a conservation law. That shows the equations were solved correctly. It doesn't show the model matches a real machine, with real materials, tolerances and everything the model leaves out. Only measured data can do that, and it's what a client ultimately cares about.</p>
+    <p>Comparing with test data has its own trap. If you can see the answer while you build the model, it's very easy to adjust things until they agree, and the agreement then proves nothing. So this study is done blind. The machine is rebuilt from the published drawings, every prediction is written into a case file and committed before its run, and the measurements stay unopened until the whole model is finished. The limits for the comparison were agreed first as well: back-EMF within 5 %, torque within 10 %, efficiency within 2 points.</p>
+    <p>It also covers three kinds of physics on one machine, which is what a real motor design needs: the electromagnetics that make the torque, the heat that limits how long it can be sustained, and the stress in a rotor spinning at thousands of rpm.</p>
+    <h2 id="the-model">The model</h2>
+    <dl class="spec">
+      <dt>Machine</dt><dd>The 2004 Toyota Prius traction motor: 48 stator slots, 8 poles, interior V-shaped permanent magnets, an 83.8 mm stack and a 0.775 mm air gap. Rated 400 N m and 50 kW, 6,000 rpm maximum.</dd>
+      <dt>Geometry</dt><dd>Rebuilt from Oak Ridge's dimensioned drawing, read from the vector outline in the PDF and not by eye. The bridges and magnet pockets come from the laboratory's design reports.</dd>
+      <dt>Materials</dt><dd>Magnets from the published material line (remanence 1.243 T at 20 °C). The lamination grade isn't published, so M330-35A stands in, with two other grades run to bracket it.</dd>
+      <dt>Electromagnetics</dt><dd>2D magnetostatics in FEMM 4.2, driven by Pyleecan, over one electrical period in 48 steps. Open circuit for the back-EMF; loaded runs sweep the current angle to find the most torque per amp.</dd>
+      <dt>Efficiency</dt><dd>Look-up tables of torque, flux and iron loss over the plane of the two current components, 260 field solutions per magnet temperature. At each speed and torque the map uses the current with the least loss that a 500 V supply can drive. Motor only: copper and iron loss.</dd>
+      <dt>Rotor stress</dt><dd>CalculiX, plane stress, half a pole at 7,200 rpm, with the magnets' centrifugal load on their seats. Stress is linearised across the 1.45 mm bridges, with elements down to 0.05 mm.</dd>
+      <dt>Thermal</dt><dd>A lumped network of the yoke, teeth, windings, end windings, housing and rotor, fed with the losses at its own temperatures and solved to a steady state. Limits: 180 °C at the winding hotspot and 150 °C at the magnets, with a 65 °C water jacket. The cooling and the limits are assumed, because they aren't published.</dd>
+    </dl>
+    <details class="record"><summary>The case file: recorded assumptions, limits and inputs</summary><div class="record-body"><p>This is the study's own record, written before the run and saved with it, in the shorthand of the case file.</p><p class="case"><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/cases/motor_prius_ornl_oc_mesh_r3.toml">cases/motor_prius_ornl_oc_mesh_r3.toml ↗</a></p><p>2004 Toyota Prius traction motor rebuilt from ORNL/TM-2005/33 Fig. 21 (radii, air gap 0.775 mm, slot, pocket thickness and position), ORNL/TM-2004/120 (bridge) and ORNL/TM-2004/137 Fig. 14 (magnet B-H line), laminations M330-35A (stand-in grade), at open circuit, 1000 rpm; Pyleecan + FEMM 4.2 magnetostatics over one electrical period (48 steps), mesh fineness 2 / 4 / 8; back-EMF and the uncontrolled-generator voltage at top speed.</p><h3>Assumptions, and how each is checked</h3><ul><li>2D magnetostatics (FEMM), no end effects: the stack (83.8 mm) is long against the air gap (0.775 mm), but end-winding leakage and axial fringing are not modelled.</li><li>Stator, rotor, slot and pocket thickness from ORNL/TM-2005/33 Fig. 21; bridge 1.45 mm from ORNL/TM-2004/120; magnet Br 1.243 T and recoil permeability 1.129 from ORNL/TM-2004/137 Fig. 14 (temperature not stated, taken as 20 C); magnet width and winding still Pyleecan&#x27;s.</li><li>Laminations M330-35A, a stand-in: ORNL gives the thickness (0.36 mm) but not the grade. B-H curve from Tata Steel&#x27;s typical data (50 Hz) up to 1.8 T, extrapolated above (saturation polarization 2.0 T).</li><li>Magnet temperature 20 C; Br falls about 0.1 %/K, so a hot motor has a lower back-EMF (stated, not modelled here).</li><li>Maximum speed 6000 rpm, the commonly published rating for this motor; ORNL&#x27;s design report tabulates ratings only up to base speed.</li></ul><h3>Limits</h3><ul><li>No test data in this case: the ORNL comparison is a separate, blind step.</li><li>The magnet fills the pocket thickness (HoleM50); TM-2004/120 gives a thinner magnet (5.31 mm), not modelled.</li><li>Line-to-line peak from the phase flux linkages with their harmonics; the inverter&#x27;s own clamping is not modelled.</li><li>The real lamination grade is unknown; the bracketing grades (M250-35A, a high-strength rotor grade) are separate cases.</li></ul><h3>Inputs</h3><div class="table-wrap"><table><thead><tr><th>Input</th><th>Value</th></tr></thead><tbody><tr><td>machine</td><td>Toyota_Prius_ORNL.json</td></tr><tr><td>speed_rpm</td><td>1000</td></tr><tr><td>id_A</td><td>0</td></tr><tr><td>iq_A</td><td>0</td></tr><tr><td>mesh_fineness</td><td>1</td></tr><tr><td>steps_per_period</td><td>48</td></tr><tr><td>angle_points</td><td>2048</td></tr><tr><td>max_speed_rpm</td><td>6000</td></tr><tr><td>bus_voltage_V</td><td>500</td></tr><tr><td>rated_torque_Nm</td><td>400</td></tr></tbody></table></div><p class="case"><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/cases/motor_prius_efficiency_r1.toml">cases/motor_prius_efficiency_r1.toml ↗</a></p><p>2004 Toyota Prius traction motor (our machine, laminations M330-35A), motor-only efficiency map from the verified dq look-up tables (25 A tables merged with low-q-current tables at 6.25 A): 500-6000 rpm, 10-400 N m, least copper + iron loss under the 500 V bus voltage limit and the current limit; cold (all 20 C) and hot (windings 100 C, magnets 80 C) scenarios.</p><h3>Assumptions, and how each is checked</h3><ul><li>Motor-only efficiency: copper (DC resistance, end connections included) and iron loss; no mechanical, magnet eddy-current, AC copper or inverter loss (user&#x27;s framing, 2026-11-22).</li><li>Voltage limit Vdc / sqrt 6 phase rms (linear modulation of a 500 V bus); the resistive drop is included, inductive coupling to the inverter is not.</li><li>Current limit 212 A rms for the design (25 A/mm^2 on 76.4 mm^2 of bare copper per slot, a stated assumption) and 300 A for the map&#x27;s edge.</li><li>Iron loss from the table&#x27;s coefficients, P = A f + B f^2 + C f^1.5 with f the electrical frequency, at each grid point.</li><li>Copper 1.72e-8 ohm m at 20 C, alpha 0.00393 /K; one parallel path; end connection 120.6 mm per side (geometry estimate, see header).</li></ul><h3>Limits</h3><ul><li>No test data in this case: the ORNL comparison is a separate, blind step at the end of the study.</li><li>The tables are 2D magnetostatic at 1000 rpm; the iron loss is scaled to speed by the fitted coefficients, not recomputed per speed.</li><li>Steady thermal corners only (cold and hot); no thermal model links temperature to the operating point yet.</li></ul><h3>Inputs</h3><div class="table-wrap"><table><thead><tr><th>Input</th><th>Value</th></tr></thead><tbody><tr><td>lut_run</td><td>20261122-102002_motor_prius_lut_cold,20261122-133946_motor_prius_lut_cold_lowiq</td></tr><tr><td>magnet_temperature_C</td><td>20</td></tr><tr><td>winding_temperature_C</td><td>20</td></tr><tr><td>series_turns_per_phase</td><td>72</td></tr><tr><td>turn_copper_area_mm2</td><td>8.492</td></tr><tr><td>stack_length_m</td><td>0.08382</td></tr><tr><td>end_connection_length_m</td><td>0.1206</td></tr><tr><td>copper_resistivity_20C_ohm_m</td><td>1.72e-08</td></tr><tr><td>copper_alpha_per_K</td><td>0.00393</td></tr><tr><td>bus_voltage_V</td><td>500</td></tr><tr><td>current_limit_design_A</td><td>212</td></tr><tr><td>current_limit_map_A</td><td>300</td></tr><tr><td>speed_min_rpm</td><td>500</td></tr><tr><td>speed_max_rpm</td><td>6000</td></tr><tr><td>speed_step_rpm</td><td>250</td></tr><tr><td>torque_min_Nm</td><td>10</td></tr><tr><td>torque_max_Nm</td><td>400</td></tr><tr><td>torque_step_Nm</td><td>10</td></tr><tr><td>rated_power_kW</td><td>50</td></tr><tr><td>rated_torque_Nm</td><td>400</td></tr><tr><td>ref_back_emf_V</td><td>111.006</td></tr><tr><td>ref_mtpa_100A_Nm</td><td>251.6</td></tr><tr><td>ref_mtpa_200A_Nm</td><td>456.9</td></tr></tbody></table></div></div></details>
+    <h2 id="how-it-works">How it works</h2>
+    <p><strong>The machine.</strong> Pyleecan, the open-source motor design library, ships a model of this motor. Rebuilt from the laboratory's own drawing, the real slot turns out to be 145 mm² and not 218, and the air gap 0.775 mm and not 0.750. So the study uses its own machine definition, and the figure below shows the difference.</p>
+    <figure><div class="plate"><img src="img/motor_slot_vs_ornl_fig21.png" alt="One stator slot: the outline from the laboratory's drawing, my machine definition lying on it, and the library's larger slot" loading="lazy"></div><figcaption>One stator slot. The black outline is the laboratory's drawing, the blue line is my machine definition, and the dashed orange line is the slot in the library's model of the same motor, half as large again.</figcaption></figure>
+    <p><strong>Electromagnetics.</strong> FEMM solves the magnetic field in a cross-section of the motor at each rotor position. With no current, the changing flux through the windings gives the back-EMF, the voltage the spinning magnets generate. With current, the model sweeps the angle between the current and the magnets to find the most torque for each current level.</p>
+    <p><strong>Efficiency.</strong> Solving the field for every speed and torque would take too long, so the field is solved once over a grid of currents and stored as tables. For each point on the map, a search then finds the current that makes the requested torque with the least copper and iron loss while staying inside the voltage the supply can provide. Above base speed that means spending some current to weaken the magnets' field, which is how these motors reach high speed.</p>
+    <p><strong>Rotor.</strong> The magnets sit in pockets, held in by thin bridges of steel at the rotor's edge. At speed, the magnets and the steel outside them pull outward on those bridges. The stress is linearised through each bridge, the same method as the pressure vessel in study 18, so the sharp pocket corners don't decide the answer.</p>
+    <p><strong>Thermal.</strong> The motor is divided into lumps (yoke, teeth, winding, end windings, housing, rotor) connected by thermal resistances worked out from the geometry. The losses depend on temperature (hot copper has more resistance, hot magnets make less flux), so the network and the losses are solved together until they agree. The continuous rating at each speed is the largest torque that keeps both the winding and the magnets within their limits.</p>
+    <figure><div class="plate"><img src="v2/motor_thermal.webp" alt="Left: continuous torque and power against speed. Right: winding and magnet temperatures along that envelope, with the magnets at their 150 degree limit at every speed" loading="lazy"></div><figcaption><b>The continuous rating.</b> Left: the torque (solid) and power (dashed) the motor can hold indefinitely: about 230 N m up to 2,000 rpm and 42 to 48 kW from 2,500 to 6,000 rpm. Right: the temperatures along that envelope. The magnets sit at their 150 °C limit at every speed, so they set the rating, not the winding.</figcaption></figure>
+    <figure><div class="plate"><img src="v2/motor_rotor.webp" alt="Linearised stress across the rotor bridge at 7,200 rpm, rising from 120 to 424 MPa and crossing the 335 MPa yield line" loading="lazy"></div><figcaption><b>The rotor bridge at 7,200 rpm.</b> Membrane-plus-bending stress across the bridge reaches 424 MPa, past the 335 MPa yield of the stand-in steel, and close to a simple beam estimate of 423 MPa. At the 6,000 rpm maximum it stays elastic at 295 MPa.</figcaption></figure>
+    <h2 id="how-i-checked-it">How I checked it</h2>
+    <p>These are checks inside the model, before any test data.</p>
+    <ul class="proof">
+      <li><strong>Independent routes to the same number.</strong> A power balance (the electrical power going in against torque times speed) checks FEMM's torque to 0.1 to 0.4 %. Winding theory checks the flux linking the coils to 0.3 to 0.6 %. The efficiency tables reproduce the separate back-EMF and torque studies to 2.7 × 10⁻⁶ and 0.2 %.</li>
+      <li><strong>The rotor method on an exact case.</strong> A plain spinning disc, which has an exact solution, comes out right to 4 × 10⁻⁴ through the same pipeline.</li>
+      <li><strong>The thermal network against a field model.</strong> A CalculiX heat-conduction model of half a slot pitch, with the same losses and boundaries, agrees on the winding mean within 3 to 6 %, the teeth within 2 to 5 % and the yoke within 2 %. The slot hotspot is 4 to 7 % low, which is discussed below.</li>
+      <li><strong>Mesh studies</strong> on every quantity, with the coarsest mesh dropped where it left the thin bridges less than one element thick.</li>
+      <li><strong>Sensitivity to what isn't published.</strong> Three lamination grades move the back-EMF by 0.13 % and the torque by under 2 %. The unmeasured top end of the steel's magnetisation curve moves the high-current torque by about 2 %. Both are far inside the 5 % and 10 % limits for the comparison, so neither unknown will decide it.</li>
+    </ul>
+    <div class="caught">
+      <h2 id="what-i-caught-along-the-way">What I caught along the way</h2>
+      <ul>
+        <li><strong>A copper area 1.57 times too large.</strong> The laboratory quotes a slot fill of 0.84, and my first version applied it to the whole slot. Re-reading the definition, it's the fill of the squares around the insulated wires. The bare copper is about 0.59 of the slot, so the current-density limit is 212 A and not 333 A. The torques didn't change, but two verdicts did: the rated-torque margin fell from 52 % to 19 %, and the torque curve now fails above 212 A. Caught and corrected before any test data was seen.</li>
+        <li><strong>A library model that wasn't the motor it was named after.</strong> The library's slot is half as large again as the drawing's. The drawing itself turned out to be stretched 1.1 % in one direction, and was corrected before use.</li>
+        <li><strong>An efficiency map that looked finished.</strong> The first map passed its spot checks but failed its interpolation check, all on one row of the table. At light load and high speed the best operating point used 2 to 5 A of torque-producing current, inside the table's first 25 A cell, and the map there moved by up to 10 points with the table spacing. Finer rows at low current fixed it everywhere from 20 N m up, to under 1 point. The 10 N m row above 4,000 rpm is reported as unresolved.</li>
+        <li><strong>Hot magnets cost more than their rating says.</strong> At 80 °C the magnets lose 6 % of their strength, but the motor lost 7 % of its flux, because the saturated bridges keep leaking the same amount.</li>
+        <li><strong>A hotspot in the wrong place.</strong> The thermal network first put the slot's hottest point in the middle of the winding and read 10 % low. The field model put it at the top of the slot, by the tooth tips: the teeth carry the winding's heat out, so they're hottest at the bore. Reading the hotspot there halved the error. The remaining 4 to 7 % is the 2D detail a lumped model leaves out, and a bound shows it can't change the rating.</li>
+        <li><strong>The magnets, not the copper, set the continuous rating.</strong> With no heat path through the shaft and only conduction across the 0.77 mm air gap, the rotor floats at the temperature of the tooth tips, the hottest iron. A better-conducting air gap made it slightly worse, because it ties the rotor closer to those tips.</li>
+        <li><strong>A leak in the blind protocol, recorded and not hidden.</strong> A filter on one of the laboratory's reports let through some of its own <em>model</em> results, not measurements. They're logged with their time and declared in every case that followed, and extraction has been by whitelist only since.</li>
+      </ul>
+    </div>
+    <h2 id="limits-and-what-i-d-do-next">Limits, and what I'd do next</h2>
+    <ul>
+      <li><strong>The comparison with the measured data hasn't happened yet.</strong> It's the next and last step: the data is opened once and every prediction is scored against the limits agreed beforehand. Until then, the predictions on this page are predictions.</li>
+      <li>The efficiencies are motor only. Mechanical, magnet and inverter losses are left out, so they're upper bounds on what a dynamometer would measure.</li>
+      <li>2D magnetostatics: no end effects, no eddy currents in the magnets and no extra copper loss at high frequency.</li>
+      <li>The lamination grade, the end-winding length and the copper temperature are estimates. Their effects are bracketed or stated.</li>
+      <li>Thermal: steady state only, so no short-time ratings. The cooling, the insulation class and the magnet grade are assumed. The rotor's heat paths are the least checked part and they set the answer.</li>
+      <li>The overspeed result depends on the stand-in steel. A stronger grade (M250-35A, 455 MPa typical yield) would pass.</li>
+    </ul>
+    <h2 id="evidence">Evidence</h2>
+    <div class="side-card"><ul class="ev-list"><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/portfolio/20-prius-traction-motor.md">Full write-up on GitHub</a></li></ul><p class="label">Run reports, with every check and the saved inputs</p><ul class="ev-list ev-runs"><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261122-174925_motor_prius_thermal_r1/report.md">motor_prius_thermal_r1</a></li><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261122-175650_motor_prius_efficiency_r1/report.md">motor_prius_efficiency_r1</a></li></ul></div>
+      </article>
+      <aside class="study-side" aria-label="Summary of this study">
+        <div class="side-card"><h2>At a glance</h2><dl><div><dt>Study</dt><dd>20</dd></div><div><dt>Discipline</dt><dd>Electric machines</dd></div><div><dt>Tools</dt><dd>Pyleecan · FEMM · CalculiX</dd></div><div><dt>Verdict</dt><dd><span class="v v-split">3 of 6 limits met</span></dd></div></dl></div><div class="side-card"><h2>Requirements</h2><ul class="side-reqs"><li><span class="r-what">Open-circuit voltage at 6,000 rpm if the inverter stops switching</span><span class="r-num">≤ 500 V · about 1,040 V</span><span class="chip fail">Not met</span></li><li><span class="r-what">Rated 400 N m within the copper&#x27;s current-density limit</span><span class="r-num">≤ 25 A/mm² · 19.8 A/mm², at about 168 A</span><span class="chip pass">Met</span></li><li><span class="r-what">Every point of the torque curve within that limit</span><span class="r-num">≤ 212 A · 250 A and above exceed it: a short-time rating</span><span class="chip fail">Not met</span></li><li><span class="r-what">Rotor bridge stress at 7,200 rpm overspeed</span><span class="r-num">≤ 335 MPa · 424 MPa; elastic at 6,000 rpm (295 MPa)</span><span class="chip fail">Not met</span></li><li><span class="r-what">Rated power from base speed to 6,000 rpm</span><span class="r-num">≥ 50 kW · 58.6 kW cold, verified; 53.7 kW hot, unverified</span><span class="chip pass">Met</span></li><li><span class="r-what">Continuous power from 1,250 to 6,000 rpm</span><span class="r-num">≥ 25 kW · 30.2 kW at the worst speed; 26.2 to 34.3 kW over ten scenarios</span><span class="chip pass">Met</span></li></ul></div><div class="side-card side-toc"><h2>On this page</h2><ul class="toc"><li><a href="#the-question">The question</a></li><li><a href="#the-answer">The answer</a></li><li><a href="#why-it-matters">Why it matters</a></li><li><a href="#the-model">The model</a></li><li><a href="#how-it-works">How it works</a></li><li><a href="#how-i-checked-it">How I checked it</a></li><li><a href="#what-i-caught-along-the-way">What I caught along the way</a></li><li><a href="#limits-and-what-i-d-do-next">Limits, and what I&#x27;d do next</a></li><li><a href="#evidence">Evidence</a></li></ul></div>
+      </aside>
+    </div>
+    <nav class="pager" aria-label="More studies"><a class="prev" href="pressure-vessel-nozzle.html"><small>← Previous study</small><b>Pressure vessel nozzle, design code check</b></a><a class="next" href="bolted-joint.html"><small>Next study →</small><b>Bolted joint, slip and opening</b></a></nav>
+  </div>
+
+</main>
+
+<footer class="site-foot">
+  <div class="wrap">
+    <section class="contact" id="contact" aria-labelledby="contact-title">
+      <div class="band-head">
+        <p class="eyebrow">Contact</p>
+        <h2 id="contact-title">Get in touch</h2>
+        <p class="contact-name"><b>Justin Smith</b>, mechanical engineer (MS), with a background in automotive.</p>
+        <p>If something here is close to what you need, or you have a model that needs building or checking, send me a note and tell me about it. I'm available for remote contract work.</p>
+      </div>
+      <div class="contact-actions">
+        <!-- the address is stored reversed and base64-encoded so scrapers reading the page or the repository don't pick it up; site.js decodes it -->
+        <a class="cta" id="contact-mail" href="#contact" data-m="bW9jLmxpYW1nQDg1MW5pdHN1amh0aW1z">Email me</a>
+        <button class="cta-2" id="contact-show" type="button">Show the address</button>
+        <span class="contact-addr" id="contact-addr" hidden></span>
+      </div>
+    </section>
+    <div class="foot-nav">
+      <a href="index.html#work">All studies</a>
+      <a href="requirements.html">Every requirement</a>
+      <a href="how-i-work.html">How I work</a>
+      <a href="grading.html">Grading tasks</a>
+      <a href="in-progress.html">In progress</a>
+      <a href="https://github.com/CptGrumpus/engineering-agent-lab">Source on GitHub ↗</a>
+      <span>Open-source tools throughout: CalculiX, OpenFOAM, Gmsh, CadQuery, OpenModelica, Blender.</span>
+    </div>
+  </div>
+</footer>
+<script>window.VP = [{"id": "motor", "study": "motor", "kind": "figure", "img": "v2/motor_efficiency.webp", "model": "2004 Toyota Prius traction motor · 48 slots, 8 poles, interior magnets · rebuilt from published drawings", "lines": ["Solver: FEMM 4.2 magnetostatics through Pyleecan · efficiency from look-up tables over the current plane", "Motor-only efficiency, cold, one cell per computed point · the line is the torque limit at the 212 A design current", "Predicted peak 97.4 % at 2,500 rpm and 80 N m · written down before any test data was opened"], "check": "", "card": "motor"}];</script>
+<script src="assets/viewer.js?v=2029ee494c"></script>
+<script src="assets/site.js?v=2029ee494c"></script>
+</body>
+</html>

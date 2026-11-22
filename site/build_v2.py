@@ -107,6 +107,11 @@ VP += [
      "lines": ["Solver: OpenFOAM 14 · k-omega SST on a periodic 5° wedge",
                "Friction factor against Prandtl's law: the mesh study, the Reynolds sweep and the wall-function placement",
                "+2.4 % when converged against a 5 % limit · one mesh alone gave the wrong sign"]},
+    {"id": "motor", "study": "motor", "kind": "figure", "img": "v2/motor_efficiency.webp",
+     "model": "2004 Toyota Prius traction motor · 48 slots, 8 poles, interior magnets · rebuilt from published drawings",
+     "lines": ["Solver: FEMM 4.2 magnetostatics through Pyleecan · efficiency from look-up tables over the current plane",
+               "Motor-only efficiency, cold, one cell per computed point · the line is the torque limit at the 212 A design current",
+               "Predicted peak 97.4 % at 2,500 rpm and 80 N m · written down before any test data was opened"]},
     {"id": "suspension", "study": "suspension", "kind": "figure", "img": "img/anim_quarter_car.webp",
      "model": "Quarter car over a bump · SciPy and OpenModelica",
      "lines": ["Drawn from the simulation at 36 km/h and 600 N·s/m, with the tire load and body acceleration",
@@ -147,6 +152,7 @@ for v in VP:
 CARDS = [
     ("bracket_opt", "12", "struct", "Featured · Design automation", "Bracket optimisation loop, driven by the agent", "The agent searched 78 designs over three runs for the lightest machined clevis bracket that stays under 100 MPa. The checks threw out its first two answers. The final one is 372 g, 4 % lighter than the start, at 98.3 MPa, and its own mesh study confirms it.", "pass", "CadQuery · Gmsh · CalculiX · SciPy"),
     ("pv_nozzle", "18", "struct", "New · Design code", "Pressure vessel nozzle, design code check", "Passes ASME-style design by analysis with a 0.9 % margin: 205.1 MPa against 207, verified to 0.03 %. The wall needs 11.7 mm, where a simpler rule asks for 16.", "pass", "CadQuery · Gmsh · CalculiX"),
+    ("motor", "20", "em", "New · Electric machines", "Traction motor, rebuilt and predicted blind", "The model of the 2004 Prius motor is complete: three design limits met and three not, including 1,040 V open-circuit at top speed and rotor bridges past yield at overspeed. Its back-EMF, torque and efficiency predictions were written down blind; the comparison with the laboratory's test data is the last step, still to come.", "split", "Pyleecan · FEMM · CalculiX"),
     ("bolted_joint", "16", "struct", "New · Friction contact", "Bolted joint, slip and opening", "Fails narrowly: once the joint settles it slips at 2.39 kN, 4.4 % short of the 2.5 kN it must carry. A 15.6 kN preload fixes it, and it stays closed to 13.1 kN.", "fail", "CalculiX"),
     ("strap_proof", "14", "struct", "New · Plasticity", "Strap proof test, notch plasticity", "A 15 kN proof test strains the hole edge to 0.58 %, inside a 1 % limit, and leaves −77 MPa of compression behind, which helps fatigue.", "pass", "CadQuery · Gmsh · CalculiX"),
     ("strut", "13", "struct", "New · Stability", "Strut buckling, with an imperfect strut", "The longest acceptable strut is about 587 mm. The bow costs 4 to 7 % of the buckling load, so a buckling check alone would overstate the capacity.", "pass", "CalculiX"),
@@ -165,7 +171,8 @@ CARDS = [
     ("cad", "08", "geom", "Geometry", "Parametric mounting plate", "Only the 9 mm (M8 clearance) hole meets both the weight and edge-distance rules.", "pass", "CadQuery"),
     ("baseline", "09", "workflow", "Workflow", "Mass-spring-damper baseline", "All 72 checks pass, and the two tools agree to a few parts per million.", "pass", "SciPy · OpenModelica"),
 ]
-VERDICT = {"pass": "Passes", "fail": "Fails", "mixed": "Depends on speed", "held": "One result on hold"}
+VERDICT = {"pass": "Passes", "fail": "Fails", "mixed": "Depends on speed", "held": "One result on hold",
+           "split": "3 of 6 limits met"}
 
 # studies of the same part, shown as one card and one panel; each study keeps its own write-up, viewer
 # result, requirements rows and evidence, and links to a study land on its part of the panel
@@ -197,7 +204,7 @@ PART_OF = {p: g for g, gd in GROUPS.items() for p in gd["parts"]}
 PART_LABEL = {"fea": "01 · Stress check", "cantilever_opt": "01b · Optimised",
               "strap": "02 · Cable hole", "fatigue": "03 · Fatigue life", "strap_proof": "14 · Proof test",
               "heat": "11 · Coolant channel", "cold_plate": "15 · Full thermal chain"}
-WIDE = {"bracket_opt", "pv_nozzle", "strap", "cantilever_bracket", "cold_plate"}
+WIDE = {"bracket_opt", "pv_nozzle", "motor", "cold_plate"}
 
 GALLERY, _seen = [], set()        # (key, no, group, d, title, answer, verdict, tools, thumb key)
 for k, n, g, d, title, a, v, tools in CARDS:
@@ -220,11 +227,12 @@ SLUG = {"bracket_opt": "bracket-optimisation", "pv_nozzle": "pressure-vessel-noz
         "strap": "aluminium-strap", "strut": "strut-buckling", "contact": "roller-contact",
         "cantilever_bracket": "cantilever-bracket", "modal": "bracket-modal", "cold_plate": "cold-plate",
         "pipe": "turbulent-pipe-friction", "cfd": "coolant-channel", "thermal": "heat-sink-fin",
-        "suspension": "quarter-car", "cad": "mounting-plate", "baseline": "mass-spring-damper"}
+        "suspension": "quarter-car", "cad": "mounting-plate", "baseline": "mass-spring-damper",
+        "motor": "traction-motor"}
 assert set(SLUG) == {c[0] for c in GALLERY}, "every gallery card needs a page name"
 FILE = {k: f"{s}.html" for k, s in SLUG.items()}
 DISC = {"struct": "Structures and vibration", "fluid": "Thermal and fluids", "vehicle": "Vehicle dynamics",
-        "geom": "Geometry automation", "workflow": "Workflow validation"}
+        "geom": "Geometry automation", "workflow": "Workflow validation", "em": "Electric machines"}
 NAV = [("index.html#work", "Studies", "index"), ("how-i-work.html", "How I work", "how-i-work"),
        ("grading.html", "Grading", "grading"), ("in-progress.html", "In progress", "in-progress"),
        ("requirements.html", "Requirements", "requirements")]
@@ -241,8 +249,8 @@ CASES = {"fea": ["cantilever_tet10"], "cantilever_opt": ["bracket_opt"], "strap"
          "pv_nozzle": ["pv_nozzle_mesh"], "bracket_opt": ["clevis_opt_r2"], "cfd": ["channel_header_tolerance", "duct_side_walls"],
          "thermal": ["fin_tolerance"], "heat": ["heated_channel_mesh_r2"], "cold_plate": ["cold_plate_mesh_r1"],
          "pipe": ["pipe_rans_mesh_r2"], "suspension": ["qc_speed_bump", "qc_bump_liftoff"], "cad": ["mounting_plate"],
-         "baseline": ["msd_step"]}
-HIGHLIGHTS = [("bracket_opt", "Optimised bracket"), ("pv_nozzle", "Pressure vessel"), ("bolted_joint", "Bolted joint slip"),
+         "baseline": ["msd_step"], "motor": ["motor_prius_ornl_oc_mesh_r3", "motor_prius_efficiency_r1"]}
+HIGHLIGHTS = [("bracket_opt", "Optimised bracket"), ("pv_nozzle", "Pressure vessel"), ("motor", "Traction motor"), ("bolted_joint", "Bolted joint slip"),
               ("strut", "Strut buckling"), ("cold_plate", "Cold plate")]
 
 import tomllib
@@ -565,9 +573,9 @@ pages = [home_page(facts)] + [study_page(c[0]) for c in GALLERY] + [
               "with a reference solution and an automated grader you can try on the page.",
               "grading", {"{{GRADER}}": grader_body, "{{TASK_COUNT_WORD}}": TASK_WORDS[len(gdata)]},
               scripts=f"<script>\n{grader_js}\n</script>"),
-    text_page("in-progress.html", "progress.html", "In progress", "Two studies in progress",
-              "A flexible flag behind a cylinder (fluid-structure interaction) and a production traction motor checked "
-              "blind against a laboratory's test data.", "in-progress", {}),
+    text_page("in-progress.html", "progress.html", "In progress", "One study running, one comparison to come",
+              "A flexible flag behind a cylinder (fluid-structure interaction), still running, and the traction motor's last "
+              "step: the comparison with a laboratory's test data.", "in-progress", {}),
     reqs_page(),
 ]
 
