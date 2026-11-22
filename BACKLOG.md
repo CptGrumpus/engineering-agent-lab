@@ -102,8 +102,10 @@ reports/motor/build_report.py <scratchpad>/motor_index.html`, then republish htt
 (main page = that index file; `geometry.html`, `open-circuit.html`, `torque.html` from `reports/motor/` as files; read
 the artifact first in a new session).
 
-**Waiting on the user:** whether to add an eval case for the rms/peak current trap (CLAUDE.md: ask first); whether the
-assumed 25 A/mm^2 copper limit (REQ-M2) stands; whether to run the B-H tail sensitivity above.
+**Decided by the user (2026-11-22 morning):** the 25 A/mm^2 copper limit stays as a stated, reasonable assumption ("an
+educated guess is all we can do without strict material card requirements"); the B-H tail sensitivity runs
+(`motor_prius_ornl_oc_js205`, `motor_prius_torque_js205`, predictions committed in d42d543); the rms/peak eval is added
+(`.claude/skills/build-model/evals/motor-peak-current-trap`, 23cdbff). Keep working on both open studies (6 and 7).
 
 **Study 7 next, all before the ORNL data is opened:** efficiency predictions (M330-35A loss data in
 `models/motor/materials/M330-35A_tata_2009.csv`; a three-term fit, kh 0.0202, alpha 1.791, kc 7.91e-5, ke 3.70e-4, f
