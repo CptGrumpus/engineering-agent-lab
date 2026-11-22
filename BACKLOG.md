@@ -187,6 +187,19 @@ The thermal report's text gives 9 conductor bundles per slot (matches 9 turns pe
 the drawing's values (air gap 0.775 mm) and run both through the open-circuit case to measure what the differences
 change.
 
+**Study 7: air-gap sensitivity and updated blind prediction (2026-11-21, 21:45, before any ORNL performance data is
+opened).** Open circuit, 1000 rpm, mesh fineness 4, 48 steps per electrical period, scratch run:
+| Machine | Air gap | Back-EMF |
+|---|---|---|
+| Pyleecan file | 0.750 mm | 107.035 V rms LL per 1000 rpm |
+| Same machine with the ORNL Fig. 21 radii (stator bore 6.375 in, rotor OD 6.314 in, rotor ID 4.356 in, stator OD 10.600 in), slot opening 0.076 in, tooth tip 0.040 in | 0.7747 mm | 106.591 V (-0.41 %) |
+
+**Updated blind prediction:** 106.6 V rms line-to-line per 1000 rpm at 20 C, from the rebuilt radii. Mesh uncertainty
+about 0.02 % (from the fineness 2/4/8 study on Pyleecan's machine). The magnet pockets are still Pyleecan's: ORNL's
+Fig. 21 simplifies them, so they need another published source before the rebuild is complete. Next session: turn the
+rebuild into a committed machine definition (a script that applies the ORNL dimensions to Pyleecan's file, with
+provenance), run it through `motor_prius_oc_mesh`, then do the torque-vs-current case.
+
 **Uncommitted at handoff:** nothing settled. Running cases and their runs are committed once they finish.
 
 ## Action items
