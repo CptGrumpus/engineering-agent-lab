@@ -11,6 +11,9 @@ Traps found while building the studies in this repo, by tool.
   source files.
 - Load model sources in `prepare()` from the run's saved `inputs/` with
   `importlib.util.spec_from_file_location`, so reruns use the saved version.
+- Solver outputs pass through the privacy redaction before `verify_point` sees them: the home folder becomes `~`.
+  A work-folder path stored in the outputs then does not exist at verify time (study 7 thermal: the FE logs were never
+  copied and the temp folders were left behind). `os.path.expanduser` it, or keep the path on the backend.
 
 ## OpenModelica (omc 1.26)
 
@@ -57,13 +60,19 @@ Traps found while building the studies in this repo, by tool.
   energy balance.
 - The `.frd` prints temperatures with 6 significant digits; a `*NODE PRINT`
   of the nodes that matter gives 7 in the `.dat`. Check this is enough for the
-  differences a GCI must resolve.
+  differences a GCI must resolve. A nodal maximum that reads the same at 6 digits on all three meshes
+  (139.363 C, a 74 K rise: 1.4e-5 per step) is above `discretization_uncertainty`'s default 1e-5 noise floor and
+  gets classed divergent; pass `noise_floor` from the output's precision (study 7 thermal used 1e-4).
 
 ## CAD to mesh to solver (CadQuery -> STEP -> Gmsh -> CalculiX)
 
 - Export a planar face with a +z normal. A face with a -z normal makes Gmsh
   number the triangles clockwise, and CalculiX rejects every element
-  ("nonpositive jacobian").
+  ("nonpositive jacobian"). In a hand-written .geo each surface follows its curve loop's direction, so a model
+  with several surfaces easily mixes both: reorient the clockwise triangles when reading the mesh (corners 1 3 2,
+  midsides 6 5 4; `models/motor/stator_section_ccx.py`).
+- Gmsh's .inp writes the elements per geometric surface (`ELSET=Surface1` ...) and each physical group as a
+  separate `*ELSET` listing element ids: read the regions from those lists, not from the element blocks' names.
 - Gmsh CLI: `gmsh mesh.geo -2 -format inp -o mesh.inp` with
   `Mesh.ElementOrder = 2` writes 6-node `CPS6` triangles that CalculiX reads
   with `*INCLUDE`. Refine at a feature with a Distance + Threshold field on

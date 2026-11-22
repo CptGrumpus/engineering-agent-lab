@@ -93,6 +93,24 @@ Fatigue life is extremely sensitive to stress (here a 10 % stress change moves l
 | GCI on the requirement metric | numerical | fin mesh study |
 | Biot number below 0.1 for the 1D reference | validity | `one_d_reference_valid` |
 
+## Lumped thermal networks (electric machine, coupled to losses)
+
+| Check | Kind | Example |
+|---|---|---|
+| T-equivalent pieces (slab, Mellor cylinder) against the exact 1D solution: mean temperature and heat split | numerical (unit test) | `tests/test_motor_thermal.py` |
+| Network energy balance: losses in = heat into the fixed-temperature nodes | numerical | motor_thermal `energy_balance` |
+| Losses at fixed temperatures reproduce the loss model's own run (same tables, same search) | numerical | motor_thermal `efficiency_consistency` (2.6e-16) |
+| 2D FE of a section with the same losses, conductivities and boundary conditions, against the network's cross-section part (means and hotspot rises above the coolant) | model form | motor_thermal `section_*` |
+| Loss-temperature iteration converged on the reported states | numerical | motor_thermal `coupling_convergence` |
+
+Lessons (study 7): a slab hotspot (surface + 1.5 x (mean - surface)) put the slot's peak at the mean wall temperature
+and read 10 % low on the rise; the FE peak sat at the top of the slot, by the tooth tips, which are the hottest iron
+because the winding's heat enters the teeth along their flanks and flows out to the yoke. Find where the FE puts the
+hotspot before trusting a lumped hotspot formula. A rotor with no shaft path and only gap conduction floats at the
+tooth-tip temperature, so the magnets, not the copper, can set the continuous rating; and a better gap can make
+them hotter. A bisection on torque probes states past thermal runaway (copper loss rising faster than cooling): they
+never converge, so measure convergence and extrapolation on the reported states, and stop a probe past a cut-off.
+
 ## Geometry automation (CAD)
 
 | Check | Kind | Example |
