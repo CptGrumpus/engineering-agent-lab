@@ -38,7 +38,14 @@ The intended user is an automotive engineer with a master's degree in mechanical
 | Bolted joint, friction contact to slip | `ccx_bolted_joint` | CalculiX contact with friction | `bolted_joint_mesh`, `bolted_joint_mesh_r1` |
 | Turek-Hron flag, solid stage (static, dynamic) | `ccx_flag`, `ccx_flag_dynamic` | CalculiX NLGEOM | `flag_csm1_mesh`, `flag_csm2_mesh`, `flag_csm3_dt`, `flag_csm3_dt_r1` |
 | Turek-Hron fluid stage (cylinder + rigid flag) | `openfoam_turek_hron` | Gmsh -> OpenFOAM 14 (in WSL) | `turek_hron_cfd1_mesh`, `turek_hron_cfd1_mesh_r1`, `turek_hron_cfd2_mesh` |
-| Turek-Hron FSI, coupled (flag behind a cylinder) | `openfoam_ccx_precice_fsi` | OpenFOAM v2512 (moving mesh) + CalculiX through preCICE 3.4 (in WSL) | `turek_hron_fsi1_mesh` |
+| Turek-Hron FSI, coupled (flag behind a cylinder) | `openfoam_ccx_precice_fsi` | OpenFOAM v2512 (moving mesh) + CalculiX through preCICE 3.4 (in WSL) | `turek_hron_fsi1_mesh`, `turek_hron_fsi1_mesh_r1` |
+| Prius traction motor, open circuit (back-EMF, flux linkage) | `pyleecan_femm` | Pyleecan + FEMM 4.2 (own environment, `models/motor/pyleecan-env.txt`) | `motor_prius_ornl_oc_mesh_r3` (final machine), its earlier revisions, `motor_prius_ornl_oc_m250`, `motor_prius_ornl_oc_y390`, `motor_prius_ornl_oc_js205`, `motor_prius_oc_mesh`, `motor_prius_oc_mesh_r1` |
+| Prius motor, torque against current (MTPA) | `pyleecan_femm_load` | Pyleecan + FEMM 4.2 | `motor_prius_torque_current_r1`, `motor_prius_torque_current`, `motor_prius_torque_mesh`, `motor_prius_torque_m250`, `motor_prius_torque_y390`, `motor_prius_torque_js205` |
+| Prius motor, dq look-up tables | `pyleecan_femm_lut` | Pyleecan + FEMM 4.2 | `motor_prius_lut_mesh`, `motor_prius_lut_cold`, `motor_prius_lut_hot`, `motor_prius_lut_cold_lowiq`, `motor_prius_lut_hot_lowiq` |
+| Prius motor, efficiency map | `lut_efficiency` | Python (NumPy, SciPy) on the dq tables | `motor_prius_efficiency`, `motor_prius_efficiency_r1` |
+| Prius motor, rotor stress at overspeed | `pyleecan_gmsh_ccx_rotor` | Pyleecan geometry -> Gmsh -> CalculiX | `motor_prius_rotor_overspeed_mesh` |
+| Pressure vessel nozzle, design by analysis | `cadquery_ccx_vessel` | CadQuery -> Gmsh -> CalculiX, stress linearisation | `pv_nozzle_mesh`, `pv_nozzle_thickness` |
+| Turbulent pipe friction (RANS) | `openfoam_pipe_rans` | OpenFOAM 14 (in WSL), k-omega SST | `pipe_rans_mesh`, `pipe_rans_mesh_r1`, `pipe_rans_reynolds`, `pipe_rans_wf_mesh`, `pipe_rans_wf_yplus` |
 
 ## Project folders
 
@@ -84,7 +91,7 @@ winget install --id FreeCAD.FreeCAD                       # bundles CalculiX and
 .venv\Scripts\python.exe -m pytest -q        # Modelica/FreeCAD/OpenFOAM tests skip if the tool is absent
 ```
 
-Since added: friction contact (the bolted joint), plasticity (the strap proof test), buckling (the strut) and a chained coolant-to-conduction-to-stress model (the cold plate). In progress: two-way fluid-structure coupling (the Turek-Hron flag) and the first comparison with measured test data (the traction motor, against Oak Ridge's published tests). Not yet done: fully conjugate heat transfer, where the fluid and solid temperatures are solved together.
+Since added: friction contact (the bolted joint), plasticity (the strap proof test), buckling (the strut), a chained coolant-to-conduction-to-stress model (the cold plate), design by analysis of a pressure-vessel nozzle, and turbulent pipe flow against a measured-data correlation. In progress: two-way fluid-structure coupling (the Turek-Hron flag) and the first comparison with measured test data (the traction motor, against Oak Ridge's published tests). Not yet done: fully conjugate heat transfer, where the fluid and solid temperatures are solved together.
 
 ## First implementation milestone (done)
 
