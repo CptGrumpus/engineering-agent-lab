@@ -354,6 +354,23 @@ td.num { font-family: var(--font-data); font-variant-numeric: tabular-nums; whit
 .feature figcaption b { color: var(--ink); font-weight: 600; }
 .opt-caught { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .opt-caught .finding:first-child { grid-column: auto; }
+/* before-and-after wipe */
+.wipe { position: relative; padding: 0; overflow: hidden; touch-action: pan-y; }
+.wipe img { display: block; width: 100%; height: auto; }
+.wipe .wipe-b { position: absolute; inset: 0; clip-path: inset(0 0 0 var(--pos)); }
+.wipe-line { position: absolute; top: 0; bottom: 0; left: var(--pos); width: 2px; margin-left: -1px; background: var(--accent); pointer-events: none; }
+.wipe-line::after { content: "◀ ▶"; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); white-space: nowrap; font-size: 0.7rem; color: var(--surface); background: var(--accent); padding: 5px 7px; border-radius: 999px; letter-spacing: 2px; }
+.wipe-tag { position: absolute; top: 10px; font: 0.74rem/1.3 var(--font-data); color: var(--ink); background: color-mix(in srgb, var(--plate) 85%, transparent); padding: 4px 8px; border-radius: 4px; pointer-events: none; }
+.wipe-tag.l { left: 10px; } .wipe-tag.r { right: 10px; text-align: right; }
+.wipe-range { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: ew-resize; }
+.wipe-range:focus-visible + * , .wipe:focus-within { outline: 2px solid var(--accent); outline-offset: 2px; }
+.wipe-legend { display: grid; gap: 4px; margin-top: 8px; max-width: 420px; }
+.wl-bar { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; height: 10px; border: 1px solid var(--rule); }
+.wl-bar i { display: block; }
+.wl-ticks { position: relative; height: 1.3em; font: 0.7rem var(--font-data); color: var(--ink-3); }
+.wl-ticks span { position: absolute; top: 0; transform: translateX(-50%); white-space: nowrap; }
+.wl-ticks span:first-child { transform: none; }
+@media (max-width: 560px) { .wipe-tag { font-size: 0.66rem; top: 6px; } .wipe-tag.l { left: 6px; } .wipe-tag.r { right: 6px; top: auto; bottom: 6px; } }
 details.more { border: 1px solid var(--rule); border-radius: 6px; background: var(--surface); padding: 14px 20px; }
 details.more > summary { cursor: pointer; font-weight: 600; color: var(--accent); }
 details.more[open] > summary { margin-bottom: 14px; }
@@ -743,6 +760,11 @@ details.study > summary:hover .study-toggle { text-decoration: underline; }
 {{VIEWER3D_JS}}
 </script>
 <script>
+// before-and-after wipes
+document.querySelectorAll(".wipe").forEach(w => {
+  const r = w.querySelector(".wipe-range");
+  r.addEventListener("input", () => w.style.setProperty("--pos", r.value + "%"));
+});
 // contact: decode the address only when someone asks for it
 (() => {
   const mail = document.getElementById("contact-mail"), show = document.getElementById("contact-show"), out = document.getElementById("contact-addr");

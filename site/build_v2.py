@@ -214,6 +214,18 @@ def study_panels(text: str) -> str:
 def featured_with_evidence() -> str:
     """The featured study gets the same evidence line as the others, once its files are committed."""
     text = (HERE / "featured.html").read_text(encoding="utf-8")
+    w = json.loads((HERE / "v2" / "wipe.json").read_text(encoding="utf-8"))
+    s = scenes["bracket_opt"]                      # the same 0-110 MPa scale and bands as the pair
+    cols = ["#%02x%02x%02x" % tuple(round(c * 255) for c in rgb) for rgb in s["band_colors"]]
+    legend = ('<div class="wipe-legend" aria-label="von Mises stress, MPa"><span class="wl-bar">'
+              + "".join(f'<i style="background:{c}"></i>' for c in cols) + '</span>'
+              + '<span class="wl-ticks">'
+              + "".join(f'<span style="left:{100 * (v - s["vmin"]) / (s["vmax"] - s["vmin"]):.3f}%">{lab}</span>'
+                        for v, lab in ((s["vmin"], f'{s["vmin"]:.0f}'), (50, "50"), (100, "100 MPa limit")))
+              + '</span></div>')
+    text = (text.replace("{{WIPE_START}}", f'Start · {w["wipe_start"]["mass_g"]:.1f} g · peak {w["wipe_start"]["peak_MPa"]:.1f} MPa')
+                .replace("{{WIPE_D}}", f'Design D · {w["wipe_d"]["mass_g"]:.1f} g · peak {w["wipe_d"]["peak_MPa"]:.1f} MPa')
+                .replace("{{WIPE_LEGEND}}", legend))
     ev = extras.evidence_html("bracket_opt")
     end = text.rindex("  </section>")
     return text[:end] + ev + text[end:] if ev else text

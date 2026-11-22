@@ -29,7 +29,13 @@
       </div>
     </div>
     <div class="figs-2">
-      <figure><div class="plate"><img src="img/render_clevis_compare.png" alt="The starting clevis bracket and design D rendered on one stress scale" loading="lazy"></div><figcaption><b>Before and after, on one stress scale.</b> The optimiser thinned the lug and shortened the gussets, but made the gussets slightly thicker. That's the cheapest way to support the fillet where the stress peaks. The tops of the gussets, where they meet the lug, come close behind at about 95 MPa.</figcaption></figure>
+      <figure><div class="plate wipe" style="--pos: 50%">
+        <img class="wipe-a" src="v2/wipe_start.webp" alt="The starting design, von Mises stress" loading="lazy">
+        <img class="wipe-b" src="v2/wipe_d.webp" alt="Design D, von Mises stress on the same scale" loading="lazy">
+        <span class="wipe-line" aria-hidden="true"></span>
+        <span class="wipe-tag l">{{WIPE_START}}</span><span class="wipe-tag r">{{WIPE_D}}</span>
+        <input class="wipe-range" type="range" min="0" max="100" value="50" aria-label="Wipe between the starting design and design D">
+      </div>{{WIPE_LEGEND}}<figcaption><b>Before and after: drag across to compare.</b> The optimiser thinned the lug and shortened the gussets, but made the gussets slightly thicker. That's the cheapest way to support the fillet where the stress peaks. The tops of the gussets, where they meet the lug, come close behind at about 95 MPa. Both on the optimisation mesh, one camera and one stress scale; each image passes the render checks.</figcaption></figure>
       <figure><div class="plate"><img src="img/clevis_noise.png" alt="Peak stress found by CalculiX against the stress a linear fit predicts, for the last fifteen candidates and design D" loading="lazy"></div><figcaption><b>Why the optimiser stalled.</b> Near the answer, designs a tenth of a millimetre apart scatter by 1.5 % in peak stress, because a fillet peak is a maximum over mesh nodes. A straight-line fit through the last 15 candidates averages that out. Design D sits where the fit reads two standard deviations under the search limit, and its own mesh study confirms it.</figcaption></figure>
     </div>
     <div class="findings opt-caught">

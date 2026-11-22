@@ -382,12 +382,45 @@ def make_hero(blender, samples):
     return g
 
 
+def make_wipe(blender, samples):
+    """The starting design and design D as two images with one camera and one crop, for the page's
+    before-and-after wipe (site/v2/wipe_start.webp, wipe_d.webp). Both pass the three render gates."""
+    from PIL import Image
+
+    out = {}
+    for pt, name in ((RUN / "points/c000", "wipe_start"), (D_COARSE, "wipe_d")):
+        sc = export(pt, name)
+        if blender is not None:
+            mr.render(blender, sc, samples)
+        g = gate(sc)
+        m = point(pt)["metrics"]
+        out[name] = {"scene": sc, "gate": g, "mass_g": round(m["mass_g"], 1), "peak_MPa": round(m["peak_von_mises_MPa"], 1)}
+        print(name, g["volume_rel_error"], g["color_check"]["fraction_on_legend"], g["legibility_check"]["misread"])
+    ims = {k: Image.fromarray((np.clip(mr.beauty(v["scene"]), 0, 1) * 255).astype(np.uint8), "RGBA") for k, v in out.items()}
+    alpha = np.maximum(*[np.asarray(im)[..., 3] for im in ims.values()])
+    ys, xs = np.nonzero(alpha > 60)
+    pad = int(0.08 * max(np.ptp(xs), np.ptp(ys)))
+    crop = (max(0, xs.min() - pad), max(0, ys.min() - pad), xs.max() + pad, ys.max() + pad)
+    site = REPO / "site" / "v2"
+    for k, im in ims.items():
+        im = im.crop(crop)
+        im.thumbnail((1200, 1000), Image.LANCZOS)
+        im.save(site / f"{k}.webp", quality=90, method=6)
+    info = {k: {kk: vv for kk, vv in v.items() if kk != "scene"} for k, v in out.items()}
+    (site / "wipe.json").write_text(json.dumps(info, indent=1), encoding="utf-8")
+    return info
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--samples", type=int, default=64)
     ap.add_argument("--skip-render", action="store_true")
     ap.add_argument("--only", nargs="*")
+    ap.add_argument("--wipe", action="store_true", help="only the before-and-after pair for the page's wipe")
     args = ap.parse_args()
+    if args.wipe:
+        make_wipe(None if args.skip_render else mr.find_blender(), 128)
+        return
     _, hist = history()
     labels = args.only or [h["label"] for h in hist]
     blender = mr.find_blender()

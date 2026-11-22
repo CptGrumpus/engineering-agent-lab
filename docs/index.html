@@ -369,6 +369,23 @@ td.num { font-family: var(--font-data); font-variant-numeric: tabular-nums; whit
 .feature figcaption b { color: var(--ink); font-weight: 600; }
 .opt-caught { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .opt-caught .finding:first-child { grid-column: auto; }
+/* before-and-after wipe */
+.wipe { position: relative; padding: 0; overflow: hidden; touch-action: pan-y; }
+.wipe img { display: block; width: 100%; height: auto; }
+.wipe .wipe-b { position: absolute; inset: 0; clip-path: inset(0 0 0 var(--pos)); }
+.wipe-line { position: absolute; top: 0; bottom: 0; left: var(--pos); width: 2px; margin-left: -1px; background: var(--accent); pointer-events: none; }
+.wipe-line::after { content: "◀ ▶"; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); white-space: nowrap; font-size: 0.7rem; color: var(--surface); background: var(--accent); padding: 5px 7px; border-radius: 999px; letter-spacing: 2px; }
+.wipe-tag { position: absolute; top: 10px; font: 0.74rem/1.3 var(--font-data); color: var(--ink); background: color-mix(in srgb, var(--plate) 85%, transparent); padding: 4px 8px; border-radius: 4px; pointer-events: none; }
+.wipe-tag.l { left: 10px; } .wipe-tag.r { right: 10px; text-align: right; }
+.wipe-range { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: ew-resize; }
+.wipe-range:focus-visible + * , .wipe:focus-within { outline: 2px solid var(--accent); outline-offset: 2px; }
+.wipe-legend { display: grid; gap: 4px; margin-top: 8px; max-width: 420px; }
+.wl-bar { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; height: 10px; border: 1px solid var(--rule); }
+.wl-bar i { display: block; }
+.wl-ticks { position: relative; height: 1.3em; font: 0.7rem var(--font-data); color: var(--ink-3); }
+.wl-ticks span { position: absolute; top: 0; transform: translateX(-50%); white-space: nowrap; }
+.wl-ticks span:first-child { transform: none; }
+@media (max-width: 560px) { .wipe-tag { font-size: 0.66rem; top: 6px; } .wipe-tag.l { left: 6px; } .wipe-tag.r { right: 6px; top: auto; bottom: 6px; } }
 details.more { border: 1px solid var(--rule); border-radius: 6px; background: var(--surface); padding: 14px 20px; }
 details.more > summary { cursor: pointer; font-weight: 600; color: var(--accent); }
 details.more[open] > summary { margin-bottom: 14px; }
@@ -1294,7 +1311,13 @@ details.study > summary:hover .study-toggle { text-decoration: underline; }
       </div>
     </div>
     <div class="figs-2">
-      <figure><div class="plate"><img src="img/render_clevis_compare.png" alt="The starting clevis bracket and design D rendered on one stress scale" loading="lazy"></div><figcaption><b>Before and after, on one stress scale.</b> The optimiser thinned the lug and shortened the gussets, but made the gussets slightly thicker. That's the cheapest way to support the fillet where the stress peaks. The tops of the gussets, where they meet the lug, come close behind at about 95 MPa.</figcaption></figure>
+      <figure><div class="plate wipe" style="--pos: 50%">
+        <img class="wipe-a" src="v2/wipe_start.webp" alt="The starting design, von Mises stress" loading="lazy">
+        <img class="wipe-b" src="v2/wipe_d.webp" alt="Design D, von Mises stress on the same scale" loading="lazy">
+        <span class="wipe-line" aria-hidden="true"></span>
+        <span class="wipe-tag l">Start · 387.7 g · peak 88.9 MPa</span><span class="wipe-tag r">Design D · 372.0 g · peak 97.4 MPa</span>
+        <input class="wipe-range" type="range" min="0" max="100" value="50" aria-label="Wipe between the starting design and design D">
+      </div><div class="wipe-legend" aria-label="von Mises stress, MPa"><span class="wl-bar"><i style="background:#3c3286"></i><i style="background:#4771e9"></i><i style="background:#33adf7"></i><i style="background:#18dec0"></i><i style="background:#4ef97d"></i><i style="background:#a4fc3c"></i><i style="background:#dde037"></i><i style="background:#fcb136"></i><i style="background:#f76f1a"></i><i style="background:#d63506"></i><i style="background:#9e1001"></i></span><span class="wl-ticks"><span style="left:0.000%">0</span><span style="left:45.455%">50</span><span style="left:90.909%">100 MPa limit</span></span></div><figcaption><b>Before and after: drag across to compare.</b> The optimiser thinned the lug and shortened the gussets, but made the gussets slightly thicker. That's the cheapest way to support the fillet where the stress peaks. The tops of the gussets, where they meet the lug, come close behind at about 95 MPa. Both on the optimisation mesh, one camera and one stress scale; each image passes the render checks.</figcaption></figure>
       <figure><div class="plate"><img src="img/clevis_noise.png" alt="Peak stress found by CalculiX against the stress a linear fit predicts, for the last fifteen candidates and design D" loading="lazy"></div><figcaption><b>Why the optimiser stalled.</b> Near the answer, designs a tenth of a millimetre apart scatter by 1.5 % in peak stress, because a fillet peak is a maximum over mesh nodes. A straight-line fit through the last 15 candidates averages that out. Design D sits where the fit reads two standard deviations under the search limit, and its own mesh study confirms it.</figcaption></figure>
     </div>
     <div class="findings opt-caught">
@@ -1396,7 +1419,7 @@ details.study > summary:hover .study-toggle { text-decoration: underline; }
         </tbody>
       </table>
     </div>
-    <p class="code-facts">It's all Python, about 33,000 lines across 217 files: the harness that runs and checks everything, the models, the independent reference solutions and the graders, with 243 automated tests that run on every push.</p>
+    <p class="code-facts">It's all Python, about 34,000 lines across 218 files: the harness that runs and checks everything, the models, the independent reference solutions and the graders, with 243 automated tests that run on every push.</p>
   </section>
 
   <section class="band wrap" id="tasks" aria-labelledby="tasks-title">
@@ -2016,6 +2039,11 @@ function gradeAnswer(criteria, ans) {
 
 </script>
 <script>
+// before-and-after wipes
+document.querySelectorAll(".wipe").forEach(w => {
+  const r = w.querySelector(".wipe-range");
+  r.addEventListener("input", () => w.style.setProperty("--pos", r.value + "%"));
+});
 // contact: decode the address only when someone asks for it
 (() => {
   const mail = document.getElementById("contact-mail"), show = document.getElementById("contact-show"), out = document.getElementById("contact-addr");
