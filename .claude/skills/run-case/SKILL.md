@@ -41,6 +41,7 @@ is the `verify-against-reference` skill.
 | `pyleecan_femm` | electric-machine electromagnetics (study 7; the 2004 Prius motor) | Pyleecan master + FEMM 4.2, run as a subprocess in Pyleecan's own environment (`PYLEECAN_PYTHON`, default `~/.venvs/pyleecan`) | `models/motor/pyleecan_em.py` |
 | `pyleecan_femm_load` | electric-machine torque against current (study 7): a current-angle sweep per point, MTPA torque | same runner in its current-angle mode | `models/motor/pyleecan_em.py` |
 | `pyleecan_femm_lut` | electric-machine dq look-up table (study 7, efficiency map input): one d-axis current per point, a q-axis sweep inside, dq flux linkages, torque and iron-loss coefficients (P = A f + B f^2 + C f^1.5) | same runner in its dq-grid mode | `models/motor/pyleecan_em.py` |
+| `lut_efficiency` | electric-machine efficiency map (study 7) from a `motor_lut` run: lowest-loss feasible current at each speed and torque under the bus voltage and a current limit; scenarios for temperatures | numpy/scipy, no solver | `models/motor/efficiency_map.py` |
 | `pyleecan_gmsh_ccx_rotor` | IPM rotor lamination at overspeed (study 7): half a pole in plane stress, linearized bridge stress | Pyleecan export (its own environment) + Gmsh + CalculiX | `models/motor/export_rotor_pole.py`, `models/fea/rotor_ccx.py` |
 
 A case with an `[optimization]` section runs with `python -m harness optimize <case>`
