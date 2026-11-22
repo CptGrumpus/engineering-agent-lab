@@ -1,0 +1,75 @@
+# Study 7, efficiency map: the dq look-up table of our machine, HOT corner of the temperature band (magnets 80 C,
+# MagFEMM T_mag with the magnet's alpha_Br -0.1 %/K: Br 1.168 T; the
+# winding temperature enters later, in the efficiency case). Model, iron-loss fit, copper area and checks as
+# motor_prius_lut_mesh.toml (read it for the method and the smoke test). Grid: d-axis current 0 to -300 A rms and
+# q-axis current 0 to 300 A rms in 25 A steps (13 x 13 = 169 FEMM solves), mesh fineness 2 (chosen by
+# motor_prius_lut_mesh: within 0.4 % of fineness 8, 3.8 x faster than 4). The grid reaches past the corrected 212 A copper limit so the map's edge is interpolated, not
+# extrapolated. Motoring only (iq >= 0).
+#
+# Predictions, written BEFORE the run (no ORNL measured data opened):
+#   P1 Every point check passes in every column; the dq torque equation within 0.5 % of FEMM's torque.
+#   P2 Br 6 % lower: the open-circuit flux about -5.5 % (the iron is far from saturation at open circuit, so a little
+#      under the Br ratio); at iq 100 / 200 / 300 A on the id = 0 column about -5 / -4 / -3 % on the cold table (the
+#      magnet torque falls with Br; saturation shrinks the difference as current rises).
+#   P3 Torque per grid point rises with -id at fixed iq up to about id = -150 to -200 A (the reluctance torque), then
+#      flattens: the largest torque on the grid lies near (-300, 300) A, about 3 % below the cold table's (424 A rms, beyond r1's
+#      350 A curve, 606 N m, extrapolated along its 1.73 N m/A slope, falling).
+#   P4 About 31 s per solve: 13 columns of about 7 min, about 1 h 30 min.
+
+[case]
+name = "motor_prius_lut_hot"
+model = "pyleecan_femm_lut"
+description = "2004 Toyota Prius traction motor (our machine from ORNL Fig. 21, laminations M330-35A, magnets at 80 C), dq look-up table, id 0 to -300 A rms and iq 0 to 300 A rms in 25 A steps, 1000 rpm; Pyleecan + FEMM 4.2 magnetostatics over one electrical period (48 steps) with element fields; mesh fineness 2; torque, dq flux linkages and iron-loss coefficients."
+assumptions = [
+  "2D magnetostatics (FEMM), no end effects; torque is the mean of FEMM's stress-tensor torque over one electrical period.",
+  "Iron loss from the element fields with the M330-35A three-term fit applied per harmonic; rotational fields counted as two orthogonal alternating ones; minor loops and DC bias not modelled.",
+  "Core mass without the stacking factor (FEMM models the stack as solid steel, lam_fill 1).",
+  "Magnet temperature 80 C (MagFEMM T_mag; Br falls 0.1 %/K, Pyleecan's alpha_Br for this magnet: a generic NdFeB value, not ORNL's).",
+  "Copper 76.4 mm^2 per slot (Pyleecan's 13 x 0.912 mm strands per turn, 9 turns), consistent with ORNL's 0.84 fill on the squares of insulated wires.",
+]
+limitations = [
+  "No test data in this case: the ORNL comparison is a separate, blind step at the end of the study.",
+  "The loss fit covers 0.1-1.8 T at 50-2500 Hz; deep-saturation regions (tooth tips at load) extrapolate it.",
+  "No magnet eddy-current loss, no AC copper loss (proximity, skin), no mechanical loss.",
+]
+
+[parameters]
+machine = "Toyota_Prius_ORNL.json"
+speed_rpm = 1000.0
+id_A = 0.0
+iq_min_A = 0.0
+iq_max_A = 300.0
+iq_steps = 13
+mesh_fineness = 2.0
+steps_per_period = 48
+angle_points = 2048
+magnet_temperature_C = 80.0
+iron_kh = 0.0202
+iron_alpha = 1.791
+iron_kc = 7.91e-5
+iron_ke = 3.70e-4
+slot_fill = 0.5345
+slot_area_mm2 = 143.0
+turns_per_slot = 9
+
+[sweep]
+parameter = "id_A"
+values = [-300.0, -275.0, -250.0, -225.0, -200.0, -175.0, -150.0, -125.0, -100.0, -75.0, -50.0, -25.0, 0.0]
+
+[numerics]
+solver_timeout_s = 7200
+
+[verification]
+power_balance_rel_tol = 0.02
+dq_torque_rel_tol = 0.005
+current_rel_tol = 1e-3
+mesh_noise_rel = 1e-5
+gci_max = 0.02
+
+[[requirements]]
+id = "REQ-M3"
+text = "The column's operating points shall stay within the 25 A/mm^2 rms copper current-density limit (marks the grid points the motor can sustain for a short time)."
+metric = "current_density_max_A_per_mm2"
+operator = "<="
+limit = 25.0
+units = "A/mm^2"

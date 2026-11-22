@@ -34,6 +34,21 @@
 #   P4 About 30 s / 75 s / 7 min per solve at fineness 2 / 4 / 8, two solves each: about 17 min.
 # Decision this informs: the grid's fineness. If the fineness-4 iron loss is within 2 % of the extrapolated value,
 # the grid runs at 4 (about 75 s per point); if not, at 8 on a coarser grid.
+#
+# Results (run 20261122-094746_motor_prius_lut_mesh): verification FAIL on two run-level GCI classifications only.
+#   P1 HELD: 10/10 point checks. dq torque within 2.4e-4 of FEMM's (and power balance the same to 3 digits on every
+#      mesh: with sinusoidal currents the two are the same identity, mean sum i dphi/dt = 3 w (phi_d iq - phi_q id), so
+#      the dq check confirms Pyleecan's dq extraction against our time-domain derivative, nothing beyond the balance).
+#   P2 HELD: torque at iq 150 A 403.45 / 403.49 / 403.38 N m at fineness 2 / 4 / 8 (spread 0.03 %); the GCI calls it
+#      divergent (oscillating at noise level) and gives no estimate.
+#   P3 MOSTLY HELD: iron loss 3075.8 / 3086.7 / 3085.5 W at 6000 rpm (predicted about 3.1 kW; GCI 0.22 %, oscillatory,
+#      PASS) and 200.6 / 201.1 / 201.2 W at 1000 rpm (predicted "0.25 kW": an arithmetic slip in the prediction, the
+#      smoke-test numbers less 5 % give 0.20 kW; anomalous order, spread 0.3 %). Change 2 -> 8 under 0.4 %, far
+#      inside the predicted 5 %.
+#   P4 MISSED: 31 / 118 / 756 s per solve (predicted about 30 s / 75 s / 7 min).
+# Decision, revised with this reason before the grid runs: the case said "fineness 4 if within 2 %". Fineness 2 is
+# already within 0.4 % of fineness 8 on torque and iron loss (against the loss fit's own 6.4 % rms error) and solves
+# 3.8 x faster (169 solves: about 1.5 h against 5.5 h), so the grids run at fineness 2.
 
 [case]
 name = "motor_prius_lut_mesh"
