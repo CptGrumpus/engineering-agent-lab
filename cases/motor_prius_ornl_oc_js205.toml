@@ -9,6 +9,18 @@
 #      roughly a tenth of the magnet flux; the rest of the iron runs below 1.8 T and does not change.
 #   P3 Flux-linkage GCI under 1 %; REQ-M1 a fail near 1038 V (its GCI may again be withheld).
 #   P4 Solve times as r3 (about 20 s / 80 s / 7 min).
+#
+# Results (run 20261122-090542_motor_prius_ornl_oc_js205): verification FAIL on the REQ-M1 metric's GCI only.
+#   P1 HELD: 15/15 point checks.
+#   P2 HELD: back-EMF 110.616 / 110.546 / 110.494 V per 1000 rpm at fineness 2 / 4 / 8, -0.35 % on r3's finest
+#      (110.884 V) against about -0.2 % (range -0.5 to 0 %). The saturated bridges carry more leakage flux on the
+#      higher tail, as estimated; the effect was nearer the range's low end.
+#   P3 PARTLY: flux-linkage GCI 0.18 % (monotone, order 0.40, extrapolated 0.215062 Wb). The 6000 rpm peak is
+#      1038.27 / 1039.36 / 1039.42 V at an anomalous observed order (4.2), so REQ-M1 is formally withheld, as on r3.
+#      Verdict not in doubt: 1039 V against the 500 V bus (-0.10 % on r3).
+#   P4 HELD: 20 s / 76 s / 496 s.
+# So the back-EMF prediction carries a tail uncertainty of about -0.35 % per +0.05 T of saturation polarization; the
+# blind prediction stays 110.9 V (Js 2.0 T), as decided before the run.
 
 [case]
 name = "motor_prius_ornl_oc_js205"
