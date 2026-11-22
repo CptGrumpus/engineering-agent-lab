@@ -138,6 +138,17 @@ radiation, hyperelastic large strain, fracture, machine elements and rotordynami
 - **B (study 19): turbulent CFD (RANS)**: fully developed pipe friction against Colebrook / Moody, then the 2D
   backward-facing step against Driver & Seegmiller's measurements (NASA Turbulence Modeling Resource: reattachment,
   skin friction, pressure). OpenFOAM.
+- **Study 18 status (2026-11-22 ~10:45): two cases done.** Code: `harness/linearize.py` (linearisation, C3D10
+  sampling, tests), `models/fea/pressure_vessel.py`, `studies/pressure_vessel.py`. `pv_nozzle_mesh` (5feb663): PL 205.1
+  MPa (GCI 0.03 %), REQ-PV2 verified PASS by 0.9 %; Pm exact to 0.03 %; equilibrium exact (3e-7). `pv_nozzle_thickness`
+  (17fc040): PL 238.6 / 219.8 / 205.1 / 182.6 MPa at 8 / 10 / 12 / 16 mm; the analysis needs about 11.7 mm against
+  about 16 mm by the simplified pressure-area rule; recommendation for review 14 mm. Next: portfolio page; possibly an
+  SCL-placement sensitivity (through the crotch) and the head-to-shell junction against shell discontinuity theory.
+- **Study 19 status:** part 1 (pipe friction) code committed (2f076cf); `pipe_rans_mesh` then `pipe_rans_reynolds`
+  running from 10:45. Smoke test: f -0.9 % on Prandtl at Re 1e5, force balance 4e-13. Part 2 (backward-facing step
+  against Driver & Seegmiller's measurements) waits on its data: turbmodels.larc.nasa.gov has a TLS certificate
+  fault and the ERCOFTAC classic database (cfd.mace.manchester.ac.uk) refused connections, 2026-11-22 ~10:20; do not
+  fill values from memory; retry later.
 - Next candidates, not started: C random vibration of the study-4 bracket (Miles), D natural convection + radiation
   (de Vahl Davis, view factors), E O-ring hyperelastic contact, F cracked plate K and crack growth, G rotor critical
   speeds with ROSS.
