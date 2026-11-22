@@ -196,5 +196,11 @@ page = (page.replace("{{VP_JSON}}", json.dumps(VP, ensure_ascii=False))
             .replace("{{VIEWER3D_JS}}", (HERE / "viewer3d.js").read_text(encoding="utf-8")))
 (HERE / "index.html").write_text(page, encoding="utf-8")
 assert "{{" not in page, page[page.index("{{"):page.index("{{") + 40]
+# every link target must be unique: a repeated id sends "#id" links to whichever comes first
+ids = re.findall(r'\sid="([^"]+)"', page)
+dupes = sorted({i for i in ids if ids.count(i) > 1})
+assert not dupes, f"duplicate ids on the page: {dupes}"
+missing = sorted(set(re.findall(r'href="#([^"]+)"', page)) - set(ids))
+assert not missing, f"links to ids that don't exist: {missing}"
 print("written", len(page) // 1024, "KB;", len(term_lines), "terminal lines;", facts,
       f"; page grader matches Python on {gcheck['checked']} answers")
