@@ -29,6 +29,38 @@ skill tables, a dead reference link, an oversized SKILL.md); this rule covers th
 List skill changes in the end-of-task summary, one line each. Settings, hooks and agent files still
 need the user's approval first.
 
+## Update the record as results come in
+
+Every finished run updates everything that shows its result, in the same working session, without
+being asked. A result that only lives in a run folder or a chat message is not done.
+
+When a run finishes (or a scratch probe changes a conclusion), in this order:
+
+1. **Case file:** a Results block in the header scoring every prediction (HELD, PARTLY or MISSED, with
+   the reason). Commit it with the curated run evidence (`scripts/scrub_paths.py`, `git add -f`
+   without `*.inp`, `*.dat`, `__pycache__`, large logs; then `tests/test_privacy.py`).
+2. **Handoff:** the running-jobs table and the study's state in BACKLOG.md.
+3. **Every page that shows the result:**
+
+   | If the result changes... | Update |
+   |---|---|
+   | a study's answer, numbers or status | its portfolio page (`portfolio/NN-*.md`) and its row in PORTFOLIO.md; a draft page's "answer so far" |
+   | a study with HTML reports (`reports/<study>/`) | rebuild them with the study's `build_report.py`; republish the artifact they're published to |
+   | the list of studies, models or cases | the README study table |
+   | a reference value behind an evaluation task | that task's `solution.md`, `grader.py` and tests |
+   | how to do the work (a tool quirk, a failed check) | the skills, as in "Keep the skills current" |
+
+4. **New pages:** when a study's first case is verified and it has no portfolio page, write one
+   (marked "Draft" until the study is complete) and add it to PORTFOLIO.md.
+5. **Counts and cross-references:** don't write counts that go stale ("eleven studies"); check the
+   links you touched.
+
+Files under `site/`, `DASHBOARD.md` and `scripts/make_study_renders.py` belong to the dashboard
+session: don't edit them; if a result makes them stale, add one line for that session to BACKLOG.md.
+
+Batch the doc updates per result, not per file: one commit for the run's evidence and case, one for
+the pages it changed. Mention the updated pages in one line when reporting the result.
+
 ## Write handoff notes often, so sessions can be cleared
 
 Long sessions are what use up the usage limit: in the 2026-11-21 audit of this project's sessions,
