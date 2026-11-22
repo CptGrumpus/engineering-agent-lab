@@ -80,7 +80,6 @@ A run is finished when its `runs/<timestamp>_<case>/report.md` exists. Logs are 
 | Study 7 low-iq dq tables, cold then hot (FEMM, 91 solves each) | `runs/*_motor_prius_lut_cold_lowiq`, then `*_hot_lowiq` (`motor_prius_lut_cold_lowiq.log`, `..._hot_lowiq.log`) | about 14:30, 15:20 | Score against the case headers (P1, P2, P4; P3 is scored by the efficiency r1), Results blocks, commit. Then `motor_prius_efficiency_r1` (below). |
 | Study 6 FSI1 r1 mesh study (fluid 2.5 / 1.77 / 1.25 mm, coupling 1e-6) | `runs/20261122-125809_turek_hron_fsi1_mesh_r1` (`fsi1_r1.log`) | about 19:00 | Score against the case header (P1-P5), Results block, commit. |
 | Study 19 pipe mesh r1 (n 80 / 160 / 320) | `runs/*_pipe_rans_mesh_r1` (`pipe_rans_mesh_r1.log`) | about 14:30 | Score (P1-P4), Results block, commit. |
-| Study 19 wall functions at Re 2e6: core mesh study, then the first-cell placement sweep (9a0cfc1) | `runs/*_pipe_rans_wf_mesh`, `runs/*_pipe_rans_wf_yplus` (`pipe_rans_wf_mesh.log`, `pipe_rans_wf_yplus.log`) | about 14:40 | Score (P1-P4 each), Results blocks, commit. The probe (scratch, not committed) put n160 at -5.04 % against n40's -5.15 %: not the outer mesh. |
 
 ### Study 7 (motor): state and next steps
 
@@ -147,8 +146,9 @@ A run is finished when its `runs/<timestamp>_<case>/report.md` exists. Logs are 
   unverified. The smoke test's -0.9 % was the n80 mesh's error. Reynolds sweep done (587dadd): low_re within 2 % of
   Prandtl at Re 2e4-2e6 (on those under-resolved meshes); wall functions -5.2 % at every Re (REQ-T1 FAIL); Re 2e6
   flagged by checkMesh on aspect ratio (the axial length floor D/50 in `grading()`). `pipe_rans_mesh_r1` (a441f36,
-  n 80 / 160 / 320; n640 does not converge in reasonable time) running. Axial-length option d5e385a. Wall-function cases
-  running (above).
+  n 80 / 160 / 320; n640 does not converge in reasonable time) running. Axial-length option d5e385a. Wall functions done (877b7b3): at Re 2e6 the core
+  mesh does not matter (GCI 0.024 %) and the first-cell placement moves f only from -5.23 to -4.75 % (y+ 29-196): the
+  -5 % is the wall treatment; REQ-T1 fails or passes by under 0.25 point. Low-Re is the usable setup.
 - Part 2, the backward-facing step against Driver & Seegmiller's measurements: **waiting on data.** On 2026-11-22
   ~10:20 turbmodels.larc.nasa.gov had a TLS certificate fault and the ERCOFTAC classic database
   (cfd.mace.manchester.ac.uk) refused connections; the KB wiki (UFR 3-15) gives only secondary values (Re_H 37500,
