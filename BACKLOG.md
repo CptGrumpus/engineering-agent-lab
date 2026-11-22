@@ -50,25 +50,45 @@ each part on its own: CSM1 to CSM3 (solid only, CalculiX, nothing new needed), C
 only, OpenFOAM 14, nothing new needed), then FSI1 to FSI3 coupled through preCICE. Each part is
 verified before the coupled run, as in study 2.
 
-## Session handoff (2026-11-21, late evening, before /clear)
+## Session handoff (2026-11-21, 23:10)
 
 Read this first in a new session. The dashboard is maintained by another session; files under site/
-and docs/ belong to it.
+and docs/ belong to it. Study 7's own HTML reports live in `reports/motor/`, apart from the dashboard.
 
-**Runs that were still going at handoff.** They write to `runs/` whether or not this session is
-alive. Check with `ls -td runs/*` and, if one is still solving, `wsl -e pgrep -a foamRun` or
-`tasklist | grep ccx`. When each finishes, follow these steps:
-1. Read its report.
-2. Compare it with the predictions in its case header.
-3. Append a "Results" block to the header.
-4. Fill in the *pending* items in `portfolio/17-fsi-flag-turek-hron.md`.
-5. Run `scripts/scrub_paths.py <run dir>`, then commit the case and the curated run with `git add -f`. Leave out `*.inp`, `*.dat`, `__pycache__`, and solver logs over about 600 KB (the CSM3 `dynamic.log` files run to 10 MB).
+**Runs still going at handoff.** They write to `runs/`. The motor chain and the r2 waiter were started as background
+shells of the 23:10 session: if that session has closed and a run has no report.md and no solver process
+(`tasklist | grep -i femm`, `wsl -e pgrep -a pimpleFoam`), rerun it with
+`.venv/Scripts/python.exe -m harness pipeline cases/<case>.toml`. Never run two FEMM cases at once.
 
-| Case | Run directory prefix | Expected |
-|---|---|---|
-| `cases/turek_hron_fsi1_mesh.toml` (FSI1, coupled, three fluid meshes), RERUN started about 20:35 | the newest `*_turek_hron_fsi1_mesh` (not `20261121-184241_...`, which is the stopped run with the force-parser bug) | About 5.5 h, so about 2:00. The prototype gave uy(A) 0.818 mm (-0.34 %), drag 14.293 (-0.006 %), lift 0.764 (+0.03 %); predictions P1-P5 are in the case header. Check that drag reads about 14.29, not 21.7: if it is 21.7, the parser fix did not take. If verified, study 6's coupled stage is done (FSI2 and FSI3 are periodic and need ALPHA 0 in the solid and a longer run) |
+| Case | Run | State at 23:06 | Expected |
+|---|---|---|---|
+| `turek_hron_fsi1_mesh` (study 6 FSI1, rerun) | `20261121-203031_turek_hron_fsi1_mesh` | 5 mm: drag 14.27 (parser fix took), uy(A) +5.8 %. 2.5 mm: drag 14.29 (0.003 %), uy(A) -0.41 %, lift +0.16 %. 1.25 mm at t = 2 of 12 s | done about 03:00-03:30. P5 (wall time) already missed: 53 min for 5 mm against 15 |
+| `motor_prius_torque_mesh` (333 A, fineness 2/4/8) | `20261121-224707_motor_prius_torque_mesh` | 608.1 / 608.0 N m at 46.7 deg (fineness 2/4); the fineness-2 point passed every check offline (power balance 1.1e-3) | about 00:15 |
+| `motor_prius_torque_current` (50-350 A, fineness 4) | queued after the mesh study | | about 01:30 |
+| `motor_prius_ornl_oc_mesh_r2` (final machine) | queued by a waiter after the torque curve | | about 01:45; its finest-mesh back-EMF is the blind prediction |
 
-If a run stopped with the session (no report.md, no solver processes running), rerun it from its case file with `.venv/Scripts/python.exe -m harness pipeline cases/<case>.toml`. It takes about 1 h for CSM3 r3's last point and 5.5 h for FSI1.
+When each finishes:
+1. Read its report; compare with the predictions in its case header; append a Results block (the torque cases also
+   carry a note that the pocket placement changed after their predictions; the ripple numbers are approximate, about
+   4 samples per slot-ripple cycle).
+2. FSI1: fill in the pending items in `portfolio/17-fsi-flag-turek-hron.md`. Motor: regenerate the reports with
+   `.venv/Scripts/python.exe reports/motor/build_report.py <scratchpad>/index.html` and republish the artifact
+   https://claude.ai/artifact/C6dNdzjs1FdP8vVb6MLaRy (main page = that index file; `geometry.html`,
+   `open-circuit.html`, `torque.html` from `reports/motor/` as files).
+3. `scripts/scrub_paths.py <run dir>`, then commit the case and the curated run with `git add -f`. Leave out `*.inp`,
+   `*.dat`, `__pycache__` and solver logs over about 600 KB. Run `tests/test_privacy.py` after committing (it reads
+   committed files).
+
+**Deferred until the runs finish (these files are loaded by them):** extend `harness/privacy.py` `scrub_tree` to
+redact any user's path (its `LEAK` pattern), not only this computer's; fix the torque figure's x label in
+`studies/motor_torque.py` ("one electrical period" shows the torque's shorter period).
+
+**Waiting on the user:** whether to add an eval case for the rms/peak current trap (CLAUDE.md: ask first); whether the
+assumed 25 A/mm^2 copper limit (REQ-M2) stands.
+
+**Study 7 after tonight's runs, all before the ORNL data is opened:** efficiency predictions (needs a source for the
+real 0.36 mm lamination's loss data), rotor-bridge stress at overspeed (CalculiX), the thermal network. Then open the
+ORNL test data once and compare everything (see the memory note and the blind protocol log in the reports).
 
 
 **Study 6 (FSI) status.**
@@ -91,11 +111,8 @@ If a run stopped with the session (no report.md, no solver processes running), r
   - FSI1 (steady), then FSI2 and FSI3 (periodic, need a transient fluid solver: pimpleFoam).
 - The portfolio page is a draft, not linked from PORTFOLIO.md until study 6 is complete.
 
-**Study 7 (motor), feasibility.** See its row in the table above. The Pyleecan test environment was in
-a session scratchpad and is gone. To recreate it:
-1. `py -3.14 -m venv <dir>`
-2. `set PYTHONUTF8=1`
-3. `<dir>/Scripts/python -m pip install git+https://github.com/Eomys/pyleecan.git`
+**Study 7 (motor), feasibility.** See its row in the table above. The Pyleecan environment is at
+`~/.venvs/pyleecan`, pinned in `models/motor/pyleecan-env.txt` (recreate steps in its header).
 
 FEMM 4.2 is installed and scriptable (see the study 7 row).
 
