@@ -414,7 +414,7 @@ def scene_cold_plate_3d():
 
 
 SCENES = {"cold_plate_3d": scene_cold_plate_3d, "strap_proof": scene_strap_proof, "bolted_joint_pressure": scene_bolted_joint, "joint_section": scene_joint_section, "cold_plate": scene_cold_plate,
-          "strut": scene_strut}
+          "strut": scene_strut, "pv_nozzle": lambda: scene_pv_nozzle()}
 
 
 # --------------------------------------------------------------------------- gates and page assets
@@ -663,6 +663,101 @@ def publish_pair(names: list[str], scenes: list[Path]):
                                                      "caption", "data_min", "data_max")}
         allscenes[name].update(gate(sc))
     (SITE / "scenes.json").write_text(json.dumps(allscenes, indent=1), encoding="utf-8")
+
+
+# --------------------------------------------------------------------------- study 18: pressure vessel nozzle
+
+VESSEL = REPO / "runs/20261122-102842_pv_nozzle_mesh"
+VESSEL_PT = VESSEL / "points/p02_element_size_local_mm-2.6667"
+VESSEL_SCALE = dict(vmin=0.0, vmax=240.0, bands=12, band_colors=mr.bands(12))
+
+
+def vessel_solve() -> tuple[Path, dict]:
+    """The finest mesh of the study-18 mesh study, solved again. The run kept its CAD file, Gmsh script and logs
+    but not the mesh or the field, so both are made again with the run's own saved model code (inputs/), and the
+    re-solve must reproduce the run: the same CAD and Gmsh script byte for byte, the same node and element counts,
+    the reactions on both symmetry planes, and PL and P + Q on all four junction lines to 1e-9."""
+    import importlib.util
+    from harness.calculix import read_frd
+    from harness.linearize import Tet10Sampler, linearize
+    from studies.strut_buckling import read_dat_blocks
+
+    spec = importlib.util.spec_from_file_location("pv_saved", VESSEL / "inputs/pressure_vessel.py")
+    W = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(W)
+    rec = read_json(VESSEL_PT / "point.json")
+    p, out = rec["parameters"], rec["solver_outputs"]
+    work = BUILD / "pv_nozzle"
+    work.mkdir(parents=True, exist_ok=True)
+    if not (work / "job.frd").exists():
+        W.build_step(p, work / "vessel.step")
+        W.write_geo(p, work / "mesh.geo")
+        if (work / "mesh.geo").read_text() != (VESSEL_PT / "solver/mesh.geo").read_text():
+            raise RuntimeError("the Gmsh script differs from the run's")
+        gmsh = Path(str(ccx())).with_name("gmsh.exe")
+        subprocess.run([str(gmsh), "mesh.geo", "-3", "-format", "inp", "-o", "mesh.inp"], cwd=work,
+                       capture_output=True, text=True, timeout=3600, check=True)
+        W.write_deck(p, work / "mesh.inp", work / "job.inp")
+        subprocess.run([str(ccx()), "-i", "job"], cwd=work, capture_output=True, text=True, timeout=7200, check=True)
+    ids, xyz, eids, elems = W.read_mesh(work / "mesh.inp")
+    if (len(ids), len(eids)) != (out["nodes"], out["elements"]):
+        raise RuntimeError(f"{len(ids)} nodes, {len(eids)} elements; the run had {out['nodes']}, {out['elements']}")
+    blocks = read_dat_blocks(work / "job.dat")
+    tot = {b["set"]: b["rows"][0] for b in blocks if b["kind"] == "total"}
+    for s, key in (("NSYMY", "reaction_symy_N"), ("NSYMZ", "reaction_symz_N")):
+        if not np.allclose(np.asarray(tot[s][:3], float), out[key], rtol=1e-6, atol=1e-3):
+            raise RuntimeError(f"{s} reactions {tot[s][:3]} differ from the run's {out[key]}")
+    frd = read_frd(work / "job.frd")
+    S = frd["STRESS"]
+    smap = {k: dict(zip(S["ids"].tolist(), S[k].tolist())) for k in ("SXX", "SYY", "SZZ", "SXY", "SYZ", "SZX")}
+    stress = np.column_stack([[smap[k].get(int(n), np.nan) for n in ids] for k in smap])
+    smp = Tet10Sampler(ids, xyz, elems)
+    for name, (pts, axes, _) in W.scl_lines(p, 21).items():
+        vals, _v = smp.sample(pts, stress)
+        res = linearize(np.linalg.norm(pts - pts[0], axis=1), vals, axes)
+        ref = out["lines"][name]
+        for k in ("membrane_vm", "membrane_plus_bending_vm"):
+            if abs(res[k] / ref[k] - 1) > 1e-9:
+                raise RuntimeError(f"{name} {k}: {res[k]} against the run's {ref[k]}")
+    return work, {"ids": ids, "xyz": xyz, "stress": stress, "params": p, "out": out, "metrics": rec["metrics"]}
+
+
+def scene_pv_nozzle():
+    """Von Mises stress on the whole vessel: the quarter model mirrored about both symmetry planes, turned so the
+    vessel lies along X with the nozzle up. Not deformed (the largest movement is 0.4 mm)."""
+    from harness.femesh import compact, read_inp
+
+    work, d = vessel_solve()
+    nodes, elems = read_inp(work / "mesh.inp")
+    ids, s = d["ids"], d["stress"]
+    sxx, syy, szz, sxy, syz, szx = s.T
+    vm = np.sqrt(0.5 * ((sxx - syy) ** 2 + (syy - szz) ** 2 + (szz - sxx) ** 2) + 3 * (sxy ** 2 + syz ** 2 + szx ** 2))
+    if abs(np.nanmax(vm) / d["metrics"]["peak_vm_MPa"] - 1) > 1e-9:
+        raise RuntimeError("the field's peak differs from the run's recorded peak")
+    xyz, tris, vm = compact(d["xyz"], mr.surface(nodes, elems, ids), vm)
+    for axis in (2, 1):            # z = 0, then y = 0: each plane's faces become internal and are dropped
+        on = np.abs(xyz[:, axis]) < 1e-6
+        tris = tris[~on[tris].all(axis=1)]
+        idx = np.nonzero(~on)[0]
+        remap = np.arange(len(xyz))
+        remap[idx] = len(xyz) + np.arange(len(idx))
+        flip = np.ones(3)
+        flip[axis] = -1
+        xyz = np.vstack([xyz, xyz[idx] * flip])
+        tris = np.vstack([tris, remap[tris][:, ::-1]])
+        vm = np.concatenate([vm, vm[idx]])
+    # (x, y, z) -> (z, -y, x): the vessel along X, the nozzle up; a proper rotation, so the faces keep their winding
+    xyz = np.column_stack([xyz[:, 2], -xyz[:, 1], xyz[:, 0]])
+    xyz, tris, vm = compact(xyz, tris, vm)
+    m = d["metrics"]
+    return write_scene(BUILD / "pv_nozzle", xyz, tris, vm, field="von Mises stress", units="MPa", **VESSEL_SCALE,
+                       elev=20, azim=-58, sharp_angle_deg=30, distance_factor=2.8,
+                       frame_box=[[-1000, -516, -516], [1000, 516, 866]], fill=0.95, resolution=[1400, 900],
+                       expected_volume_mm3=4 * d["out"]["cad_volume_mm3"],
+                       title="Shell and nozzle at 3.5 MPa: von Mises stress",
+                       caption=f"The whole vessel, from a quarter model. Linearised through the wall at the junction: "
+                               f"PL {m['pl_shell_long_MPa']:.1f} MPa against 207. The range stops at 240 MPa; the "
+                               f"sharp inner corner peaks at {m['peak_vm_MPa']:.0f} MPa, which the limits exclude.")
 
 
 SLIP_INC = 30            # the slip run's increments, to SLIP_TO_MM

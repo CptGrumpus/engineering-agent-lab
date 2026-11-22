@@ -465,7 +465,7 @@ details.study > summary:hover .study-toggle { text-decoration: underline; }
     <div class="band-head">
       <p class="eyebrow">The work</p>
       <h2 id="work-title">{{STUDY_COUNT_TITLE}} studies</h2>
-      <p>Pick any study to see its result here and read how I checked it. The problems are made up, so there's no client data, but every number comes from a saved run that can be repeated from its recorded inputs with one command. The checks show each model is solved correctly and used where it's valid. Matching measured hardware takes test data, and the motor study under "Now working on" is the first to use it.</p>
+      <p>Pick any study to see its result here and read how I checked it. The problems are made up, so there's no client data, but every number comes from a saved run that can be repeated from its recorded inputs with one command. The checks show each model is solved correctly and used where it's valid. Matching real hardware takes measured data. Study 19 is checked against measured pipe friction through a published correlation, and the motor study under "Now working on" is checked blind against a laboratory's tests of the real motor.</p>
     </div>
     <div class="vp" id="vp" role="region" aria-label="Result viewer">
       <div class="legend">
@@ -575,7 +575,7 @@ details.study > summary:hover .study-toggle { text-decoration: underline; }
     <div class="band-head">
       <p class="eyebrow">Evaluation tasks</p>
       <h2 id="tasks-title">Try grading an answer</h2>
-      <p>I wrote four engineering tasks based on the studies, set up the way an AI-training pipeline would use them. Each has a problem statement, a reference solution backed by one of my simulations, an automated grader, and a list of the mistakes it's designed to catch. Pick a task and an answer below and the page will grade it using the same criteria and tolerances as the Python grader. You can also change any of the values yourself.</p>
+      <p>I wrote {{TASK_COUNT_WORD}} engineering tasks based on the studies, set up the way an AI-training pipeline would use them. Each has a problem statement, a reference solution backed by one of my simulations, an automated grader, and a list of the mistakes it's designed to catch. Pick a task and an answer below and the page will grade it using the same criteria and tolerances as the Python grader. You can also change any of the values yourself.</p>
     </div>
 {{GRADER}}
   </section>
@@ -584,23 +584,26 @@ details.study > summary:hover .study-toggle { text-decoration: underline; }
     <div class="band-head">
       <p class="eyebrow">Now working on</p>
       <h2 id="next-title">Two studies in progress</h2>
-      <p>Five harder studies are finished and in the work above: friction contact, plasticity, buckling, a chained thermal model, and the optimisation loop. These two come next. As with the others, I pick the independent check before I start modelling.</p>
+      <p>Seven harder studies are finished and in the work above: friction contact, plasticity, buckling, a chained thermal model, the optimisation loop, a design-code pressure vessel check and turbulent pipe flow. These two are still running. As with the others, I pick the independent check before I start modelling, and I write down my predictions before each run.</p>
     </div>
     <div class="skills plan now">
       <article class="skill">
-        <span class="plan-meta"><span class="no">Fluid-structure interaction</span><span class="plan-tag">In progress</span></span>
+        <span class="plan-meta"><span class="no">Study 17 · Fluid-structure interaction</span><span class="plan-tag">In progress</span></span>
         <b>Flexible flag behind a cylinder</b>
         <p><b>Why it's harder</b>Two-way fluid-structure interaction, where the flow bends the flag and the bent flag changes the flow.</p>
-        <p><b>So far</b>Each half has to reproduce the published Turek-Hron benchmark before the two are coupled. The solid's sag matches to 0.01 %, and it swings at 1.095 Hz against the published 1.096 to 1.100. The fluid's drag matches to 0.07 % and 0.014 % at the two flow speeds. Lift is within 0.7 % but scatters from mesh to mesh, so I'm holding that verdict back. The first coupled case has run: its drag converges to within 0.03 % of the benchmark, but the lift and the flag-tip position don't settle yet as the mesh is refined, so it isn't verified. That's the next revision.</p>
+        <p><b>So far</b>Each half has to reproduce the published Turek-Hron benchmark before the two are coupled. The solid's sag matches to 0.01 %, and it swings at 1.095 Hz against the published 1.096 to 1.100. The fluid's drag matches to 0.07 % and 0.014 % at the two flow speeds. Lift is within 0.7 % but scatters from mesh to mesh, so I'm holding that verdict back. The first coupled case has run: its drag converges to within 0.03 % of the benchmark, and the flag tip lands within 1 %, but the tip still drifts as the mesh is refined and the lift carries noise from the coupling, so it isn't verified yet. A revision is running.</p>
+        <p class="plan-link"><a href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/portfolio/17-fsi-flag-turek-hron.md">Read the draft write-up</a></p>
         <p><b>How I'll check it</b>The benchmark's published values, for each half and for the coupled runs.</p>
         <span class="tools">OpenFOAM · CalculiX · preCICE</span>
       </article>
       <article class="skill">
-        <span class="plan-meta"><span class="no">Electromagnetics · test data</span><span class="plan-tag">In progress</span></span>
+        <span class="plan-meta"><span class="no">Study 20 · Electromagnetics · test data</span><span class="plan-tag">In progress</span></span>
         <b>A production traction motor, checked blind against test data</b>
         <p><b>Why it's harder</b>Three kinds of physics on one machine: torque, back-EMF and efficiency from the electromagnetics, a thermal network, and rotor stress at overspeed. It's modelled on the 2004 Toyota Prius motor.</p>
         <p><b>How I'll check it</b>Internal checks first: an analytic air-gap field, the power balance at every operating point, and mesh convergence. Then the portfolio's first comparison with measured data, Oak Ridge National Laboratory's tests, opened only after my predictions are written down.</p>
-        <p><b>So far</b>Two results are verified, and both are failures a designer needs to know about. If the inverter stops switching at top speed, the magnets alone would drive about 1,030 V against the 500 V supply, so the drive depends on field weakening and fault protection there. And at the standard 20 % overspeed, 7,200 rpm, the thin steel bridges that hold the magnets reach 424 MPa against the lamination's 335 MPa yield. The blind predictions for back-EMF (110.9 V per 1,000 rpm) and the torque curve (119 to 606 N m from 50 to 350 A) are written down. The real steel grade isn't published, so I ran three candidate grades: they move the back-EMF by 0.13 % and the torque by under 2 %, far inside the 5 % and 10 % limits, so the unknown grade won't decide the comparison. Efficiency predictions come next, then the test data is opened once.</p>
+        <p><b>So far</b>Every blind prediction is now written down: back-EMF 110.9 V per 1,000 rpm, the torque curve from 119 to 606 N m (50 to 350 A), and an efficiency map peaking at 97.4 %. The real steel grade isn't published, so I ran three candidates; they move the back-EMF by 0.13 % and the torque by under 2 %, so the unknown grade won't decide the comparison.</p>
+        <p><b>Design checks</b>The rated 400 N m fits inside the copper's current limit, and the rated 50 kW holds all the way to 6,000 rpm (58.6 kW). Two results are failures a designer needs to know about. If the inverter stops switching at top speed, the magnets alone would drive about 1,040 V against the 500 V supply. And at 20 % overspeed the thin steel bridges that hold the magnets reach 424 MPa against the lamination's 335 MPa yield. Next, the test data is opened once and every prediction is scored against it.</p>
+        <p class="plan-link"><a href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/portfolio/20-prius-traction-motor.md">Read the draft write-up</a></p>
         <span class="tools">Pyleecan · FEMM · CalculiX</span>
       </article>
     </div>

@@ -290,6 +290,36 @@
     <p class="note">The bolt is represented by its clamp force on the washer areas; the shank and threads aren't modelled. The friction coefficient (0.2) and the embedding (9.5 µm) are synthetic and dominate the answer: ±20 % on μ moves the slip load by the same 20 %.</p>
   </section>
 
+  <section class="study" id="pv_nozzle">
+    <div class="study-head">
+      <span class="label">Study 18 · CadQuery, Gmsh, CalculiX, design by analysis</span>
+      <h2>Pressure vessel nozzle, design code check</h2>
+    </div>
+
+    <p><strong>The question.</strong> A 200 mm bore nozzle with a 12 mm wall goes into a 1000 mm bore shell with a 16 mm wall, at 3.5 MPa. Can it go in without a reinforcing pad? It's judged the way ASME's design-by-analysis rules (Section VIII, Division 2, Part 5) judge it: the stress through the wall is split into a membrane part and a bending part, and each is held to its own limit. The allowable, S = 138 MPa, is a typical carbon-steel value, not taken from the code's tables.</p>
+    <div class="answer">
+      <div class="chips"><span class="chip pass">PL 205.1 MPa against 207</span><span class="chip pass">P + Q 240 against 414</span><span class="chip warn">0.9 % margin</span></div>
+      <p><strong>Yes, but only just.</strong> The membrane stress at the junction is 205.1 MPa against a 207 MPa limit. The mesh uncertainty is 0.03 %, so the pass is real for this model, but the margin is thin against the judgement calls behind it: where the lines through the wall sit, the weld size, and the sharp inner corner.</p>
+      <p>The wall needs about 11.7 mm. A simpler pressure-area rule, the kind a design-by-rule check uses, asks for about 16 mm. I'd recommend 14 mm: about 6 % margin, without the rule's full thickness.</p>
+    </div>
+    <figure><div class="plate"><img src="v2/pv_nozzle_response.webp" alt="Left: von Mises stress through the shell wall at the junction, with its linearised fit and the membrane value of 205.1 MPa just under the 207 MPa limit. Right: the membrane stress falling from 238.6 MPa at 8 mm to 182.6 MPa at 16 mm, crossing the limit at 11.7 mm" loading="lazy"></div><figcaption><b>Left: the governing line, through the shell wall beside the weld.</b> Linearising replaces the curved stress profile with its average (the membrane, PL) and a straight-line bending part. The peaks at the two surfaces don't count against the membrane limit. <b>Right: the same check at four nozzle walls.</b> 8 and 10 mm fail; the limit is reached at 11.7 mm.</figcaption></figure>
+    <h3>How I checked it</h3>
+    <ul class="proof">
+      <li>Equilibrium is exact: the pressure on every wetted surface balances the reactions on both symmetry planes to 3 × 10⁻⁷.</li>
+      <li>Far from the nozzle the shell is the exact thick-cylinder (Lamé) solution, and the model matches it to within 0.03 %.</li>
+      <li>Mesh refinement at 6, 4 and 2.67 mm gives PL of 205.04, 205.13 and 205.13 MPa. The linearised values converge even though the stress at the sharp inner corner doesn't, which is why the code linearises.</li>
+      <li>The simplified pressure-area rule, worked independently from the geometry, points the same way and is more cautious, as a rule should be.</li>
+    </ul>
+    <div class="caught">
+      <h3>What I caught along the way</h3>
+      <ul>
+        <li>I predicted about 3 % mesh uncertainty on PL, more than the 1 % margin, so I expected an "it can't tell, thicken it" answer. It converged to 0.03 %, which turned the answer into a verified pass with a thin margin, and the thickness sweep then shows how fast that margin goes.</li>
+        <li>P + Q moved by 0.08 % and then 0.27 % as the mesh was refined. The convergence check rightly calls that divergent: the surface bending picks up the sharp corner. With a 42 % margin the verdict stands, but it's reported as unverified rather than as a clean pass.</li>
+      </ul>
+    </div>
+    <p class="note">Pressure only: no piping loads on the nozzle, no thermal gradients and no fatigue screening. Piping loads would add directly to the junction stress and could use up the thin margin. The allowable is synthetic, so this follows the structure of a code calculation without being a stamped one.</p>
+  </section>
+
   <h2 class="discipline">Thermal and fluids</h2>
 
   <section class="study" id="cfd">
@@ -451,6 +481,34 @@
       </ul>
     </div>
     <p class="note">It's a 2D slice through the plate and channel, with no side walls or manifolds, constant fluid properties and laminar flow. The plate ends are rigidly clamped; a real bolted end has some give, which would lower the stress.</p>
+  </section>
+
+  <section class="study" id="pipe">
+    <div class="study-head">
+      <span class="label">Study 19, part 1 · OpenFOAM, turbulence modelling</span>
+      <h2>Turbulent pipe friction, against measured data</h2>
+    </div>
+
+    <p><strong>The question.</strong> Can this OpenFOAM turbulence setup (k-omega SST) be trusted for pressure-drop budgets, such as a coolant line? The requirement: the pipe friction factor within 5 % of Prandtl's smooth-pipe law, the fit to Nikuradse's measurements behind the Moody chart. It's the portfolio's first comparison with measured data, through that correlation.</p>
+    <div class="answer">
+      <div class="chips"><span class="chip pass">+2.4 % when converged</span><span class="chip pass">Passes from Re 2 × 10⁴ to 2 × 10⁶</span><span class="chip fail">Wall functions: 5 % low</span></div>
+      <p><strong>Yes, with the thin layer of flow at the wall resolved.</strong> Converged, the friction factor at Re 10⁵ is 2.4 % above Prandtl's law, with about 1 % mesh uncertainty, well inside the 5 %.</p>
+      <p>The cheaper option, wall functions, sits about 5 % low whatever the mesh and wherever the first cell is placed, so it can't be used to 5 %.</p>
+    </div>
+    <h3>How I checked it</h3>
+    <ul class="proof">
+      <li>A force balance gives the friction factor two independent ways, from the wall shear and from the applied pressure drop. They agree to 10⁻⁹ or better on every converged mesh, and they disagree on an unconverged one, so the same check catches runs that haven't finished.</li>
+      <li>Every mesh level halves every cell, and the reported value is the one extrapolated to an infinitely fine mesh, not any single mesh.</li>
+      <li>The velocity profile follows the log law within 2.5 to 3.4 %, and the first cell sits where each wall treatment needs it.</li>
+    </ul>
+    <div class="caught">
+      <h3>What I caught along the way</h3>
+      <ul>
+        <li>The first mesh agreed with Prandtl to 0.9 %, which looked reassuring and was wrong. Refining moved it to +0.7 % and then +1.6 %, converging at only first order, and the converged answer is 2.4 % <em>above</em> the law. Quoting the first mesh would have got the sign of the error wrong.</li>
+        <li>A mesh fix that removed a warning slowed the solver by orders of magnitude, and one unconverged result even looked plausible. The force balance exposed it, and I went back to the original mesh, which converged in minutes.</li>
+      </ul>
+    </div>
+    <p class="note">Smooth walls only, one turbulence model, and the reference is a correlation with about ±2 % scatter rather than the raw measurements. Part 2 compares the same setup against measured velocity profiles behind a backward-facing step. It's waiting on the data source, whose servers were unreachable on 22 November.</p>
   </section>
 
   <h2 class="discipline">Vehicle and system dynamics</h2>

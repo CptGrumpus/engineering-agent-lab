@@ -33,7 +33,8 @@ STUDY_DOCS = {
     "suspension": "07-quarter-car", "cad": "08-mounting-plate", "baseline": "09-mass-spring-damper",
     "contact": "10-roller-contact", "heat": "11-cold-plate-heat-transfer", "bracket_opt": "12-bracket-optimisation",
     "strut": "13-strut-buckling", "strap_proof": "14-strap-proof-plasticity", "cold_plate": "15-cold-plate-thermal-chain",
-    "bolted_joint": "16-bolted-joint-slip",
+    "bolted_joint": "16-bolted-joint-slip", "pv_nozzle": "18-pressure-vessel-nozzle",
+    "pipe": "19-turbulent-pipe-friction",
 }
 _RUN = re.compile(r"runs/(\d{8}-(\d{2})(\d{2})\d{2}_[A-Za-z0-9_]+)")
 _tracked: set[str] | None = None
@@ -123,10 +124,26 @@ def _criteria(mod) -> list[dict]:
 
     mod.within, mod.equals = w, e
     try:
-        assert mod.grade(dict(mod.REFERENCE))["passed"]
+        r = mod.grade(dict(mod.REFERENCE))
+        assert r["passed"]
     finally:
         mod.within, mod.equals = w0, e0
-    return calls
+    # a criterion the grader checks with its own helper (a named choice) is described in CHOICES; its rule
+    # is checked against the Python grader like every other criterion
+    order = [c["criterion"] for c in r["criteria"]]
+    rec = {c["key"]: c for c in calls}
+    for k in order:
+        if k not in rec:
+            rec[k] = {"key": k, "kind": "choice", **CHOICES[k]}
+    assert len(rec) == len(order), "a criterion the page grader can't describe"
+    return [rec[k] for k in order]
+
+
+# choice criteria: the options offered on the page, the reference, and the grader's acceptance rule
+# (trimmed, lower case; passes if it starts with one of `prefix` or equals one of `exact`)
+CHOICES = {
+    "pq_governing_surface": {"ref": "inner", "options": ["inner", "outer"], "prefix": ["inner"], "exact": ["s = 0", "s=0"]},
+}
 
 
 LABELS = {
@@ -149,6 +166,11 @@ LABELS = {
     "tip_pull_in_mm": ("Pull-in towards the wall", "mm", 2),
     "bending_modulus_MPa": ("Bending modulus used", "MPa", 2),
     "clearance_met": ("Clears the belt?", "", 0),
+    "pl_MPa": ("PL, local membrane", "MPa", 2),
+    "pq_MPa": ("P + Q, membrane plus bending", "MPa", 2),
+    "pq_governing_surface": ("Surface where P + Q governs", "", 0),
+    "pl_limit_met": ("PL limit met?", "", 0),
+    "pq_limit_met": ("P + Q limit met?", "", 0),
 }
 
 
@@ -223,6 +245,22 @@ def _presets_strip(ref):
     ]
 
 
+def _presets_nozzle(ref):
+    # traps and their values from tasks/nozzle_stress_linearisation/solution.md (each computed from the task's
+    # table in tests/test_tasks.py)
+    return [
+        ("Linearise the components", "Averages each stress component through the wall, then takes von Mises of the averages. This is the method of ASME VIII-2 Annex 5-A.", dict(ref)),
+        ("Average the von Mises stress", "Takes von Mises at every point first and averages that through the wall. It looks reasonable, comes out 3 % high, and the PL verdict flips to a fail.",
+         ref | {"pl_MPa": 211.8, "pl_limit_met": False}),
+        ("Surface peak against the membrane limit", "Compares the largest surface stress with the membrane limit. A membrane limit needs a membrane stress, so this fails a nozzle that passes.",
+         ref | {"pl_MPa": 239.4, "pl_limit_met": False}),
+        ("Shear stresses left out", "Linearises only the normal stresses. The verdict survives here, but the number is 0.5 % low, outside the tolerance.",
+         ref | {"pl_MPa": 204.1}),
+        ("Through-wall position measured from outside", "Gets every number right but measures the position from the outer surface, so it names the wrong surface for P + Q.",
+         ref | {"pq_governing_surface": "outer"}),
+    ]
+
+
 TASK_DEFS = [
     ("heated_channel_wall_temperature", "Cold-plate wall", "Heat transfer",
      "Water at 25 °C and 0.1 m/s flows through a 1 mm gap. Both walls take 30 kW/m² over 50 mm. Find the coolant rise, the peak wall temperature and the Nusselt number at the end of the heating. Limit: wall at or under 45 °C.",
@@ -236,6 +274,9 @@ TASK_DEFS = [
     ("sagging_strip_clearance", "Sagging strip", "Large deflection",
      "A polyurethane strip, 400 mm long, 20 mm thick and 300 mm wide, is clamped along one edge and hangs under its own weight (E = 10 MPa, ν = 0.45, 1200 kg/m³). Find how far the free edge drops and pulls back, and the bending modulus you used. Limit: a drop of at most 89 mm, to clear a conveyor belt.",
      _presets_strip),
+    ("nozzle_stress_linearisation", "Vessel nozzle", "Pressure vessel",
+     "A 16 mm shell wall at a nozzle junction, 3.5 MPa inside. You get the finite-element stresses at 21 points through the wall, all six components. Linearise them to the membrane stress PL and the membrane-plus-bending stress P + Q, say which surface governs P + Q, and check PL ≤ 207 MPa and P + Q ≤ 414 MPa. The margin on PL is under 1 %.",
+     _presets_nozzle),
 ]
 
 # The same function is embedded in the page and run under node against the Python graders.
@@ -247,6 +288,10 @@ GRADE_JS = r"""function gradeAnswer(criteria, ans) {
       const x = (v === null || v === undefined || typeof v === "boolean" || String(v).trim() === "") ? NaN : Number(v);
       if (!Number.isFinite(x)) return { key: c.key, passed: false, value: null, tol };
       return { key: c.key, passed: Math.abs(x - c.ref) <= tol, value: x, tol };
+    }
+    if (c.kind === "choice") {
+      const s = String(v).trim().toLowerCase();
+      return { key: c.key, passed: c.prefix.some(x => s.startsWith(x)) || c.exact.includes(s), value: v === undefined ? null : v };
     }
     return { key: c.key, passed: v === c.ref, value: v === undefined ? null : v };
   });
@@ -290,6 +335,9 @@ def check_js_against_python(data, n_random=400, seed=7):
                 if c["kind"] == "num":
                     tol = abs(c["ref"]) * c["rel"] if c["rel"] is not None else c["abs"]
                     a[c["key"]] = c["ref"] + rng.uniform(-2.5, 2.5) * tol
+                elif c["kind"] == "choice":
+                    a[c["key"]] = rng.choice(c["options"] + ["  Inner surface ", "OUTER", "s = 0", "s=0", "s = 16",
+                                                             "", "middle", "inner-ish", None, 0, True])
                 else:
                     a[c["key"]] = rng.random() < 0.6
             answers.append(a)
@@ -302,7 +350,8 @@ def check_js_against_python(data, n_random=400, seed=7):
         for a in answers:
             r = t["_mod"].grade(dict(a))
             cases.append({"t": t["name"], "a": a, "py": [c["passed"] for c in r["criteria"]]})
-    crit = {t["name"]: [{k: c.get(k) for k in ("key", "kind", "ref", "rel", "abs")} for c in t["criteria"]] for t in data}
+    crit = {t["name"]: [{k: c.get(k) for k in ("key", "kind", "ref", "rel", "abs", "prefix", "exact")} for c in t["criteria"]]
+            for t in data}
     js = GRADE_JS + "\nconst fs = require('fs');\nconst d = JSON.parse(fs.readFileSync(process.argv[2], 'utf8'));\n" \
         "let bad = 0;\nfor (const c of d.cases) { const r = gradeAnswer(d.crit[c.t], c.a).rows.map(x => x.passed);\n" \
         "  if (JSON.stringify(r) !== JSON.stringify(c.py)) { bad++; if (bad < 5) console.log('MISMATCH', JSON.stringify(c)); } }\n" \
@@ -374,6 +423,9 @@ GRADER_UI_JS = r"""
                  `<input id="${id}" data-k="${c.key}" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" value="${esc(v)}"></label>`;
         }
         const v = ans[c.key];
+        if (c.kind === "choice")
+          return `<div class="g-field"><span>${esc(c.label)}</span><span class="g-yn" role="group" aria-label="${esc(c.label)}">` +
+                 c.options.map(o => `<button type="button" data-k="${c.key}" data-s="${esc(o)}" aria-pressed="${v === o}">${esc(o[0].toUpperCase() + o.slice(1))}</button>`).join("") + `</span></div>`;
         return `<div class="g-field"><span>${esc(c.label)}</span><span class="g-yn" role="group" aria-label="${esc(c.label)}">` +
                `<button type="button" data-k="${c.key}" data-v="true" aria-pressed="${v === true}">Yes</button>` +
                `<button type="button" data-k="${c.key}" data-v="false" aria-pressed="${v === false}">No</button></span></div>`;
@@ -432,7 +484,7 @@ GRADER_UI_JS = r"""
     fieldsEl.addEventListener("input", e => { const k = e.target.dataset.k; if (!k) return; ans[k] = e.target.value; edited(); });
     fieldsEl.addEventListener("click", e => {
       const b = e.target.closest(".g-yn button"); if (!b) return;
-      ans[b.dataset.k] = b.dataset.v === "true";
+      ans[b.dataset.k] = b.dataset.s !== undefined ? b.dataset.s : b.dataset.v === "true";
       b.parentElement.querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", x === b ? "true" : "false"));
       edited();
     });
@@ -492,6 +544,13 @@ REQS = [
     ("heat", "11", "Cold-plate heat transfer", [
         ("Coolant temperature rise", "≤ 10 K", "7.2 K", "met"),
         ("Peak wall temperature", "≤ 45 °C", "44.03 °C, mesh uncertainty 0.23 % of the rise", "met")]),
+    ("pv_nozzle", "18", "Pressure vessel nozzle", [
+        ("General membrane stress away from the nozzle, Pm", "≤ 138 MPa", "96.2 MPa", "met"),
+        ("Local membrane stress at the junction, PL", "≤ 207 MPa", "205.1 MPa, mesh uncertainty 0.03 %", "met"),
+        ("Membrane plus bending at the junction, P + Q", "≤ 414 MPa", "240 MPa (refinement not converged; 42 % margin)", "met")]),
+    ("pipe", "19", "Turbulent pipe friction", [
+        ("Friction factor against Prandtl's law, Re 10⁵", "within 5 %", "+2.4 % when converged, mesh uncertainty 1.05 %", "met"),
+        ("Same, with wall functions", "within 5 %", "5.0 to 5.4 % low at every Reynolds number", "fail")]),
     ("strut", "13", "Strut buckling", [
         ("Load before first yield, 500 mm strut with an L/1000 bow", "≥ 16 kN", "21.8 kN (the longest that passes is about 587 mm)", "met")]),
     ("strap_proof", "14", "Strap proof test", [

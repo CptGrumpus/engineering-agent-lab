@@ -1,6 +1,6 @@
 # Dashboard backlog
 
-Open work on the portfolio dashboard. Two items are open, keeping the fluid-structure and motor cards current; the rest are ideas. Studies themselves are tracked in [BACKLOG.md](BACKLOG.md).
+Open work on the portfolio dashboard. One standing item is open, keeping the fluid-structure and motor cards current; the hiring-manager review below lists what's worth discussing next, and the rest are ideas. Studies themselves are tracked in [BACKLOG.md](BACKLOG.md).
 
 ## Where the dashboard lives
 
@@ -12,7 +12,7 @@ To rebuild after a change: run `site/build_v2.py`, then `site/export_docs.py`, t
 
 Decided 2026-11-21:
 
-- **Contact:** an email button only. No name on the page and no LinkedIn yet; LinkedIn can be added once my profile is updated.
+- **Contact:** an email button only. No LinkedIn yet; LinkedIn can be added once my profile is updated. (Updated 2026-11-22: my name, Justin Smith, now appears in a byline at the top and in the contact section.)
 - **Services:** no services list. The page showcases the work and ends with a simple contact section, so people can ask for whatever they need. One line says I'm available for remote contract work.
 
 ## Biggest impact
@@ -40,9 +40,25 @@ Decided 2026-11-21:
 | 9 | New studies on the page | Studies 13 to 16 each get a gallery card, a collapsible write-up, requirements rows and checked renders | Nothing | Done 2026-11-21. Viewer tabs for all four; the strut and bolted joint also rotate in 3D |
 | 10 | Heat-transfer wall verdict | Study 11's wall temperature was withheld until a finer mesh showed the peak converging | Nothing | Done 2026-11-21: verified at 44.03 °C (uncertainty 0.23 %) and shown as a pass on the card, the write-up and the requirements table |
 | 12 | Menu label | The top menu said "Next" for the section now called "Harder studies" | Nothing | Done: now "Harder" |
-| 13 | Keep the two "Now working on" cards current | The flexible-flag (study 6) and motor (study 7) cards say where each study stands | The study session's commits and BACKLOG.md handoff | Current as of 2026-11-22 morning: the flag's first coupled case (drag within 0.03 %, lift and tip not settled); the motor's two verified failures, the blind back-EMF and torque predictions, and the lamination-grade bracket (0.13 % back-EMF, under 2 % torque). Update when the flag's coupled runs verify or the motor's efficiency predictions are written; move each to the gallery when it finishes |
+| 13 | Keep the two "Now working on" cards current | The flexible-flag (study 17) and motor (study 20) cards say where each study stands, each with a link to its draft write-up | The study session's commits and BACKLOG.md handoff | Current as of 2026-11-22 evening: the flag's first coupled case (drag within 0.03 %, tip within 1 % but drifting, a revision running); the motor's blind predictions all written (back-EMF, torque, 97.4 % peak efficiency), its design checks (400 N m and 50 kW to 6,000 rpm pass; open-circuit voltage and overspeed bridges fail). Update when the flag's coupled runs verify or the motor's test data is opened; move each to the gallery when it finishes. Study 19 part 2 (backward-facing step) joins study 19's panel when its data source is back |
 | 14 | Fourth graded task | `tasks/sagging_strip_clearance`: a sagging strip's clearance, where plane strain and large deflection each flip the verdict | Nothing | Done 2026-11-21 (d6339e8): a tab in the grader demo with its presets, the page grader checked against the Python one; listed in `tasks/README.md` |
 | 11 | Interactive 3D viewer | Rotate the parts in the browser | Nothing | Done for five of the seven viewer tabs. The contact close-up and the flow height field stay as images |
+
+## Hiring-manager review (2026-11-22)
+
+Read the page as a contractor or hiring manager seeing it for the first time, deciding whether to get in touch. What already works: the name and offer are at the top, every claim has a check and a link to the evidence, failures are shown as results, and the grader demo shows the AI-training angle directly. What would make the decision easier, roughly in order of value:
+
+| # | Recommendation | Why it matters to a reader | Needs from me | Status |
+|---|---|---|---|---|
+| H1 | A one-page CV, linked next to the email button (PDF) | Most hiring processes need a CV on file; without one the reader has to email first to get the basics (education, years, employers in general terms) | My CV content, and how much employer detail I'm comfortable showing | To discuss |
+| H2 | LinkedIn link | A second, familiar place to check that I'm a real, experienced engineer | My updated profile | Waiting on me |
+| H3 | Say which commercial tools the methods carry over to | Industry readers work in ANSYS, Abaqus, STAR-CCM+ or Fluent; a line mapping "CalculiX/OpenFOAM here, the same methods in X" answers "can they work in our stack?" | Which commercial tools I've used and at what level | To discuss |
+| H4 | Review study 18's 14 mm recommendation | The page now says "I'd recommend 14 mm" in my voice; the study session flagged that recommendation for my review | A yes, or my own number | Waiting on me |
+| H5 | Show how long a study takes | Contract buyers price by time; "this study: about N hours of my time, M of compute" helps them size a job | Agree on the numbers from the run records | Idea |
+| H6 | A short "how I'd work on your problem" paragraph | Decided against a services list on 2026-11-21. A neutral paragraph (you send a requirement, I return a verdict, the evidence and a memo like the coolant-channel one) might still help a buyer picture the engagement without a sales tone | A decision | To discuss |
+| H7 | Lead the gallery with the most industry-relevant work | Done in this pass: the design-code pressure vessel is now second, after the featured optimiser | Nothing | Done |
+| H8 | Study numbers that make sense | The gallery skipped 17 and 20; the "Now working on" cards now carry those numbers | Nothing | Done |
+| H9 | Clean figures, no code names | The harness's own plots label axes with variable names (`pl_max_MPa`); study 18's page figure was redrawn for readers. Older figures on the page could get the same pass | Nothing | Study 18 done; others to check |
 
 ## Ideas not yet scheduled
 
@@ -56,12 +72,13 @@ Aim: better visuals and more "wow", without loosening any check. Every new visua
 - **Section views.** Done for the bolted joint and the clevis lug (see below).
 - **Study limits that only new analysis can close.** These used to sit in the page footer and now live in each study's own panel. For the study session, if wanted: a frequency-weighted measure of the bump response for study 7 (ISO 2631-1 running rms or vibration dose, with predictions written first); the cold plate with side walls, in 3D, for study 15; and the fin's air-side coefficient from a correlation or an air-side model instead of a given value (study 6 already sweeps it and finds the tip fails only at about 95 W/m²K). Comparison with measured data comes from the motor study, which is in progress.
 - **3D for the contact and flow tabs.** Flow done. The contact close-up stays an image: its 1 mm patch is lost in a rotatable whole model.
-- **Lighter meshes for the 3D view.** Cold plate done (every fourth node through the thickness). The strap proof test stays an image: an unstructured 331 000-vertex mesh with no clean way to thin it.
+- **Lighter meshes for the 3D view.** Cold plate done (every fourth node through the thickness). The strap proof test stays an image: an unstructured 331 000-vertex mesh with no clean way to thin it. The pressure vessel (study 18) stays an image too: 124 000 vertices, 4.2 MB.
 
 ## Recently done
 
 | Date | Item | What changed |
 |---|---|---|
+| 2026-11-22 | Studies 18 and 19, a fifth graded task, in-progress cards | Study 18 (pressure vessel nozzle, design by analysis) has a wide gallery card second in the grid, a write-up, three requirement rows and a viewer result: the whole vessel in von Mises on a 0 to 240 MPa scale. The run kept no mesh or field, so `vessel_solve()` in `scripts/make_study_renders.py` builds them again with the run's own saved model code and requires the same Gmsh script, node and element counts, reactions, and PL and P + Q on all five classification lines to 1e-9; the render passes the three checks (volume 1.3e-7, 100 % on the legend, 0 % misread). A first camera on the cut face read as a scoop rather than a vessel and was replaced. Its 3D view was left out: 124,000 vertices and 4.2 MB, four times the next largest, with no clean way to thin a uniform shell. New page figure `scripts/make_pv_figure.py` (the governing line linearised, and PL against nozzle wall) replaces the harness plots, whose labels are variable names. Study 19 part 1 (turbulent pipe friction) has a gallery card, write-up, two requirement rows (the wall-function row as not met) and its figure in the viewer. The nozzle-linearisation task is the fifth tab in the grader demo with five answers from its documented traps; the page grader gained a choice criterion (which surface governs) and still matches the Python grader on all 2,081 test answers. The task count on the page now follows the number of tasks. The in-progress cards carry their study numbers (17, 20), link to their draft write-ups, and are current: the motor's blind predictions all written, its design checks, 1,040 V open-circuit (was 1,030). The intro says seven harder studies are done, and that study 19 is checked against measured data through a correlation. Page: nineteen studies. Checked at 360, 390, 768 and 1280 px, light and dark; 3D checks pass |
 | 2026-11-22 | The cantilever, optimised (study 1b) | The tapered-cantilever optimisation (verified 2026-11-20, dropped from the page when study 12 became the clevis) is back as study 1b, grouped with study 1 as one report, "Cantilever bracket: stress check, then optimised". The viewer switches between the straight bar and the 546 g taper on one stress scale, camera and crop (`scripts/make_study_renders.py --cantilever`); both pass the three render checks and the 3D check. The run hadn't kept its mesh, so it was generated again from the saved CAD file and Gmsh script and checked to reproduce every saved node. Write-up restored with its search animation and stress-along-the-span plot; `portfolio/01b-cantilever-optimisation.md`; requirement rows; the page now counts 17 studies, the link-preview card too |
 | 2026-11-22 | Name at the top | A byline under the intro: Justin Smith, mechanical engineer (MS) with an automotive background; builds and checks simulation models and uses AI agents to automate the work; available for remote contract work. The Contact button sits just below it. Checked at 360, 390, 768 and 1280 px, light and dark |
 | 2026-11-22 | Watch the bolted joint slip | The joint's viewer result is now a 23-frame slider: the share of the available friction in use on the plate's face as the side load builds. Slip starts at the outer edge of the contact patch and closes in on the hole; the whole joint slides at 2,991 N (μ × preload 3,000 N). From a render-only re-run with step 2 in 30 increments of at most 0.0002 mm (`slip_solve()` in `scripts/make_study_renders.py`), checked against the evidence run: clamp step printed identically, rim force within 0.01 % at 0.002 mm and 0.035 % at 0.004 mm. A first try with fixed increments stalled at slip onset (411 iterations); nodal shear overshoots μp only at the stick-slip front (extrapolation; accepted within two local element sizes of it, nowhere else). The contact-pressure picture moved into the write-up |

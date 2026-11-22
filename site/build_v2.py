@@ -45,6 +45,11 @@ VP = [
      "lines": ["Solver: CalculiX 2.22 · C3D8I, surface-to-surface contact with friction",
                "Share of the available friction (μ × local pressure) in use on the bottom plate's face; outside the 21 mm contact patch the plates don't touch",
                "Drag the slider to push the top plate sideways: the stuck region shrinks until the whole joint slides"]},
+    {"id": "pv_nozzle", "study": "pv_nozzle", "tab": "Vessel", "legend": "S, Mises", "unit": "MPa",
+     "model": "Shell with a radial nozzle · steel, 1000 mm bore × 16 mm, 200 mm nozzle × 12 mm, 3.5 MPa inside",
+     "lines": ["Solver: CalculiX 2.22 · C3D10 · the mesh study's finest mesh, a quarter model mirrored into the whole vessel",
+               "Range stops at 240 MPa · the sharp inner corner peaks higher, and the code's limits exclude it",
+               "Linearised through the wall beside the weld: PL 205.1 MPa against 207 · passes with a 0.9 % margin"]},
     {"id": "strap_proof", "study": "strap_proof", "tab": "Plasticity", "legend": "S11", "unit": "MPa",
      "model": "Strap through its proof test · 6061-T6, 40 × 4 mm, 16 mm hole, loaded to 15 kN and back",
      "lines": ["Solver: CalculiX 2.22 · elastic-plastic, quarter model mirrored",
@@ -97,6 +102,11 @@ VP += [
      "lines": ["Solver: OpenFOAM 14 · laminar flow with heat transfer",
                "Wall and bulk temperature, and the local Nusselt number, against the Graetz thermal-entry solution",
                "Wall peak 44.03 °C against 45 · coolant rise 7.2 K"]},
+    {"id": "pipe", "study": "pipe", "kind": "figure", "img": "v2/pipe_friction.webp",
+     "model": "Smooth pipe, fully developed turbulent flow · 100 mm bore, Re 2 × 10⁴ to 2 × 10⁶",
+     "lines": ["Solver: OpenFOAM 14 · k-omega SST on a periodic 5° wedge",
+               "Friction factor against Prandtl's law: the mesh study, the Reynolds sweep and the wall-function placement",
+               "+2.4 % when converged against a 5 % limit · one mesh alone gave the wrong sign"]},
     {"id": "suspension", "study": "suspension", "kind": "figure", "img": "img/anim_quarter_car.webp",
      "model": "Quarter car over a bump · SciPy and OpenModelica",
      "lines": ["Drawn from the simulation at 36 km/h and 600 N·s/m, with the tire load and body acceleration",
@@ -136,6 +146,7 @@ for v in VP:
 # --- case gallery ---------------------------------------------------------------
 CARDS = [
     ("bracket_opt", "12", "struct", "Featured · Design automation", "Bracket optimisation loop, driven by the agent", "The agent searched 78 designs over three runs for the lightest machined clevis bracket that stays under 100 MPa. The checks threw out its first two answers. The final one is 372 g, 4 % lighter than the start, at 98.3 MPa, and its own mesh study confirms it.", "pass", "CadQuery · Gmsh · CalculiX · SciPy"),
+    ("pv_nozzle", "18", "struct", "New · Design code", "Pressure vessel nozzle, design code check", "Passes ASME-style design by analysis with a 0.9 % margin: 205.1 MPa against 207, verified to 0.03 %. The wall needs 11.7 mm, where a simpler rule asks for 16.", "pass", "CadQuery · Gmsh · CalculiX"),
     ("bolted_joint", "16", "struct", "New · Friction contact", "Bolted joint, slip and opening", "Fails narrowly: once the joint settles it slips at 2.39 kN, 4.4 % short of the 2.5 kN it must carry. A 15.6 kN preload fixes it, and it stays closed to 13.1 kN.", "fail", "CalculiX"),
     ("strap_proof", "14", "struct", "New · Plasticity", "Strap proof test, notch plasticity", "A 15 kN proof test strains the hole edge to 0.58 %, inside a 1 % limit, and leaves −77 MPa of compression behind, which helps fatigue.", "pass", "CadQuery · Gmsh · CalculiX"),
     ("strut", "13", "struct", "New · Stability", "Strut buckling, with an imperfect strut", "The longest acceptable strut is about 587 mm. The bow costs 4 to 7 % of the buckling load, so a buckling check alone would overstate the capacity.", "pass", "CalculiX"),
@@ -146,6 +157,7 @@ CARDS = [
     ("fatigue", "03", "struct", "Fatigue", "Strap fatigue life, chained analysis", "Predicted to last with a wide margin; rated 7.8 kN cyclic for 3 × 10⁷ cycles, the lower of two data sets, extrapolated past the test data.", "pass", "CalculiX · Python"),
     ("modal", "04", "struct", "Vibration", "Bracket arm modal analysis", "7 mm thick puts the first mode at 261.7 Hz and the weight at 206 g.", "pass", "CadQuery · Gmsh · CalculiX"),
     ("cold_plate", "15", "fluid", "New · Multiphysics", "Cold plate, the full thermal chain", "Passes on all three counts, from the coolant flow through the plate's conduction to its thermal stress: 40.99 °C, a 7.20 K coolant rise and 46.8 MPa.", "pass", "OpenFOAM · CalculiX"),
+    ("pipe", "19", "fluid", "New · Turbulence", "Turbulent pipe friction, against measured data", "Passes: converged, the turbulence model lands 2.4 % above Prandtl's law against a 5 % limit. The first mesh agreed to 0.9 %, with the wrong sign. Wall functions sit 5 % low on every mesh.", "pass", "OpenFOAM"),
     ("cfd", "05", "fluid", "CFD", "Coolant channel pressure budget", "Fails. It needs 33.4 Pa against a 30 Pa budget, and no gap size fixes it.", "fail", "OpenFOAM"),
     ("thermal", "06", "fluid", "Heat transfer", "Heat-sink fin temperature", "The tip sits at 73.2 °C, and still 65.9 °C with every input at its worst.", "pass", "CalculiX"),
     ("heat", "11", "fluid", "Heat transfer", "Cold-plate channel heat transfer", "Passes, verified: the wall peaks at 44.03 °C against 45, and the coolant warms 7.2 K. A finer mesh study was needed to settle the peak.", "pass", "OpenFOAM"),
@@ -185,7 +197,7 @@ PART_OF = {p: g for g, gd in GROUPS.items() for p in gd["parts"]}
 PART_LABEL = {"fea": "01 · Stress check", "cantilever_opt": "01b · Optimised",
               "strap": "02 · Cable hole", "fatigue": "03 · Fatigue life", "strap_proof": "14 · Proof test",
               "heat": "11 · Coolant channel", "cold_plate": "15 · Full thermal chain"}
-WIDE = {"bracket_opt", "strap", "cold_plate"}
+WIDE = {"bracket_opt", "pv_nozzle", "strap", "cold_plate"}
 
 GALLERY, _seen = [], set()        # (key, no, group, d, title, answer, verdict, tools, thumb key)
 for k, n, g, d, title, a, v, tools in CARDS:
@@ -315,7 +327,8 @@ def featured_with_evidence() -> str:
 
 
 WORDS = {15: ("fifteen", "Fifteen"), 16: ("sixteen", "Sixteen"), 17: ("seventeen", "Seventeen"),
-         18: ("eighteen", "Eighteen")}
+         18: ("eighteen", "Eighteen"), 19: ("nineteen", "Nineteen"), 20: ("twenty", "Twenty")}
+TASK_WORDS = {4: "four", 5: "five", 6: "six", 7: "seven"}
 import extras
 import make_og
 facts = extras.repo_facts()
@@ -332,6 +345,7 @@ page = (page.replace("{{EXTRA_CSS}}", extras.CSS)
             .replace("{{MEMO_URL}}", extras.gh(extras.MEMO))
             .replace("{{CODE_FACTS}}", extras.code_facts(facts))
             .replace("{{GRADER}}", grader_body)
+            .replace("{{TASK_COUNT_WORD}}", TASK_WORDS[len(gdata)])
             .replace("{{GRADER_JS}}", grader_js)
             .replace("{{REQS}}", extras.reqs_html())
             .replace("{{CHECKS}}", f"{facts['checks']:,}")
