@@ -288,6 +288,43 @@ back-EMF 108.04 V per 1000 rpm (+1.4 % on the radii-only machine, under the pred
   `motor_prius_ornl_oc_mesh_r2` (final machine; its back-EMF becomes the blind prediction). Each case header holds
   predictions written before its run; fill in the Results blocks, update `reports/motor/` and commit.
 
+**Study 7 status (2026-11-22, 00:45), one place.**
+
+| Piece | State | Result / next |
+|---|---|---|
+| Design inputs: stator, rotor, slot, pocket | done | ORNL Fig. 21 (stretch corrected); bridge from TM-2004/120; magnet B-H from TM-2004/137 Fig. 14 |
+| Open circuit (back-EMF, REQ-M1) | verified; final-machine run r2 queued (~01:40) | 108.52 V per 1000 rpm on the intermediate machine; REQ-M1 verified fail (1009 V > 500 V bus) |
+| Torque mesh study, 333 A (REQ-M2) | run, GCI withheld | 608 N m at 46.7 deg, spread 0.055 %, divergent classification: REQ-M2 pass (unverified), margin 52 %. Revision: measure the mesh noise, declare it, rerun |
+| Torque curve 50-350 A | running (~01:25) | the blind torque-against-current prediction |
+| Rotor overspeed (REQ-M4) | verified | 424 MPa linearized vs 335 at 7200 rpm: FAIL (295 MPa at 6000 rpm: elastic in service) |
+| Lamination steel | decided, not yet applied | see the decision below |
+| Efficiency map | not started | M330-35A loss data in hand (`models/motor/materials/`) |
+| Thermal network | not started | |
+| Blind comparison with ORNL | sealed until all of the above | |
+
+**Decision (user, 2026-11-22 ~00:40): one stand-in lamination steel, M330-35A, for every property.**
+- Why: ORNL gives the thickness (0.014 in = 0.36 mm) but not the grade; Toyota likely used a supplier's proprietary
+  0.35 mm grade. The aim is the closest guess to what Toyota used (reverse engineering for a blind validation), not
+  the best steel. M330-35A is a standard 0.35 mm EN 10106 grade with full public data, mid-range in its class.
+- Until now the study mixed two steels: the electromagnetics used Pyleecan's inherited M400-50A B-H curve (0.5 mm,
+  never chosen), the overspeed check used M330-35A's yield (335 MPa, Waelzholz; Tata's sheet says 315), and the loss
+  data is M330-35A (Tata 2009). The two B-H curves differ a lot: M400-50A needs 2-4 x more field at 1.0-1.5 T
+  (e.g. 950 against 242 A/m at 1.3 T), where the Prius teeth run.
+- To do after tonight's runs: put M330-35A's B-H curve (Tata, typical, 50 Hz) and density into the machine file
+  through `build_prius_ornl.py` (sourced like the other changes), rerun open circuit and torque, and keep the
+  M400-50A runs as the "inherited steel" side of the sensitivity. This is a design-input correction made before the
+  ORNL data is opened, so it is allowed with this written reason.
+
+**Decision (user, same time): bracket the unknown grade.** Rerun the key cases (open circuit, torque at two currents,
+overspeed) with a lower-loss 0.35 mm grade (M250-35A) and a high-strength rotor grade (a Y390 type, Rp0.2 about 412
+MPa). The blind predictions become ranges. Needs published B-H, loss and yield data for both (material searches only;
+never search for Prius performance).
+
+**Next step recorded (user, same time): a material trade study after validation.** Once the model is validated
+against ORNL, swap lamination grades and report what each changes in efficiency, torque and overspeed margin, with
+rough public cost indices (relative, labelled as such). That is the cost-versus-performance question a client would
+ask; it belongs after validation, not inside it.
+
 **Uncommitted at handoff:** nothing settled. Running cases and their runs are committed once they finish.
 
 ## Action items
