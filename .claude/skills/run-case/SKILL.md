@@ -40,6 +40,7 @@ is the `verify-against-reference` skill.
 | `openfoam_ccx_precice_fsi` | Turek-Hron FSI (flag behind a cylinder, coupled) | OpenFOAM v2512 pimpleFoam (moving mesh, Gmsh mesh) + CalculiX (`ccx_preCICE`) through preCICE 3.4, both in WSL; needs the v2512 bashrc (`OPENFOAM_V2512_BASHRC` to override) | `models/fsi/turek_hron_fsi.py`, `models/fsi/run_turek_hron_fsi.sh` |
 | `pyleecan_femm` | electric-machine electromagnetics (study 7; the 2004 Prius motor) | Pyleecan master + FEMM 4.2, run as a subprocess in Pyleecan's own environment (`PYLEECAN_PYTHON`, default `~/.venvs/pyleecan`) | `models/motor/pyleecan_em.py` |
 | `pyleecan_femm_load` | electric-machine torque against current (study 7): a current-angle sweep per point, MTPA torque | same runner in its current-angle mode | `models/motor/pyleecan_em.py` |
+| `pyleecan_femm_lut` | electric-machine dq look-up table (study 7, efficiency map input): one d-axis current per point, a q-axis sweep inside, dq flux linkages, torque and iron-loss coefficients (P = A f + B f^2 + C f^1.5) | same runner in its dq-grid mode | `models/motor/pyleecan_em.py` |
 | `pyleecan_gmsh_ccx_rotor` | IPM rotor lamination at overspeed (study 7): half a pole in plane stress, linearized bridge stress | Pyleecan export (its own environment) + Gmsh + CalculiX | `models/motor/export_rotor_pole.py`, `models/fea/rotor_ccx.py` |
 
 A case with an `[optimization]` section runs with `python -m harness optimize <case>`
