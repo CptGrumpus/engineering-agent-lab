@@ -18,6 +18,16 @@
 #   P4 About 31 s per solve: 13 columns of about 3.6 min, about 47 min.
 # REQ-M3 is reported per column as before; with iq at most 43.75 A it passes for |id| up to about 210 A and fails
 # beyond, by construction (the 212 A copper limit), not as a design verdict.
+#
+# Results (run 20261122-143828_motor_prius_lut_hot_lowiq): verification FAIL, the dq torque check in four columns.
+#   P1 MISSED, as in the cold table: the dq torque equation is off by 1.10 / 0.93 / 0.52 / 0.73 % at id -300 / -275 /
+#      -200 / -175 A against 0.5 %, always at iq 6.25 A (mean torque 33-36 N m, large ripple). Every other check
+#      passes everywhere. One more column than cold (-200 A, 0.52 %): the hotter magnets lower the torque a little,
+#      so the same ripple weighs more. Same reading as the cold case: the map interpolates FEMM's torque; the dq
+#      fluxes enter only the voltage limit.
+#   P2 HELD exactly: the iq 25 A row is bit-identical to the main hot table's in every column.
+#   P3 is scored by motor_prius_efficiency_r1.
+#   P4 MISSED a little: 56 min (predicted about 47; the CPU was shared).
 
 [case]
 name = "motor_prius_lut_hot_lowiq"

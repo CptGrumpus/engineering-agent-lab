@@ -1,0 +1,677 @@
+{
+  "run_id": "20261122-143828_motor_prius_lut_hot_lowiq",
+  "verified_utc": "2026-11-22T20:34:25+00:00",
+  "tolerances": {
+    "power_balance_rel_tol": 0.02,
+    "dq_torque_rel_tol": 0.005,
+    "current_rel_tol": 0.001,
+    "mesh_noise_rel": 1e-05,
+    "gci_max": 0.02
+  },
+  "points": [
+    {
+      "label": "p00_id_A--300",
+      "status": "FAIL",
+      "checks": [
+        {
+          "id": "power_balance",
+          "description": "max over q-axis currents (|T| >= 5 N m) of |mean(sum i dphi/dt) - mean torque x omega_m| / (mean torque x omega_m)",
+          "kind": "numerical",
+          "value": 0.010991460701469514,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "dq_torque",
+          "description": "max over q-axis currents (|T| >= 5 N m) of |3 p (phi_d i_q - phi_q i_d) - FEMM torque| / FEMM torque: the mean dq flux linkages the efficiency map interpolates reproduce the torque (model form: harmonics are left out of the dq means)",
+          "kind": "numerical",
+          "value": 0.01099146070147084,
+          "tolerance": 0.005,
+          "comparison": "<=",
+          "status": "FAIL"
+        },
+        {
+          "id": "current_amplitude",
+          "description": "max |imposed phase current fundamental - sqrt(2) x requested rms| / peak",
+          "kind": "numerical",
+          "value": 4.0116091567254517e-16,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "iron_coefficients_non_negative",
+          "description": "min iron-loss coefficient over cores and currents (W), below 0 would be unphysical",
+          "kind": "numerical",
+          "value": -0.005974902187049155,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "time_resolution",
+          "description": "48 / steps per electrical period (below 1: at least 48)",
+          "kind": "validity",
+          "value": 1.0,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p01_id_A--275",
+      "status": "FAIL",
+      "checks": [
+        {
+          "id": "power_balance",
+          "description": "max over q-axis currents (|T| >= 5 N m) of |mean(sum i dphi/dt) - mean torque x omega_m| / (mean torque x omega_m)",
+          "kind": "numerical",
+          "value": 0.009277629285065729,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "dq_torque",
+          "description": "max over q-axis currents (|T| >= 5 N m) of |3 p (phi_d i_q - phi_q i_d) - FEMM torque| / FEMM torque: the mean dq flux linkages the efficiency map interpolates reproduce the torque (model form: harmonics are left out of the dq means)",
+          "kind": "numerical",
+          "value": 0.009277629285067524,
+          "tolerance": 0.005,
+          "comparison": "<=",
+          "status": "FAIL"
+        },
+        {
+          "id": "current_amplitude",
+          "description": "max |imposed phase current fundamental - sqrt(2) x requested rms| / peak",
+          "kind": "numerical",
+          "value": 4.38370802023272e-16,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "iron_coefficients_non_negative",
+          "description": "min iron-loss coefficient over cores and currents (W), below 0 would be unphysical",
+          "kind": "numerical",
+          "value": -0.00572929684603278,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "time_resolution",
+          "description": "48 / steps per electrical period (below 1: at least 48)",
+          "kind": "validity",
+          "value": 1.0,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p02_id_A--250",
+      "status": "PASS",
+      "checks": [
+        {
+          "id": "power_balance",
+          "description": "max over q-axis currents (|T| >= 5 N m) of |mean(sum i dphi/dt) - mean torque x omega_m| / (mean torque x omega_m)",
+          "kind": "numerical",
+          "value": 0.004917357464776494,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "dq_torque",
+          "description": "max over q-axis currents (|T| >= 5 N m) of |3 p (phi_d i_q - phi_q i_d) - FEMM torque| / FEMM torque: the mean dq flux linkages the efficiency map interpolates reproduce the torque (model form: harmonics are left out of the dq means)",
+          "kind": "numerical",
+          "value": 0.0049173574647784005,
+          "tolerance": 0.005,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "current_amplitude",
+          "description": "max |imposed phase current fundamental - sqrt(2) x requested rms| / peak",
+          "kind": "numerical",
+          "value": 3.2065435981015653e-16,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "iron_coefficients_non_negative",
+          "description": "min iron-loss coefficient over cores and currents (W), below 0 would be unphysical",
+          "kind": "numerical",
+          "value": -0.005362047804941091,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "time_resolution",
+          "description": "48 / steps per electrical period (below 1: at least 48)",
+          "kind": "validity",
+          "value": 1.0,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p03_id_A--225",
+      "status": "PASS",
+      "checks": [
+        {
+          "id": "power_balance",
+          "description": "max over q-axis currents (|T| >= 5 N m) of |mean(sum i dphi/dt) - mean torque x omega_m| / (mean torque x omega_m)",
+          "kind": "numerical",
+          "value": 0.004580951244765617,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "dq_torque",
+          "description": "max over q-axis currents (|T| >= 5 N m) of |3 p (phi_d i_q - phi_q i_d) - FEMM torque| / FEMM torque: the mean dq flux linkages the efficiency map interpolates reproduce the torque (model form: harmonics are left out of the dq means)",
+          "kind": "numerical",
+          "value": 0.0045809512447671785,
+          "tolerance": 0.005,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "current_amplitude",
+          "description": "max |imposed phase current fundamental - sqrt(2) x requested rms| / peak",
+          "kind": "numerical",
+          "value": 3.5604911894837243e-16,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "iron_coefficients_non_negative",
+          "description": "min iron-loss coefficient over cores and currents (W), below 0 would be unphysical",
+          "kind": "numerical",
+          "value": -0.004838334903931043,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "time_resolution",
+          "description": "48 / steps per electrical period (below 1: at least 48)",
+          "kind": "validity",
+          "value": 1.0,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p04_id_A--200",
+      "status": "FAIL",
+      "checks": [
+        {
+          "id": "power_balance",
+          "description": "max over q-axis currents (|T| >= 5 N m) of |mean(sum i dphi/dt) - mean torque x omega_m| / (mean torque x omega_m)",
+          "kind": "numerical",
+          "value": 0.005189889467187709,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "dq_torque",
+          "description": "max over q-axis currents (|T| >= 5 N m) of |3 p (phi_d i_q - phi_q i_d) - FEMM torque| / FEMM torque: the mean dq flux linkages the efficiency map interpolates reproduce the torque (model form: harmonics are left out of the dq means)",
+          "kind": "numerical",
+          "value": 0.00518988946718961,
+          "tolerance": 0.005,
+          "comparison": "<=",
+          "status": "FAIL"
+        },
+        {
+          "id": "current_amplitude",
+          "description": "max |imposed phase current fundamental - sqrt(2) x requested rms| / peak",
+          "kind": "numerical",
+          "value": 2.008737757475438e-16,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "iron_coefficients_non_negative",
+          "description": "min iron-loss coefficient over cores and currents (W), below 0 would be unphysical",
+          "kind": "numerical",
+          "value": -0.004235618156551914,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "time_resolution",
+          "description": "48 / steps per electrical period (below 1: at least 48)",
+          "kind": "validity",
+          "value": 1.0,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p05_id_A--175",
+      "status": "FAIL",
+      "checks": [
+        {
+          "id": "power_balance",
+          "description": "max over q-axis currents (|T| >= 5 N m) of |mean(sum i dphi/dt) - mean torque x omega_m| / (mean torque x omega_m)",
+          "kind": "numerical",
+          "value": 0.007302369632627704,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "dq_torque",
+          "description": "max over q-axis currents (|T| >= 5 N m) of |3 p (phi_d i_q - phi_q i_d) - FEMM torque| / FEMM torque: the mean dq flux linkages the efficiency map interpolates reproduce the torque (model form: harmonics are left out of the dq means)",
+          "kind": "numerical",
+          "value": 0.007302369632628186,
+          "tolerance": 0.005,
+          "comparison": "<=",
+          "status": "FAIL"
+        },
+        {
+          "id": "current_amplitude",
+          "description": "max |imposed phase current fundamental - sqrt(2) x requested rms| / peak",
+          "kind": "numerical",
+          "value": 3.425625170292451e-16,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "iron_coefficients_non_negative",
+          "description": "min iron-loss coefficient over cores and currents (W), below 0 would be unphysical",
+          "kind": "numerical",
+          "value": -0.0036577272701725323,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "time_resolution",
+          "description": "48 / steps per electrical period (below 1: at least 48)",
+          "kind": "validity",
+          "value": 1.0,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p06_id_A--150",
+      "status": "PASS",
+      "checks": [
+        {
+          "id": "power_balance",
+          "description": "max over q-axis currents (|T| >= 5 N m) of |mean(sum i dphi/dt) - mean torque x omega_m| / (mean torque x omega_m)",
+          "kind": "numerical",
+          "value": 0.0038375049263073245,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "dq_torque",
+          "description": "max over q-axis currents (|T| >= 5 N m) of |3 p (phi_d i_q - phi_q i_d) - FEMM torque| / FEMM torque: the mean dq flux linkages the efficiency map interpolates reproduce the torque (model form: harmonics are left out of the dq means)",
+          "kind": "numerical",
+          "value": 0.0038375049263084052,
+          "tolerance": 0.005,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "current_amplitude",
+          "description": "max |imposed phase current fundamental - sqrt(2) x requested rms| / peak",
+          "kind": "numerical",
+          "value": 2.6773014242710983e-16,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "iron_coefficients_non_negative",
+          "description": "min iron-loss coefficient over cores and currents (W), below 0 would be unphysical",
+          "kind": "numerical",
+          "value": -0.0030237618767031587,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "time_resolution",
+          "description": "48 / steps per electrical period (below 1: at least 48)",
+          "kind": "validity",
+          "value": 1.0,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p07_id_A--125",
+      "status": "PASS",
+      "checks": [
+        {
+          "id": "power_balance",
+          "description": "max over q-axis currents (|T| >= 5 N m) of |mean(sum i dphi/dt) - mean torque x omega_m| / (mean torque x omega_m)",
+          "kind": "numerical",
+          "value": 0.0021090159693335723,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "dq_torque",
+          "description": "max over q-axis currents (|T| >= 5 N m) of |3 p (phi_d i_q - phi_q i_d) - FEMM torque| / FEMM torque: the mean dq flux linkages the efficiency map interpolates reproduce the torque (model form: harmonics are left out of the dq means)",
+          "kind": "numerical",
+          "value": 0.002109015969333861,
+          "tolerance": 0.005,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "current_amplitude",
+          "description": "max |imposed phase current fundamental - sqrt(2) x requested rms| / peak",
+          "kind": "numerical",
+          "value": 3.1995911955632065e-16,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "iron_coefficients_non_negative",
+          "description": "min iron-loss coefficient over cores and currents (W), below 0 would be unphysical",
+          "kind": "numerical",
+          "value": -0.0023319753610976882,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "time_resolution",
+          "description": "48 / steps per electrical period (below 1: at least 48)",
+          "kind": "validity",
+          "value": 1.0,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p08_id_A--100",
+      "status": "PASS",
+      "checks": [
+        {
+          "id": "power_balance",
+          "description": "max over q-axis currents (|T| >= 5 N m) of |mean(sum i dphi/dt) - mean torque x omega_m| / (mean torque x omega_m)",
+          "kind": "numerical",
+          "value": 0.003148926505849272,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "dq_torque",
+          "description": "max over q-axis currents (|T| >= 5 N m) of |3 p (phi_d i_q - phi_q i_d) - FEMM torque| / FEMM torque: the mean dq flux linkages the efficiency map interpolates reproduce the torque (model form: harmonics are left out of the dq means)",
+          "kind": "numerical",
+          "value": 0.003148926505849774,
+          "tolerance": 0.005,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "current_amplitude",
+          "description": "max |imposed phase current fundamental - sqrt(2) x requested rms| / peak",
+          "kind": "numerical",
+          "value": 3.89942636371663e-16,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "iron_coefficients_non_negative",
+          "description": "min iron-loss coefficient over cores and currents (W), below 0 would be unphysical",
+          "kind": "numerical",
+          "value": -0.0016410185897999794,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "time_resolution",
+          "description": "48 / steps per electrical period (below 1: at least 48)",
+          "kind": "validity",
+          "value": 1.0,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p09_id_A--75",
+      "status": "PASS",
+      "checks": [
+        {
+          "id": "power_balance",
+          "description": "max over q-axis currents (|T| >= 5 N m) of |mean(sum i dphi/dt) - mean torque x omega_m| / (mean torque x omega_m)",
+          "kind": "numerical",
+          "value": 0.001717416052356454,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "dq_torque",
+          "description": "max over q-axis currents (|T| >= 5 N m) of |3 p (phi_d i_q - phi_q i_d) - FEMM torque| / FEMM torque: the mean dq flux linkages the efficiency map interpolates reproduce the torque (model form: harmonics are left out of the dq means)",
+          "kind": "numerical",
+          "value": 0.0017174160523565202,
+          "tolerance": 0.005,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "current_amplitude",
+          "description": "max |imposed phase current fundamental - sqrt(2) x requested rms| / peak",
+          "kind": "numerical",
+          "value": 3.5950934718225414e-16,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "iron_coefficients_non_negative",
+          "description": "min iron-loss coefficient over cores and currents (W), below 0 would be unphysical",
+          "kind": "numerical",
+          "value": -0.001039894718587116,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "time_resolution",
+          "description": "48 / steps per electrical period (below 1: at least 48)",
+          "kind": "validity",
+          "value": 1.0,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p10_id_A--50",
+      "status": "PASS",
+      "checks": [
+        {
+          "id": "power_balance",
+          "description": "max over q-axis currents (|T| >= 5 N m) of |mean(sum i dphi/dt) - mean torque x omega_m| / (mean torque x omega_m)",
+          "kind": "numerical",
+          "value": 0.0021121084806753083,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "dq_torque",
+          "description": "max over q-axis currents (|T| >= 5 N m) of |3 p (phi_d i_q - phi_q i_d) - FEMM torque| / FEMM torque: the mean dq flux linkages the efficiency map interpolates reproduce the torque (model form: harmonics are left out of the dq means)",
+          "kind": "numerical",
+          "value": 0.002112108480675452,
+          "tolerance": 0.005,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "current_amplitude",
+          "description": "max |imposed phase current fundamental - sqrt(2) x requested rms| / peak",
+          "kind": "numerical",
+          "value": 3.89942636371663e-16,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "iron_coefficients_non_negative",
+          "description": "min iron-loss coefficient over cores and currents (W), below 0 would be unphysical",
+          "kind": "numerical",
+          "value": -0.0005595179356410472,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "time_resolution",
+          "description": "48 / steps per electrical period (below 1: at least 48)",
+          "kind": "validity",
+          "value": 1.0,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p11_id_A--25",
+      "status": "PASS",
+      "checks": [
+        {
+          "id": "power_balance",
+          "description": "max over q-axis currents (|T| >= 5 N m) of |mean(sum i dphi/dt) - mean torque x omega_m| / (mean torque x omega_m)",
+          "kind": "numerical",
+          "value": 0.0029786339123226567,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "dq_torque",
+          "description": "max over q-axis currents (|T| >= 5 N m) of |3 p (phi_d i_q - phi_q i_d) - FEMM torque| / FEMM torque: the mean dq flux linkages the efficiency map interpolates reproduce the torque (model form: harmonics are left out of the dq means)",
+          "kind": "numerical",
+          "value": 0.002978633912322534,
+          "tolerance": 0.005,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "current_amplitude",
+          "description": "max |imposed phase current fundamental - sqrt(2) x requested rms| / peak",
+          "kind": "numerical",
+          "value": 3.89942636371663e-16,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "iron_coefficients_non_negative",
+          "description": "min iron-loss coefficient over cores and currents (W), below 0 would be unphysical",
+          "kind": "numerical",
+          "value": -0.0002615315440831046,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "time_resolution",
+          "description": "48 / steps per electrical period (below 1: at least 48)",
+          "kind": "validity",
+          "value": 1.0,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p12_id_A-0",
+      "status": "PASS",
+      "checks": [
+        {
+          "id": "power_balance",
+          "description": "max over q-axis currents (|T| >= 5 N m) of |mean(sum i dphi/dt) - mean torque x omega_m| / (mean torque x omega_m)",
+          "kind": "numerical",
+          "value": 0.002013709617556768,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "dq_torque",
+          "description": "max over q-axis currents (|T| >= 5 N m) of |3 p (phi_d i_q - phi_q i_d) - FEMM torque| / FEMM torque: the mean dq flux linkages the efficiency map interpolates reproduce the torque (model form: harmonics are left out of the dq means)",
+          "kind": "numerical",
+          "value": 0.0020137096175571897,
+          "tolerance": 0.005,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "current_amplitude",
+          "description": "max |imposed phase current fundamental - sqrt(2) x requested rms| / peak",
+          "kind": "numerical",
+          "value": 2.6796244628203093e-16,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "iron_coefficients_non_negative",
+          "description": "min iron-loss coefficient over cores and currents (W), below 0 would be unphysical",
+          "kind": "numerical",
+          "value": -0.00020349517337285323,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "time_resolution",
+          "description": "48 / steps per electrical period (below 1: at least 48)",
+          "kind": "validity",
+          "value": 1.0,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ]
+    }
+  ],
+  "status": "FAIL"
+}
