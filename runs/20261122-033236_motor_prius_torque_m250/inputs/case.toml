@@ -1,0 +1,63 @@
+# Study 7, lamination bracket, torque at two currents: the MTPA torque of motor_prius_torque_current_r1 at 100 and
+# 300 A rms with M250-35A laminations instead of the stand-in M330-35A (same machine, model, angle sweep, mesh
+# and checks). See motor_prius_ornl_oc_m250.toml for why this grade.
+#
+# Predictions, written BEFORE the run (no ORNL measured data opened; motor_prius_torque_current_r1 still running):
+#   P1 Every point check passes at both currents.
+#   P2 MTPA torque below motor_prius_torque_current_r1 (M330-35A) at both currents: about -0.5 % at 100 A (range -1.2 to
+#      0 %) and about -1.0 % at 300 A (range -2.5 to 0 %), where the teeth run at 1.7-1.9 T and M250-35A needs
+#      20-35 % more field.
+#   P3 MTPA angle within 1 deg of the M330-35A curve; REQ-M3 passes at both (current density does not depend on the steel).
+#   P4 About 25 min.
+
+[case]
+name = "motor_prius_torque_m250"
+model = "pyleecan_femm_load"
+description = "2004 Toyota Prius traction motor (our machine from ORNL Fig. 21, laminations M250-35A), MTPA torque at 100 and 300 A rms, 1000 rpm; Pyleecan + FEMM 4.2 magnetostatics, current angle 0-70 deg from the q axis, mesh fineness 4."
+assumptions = [
+  "2D magnetostatics (FEMM), no end effects; torque is the mean of FEMM's stress-tensor torque over one electrical period.",
+  "Magnets, magnet pockets and materials as in models/motor/Toyota_Prius_ORNL_M250-35A.json; laminations M250-35A, a bracketing grade (Tata Steel's M250-35A typical data (June 2008, 50 Hz) up to 1.8 T, extrapolated above (saturation polarization 2.0 T)).",
+  "Magnet temperature 20 C.",
+  "Current-density limit 25 A/mm^2 rms on 0.84 x 143.0 mm^2 of copper per slot (stated assumption).",
+]
+limitations = [
+  "No test data in this case: the ORNL comparison is a separate, blind step at the end of the study.",
+  "Sinusoidal currents; no inverter harmonics, no voltage limit (1000 rpm is below base speed).",
+]
+
+[parameters]
+machine = "Toyota_Prius_ORNL_M250-35A.json"
+speed_rpm = 1000.0
+current_rms_A = 100.0
+angle_min_deg = 0.0
+angle_max_deg = 70.0
+angle_steps = 8
+mesh_fineness = 4.0
+steps_per_period = 48
+angle_points = 2048
+rated_torque_Nm = 400.0
+slot_fill = 0.84
+slot_area_mm2 = 143.0
+turns_per_slot = 9
+
+[sweep]
+parameter = "current_rms_A"
+values = [100.0, 300.0]
+
+[numerics]
+solver_timeout_s = 7200
+
+[verification]
+power_balance_rel_tol = 0.02
+current_rel_tol = 1e-3
+phase_symmetry_rel_tol = 2e-3
+mesh_noise_rel = 1e-5
+gci_max = 0.01
+
+[[requirements]]
+id = "REQ-M3"
+text = "Each operating point of the torque curve shall stay within the 25 A/mm^2 rms copper current-density limit (marks which points of the curve the motor can sustain for a short time)."
+metric = "current_density_rms_A_per_mm2"
+operator = "<="
+limit = 25.0
+units = "A/mm^2"
