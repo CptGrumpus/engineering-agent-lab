@@ -18,6 +18,19 @@
 #   P4 About 31 s per solve: 13 columns of about 3.6 min, about 47 min.
 # REQ-M3 is reported per column as before; with iq at most 43.75 A it passes for |id| up to about 210 A and fails
 # beyond, by construction (the 212 A copper limit), not as a design verdict.
+#
+# Results (run 20261122-133946_motor_prius_lut_cold_lowiq): verification FAIL, the dq torque check in three columns.
+#   P1 MISSED: dq torque equation off by 1.00 / 0.75 / 0.56 % at id -300 / -275 / -175 A against the 0.5 % tolerance,
+#      always at the lowest q-axis currents (iq 6.25-12.5 A). There the mean torque is small (33-70 N m) and the ripple
+#      large (18-27 N m peak to peak), so the product of the mean dq fluxes misses the mean torque by up to 0.33 N m:
+#      the harmonics left out of the dq means (the check's stated model form) matter more at low torque. Every other
+#      check passes everywhere (power balance, current amplitude, iron coefficients). The efficiency map interpolates
+#      FEMM's own torque, not the dq product; the fluxes enter only its voltage limit, where a 1 % inconsistency moves
+#      the voltage by well under 1 %. The failed columns' REQ-M3 verdicts are withheld (by construction anyway).
+#   P2 HELD exactly: the iq 25 A row is bit-identical to the main table's in every column (torque, ripple, dq flux,
+#      all six iron-loss coefficients): FEMM on the same mesh and rotor positions reproduces itself.
+#   P3 (the main table's interpolation error at the new nodes) is scored by motor_prius_efficiency_r1.
+#   P4 MISSED a little: 58.6 min (predicted about 47; FSI1 r1 and the pipe runs shared the CPU).
 
 [case]
 name = "motor_prius_lut_cold_lowiq"
