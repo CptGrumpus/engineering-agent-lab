@@ -6,6 +6,12 @@ Reference: the published FSI1 values (the requirement); internal checks: every c
            steady state reached, the force the fluid puts on the flag equal to the clamp reaction in the solid
            (the coupling conserves force), the inflow equal to the benchmark parabola at every inlet face
 Run-level: GCI on the requirement metrics when the sweep is fluid_cell_size_m (single-mesh runs: none)
+
+Opt-in (FSI1 revision 1): numerics.metric_average_s takes the metrics and the force-transfer check as means over the
+last that many seconds instead of the final values, and verification.steady_measure = "drift" judges steadiness by
+the change of the mean between the two halves of the steady window instead of the peak-to-peak spread. The first FSI1
+run showed why: at Re 20 the lift jitters at every time step (coupling noise, about +-2 % of the lift) with no drift, so
+a final value and a spread both report the noise. Cases without these keys behave as before.
 """
 
 from __future__ import annotations
@@ -69,6 +75,19 @@ def read_watchpoint(path: Path) -> np.ndarray:
     return np.loadtxt(path, skiprows=1, ndmin=2)
 
 
+def _window_means(numerics, Ff, rf_blocks) -> dict:
+    """Means of the flag's fluid force and the clamp reaction over the last numerics.metric_average_s (opt-in)."""
+    w = numerics.get("metric_average_s")
+    if not w or not rf_blocks:
+        return {}
+    t_end = float(Ff[-1, 0])
+    f = Ff[Ff[:, 0] >= t_end - float(w)]
+    r = np.array([b["rows"][0][:2] for b in rf_blocks if b["time"] >= t_end - float(w)])
+    return {"flag_fluid_force_mean_N": [float(np.mean(f[:, 1] + f[:, 3])), float(np.mean(f[:, 2] + f[:, 4]))],
+            "clamp_reaction_mean_N": [float(np.mean(r[:, 0])), float(np.mean(r[:, 1]))],
+            "metric_average_s": float(w)}
+
+
 def read_iterations(path: Path) -> np.ndarray:
     """preCICE iterations log: (window, total iterations, iterations, converged, ...)."""
     return np.loadtxt(path, skiprows=1, ndmin=2)
@@ -124,7 +143,8 @@ class PreciceFSI(Backend):
         F = read_forces(fl / "postProcessing/forces/0/force.dat")
         Ff = read_forces(fl / "postProcessing/forcesFlag/0/force.dat")
         it = read_iterations(fl / "precice-Fluid-iterations.log")
-        rf = [b["rows"][0] for b in read_dat_blocks(so / "flag.dat") if b["kind"] == "total" and b["set"] == "NFIX"]
+        rfb = [b for b in read_dat_blocks(so / "flag.dat") if b["kind"] == "total" and b["set"] == "NFIX"]
+        rf = [b["rows"][0] for b in rfb]
         chk = (fl / "log.checkMesh").read_text(encoding="utf-8")
         tdir = of.latest_time_dir(fl)
         u_in = np.asarray(of.read_patch_value(tdir / "U", "inlet"))
@@ -140,6 +160,7 @@ class PreciceFSI(Backend):
                           "coupling_iterations_max": int(np.max(it[:, 2])),
                           "flag_fluid_force_N": [float(Ff[-1, 1] + Ff[-1, 3]), float(Ff[-1, 2] + Ff[-1, 4])],
                           "clamp_reaction_N": [float(rf[-1][0]), float(rf[-1][1])] if rf else [float("nan")] * 2,
+                          **_window_means(numerics, Ff, rfb),
                           "inlet_profile_error_max": float(np.max(np.abs(u_in[:, 0] - parabola)) / (1.5 * U))}
         return {"success": True, "message": f"uy(A) {wp[-1, 4] * 1e3:.4f} mm, drag {series['drag_N_per_m'][-1]:.3f} "
                 f"N/m ({len(it)} windows, {outputs['coupling_iterations_mean']:.1f} iterations each)",
@@ -168,7 +189,13 @@ class TurekHronFSIStudy(Study):
                 "mass_ratio": _p(params, "solid_density_kg_per_m3") / _p(params, "fluid_density_kg_per_m3")}
 
     def compute_metrics(self, series, params, case, outputs=None):
-        out = {m: float(np.asarray(series[m])[-1]) for m in METRICS}
+        w = case.get("numerics", {}).get("metric_average_s")
+        if w:
+            t = np.asarray(series["t_s"])
+            tail = t >= t[-1] - float(w)
+            out = {m: float(np.mean(np.asarray(series[m])[tail])) for m in METRICS}
+        else:
+            out = {m: float(np.asarray(series[m])[-1]) for m in METRICS}
         for m, b in zip(METRICS, BENCH):
             out[self._dev_name(m)] = 100 * abs(out[m] - _p(params, b)) / abs(_p(params, b))
         return out
@@ -178,18 +205,30 @@ class TurekHronFSIStudy(Study):
         p, d, out = point["parameters"], point["derived"], point["solver_outputs"]
         t = np.asarray(series["t_s"])
         tail = t >= t[-1] - tol["steady_window_s"]
-        steady = max(float(np.ptp(np.asarray(series[m])[tail]) / max(abs(np.asarray(series[m])[-1]), 1e-30))
-                     for m in ("uy_A_m", "drag_N_per_m", "lift_N_per_m"))
-        ff, rf = np.array(out["flag_fluid_force_N"]), np.array(out["clamp_reaction_N"])
+        drift = tol.get("steady_measure") == "drift"
+        if drift:
+            def change(x):
+                h = len(x) // 2
+                return abs(np.mean(x[h:]) - np.mean(x[:h])) / max(abs(np.mean(x)), 1e-30)
+            steady = max(float(change(np.asarray(series[m])[tail])) for m in ("uy_A_m", "drag_N_per_m", "lift_N_per_m"))
+            steady_text = (f"max over uy(A), drag, lift of the change of the mean between the two halves of the last "
+                           f"{tol['steady_window_s']:g} s / mean (drift, not jitter)")
+        else:
+            steady = max(float(np.ptp(np.asarray(series[m])[tail]) / max(abs(np.asarray(series[m])[-1]), 1e-30))
+                         for m in ("uy_A_m", "drag_N_per_m", "lift_N_per_m"))
+            steady_text = f"max over uy(A), drag, lift of the spread over the last {tol['steady_window_s']:g} s / final value"
+        means = "flag_fluid_force_mean_N" in out
+        ff = np.array(out["flag_fluid_force_mean_N" if means else "flag_fluid_force_N"])
+        rf = np.array(out["clamp_reaction_mean_N" if means else "clamp_reaction_N"])
         transfer = float(np.linalg.norm(ff + rf) / np.linalg.norm(ff))
+        when = f"averaged over the last {out['metric_average_s']:g} s" if means else "at the end"
         checks = [
             check("mesh", "checkMesh reports Mesh OK (1 = failed)", 0.0 if out["mesh_ok"] else 1.0, 0.5),
             check("coupling_converged", "coupling windows that hit the iteration limit without converging",
                   float(out["windows_not_converged"]), 0.5),
-            check("steady", f"max over uy(A), drag, lift of the spread over the last {tol['steady_window_s']:g} s / "
-                  "final value", steady, tol["steady_rel_tol"]),
+            check("steady", steady_text, steady, tol["steady_rel_tol"]),
             check("force_transfer", "|fluid force on the flag + clamp reaction in the solid| / |fluid force on the "
-                  "flag| at the end (the coupling conserves force)", transfer, tol["force_transfer_rel_tol"]),
+                  f"flag| {when} (the coupling conserves force)", transfer, tol["force_transfer_rel_tol"]),
             check("inflow_profile", "max over inlet faces |U - benchmark parabola| / (1.5 U_mean), after the ramp",
                   out["inlet_profile_error_max"], tol["profile_rel_tol"]),
             check("laminar", "Reynolds number (D) / 200", d["reynolds_D"] / 200, 1.0, kind="validity"),

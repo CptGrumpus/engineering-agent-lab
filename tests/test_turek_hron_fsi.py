@@ -96,3 +96,27 @@ def test_read_forces_v2512_columns(tmp_path):
     F = read_forces(f)
     assert (F[-1, 1] + F[-1, 3]) / 0.01 == pytest.approx(14.293411941, rel=1e-9)   # drag = pressure + viscous = total
     assert (F[-1, 2] + F[-1, 4]) / 0.01 == pytest.approx(0.76400687906, rel=1e-9)
+
+
+def test_averaged_metrics_ignore_step_jitter():
+    """FSI1 revision 1: with metric_average_s the metrics are window means, so a lift that jitters at every step about
+    the right value reports that value, where the final value would report the jitter."""
+    from studies.turek_hron_fsi import _window_means
+
+    t = np.arange(0, 12.0001, 0.0025)
+    lift = 0.7637 * (1 + 0.02 * (-1) ** np.arange(len(t)))
+    series = {"t_s": t, "ux_A_m": np.full_like(t, 2.27e-5), "uy_A_m": np.full_like(t, 8.2e-4),
+              "drag_N_per_m": np.full_like(t, 14.29), "lift_N_per_m": lift}
+    params = {"benchmark_ux_A_m": 2.27e-5, "benchmark_uy_A_m": 8.2e-4, "benchmark_drag_N_per_m": 14.29,
+              "benchmark_lift_N_per_m": 0.7637}
+    final = STUDY.compute_metrics(series, params, {"numerics": {}})
+    mean = STUDY.compute_metrics(series, params, {"numerics": {"metric_average_s": 2.0}})
+    assert final["lift_deviation_pct"] == pytest.approx(2.0, rel=1e-6)
+    assert mean["lift_deviation_pct"] < 0.01
+
+    Ff = np.column_stack([t, np.full_like(t, 0.3), lift * 0.01, np.zeros_like(t), np.zeros_like(t)])
+    blocks = [{"kind": "total", "set": "NFIX", "time": float(x), "rows": np.array([[-0.3, -l * 0.01]])}
+              for x, l in zip(t, lift)]
+    m = _window_means({"metric_average_s": 2.0}, Ff, blocks)
+    assert np.allclose(np.array(m["flag_fluid_force_mean_N"]) + np.array(m["clamp_reaction_mean_N"]), 0, atol=1e-12)
+    assert _window_means({}, Ff, blocks) == {}
