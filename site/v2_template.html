@@ -331,12 +331,12 @@ figcaption { font-size: 0.88rem; color: var(--ink-2); max-width: 72ch; }
 td.num { font-family: var(--font-data); font-variant-numeric: tabular-nums; white-space: nowrap; }
 
 /* ------------------------------------------------------------- footer */
-.foot { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 32px; padding-top: 28px; border-top: 1px solid var(--rule); color: var(--ink-2); font-size: 0.95rem; }
-.foot ul { margin: 8px 0 0; padding-left: 1.1rem; display: grid; gap: 6px; }
-.toolchain { display: grid; grid-template-columns: auto 1fr; gap: 6px 16px; margin: 8px 0 0; font-size: 0.9rem; }
+.foot { display: grid; gap: 14px; padding-top: 28px; border-top: 1px solid var(--rule); color: var(--ink-2); font-size: 0.95rem; }
+.foot-note { max-width: 80ch; }
+.toolchain { display: grid; grid-template-columns: auto minmax(0, 1fr) auto minmax(0, 1fr); gap: 8px 16px; margin: 0; font-size: 0.9rem; }
 .toolchain dt { color: var(--ink); font-weight: 600; }
 .toolchain dd { margin: 0; font-family: var(--font-data); font-size: 0.8rem; align-self: center; }
-@media (max-width: 760px) { .foot { grid-template-columns: 1fr; } }
+@media (max-width: 900px) { .toolchain { grid-template-columns: auto minmax(0, 1fr); } }
 
 /* ------------------------------------------------------------- featured study (the optimiser) */
 .feature { gap: 24px; }
@@ -439,7 +439,7 @@ details.study > summary:hover .study-toggle { text-decoration: underline; }
     <div class="band-head">
       <p class="eyebrow">The work</p>
       <h2 id="work-title">{{STUDY_COUNT_TITLE}} studies</h2>
-      <p>Pick any study to see its result here and read how I checked it. The problems are made up, so there's no client data, but every number comes from a saved run that can be repeated from its recorded inputs with one command.</p>
+      <p>Pick any study to see its result here and read how I checked it. The problems are made up, so there's no client data, but every number comes from a saved run that can be repeated from its recorded inputs with one command. The checks show each model is solved correctly and used where it's valid. Matching measured hardware takes test data, and the motor study under "Now working on" is the first to use it.</p>
     </div>
     <div class="vp" id="vp" role="region" aria-label="Result viewer">
       <div class="legend">
@@ -596,21 +596,10 @@ details.study > summary:hover .study-toggle { text-decoration: underline; }
     </div>
   </section>
 
-  <footer class="band wrap" aria-label="Limits and toolchain">
+  <footer class="band wrap" aria-label="Toolchain">
     <div class="foot">
-      <div>
-        <span class="label">What these studies don't cover</span>
-        <ul>
-          <li>The parameters and limits are made up. None of it is calibrated to a real product.</li>
-          <li>The checks show the equations were solved correctly and each model was used where it's valid. Showing that a model matches real hardware would take test data, and I don't have any for these.</li>
-          <li>The peak acceleration over the bump is unweighted. Only the rough-road ride level uses ISO 2631-1 weighting.</li>
-          <li>Study 11 applies the heat flux directly at the channel wall. Study 15 adds the plate's own conduction, but as a 2D slice with no side walls or manifolds. The fin study takes the air-side heat-transfer coefficient as a given.</li>
-          <li>Every report ends with "pending human review", because accepting a design is a person's call.</li>
-        </ul>
-      </div>
-      <div>
-        <span class="label">Tools, all open source</span>
-        <dl class="toolchain">
+      <span class="label">Tools, all open source</span>
+      <dl class="toolchain">
           <dt>Python</dt><dd>3.14 · NumPy 2.5 · SciPy 1.18</dd>
           <dt>CalculiX</dt><dd>2.22 · structural, contact, modal, heat transfer</dd>
           <dt>Gmsh</dt><dd>4.15 · scripted meshing from STEP</dd>
@@ -620,8 +609,7 @@ details.study > summary:hover .study-toggle { text-decoration: underline; }
           <dt>OpenModelica</dt><dd>1.26.3 · Modelica Standard Library 4.1</dd>
           <dt>Blender</dt><dd>4.5 LTS · Cycles result renders</dd>
         </dl>
-        <p style="margin-top:12px">Every run records its exact inputs, tool versions and code version, and can be repeated with one command. I'm happy to share the full reports and case files; <a href="#get-in-touch">just ask</a>.</p>
-      </div>
+      <p class="foot-note">Every run records its exact inputs, tool versions and code version, and can be repeated with one command. I'm happy to share the full reports and case files; <a href="#get-in-touch">just ask</a>.</p>
     </div>
   </footer>
 </main>

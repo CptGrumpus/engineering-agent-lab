@@ -382,6 +382,7 @@
         <li>I tried four bounded schemes that get rid of the overshoot. All of them flip-flopped from one iteration to the next and never closed the energy balance, and under-relaxation just hid the problem. I went back to the scheme that converges exactly and let the checks bound its error. I kept every failed run and didn't change any tolerances.</li>
       </ul>
     </div>
+    <p class="note">The heat is applied as a fixed flux straight at the channel wall, so the plate's own conduction isn't in this model. <a href="#cold_plate">Study 15</a> adds it, as a 2D slice.</p>
   </section>
 
   <section class="study" id="cold_plate">
@@ -457,6 +458,7 @@
         <li>Then I built the model that check was asking for, a tire that can leave the road, and wrote down five predictions first. It turned out the linear model had overstated the peak body acceleration by up to 29 %. After the crest, the linear tire pulls the wheel back down, which a real tire can't do, and a stiff damper passes that pull straight into the body. The other surprise was that the worst moment for the tire is the landing. With light damping the wheel bounces twice and comes down hard enough to load the tire to 2.6 times its static load.</li>
       </ul>
     </div>
+    <p class="note">The peak body acceleration over the bump is the raw, unweighted peak, which is what the 4.0 m/s² comfort limit is written against. Only the rough-road ride level is frequency-weighted (ISO 2631-1).</p>
   </section>
 
   <h2 class="discipline">Geometry automation</h2>
