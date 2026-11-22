@@ -106,19 +106,20 @@ def _csv_rows(path):
         return list(csv.DictReader(line for line in f if not line.startswith("#")))
 
 
-def _m330_35a():
-    """M330-35A, Tata Steel 'Typical data' sheet (Oct 2009), models/motor/materials/M330-35A_tata_2009.csv."""
+def _m330_35a(js=2.0):
+    """M330-35A, Tata Steel 'Typical data' sheet (Oct 2009), models/motor/materials/M330-35A_tata_2009.csv. js: the
+    saturation polarization of the extrapolated tail (2.0 T; 2.05 T only for the tail sensitivity case)."""
     csv_name = "M330-35A_tata_2009.csv"
     rows = _csv_rows(HERE / "materials" / csv_name)
     bh = [(0.0, 0.0)] + [(float(r["H_50Hz_A_per_m"]), float(r["B_T"])) for r in rows if r["H_50Hz_A_per_m"]]
     h_last, b_last = bh[-1]
-    bh += _tail(h_last, b_last, 2.0, [12e3, 15e3, 20e3, 30e3, 45e3, 70e3, 100e3, 150e3, 220e3, 300e3])
+    bh += _tail(h_last, b_last, js, [12e3, 15e3, 20e3, 30e3, 45e3, 70e3, 100e3, 150e3, 220e3, 300e3])
     return {
-        "name": "M330-35A",
+        "name": "M330-35A" if js == 2.0 else f"M330-35A (tail Js {js:g} T)",
         "path": csv_name,
         "bh": bh,
         "bh_source": (f"Tata Steel M330-35A typical data (Oct 2009), H at 50 Hz, 0.1-{b_last:.1f} T; above {b_last:.1f} T "
-                      "extrapolated (build_prius_ornl._tail, saturation polarization 2.0 T)"),
+                      f"extrapolated (build_prius_ornl._tail, saturation polarization {js:g} T)"),
         "Wlam": 0.35e-3,  # EN 10106 nominal thickness (ORNL: 0.36 mm)
         "rho": 7650.0,  # kg/m^3, EN 10106 conventional density for M330-35A
         "elec_rho": 0.42e-6,  # ohm m, Tata sheet (42 uOhm cm)
@@ -174,7 +175,9 @@ def _powercore_190y390():
 
 # lamination grades: name -> function returning the data. Grades without an entry keep Pyleecan's file data (only
 # M400-50A, which came with it).
-LAMINATIONS = {"M330-35A": _m330_35a, "M250-35A": _m250_35a, "190Y390": _powercore_190y390}
+LAMINATIONS = {"M330-35A": _m330_35a, "M250-35A": _m250_35a, "190Y390": _powercore_190y390,
+               # sensitivity of the deep-saturation tail (user's decision 2026-11-22 morning): M330-35A with Js 2.05 T
+               "M330-35A-Js205": lambda: _m330_35a(js=2.05)}
 
 
 def _set_lamination(m, grade):

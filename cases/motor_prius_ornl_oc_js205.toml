@@ -1,0 +1,63 @@
+# Study 7, sensitivity to the B-H curve above the datasheet, open circuit: the final machine (as
+# motor_prius_ornl_oc_mesh_r3) with M330-35A laminations whose extrapolated tail saturates at Js = 2.05 T instead of
+# 2.0 T. See motor_prius_torque_js205.toml for why and for the two tails. User's decision 2026-11-22 morning.
+#
+# Predictions, written BEFORE the run (no ORNL measured data opened):
+#   P1 Every point check passes on every mesh.
+#   P2 Back-EMF slightly below r3's finest (110.884 V): about -0.2 % (range -0.5 to 0 %). At open circuit only the
+#      saturated bridges (1.45 mm, deep in the tail) see the change: about 2 % more flux through them on a leakage of
+#      roughly a tenth of the magnet flux; the rest of the iron runs below 1.8 T and does not change.
+#   P3 Flux-linkage GCI under 1 %; REQ-M1 a fail near 1038 V (its GCI may again be withheld).
+#   P4 Solve times as r3 (about 20 s / 80 s / 7 min).
+
+[case]
+name = "motor_prius_ornl_oc_js205"
+model = "pyleecan_femm"
+description = "2004 Toyota Prius traction motor rebuilt from ORNL/TM-2005/33 Fig. 21 (radii, air gap 0.775 mm, slot, pocket thickness and position), ORNL/TM-2004/120 (bridge) and ORNL/TM-2004/137 Fig. 14 (magnet B-H line), laminations M330-35A with the B-H tail saturating at 2.05 T (sensitivity), at open circuit, 1000 rpm; Pyleecan + FEMM 4.2 magnetostatics over one electrical period (48 steps), mesh fineness 2 / 4 / 8; back-EMF and the uncontrolled-generator voltage at top speed."
+assumptions = [
+  "2D magnetostatics (FEMM), no end effects: the stack (83.8 mm) is long against the air gap (0.775 mm), but end-winding leakage and axial fringing are not modelled.",
+  "Stator, rotor, slot and pocket thickness from ORNL/TM-2005/33 Fig. 21; bridge 1.45 mm from ORNL/TM-2004/120; magnet Br 1.243 T and recoil permeability 1.129 from ORNL/TM-2004/137 Fig. 14 (temperature not stated, taken as 20 C); magnet width and winding still Pyleecan's.",
+  "Laminations M330-35A, the stand-in grade. B-H curve from Tata Steel's typical data (50 Hz) up to 1.8 T, extrapolated above with saturation polarization 2.05 T (a sensitivity; the prediction uses 2.0 T).",
+  "Magnet temperature 20 C; Br falls about 0.1 %/K, so a hot motor has a lower back-EMF (stated, not modelled here).",
+  "Maximum speed 6000 rpm, the commonly published rating for this motor; ORNL's design report tabulates ratings only up to base speed.",
+]
+limitations = [
+  "No test data in this case: the ORNL comparison is a separate, blind step.",
+  "The magnet fills the pocket thickness (HoleM50); TM-2004/120 gives a thinner magnet (5.31 mm), not modelled.",
+  "Line-to-line peak from the phase flux linkages with their harmonics; the inverter's own clamping is not modelled.",
+]
+
+[parameters]
+machine = "Toyota_Prius_ORNL_M330-35A-Js205.json"
+speed_rpm = 1000.0
+id_A = 0.0
+iq_A = 0.0
+mesh_fineness = 1.0
+steps_per_period = 48
+angle_points = 2048
+max_speed_rpm = 6000.0
+bus_voltage_V = 500.0
+rated_torque_Nm = 400.0
+
+[sweep]
+parameter = "mesh_fineness"
+values = [2.0, 4.0, 8.0]
+
+[numerics]
+solver_timeout_s = 3600
+
+[verification]
+phase_symmetry_rel_tol = 1e-3
+phase_shift_deg_tol = 0.5
+winding_theory_rel_tol = 0.02
+open_circuit_torque_rel_tol = 1e-3
+mesh_noise_rel = 1e-5
+gci_max = 0.01
+
+[[requirements]]
+id = "REQ-M1"
+text = "With the inverter not switching (a fault at top speed), the line-to-line back-EMF peak at 6000 rpm shall not exceed the 500 V maximum bus voltage."
+metric = "back_emf_LL_peak_at_max_speed_V"
+operator = "<="
+limit = 500.0
+units = "V"
