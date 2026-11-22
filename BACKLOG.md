@@ -159,6 +159,25 @@ Logs of the 17:15 session (thermal runs): `$TEMP/claude/cb67dd1e648f8970/4abd5a9
   page 20, PORTFOLIO, README and skills updated; `reports/motor/` has a thermal page (cb6920c).
 - **Blind comparison done (19:00): FAIL 3/3**; see the top of this handoff. Next: the Fig. 13 diagnostic (ask first).
 
+### Study 6 (FSI): FSI2 / FSI3 set-up (started 2026-11-22 ~19:20)
+
+Benchmark source (featflow.de fails TLS at the server; TU Dortmund's mirror works with normal certificate checks):
+https://wwwold.mathematik.tu-dortmund.de/~featflow/en/benchmarks/cfdbenchmarking/fsi_benchmark/fsi_tests/fsi_fsi_tests.html
+(tables), `.../fsi_quantities.html` (definitions), `.../fsi_reference.html` (time series `media/fsi/data/fsi2/0p0005/
+ref_fsi2.point`, `fsi3/0p00025/ref_fsi3.point`; columns 1 time, 5+7 drag, 6+8 lift, 11 ux(A), 12 uy(A)). The FSI1 row
+there matches our case's values exactly.
+- Parameters: FSI2 rho_s 10e3 kg/m^3, nu_s 0.4, mu_s 0.5e6 Pa, U 1 m/s (Re 100); FSI3 rho_s 1e3, mu_s 2.0e6, U 2 (Re 200);
+  fluid 1e3 kg/m^3, nu 1e-3 m^2/s.
+- Reference (level 4+0, finest dt): FSI2 (dt 0.0005) ux -1.485e-2 +- 1.270e-2 m [3.86 Hz], uy 1.30e-3 +- 8.16e-2 m
+  [1.93], drag 2.1506e2 +- 7.765e1 N/m [3.86], lift 6.1e-1 +- 2.378e2 [1.93]. FSI3 (dt 0.00025) ux -2.88e-3 +- 2.72e-3
+  [10.93], uy 1.47e-3 +- 3.499e-2 [5.46], drag 4.605e2 +- 2.774e1 [10.93], lift 2.50 +- 1.5391e2 [5.46]. Across the
+  page's levels 2-4 and time steps the FSI2 uy amplitude spans 7.9-8.2e-2 and drag 201-215 N/m: a few % of scatter.
+- Definition (fsi_quantities): over the last period, mean = (max + min) / 2, amplitude = (max - min) / 2; frequency =
+  1 / period or the lowest significant FFT peak. Forces on cylinder + flag (as FSI1).
+- Plan: opt-in periodic metrics in `studies/turek_hron_fsi.py` (mean, amplitude, frequency over the last whole periods
+  of uy; a periodic-steadiness check comparing the last two periods' amplitudes); case `turek_hron_fsi2` (2.5 mm fluid,
+  dt 0.001, about 15-20 s) with predictions first; then FSI3 (dt 0.0005 or finer; added mass is hardest at beta 1).
+
 ### Study 6 (FSI): FSI1 revision 1
 
 - Code (f61cc9f): opt-in `numerics.metric_average_s` (window-mean metrics and force transfer) and
