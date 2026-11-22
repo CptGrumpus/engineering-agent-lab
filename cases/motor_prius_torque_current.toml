@@ -20,6 +20,22 @@
 # the outer apex 0.31 mm nearer the air gap, so the machine now has H0 10.65 mm, H3 6.80 mm, W0 41.21 mm (arm angle
 # kept at 17.4 deg). The prototype above used H3 6.78 mm grown inward. Expected effect on torque: well under the
 # predictions' 3 % ranges, so they stand as written; the open-circuit revision r2 measures the effect on back-EMF.
+#
+# Results (run 20261122-000853_motor_prius_torque_current): verification PASS. Laminations M400-50A (Pyleecan's
+# inherited curve); motor_prius_torque_current_r1 repeats the curve with M330-35A, the study's stand-in steel.
+#   P1 HELD: 35/35 point checks; power balance 3.3e-4 to 1.3e-3 (tolerance 2e-2), imposed current exact, phases
+#      symmetric to 2e-4, MTPA inside the sweep at every current.
+#   P2 MOSTLY HELD: MTPA torque 115.4 / 246.0 / 359.8 / 453.8 / 524.3 / 578.4 / 621.8 N m at 50-350 A rms, against
+#      122 / 242 / 350 / 453 / 525 / 570 / 615: -5.4, +1.7, +2.8, +0.2, -0.1, +1.5, +1.1 %. Inside 3 % at every current
+#      but 50 A. The 50 A miss is the prediction's method, not the model: it halved the 100 A prototype, but torque per
+#      amp RISES from 2.31 at 50 A to 2.46 N m/A at 100 A (the reluctance torque grows as the current squared) before
+#      falling to 1.78 at 350 A as the iron saturates (predicted: falling all the way from about 2.4 to 1.75). MTPA
+#      angle 30.8 deg at 50 A, 39.6 at 100, 44.7-47.7 from 150 A up (predicted 30-35, then about 45: held).
+#   P3 HELD: 400 N m at about 171 A rms (linear between 150 and 200 A).
+#   P4 HELD: REQ-M3 passes up to 300 A (22.5 A/mm^2), fails at 350 A (26.2 A/mm^2).
+#   P5 MISSED: 88 min (00:08-01:36), not about 65; about 12.5 min per current.
+#   Ripple at MTPA 24.7 / 41.6 / 50.4 / 80.1 / 98.1 / 113.9 / 122.5 N m peak to peak (approximate: about 4 samples per
+#   slot-ripple cycle).
 
 [case]
 name = "motor_prius_torque_current"
