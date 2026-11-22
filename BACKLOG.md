@@ -63,8 +63,9 @@ shells of the 23:10 session: if that session has closed and a run has no report.
 | Case | Run | State at 23:06 | Expected |
 |---|---|---|---|
 | `turek_hron_fsi1_mesh` (study 6 FSI1, rerun) | `20261121-203031_turek_hron_fsi1_mesh` | 5 mm: drag 14.27 (parser fix took), uy(A) +5.8 %. 2.5 mm: drag 14.29 (0.003 %), uy(A) -0.41 %, lift +0.16 %. 1.25 mm at t = 2 of 12 s | done about 03:00-03:30. P5 (wall time) already missed: 53 min for 5 mm against 15 |
-| `motor_prius_torque_mesh` (333 A, fineness 2/4/8) | `20261121-224707_motor_prius_torque_mesh` | 608.1 / 608.0 N m at 46.7 deg (fineness 2/4); the fineness-2 point passed every check offline (power balance 1.1e-3) | about 00:15 |
-| `motor_prius_torque_current` (50-350 A, fineness 4) | queued after the mesh study | | about 01:30 |
+| `motor_prius_torque_mesh` | `20261121-224707_motor_prius_torque_mesh` | DONE, committed: 608.07 / 607.96 / 607.73 N m; verification FAIL on the GCI only (spread 0.055 %, differences growing); REQ-M2 PASS (unverified), margin 52 % | revision: measure the mesh noise, declare `mesh_noise_rel`, rerun |
+| `motor_prius_rotor_overspeed_mesh` (new study `rotor_stress`) | `20261122-001104_motor_prius_rotor_overspeed_mesh` | DONE, committed: verification PASS; REQ-M4 VERIFIED FAIL, 424 MPa linearized against 335 at 7200 rpm (295 MPa at 6000) | sensitivity: 412 MPa grade, pocket corner radii |
+| `motor_prius_torque_current` (50-350 A, fineness 4) | started 00:08 (`20261122-000853_motor_prius_torque_current`) | | about 01:25 |
 | `motor_prius_ornl_oc_mesh_r2` (final machine) | queued by a waiter after the torque curve | | about 01:45; its finest-mesh back-EMF is the blind prediction |
 
 When each finishes:
@@ -85,6 +86,11 @@ redact any user's path (its `LEAK` pattern), not only this computer's; fix the t
 
 **Waiting on the user:** whether to add an eval case for the rms/peak current trap (CLAUDE.md: ask first); whether the
 assumed 25 A/mm^2 copper limit (REQ-M2) stands.
+Also for the user: the lamination B-H curve. The EM model still uses Pyleecan's M400-50A (0.5 mm); the overspeed check
+and the coming loss model use M330-35A (0.35 mm, closer to the real 0.36 mm). Switching the B-H curve would move the
+back-EMF and torque predictions, so decide before the ORNL data is opened. M330-35A typical data (losses 0.1-1.8 T at
+50-2500 Hz, B-H at 50 Hz) is in `models/motor/materials/M330-35A_tata_2009.csv`; a three-term loss fit (kh 0.0202,
+alpha 1.791, kc 7.91e-5, ke 3.70e-4, f in Hz, B in T) matches it to 6.4 % rms, 13.5 % worst.
 
 **Study 7 after tonight's runs, all before the ORNL data is opened:** efficiency predictions (needs a source for the
 real 0.36 mm lamination's loss data), rotor-bridge stress at overspeed (CalculiX), the thermal network. Then open the
