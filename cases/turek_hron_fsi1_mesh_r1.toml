@@ -1,0 +1,120 @@
+# Turek-Hron FSI1, revision 1 of turek_hron_fsi1_mesh (read that case for the model, the benchmark values and the
+# first run's Results). Same model and requirements; what changes, and why:
+#
+# 1. Steadiness judged by drift (the change of the mean between the two halves of the last 2 s), and every metric,
+#    lift included, taken as the mean over the last 2 s (numerics.metric_average_s, verification.steady_measure,
+#    f61cc9f). The first run's 'steady' and 'force_transfer' failures were zero-mean coupling jitter on the lift
+#    (+-2 % peak to peak at every step), not unsteadiness.
+# 2. Coupling convergence limit 1e-6 (was 1e-4), at most 100 iterations per window.
+#    Prototype A (scratch, 5 mm fluid, 2026-11-22): lift jitter 72 x smaller, means unchanged to 5 digits,
+#    coupling iterations +19 %, every point check passes.
+# 3. The solid stays at 2.5 mm. Prototype B (scratch run 20261122-091140, solid 1.25 mm at the 2.5 mm fluid mesh,
+#    coupling 1e-4, window means): uy(A) 0.817808 mm against 0.817523 at 2.5 mm solid, +0.035 %; ux(A) +0.09 %;
+#    lift +0.17 %; drag unchanged. The finer solid explains about 1/16 of the -0.55 % uy(A) moved between the 2.5
+#    and 1.25 mm fluid meshes, and cost 3 h 45 min against 51 min. Its window-mean lift at 2.5 mm fluid was
+#    0.763813 N/m, 0.009 % from the benchmark; every point check passed.
+# 4. Fluid meshes 2.5 / 1.77 / 1.25 mm (ratio sqrt 2) instead of 5 / 2.5 / 1.25. The 5 mm mesh was outside the
+#    asymptotic range (uy(A) +5.8 %, then -0.41 % and -0.96 %: an apparent order of 3.5, no GCI estimate). About
+#    the same wall time.
+#
+# Still unexplained: uy(A) moving away from the benchmark as the fluid refines. Remaining candidates: the fluid mesh
+# motion near the flag tip, and the force mapping (RBF, support radius 0.05 m on a 0.02 m thick flag: the total
+# force is conserved, force_transfer 5e-5, but how it is spread along the flag, and so the bending moment, is not
+# checked). This case measures the drift; it does not explain it.
+#
+# Predictions, written BEFORE the evidence run:
+#   P1 Every point check passes on every mesh: all 4800 windows converge (within 100 iterations at 1e-6); drift
+#      under 1e-3; force transfer under 1e-3; inflow exact.
+#   P2 Drag about 14.294 / 14.296 / 14.298 N/m, GCI under 0.1 %: REQ-FSI-3 verified PASS.
+#   P3 uy(A) about 0.8175 / 0.815 / 0.813 mm: still moving away from the benchmark, monotone, observed order 1-2,
+#      GCI about 0.5-1 %, extrapolated about 0.810 mm (-1.3 %). REQ-FSI-2 (3 %) PASS, verified if the GCI is under
+#      1 %. A real disagreement of about 1 % with the benchmark remains, unexplained.
+#   P4 ux(A) within 1 % on every mesh. Lift (window mean) within 1 % on every mesh; its GCI may still fail, now on
+#      the regenerated meshes' scatter (about +-0.6 % in CFD1/CFD2) against smaller steps between meshes.
+#   P5 About 1 h / 1 h 45 min / 3 h (the first run's 51 and 140 min at 1e-4, +20 % for 1e-6), about 6 h in all;
+#      more if FEMM and other runs share the CPU.
+
+[case]
+name = "turek_hron_fsi1_mesh_r1"
+model = "openfoam_ccx_precice_fsi"
+description = "Turek-Hron FSI1: steady laminar flow (Re 20) bending the elastic flag behind the cylinder; OpenFOAM v2512 (moving mesh) coupled to CalculiX through preCICE; fluid cell size at the body 2.5 / 1.77 / 1.25 mm, solid 2.5 mm, dt 0.0025 s to 12 s; tip displacements, drag and lift against the published benchmark."
+assumptions = [
+  "2D: one cell deep in the fluid, plane strain in the solid (one element layer, as deep as the fluid).",
+  "St. Venant-Kirchhoff solid (CalculiX *ELASTIC under NLGEOM), no gravity, as the FSI tests define it.",
+  "Steady target: numerical damping in the solid only speeds up settling (ALPHA -0.3).",
+  "Inflow: the benchmark's parabola with its (1 - cos) ramp over 2 s.",
+]
+limitations = [
+  "The solid mesh is not refined in this study (CSM1 put it within 0.08 % at 2.5 mm; at the coupled load, 1.25 mm moved uy(A) by 0.035 %: prototype B).",
+  "The fluid mesh is regenerated at each size (not nested), which made the CFD lift scatter by about +-0.6 %.",
+]
+
+[parameters]
+solid_density_kg_per_m3 = 1000.0
+shear_modulus_Pa = 500000.0
+poisson_ratio = 0.4
+fluid_density_kg_per_m3 = 1000.0
+kinematic_viscosity_m2_per_s = 0.001
+mean_velocity_m_per_s = 0.2
+fluid_cell_size_m = 0.0025
+solid_element_size_mm = 2.5
+time_step_s = 0.0025
+end_time_s = 12.0
+benchmark_ux_A_m = 2.270493e-05
+benchmark_uy_A_m = 8.208773e-04
+benchmark_drag_N_per_m = 14.29426
+benchmark_lift_N_per_m = 0.7637460
+
+[sweep]
+parameter = "fluid_cell_size_m"
+values = [0.0025, 0.0017677670, 0.00125]
+
+[numerics]
+metric_average_s = 2.0
+solid_alpha = -0.3
+write_interval_s = 2.0
+ramp_time_s = 2.0
+coupling_rel_tol = 1e-6
+coupling_max_iterations = 100
+rbf_support_radius_m = 0.05
+solver_timeout_s = 43200
+
+[verification]
+steady_measure = "drift"
+steady_window_s = 2.0
+steady_rel_tol = 1e-3
+force_transfer_rel_tol = 1e-3
+profile_rel_tol = 1e-6
+gci_max = 0.01
+
+[[requirements]]
+id = "REQ-FSI-1"
+text = "The coupled model shall reproduce the Turek-Hron FSI1 horizontal displacement of point A within 5 % (a second-order quantity, 3 % of the vertical one)."
+metric = "ux_A_deviation_pct"
+operator = "<="
+limit = 5.0
+units = "%"
+
+[[requirements]]
+id = "REQ-FSI-2"
+text = "It shall reproduce the FSI1 vertical displacement of point A within 3 %."
+metric = "uy_A_deviation_pct"
+operator = "<="
+limit = 3.0
+units = "%"
+
+[[requirements]]
+id = "REQ-FSI-3"
+text = "It shall reproduce the FSI1 drag within 1 %."
+metric = "drag_deviation_pct"
+operator = "<="
+limit = 1.0
+units = "%"
+
+[[requirements]]
+id = "REQ-FSI-4"
+text = "It shall reproduce the FSI1 lift within 5 % (lift is about 5 % of the drag and moved 30 % from the rigid CFD1 value once the flag bends)."
+metric = "lift_deviation_pct"
+operator = "<="
+limit = 5.0
+units = "%"
