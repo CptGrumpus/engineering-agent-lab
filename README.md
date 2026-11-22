@@ -38,6 +38,7 @@ The intended user is an automotive engineer with a master's degree in mechanical
 | Bolted joint, friction contact to slip | `ccx_bolted_joint` | CalculiX contact with friction | `bolted_joint_mesh`, `bolted_joint_mesh_r1` |
 | Turek-Hron flag, solid stage (static, dynamic) | `ccx_flag`, `ccx_flag_dynamic` | CalculiX NLGEOM | `flag_csm1_mesh`, `flag_csm2_mesh`, `flag_csm3_dt`, `flag_csm3_dt_r1` |
 | Turek-Hron fluid stage (cylinder + rigid flag) | `openfoam_turek_hron` | Gmsh -> OpenFOAM 14 (in WSL) | `turek_hron_cfd1_mesh`, `turek_hron_cfd1_mesh_r1`, `turek_hron_cfd2_mesh` |
+| Turek-Hron FSI, coupled (flag behind a cylinder) | `openfoam_ccx_precice_fsi` | OpenFOAM v2512 (moving mesh) + CalculiX through preCICE 3.4 (in WSL) | `turek_hron_fsi1_mesh` |
 
 ## Project folders
 

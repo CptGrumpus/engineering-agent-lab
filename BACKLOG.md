@@ -128,7 +128,7 @@ the ORNL report is the last step, opened blind.
   or the blind comparison means nothing.
 - **Scope:** electromagnetics and rotor stress first; the thermal network second (the biggest build, with no
   open-source tool to lean on).
-- The Pyleecan environment is durable now, at `C:/Users/mrstego/.venvs/pyleecan` (master, pyFEMM, pywin32).
+- The Pyleecan environment is durable now, at `~/.venvs/pyleecan` (in the user home folder) (master, pyFEMM, pywin32).
 
 **Study 7 progress (2026-11-21 evening).**
 - **Design-input spot check against ORNL's design report** (ORNL/TM-2004/137, Hsu, Ayers, Coomer, July 2004;
