@@ -136,8 +136,10 @@ range). Ask for it. If the user wants to proceed anyway, choose a value, mark it
 - Before an expensive revision, test the cheapest suspect with a scratch probe and
   put its numbers in the new header (study 6: a finer solid moved the drifting
   displacement 0.035 %, so the 6-hour revision kept the solid and changed the fluid
-  meshes). Probe the finest planned level's cost too: on stretched wall-resolved
-  grids the iterations can grow with the square of the cells (study 19 dropped 640).
+  meshes). Probe the finest planned level's cost too, and change one thing at a
+  time: study 19's r1 changed the mesh family and the axial length together, and the
+  length change alone stalled the solver (the probe had shown f unchanged, but not
+  the convergence rate at the finer levels).
 - When the coarsest level is outside the asymptotic range (an apparent order far
   from the design order), drop it and add a finer one; do not keep it for continuity.
 - If the revision needs an input that does not exist yet (a run id), commit the

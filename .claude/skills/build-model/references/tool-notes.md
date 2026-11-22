@@ -293,16 +293,18 @@ Traps found while building the studies in this repo, by tool.
 
 - **checkMesh's aspect ratio on a wedge is about axial length / radial cell height.** A wedge mesh is 2D, so the
   3D measure is skipped and the face-area ratio in the two solution directions is what counts. A fixed axial
-  length (D/50) against sub-micron wall cells at Re 2e6 gave 2884 and failed the mesh check. Tie the axial
-  length to the cells: sqrt(wall cell x axis cell) gives the same ratio at both ends, sqrt(axis / wall), about
-  19 on wall-resolved grids (`numerics.axial_length_rule = "geometric_mean"`). In fully developed flow the
-  length does not change the answer (f to 4e-8).
+  length (D/50) against sub-micron wall cells at Re 2e6 gave 2884 and failed the mesh check.
+  `numerics.axial_length_rule = "geometric_mean"` ties the length to the cells (sqrt(wall x axis cell), ratio about
+  19 at both ends), and the converged f does not change (4e-8). **But it slows SIMPLE's convergence by orders of
+  magnitude on wall-resolved grids** (study 19, r1): the same n160 mesh converged to 3e-11 in 15000 iterations with
+  2 mm, and only to 9e-5 after 80000 with 0.10 mm; n320 and a probe at n640 never converged. Use the default D/50
+  wherever checkMesh allows it (at Re 1e5 up to n320, ratio 759); use the rule only where it does not (Re 2e6
+  wall-resolved, n640), and budget far more iterations there. Wall-function meshes converged fine with it.
 - **The pressure residual never falls in a fully periodic domain** (pressure is a constant there): set its
   residual control to 1 and judge convergence on the meanVelocityForce gradient's history and on U, k, omega.
-- **SIMPLE iterations on a stretched, wall-resolved 1-D grid grow roughly with the square of the cell count.**
-  160 radial cells converged well inside 15000 iterations; 640 was still falling 2 % per 3000 iterations at
-  42000 (55 min). Size max_iterations per level and check the gradient's change over the last 10 %; 320 is the
-  practical top level.
+- **Until converged, the two routes to f disagree:** the wall shear and the meanVelocityForce gradient differ by the
+  momentum still changing in the domain (7e-3 on the unconverged n320). The force-balance check is therefore also a
+  convergence check; do not report the wall-shear f of a point that fails it.
 - **k-omega SST with the sublayer resolved (y+ below 1) still moves with the wall cell.** f went 0.01730 /
   0.01783 / 0.01813 on 40 / 80 / 160 cells with the first face at y+ 1 / 0.5 / 0.25 (observed order 0.84): the
   -0.9 % agreement with Prandtl at 80 cells was mesh error. Do not quote one mesh's agreement; extrapolate.
