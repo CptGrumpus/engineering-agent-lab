@@ -1,0 +1,77 @@
+# Study 7, open circuit, mesh study revision 1: mesh fineness 2 / 4 / 8. Same model, requirement and tolerances as
+# motor_prius_oc_mesh.toml; read it for the background and the first results.
+#
+# Why: run 20261121-194454 verified REQ-M1 (fail, 1028 V) but the flux-linkage fundamental converged at order 0.19
+# (0.20906 / 0.20884 / 0.20864 Wb), too low to trust its extrapolation. Pyleecan's FEMM mesh sizes (comp_FEMM_dict, at
+# fineness 1): rotor iron 1.94 mm, magnets 3.9 mm, air gap 0.25 mm, stator teeth 4.3 mm, stator yoke 4.8 mm, all
+# divided by the fineness. The rotor bridges beside the magnets are 1-1.5 mm wide: under one element at fineness 1, so
+# that level is probably outside the asymptotic range. As in the strap and CFD studies, drop it and add a finer one.
+#
+# Predictions, written BEFORE the run (still before any ORNL performance data has been opened):
+#   P1 Every point check passes on every mesh.
+#   P2 The flux-linkage fundamental keeps falling slowly: about 0.2088 / 0.2086 / 0.2085 Wb; observed order 0.5-1.5;
+#      GCI under 1 %. Back-EMF at fineness 8 about 106.9-107.0 V per 1000 rpm.
+#   P3 REQ-M1 unchanged: about 1028 V, a verified fail.
+#   P4 If the order stays below 0.5, the bridges need local refinement (FEMM_dict_enforced), not more global fineness.
+#
+# Results (run 20261121-194926_motor_prius_oc_mesh_r1): every point check passes on every mesh (15/15). Flux-linkage
+#   fundamental 0.20884 / 0.20864 / 0.20859 Wb at fineness 2 / 4 / 8: monotone, observed order 1.95, extrapolated
+#   0.208568, GCI 0.01 %. P2 held and better: order near the design value once the coarsest level was dropped.
+#   BLIND PREDICTION, final, before any ORNL performance data is opened: back-EMF 107.0 V rms line-to-line per
+#   1000 rpm at 20 C (107.009 V at fineness 8), mesh uncertainty 0.01 %.
+#   Line-to-line peak at 6000 rpm 1028.28 / 1028.05 / 1027.45 V: spread 0.08 % but the differences grow (R = 2.67),
+#   so the GCI gives no estimate and REQ-M1 is formally withheld on this run. The peak carries the flux linkage's high
+#   harmonics, resolved by 48 steps per period, and so tiny mesh-to-mesh noise. Run 20261121-194454 verified it (fail,
+#   uncertainty 0.10 %). The margin is about 105 % over the 500 V limit, so the verdict is not in doubt. If needed, a
+#   later revision would measure that noise floor (time steps, mesh jitter) BEFORE rerunning, as the clevis study did.
+#   Solve times 27 s / 103 s / 15 min.
+
+[case]
+name = "motor_prius_oc_mesh_r1"
+model = "pyleecan_femm"
+description = "2004 Toyota Prius traction motor (48 slots, 8 poles, interior V magnets) at open circuit, 1000 rpm; Pyleecan + FEMM 4.2 magnetostatics over one electrical period (48 steps), mesh fineness 2 / 4 / 8; back-EMF and the uncontrolled-generator voltage at top speed."
+assumptions = [
+  "2D magnetostatics (FEMM), no end effects: the stack (83.8 mm) is long against the air gap (0.75 mm), but end-winding leakage and axial fringing are not modelled.",
+  "Magnet and lamination grades are Pyleecan's generic choices (NdFeB 1.24 T at 20 C; M400-50A), not Toyota's.",
+  "Magnet temperature 20 C; Br falls about 0.1 %/K, so a hot motor has a lower back-EMF (stated, not modelled here).",
+  "Maximum speed 6000 rpm, the commonly published rating for this motor; ORNL's design report tabulates ratings only up to base speed.",
+]
+limitations = [
+  "No test data in this case: the ORNL comparison is a separate, blind step.",
+  "Line-to-line peak from the phase flux linkages with their harmonics; the inverter's own clamping is not modelled.",
+]
+
+[parameters]
+machine = "Toyota_Prius.json"
+speed_rpm = 1000.0
+id_A = 0.0
+iq_A = 0.0
+mesh_fineness = 1.0
+steps_per_period = 48
+angle_points = 2048
+max_speed_rpm = 6000.0
+bus_voltage_V = 500.0
+rated_torque_Nm = 400.0
+
+[sweep]
+parameter = "mesh_fineness"
+values = [2.0, 4.0, 8.0]
+
+[numerics]
+solver_timeout_s = 3600
+
+[verification]
+phase_symmetry_rel_tol = 1e-3
+phase_shift_deg_tol = 0.5
+winding_theory_rel_tol = 0.02
+open_circuit_torque_rel_tol = 1e-3
+mesh_noise_rel = 1e-5
+gci_max = 0.01
+
+[[requirements]]
+id = "REQ-M1"
+text = "With the inverter not switching (a fault at top speed), the line-to-line back-EMF peak at 6000 rpm shall not exceed the 500 V maximum bus voltage."
+metric = "back_emf_LL_peak_at_max_speed_V"
+operator = "<="
+limit = 500.0
+units = "V"
