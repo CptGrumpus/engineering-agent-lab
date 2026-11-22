@@ -33,6 +33,29 @@
 #      the regenerated meshes' scatter (about +-0.6 % in CFD1/CFD2) against smaller steps between meshes.
 #   P5 About 1 h / 1 h 45 min / 3 h (the first run's 51 and 140 min at 1e-4, +20 % for 1e-6), about 6 h in all;
 #      more if FEMM and other runs share the CPU.
+#
+# Results (run 20261122-125809_turek_hron_fsi1_mesh_r1, 12:58-18:09, 5 h 11 min): every point check passes on every
+# mesh; run level: drag and lift verified (oscillatory, uncertainty 0.029 % and 0.31 %), ux(A) and uy(A) fail
+# (divergent: no estimate), so REQ-FSI-1 and REQ-FSI-2 are PASS but unverified on every mesh; REQ-FSI-3 and REQ-FSI-4
+# verified PASS.
+#   P1 HELD: 6/6 point checks on all three meshes; 4800 windows, 3.5-3.6 coupling iterations each at 1e-6; drift
+#      1.0e-4; force transfer 4.3-4.5e-5; inflow exact.
+#   P2 HELD: drag 14.2939 / 14.3006 / 14.2981 N/m (predicted 14.294 / 14.296 / 14.298), uncertainty 0.029 % (oscillatory,
+#      R -0.38): REQ-FSI-3 verified PASS (0.027 % from the benchmark on the finest mesh).
+#   P3 MISSED: uy(A) 0.81749 / 0.82119 / 0.81300 mm, not monotone: +0.45 % then -1.00 % between meshes (R -2.2,
+#      'oscillating, growing'), no estimate. Every mesh is within 1 % of the benchmark (0.41 / 0.04 / 0.96 % low or
+#      high), so REQ-FSI-2 (3 %) passes on each, unverified. The 'drift away from the benchmark' in the first run is not
+#      confirmed: the middle mesh, new in this run, sits on the benchmark. What the data supports: uy(A) carries a
+#      mesh-to-mesh scatter of about +-0.5 % on these regenerated meshes (like CFD1/CFD2's lift), larger than the step
+#      the refinement makes. The next diagnostic, if one is wanted: several meshes at one nominal size with small
+#      perturbations, to measure that scatter and declare it (verification.mesh_noise_rel) before a rerun.
+#   P4 HELD: ux(A) 0.68 / 0.50 / 0.26 % from the benchmark (within 1 %; run-level divergent, R 1.35, approaching
+#      it); lift 0.03 / 0.46 / 0.18 % (within 1 %), and its uncertainty passes (0.31 %, oscillatory), better than the
+#      predicted possible failure.
+#   P5 PARTLY: 5 h 11 min in all (predicted about 6 h): faster, with nothing else on the CPU for most of it.
+# Engineering reading: FSI1 reproduces the benchmark within 1 % on every quantity and mesh; drag and lift verified; the
+# tip displacement is within 1 % but its mesh uncertainty cannot be estimated from three regenerated meshes. Good
+# enough to move to FSI2 and FSI3 (periodic), where the benchmark's own spread is a few percent.
 
 [case]
 name = "turek_hron_fsi1_mesh_r1"

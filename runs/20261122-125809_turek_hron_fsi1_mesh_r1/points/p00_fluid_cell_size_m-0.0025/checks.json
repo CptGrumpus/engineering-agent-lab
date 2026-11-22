@@ -1,0 +1,60 @@
+{
+  "label": "p00_fluid_cell_size_m-0.0025",
+  "status": "PASS",
+  "checks": [
+    {
+      "id": "mesh",
+      "description": "checkMesh reports Mesh OK (1 = failed)",
+      "kind": "numerical",
+      "value": 0.0,
+      "tolerance": 0.5,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "coupling_converged",
+      "description": "coupling windows that hit the iteration limit without converging",
+      "kind": "numerical",
+      "value": 0.0,
+      "tolerance": 0.5,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "steady",
+      "description": "max over uy(A), drag, lift of the change of the mean between the two halves of the last 2 s / mean (drift, not jitter)",
+      "kind": "numerical",
+      "value": 0.00010409381925429152,
+      "tolerance": 0.001,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "force_transfer",
+      "description": "|fluid force on the flag + clamp reaction in the solid| / |fluid force on the flag| averaged over the last 2 s (the coupling conserves force)",
+      "kind": "numerical",
+      "value": 4.5085361314978804e-05,
+      "tolerance": 0.001,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "inflow_profile",
+      "description": "max over inlet faces |U - benchmark parabola| / (1.5 U_mean), after the ramp",
+      "kind": "numerical",
+      "value": 4.663357200396233e-10,
+      "tolerance": 1e-06,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "laminar",
+      "description": "Reynolds number (D) / 200",
+      "kind": "validity",
+      "value": 0.10000000000000002,
+      "tolerance": 1.0,
+      "comparison": "<=",
+      "status": "PASS"
+    }
+  ]
+}

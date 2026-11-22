@@ -1,0 +1,273 @@
+{
+  "run_id": "20261122-125809_turek_hron_fsi1_mesh_r1",
+  "case_name": "turek_hron_fsi1_mesh_r1",
+  "model": "openfoam_ccx_precice_fsi",
+  "case_source": "cases/turek_hron_fsi1_mesh_r1.toml",
+  "case_sha256": "ec82ce5c6cbe3ee8d3c39b5f246181d860cdefdcc80cf0c5adf3ba5196d01657",
+  "model_sources_sha256": {
+    "models/fsi/turek_hron_fsi.py": "dc5be892415c27b0cb69d61effc3f1936a858b79c85ccc7fe22de662d51626f1",
+    "models/fsi/run_turek_hron_fsi.sh": "63cd32496912d2f5b9e133eaefeab4e3f62a77c28fd4a50346926cd7f887d6ae",
+    "models/fea/flag_ccx.py": "4ae65080b525535565e09d6a52c1bcc2e9a24e979816b465613b402f59884bd1"
+  },
+  "rerun_of": null,
+  "started_utc": "2026-11-22T17:58:09+00:00",
+  "environment": {
+    "python": "3.14.10",
+    "python_executable": "<repo>\\.venv\\Scripts\\python.exe",
+    "platform": "Windows-11-10.0.26100-SP0",
+    "machine": "AMD64",
+    "packages": {
+      "numpy": "2.5.5",
+      "scipy": "1.18.1",
+      "matplotlib": "3.11.2",
+      "cadquery": "2.8.0"
+    },
+    "git": {
+      "commit": "8ddf81663140478415a03b4361b1be1915fc833a",
+      "dirty": true
+    },
+    "tools": {
+      "openfoam_bashrc": "/usr/lib/openfoam/openfoam2512/etc/bashrc",
+      "gmsh": "4.15.0",
+      "openfoam_version": "v2512",
+      "openfoam_package": "openfoam2512 2512.0-2",
+      "precice": "3.4.1",
+      "calculix_precice": "2.20.2-1",
+      "linux": "Ubuntu 22.04.5 LTS"
+    }
+  },
+  "numerics": {
+    "metric_average_s": 2.0,
+    "solid_alpha": -0.3,
+    "write_interval_s": 2.0,
+    "ramp_time_s": 2.0,
+    "coupling_rel_tol": 1e-06,
+    "coupling_max_iterations": 100,
+    "rbf_support_radius_m": 0.05,
+    "solver_timeout_s": 43200
+  },
+  "points": [
+    {
+      "label": "p00_fluid_cell_size_m-0.0025",
+      "parameters": {
+        "solid_density_kg_per_m3": 1000.0,
+        "shear_modulus_Pa": 500000.0,
+        "poisson_ratio": 0.4,
+        "fluid_density_kg_per_m3": 1000.0,
+        "kinematic_viscosity_m2_per_s": 0.001,
+        "mean_velocity_m_per_s": 0.2,
+        "fluid_cell_size_m": 0.0025,
+        "solid_element_size_mm": 2.5,
+        "time_step_s": 0.0025,
+        "end_time_s": 12.0,
+        "benchmark_ux_A_m": 2.270493e-05,
+        "benchmark_uy_A_m": 0.0008208773,
+        "benchmark_drag_N_per_m": 14.29426,
+        "benchmark_lift_N_per_m": 0.763746
+      },
+      "status": "completed",
+      "derived": {
+        "reynolds_D": 20.000000000000004,
+        "mass_ratio": 1.0
+      },
+      "solver": {
+        "success": true,
+        "message": "uy(A) 0.8176 mm, drag 14.294 N/m (4800 windows, 3.5 iterations each)",
+        "nfev": 16742
+      },
+      "solver_outputs": {
+        "solid_divisions": [
+          140,
+          8
+        ],
+        "solid_nodes": 2538,
+        "wet_nodes": 574,
+        "point_a_node": 705,
+        "depth_m": 0.01,
+        "cells": 13047,
+        "mesh_ok": true,
+        "windows": 4800,
+        "windows_not_converged": 0,
+        "coupling_iterations_mean": 3.4879166666666666,
+        "coupling_iterations_max": 20,
+        "flag_fluid_force_N": [
+          0.0258941564474,
+          0.004141698998907001
+        ],
+        "clamp_reaction_N": [
+          -0.02589416,
+          -0.00414174
+        ],
+        "flag_fluid_force_mean_N": [
+          0.025895324422147932,
+          0.004141534956648444
+        ],
+        "clamp_reaction_mean_N": [
+          -0.02589416,
+          -0.00414174
+        ],
+        "metric_average_s": 2.0,
+        "inlet_profile_error_max": 4.663357200396233e-10
+      },
+      "metrics": {
+        "ux_A_m": 2.2550116464918854e-05,
+        "uy_A_m": 0.000817492560042447,
+        "drag_N_per_m": 14.293888999661922,
+        "lift_N_per_m": 0.7639492173226479,
+        "ux_A_deviation_pct": 0.6818498673246046,
+        "uy_A_deviation_pct": 0.412332020577627,
+        "drag_deviation_pct": 0.0025954497684907447,
+        "lift_deviation_pct": 0.02660797210693485
+      }
+    },
+    {
+      "label": "p01_fluid_cell_size_m-0.00176777",
+      "parameters": {
+        "solid_density_kg_per_m3": 1000.0,
+        "shear_modulus_Pa": 500000.0,
+        "poisson_ratio": 0.4,
+        "fluid_density_kg_per_m3": 1000.0,
+        "kinematic_viscosity_m2_per_s": 0.001,
+        "mean_velocity_m_per_s": 0.2,
+        "fluid_cell_size_m": 0.001767767,
+        "solid_element_size_mm": 2.5,
+        "time_step_s": 0.0025,
+        "end_time_s": 12.0,
+        "benchmark_ux_A_m": 2.270493e-05,
+        "benchmark_uy_A_m": 0.0008208773,
+        "benchmark_drag_N_per_m": 14.29426,
+        "benchmark_lift_N_per_m": 0.763746
+      },
+      "status": "completed",
+      "derived": {
+        "reynolds_D": 20.000000000000004,
+        "mass_ratio": 1.0
+      },
+      "solver": {
+        "success": true,
+        "message": "uy(A) 0.8213 mm, drag 14.301 N/m (4800 windows, 3.5 iterations each)",
+        "nfev": 16568
+      },
+      "solver_outputs": {
+        "solid_divisions": [
+          140,
+          8
+        ],
+        "solid_nodes": 2538,
+        "wet_nodes": 574,
+        "point_a_node": 705,
+        "depth_m": 0.01,
+        "cells": 26153,
+        "mesh_ok": true,
+        "windows": 4800,
+        "windows_not_converged": 0,
+        "coupling_iterations_mean": 3.4516666666666667,
+        "coupling_iterations_max": 22,
+        "flag_fluid_force_N": [
+          0.025932197089699998,
+          0.004130551141029001
+        ],
+        "clamp_reaction_N": [
+          -0.0259322,
+          -0.004130557
+        ],
+        "flag_fluid_force_mean_N": [
+          0.02593333550954038,
+          0.004130355361820308
+        ],
+        "clamp_reaction_mean_N": [
+          -0.0259322,
+          -0.004130557
+        ],
+        "metric_average_s": 2.0,
+        "inlet_profile_error_max": 5.156881403382366e-10
+      },
+      "metrics": {
+        "ux_A_m": 2.2590570294506866e-05,
+        "uy_A_m": 0.0008211948803083645,
+        "drag_N_per_m": 14.300576592426467,
+        "lift_N_per_m": 0.760211311895874,
+        "ux_A_deviation_pct": 0.5036778598001986,
+        "uy_A_deviation_pct": 0.03868791454758423,
+        "drag_deviation_pct": 0.04418971269913226,
+        "lift_deviation_pct": 0.46280937695595775
+      }
+    },
+    {
+      "label": "p02_fluid_cell_size_m-0.00125",
+      "parameters": {
+        "solid_density_kg_per_m3": 1000.0,
+        "shear_modulus_Pa": 500000.0,
+        "poisson_ratio": 0.4,
+        "fluid_density_kg_per_m3": 1000.0,
+        "kinematic_viscosity_m2_per_s": 0.001,
+        "mean_velocity_m_per_s": 0.2,
+        "fluid_cell_size_m": 0.00125,
+        "solid_element_size_mm": 2.5,
+        "time_step_s": 0.0025,
+        "end_time_s": 12.0,
+        "benchmark_ux_A_m": 2.270493e-05,
+        "benchmark_uy_A_m": 0.0008208773,
+        "benchmark_drag_N_per_m": 14.29426,
+        "benchmark_lift_N_per_m": 0.763746
+      },
+      "status": "completed",
+      "derived": {
+        "reynolds_D": 20.000000000000004,
+        "mass_ratio": 1.0
+      },
+      "solver": {
+        "success": true,
+        "message": "uy(A) 0.8131 mm, drag 14.298 N/m (4800 windows, 3.6 iterations each)",
+        "nfev": 17289
+      },
+      "solver_outputs": {
+        "solid_divisions": [
+          140,
+          8
+        ],
+        "solid_nodes": 2538,
+        "wet_nodes": 574,
+        "point_a_node": 705,
+        "depth_m": 0.01,
+        "cells": 52321,
+        "mesh_ok": true,
+        "windows": 4800,
+        "windows_not_converged": 0,
+        "coupling_iterations_mean": 3.601875,
+        "coupling_iterations_max": 20,
+        "flag_fluid_force_N": [
+          0.0259556811969,
+          0.0041409826475
+        ],
+        "clamp_reaction_N": [
+          -0.02595568,
+          -0.004140927
+        ],
+        "flag_fluid_force_mean_N": [
+          0.025956784706684468,
+          0.004140719799578117
+        ],
+        "clamp_reaction_mean_N": [
+          -0.02595568,
+          -0.004140927
+        ],
+        "metric_average_s": 2.0,
+        "inlet_profile_error_max": 5.038072736773812e-10
+      },
+      "metrics": {
+        "ux_A_m": 2.2645093497003746e-05,
+        "uy_A_m": 0.0008129963354282146,
+        "drag_N_per_m": 14.298069628069786,
+        "lift_N_per_m": 0.7624062604751959,
+        "ux_A_deviation_pct": 0.26353969378567793,
+        "uy_A_deviation_pct": 0.9600660868299611,
+        "drag_deviation_pct": 0.026651453588970656,
+        "lift_deviation_pct": 0.17541689577479305
+      }
+    }
+  ],
+  "study": "turek_hron_fsi",
+  "status": "completed",
+  "finished_utc": "2026-11-22T23:09:16+00:00"
+}
