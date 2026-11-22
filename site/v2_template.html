@@ -587,7 +587,7 @@ details.study > summary:hover .study-toggle { text-decoration: underline; }
         <span class="plan-meta"><span class="no">Fluid-structure interaction</span><span class="plan-tag">In progress</span></span>
         <b>Flexible flag behind a cylinder</b>
         <p><b>Why it's harder</b>Two-way fluid-structure interaction, where the flow bends the flag and the bent flag changes the flow.</p>
-        <p><b>So far</b>Each half has to reproduce the published Turek-Hron benchmark before the two are coupled. The solid's sag matches to 0.01 %, and it swings at 1.095 Hz against the published 1.096 to 1.100. The fluid's drag matches to 0.07 % and 0.014 % at the two flow speeds. Lift is within 0.7 % but scatters from mesh to mesh, so I'm holding that verdict back. The coupling is now set up: a trial of the first coupled case came within 0.7 % of the benchmark, and the recorded runs come next.</p>
+        <p><b>So far</b>Each half has to reproduce the published Turek-Hron benchmark before the two are coupled. The solid's sag matches to 0.01 %, and it swings at 1.095 Hz against the published 1.096 to 1.100. The fluid's drag matches to 0.07 % and 0.014 % at the two flow speeds. Lift is within 0.7 % but scatters from mesh to mesh, so I'm holding that verdict back. The first coupled case has run: its drag converges to within 0.03 % of the benchmark, but the lift and the flag-tip position don't settle yet as the mesh is refined, so it isn't verified. That's the next revision.</p>
         <p><b>How I'll check it</b>The benchmark's published values, for each half and for the coupled runs.</p>
         <span class="tools">OpenFOAM · CalculiX · preCICE</span>
       </article>
@@ -596,7 +596,7 @@ details.study > summary:hover .study-toggle { text-decoration: underline; }
         <b>A production traction motor, checked blind against test data</b>
         <p><b>Why it's harder</b>Three kinds of physics on one machine: torque, back-EMF and efficiency from the electromagnetics, a thermal network, and rotor stress at overspeed. It's modelled on the 2004 Toyota Prius motor.</p>
         <p><b>How I'll check it</b>Internal checks first: an analytic air-gap field, the power balance at every operating point, and mesh convergence. Then the portfolio's first comparison with measured data, Oak Ridge National Laboratory's tests, opened only after my predictions are written down.</p>
-        <p><b>So far</b>The first result is verified: if the inverter stops switching at top speed, the magnets alone would drive about 1,030 V against the 500 V supply, so the drive depends on field weakening and fault protection there. The blind back-EMF prediction is final and written down, and the geometry is being rebuilt from published dimensions to check the model's inputs.</p>
+        <p><b>So far</b>Two results are verified, and both are failures a designer needs to know about. If the inverter stops switching at top speed, the magnets alone would drive about 1,030 V against the 500 V supply, so the drive depends on field weakening and fault protection there. And at the standard 20 % overspeed, 7,200 rpm, the thin steel bridges that hold the magnets reach 424 MPa against the lamination's 335 MPa yield. The blind back-EMF prediction is final and written down, and the geometry is being rebuilt from published dimensions to check the model's inputs.</p>
         <span class="tools">Pyleecan · FEMM · CalculiX</span>
       </article>
     </div>
