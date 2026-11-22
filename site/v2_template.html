@@ -118,7 +118,7 @@ code { font-family: var(--font-data); font-size: 0.85em; }
   position: relative; border-radius: 6px; overflow: hidden; color: var(--vp-ink);
   background: linear-gradient(180deg, var(--vp-top) 0%, var(--vp-bot) 100%);
   box-shadow: 0 1px 0 rgba(255,255,255,0.06) inset, 0 24px 48px -28px rgba(10, 20, 40, 0.55);
-  display: grid; grid-template-columns: 190px minmax(0, 1fr); grid-template-rows: minmax(0, 1fr) auto;
+  display: grid; grid-template-columns: 190px minmax(0, 1fr); grid-template-rows: minmax(0, 1fr) auto auto;
   min-height: clamp(360px, 52vw, 620px);
 }
 .vp::after { /* faint viewport grid */
@@ -157,6 +157,13 @@ code { font-family: var(--font-data); font-size: 0.85em; }
 .vp.is-figure .stage, .vp.is-plain .stage { grid-column: 1 / -1; padding: 20px 24px 12px; }
 .vp.is-figure .stage img { background: var(--plate); border-radius: 4px; padding: 10px; filter: none; max-height: clamp(260px, 40vw, 480px); }
 .vp { scroll-margin-top: 64px; }
+.vp-scrub { grid-column: 1 / -1; position: relative; z-index: 2; display: flex; align-items: center; gap: 12px; padding: 8px 20px; border-top: 1px solid var(--vp-line); background: rgba(8, 14, 26, 0.18); }
+.vp-scrub[hidden], .vp.is-3d .vp-scrub { display: none; }
+.vp-play { flex: none; width: 34px; height: 34px; border-radius: 50%; border: 1px solid rgba(237, 241, 248, 0.4); background: rgba(8, 14, 26, 0.45); color: var(--vp-ink); font-size: 0.85rem; cursor: pointer; }
+.vp-play:hover { border-color: var(--vp-ink); }
+#vp-range { flex: 1; min-width: 0; accent-color: #8fb4ff; }
+#vp-step { flex: none; font: 0.76rem/1.3 var(--font-data); color: var(--vp-ink); font-variant-numeric: tabular-nums; min-width: 44ch; text-align: right; }
+@media (max-width: 900px) { .vp-scrub { flex-wrap: wrap; padding: 8px 14px 10px; gap: 6px 10px; } #vp-step { flex-basis: 100%; min-width: 0; text-align: left; font-size: 0.72rem; } }
 .triad { position: absolute; left: 4px; bottom: 6px; width: 54px; height: 54px; opacity: 0.85; }
 .status {
   grid-column: 1 / -1; position: relative; z-index: 1;
@@ -168,7 +175,7 @@ code { font-family: var(--font-data); font-size: 0.85em; }
 .status .chk { color: #9fe3b9; }
 .vp-note p { font-size: 0.92rem; color: var(--ink-2); max-width: 80ch; }
 @media (max-width: 720px) {
-  .vp { grid-template-columns: 1fr; grid-template-rows: auto minmax(0, 1fr) auto; min-height: 0; }
+  .vp { grid-template-columns: 1fr; grid-template-rows: auto minmax(0, 1fr) auto auto; min-height: 0; }
   .legend { padding: 16px 16px 0; }
   .legend-body { grid-template-columns: 1fr; gap: 4px; }
   .swatches { grid-auto-flow: column; grid-auto-columns: 1fr; direction: rtl; }
@@ -432,6 +439,11 @@ details.study > summary:hover .study-toggle { text-decoration: underline; }
         <g font-family="JetBrains Mono, monospace" font-size="8" fill="#edf1f8"><text x="46" y="50">X</text><text x="36" y="27">Y</text><text x="11" y="6">Z</text></g>
       </svg>
       </div>
+      <div class="vp-scrub" id="vp-scrub" hidden>
+        <button type="button" class="vp-play" id="vp-play" aria-label="Play the load steps">▶</button>
+        <input type="range" id="vp-range" min="0" max="0" step="1" value="0" aria-label="Load step">
+        <output id="vp-step" for="vp-range"></output>
+      </div>
       <div class="status" id="vp-status" aria-live="polite"></div>
     </div>
     <div class="picks" id="picks">
@@ -545,7 +557,7 @@ details.study > summary:hover .study-toggle { text-decoration: underline; }
         <b>A production traction motor, checked blind against test data</b>
         <p><b>Why it's harder</b>Three kinds of physics on one machine: torque, back-EMF and efficiency from the electromagnetics, a thermal network, and rotor stress at overspeed. It's modelled on the 2004 Toyota Prius motor.</p>
         <p><b>How I'll check it</b>Internal checks first: an analytic air-gap field, the power balance at every operating point, and mesh convergence. Then the portfolio's first comparison with measured data, Oak Ridge National Laboratory's tests, opened only after my predictions are written down.</p>
-        <p><b>So far</b>The design inputs are spot-checked against Oak Ridge's design report, the first electromagnetic solve has run, and the first blind prediction is written down.</p>
+        <p><b>So far</b>The first result is verified: if the inverter stops switching at top speed, the magnets alone would drive about 1,030 V against the 500 V supply, so the drive depends on field weakening and fault protection there. The blind back-EMF prediction is final and written down, and the geometry is being rebuilt from published dimensions to check the model's inputs.</p>
         <span class="tools">Pyleecan · FEMM · CalculiX</span>
       </article>
     </div>
@@ -630,11 +642,41 @@ details.study > summary:hover .study-toggle { text-decoration: underline; }
     img.alt = v.model;
   }
 
+  // load-step slider: studies with frames (the strut) can be stepped through, or played
+  const scrub = document.getElementById("vp-scrub"), range = document.getElementById("vp-range");
+  const step = document.getElementById("vp-step"), play = document.getElementById("vp-play");
+  let timer = null, loaded = false;
+  const stopPlay = () => { clearInterval(timer); timer = null; play.textContent = "▶"; play.setAttribute("aria-label", "Play the load steps"); };
+  const frameText = (v, f) => `${f.load_kN.toFixed(2)} kN, ${Math.round(100 * f.load_kN / v.frames_of)} % of buckling · mid-span moves ${f.deflection_mm.toFixed(2)} mm · peak ${f.peak_MPa.toFixed(0)} MPa`;
+  const preload = v => { if (loaded) return; loaded = true; v.frames.forEach(f => { const p = new Image(); p.src = f.img; }); };
+  function setFrame(k) {
+    const v = VP[current], f = v.frames[k];
+    range.value = k; img.src = f.img; step.textContent = frameText(v, f);
+  }
+  function setupScrub(v) {
+    stopPlay();
+    scrub.hidden = !v.frames;
+    if (!v.frames) return;
+    range.max = v.frames.length - 1; range.value = v.frames.length - 1;
+    step.textContent = frameText(v, v.frames[v.frames.length - 1]);
+  }
+  range.addEventListener("input", () => { stopPlay(); preload(VP[current]); setFrame(+range.value); });
+  play.addEventListener("click", () => {
+    const v = VP[current];
+    if (timer) return stopPlay();
+    preload(v);
+    let k = +range.value >= v.frames.length - 1 ? 0 : +range.value;
+    setFrame(k);
+    play.textContent = "❚❚"; play.setAttribute("aria-label", "Pause");
+    timer = setInterval(() => { k += 1; if (k >= v.frames.length) return stopPlay(); setFrame(k); }, 220);
+  });
+
   let current = -1;
   function show(i) {
     if (i === current) return;
     current = i;
     announce(VP[i]);
+    setupScrub(VP[i]);
     if (reduce() || !img.getAttribute("src")) { img.src = VP[i].img; paint(VP[i]); return; }
     vp.classList.add("switching");
     setTimeout(() => {

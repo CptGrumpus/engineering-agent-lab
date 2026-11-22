@@ -238,9 +238,9 @@ STRUT = REPO / "runs/20261120-232856_strut_length/points/p01_length_mm-500"
 STRUT_SCALE = 5.0
 
 
-def scene_strut():
-    """The bowed 500 mm strut in the last load increment before first yield (time 0.95 of the ramp to
-    0.98 P_cr), von Mises stress with the top band starting at yield."""
+def strut_data() -> dict:
+    """Every load increment of the 500 mm strut's nonlinear run, from the re-solve. Each increment's
+    displacement in the .frd must match the mid-span node the solver printed to the .dat at that time."""
     import re
 
     from harness.calculix import read_frd
@@ -253,44 +253,72 @@ def scene_strut():
     frd = read_frd(work / "nonlinear.frd")
     disp = [b for n, b in frd["blocks"] if n == "DISP"]
     stress = [b for n, b in frd["blocks"] if n == "STRESS"]
-    k = 18                                                     # increment 19 of 20: time 0.95
-    # the .dat prints the mid-span nodes at every increment: the chosen .frd block must match it
-    dat = (work / "nonlinear.dat").read_text()
-    blocks = re.split(r"displacements \(vx,vy,vz\) for set NMID and time\s+", dat)[1:]
-    time, rows = blocks[k].split("\n", 1)
-    if abs(float(time) - 0.95) > 1e-9:
-        raise RuntimeError(f"increment {k + 1} is at time {time}")
-    nid, *u_dat = rows.split("\n")[1].split()
-    D = disp[k]
-    j = int(np.nonzero(D["ids"] == int(nid))[0][0])
-    u_frd = [D["D1"][j], D["D2"][j], D["D3"][j]]
-    if np.abs(np.array(u_frd) - np.array([float(v) for v in u_dat])).max() > 1e-6 * max(1.0, abs(float(u_dat[2]))):
-        raise RuntimeError(f"frd displacement {u_frd} != dat {u_dat} at node {nid}")
-    load = float(time) * rec["solver_outputs"]["p_max_N"]
+    blocks = re.split(r"displacements \(vx,vy,vz\) for set NMID and time\s+", (work / "nonlinear.dat").read_text())[1:]
+    if not (len(blocks) == len(disp) == len(stress)):
+        raise RuntimeError(f"{len(blocks)} printed increments, {len(disp)} displacement and {len(stress)} stress blocks")
+    times = []
+    for D, blk in zip(disp, blocks):
+        time, rows = blk.split("\n", 1)
+        nid, *u_dat = rows.split("\n")[1].split()
+        j = int(np.nonzero(D["ids"] == int(nid))[0][0])
+        u_frd = np.array([D["D1"][j], D["D2"][j], D["D3"][j]])
+        # the .frd writes 6 significant figures (half a unit in the last place is 5e-6 relative) and the
+        # .dat 7, so they can only agree to the .frd's precision
+        if np.abs(u_frd - np.array([float(v) for v in u_dat])).max() > 1e-5 * np.abs(u_frd).max():
+            raise RuntimeError(f"time {time}: frd displacement {u_frd} != dat {u_dat} at node {nid}")
+        times.append(float(time))
     view = work / "view.inp"
     view.write_text(re.sub(r"TYPE=C3D8I", "TYPE=C3D8", (work / "nonlinear.inp").read_text(encoding="latin-1")),
                     encoding="latin-1")
     nodes, elems = read_inp(view)
     ids = np.array(sorted(nodes))
-    S = stress[k]
-    si = {int(n): i for i, n in enumerate(S["ids"])}
-    di = {int(n): i for i, n in enumerate(D["ids"])}
-    s = {c: np.array([S[c][si[int(n)]] for n in ids]) for c in ("SXX", "SYY", "SZZ", "SXY", "SYZ", "SZX")}
-    vm = np.sqrt(0.5 * ((s["SXX"] - s["SYY"]) ** 2 + (s["SYY"] - s["SZZ"]) ** 2 + (s["SZZ"] - s["SXX"]) ** 2)
-                 + 3 * (s["SXY"] ** 2 + s["SYZ"] ** 2 + s["SZX"] ** 2))
-    u = np.array([[D[c][di[int(n)]] for c in ("D1", "D2", "D3")] for n in ids])
     xyz = np.array([nodes[int(n)] for n in ids])
     tris = mr.surface(nodes, elems, ids)
-    xyz, tris, vm, u = compact(xyz, tris, vm, u)
+    vms, us = [], []
+    for S, D in zip(stress, disp):
+        si = {int(n): i for i, n in enumerate(S["ids"])}
+        di = {int(n): i for i, n in enumerate(D["ids"])}
+        s = {c: np.array([S[c][si[int(n)]] for n in ids]) for c in ("SXX", "SYY", "SZZ", "SXY", "SYZ", "SZX")}
+        vms.append(np.sqrt(0.5 * ((s["SXX"] - s["SYY"]) ** 2 + (s["SYY"] - s["SZZ"]) ** 2 + (s["SZZ"] - s["SXX"]) ** 2)
+                           + 3 * (s["SXY"] ** 2 + s["SYZ"] ** 2 + s["SZX"] ** 2)))
+        us.append(np.array([[D[c][di[int(n)]] for c in ("D1", "D2", "D3")] for n in ids]))
+    used = np.unique(tris)
+    remap = np.full(len(xyz), -1)
+    remap[used] = np.arange(len(used))
+    xyz, tris = xyz[used], remap[tris]
+    vms, us = [v[used] for v in vms], [u[used] for u in us]
     mid = np.abs(xyz[:, 0] - p["length_mm"] / 2) < 0.6 * p["element_size_mm"]
     centre = xyz.mean(axis=0)
-    return write_scene(BUILD / "strut", xyz - centre + STRUT_SCALE * u, tris, vm, ghost_xyz=xyz - centre,
+    return {"rec": rec, "p": p, "xyz": xyz - centre, "tris": tris, "vm": vms, "u": us, "times": times, "mid": mid,
+            "loads_N": [tm * rec["solver_outputs"]["p_max_N"] for tm in times]}
+
+
+# frames run up to increment 19 (time 0.95): the next one, at 0.98 P_cr, is past first yield
+STRUT_FRAMES = 19
+
+
+def strut_box(d) -> list:
+    pts = np.vstack([d["xyz"]] + [d["xyz"] + STRUT_SCALE * d["u"][k] for k in range(STRUT_FRAMES)])
+    pad = 0.02 * np.ptp(pts, axis=0).max()
+    return [(pts.min(axis=0) - pad).tolist(), (pts.max(axis=0) + pad).tolist()]
+
+
+def strut_frame(d, k: int, name: str, box) -> Path:
+    p, vm = d["p"], d["vm"][k]
+    return write_scene(BUILD / name, d["xyz"] + STRUT_SCALE * d["u"][k], d["tris"], vm, ghost_xyz=d["xyz"],
                        field="von Mises stress", units="MPa", vmin=0.0, vmax=300.0, bands=12, band_colors=mr.bands(12),
                        elev=22, azim=-74, sharp_angle_deg=60, distance_factor=3.4, resolution=[1400, 900],
-                       expected_volume_mm3=p["length_mm"] * p["width_mm"] * p["thickness_mm"],
-                       title=f"Strut at {load / 1000:.2f} kN, just under first yield",
-                       caption=f"Bow drawn {STRUT_SCALE:.0f}x; peak at mid-span {vm[mid].max():.0f} MPa against the "
+                       fixed_box=box, expected_volume_mm3=p["length_mm"] * p["width_mm"] * p["thickness_mm"],
+                       title=f"Strut at {d['loads_N'][k] / 1000:.2f} kN",
+                       caption=f"Bow drawn {STRUT_SCALE:.0f}x; peak at mid-span {vm[d['mid']].max():.0f} MPa against the "
                                f"{p['yield_strength_MPa']:.0f} MPa yield (top band from 275).")
+
+
+def scene_strut():
+    """The bowed 500 mm strut in the last load increment before first yield (time 0.95 of the ramp to
+    0.98 P_cr), von Mises stress with the top band starting at yield. Same camera as its load-step frames."""
+    d = strut_data()
+    return strut_frame(d, STRUT_FRAMES - 1, "strut", strut_box(d))
 
 
 SCENES = {"strap_proof": scene_strap_proof, "bolted_joint": scene_bolted_joint, "cold_plate": scene_cold_plate,
@@ -342,13 +370,76 @@ def publish(name: str, scene: Path, g: dict):
     path.write_text(json.dumps(scenes, indent=1), encoding="utf-8")
 
 
+def make_strut_frames(blender, samples: int, skip_render: bool) -> dict:
+    """The strut at each load step up to first yield, for the viewer's load slider: one camera, one
+    stress scale, one crop for every frame, each frame through the three gates. The last frame is also
+    the viewer's main strut image."""
+    from PIL import Image
+
+    d = strut_data()
+    box = strut_box(d)
+    scenes, gates = [], []
+    for k in range(STRUT_FRAMES):
+        sc = strut_frame(d, k, f"frames/strut_{k:02d}", box)
+        if not skip_render:
+            mr.render(blender, sc, samples)
+        gates.append(gate(sc))
+        scenes.append(sc)
+        print(f"strut frame {k + 1}: {d['loads_N'][k] / 1000:.2f} kN, misread {gates[-1]['legibility']['misread']:.2%}", flush=True)
+    ims = [Image.fromarray((np.clip(mr.beauty(sc), 0, 1) * 255).astype(np.uint8), "RGBA") for sc in scenes]
+    alpha = np.max([np.asarray(im)[..., 3] for im in ims], axis=0)
+    ys, xs = np.nonzero(alpha > 60)
+    pad = int(0.10 * max(np.ptp(xs), np.ptp(ys)))
+    crop = (max(0, xs.min() - pad), max(0, ys.min() - pad), min(ims[0].width, xs.max() + pad), min(ims[0].height, ys.max() + pad))
+    frames = []
+    for k, im in enumerate(ims):
+        im = im.crop(crop)
+        im.thumbnail((1400, 900), Image.LANCZOS)
+        name = f"fr_strut_{k:02d}.webp"
+        im.save(SITE / name, quality=88, method=6)
+        mid = d["mid"]
+        frames.append({"img": f"v2/{name}", "load_kN": round(d["loads_N"][k] / 1000, 2),
+                       "deflection_mm": round(float(np.abs(d["u"][k][mid][:, 2]).max()), 2),
+                       "peak_MPa": round(float(d["vm"][k][mid].max()), 1)})
+    # the last frame is the main image (same crop as the frames, so nothing jumps at the end of the slider)
+    shutil.copyfile(SITE / frames[-1]["img"].split("/")[1], SITE / "vp_strut.webp")
+    th = Image.open(SITE / "vp_strut.webp").convert("RGBA")
+    th.thumbnail((800, 500), Image.LANCZOS)
+    canvas = Image.new("RGBA", (800, 500), (0, 0, 0, 0))
+    canvas.alpha_composite(th, ((800 - th.width) // 2, (500 - th.height) // 2))
+    canvas.save(SITE / "th_strut.webp", quality=88, method=6)
+    meta = json.loads(scenes[-1].with_suffix(".json").read_text(encoding="utf-8"))
+    path = SITE / "scenes.json"
+    allscenes = json.loads(path.read_text(encoding="utf-8"))
+    allscenes["strut"] = {k: meta.get(k) for k in ("field", "units", "vmin", "vmax", "bands", "band_colors", "title",
+                                                    "caption", "data_min", "data_max")}
+    allscenes["strut"].update(gates[-1])
+    path.write_text(json.dumps(allscenes, indent=1), encoding="utf-8")
+    # the 3D view's mesh is the main strut scene: keep build/render/strut.* as the last frame
+    for ext in (".npz", ".json"):
+        shutil.copyfile(scenes[-1].with_suffix(ext), BUILD / f"strut{ext}")
+    fpath = SITE / "frames.json"
+    allframes = json.loads(fpath.read_text(encoding="utf-8")) if fpath.exists() else {}
+    allframes["strut"] = {"label": "Load", "buckling_kN": round(d["rec"]["metrics"]["critical_load_N"] / 1000, 2),
+                          "first_yield_kN": round(d["rec"]["metrics"]["first_yield_load_N"] / 1000, 2),
+                          "worst_misread": max(g["legibility"]["misread"] for g in gates),
+                          "worst_on_legend": min(g["color"]["fraction_on_legend"] for g in gates), "frames": frames}
+    fpath.write_text(json.dumps(allframes, indent=1), encoding="utf-8")
+    return allframes["strut"]
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--only", nargs="*")
     ap.add_argument("--samples", type=int, default=128)
     ap.add_argument("--skip-render", action="store_true")
+    ap.add_argument("--frames", action="store_true", help="the strut's load-step frames for the viewer slider")
     args = ap.parse_args()
     blender = mr.find_blender()
+    if args.frames:
+        f = make_strut_frames(blender, args.samples, args.skip_render)
+        print(f"{len(f['frames'])} strut frames; worst misread {f['worst_misread']:.2%}, worst on legend {f['worst_on_legend']:.2%}")
+        return
     for name in args.only or SCENES:
         scene = SCENES[name]()
         meta = json.loads(scene.with_suffix(".json").read_text(encoding="utf-8"))

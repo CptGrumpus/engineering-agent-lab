@@ -47,9 +47,9 @@ VP = [
                "Hole edge 274 MPa and 0.58 % strain · left at −77 MPa after unloading"]},
     {"id": "strut", "study": "strut", "tab": "Buckling", "legend": "S, Mises", "unit": "MPa",
      "model": "Strut · 6061-T6, 500 mm, 25 × 16 mm, pinned, bowed L/1000",
-     "lines": ["Solver: CalculiX 2.22 · C3D8I, geometrically nonlinear, increment 19 of 20",
+     "lines": ["Solver: CalculiX 2.22 · C3D8I, geometrically nonlinear, 19 load steps up to first yield",
                "Deformation scale factor: +5.000e+00",
-               "21.54 kN, 1 % under first yield · buckling load 23.14 kN"]},
+               "Buckling load 23.14 kN · first yield at 21.80 kN · drag the slider to load it step by step"]},
     {"id": "fatigue", "study": "fatigue", "tab": "Fatigue", "legend": "S11 amplitude", "unit": "MPa",
      "model": "Strap with a 16 mm hole · 160 × 40 × 4 mm, 0 → 5 kN cyclic",
      "lines": ["Solver: CalculiX 2.22 · plane stress, quarter model mirrored",
@@ -157,6 +157,14 @@ cards_html = "\n".join(
           <span class="card-foot"><span class="v v-{v}">{VERDICT[v]}</span><span class="tools">{tools}</span></span>
         </span>
       </a>''' for k, n, g, d, t, a, v, tools in CARDS)
+
+# load-step frames for the viewer's slider (scripts/make_study_renders.py --frames)
+_fr = HERE / "v2" / "frames.json"
+for v in VP:
+    f = json.loads(_fr.read_text(encoding="utf-8")).get(v["study"]) if _fr.exists() else None
+    if f:
+        v["frames"] = f["frames"]
+        v["frames_of"] = f["buckling_kN"]
 
 # the viewer follows the gallery's order
 order = [c[0] for c in CARDS]
