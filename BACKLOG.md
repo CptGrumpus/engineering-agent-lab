@@ -107,6 +107,13 @@ educated guess is all we can do without strict material card requirements"); the
 (`motor_prius_ornl_oc_js205`, `motor_prius_torque_js205`, predictions committed in d42d543); the rms/peak eval is added
 (`.claude/skills/build-model/evals/motor-peak-current-trap`, 23cdbff). Keep working on both open studies (6 and 7).
 
+**Efficiency map framing (user, 2026-11-22 ~09:15):** predict MOTOR-ONLY efficiency (shaft power / terminal power;
+no inverter); a temperature BAND, cold (everything 20 C) and hot (windings 100 C, magnets 80 C); mechanical losses
+(bearings, windage) LEFT OUT and stated (the prediction reads slightly high, most at top speed). Bus 500 V as in
+REQ-M1. Plan: one FEMM solve per (id, iq) grid point gives flux linkages, torque and the iron-loss terms per unit
+frequency (Bertotti: hysteresis ~ f, eddy ~ f^2, excess ~ f^1.5), so any speed follows without re-solving; then MTPA /
+flux weakening under the voltage limit picks the lowest-loss current at each (speed, torque).
+
 **Study 7 next, all before the ORNL data is opened:** efficiency predictions (M330-35A loss data in
 `models/motor/materials/M330-35A_tata_2009.csv`; a three-term fit, kh 0.0202, alpha 1.791, kc 7.91e-5, ke 3.70e-4, f
 in Hz, B in T, matches it to 6.4 % rms, 13.5 % worst), the thermal network. Then open the ORNL test data once and
