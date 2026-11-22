@@ -13,6 +13,33 @@
 #      differing from low_re at the same Re by 0.5-3 %.
 #   P4 Blasius (Re <= 1e5) within 2 % of Prandtl's law; Petukhov within 1 %.
 #   P5 About 2-6 min per point (more iterations at high Re), about 30 min.
+#
+# Results (run 20261122-104744_pipe_rans_reynolds): verification FAIL at four of seven points.
+# Read with the mesh study's Results (pipe_rans_mesh.toml, run 20261122-104218): the low_re mesh family used here
+# carries about -3.6 % mesh error at Re 1e5 (n80 against the extrapolated f), so none of these numbers is mesh-converged.
+#   P1 MISSED: 45/49 point checks. (a) lowre_2e6 fails checkMesh on aspect ratio only (2884 against checkMesh's 1000,
+#      15 wall cells): the axial cell length has a floor of D/50, far longer than the 0.1-um-scale wall cells at
+#      Re 2e6. Non-orthogonality 0, skewness 0.33; with no axial gradient in fully developed flow the high aspect
+#      ratio is harmless here, but the check is right to flag it, and the fix (axial length tied to the wall cell) goes
+#      in the revision. (b) The three wall-function points fail the log-law check, 5.06-5.40 % against 5 %. y+ inside
+#      each range everywhere (low_re cell centre 0.25; wall-function cell centre 46 / 59 / 79). Force balance <= 3e-12;
+#      every point stopped at the 30000-iteration cap with the pressure gradient converged (change <= 1e-10).
+#   P2 PARTLY: within 2 % of Prandtl at every Re (+1.27 / -0.90 / -1.36 / -1.33 % at 2e4 / 1e5 / 5e5 / 2e6); REQ-T1
+#      PASS at all four (2e6 unverified: the checkMesh failure). The drift across the range is 2.6 points, not <= 1.5,
+#      almost all of it between 2e4 and 1e5. Given the mesh study, the agreement within 2 % is partly mesh error
+#      offsetting model error, and the mesh counts differ by Re (60 / 80 / 100 / 120), so the drift is not cleanly a
+#      model trend either.
+#   P3 MISSED: wall functions give -5.21 / -5.37 / -5.15 % at 1e5 / 5e5 / 2e6, a steady offset nearly independent of Re
+#      and of y+ (46-79). REQ-T1 FAIL at all three (unverified: the log-law check withholds it). The gap to low_re at
+#      the same Re is 3.8-4.3 %, above the predicted 0.5-3 %. Not mesh-studied: whether the offset is the wall
+#      function's constants or the coarse outer mesh (25-40 cells) is open.
+#   P4 PARTLY: Blasius against Prandtl +2.8 % at 2e4 (missed), -1.1 % at 1e5 (held); Petukhov within 1 % at 1e5,
+#      5e5 and 2e6 (0.00 / -0.22 / -0.08 %) but +1.02 % at 2e4 (just missed). These are correlation-to-correlation
+#      gaps; they do not depend on the runs.
+#   P5 HELD: 3.3-4.5 min per point, 27 min 40 s in all.
+# Engineering reading so far: the low-Reynolds SST setup is usable for pressure-drop budgets within REQ-T1's 5 % on
+# this evidence, but its error sign is not yet known (the mesh study points to about +2-3 % when converged); the
+# wall-function setup as built is not (-5.2 %, failing REQ-T1). Both conclusions wait on the finer-mesh revision.
 
 [case]
 name = "pipe_rans_reynolds"

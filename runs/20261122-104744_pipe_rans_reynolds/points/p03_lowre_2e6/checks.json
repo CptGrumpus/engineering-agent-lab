@@ -1,0 +1,69 @@
+{
+  "label": "p03_lowre_2e6",
+  "status": "FAIL",
+  "checks": [
+    {
+      "id": "mesh",
+      "description": "checkMesh reports Mesh OK (1 = failed)",
+      "kind": "numerical",
+      "value": 1.0,
+      "tolerance": 0.5,
+      "comparison": "<=",
+      "status": "FAIL"
+    },
+    {
+      "id": "force_balance",
+      "description": "|f from the wall shear - f from the applied pressure gradient| / f (periodic flow: dp/dx A = tau_w P exactly)",
+      "kind": "numerical",
+      "value": 2.4707071703999736e-12,
+      "tolerance": 0.0001,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "bulk_velocity",
+      "description": "|bulk velocity of the cell field - target| / target",
+      "kind": "numerical",
+      "value": 3.0251356974986267e-13,
+      "tolerance": 1e-06,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "iterative_convergence",
+      "description": "max change of the pressure gradient over the last 10 % of iterations / final",
+      "kind": "numerical",
+      "value": 9.758660219010332e-12,
+      "tolerance": 1e-06,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "wall_uniform",
+      "description": "spread of the wall shear along the wall / mean (fully developed: 0)",
+      "kind": "numerical",
+      "value": 0.0,
+      "tolerance": 0.0001,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "yplus_range",
+      "description": "first-cell y+ against the wall treatment's range (below 1 = inside)",
+      "kind": "validity",
+      "value": 0.248111671115,
+      "tolerance": 1.0,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "log_law",
+      "description": "max |u+ - (ln y+ / 0.41 + 5.2)| / u+ for 50 <= y+ <= 0.15 Re_tau (model form: the log law's constants scatter by a few per cent between experiments)",
+      "kind": "numerical",
+      "value": 0.02955379513558952,
+      "tolerance": 0.05,
+      "comparison": "<=",
+      "status": "PASS"
+    }
+  ]
+}

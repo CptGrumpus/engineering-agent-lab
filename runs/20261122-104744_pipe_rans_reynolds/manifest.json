@@ -1,0 +1,495 @@
+{
+  "run_id": "20261122-104744_pipe_rans_reynolds",
+  "case_name": "pipe_rans_reynolds",
+  "model": "openfoam_pipe_rans",
+  "case_source": "cases/pipe_rans_reynolds.toml",
+  "case_sha256": "e8f263de0f581182a640bdbcb97a05802213817bc5755af995668a97a8631e48",
+  "model_sources_sha256": {
+    "models/cfd/pipe_openfoam.py": "8ade05c43b59d5e4ea90eb26684ac040f80f29dc88f478b2dbaa7fe01fff57d0",
+    "models/cfd/run_pipe.sh": "c29fc7442826749b1498163c41c0c1b66f6b13ffeac9295d480358c01acf6ec8"
+  },
+  "rerun_of": null,
+  "started_utc": "2026-11-22T15:47:44+00:00",
+  "environment": {
+    "python": "3.14.10",
+    "python_executable": "<repo>\\.venv\\Scripts\\python.exe",
+    "platform": "Windows-11-10.0.26100-SP0",
+    "machine": "AMD64",
+    "packages": {
+      "numpy": "2.5.5",
+      "scipy": "1.18.1",
+      "matplotlib": "3.11.2",
+      "cadquery": "2.8.0"
+    },
+    "git": {
+      "commit": "575b47a542d08345a0934047527094b837f83e48",
+      "dirty": true
+    },
+    "tools": {
+      "openfoam_bashrc": "/opt/openfoam14/etc/bashrc",
+      "openfoam_version": "14",
+      "openfoam_package": "openfoam14 20261008",
+      "linux": "Ubuntu 22.04.5 LTS"
+    }
+  },
+  "numerics": {
+    "residual_p": 1.0,
+    "residual_U": 1e-09,
+    "residual_turb": 1e-09,
+    "max_iterations": 30000,
+    "solver_timeout_s": 7200
+  },
+  "points": [
+    {
+      "label": "p00_lowre_2e4",
+      "parameters": {
+        "diameter_m": 0.1,
+        "reynolds_number": 20000.0,
+        "kinematic_viscosity_m2_per_s": 1e-06,
+        "n_radial": 60,
+        "first_cell_yplus": 0.5,
+        "wall_treatment": "low_re",
+        "turbulence_model": "kOmegaSST",
+        "scenario": "lowre_2e4"
+      },
+      "status": "completed",
+      "derived": {
+        "friction_prandtl": 0.025887847501030237,
+        "friction_petukhov": 0.026151429145930653,
+        "friction_blasius": 0.026605962578627528
+      },
+      "solver": {
+        "success": true,
+        "message": "foamRun: 30000 iterations, f from wall shear 0.02622, y+ 0.25",
+        "nfev": 30000
+      },
+      "solver_outputs": {
+        "R_m": 0.05,
+        "Ub_m_per_s": 0.19999999999999998,
+        "u_tau_est_m_per_s": 0.011377136612748884,
+        "h1_m": 4.3947789063173834e-05,
+        "growth": 1.0777786027478138,
+        "expansion": 0.012043594430369661,
+        "length_m": 0.002,
+        "nu_m2_per_s": 1e-06,
+        "Rw_m": 0.049952411079092894,
+        "D_h_m": 0.09990482215818579,
+        "iterations": 30000,
+        "final_initial_residuals": {
+          "Ux": 1.32766568969e-15,
+          "Uy": 0.00718674406331,
+          "Uz": 1.58508240573e-16,
+          "p": 0.0284860927031,
+          "omega": 8.76980117678e-15,
+          "k": 9.65099988209e-15
+        },
+        "pressure_gradient_kin": 0.00524934963851,
+        "pressure_gradient_change_last_10pct": 5.715052313043932e-12,
+        "tau_wall_kin": 0.0001311088355204,
+        "tau_wall_spread": 0.0,
+        "yplus_min": 0.2513308576358,
+        "yplus_max": 0.2513308576358,
+        "yplus_avg": 0.2513308576358,
+        "bulk_velocity_field_m_per_s": 0.20000000000006216,
+        "mesh_ok": true
+      },
+      "metrics": {
+        "friction_factor": 0.026221767104080005,
+        "reynolds_Dh": 19980.96443163716,
+        "yplus_first_cell": 0.2513308576358,
+        "friction_dev_prandtl_pct": 1.266218438737643,
+        "friction_abs_dev_prandtl_pct": 1.266218438737643,
+        "friction_dev_petukhov_pct": 0.24456985512195661,
+        "friction_dev_blasius_pct": -1.46747944020571,
+        "log_law_error_max": 0.02621614966982134
+      }
+    },
+    {
+      "label": "p01_lowre_1e5",
+      "parameters": {
+        "diameter_m": 0.1,
+        "reynolds_number": 100000.0,
+        "kinematic_viscosity_m2_per_s": 1e-06,
+        "n_radial": 80,
+        "first_cell_yplus": 0.5,
+        "wall_treatment": "low_re",
+        "turbulence_model": "kOmegaSST",
+        "scenario": "lowre_1e5"
+      },
+      "status": "completed",
+      "derived": {
+        "friction_prandtl": 0.01799259391769343,
+        "friction_petukhov": 0.017992027544212322,
+        "friction_blasius": 0.017792479529022645
+      },
+      "solver": {
+        "success": true,
+        "message": "foamRun: 30000 iterations, f from wall shear 0.01783, y+ 0.25",
+        "nfev": 30000
+      },
+      "solver_outputs": {
+        "R_m": 0.05,
+        "Ub_m_per_s": 0.9999999999999999,
+        "u_tau_est_m_per_s": 0.047424405528289734,
+        "h1_m": 1.054309473002753e-05,
+        "growth": 1.0764900809435467,
+        "expansion": 0.002959425654850744,
+        "length_m": 0.002,
+        "nu_m2_per_s": 1e-06,
+        "Rw_m": 0.049952411079092894,
+        "D_h_m": 0.09990482215818579,
+        "iterations": 30000,
+        "final_initial_residuals": {
+          "Ux": 2.79150840737e-15,
+          "Uy": 0.0506702704126,
+          "Uz": 4.85806536129e-15,
+          "p": 0.0216428462571,
+          "omega": 7.27596875322e-15,
+          "k": 9.3157107358e-15
+        },
+        "pressure_gradient_kin": 0.0892526223746,
+        "pressure_gradient_change_last_10pct": 7.843013193225588e-12,
+        "tau_wall_kin": 0.002229191841375,
+        "tau_wall_spread": 0.0,
+        "yplus_min": 0.2486468844912,
+        "yplus_max": 0.2486468844912,
+        "yplus_avg": 0.2486468844912,
+        "bulk_velocity_field_m_per_s": 0.9999999999998062,
+        "mesh_ok": true
+      },
+      "metrics": {
+        "friction_factor": 0.017833534731000005,
+        "reynolds_Dh": 99904.82215818578,
+        "yplus_first_cell": 0.2486468844912,
+        "friction_dev_prandtl_pct": -0.9037224777772024,
+        "friction_abs_dev_prandtl_pct": 0.9037224777772024,
+        "friction_dev_petukhov_pct": -0.9009078748594135,
+        "friction_dev_blasius_pct": 0.20688680949729754,
+        "log_law_error_max": 0.03412118976263832
+      }
+    },
+    {
+      "label": "p02_lowre_5e5",
+      "parameters": {
+        "diameter_m": 0.1,
+        "reynolds_number": 500000.0,
+        "kinematic_viscosity_m2_per_s": 1e-06,
+        "n_radial": 100,
+        "first_cell_yplus": 0.5,
+        "wall_treatment": "low_re",
+        "turbulence_model": "kOmegaSST",
+        "scenario": "lowre_5e5"
+      },
+      "status": "completed",
+      "derived": {
+        "friction_prandtl": 0.013159738192800186,
+        "friction_petukhov": 0.013131162778992548,
+        "friction_blasius": 0.011898548186525349
+      },
+      "solver": {
+        "success": true,
+        "message": "foamRun: 30000 iterations, f from wall shear 0.01298, y+ 0.25",
+        "nfev": 30000
+      },
+      "solver_outputs": {
+        "R_m": 0.05,
+        "Ub_m_per_s": 5.0,
+        "u_tau_est_m_per_s": 0.20279098069810844,
+        "h1_m": 2.4655928891844635e-06,
+        "growth": 1.0761995900886476,
+        "expansion": 0.0006960021689309062,
+        "length_m": 0.002,
+        "nu_m2_per_s": 1e-06,
+        "Rw_m": 0.049952411079092894,
+        "D_h_m": 0.09990482215818579,
+        "iterations": 30000,
+        "final_initial_residuals": {
+          "Ux": 2.61391553584e-15,
+          "Uy": 0.146144371879,
+          "Uz": 3.33234550991e-13,
+          "p": 0.0548692595182,
+          "omega": 7.55397319203e-15,
+          "k": 9.59787998597e-15
+        },
+        "pressure_gradient_kin": 1.6244353683,
+        "pressure_gradient_change_last_10pct": 1.2311971313292551e-11,
+        "tau_wall_kin": 0.04057223164443,
+        "tau_wall_spread": 0.0,
+        "yplus_min": 0.2480782576585,
+        "yplus_max": 0.2480782576585,
+        "yplus_avg": 0.2480782576585,
+        "bulk_velocity_field_m_per_s": 5.000000000000533,
+        "mesh_ok": true
+      },
+      "metrics": {
+        "friction_factor": 0.012983114126217601,
+        "reynolds_Dh": 499524.110790929,
+        "yplus_first_cell": 0.2480782576585,
+        "friction_dev_prandtl_pct": -1.3591792275063352,
+        "friction_abs_dev_prandtl_pct": 1.3591792275063352,
+        "friction_dev_petukhov_pct": -1.1445057837387251,
+        "friction_dev_blasius_pct": NaN,
+        "log_law_error_max": 0.03239096558672787
+      }
+    },
+    {
+      "label": "p03_lowre_2e6",
+      "parameters": {
+        "diameter_m": 0.1,
+        "reynolds_number": 2000000.0,
+        "kinematic_viscosity_m2_per_s": 1e-06,
+        "n_radial": 120,
+        "first_cell_yplus": 0.5,
+        "wall_treatment": "low_re",
+        "turbulence_model": "kOmegaSST",
+        "scenario": "lowre_2e6"
+      },
+      "status": "completed",
+      "derived": {
+        "friction_prandtl": 0.01037415689436092,
+        "friction_petukhov": 0.01036607445804375,
+        "friction_blasius": 0.008413544108966973
+      },
+      "solver": {
+        "success": true,
+        "message": "foamRun: 30000 iterations, f from wall shear 0.01024, y+ 0.25",
+        "nfev": 30000
+      },
+      "solver_outputs": {
+        "R_m": 0.05,
+        "Ub_m_per_s": 20.0,
+        "u_tau_est_m_per_s": 0.7202137493258831,
+        "h1_m": 6.942383430863376e-07,
+        "growth": 1.0741467639600386,
+        "expansion": 0.00020110769860961797,
+        "length_m": 0.002,
+        "nu_m2_per_s": 1e-06,
+        "Rw_m": 0.049952411079092894,
+        "D_h_m": 0.09990482215818579,
+        "iterations": 30000,
+        "final_initial_residuals": {
+          "Ux": 2.61923031977e-15,
+          "Uy": 0.121212212931,
+          "Uz": 2.29223867117e-10,
+          "p": 0.011922169418,
+          "omega": 4.77141621478e-15,
+          "k": 9.53191074723e-15
+        },
+        "pressure_gradient_kin": 20.4946183246,
+        "pressure_gradient_change_last_10pct": 9.758660219010332e-12,
+        "tau_wall_kin": 0.5118777997285,
+        "tau_wall_spread": 0.0,
+        "yplus_min": 0.248111671115,
+        "yplus_max": 0.248111671115,
+        "yplus_avg": 0.248111671115,
+        "bulk_velocity_field_m_per_s": 19.99999999999395,
+        "mesh_ok": false
+      },
+      "metrics": {
+        "friction_factor": 0.01023755599457,
+        "reynolds_Dh": 1998096.443163716,
+        "yplus_first_cell": 0.248111671115,
+        "friction_dev_prandtl_pct": -1.3320168780110997,
+        "friction_abs_dev_prandtl_pct": 1.3320168780110997,
+        "friction_dev_petukhov_pct": -1.254926443808868,
+        "friction_dev_blasius_pct": NaN,
+        "log_law_error_max": 0.02955379513558952
+      }
+    },
+    {
+      "label": "p04_wf_1e5",
+      "parameters": {
+        "diameter_m": 0.1,
+        "reynolds_number": 100000.0,
+        "kinematic_viscosity_m2_per_s": 1e-06,
+        "n_radial": 25,
+        "first_cell_yplus": 100.0,
+        "wall_treatment": "wall_function",
+        "turbulence_model": "kOmegaSST",
+        "scenario": "wf_1e5"
+      },
+      "status": "completed",
+      "derived": {
+        "friction_prandtl": 0.01799259391769343,
+        "friction_petukhov": 0.017992027544212322,
+        "friction_blasius": 0.017792479529022645
+      },
+      "solver": {
+        "success": true,
+        "message": "foamRun: 30000 iterations, f from wall shear 0.01706, y+ 46.05",
+        "nfev": 30000
+      },
+      "solver_outputs": {
+        "R_m": 0.05,
+        "Ub_m_per_s": 0.9999999999999999,
+        "u_tau_est_m_per_s": 0.047424405528289734,
+        "h1_m": 0.002108618946005506,
+        "growth": 1.0,
+        "expansion": 1.0,
+        "length_m": 0.01686895156804405,
+        "nu_m2_per_s": 1e-06,
+        "Rw_m": 0.049952411079092894,
+        "D_h_m": 0.09990482215818579,
+        "iterations": 30000,
+        "final_initial_residuals": {
+          "Ux": 1.03990717404e-14,
+          "Uy": 0.0672588376537,
+          "Uz": 7.31817401749e-15,
+          "p": 0.0205770244338,
+          "omega": 8.89168772083e-15,
+          "k": 5.19229423323e-15
+        },
+        "pressure_gradient_kin": 0.0853699577595,
+        "pressure_gradient_change_last_10pct": 3.514071541263489e-12,
+        "tau_wall_kin": 0.002132217611903,
+        "tau_wall_spread": 0.0,
+        "yplus_min": 46.04661101947,
+        "yplus_max": 46.04661101947,
+        "yplus_avg": 46.04661101947,
+        "bulk_velocity_field_m_per_s": 0.999999999999252,
+        "mesh_ok": true
+      },
+      "metrics": {
+        "friction_factor": 0.017057740895224004,
+        "reynolds_Dh": 99904.82215818578,
+        "yplus_first_cell": 46.04661101947,
+        "friction_dev_prandtl_pct": -5.214605452449128,
+        "friction_abs_dev_prandtl_pct": 5.214605452449128,
+        "friction_dev_petukhov_pct": -5.211913290294012,
+        "friction_dev_blasius_pct": -4.152309853516256,
+        "log_law_error_max": 0.05341470074839239
+      }
+    },
+    {
+      "label": "p05_wf_5e5",
+      "parameters": {
+        "diameter_m": 0.1,
+        "reynolds_number": 500000.0,
+        "kinematic_viscosity_m2_per_s": 1e-06,
+        "n_radial": 30,
+        "first_cell_yplus": 120.0,
+        "wall_treatment": "wall_function",
+        "turbulence_model": "kOmegaSST",
+        "scenario": "wf_5e5"
+      },
+      "status": "completed",
+      "derived": {
+        "friction_prandtl": 0.013159738192800186,
+        "friction_petukhov": 0.013131162778992548,
+        "friction_blasius": 0.011898548186525349
+      },
+      "solver": {
+        "success": true,
+        "message": "foamRun: 30000 iterations, f from wall shear 0.01246, y+ 58.67",
+        "nfev": 30000
+      },
+      "solver_outputs": {
+        "R_m": 0.05,
+        "Ub_m_per_s": 5.0,
+        "u_tau_est_m_per_s": 0.20279098069810844,
+        "h1_m": 0.0005917422934042713,
+        "growth": 1.0637630612444742,
+        "expansion": 0.16653201590946545,
+        "length_m": 0.00473393834723417,
+        "nu_m2_per_s": 1e-06,
+        "Rw_m": 0.049952411079092894,
+        "D_h_m": 0.09990482215818579,
+        "iterations": 30000,
+        "final_initial_residuals": {
+          "Ux": 3.23619570421e-14,
+          "Uy": 0.165876257408,
+          "Uz": 1.65031495481e-14,
+          "p": 0.0491844721727,
+          "omega": 9.64768764979e-15,
+          "k": 8.48059641984e-15
+        },
+        "pressure_gradient_kin": 1.55837636381,
+        "pressure_gradient_change_last_10pct": 4.491840698615443e-11,
+        "tau_wall_kin": 0.0389223283705,
+        "tau_wall_spread": 0.0,
+        "yplus_min": 58.66646683114,
+        "yplus_max": 58.66646683114,
+        "yplus_avg": 58.66646683114,
+        "bulk_velocity_field_m_per_s": 4.9999999999998765,
+        "mesh_ok": true
+      },
+      "metrics": {
+        "friction_factor": 0.01245514507856,
+        "reynolds_Dh": 499524.110790929,
+        "yplus_first_cell": 58.66646683114,
+        "friction_dev_prandtl_pct": -5.37048958780354,
+        "friction_abs_dev_prandtl_pct": 5.37048958780354,
+        "friction_dev_petukhov_pct": -5.16454601674301,
+        "friction_dev_blasius_pct": NaN,
+        "log_law_error_max": 0.05399230906493325
+      }
+    },
+    {
+      "label": "p06_wf_2e6",
+      "parameters": {
+        "diameter_m": 0.1,
+        "reynolds_number": 2000000.0,
+        "kinematic_viscosity_m2_per_s": 1e-06,
+        "n_radial": 40,
+        "first_cell_yplus": 160.0,
+        "wall_treatment": "wall_function",
+        "turbulence_model": "kOmegaSST",
+        "scenario": "wf_2e6"
+      },
+      "status": "completed",
+      "derived": {
+        "friction_prandtl": 0.01037415689436092,
+        "friction_petukhov": 0.01036607445804375,
+        "friction_blasius": 0.008413544108966973
+      },
+      "solver": {
+        "success": true,
+        "message": "foamRun: 30000 iterations, f from wall shear 0.00984, y+ 78.49",
+        "nfev": 30000
+      },
+      "solver_outputs": {
+        "R_m": 0.05,
+        "Ub_m_per_s": 20.0,
+        "u_tau_est_m_per_s": 0.7202137493258831,
+        "h1_m": 0.00022215626978762802,
+        "growth": 1.0746283057904318,
+        "expansion": 0.060384746359393844,
+        "length_m": 0.002,
+        "nu_m2_per_s": 1e-06,
+        "Rw_m": 0.049952411079092894,
+        "D_h_m": 0.09990482215818579,
+        "iterations": 30000,
+        "final_initial_residuals": {
+          "Ux": 4.41953590885e-15,
+          "Uy": 0.100753481524,
+          "Uz": 1.60959518787e-14,
+          "p": 0.0168064612023,
+          "omega": 9.24517003774e-15,
+          "k": 4.81470930802e-15
+        },
+        "pressure_gradient_kin": 19.7025584701,
+        "pressure_gradient_change_last_10pct": 1.0150966781882064e-10,
+        "tau_wall_kin": 0.4920951500034,
+        "tau_wall_spread": 0.0,
+        "yplus_min": 78.4923145738,
+        "yplus_max": 78.4923145738,
+        "yplus_avg": 78.4923145738,
+        "bulk_velocity_field_m_per_s": 19.999999999996234,
+        "mesh_ok": true
+      },
+      "metrics": {
+        "friction_factor": 0.009841903000068,
+        "reynolds_Dh": 1998096.443163716,
+        "yplus_first_cell": 78.4923145738,
+        "friction_dev_prandtl_pct": -5.145259316381501,
+        "friction_abs_dev_prandtl_pct": 5.145259316381501,
+        "friction_dev_petukhov_pct": -5.071148212515119,
+        "friction_dev_blasius_pct": NaN,
+        "log_law_error_max": 0.05062553168406986
+      }
+    }
+  ],
+  "study": "pipe_flow",
+  "status": "completed",
+  "finished_utc": "2026-11-22T16:15:22+00:00"
+}

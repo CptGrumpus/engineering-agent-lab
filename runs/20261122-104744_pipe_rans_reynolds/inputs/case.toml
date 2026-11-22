@@ -1,0 +1,113 @@
+# Study 19, turbulent flow, part 1, second case: the friction factor across Reynolds numbers with both wall
+# treatments. Same model, checks and requirement as pipe_rans_mesh.toml (read it for the framing and smoke test).
+#   low_re:        Re 2e4 / 1e5 / 5e5 / 2e6, the sublayer resolved (target first-face y+ 0.5; cell growth about 1.077)
+#   wall_function: Re 1e5 / 5e5 / 2e6, first cell in the log layer (target first-face y+ 100 / 120 / 160, so the cell
+#                  centre sits near y+ 50-80; at Re 2e4 the whole radius is only about 570 wall units, too few for a
+#                  wall-function cell, so it is left out)
+#
+# Predictions, written BEFORE the evidence run:
+#   P1 Every point check passes; y+ inside each treatment's range (low_re centre y+ about 0.25; wall functions 30-300).
+#   P2 low_re: f within 2 % of Prandtl at every Re (about -1 % at 1e5, the smoke test), drifting by at most 1.5 points
+#      across the range; REQ-T1 PASS at every Re.
+#   P3 wall_function: within 4 % of Prandtl (the log-law-based wall function carries its own constants), REQ-T1 PASS;
+#      differing from low_re at the same Re by 0.5-3 %.
+#   P4 Blasius (Re <= 1e5) within 2 % of Prandtl's law; Petukhov within 1 %.
+#   P5 About 2-6 min per point (more iterations at high Re), about 30 min.
+
+[case]
+name = "pipe_rans_reynolds"
+model = "openfoam_pipe_rans"
+description = "Fully developed turbulent pipe flow (D 0.1 m, nu 1e-6 m^2/s), axisymmetric periodic wedge, RANS k-omega SST; Re 2e4 to 2e6, low-Reynolds wall treatment and wall functions; friction factor against Prandtl's smooth-pipe law."
+assumptions = [
+  "Fully developed, steady, incompressible, axisymmetric mean flow in a hydraulically smooth pipe.",
+  "RANS with the k-omega SST model (openfoam.org v14 coefficients); its form error is what this study measures.",
+  "Hydraulic diameter of the wedge 2 R cos(2.5 deg) (its wall is a flat face): 0.1 % below D, used consistently.",
+]
+limitations = [
+  "Smooth walls only; roughness (the Colebrook range) not modelled.",
+  "The reference is a correlation of measurements (about +-2 % scatter in Nikuradse's smooth-pipe data), not the measurements themselves.",
+]
+
+[parameters]
+diameter_m = 0.1
+reynolds_number = 100000.0
+kinematic_viscosity_m2_per_s = 1e-6
+n_radial = 80
+first_cell_yplus = 0.5
+wall_treatment = "low_re"
+turbulence_model = "kOmegaSST"
+
+[[sweep.scenarios]]
+name = "lowre_2e4"
+reynolds_number = 20000.0
+n_radial = 60
+first_cell_yplus = 0.5
+wall_treatment = "low_re"
+
+[[sweep.scenarios]]
+name = "lowre_1e5"
+reynolds_number = 100000.0
+n_radial = 80
+first_cell_yplus = 0.5
+wall_treatment = "low_re"
+
+[[sweep.scenarios]]
+name = "lowre_5e5"
+reynolds_number = 500000.0
+n_radial = 100
+first_cell_yplus = 0.5
+wall_treatment = "low_re"
+
+[[sweep.scenarios]]
+name = "lowre_2e6"
+reynolds_number = 2000000.0
+n_radial = 120
+first_cell_yplus = 0.5
+wall_treatment = "low_re"
+
+[[sweep.scenarios]]
+name = "wf_1e5"
+reynolds_number = 100000.0
+n_radial = 25
+first_cell_yplus = 100.0
+wall_treatment = "wall_function"
+
+[[sweep.scenarios]]
+name = "wf_5e5"
+reynolds_number = 500000.0
+n_radial = 30
+first_cell_yplus = 120.0
+wall_treatment = "wall_function"
+
+[[sweep.scenarios]]
+name = "wf_2e6"
+reynolds_number = 2000000.0
+n_radial = 40
+first_cell_yplus = 160.0
+wall_treatment = "wall_function"
+
+[numerics]
+residual_p = 1.0        # inactive: pressure is a constant in a periodic domain
+residual_U = 1e-9
+residual_turb = 1e-9
+max_iterations = 30000
+solver_timeout_s = 7200
+
+[verification]
+force_balance_rel_tol = 1e-4   # exact in steady periodic flow; above this means unconverged or a sampling error
+bulk_velocity_rel_tol = 1e-6
+iterative_rel_tol = 1e-6
+yplus_max_low_re = 1.0
+yplus_min_wall_function = 30.0
+yplus_max_wall_function = 300.0
+log_law_rel_tol = 0.05         # model form: the log law's constants scatter by a few per cent
+mesh_noise_rel = 1e-6
+gci_max = 0.01
+
+[[requirements]]
+id = "REQ-T1"
+text = "The predicted friction factor shall be within 5 % of Prandtl's smooth-pipe law (the Moody chart's smooth curve), a usable accuracy for pressure-drop budgets."
+metric = "friction_abs_dev_prandtl_pct"
+operator = "<="
+limit = 5.0
+units = "%"
