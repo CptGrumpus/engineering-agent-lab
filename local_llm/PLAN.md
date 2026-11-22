@@ -3,6 +3,14 @@
 Goal: make Inkling 2 Mini fast enough to be useful in this repo's workflow, ideally for workflow planning
 (drafts a human or Claude reviews), while it shares the machine with CPU-heavy solver runs.
 
+**Value check (2026-11-21).** The user is on a flat Claude subscription, so "saving" means stretching
+usage limits. An audit of this project's Claude Code sessions found that input is 99% re-sent context and
+driven by session length (calls over 400k context = 66% of input). Solver logs and run output together
+are only ~5% of input. So pre-reading by the local model can save at most ~5%; the big lever was earlier
+compaction and clearing (auto-compact set to 300k, handoff rule in CLAUDE.md). The local model's case
+rests on offline batch work that doesn't touch the limits, planning drafts if O10 shows they're good,
+and the portfolio value of this log.
+
 Method: from [inference-optimisation-skill](https://github.com/sybil-solutions/inference-optimisation-skill)
 (MIT), followed by hand, not installed:
 - compute the ceiling first ([THEORY.md](THEORY.md));
@@ -85,3 +93,21 @@ Status: `todo`, `doing`, `done`, `rejected`, or `blocked (reason)`.
 
 **Best so far, alongside a solver:** `-ngl 99 -ub 2048 -t 4 -C 0xFFF000 --prio -1` + core experts on GPU
 (VRAM-tight) → ~490 tok/s prompt (22×), ~9-10 tok/s generation (2.1-2.3×), solver cost ~10%.
+
+## Next session
+
+Handoff written 2026-11-21 23:16.
+
+1. **Running jobs:** none from this workstream. No llama-server is running and the GPU is free. FSI1
+   (study 6, another workstream) is still running: check with `wsl -e pgrep -a pimpleFoam`; expected
+   done about 03:00-03:30. Don't run the idle baseline (O3) until it has finished.
+2. **When FSI1 finishes:** run O3 idle, with interleaved repeats, e.g.
+   `.\local_llm\bench.ps1 -Label "O3 idle best" -BenchArgs "-t 4 -C 0xFFF000 -ub 2048 -p 512,2048,8192 -n 128 -r 5 -ot blk\.[6-9]\.ffn_.*_exps=CUDA0 -ncmoe 99"`,
+   plus the same with `-ncmoe 99` alone and `-t 3,6,12`. Compare with the contended numbers above.
+3. **Decisions this session:** pin the LLM to CCD 2 at low priority when it runs beside solvers (22:00);
+   flat subscription, so judge it on usage limits (22:50); `autoCompactWindow` 300000 in the user's
+   settings and a handoff rule in CLAUDE.md (23:15). Open question for the user: XMP (O11).
+4. **Uncommitted:** none from this workstream after this commit.
+5. **Next steps, in order:** O3 → O6 (fit core experts in less VRAM: blocks 6-8 only, or `-ub 1024`)
+   → O7 (flash attention) → O9 (needle check) → O10 (planning retest) → O8 (contention with a
+   multi-core solver) → O12 (wiring) only if O10 is worth it.
