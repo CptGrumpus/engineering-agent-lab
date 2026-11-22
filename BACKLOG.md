@@ -129,6 +129,19 @@ in Hz, B in T, matches it to 6.4 % rms, 13.5 % worst), the thermal network. Then
 compare everything (see the memory note and the blind protocol log in the reports).
 
 
+**New studies decided (user, 2026-11-22 ~10:15), from a gap review of the portfolio** (gaps: design codes beyond VDI
+2230, turbulent flow and validation against measured flow data, transient/forced dynamics, natural convection and
+radiation, hyperelastic large strain, fracture, machine elements and rotordynamics, probabilistic uncertainty):
+- **A (study 18): pressure vessel with a nozzle, ASME VIII-2 Part 5 elastic stress analysis** (stress linearisation on
+  classification lines, Pm / PL / PL+Pb / P+Q against S / 1.5S / 3S). References: Lame thick cylinder, membrane pr/t,
+  the cylinder-head junction from shell discontinuity theory. CalculiX + Gmsh (CadQuery geometry).
+- **B (study 19): turbulent CFD (RANS)**: fully developed pipe friction against Colebrook / Moody, then the 2D
+  backward-facing step against Driver & Seegmiller's measurements (NASA Turbulence Modeling Resource: reattachment,
+  skin friction, pressure). OpenFOAM.
+- Next candidates, not started: C random vibration of the study-4 bracket (Miles), D natural convection + radiation
+  (de Vahl Davis, view factors), E O-ring hyperelastic contact, F cracked plate K and crack growth, G rotor critical
+  speeds with ROSS.
+
 **Study 6 (FSI) status.**
 - **CSM1, CSM2:** verified and committed (e72d395).
 - **CFD1:**
@@ -147,6 +160,14 @@ compare everything (see the memory note and the blind protocol log in the report
   tutorial (OpenFOAM + CalculiX, tutorials develop branch in `~/precice-tutorials`) matched its reference
   flap-tip history: peak equal to 5 digits, largest difference 0.7 % of the peak. Next:
   - FSI1 (steady), then FSI2 and FSI3 (periodic, need a transient fluid solver: pimpleFoam).
+- **FSI1 revision 1 under way (2026-11-22).** Code: opt-in window-mean metrics and drift-based steadiness (f61cc9f).
+  Scratch prototype A (5 mm fluid mesh, coupling tolerance 1e-6, run `20261122-091120_scratch_fsi1_tol1e6`, not
+  committed): lift jitter 1.70e-2 -> 2.36e-4 peak to peak (72 x less), means unchanged to 5 digits (lift 0.74231,
+  uy(A) 0.868557 mm, drag 14.2656), coupling iterations 2.94 -> 3.49, every point check passes (steady by drift 1.1e-4,
+  force transfer 5.6e-5 averaged). So the jitter was zero-mean coupling noise from the 1e-4 tolerance. Prototype B
+  (solid 1.25 mm at the 2.5 mm fluid mesh, tolerance 1e-4) still running (about 4 h, slower than expected): tests the
+  uy(A) drift. Then write `turek_hron_fsi1_mesh_r1` (tolerance 1e-6, means, drift; solid mesh as B decides) with
+  predictions, and run it.
 - The portfolio page is a draft, not linked from PORTFOLIO.md until study 6 is complete.
 
 **Study 7 (motor), feasibility.** See its row in the table above. The Pyleecan environment is at
