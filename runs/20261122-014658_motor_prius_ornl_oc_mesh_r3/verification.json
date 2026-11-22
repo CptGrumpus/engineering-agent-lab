@@ -1,0 +1,224 @@
+{
+  "run_id": "20261122-014658_motor_prius_ornl_oc_mesh_r3",
+  "verified_utc": "2026-11-22T06:56:12+00:00",
+  "tolerances": {
+    "phase_symmetry_rel_tol": 0.001,
+    "phase_shift_deg_tol": 0.5,
+    "winding_theory_rel_tol": 0.02,
+    "open_circuit_torque_rel_tol": 0.001,
+    "mesh_noise_rel": 1e-05,
+    "gci_max": 0.01
+  },
+  "points": [
+    {
+      "label": "p00_mesh_fineness-2",
+      "status": "PASS",
+      "checks": [
+        {
+          "id": "phase_symmetry",
+          "description": "spread of the three phases' fundamental flux linkage / mean",
+          "kind": "numerical",
+          "value": 0.0001895335372329217,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "phase_shift",
+          "description": "max |phase shift between phases - 120 deg| (deg)",
+          "kind": "numerical",
+          "value": 0.02433107148937097,
+          "tolerance": 0.5,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "winding_theory",
+          "description": "|2 N k_w1 B_1 R L / p from the air-gap field - FEMM coil flux linkage| / FEMM (model form: mid-gap sampling, slot openings, leakage)",
+          "kind": "numerical",
+          "value": 0.002101304423167737,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "open_circuit_torque",
+          "description": "|mean torque at zero current| / rated torque (no net torque without current)",
+          "kind": "numerical",
+          "value": 2.0614010467857185e-05,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "time_resolution",
+          "description": "48 / steps per electrical period (below 1: at least 48)",
+          "kind": "validity",
+          "value": 1.0,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p01_mesh_fineness-4",
+      "status": "PASS",
+      "checks": [
+        {
+          "id": "phase_symmetry",
+          "description": "spread of the three phases' fundamental flux linkage / mean",
+          "kind": "numerical",
+          "value": 5.677285017020004e-05,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "phase_shift",
+          "description": "max |phase shift between phases - 120 deg| (deg)",
+          "kind": "numerical",
+          "value": 0.007769145899885643,
+          "tolerance": 0.5,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "winding_theory",
+          "description": "|2 N k_w1 B_1 R L / p from the air-gap field - FEMM coil flux linkage| / FEMM (model form: mid-gap sampling, slot openings, leakage)",
+          "kind": "numerical",
+          "value": 0.0020851932648077286,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "open_circuit_torque",
+          "description": "|mean torque at zero current| / rated torque (no net torque without current)",
+          "kind": "numerical",
+          "value": 3.5508612632208227e-06,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "time_resolution",
+          "description": "48 / steps per electrical period (below 1: at least 48)",
+          "kind": "validity",
+          "value": 1.0,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p02_mesh_fineness-8",
+      "status": "PASS",
+      "checks": [
+        {
+          "id": "phase_symmetry",
+          "description": "spread of the three phases' fundamental flux linkage / mean",
+          "kind": "numerical",
+          "value": 0.00010417175531154168,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "phase_shift",
+          "description": "max |phase shift between phases - 120 deg| (deg)",
+          "kind": "numerical",
+          "value": 0.015102767001820894,
+          "tolerance": 0.5,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "winding_theory",
+          "description": "|2 N k_w1 B_1 R L / p from the air-gap field - FEMM coil flux linkage| / FEMM (model form: mid-gap sampling, slot openings, leakage)",
+          "kind": "numerical",
+          "value": 0.002006339367169902,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "open_circuit_torque",
+          "description": "|mean torque at zero current| / rated torque (no net torque without current)",
+          "kind": "numerical",
+          "value": 3.9275645039582585e-06,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "time_resolution",
+          "description": "48 / steps per electrical period (below 1: at least 48)",
+          "kind": "validity",
+          "value": 1.0,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ]
+    }
+  ],
+  "run_checks": [
+    {
+      "id": "discretization_back_emf_LL_peak_at_max_speed_V",
+      "description": "relative discretization uncertainty of back_emf_LL_peak_at_max_speed_V, anomalous: observed order 3.79 is far above the design order 2, so the solutions are not in the asymptotic range (singularity or coincidence); no estimate",
+      "kind": "numerical",
+      "value": Infinity,
+      "tolerance": 0.01,
+      "comparison": "<=",
+      "status": "FAIL",
+      "metric": "back_emf_LL_peak_at_max_speed_V"
+    },
+    {
+      "id": "discretization_lambda1_Wb",
+      "description": "relative discretization uncertainty of lambda1_Wb, monotone (R = 0.737): GCI_fine, observed order 0.44, extrapolated 0.215856",
+      "kind": "numerical",
+      "value": 0.0016383312589988489,
+      "tolerance": 0.01,
+      "comparison": "<=",
+      "status": "PASS",
+      "metric": "lambda1_Wb"
+    }
+  ],
+  "run_check_detail": {
+    "meshes_used": [
+      "p02_mesh_fineness-8",
+      "p01_mesh_fineness-4",
+      "p00_mesh_fineness-2"
+    ],
+    "back_emf_LL_peak_at_max_speed_V": {
+      "converged_exactly": false,
+      "order": 3.785809286716911,
+      "extrapolated": 1040.438867903081,
+      "rel_error_fine": 0.00011396826124688886,
+      "rel_error_extrapolated": 8.908929718616328e-06,
+      "gci_fine": 1.1136261360307022e-05,
+      "convergence_ratio": 0.07250331215811727,
+      "r21": 2.0,
+      "r32": 2.0,
+      "regime": "anomalous order",
+      "uncertainty": Infinity,
+      "design_order": 2
+    },
+    "lambda1_Wb": {
+      "regime": "monotone",
+      "uncertainty": 0.0016383312589988489,
+      "converged_exactly": false,
+      "order": 0.4412376586540122,
+      "extrapolated": 0.21585581865723852,
+      "rel_error_fine": 0.0004689148239865114,
+      "rel_error_extrapolated": 0.0013123851044316418,
+      "gci_fine": 0.0016383312589988489,
+      "convergence_ratio": 0.7365025070698227,
+      "r21": 2.0,
+      "r32": 2.0
+    }
+  },
+  "status": "FAIL"
+}

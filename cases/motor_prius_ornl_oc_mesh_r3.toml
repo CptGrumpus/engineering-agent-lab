@@ -23,6 +23,19 @@
 #   P3 GCI under 1 %; REQ-M1 a verified fail, about 2 % above r2's value (near 1030 V).
 #   P4 Solve times as r2 (about 20 s / 80 s / 9 min).
 # Its finest-mesh back-EMF becomes the blind prediction (with M330-35A as the stand-in steel).
+#
+# Results (run 20261122-014658_motor_prius_ornl_oc_mesh_r3): verification FAIL on the REQ-M1 metric's GCI only.
+#   P1 HELD: 15/15 point checks; winding theory 0.20-0.21 %.
+#   P2 HELD (inside the range, near its low end): back-EMF 111.006 / 110.936 / 110.884 V per 1000 rpm at fineness
+#      2 / 4 / 8, +1.08 % on r2's finest (109.699 V) against +2.0 % (+1.0 to +3.5 %). The iron's share of the external
+#      MMF drop was smaller than the estimate's 30 %, or the bridges gained less.
+#   P3 PARTLY: flux-linkage GCI 0.16 % (monotone, order 0.44, extrapolated 0.215856 Wb, i.e. 110.74 V). The 6000 rpm
+#      peak is 1038.68 / 1040.31 / 1040.43 V: monotone but at an anomalous observed order (3.8 against 2), so the
+#      harness gives no uncertainty and REQ-M1 is formally withheld (the fine-mesh GCI would be 1e-5). Verdict not in
+#      doubt: 1040 V against the 500 V bus, +1.2 % on r2 (predicted about +2 %).
+#   P4 HELD: 21 s / 79 s / 438 s.
+# BLIND BACK-EMF PREDICTION (stand-in steel M330-35A, 20 C): 110.9 V rms line-to-line per 1000 rpm, mesh uncertainty
+# 0.16 %; with Pyleecan's inherited M400-50A it would be 109.7 V (r2). The M250-35A bracket is still to run.
 
 [case]
 name = "motor_prius_ornl_oc_mesh_r3"
