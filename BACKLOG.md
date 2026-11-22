@@ -112,6 +112,45 @@ the ORNL report is the last step, opened blind.
    compare. This is the portfolio's first comparison with test data. Expect 5 to 10 % from material
    and temperature uncertainty, and explain the gap rather than tune it away.
 
+**Study 7 framing, agreed with the user 2026-11-21 (started that evening).**
+- **Decision:** can an open-source toolchain (Pyleecan + FEMM electromagnetics, CalculiX rotor stress, and later a
+  thermal network checked against CalculiX) predict a production traction motor's key characteristics well enough
+  for early design screening? Tested on the 2004 Prius against ORNL's measured data.
+- **Design checks**, answered by our models with internal verification only: rated peak torque within the current
+  limit; rotor bridge stress at overspeed under the lamination's yield.
+- **Validation limits**, agreed with the user:
+  - back-EMF constant within 5 %;
+  - peak torque at several currents within 10 %;
+  - efficiency at sample points within 2 percentage points.
+
+  The user wants to keep an eye on these and may tune them later. They may change only **before** the ORNL data is
+  opened, with a written reason. After that, any change is a documented revision with the earlier verdict kept,
+  or the blind comparison means nothing.
+- **Scope:** electromagnetics and rotor stress first; the thermal network second (the biggest build, with no
+  open-source tool to lean on).
+- The Pyleecan environment is durable now, at `C:/Users/mrstego/.venvs/pyleecan` (master, pyFEMM, pywin32).
+
+**Study 7 progress (2026-11-21 evening).**
+- **Design-input spot check against ORNL's design report** (ORNL/TM-2004/137, Hsu, Ayers, Coomer, July 2004;
+  https://info.ornl.gov/sites/publications/Files/Pub57348.pdf). Design content only; no performance data was opened.
+  - Confirmed: the 3.3 in (83.82 mm) stack, an exact match with Pyleecan's L1; the series winding on the 2004
+    model (200 to 500 V boosted bus); ratings 50 kW and 400 N m up to base speed.
+  - Also from the report: 0.014 in (0.36 mm) laminations, slot fill 0.84, end winding 1.5 in per side.
+  - Not yet confirmed: the diameters and the air gap, which are in the report's figures, not its text.
+  - The two ORNL test reports (ORNL/TM-2006/423, ORNL/TM-2004/247 rev.) contain no dimensions in their text; only
+    filtered design-term searches were run on them, so the blind comparison is intact.
+- **Assumptions to state:**
+  - Pyleecan's lamination grade is M400-50A, a 0.5 mm grade, not the actual 0.36 mm steel. That matters for
+    iron loss and efficiency.
+  - Its magnet is a generic NdFeB (Br 1.24 T at 20 C, recoil permeability 1.05).
+- **Toolchain:** SciDataTool 2.5.0 (PyPI) uses numpy.string_, which numpy 2 removed. Install SciDataTool from GitHub
+  master (2.5.1, Feb 2026, commit c6f2497) in the Pyleecan environment. Pyleecan is pinned at master 1e940df.
+- **First FEMM solve through Pyleecan** (open circuit, 1000 rpm, 24 rotor positions, default mesh, 2.3 s): phase
+  flux-linkage peak 0.2087 Wb, the same in all three phases; cogging torque mean 0.07 N m.
+- **Blind prediction, written before any ORNL performance data was opened:** back-EMF of about 107 V line-to-line
+  rms per 1000 rpm, from lambda_peak x omega_e at 4 pole pairs. This comes from the smoke solve; mesh and
+  time-resolution checks are still to come.
+
 **Uncommitted at handoff:** nothing settled. Running cases and their runs are committed once they finish.
 
 ## Action items
