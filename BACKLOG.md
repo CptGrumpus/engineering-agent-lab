@@ -177,6 +177,12 @@ elements, probabilistic uncertainty). Each with its tools and independent refere
 - Also noted: transient conduction (exact series for a slab or cylinder), machine elements (a gear tooth by ISO 6336 or
   AGMA against FE contact; shaft fatigue by DIN 743).
 
+### For the dashboard session (from the study session)
+
+- 2026-11-22 ~16:00: new portfolio pages `portfolio/18-pressure-vessel-nozzle.md` (complete), `portfolio/20-prius-traction-motor.md`
+  and `portfolio/17-fsi-flag-turek-hron.md` (drafts, now in PORTFOLIO.md); new task `tasks/nozzle_stress_linearisation`.
+  PORTFOLIO.md no longer states a study count. The site's study list and counts may be stale.
+
 ### Waiting on the user
 
 Nothing blocking. For review when convenient: study 18's 14 mm recommendation. (User, 2026-11-22 ~15:00: "keep working
