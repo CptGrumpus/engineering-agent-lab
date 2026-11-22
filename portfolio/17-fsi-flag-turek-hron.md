@@ -7,7 +7,7 @@
 
 | | |
 |---|---|
-| **Answer so far** | Both single-physics halves reproduce the published Turek-Hron benchmark before any coupling. Solid, static (CSM1, CSM2): the tip displacement extrapolates to within 0.015 % of the published values. Fluid (CFD1): drag within 0.07 %, lift within 0.6 % on every mesh. Solid, dynamic (CSM3): frequency 1.095 Hz, 0.06 % from the published values. Fluid at Re 100 (CFD2): drag within 0.014 % when extrapolated, lift within 0.7 % on the finer meshes. Coupled runs (FSI1 to FSI3): *pending*. |
+| **Answer so far** | Both single-physics halves reproduce the published Turek-Hron benchmark before any coupling. Solid, static (CSM1, CSM2): the tip displacement extrapolates to within 0.015 % of the published values. Fluid (CFD1): drag within 0.07 %, lift within 0.6 % on every mesh. Solid, dynamic (CSM3): frequency 1.0946 Hz, 0.09 % from the published band (verified). Fluid at Re 100 (CFD2): drag within 0.014 % when extrapolated, lift within 0.7 % on the finer meshes. Coupled runs (FSI1 to FSI3): *pending*. |
 | **Discipline** | Structures (large deflection, dynamics), fluids, fluid-structure interaction |
 | **Tools** | CalculiX (solid), OpenFOAM 14 with Gmsh (fluid), Python; preCICE with OpenFOAM v2512 for the coupled stage (*pending*) |
 | **Methods** | Geometrically nonlinear static and dynamic FE, a large-deflection elastica as an independent reference, steady laminar CFD, mesh and time-step refinement with GCI, published benchmark values as the acceptance requirement |
@@ -32,8 +32,10 @@ published results first, and only then are they coupled.
 - **Fluid (CFD1, Re 20).** Drag 14.300 N/m on 208,000 cells, extrapolating to 14.303 against the
   published 14.293, with a 0.02 % mesh uncertainty. Lift lands within 0.6 % of the published 1.119 on
   every mesh, but it scatters between meshes (see below).
-- **Solid, dynamic (CSM3).** Released from rest, the flag swings at 1.095 Hz, against published values of
-  1.096 to 1.100. Amplitude and mean: *pending, final run in progress*.
+- **Solid, dynamic (CSM3).** Released from rest, the flag swings at **1.0946 Hz** (time-step uncertainty 0.013 %),
+  0.09 % under the published band of 1.0956 to 1.0995. The horizontal mean is inside the band. The vertical mean and
+  amplitude sit inside the band or within 0.08 % of it, but are formally unverified: they move by only 0.03 to
+  0.09 % between time steps, without a clean convergence pattern.
 - **Fluid at Re 100 (CFD2).** Drag converges to 136.719 N/m against the published 136.700 (0.014 %, mesh
   uncertainty 0.11 %). Lift is 10.61 on the finest mesh, 0.7 % from the published 10.53, with the same
   mesh-to-mesh scatter as CFD1.
@@ -72,6 +74,7 @@ published results first, and only then are they coupled.
   low at mid-channel and 1.5 % high near the walls. It scales the profile by the largest face distance on
   the inlet, not the true half-height. My first explanation (the cylinder counted as a wall) was tested
   and was wrong. The inlet now sets the benchmark's exact parabola, checked face by face.
+- **A diagnosis that was wrong, and the rerun that showed it.** The finest time step diverged late in the run. I first blamed the Newton tolerance, but loosening it changed nothing: same increment, same iteration history. The real cause was energy building up in the flag's stiff high-frequency modes under the undamped scheme. A little standard numerical damping (HHT, alpha -0.05) fixed it, and left the 1.1 Hz swing's frequency unchanged to 1e-4.
 - **The time-stepping scheme adds energy to a large swing.** The trapezoidal rule only conserves energy
   for linear problems. At a 0.01 s step the flag climbed 1.9 mm higher each swing and its frequency rose
   by 1.3 %. The drift falls about four times per halving of the step, and the checks reject the coarse
@@ -99,8 +102,7 @@ published results first, and only then are they coupled.
 
 - solid, static: [CSM1 mesh study](../runs/20261121-131111_flag_csm1_mesh/report.md),
   [CSM2 mesh study](../runs/20261121-131133_flag_csm2_mesh/report.md) (both verification PASS)
-- solid, dynamic: CSM3 time-step study (first run kept as evidence of the energy drift; final run
-  *pending*)
+- solid, dynamic: [CSM3, final](../runs/20261121-184353_flag_csm3_dt_r3/report.md) (frequency and ux verified), with the [first run](../runs/20261121-132448_flag_csm3_dt/report.md) (energy drift), [r1](../runs/20261121-142836_flag_csm3_dt_r1/report.md) and [r2](../runs/20261121-164522_flag_csm3_dt_r2/report.md) (the divergence and the wrong diagnosis) kept as evidence
 - fluid: [CFD1 first mesh study](../runs/20261121-140245_turek_hron_cfd1_mesh/report.md) (lift verified), [CFD1 refined](../runs/20261121-140657_turek_hron_cfd1_mesh_r1/report.md) (drag verified), [CFD2](../runs/20261121-151947_turek_hron_cfd2_mesh/report.md) (drag verified, lift withheld on mesh noise)
 - case files: `cases/flag_csm1_mesh.toml`, `cases/flag_csm2_mesh.toml`, `cases/flag_csm3_dt.toml`,
   `cases/flag_csm3_dt_r1.toml`, `cases/turek_hron_cfd1_mesh.toml`, `cases/turek_hron_cfd1_mesh_r1.toml`,

@@ -1,0 +1,403 @@
+{
+  "points": [
+    {
+      "label": "p00_time_step_s-0.0025",
+      "parameters": {
+        "density_kg_per_m3": 1000.0,
+        "shear_modulus_Pa": 500000.0,
+        "poisson_ratio": 0.4,
+        "gravity_m_per_s2": 2.0,
+        "flag_length_m": 0.35,
+        "flag_height_m": 0.02,
+        "cylinder_radius_m": 0.05,
+        "element_size_mm": 2.5,
+        "time_step_s": 0.0025
+      },
+      "derived": {
+        "beam_frequency_Hz": 1.0767094945878215,
+        "steps_per_linear_period": 371.50225015255876,
+        "height_over_length": 0.05714285714285715
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "integrator_small_amplitude",
+          "description": "|mean frequency over every period of a gravity/1000 run - linear modal f1| / f1 (the time integrator alone)",
+          "kind": "numerical",
+          "value": 3.655134500209039e-05,
+          "tolerance": 0.002,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "returns_to_start",
+          "description": "max uy(A) over the last period / amplitude (undamped: the flag swings back to its undeformed height)",
+          "kind": "numerical",
+          "value": 0.004218342154356176,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "periodic_troughs",
+          "description": "spread of the trough depths of uy(A) over all periods / mean depth",
+          "kind": "numerical",
+          "value": 0.0003335609854937347,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "periodic_periods",
+          "description": "spread of the periods / mean period",
+          "kind": "numerical",
+          "value": 0.00010719606354184558,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "frequency_reference",
+          "description": "|f1 modal - Euler-Bernoulli cantilever| / beam value (model form)",
+          "kind": "numerical",
+          "value": 0.0041297068616671885,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "periods_seen",
+          "description": "shortfall of full periods before the last one (needs >= 3)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.5,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "steps_per_period",
+          "description": "50 / time steps per linear period (below 1: at least 50 steps a period, period error of the trapezoidal rule about (2 pi / 50)^2 / 12 = 0.13 %)",
+          "kind": "validity",
+          "value": 0.1345886868234777,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-S3",
+          "text": "The solid model shall reproduce the CSM3 mean vertical displacement of point A inside the band of the published rows, or within 1 % of its nearest edge.",
+          "metric": "uy_mean_band_dev_pct",
+          "operator": "<=",
+          "limit": 1.0,
+          "units": "%",
+          "value": 0.0,
+          "margin": 1.0,
+          "verdict": "PASS (unverified)"
+        },
+        {
+          "id": "REQ-S4",
+          "text": "It shall reproduce the CSM3 vertical amplitude of point A inside the published band, or within 1 % of its nearest edge.",
+          "metric": "uy_amplitude_band_dev_pct",
+          "operator": "<=",
+          "limit": 1.0,
+          "units": "%",
+          "value": 0.0,
+          "margin": 1.0,
+          "verdict": "PASS (unverified)"
+        },
+        {
+          "id": "REQ-S5",
+          "text": "It shall reproduce the CSM3 mean horizontal displacement of point A inside the published band, or within 2 % of its nearest edge.",
+          "metric": "ux_mean_band_dev_pct",
+          "operator": "<=",
+          "limit": 2.0,
+          "units": "%",
+          "value": 0.0,
+          "margin": 2.0,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-S6",
+          "text": "It shall reproduce the CSM3 oscillation frequency inside the published band, or within 1 % of its nearest edge.",
+          "metric": "frequency_band_dev_pct",
+          "operator": "<=",
+          "limit": 1.0,
+          "units": "%",
+          "value": 0.0586009223373797,
+          "margin": 0.9413990776626203,
+          "verdict": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p01_time_step_s-0.00125",
+      "parameters": {
+        "density_kg_per_m3": 1000.0,
+        "shear_modulus_Pa": 500000.0,
+        "poisson_ratio": 0.4,
+        "gravity_m_per_s2": 2.0,
+        "flag_length_m": 0.35,
+        "flag_height_m": 0.02,
+        "cylinder_radius_m": 0.05,
+        "element_size_mm": 2.5,
+        "time_step_s": 0.00125
+      },
+      "derived": {
+        "beam_frequency_Hz": 1.0767094945878215,
+        "steps_per_linear_period": 743.0045003051175,
+        "height_over_length": 0.05714285714285715
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "integrator_small_amplitude",
+          "description": "|mean frequency over every period of a gravity/1000 run - linear modal f1| / f1 (the time integrator alone)",
+          "kind": "numerical",
+          "value": 2.0035227888926802e-05,
+          "tolerance": 0.002,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "returns_to_start",
+          "description": "max uy(A) over the last period / amplitude (undamped: the flag swings back to its undeformed height)",
+          "kind": "numerical",
+          "value": 0.0010273841471167959,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "periodic_troughs",
+          "description": "spread of the trough depths of uy(A) over all periods / mean depth",
+          "kind": "numerical",
+          "value": 0.0008897959639329125,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "periodic_periods",
+          "description": "spread of the periods / mean period",
+          "kind": "numerical",
+          "value": 0.0001944834204349519,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "frequency_reference",
+          "description": "|f1 modal - Euler-Bernoulli cantilever| / beam value (model form)",
+          "kind": "numerical",
+          "value": 0.0041297068616671885,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "periods_seen",
+          "description": "shortfall of full periods before the last one (needs >= 3)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.5,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "steps_per_period",
+          "description": "50 / time steps per linear period (below 1: at least 50 steps a period, period error of the trapezoidal rule about (2 pi / 50)^2 / 12 = 0.13 %)",
+          "kind": "validity",
+          "value": 0.06729434341173884,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-S3",
+          "text": "The solid model shall reproduce the CSM3 mean vertical displacement of point A inside the band of the published rows, or within 1 % of its nearest edge.",
+          "metric": "uy_mean_band_dev_pct",
+          "operator": "<=",
+          "limit": 1.0,
+          "units": "%",
+          "value": 0.05046147060246077,
+          "margin": 0.9495385293975392,
+          "verdict": "PASS (unverified)"
+        },
+        {
+          "id": "REQ-S4",
+          "text": "It shall reproduce the CSM3 vertical amplitude of point A inside the published band, or within 1 % of its nearest edge.",
+          "metric": "uy_amplitude_band_dev_pct",
+          "operator": "<=",
+          "limit": 1.0,
+          "units": "%",
+          "value": 0.0,
+          "margin": 1.0,
+          "verdict": "PASS (unverified)"
+        },
+        {
+          "id": "REQ-S5",
+          "text": "It shall reproduce the CSM3 mean horizontal displacement of point A inside the published band, or within 2 % of its nearest edge.",
+          "metric": "ux_mean_band_dev_pct",
+          "operator": "<=",
+          "limit": 2.0,
+          "units": "%",
+          "value": 0.0,
+          "margin": 2.0,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-S6",
+          "text": "It shall reproduce the CSM3 oscillation frequency inside the published band, or within 1 % of its nearest edge.",
+          "metric": "frequency_band_dev_pct",
+          "operator": "<=",
+          "limit": 1.0,
+          "units": "%",
+          "value": 0.07302846127460533,
+          "margin": 0.9269715387253947,
+          "verdict": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p02_time_step_s-0.000625",
+      "parameters": {
+        "density_kg_per_m3": 1000.0,
+        "shear_modulus_Pa": 500000.0,
+        "poisson_ratio": 0.4,
+        "gravity_m_per_s2": 2.0,
+        "flag_length_m": 0.35,
+        "flag_height_m": 0.02,
+        "cylinder_radius_m": 0.05,
+        "element_size_mm": 2.5,
+        "time_step_s": 0.000625
+      },
+      "derived": {
+        "beam_frequency_Hz": 1.0767094945878215,
+        "steps_per_linear_period": 1486.009000610235,
+        "height_over_length": 0.05714285714285715
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "integrator_small_amplitude",
+          "description": "|mean frequency over every period of a gravity/1000 run - linear modal f1| / f1 (the time integrator alone)",
+          "kind": "numerical",
+          "value": 4.5954375469030725e-05,
+          "tolerance": 0.002,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "returns_to_start",
+          "description": "max uy(A) over the last period / amplitude (undamped: the flag swings back to its undeformed height)",
+          "kind": "numerical",
+          "value": 0.00013095343855383277,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "periodic_troughs",
+          "description": "spread of the trough depths of uy(A) over all periods / mean depth",
+          "kind": "numerical",
+          "value": 0.0009351740373117087,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "periodic_periods",
+          "description": "spread of the periods / mean period",
+          "kind": "numerical",
+          "value": 0.000341621509652707,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "frequency_reference",
+          "description": "|f1 modal - Euler-Bernoulli cantilever| / beam value (model form)",
+          "kind": "numerical",
+          "value": 0.0041297068616671885,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "periods_seen",
+          "description": "shortfall of full periods before the last one (needs >= 3)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.5,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "steps_per_period",
+          "description": "50 / time steps per linear period (below 1: at least 50 steps a period, period error of the trapezoidal rule about (2 pi / 50)^2 / 12 = 0.13 %)",
+          "kind": "validity",
+          "value": 0.03364717170586942,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-S3",
+          "text": "The solid model shall reproduce the CSM3 mean vertical displacement of point A inside the band of the published rows, or within 1 % of its nearest edge.",
+          "metric": "uy_mean_band_dev_pct",
+          "operator": "<=",
+          "limit": 1.0,
+          "units": "%",
+          "value": 0.0808454290274024,
+          "margin": 0.9191545709725976,
+          "verdict": "PASS (unverified)"
+        },
+        {
+          "id": "REQ-S4",
+          "text": "It shall reproduce the CSM3 vertical amplitude of point A inside the published band, or within 1 % of its nearest edge.",
+          "metric": "uy_amplitude_band_dev_pct",
+          "operator": "<=",
+          "limit": 1.0,
+          "units": "%",
+          "value": 0.0,
+          "margin": 1.0,
+          "verdict": "PASS (unverified)"
+        },
+        {
+          "id": "REQ-S5",
+          "text": "It shall reproduce the CSM3 mean horizontal displacement of point A inside the published band, or within 2 % of its nearest edge.",
+          "metric": "ux_mean_band_dev_pct",
+          "operator": "<=",
+          "limit": 2.0,
+          "units": "%",
+          "value": 0.0,
+          "margin": 2.0,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-S6",
+          "text": "It shall reproduce the CSM3 oscillation frequency inside the published band, or within 1 % of its nearest edge.",
+          "metric": "frequency_band_dev_pct",
+          "operator": "<=",
+          "limit": 1.0,
+          "units": "%",
+          "value": 0.08121364455709472,
+          "margin": 0.9187863554429053,
+          "verdict": "PASS"
+        }
+      ]
+    }
+  ],
+  "run_id": "20261121-184353_flag_csm3_dt_r3",
+  "generated_utc": "2026-11-22T02:03:31+00:00",
+  "verification_status": "FAIL"
+}

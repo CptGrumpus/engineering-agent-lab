@@ -14,6 +14,22 @@
 #      time-step GCI under 0.1 %: REQ-S6 verified PASS.
 #   P4 uy amplitude about 64.83, ux mean about -14.64 mm inside the band; uy mean about -64.9 to -65.05, within the
 #      band's 1 % allowance: REQ-S3 to S5 verified PASS.
+#
+# Results (run 20261121-184353_flag_csm3_dt_r3): P1 held. All three steps completed, including 0.000625 s, which had
+#   diverged at the same increment in r1 and r2, so the high-frequency explanation stands. All 21 point checks pass.
+#   Small-amplitude companion 1.07222 / 1.07224 / 1.07221 Hz against the modal 1.07226; energy drift (return to the
+#   start height) 0.27 / 0.067 / 0.0085 mm, about 4x per halving.
+#   Frequency 1.0950 / 1.0948 / 1.0947 Hz: monotone, GCI 0.013 %, extrapolated 1.09459, 0.09 % under the band:
+#   REQ-S6 VERIFIED PASS (P3 held). ux mean -14.600 / -14.632 / -14.627 mm: oscillatory, 0.14 %, inside the band:
+#   REQ-S5 VERIFIED PASS.
+#   uy mean -64.611 / -64.799 / -64.818 mm (anomalous order 3.3) and uy amplitude 64.884 / 64.865 / 64.827 mm
+#   (divergent, R = 2.0) give no time-step estimate, so REQ-S3 and REQ-S4 are formally withheld. The values lie inside
+#   the band, or 0.08 % beyond its edge against a 1 % allowance, and move by only 0.03-0.09 % between steps. That is
+#   two small time-integration errors working against each other: the trapezoidal energy gain shrinks with the step
+#   while the HHT damping removes a little. P4 partly missed (predicted verified). P2 held: the r1/r2 values moved by
+#   under 0.1 %.
+#   Decision: CSM3 is closed at this level. A tighter estimate would chase a 0.05 % wobble on quantities whose
+#   published rows themselves differ by 1.8 % between time steps.
 
 [case]
 name = "flag_csm3_dt_r3"

@@ -1,0 +1,91 @@
+# Turek-Hron CSM3, revision 3: HHT numerical damping ALPHA = -0.05 (CalculiX's default) instead of 0, same steps
+# (0.0025 / 0.00125 / 0.000625 s) and settings as r2. Read flag_csm3_dt.toml, _r1 and _r2 for the history.
+#
+# Why: r1 and r2 both diverged at dt 0.000625 s at the same increment; r2 showed the Newton residual was not the
+# cause. The likely cause is energy growth in the high-frequency modes under the undamped trapezoidal rule. HHT
+# damping at ALPHA = -0.05 removes it at high frequency; at the swing's frequency (omega dt = 0.004 to 0.017
+# here) the algorithmic damping ratio is negligible. That is the claim this run tests, with the same checks and
+# tolerances: if the main swing were damped, returns_to_start and the frequency would show it.
+#
+# Predictions, written BEFORE the run:
+#   P1 All three steps complete, with Newton iterations staying at 2-4 per step (no creep).
+#   P2 The 0.0025 and 0.00125 s last-period values move by under 0.1 % from r1/r2 (damping negligible at 1.1 Hz).
+#   P3 returns_to_start still passes at every step (energy drift under 1 %); frequency 1.0949 Hz at every step,
+#      time-step GCI under 0.1 %: REQ-S6 verified PASS.
+#   P4 uy amplitude about 64.83, ux mean about -14.64 mm inside the band; uy mean about -64.9 to -65.05, within the
+#      band's 1 % allowance: REQ-S3 to S5 verified PASS.
+
+[case]
+name = "flag_csm3_dt_r3"
+model = "ccx_flag_dynamic"
+description = "Turek-Hron CSM3: the elastic flag (plane strain, St. Venant-Kirchhoff, mu_s 0.5 MPa, nu 0.4, rho 1000 kg/m3) released from rest under gravity (2 m/s2) and left to swing undamped; CalculiX NLGEOM *DYNAMIC (trapezoidal rule), 2.5 mm C3D8I, time step 0.0025 / 0.00125 / 0.000625 s, 6 s; checked against the published band, a small-amplitude companion run, the modal frequency and beam theory."
+assumptions = [
+  "Plane strain, per unit depth (established in flag_csm1_mesh).",
+  "St. Venant-Kirchhoff material (CalculiX *ELASTIC under NLGEOM), as the benchmark defines it.",
+  "No physical damping; a little numerical damping (HHT ALPHA = -0.05, CalculiX's default) that damps the high-frequency modes and leaves the 1.1 Hz swing essentially undamped (checked by returns_to_start and the frequency).",
+  "2.5 mm elements: the static mesh study (flag_csm1_mesh) puts uy(A) at this size 0.09 % from its extrapolated value.",
+]
+limitations = [
+  "Time-step convergence only; the spatial error is taken from the static mesh study at the same size.",
+  "The published rows are not labelled with their time step, so the reference is a band, not a value.",
+]
+
+[parameters]
+density_kg_per_m3 = 1000.0
+shear_modulus_Pa = 500000.0
+poisson_ratio = 0.4
+gravity_m_per_s2 = 2.0
+flag_length_m = 0.35
+flag_height_m = 0.02
+cylinder_radius_m = 0.05
+element_size_mm = 2.5
+time_step_s = 0.005
+
+[sweep]
+parameter = "time_step_s"
+values = [0.0025, 0.00125, 0.000625]
+
+[numerics]
+end_time_s = 6.0
+small_end_time_s = 6.0
+newton_residual_rel = 1e-6
+alpha = -0.05
+
+[verification]
+small_amplitude_rel_tol = 0.002
+energy_drift_max = 0.01
+period_spread_max = 0.01
+frequency_rel_tol = 0.02
+gci_max = 0.01
+
+[[requirements]]
+id = "REQ-S3"
+text = "The solid model shall reproduce the CSM3 mean vertical displacement of point A inside the band of the published rows, or within 1 % of its nearest edge."
+metric = "uy_mean_band_dev_pct"
+operator = "<="
+limit = 1.0
+units = "%"
+
+[[requirements]]
+id = "REQ-S4"
+text = "It shall reproduce the CSM3 vertical amplitude of point A inside the published band, or within 1 % of its nearest edge."
+metric = "uy_amplitude_band_dev_pct"
+operator = "<="
+limit = 1.0
+units = "%"
+
+[[requirements]]
+id = "REQ-S5"
+text = "It shall reproduce the CSM3 mean horizontal displacement of point A inside the published band, or within 2 % of its nearest edge."
+metric = "ux_mean_band_dev_pct"
+operator = "<="
+limit = 2.0
+units = "%"
+
+[[requirements]]
+id = "REQ-S6"
+text = "It shall reproduce the CSM3 oscillation frequency inside the published band, or within 1 % of its nearest edge."
+metric = "frequency_band_dev_pct"
+operator = "<="
+limit = 1.0
+units = "%"
