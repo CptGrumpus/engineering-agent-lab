@@ -58,7 +58,7 @@ each part on its own: CSM1 to CSM3 (solid only, CalculiX, nothing new needed), C
 only, OpenFOAM 14, nothing new needed), then FSI1 to FSI3 coupled through preCICE. Each part is
 verified before the coupled run, as in study 2.
 
-## Session handoff (2026-11-22, 10:50; first written 2026-11-21, 23:10)
+## Session handoff (2026-11-22, 17:10; first written 2026-11-21, 23:10)
 
 Read this first in a new session. Files under site/, docs/, DASHBOARD.md and `scripts/make_study_renders.py` belong
 to the dashboard session (it commits in this clone: add and commit only your own paths, in one command; never leave
@@ -69,15 +69,38 @@ predictions go into a case header and get committed BEFORE its evidence run; Res
 <run dir>`, commit with `git add -f` leaving out `*.inp`, `*.dat`, `__pycache__` and logs over about 600 KB, then
 `tests/test_privacy.py`.
 
-### Running at 13:50 (background shells: they should keep running after a /clear; confirm with the commands below)
+### Work order (user, 2026-11-22 ~17:05: "keep working through all of this")
+
+1. **Study 7 thermal network** (start now; light CPU, runs beside FSI). Load the frame-requirements skill first. Plan:
+   a lumped network built from the machine geometry (`models/motor/`, our ORNL machine): winding in slot, end winding,
+   teeth, yoke, housing/jacket, air gap, rotor, magnets; losses per region from the efficiency study (copper from the
+   phase resistance; stator and rotor iron from the dq tables' separate coefficients). Independent check: CalculiX 2D
+   steady conduction on one slot-pitch stator section with the same losses and boundary conditions (the plan in the
+   table at the top). Cooling is not in the design data we may read: state a synthetic jacket coolant temperature and
+   h, mark them synthetic, and show how the answer scales with them. Decision to frame (propose to the user, don't
+   assume): e.g. the continuous torque-speed envelope that keeps the winding under its insulation class limit, and
+   whether the efficiency map's hot corner (windings 100 C, magnets 80 C) is a consistent operating state. Thermal
+   is NOT in the agreed validation set; ORNL's thermal report pages 20-30 stay sealed (design text only, whitelist).
+2. **FSI1 r1** (~18:20, below): score, Results block, update `portfolio/17-...` draft (CLAUDE.md "Update the record").
+   Early: 2.5 mm uy(A) -0.41 %, 1.77 mm +0.04 % (the drift may not be real). Then FSI2 / FSI3 (periodic; set up cases,
+   predictions first; likely overnight runs).
+3. **Study 7 blind comparison:** only after the thermal network; ASK the user before opening any ORNL measured data.
+4. **Next new study:** C, random vibration of the study-4 bracket (documented below).
+5. **Small items:** the efficiency-map figure's contour-fill artefact at the map edge (`studies/motor_efficiency.py`
+   `efficiency_figure`: use pcolormesh or mask, the data is fine); optionally run the new eval
+   (`.claude/skills/verify-against-reference/evals/single-mesh-agreement-trap`) with the skill-eval-runner agent (ask:
+   it costs a session); study 18 extras (classification-line placement, head-to-shell junction).
+6. **Blocked:** study 19 part 2 (step data host certificate; the user may supply the files).
+
+### Running at 17:10 (background shells: they should keep running after a /clear; confirm with the commands below)
 
 Check with `ps -ef | grep "[h]arness pipeline"` (WSL jobs: `wsl.exe -e bash -lc "ps -eo etime,cmd | grep -E 'Foam|ccx' | grep -v grep"`).
-A run is finished when its `runs/<timestamp>_<case>/report.md` exists. Logs are in the 13:50 session's scratchpad,
+A run is finished when its `runs/<timestamp>_<case>/report.md` exists. Logs are in the 13:50-17:10 session's scratchpad,
 `$TEMP/claude/cb67dd1e648f8970/2466259e-97df-49dc-993b-d474fed5635d/scratchpad/` ($TEMP = the user's AppData/Local/Temp).
 
 | Job | Run dir (log) | Done about | When it finishes |
 |---|---|---|---|
-| Study 6 FSI1 r1 mesh study (fluid 2.5 / 1.77 / 1.25 mm, coupling 1e-6) | `runs/20261122-125809_turek_hron_fsi1_mesh_r1` (`fsi1_r1.log`) | about 19:00 | Score against the case header (P1-P5), Results block, commit. |
+| Study 6 FSI1 r1 mesh study (fluid 2.5 / 1.77 / 1.25 mm, coupling 1e-6) | `runs/20261122-125809_turek_hron_fsi1_mesh_r1` (`fsi1_r1.log`) | about 18:20 (1.25 mm mesh, window 2753 of 4800 at 17:05) | Score against the case header (P1-P5), Results block, commit. |
 
 ### Study 7 (motor): state and next steps
 
