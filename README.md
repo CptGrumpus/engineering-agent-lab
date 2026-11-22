@@ -45,7 +45,7 @@ The intended user is an automotive engineer with a master's degree in mechanical
 | Prius motor, efficiency map | `lut_efficiency` | Python (NumPy, SciPy) on the dq tables | `motor_prius_efficiency`, `motor_prius_efficiency_r1` |
 | Prius motor, rotor stress at overspeed | `pyleecan_gmsh_ccx_rotor` | Pyleecan geometry -> Gmsh -> CalculiX | `motor_prius_rotor_overspeed_mesh` |
 | Pressure vessel nozzle, design by analysis | `cadquery_ccx_vessel` | CadQuery -> Gmsh -> CalculiX, stress linearisation | `pv_nozzle_mesh`, `pv_nozzle_thickness` |
-| Turbulent pipe friction (RANS) | `openfoam_pipe_rans` | OpenFOAM 14 (in WSL), k-omega SST | `pipe_rans_mesh`, `pipe_rans_mesh_r1`, `pipe_rans_reynolds`, `pipe_rans_wf_mesh`, `pipe_rans_wf_yplus` |
+| Turbulent pipe friction (RANS) | `openfoam_pipe_rans` | OpenFOAM 14 (in WSL), k-omega SST | `pipe_rans_mesh`, `pipe_rans_mesh_r1`, `pipe_rans_mesh_r2`, `pipe_rans_reynolds`, `pipe_rans_wf_mesh`, `pipe_rans_wf_yplus` |
 
 ## Project folders
 

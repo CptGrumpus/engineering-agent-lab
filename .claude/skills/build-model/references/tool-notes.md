@@ -305,9 +305,10 @@ Traps found while building the studies in this repo, by tool.
 - **Until converged, the two routes to f disagree:** the wall shear and the meanVelocityForce gradient differ by the
   momentum still changing in the domain (7e-3 on the unconverged n320). The force-balance check is therefore also a
   convergence check; do not report the wall-shear f of a point that fails it.
-- **k-omega SST with the sublayer resolved (y+ below 1) still moves with the wall cell.** f went 0.01730 /
-  0.01783 / 0.01813 on 40 / 80 / 160 cells with the first face at y+ 1 / 0.5 / 0.25 (observed order 0.84): the
-  -0.9 % agreement with Prandtl at 80 cells was mesh error. Do not quote one mesh's agreement; extrapolate.
+- **k-omega SST with the sublayer resolved (y+ below 1) converges at about first order in f.** 0.01730 / 0.01783 /
+  0.01813 / 0.01828 on 40 / 80 / 160 / 320 cells (wall cell halved each time; observed order 0.84, then 0.98),
+  extrapolating to +2.4 % on Prandtl: the -0.9 % agreement at 80 cells was mesh error with the wrong sign. Do not
+  quote one mesh's agreement; extrapolate, and expect a GCI near 1 % even at 320 cells.
 - **Wall functions (nutkWallFunction, kqRWallFunction, omegaWallFunction, v14) sit about 5 % below Prandtl's
   smooth-pipe law** at Re 1e5 to 2e6, independent of the core mesh (GCI 0.02 %) and only weakly dependent on
   where the first cell sits (-5.23 to -4.75 % over cell-centre y+ 29-196). For a 5 % pressure-drop
