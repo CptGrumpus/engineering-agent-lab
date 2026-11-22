@@ -233,7 +233,7 @@ document.querySelectorAll('.chart').forEach(function (box) {
 """
 
 PAGES = [("index.html", "Overview"), ("geometry.html", "Design inputs"), ("open-circuit.html", "Open circuit"),
-         ("torque.html", "Torque")]
+         ("torque.html", "Torque"), ("efficiency.html", "Efficiency")]
 
 
 def page(fname, title, body, description, full=True):
@@ -407,6 +407,10 @@ def build_index(cases, runs, full=True):
         if not r["complete"]:
             return pill("RUNNING")
         return pill(r["report"]["verification_status"]) + " verification"
+    def eff_status(runs):
+        r = runs.get("motor_prius_efficiency_r1") or runs.get("motor_prius_efficiency")
+        return torque_status(r)
+
     status_rows = [
         ["Design inputs: stator, rotor, slot", "ORNL/TM-2005/33 Fig. 21, read from the PDF's vector text and outline",
          pill("PASS") + " rebuilt and compared", '<a href="geometry.html">Design inputs</a>'],
@@ -431,7 +435,9 @@ def build_index(cases, runs, full=True):
          torque_status(tc), '<a href="torque.html">Torque</a>'],
         ["Electromagnetics, torque against current: 50-350 A curve, M330-35A (the blind prediction)",
          "Same checks at every current", torque_status(tc1), '<a href="torque.html">Torque</a>'],
-        ["Efficiency map", "Copper and iron losses on the torque-speed plane", pill("NOT STARTED"), ""],
+        ["Efficiency map", "dq look-up tables (FEMM) at 20 and 80 °C magnets; lowest-loss current under the 500 V bus "
+         "and 212 A limits; checks against the open-circuit and torque studies and on the map's own interpolation",
+         eff_status(runs), '<a href="efficiency.html">Efficiency</a>'],
         ["Rotor bridge stress at overspeed (REQ-M4)", "CalculiX, plane stress, centrifugal and magnet loads, 7200 rpm; "
          "linearized bridge stress against M330-35A's yield (335 MPa)",
          (torque_status(so) + ": REQ-M4 fail, 424 MPa") if so and so["complete"] else torque_status(so), ""],
@@ -470,7 +476,9 @@ before any data was seen:</li>
         ["Back-EMF constant", "within 5 %", pill("SEALED") + " prediction written"],
         ["Peak torque at several currents", "within 10 %",
          pill("SEALED") + (" prediction written" if tc1 and tc1["complete"] else " stand-in steel curve still running")],
-        ["Efficiency at sample points", "within 2 percentage points", pill("SEALED") + " not yet predicted"],
+        ["Efficiency at sample points", "within 2 percentage points",
+         pill("SEALED") + (" prediction written" if (runs.get("motor_prius_efficiency_r1") or {}).get("complete")
+                           else " first map written; revision running")],
     ])}
 <div class="col">
 <p>The limits may change only before the ORNL data is opened, and only with a written reason. After that, any change is
@@ -1102,18 +1110,145 @@ above 200 A therefore rests on a stated assumption about deep saturation.</p></d
     return page("torque.html", "Prius Torque Curve", body, "Study 7: torque against current of the Prius motor.")
 
 
+# --------------------------------------------------------------------------- page: efficiency map
+
+EFF_CASES = ["motor_prius_efficiency", "motor_prius_efficiency_r1"]
+LUT_CASES = ["motor_prius_lut_mesh", "motor_prius_lut_cold", "motor_prius_lut_hot", "motor_prius_lut_cold_lowiq",
+             "motor_prius_lut_hot_lowiq"]
+EFF_NOTES = {
+    "motor_prius_efficiency": "First map, on the 25 A tables. Not verified: below 30 N m at 4000-6000 rpm the best "
+                              "operating point uses only 2-5 A of q-axis current, inside the table's first cell, and the "
+                              "map there moved by up to 10 points between the half and the full table.",
+    "motor_prius_efficiency_r1": "The tables gain rows at 6.25 A steps below 50 A of q-axis current, and the map itself "
+                                 "is checked: the map from the half table against the map from the full one.",
+    "motor_prius_lut_mesh": "Mesh study for the tables: fineness 2 within 0.4 % of 8 on torque and iron loss.",
+    "motor_prius_lut_cold": "dq table, magnets at 20 °C: id 0 to −300 A, iq 0 to 300 A in 25 A steps (169 FEMM solves).",
+    "motor_prius_lut_hot": "The same table with magnets at 80 °C.",
+    "motor_prius_lut_cold_lowiq": "Supplementary rows at iq 6.25-43.75 A (cold). The 25 A row, computed again, is "
+                                  "bit-identical to the main table.",
+    "motor_prius_lut_hot_lowiq": "Supplementary rows at iq 6.25-43.75 A (hot).",
+}
+
+
+def eff_metrics_table(run):
+    from studies.motor_efficiency import REF_POINTS  # noqa: PLC0415
+
+    pts = [pt for pt in run["points"] if pt.get("status") == "completed"]
+    names = [pt["label"].split("_", 1)[1] for pt in pts]
+    rows = [["Peak efficiency"] + [f'{pt["metrics"]["peak_efficiency_pct"]:.2f} % at {pt["metrics"]["peak_efficiency_speed_rpm"]:.0f} rpm, '
+                                   f'{pt["metrics"]["peak_efficiency_torque_Nm"]:.0f} N m' for pt in pts]]
+    for n, t in REF_POINTS:
+        rows.append([f"{n} rpm, {t} N m"] + [f'{pt["metrics"][f"efficiency_{n}rpm_{t}Nm_pct"]:.2f} %' for pt in pts])
+    rows.append(["Lowest power at 212 A, base speed to 6000 rpm (REQ-M5 ≥ 50 kW)"]
+                + [f'{pt["metrics"]["min_power_rated_speed_range_kW"]:.1f} kW' for pt in pts])
+    rows.append(["400 N m reachable at 212 A up to"] + [f'{pt["metrics"]["base_speed_rated_torque_rpm"]:.0f} rpm' for pt in pts])
+    rows.append(["Phase resistance"] + [f'{pt["solver_outputs"]["phase_resistance_ohm"] * 1e3:.1f} mΩ' for pt in pts])
+    return table(["Quantity"] + [E(n) for n in names], rows, "num")
+
+
+def eff_section(case, run):
+    name = case["name"]
+    head = f'<h3 id="{name}">{E(name)}</h3><p>{E(EFF_NOTES.get(name, case["toml"]["case"]["description"]))}</p>'
+    record = f'<details><summary>Case record: predictions before the run, results after</summary><pre>{E(case["header"])}</pre></details>'
+    if run is None:
+        return head + '<p class="muted">Queued: no run yet.</p>' + record
+    if not run["complete"]:
+        return head + f'<p class="muted mono">run {E(run["id"])} (still running)</p>' + record
+    body = ""
+    if name.startswith("motor_prius_efficiency"):
+        body += eff_metrics_table(run)
+        rows = []
+        for pt in run["points"]:
+            for c in pt["checks"]:
+                rows.append([E(pt["label"].split("_", 1)[1]), f'<code>{E(c["id"])}</code>', E(c["description"]),
+                             fmt(c["value"], 3), fmt(c["tolerance"], 3), pill(c["status"])])
+        body += table(["Scenario", "Check", "Description", "Value", "Limit", "Status"], rows)
+    else:
+        ok = sum(1 for pt in run["points"] if point_pass(pt)[0] == point_pass(pt)[1])
+        body += f'<p>{ok} of {len(run["points"])} columns pass every check; verification {pill(run["report"]["verification_status"])}.</p>'
+    req = ""
+    if run["report"] and name.startswith("motor_prius_efficiency"):
+        req = "<p>Requirement verdicts: " + ", ".join(
+            f'{E(pt["label"].split("_", 1)[1])} {pill(pt["requirements"][0]["verdict"])}'
+            for pt in run["report"]["points"] if pt.get("requirements")) + "</p>"
+    prov = f'<p class="muted mono">run {E(run["id"])}, verification {E(run["report"]["verification_status"])}</p>'
+    return head + body + req + record + prov
+
+
+def build_efficiency(runs):
+    ecases = [case_record(c) for c in EFF_CASES]
+    lcases = [case_record(c) for c in LUT_CASES]
+    best = runs.get("motor_prius_efficiency_r1")
+    if not (best and best["complete"]):
+        best = runs.get("motor_prius_efficiency")
+    figs = ""
+    if best and best["complete"]:
+        for pt in best["points"]:
+            figs += (f'<figure>{img64(pt["dir"] / "response.png", "Efficiency map")}<figcaption>{E(pt["label"])}: '
+                     "motor-only efficiency over speed and torque, with the torque limit at the 212 A design current. "
+                     f'Run {E(best["id"])}.</figcaption></figure>')
+    sections = "".join(eff_section(c, runs.get(c["name"])) for c in ecases)
+    lut_sections = "".join(eff_section(c, runs.get(c["name"])) for c in lcases)
+    body = f"""
+<div class="col">
+<div class="eyebrow">Study 7 · efficiency</div>
+<h1>Efficiency map</h1>
+<p class="lede">How efficient is the motor across its torque-speed range, and does it hold its rated 50 kW from base
+speed to 6000 rpm within the 500 V bus and the 212 A copper limit? The map comes from look-up tables of FEMM solves,
+searched for the lowest-loss current at every operating point.</p>
+</div>
+
+<div class="callout">
+<p><b>Framing (user's decision, 2026-11-22):</b> motor only, copper and iron loss; no mechanical, magnet eddy-current,
+AC copper or inverter loss, so these efficiencies are upper bounds on what a dynamometer would measure. Two corners of a
+temperature band: cold (everything at 20 °C) and hot (windings 100 °C, magnets 80 °C). Bus 500 V; design current
+212 A rms.</p>
+<p><b>Blind:</b> no ORNL efficiency value has been opened. The sample points are chosen to span the plane, not taken
+from any ORNL test plan.</p>
+</div>
+
+<h2>Method</h2>
+<div class="col">
+<ul>
+<li><b>dq tables.</b> At each d-axis current, one FEMM run per q-axis current over one electrical period at 1000 rpm
+gives the mean torque, the dq flux linkages and the iron-loss coefficients of P = A f + B f² + C f<sup>1.5</sup>.
+One table per magnet temperature.</li>
+<li><b>The search.</b> The tables are interpolated (cubic) onto a 1 A grid. At each speed and torque, the feasible
+current with the least copper plus iron loss is chosen, under the voltage limit V<sub>dc</sub>/√6 (204 V phase rms,
+the resistive drop included) and the current limit.</li>
+<li><b>Copper.</b> 72 series turns per phase, 8.49 mm² of bare copper per turn, end connections estimated from the
+geometry: 59.6 mΩ per phase at 20 °C, 78.4 mΩ at 100 °C.</li>
+</ul>
+</div>
+
+<h2>Result</h2>
+{figs or '<p class="muted">The maps appear when the efficiency run has finished.</p>'}
+
+<h2>Runs</h2>
+{sections}
+
+<h2>The tables behind the map</h2>
+{lut_sections}
+
+<p class="muted">Generated by <code>reports/motor/build_report.py</code>.</p>
+"""
+    return page("efficiency.html", "Prius Efficiency Map", body, "Study 7: motor-only efficiency map of the Prius motor.")
+
+
 def main():
     cases = [case_record(c) for c in CASES]
     tcases = [case_record(c) for c in TORQUE_CASES]
     bcases = [case_record(c) for c in BRACKET_OC]
     btcases = [case_record(c) for c in BRACKET_TQ]
-    runs = {c: load_run(c) for c in CASES + TORQUE_CASES + BRACKET_OC + BRACKET_TQ + ["motor_prius_rotor_overspeed_mesh"]}
+    runs = {c: load_run(c) for c in CASES + TORQUE_CASES + BRACKET_OC + BRACKET_TQ + EFF_CASES + LUT_CASES
+            + ["motor_prius_rotor_overspeed_mesh"]}
     (OUT / "index.html").write_text(build_index(cases, runs), encoding="utf-8")
     if len(sys.argv) > 1:  # also write the artifact's main page (no document skeleton) to the given path
         Path(sys.argv[1]).write_text(build_index(cases, runs, full=False), encoding="utf-8")
     (OUT / "geometry.html").write_text(build_geometry(), encoding="utf-8")
     (OUT / "open-circuit.html").write_text(build_open_circuit(cases + bcases, runs), encoding="utf-8")
     (OUT / "torque.html").write_text(build_torque(tcases + btcases, runs), encoding="utf-8")
+    (OUT / "efficiency.html").write_text(build_efficiency(runs), encoding="utf-8")
     for f, _ in PAGES:
         print(f"wrote {OUT / f} ({(OUT / f).stat().st_size / 1e3:.0f} kB)")
 
