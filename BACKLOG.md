@@ -80,7 +80,7 @@ A run is finished when its `runs/<timestamp>_<case>/report.md` exists. Logs are 
 | Study 7 low-iq dq tables, cold then hot (FEMM, 91 solves each) | `runs/*_motor_prius_lut_cold_lowiq`, then `*_hot_lowiq` (`motor_prius_lut_cold_lowiq.log`, `..._hot_lowiq.log`) | about 14:30, 15:20 | Score against the case headers (P1, P2, P4; P3 is scored by the efficiency r1), Results blocks, commit. Then `motor_prius_efficiency_r1` (below). |
 | Study 6 FSI1 r1 mesh study (fluid 2.5 / 1.77 / 1.25 mm, coupling 1e-6) | `runs/20261122-125809_turek_hron_fsi1_mesh_r1` (`fsi1_r1.log`) | about 19:00 | Score against the case header (P1-P5), Results block, commit. |
 | Study 19 pipe mesh r1 (n 80 / 160 / 320) | `runs/*_pipe_rans_mesh_r1` (`pipe_rans_mesh_r1.log`) | about 14:30 | Score (P1-P4), Results block, commit. |
-| Study 19 pipe probe, last point (scratch: wall functions, Re 2e6, n160) | `runs/20261122-122935_scratch_pipe_r1_probe` (`pipe/probe.log`) | about 14:00 | Its number goes in the header of `pipe_rans_wf_mesh` (to write, predictions first; n 40 / 80 / 160 at Re 2e6, first-face y+ 160 held, axial_length_rule geometric_mean). Do not commit scratch runs. |
+| Study 19 wall functions at Re 2e6: core mesh study, then the first-cell placement sweep (9a0cfc1) | `runs/*_pipe_rans_wf_mesh`, `runs/*_pipe_rans_wf_yplus` (`pipe_rans_wf_mesh.log`, `pipe_rans_wf_yplus.log`) | about 14:40 | Score (P1-P4 each), Results blocks, commit. The probe (scratch, not committed) put n160 at -5.04 % against n40's -5.15 %: not the outer mesh. |
 
 ### Study 7 (motor): state and next steps
 
@@ -147,8 +147,8 @@ A run is finished when its `runs/<timestamp>_<case>/report.md` exists. Logs are 
   unverified. The smoke test's -0.9 % was the n80 mesh's error. Reynolds sweep done (587dadd): low_re within 2 % of
   Prandtl at Re 2e4-2e6 (on those under-resolved meshes); wall functions -5.2 % at every Re (REQ-T1 FAIL); Re 2e6
   flagged by checkMesh on aspect ratio (the axial length floor D/50 in `grading()`). `pipe_rans_mesh_r1` (a441f36,
-  n 80 / 160 / 320; n640 does not converge in reasonable time) running. Axial-length option d5e385a. **Next:**
-  `pipe_rans_wf_mesh` at Re 2e6 (is -5.2 % the wall function's constants or the coarse outer mesh?).
+  n 80 / 160 / 320; n640 does not converge in reasonable time) running. Axial-length option d5e385a. Wall-function cases
+  running (above).
 - Part 2, the backward-facing step against Driver & Seegmiller's measurements: **waiting on data.** On 2026-11-22
   ~10:20 turbmodels.larc.nasa.gov had a TLS certificate fault and the ERCOFTAC classic database
   (cfd.mace.manchester.ac.uk) refused connections; the KB wiki (UFR 3-15) gives only secondary values (Re_H 37500,
