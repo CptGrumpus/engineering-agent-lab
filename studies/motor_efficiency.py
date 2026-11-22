@@ -105,6 +105,7 @@ def load_lut(run_dir: Path | list[Path]) -> dict:
         grid[k] = get(k)
     for c in "ABC":
         grid[f"iron_{c}_W"] = get(f"stator_iron_{c}_W") + get(f"rotor_iron_{c}_W")
+        grid[f"stator_iron_{c}_W"] = get(f"stator_iron_{c}_W")  # the thermal network places the cores' losses apart
     return grid
 
 
