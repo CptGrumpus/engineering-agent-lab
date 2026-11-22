@@ -63,7 +63,7 @@ VP = [
     {"id": "cold_plate", "study": "cold_plate", "tab": "Cold plate", "legend": "NT11", "unit": "°C",
      "model": "Cold plate · 3 mm 6061-T6 on a 1 mm water channel, 30 kW/m²",
      "lines": ["Solver: OpenFOAM 14 → CalculiX 2.22 · coupled, 28 passes",
-               "A 30 mm slice of the plane-strain section · coolant left to right",
+               "A 30 mm slice of the plane-strain section · coolant left to right · the 3D view keeps every fourth node through the thickness",
                "Component face 40.99 °C against 45 · coolant rise 7.20 K"]},
     {"id": "duct", "study": "cfd", "tab": "Flow", "legend": "U, axial", "unit": "m/s",
      "model": "Coolant passage · 20 × 1 mm, water at 0.1 m/s mean, Re 199",

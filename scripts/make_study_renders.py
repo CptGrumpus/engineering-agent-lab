@@ -41,16 +41,16 @@ def ccx():
 
 
 def resolve(src: Path, deck: str, extra: tuple[str, ...], work: Path, printed: str, add_output: str = "",
-            every_increment: bool = False) -> Path:
+            every_increment: bool = False, first_step: bool = False) -> Path:
     """Solve a saved deck again in `work` and check that its printed output file matches the saved one.
-    `add_output` (field-output request lines) is inserted before the deck's last *END STEP; it changes
-    what is written to the .frd, not the solution."""
+    `add_output` (field-output request lines) is inserted before the deck's last *END STEP (the first,
+    with first_step); it changes what is written to the .frd, not the solution."""
     work.mkdir(parents=True, exist_ok=True)
     for n in (f"{deck}.inp", *extra):
         shutil.copyfile(src / n, work / n)
     if add_output:
         text = (work / f"{deck}.inp").read_text(encoding="latin-1")
-        i = text.upper().rindex("*END STEP")
+        i = text.upper().index("*END STEP") if first_step else text.upper().rindex("*END STEP")
         (work / f"{deck}.inp").write_text(text[:i] + add_output.strip() + "\n" + text[i:], encoding="latin-1")
     if every_increment:
         # output at every increment. CalculiX shares one frequency between a step's field (.frd) and
@@ -171,6 +171,52 @@ JOINT = REPO / "runs/20261121-110554_bolted_joint_mesh_r1/points/p02_element_siz
 OFFSET = 1_000_000                  # bottom plate node and element numbers
 
 
+def scene_joint_section():
+    """Section through the bolt axis after clamping: the axial stress in both plates on the half model's
+    symmetry plane, which is where the pressure cone shows. The clamp step is solved again with a stress
+    output request added (frequency 1000, the same as the step's other requests, so it writes at the end
+    of the step only); the printed output must match the evidence run's exactly."""
+    import re
+
+    from harness.calculix import read_frd
+    from harness.femesh import compact, read_inp
+
+    work = resolve(JOINT / "solver", "job", (), BUILD / "bolted_joint_section_solve", "job.dat",
+                   add_output="*EL FILE, FREQUENCY=1000\nS", first_step=True)
+    rec = read_json(JOINT / "point.json")
+    p = rec["parameters"]
+    frd = read_frd(work / "job.frd")
+    S = next(b for n, b in frd["blocks"] if n == "STRESS")          # end of step 1: clamped
+    view = work / "view.inp"
+    view.write_text(re.sub(r"TYPE=C3D8I", "TYPE=C3D8", (work / "job.inp").read_text(encoding="latin-1")),
+                    encoding="latin-1")
+    nodes, elems = read_inp(view)
+    ids = np.array(sorted({n for e in elems for n in e[1]}))
+    si = {int(n): i for i, n in enumerate(S["ids"])}
+    szz = np.array([S["SZZ"][si[int(n)]] for n in ids])
+    xyz = np.array([nodes[int(n)] for n in ids])
+    # the washer pressure the clamp is applied as: the stress under the washer must match it
+    washer = 15000 / 2 / (np.pi * ((p["washer_diameter_mm"] / 2) ** 2 - (p["hole_diameter_mm"] / 2) ** 2) / 2)
+    top = np.abs(xyz[:, 2] - p["top_thickness_mm"]) < 1e-9
+    r = np.hypot(xyz[:, 0], xyz[:, 1])
+    under = top & (r > p["hole_diameter_mm"] / 2 + 0.6) & (r < p["washer_diameter_mm"] / 2 - 0.6)
+    mean_under = float(-szz[under].mean())
+    if abs(mean_under / washer - 1) > 0.10:
+        raise RuntimeError(f"stress under the washer {mean_under:.1f} MPa against the applied {washer:.1f} MPa")
+    tris = mr.surface({int(n): nodes[int(n)] for n in ids}, elems, ids)
+    xyz, tris, szz = compact(xyz, tris, szz)
+    R, rh = p["plate_outer_diameter_mm"] / 2, p["hole_diameter_mm"] / 2
+    # compression drawn as a positive number; 30 MPa bands with zero in the middle of the lowest, so
+    # round-off around an unloaded region can't flicker across a band edge
+    return write_scene(BUILD / "bolted_joint_section", xyz, tris, -szz, field="compressive axial stress", units="MPa",
+                       vmin=-15.0, vmax=255.0, bands=9, band_colors=mr.bands(9), elev=16, azim=-90,
+                       sharp_angle_deg=50, distance_factor=3.0, resolution=[1400, 800],
+                       expected_volume_mm3=np.pi * (R ** 2 - rh ** 2) / 2 * (p["top_thickness_mm"] + p["bottom_thickness_mm"]),
+                       title="Bolted joint: section through the bolt axis after clamping",
+                       caption=f"Axial stress in both plates; the compression spreads from the washers in a cone. "
+                               f"Under the washer {mean_under:.0f} MPa against the {washer:.0f} MPa applied.")
+
+
 def scene_bolted_joint():
     """The bottom plate after clamping, with the contact pressure the top plate puts on its face.
 
@@ -237,7 +283,10 @@ PLATE = REPO / "runs/20261121-094235_cold_plate_mesh_r1/points/p02_cells_across_
 SLICE_MM = 30.0                     # the plate is a plane-strain section: drawn as a 30 mm wide slice
 
 
-def scene_cold_plate():
+def scene_cold_plate(thin: int = 1, name: str = "cold_plate"):
+    """thin > 1 keeps every thin-th node row through the thickness (and both faces): the lighter mesh
+    for the page's 3D view. Temperature changes by about 0.5 K through the 3 mm, so the colour bands,
+    which change along the flow, keep their full resolution."""
     from harness.runio import read_series
 
     rec = read_json(PLATE / "point.json")
@@ -251,13 +300,18 @@ def scene_cold_plate():
     i, j = np.searchsorted(xs, x.round(6)), np.searchsorted(ys, y.round(6))
     grid = np.empty((len(xs), len(ys)), dtype=np.int64)
     grid[i, j] = np.arange(len(x))
+    if thin > 1:
+        rows = sorted(set(range(0, len(ys), thin)) | {len(ys) - 1})
+        keep = grid[:, rows]
+        x, y, T = x[keep.ravel()], y[keep.ravel()], T[keep.ravel()]
+        grid = np.arange(keep.size).reshape(keep.shape)
     a, b, c, d = grid[:-1, :-1].ravel(), grid[1:, :-1].ravel(), grid[1:, 1:].ravel(), grid[:-1, 1:].ravel()
     tris = np.vstack([np.column_stack([a, b, c]), np.column_stack([a, c, d])])
     # extrude the x-y section along the width; in the scene the plate's thickness direction is up
     xyz2, faces, val = extrude_planar(np.column_stack([x, y]), tris, T, thickness=SLICE_MM)
     xyz = np.column_stack([xyz2[:, 0] - 25.0, -xyz2[:, 2], xyz2[:, 1] - 2.5])   # a rotation, not a mirror
     t = rec["parameters"]["plate_thickness_mm"]
-    return write_scene(BUILD / "cold_plate", xyz, faces, val, field="temperature", units="°C",
+    return write_scene(BUILD / name, xyz, faces, val, field="temperature", units="°C",
                        vmin=30.5, vmax=41.5, bands=11, band_colors=mr.bands(11), elev=30, azim=-62,
                        sharp_angle_deg=60, distance_factor=3.0, resolution=[1400, 900],
                        expected_volume_mm3=(xs[-1] - xs[0]) * t * SLICE_MM,
@@ -355,7 +409,11 @@ def scene_strut():
     return strut_frame(d, STRUT_FRAMES - 1, "strut", strut_box(d))
 
 
-SCENES = {"strap_proof": scene_strap_proof, "bolted_joint": scene_bolted_joint, "cold_plate": scene_cold_plate,
+def scene_cold_plate_3d():
+    return scene_cold_plate(thin=4, name="cold_plate_3d")
+
+
+SCENES = {"cold_plate_3d": scene_cold_plate_3d, "strap_proof": scene_strap_proof, "bolted_joint": scene_bolted_joint, "joint_section": scene_joint_section, "cold_plate": scene_cold_plate,
           "strut": scene_strut}
 
 

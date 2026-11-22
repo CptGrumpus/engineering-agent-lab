@@ -31,10 +31,12 @@ OUT = HERE / "v2"
 INDEX = OUT / "m3d.json"
 MAGIC = 0x3144334D                                   # "M3D1" little-endian
 
-# viewer tab id -> render scene; the section close-up (contact), the flow height field and the two
-# heaviest meshes (strap proof test, cold plate) stay as images
+# viewer entry -> render scene. The contact close-up stays an image (its 1 mm patch is lost in a
+# rotatable whole model) and so does the strap proof test (an unstructured 331 000-vertex mesh). The
+# cold plate uses a lighter mesh: every fourth node through the thickness (make_study_renders.py)
 SCENES = {"bracket_opt": "opt/bracket_opt_hero", "cantilever": "cantilever", "fatigue": "fatigue",
-          "fin": "fin", "mode1": "mode1", "strut": "strut", "bolted_joint": "bolted_joint"}
+          "fin": "fin", "mode1": "mode1", "strut": "strut", "bolted_joint": "bolted_joint", "duct": "duct",
+          "cold_plate": "cold_plate_3d"}
 
 
 def feature_edges(pts: np.ndarray, tris: np.ndarray, angle_deg: float) -> np.ndarray:
