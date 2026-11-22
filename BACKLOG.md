@@ -147,8 +147,9 @@ A run is finished when its `runs/<timestamp>_<case>/report.md` exists. Logs are 
 - Part 2, the backward-facing step against Driver & Seegmiller's measurements: **waiting on data.** On 2026-11-22
   ~10:20 turbmodels.larc.nasa.gov had a TLS certificate fault and the ERCOFTAC classic database
   (cfd.mace.manchester.ac.uk) refused connections; the KB wiki (UFR 3-15) gives only secondary values (Re_H 37500,
-  expansion 1.125, inflow BL at x/H = -4: delta 19 mm, theta 1.9 mm). Retry the hosts; never fill values from memory;
-  never bypass a certificate error.
+  expansion 1.125, inflow BL at x/H = -4: delta 19 mm, theta 1.9 mm). Retried 2026-11-22 ~16:05:
+  turbmodels.larc.nasa.gov still serves a certificate for other larc.nasa.gov names (hostname mismatch). Retry the
+  hosts, or ask the user for the data files; never fill values from memory; never bypass a certificate error.
 
 ### Documented, not started (user, 2026-11-22: "work on the agreed ones, document the rest")
 
