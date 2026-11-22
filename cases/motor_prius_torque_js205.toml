@@ -20,6 +20,20 @@
 #   P4 About 25 min.
 # If P2's size holds, the blind torque prediction above 300 A carries a tail uncertainty of about +-1 %, stated with it;
 # the prediction itself stays on Js 2.0 T (decided before the run, whatever the result).
+#
+# Results (run 20261122-091610_motor_prius_torque_js205): verification PASS.
+#   P1 HELD: 10/10 point checks; power balance 8.1e-4 and 8.9e-4 (tolerance 2e-2).
+#   P2 PARTLY: MTPA torque 579.35 N m at 300 A (+1.75 % on r1's 569.4; predicted +0.7 %, range +0.2 to +1.5: MISSED,
+#      larger) and 618.30 N m at 350 A (+1.96 % on 606.4; predicted +1.0 %, range +0.4 to +2.0: HELD, near the top).
+#      The deep-saturation tail weighs about twice what the estimate gave it at 300 A: there the teeth already sit
+#      well above 1.8 T.
+#   P3 HELD: MTPA angle 47.9 deg at 300 A (+0.03 deg), 46.9 deg at 350 A (+0.15 deg). REQ-M3 as predicted with this
+#      case's (old) copper area; with the corrected area (CORRECTION note in motor_prius_torque_current_r1.toml) both
+#      currents FAIL (35.3 and 41.2 A/mm^2).
+#   P4 HELD: 26 min (09:16-09:41).
+# So the blind torque prediction carries a tail uncertainty of about +2 % per +0.05 T of saturation polarization at
+# 300-350 A (back-EMF -0.35 %, motor_prius_ornl_oc_js205). Both currents lie beyond the corrected 212 A copper limit.
+# The prediction stays on Js 2.0 T, as decided before the run.
 
 [case]
 name = "motor_prius_torque_js205"
