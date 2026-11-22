@@ -69,17 +69,18 @@ predictions go into a case header and get committed BEFORE its evidence run; Res
 <run dir>`, commit with `git add -f` leaving out `*.inp`, `*.dat`, `__pycache__` and logs over about 600 KB, then
 `tests/test_privacy.py`.
 
-### Running at 10:50 (background shells started by the 10:50 session: they should keep running after a /clear; confirm with the commands below)
+### Running at 13:50 (background shells: they should keep running after a /clear; confirm with the commands below)
 
 Check with `ps -ef | grep "[h]arness pipeline"` (WSL jobs: `wsl.exe -e bash -lc "ps -eo etime,cmd | grep -E 'Foam|ccx' | grep -v grep"`).
-A run is finished when its `runs/<timestamp>_<case>/report.md` exists. Logs are in the 10:50 session's scratchpad,
-`$TEMP/claude/cb67dd1e648f8970/4c94c999-0080-4004-9acc-817969cda447/scratchpad/` ($TEMP = the user's AppData/Local/Temp).
+A run is finished when its `runs/<timestamp>_<case>/report.md` exists. Logs are in the 13:50 session's scratchpad,
+`$TEMP/claude/cb67dd1e648f8970/2466259e-97df-49dc-993b-d474fed5635d/scratchpad/` ($TEMP = the user's AppData/Local/Temp).
 
 | Job | Run dir (log) | Done about | When it finishes |
 |---|---|---|---|
-| Study 7 dq table, hot (the cold one is done: 2bf53fc, PASS) | `runs/20261122-115824_motor_prius_lut_hot` (`motor_prius_lut_hot.log`) | 13:36 | Score against its case header (P1-P4), Results block, commit. Then the efficiency case below. |
-| Study 6 FSI1 r1 mesh study (fluid 2.5 / 1.77 / 1.25 mm, coupling 1e-6) | `runs/20261122-125809_turek_hron_fsi1_mesh_r1` (this session's scratchpad, `$TEMP/claude/cb67dd1e648f8970/2466259e-97df-49dc-993b-d474fed5635d/scratchpad/fsi1_r1.log`) | about 19:00 | Score against the case header (P1-P5), Results block, commit. |
-| Study 19 pipe probe (scratch: n80 and n640 low_re with the new axial length; wf Re 2e6 n160) | `runs/20261122-122935_scratch_pipe_r1_probe` (same scratchpad, `pipe/probe.log`) | about 13:20 | Its numbers go in the headers of `pipe_rans_mesh_r1` and `pipe_rans_wf_mesh` (to write, predictions first). Do not commit scratch runs. |
+| Study 7 low-iq dq tables, cold then hot (FEMM, 91 solves each) | `runs/*_motor_prius_lut_cold_lowiq`, then `*_hot_lowiq` (`motor_prius_lut_cold_lowiq.log`, `..._hot_lowiq.log`) | about 14:30, 15:20 | Score against the case headers (P1, P2, P4; P3 is scored by the efficiency r1), Results blocks, commit. Then `motor_prius_efficiency_r1` (below). |
+| Study 6 FSI1 r1 mesh study (fluid 2.5 / 1.77 / 1.25 mm, coupling 1e-6) | `runs/20261122-125809_turek_hron_fsi1_mesh_r1` (`fsi1_r1.log`) | about 19:00 | Score against the case header (P1-P5), Results block, commit. |
+| Study 19 pipe mesh r1 (n 80 / 160 / 320) | `runs/*_pipe_rans_mesh_r1` (`pipe_rans_mesh_r1.log`) | about 14:30 | Score (P1-P4), Results block, commit. |
+| Study 19 pipe probe, last point (scratch: wall functions, Re 2e6, n160) | `runs/20261122-122935_scratch_pipe_r1_probe` (`pipe/probe.log`) | about 14:00 | Its number goes in the header of `pipe_rans_wf_mesh` (to write, predictions first; n 40 / 80 / 160 at Re 2e6, first-face y+ 160 held, axial_length_rule geometric_mean). Do not commit scratch runs. |
 
 ### Study 7 (motor): state and next steps
 
@@ -101,17 +102,16 @@ A run is finished when its `runs/<timestamp>_<case>/report.md` exists. Logs are 
   B, C with P = A f + B f^2 + C f^1.5), `models/motor/efficiency_map.py` + `studies/motor_efficiency.py` (lowest-loss
   feasible current per speed and torque under the voltage limit Vdc / sqrt 6 and a current limit). Mesh study
   `motor_prius_lut_mesh` done: fineness 2 within 0.4 % of 8 (grids revised to 2, reason in the case).
-- **NEXT when both tables are in: write `cases/motor_prius_efficiency.toml`** (model `lut_efficiency`), predictions
-  BEFORE running. Two scenarios: cold (lut_run = the cold table's run id, magnet_temperature_C 20, winding 20) and hot
-  (the hot run id, magnets 80, winding 100). Parameters: series_turns_per_phase 72, turn_copper_area_mm2 8.492,
-  stack_length_m 0.08382, end_connection_length_m 0.1206 (a semicircle over the 6-slot span at the slot mid radius,
-  97.7 mm: its axial height 38.4 mm matches ORNL's "end winding extensions approximately 1.5 in"), copper 1.72e-8 ohm m,
-  alpha 0.00393; phase resistance about 59.6 mOhm at 20 C; bus_voltage_V 500; current_limit_design_A 212;
-  current_limit_map_A 300; speeds 500-6000 step 250; torques 10-400 step 10 (or to the envelope); rated 50 kW / 400 N m;
-  refs for the cold scenario: ref_back_emf_V 111.006 (r3 at fineness 2), ref_mtpa_100A_Nm 251.6, ref_mtpa_200A_Nm 456.9
-  (r1, fineness 4: tolerance 1 %); the hot scenario sets the refs to 0 (skipped). Verification keys: back_emf_rel_tol,
-  mtpa_rel_tol, interp_halfgrid_rel_tol. Requirement suggestion: REQ-M5 rated 50 kW from base speed to 6000 rpm within
-  the voltage and 212 A limits (metric min_power_rated_speed_range_kW >= 50).
+- **Both 25 A tables done** (cold 2bf53fc, hot 590f42e, both PASS): hot open-circuit flux -7.0 % against Br -6 %;
+  torque -5.1 to -5.4 % at id 0. **Efficiency map run** (`motor_prius_efficiency`, cfe0f58): cold peak 97.4 % at
+  2500 rpm / 80 N m, hot 97.0 %; REQ-M5 PASS but unverified (58.6 / 53.7 kW, lowest at 6000 rpm). Verification FAIL
+  on the half-grid checks, all on the iq 25 A row; diagnostic: below 30 N m at 4000-6000 rpm the optimum sits at iq
+  2-5 A, inside the first 25 A cell, and the map moves up to 10 points; above 60 N m within about 1 point.
+- **Fix under way:** supplementary tables at iq 6.25-43.75 A (c70e7e5, running); merge code (104b3cb: `lut_run` takes
+  "main,supplementary"; checks `lut_merge` via verification.merge_rel_tol and `interp_map` via numerics.halfgrid_map_check
+  + verification.interp_map_max_pts). **Next:** `cases/motor_prius_efficiency_r1.toml` with lut_run = the 25 A run
+  then the low-iq run for each scenario, predictions first (score the low-iq cases' P3 from
+  main_table_interp_torque_rel_at_new_nodes).
 - **Then:** rebuild the reports (`.venv/Scripts/python.exe reports/motor/build_report.py <scratchpad>/motor_index.html`):
   add the copper correction (REQ-M2/M3 status rows, the torque page's design-limit callout: 212 A), the tail
   sensitivity, the efficiency map (a new page); republish https://claude.ai/artifact/C6dNdzjs1FdP8vVb6MLaRy (read it
@@ -146,9 +146,9 @@ A run is finished when its `runs/<timestamp>_<case>/report.md` exists. Logs are 
   n 40 / 80 / 160, observed order 0.84, GCI 2.6 % (tolerance 1 %), extrapolated +2.8 % on Prandtl. REQ-T1 PASS but
   unverified. The smoke test's -0.9 % was the n80 mesh's error. Reynolds sweep done (587dadd): low_re within 2 % of
   Prandtl at Re 2e4-2e6 (on those under-resolved meshes); wall functions -5.2 % at every Re (REQ-T1 FAIL); Re 2e6
-  flagged by checkMesh on aspect ratio (the axial length floor D/50 in `grading()`). **Next:** `pipe_rans_mesh_r1` on
-  n 80 / 160 / 320 (640 if needed), with the axial length tied to the wall cell, predictions first; then a mesh study
-  of the wall-function setup (is -5.2 % the constants or the coarse outer mesh?).
+  flagged by checkMesh on aspect ratio (the axial length floor D/50 in `grading()`). `pipe_rans_mesh_r1` (a441f36,
+  n 80 / 160 / 320; n640 does not converge in reasonable time) running. Axial-length option d5e385a. **Next:**
+  `pipe_rans_wf_mesh` at Re 2e6 (is -5.2 % the wall function's constants or the coarse outer mesh?).
 - Part 2, the backward-facing step against Driver & Seegmiller's measurements: **waiting on data.** On 2026-11-22
   ~10:20 turbmodels.larc.nasa.gov had a TLS certificate fault and the ERCOFTAC classic database
   (cfd.mace.manchester.ac.uk) refused connections; the KB wiki (UFR 3-15) gives only secondary values (Re_H 37500,
