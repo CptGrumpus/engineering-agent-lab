@@ -1,0 +1,139 @@
+# Turek-Hron FSI3: the flag behind the cylinder in self-excited periodic oscillation at Re 200, density ratio 1 (the
+# hardest coupling of the three: added mass equal to the solid's own). Same model and periodic statistics as
+# cases/turek_hron_fsi2.toml (read it for the definitions and the benchmark source); started beside FSI2 on the same
+# evening, before FSI2 had shown anything (so neither case informs the other's predictions).
+#
+# Benchmark (same page, TU Dortmund mirror of featflow.de's FSI tests). Parameters: rho_s 1e3 kg/m^3, nu_s 0.4,
+# mu_s 2.0e6 Pa, fluid 1e3 kg/m^3, nu_f 1e-3 m^2/s, U 2 m/s (Re 200). Reference row: level 4+0, dt 0.00025:
+#   ux(A) -2.88e-3 +- 2.72e-3 m [10.93 Hz]; uy(A) 1.47e-3 +- 3.499e-2 m [5.46 Hz];
+#   drag 4.605e2 +- 2.774e1 N/m [10.93 Hz]; lift 2.50 +- 1.5391e2 N/m [5.46 Hz].
+# The page's own spread (levels 2-4, dt 0.001 to 0.00025, two further tables): uy amplitude 3.43-3.57e-2 (4 %), drag
+# mean 445-461 (3.5 %), drag amplitude 20.0-35.1 (level 4: 20.0-27.7), lift amplitude 146-164 (12 %), ux mean
+# -2.69 to -3.02e-3, frequencies 5.3-5.5 and 10.6-10.95 Hz. The reference time series starts at 5 s.
+#
+# Requirements (set from that spread, before any run): uy amplitude 5 %, uy frequency 3 %, drag mean 5 %, drag
+# amplitude 25 % (the benchmark's own spread is about 40 % across its tables), lift amplitude 10 %, ux mean 15 %.
+#
+# Choices: dt 0.0005 s (the benchmark's dt 0.0005 rows agree with its dt 0.00025 rows within about 1 %); 8 s; coupling
+# 1e-5, up to 100 iterations; solid_alpha 0; statistics over the last 4 whole periods of uy(A).
+#
+# Predictions, written BEFORE any FSI3 run (and before FSI2 had produced anything):
+#   P1 Periodic by about 5 s, last two periods within 1 %; every window converges, with more iterations than FSI2
+#      (6-12 on average: density ratio 1); the moving mesh survives (35 mm tip swing, less than FSI2's 82).
+#   P2 uy(A) amplitude 3.35-3.60e-2 m (within 4 %); frequency 5.3-5.55 Hz.
+#   P3 Drag mean 445-470 N/m, amplitude 20-32 N/m at 10.6-11.1 Hz; lift amplitude 140-165 N/m.
+#   P4 ux(A) mean -2.6 to -3.1e-3 m.
+#   P5 Every requirement PASS on this single mesh, with drag amplitude the likeliest miss.
+#   P6 Force transfer over 4 whole periods within 1e-2; inflow exact.
+#   P7 About 6-10 h (16000 windows; sharing the CPU with FSI2).
+#
+# Requirements and tolerances were fixed BEFORE the first run.
+
+[case]
+name = "turek_hron_fsi3"
+model = "openfoam_ccx_precice_fsi"
+description = "Turek-Hron FSI3: self-excited periodic oscillation of the elastic flag behind the cylinder (Re 200, density ratio 1); OpenFOAM v2512 (moving mesh) coupled to CalculiX through preCICE; fluid 2.5 mm at the body, solid 2.5 mm, dt 0.0005 s to 8 s; mean, amplitude and frequency of the tip displacements, drag and lift over the last periods against the published benchmark."
+assumptions = [
+  "2D: one cell deep in the fluid, plane strain in the solid (one element layer, as deep as the fluid).",
+  "St. Venant-Kirchhoff solid (CalculiX *ELASTIC under NLGEOM), no gravity, as the FSI tests define it.",
+  "No numerical damping in the solid (HHT alpha 0).",
+  "Inflow: the benchmark's parabola with its (1 - cos) ramp over 2 s.",
+  "Statistics from the last whole periods (benchmark definition); the oscillation is periodic (checked: last two periods).",
+]
+limitations = [
+  "Single fluid mesh and time step: no discretization uncertainty in this case.",
+  "The fluid mesh is regenerated per size (FSI1: about +-0.5 % mesh-to-mesh scatter on the tip displacement).",
+]
+
+[parameters]
+solid_density_kg_per_m3 = 1000.0
+shear_modulus_Pa = 2000000.0
+poisson_ratio = 0.4
+fluid_density_kg_per_m3 = 1000.0
+kinematic_viscosity_m2_per_s = 0.001
+mean_velocity_m_per_s = 2.0
+fluid_cell_size_m = 0.0025
+solid_element_size_mm = 2.5
+time_step_s = 0.0005
+end_time_s = 8.0
+# steady-case benchmark keys (required by the study; unused in periodic mode): the periodic means
+benchmark_ux_A_m = -2.88e-3
+benchmark_uy_A_m = 1.47e-3
+benchmark_drag_N_per_m = 460.5
+benchmark_lift_N_per_m = 2.50
+benchmark_ux_A_mean = -2.88e-3
+benchmark_ux_A_amp = 2.72e-3
+benchmark_ux_A_freq_Hz = 10.93
+benchmark_uy_A_mean = 1.47e-3
+benchmark_uy_A_amp = 3.499e-2
+benchmark_uy_A_freq_Hz = 5.46
+benchmark_drag_mean = 460.5
+benchmark_drag_amp = 27.74
+benchmark_drag_freq_Hz = 10.93
+benchmark_lift_mean = 2.50
+benchmark_lift_amp = 153.91
+benchmark_lift_freq_Hz = 5.46
+
+[numerics]
+periodic_periods = 4
+solid_alpha = 0.0
+write_interval_s = 1.0
+ramp_time_s = 2.0
+coupling_rel_tol = 1e-5
+coupling_max_iterations = 100
+rbf_support_radius_m = 0.05
+solver_timeout_s = 43200
+
+[verification]
+periodic_rel_tol = 0.02           # last two periods: uy amplitude and drag mean agree within 2 % (a settled cycle)
+force_transfer_rel_tol = 0.01     # means over 4 whole periods: inertia cancels to within the period detection
+profile_rel_tol = 1e-6
+gci_max = 0.01
+
+[[requirements]]
+id = "REQ-FSI3-1"
+text = "The coupled model shall reproduce the FSI3 amplitude of the tip's vertical displacement within 5 %."
+metric = "uy_A_amp_deviation_pct"
+operator = "<="
+limit = 5.0
+units = "%"
+
+[[requirements]]
+id = "REQ-FSI3-2"
+text = "It shall reproduce the FSI3 oscillation frequency (uy of point A) within 3 %."
+metric = "uy_A_freq_Hz_deviation_pct"
+operator = "<="
+limit = 3.0
+units = "%"
+
+[[requirements]]
+id = "REQ-FSI3-3"
+text = "It shall reproduce the FSI3 mean drag within 5 %."
+metric = "drag_mean_deviation_pct"
+operator = "<="
+limit = 5.0
+units = "%"
+
+[[requirements]]
+id = "REQ-FSI3-4"
+text = "It shall reproduce the FSI3 drag amplitude within 25 % (the benchmark's own tables spread about 40 %)."
+metric = "drag_amp_deviation_pct"
+operator = "<="
+limit = 25.0
+units = "%"
+
+[[requirements]]
+id = "REQ-FSI3-5"
+text = "It shall reproduce the FSI3 lift amplitude within 10 %."
+metric = "lift_amp_deviation_pct"
+operator = "<="
+limit = 10.0
+units = "%"
+
+[[requirements]]
+id = "REQ-FSI3-6"
+text = "It shall reproduce the FSI3 mean horizontal tip displacement within 15 % (second order; the benchmark spreads 12 %)."
+metric = "ux_A_mean_deviation_pct"
+operator = "<="
+limit = 15.0
+units = "%"
