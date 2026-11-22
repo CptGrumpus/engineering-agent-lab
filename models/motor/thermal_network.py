@@ -23,8 +23,9 @@ Paths:
   stator bore <- air gap (conduction, Nu = 2 on 2 g) <- rotor outer face; rotor: radial cylinder, adiabatic bore
   rotor end faces and housing end caps <-> end-space air (end-space correlations)
 
-Hotspots: in the slot cross-section, peak = surface + 1.5 (mean - surface), the slab value (the CalculiX slot-pitch
-check measures it); in the end turn, peak = slot exit + 1.5 (mean - slot exit). The winding hotspot is the larger.
+Hotspots: in the slot cross-section, the larger of the slab value (surface + 1.5 (mean - surface)) and the
+top-of-slot value (tooth-tip temperature + liner drop + local slab rise across the narrow top: see slot_hotspot; the
+CalculiX slot-pitch check measures it); in the end turn, peak = slot exit + 1.5 (mean - slot exit). The winding hotspot is the larger.
 Magnets carry no loss in this model (magnet eddy loss is outside the efficiency model too), so they sit at the rotor
 temperature; the rotor's mean node stands for them.
 """
@@ -296,18 +297,33 @@ def machine(p: dict, g: dict, losses: dict, speed_rpm: float) -> tuple[Network, 
     return net, info
 
 
-def hotspots(T: dict) -> dict:
-    slot = T["WS"] + 1.5 * (T["W"] - T["WS"])
+def slot_hotspot(T: dict, p: dict, g: dict, q_slot_W: float, L: float) -> tuple[float, float, float]:
+    """(hotspot, slab estimate, top-of-slot estimate) of the slot winding's cross-section.
+    Slab: surface + 1.5 (mean - surface), the peak of a slab of the mean width between walls at one temperature.
+    Top of slot (revision 1, from the CalculiX section of run 20261122-174048: the peak sits at the top of the slot,
+    by the tooth tips): the teeth carry the winding's heat from their flanks out to the yoke, so they are hottest at
+    the bore face B, and the narrow top of the winding sits on that wall. Local 1D estimate across the top width w:
+    T_B + q (w / 2) t_liner / k_liner + q w^2 / (8 k_winding), q the winding's loss per volume."""
+    slab = T["WS"] + 1.5 * (T["W"] - T["WS"])
+    k_x, _ = winding_conductivity(p, g)
+    w = g["w1"] - 2 * g["t_l"]
+    q = q_slot_W / (g["Zs"] * g["a_wind"] * L)
+    top = T["B"] + q * (w / 2) * g["t_l"] / float(p["liner_conductivity_W_mK"]) + q * w ** 2 / (8 * k_x)
+    return max(slab, top), slab, top
+
+
+def hotspots(T: dict, p: dict, g: dict, losses: dict) -> dict:
+    slot, slab, top = slot_hotspot(T, p, g, losses["cu_slot"], g["L"])
     end = T["X"] + 1.5 * (T["E"] - T["X"])
-    return {"slot_hotspot_C": slot, "end_hotspot_C": end, "winding_hotspot_C": max(slot, end),
-            "winding_mean_C": None}
+    return {"slot_hotspot_C": slot, "slot_hotspot_slab_C": slab, "slot_hotspot_top_C": top, "end_hotspot_C": end,
+            "winding_hotspot_C": max(slot, end), "winding_mean_C": None}
 
 
 def steady(p: dict, g: dict, losses: dict, speed_rpm: float) -> dict:
     net, info = machine(p, g, losses, speed_rpm)
     s = net.solve()
     T = s["T"]
-    h = hotspots(T)
+    h = hotspots(T, p, g, losses)
     # copper-weighted winding mean (the temperature the phase resistance sees): slot and end lengths
     Ls, Le = g["L"], g["l_end"]
     h["winding_mean_C"] = (Ls * T["W"] + Le * T["E"]) / (Ls + Le)
@@ -327,5 +343,5 @@ def section_check_network(p: dict, g: dict, *, q_wind: float, q_teeth: float, q_
     net.fix("ROTOR", t_rotor_C)
     s = net.solve()
     T = s["T"]
-    s["slot_hotspot_C"] = T["WS"] + 1.5 * (T["W"] - T["WS"])
+    s["slot_hotspot_C"], s["slot_hotspot_slab_C"], s["slot_hotspot_top_C"] = slot_hotspot(T, p, g, q_wind * L, L)
     return s

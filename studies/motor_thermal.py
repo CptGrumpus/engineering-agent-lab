@@ -20,6 +20,7 @@ from __future__ import annotations
 import csv
 import importlib.util
 import math
+import os
 import subprocess
 from pathlib import Path
 
@@ -257,7 +258,10 @@ class LumpedThermal(Backend):
                "network_balance_rel": sec["balance_rel"], "fe_levels": res}
         for k, fk in fe_keys.items():
             f = [r[fk] for r in res]
-            u = discretization_uncertainty(tuple(sizes), tuple(fi - t0 for fi in f), design_order=2)
+            # noise floor 1e-4: the .frd holds 6 significant digits (0.001 K at 100-200 C, about 1.5e-5 of a 70 K
+            # rise), and the peak is a nodal maximum; 1e-5 classed identical values as divergent (run 20261122-174048)
+            u = discretization_uncertainty(tuple(sizes), tuple(fi - t0 for fi in f), noise_floor=1e-4,
+                                           design_order=2)
             out[f"fe_{k}_C"] = f[0]
             out[f"fe_{k}_gci"] = float(u["uncertainty"])
             out[f"fe_{k}_regime"] = u["regime"]
@@ -408,7 +412,7 @@ class MotorThermalStudy(Study):
         thermal_figure(pdir / "response.png", series, out, point)
         import shutil
 
-        work = Path(out.get("fe_work_dir", ""))
+        work = Path(os.path.expanduser(out.get("fe_work_dir", "")))  # the harness writes home as ~
         if work.exists():
             dst = pdir / "solver"
             dst.mkdir(exist_ok=True)
