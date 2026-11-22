@@ -14,6 +14,20 @@
 #      above it): about +0.2 % (0 to +0.5 %) on r1's finest-mesh value.
 #   P3 GCI under 1 %; REQ-M1 a verified fail near 1010 V.
 # Its finest-mesh back-EMF becomes the blind prediction.
+#
+# Results (run 20261122-013743_motor_prius_ornl_oc_mesh_r2): verification FAIL on the REQ-M1 metric's GCI only.
+# Laminations M400-50A (Pyleecan's inherited curve). Superseded as the blind prediction by r3 (M330-35A, the study's
+# stand-in steel, decided 2026-11-22 ~00:40, after these predictions); r2 is the "inherited steel" side.
+#   P1 HELD: 15/15 point checks; winding theory 0.32 %.
+#   P2 MISSED (above the range): back-EMF 109.834 / 109.749 / 109.699 V per 1000 rpm at fineness 2 / 4 / 8, +1.09 % on
+#      r1's finest (108.52 V) against +0.2 % (0 to +0.5 %). The estimate counted only the magnet face moving 0.3 mm
+#      nearer the gap; the move also thins the iron above the magnet and reshapes the bridge ends (W0 42.0 -> 41.2 mm),
+#      which it left out. Not separated here.
+#   P3 PARTLY: flux-linkage GCI 0.079 % (extrapolated from 0.214092 / 0.213927 / 0.213830 Wb). The line-to-line peak at
+#      6000 rpm is 1028.66 / 1028.91 / 1028.50 V: oscillatory within 0.04 %, so the GCI returns no estimate and REQ-M1 is
+#      formally withheld on this run (r1 verified it). Verdict not in doubt: about twice the 500 V bus. Higher than the
+#      predicted 1010 V, with the back-EMF.
+#   Solve times 19 s / 71 s / 380 s.
 
 [case]
 name = "motor_prius_ornl_oc_mesh_r2"

@@ -1,0 +1,247 @@
+{
+  "points": [
+    {
+      "label": "p00_mesh_fineness-2",
+      "parameters": {
+        "machine": "Toyota_Prius_ORNL.json",
+        "speed_rpm": 1000.0,
+        "id_A": 0.0,
+        "iq_A": 0.0,
+        "mesh_fineness": 2.0,
+        "steps_per_period": 48,
+        "angle_points": 2048,
+        "max_speed_rpm": 6000.0,
+        "bus_voltage_V": 500.0,
+        "rated_torque_Nm": 400.0
+      },
+      "derived": {
+        "speed_ratio_to_max": 6.0
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "phase_symmetry",
+          "description": "spread of the three phases' fundamental flux linkage / mean",
+          "kind": "numerical",
+          "value": 0.00018006843226189888,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "phase_shift",
+          "description": "max |phase shift between phases - 120 deg| (deg)",
+          "kind": "numerical",
+          "value": 0.021095968725774128,
+          "tolerance": 0.5,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "winding_theory",
+          "description": "|2 N k_w1 B_1 R L / p from the air-gap field - FEMM coil flux linkage| / FEMM (model form: mid-gap sampling, slot openings, leakage)",
+          "kind": "numerical",
+          "value": 0.003256271010789067,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "open_circuit_torque",
+          "description": "|mean torque at zero current| / rated torque (no net torque without current)",
+          "kind": "numerical",
+          "value": 1.667339244626388e-05,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "time_resolution",
+          "description": "48 / steps per electrical period (below 1: at least 48)",
+          "kind": "validity",
+          "value": 1.0,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-M1",
+          "text": "With the inverter not switching (a fault at top speed), the line-to-line back-EMF peak at 6000 rpm shall not exceed the 500 V maximum bus voltage.",
+          "metric": "back_emf_LL_peak_at_max_speed_V",
+          "operator": "<=",
+          "limit": 500.0,
+          "units": "V",
+          "value": 1028.664613355843,
+          "margin": -528.6646133558429,
+          "verdict": "FAIL (unverified)"
+        }
+      ]
+    },
+    {
+      "label": "p01_mesh_fineness-4",
+      "parameters": {
+        "machine": "Toyota_Prius_ORNL.json",
+        "speed_rpm": 1000.0,
+        "id_A": 0.0,
+        "iq_A": 0.0,
+        "mesh_fineness": 4.0,
+        "steps_per_period": 48,
+        "angle_points": 2048,
+        "max_speed_rpm": 6000.0,
+        "bus_voltage_V": 500.0,
+        "rated_torque_Nm": 400.0
+      },
+      "derived": {
+        "speed_ratio_to_max": 6.0
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "phase_symmetry",
+          "description": "spread of the three phases' fundamental flux linkage / mean",
+          "kind": "numerical",
+          "value": 5.454389742570434e-05,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "phase_shift",
+          "description": "max |phase shift between phases - 120 deg| (deg)",
+          "kind": "numerical",
+          "value": 0.0069514660635832115,
+          "tolerance": 0.5,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "winding_theory",
+          "description": "|2 N k_w1 B_1 R L / p from the air-gap field - FEMM coil flux linkage| / FEMM (model form: mid-gap sampling, slot openings, leakage)",
+          "kind": "numerical",
+          "value": 0.0032156828111364597,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "open_circuit_torque",
+          "description": "|mean torque at zero current| / rated torque (no net torque without current)",
+          "kind": "numerical",
+          "value": 4.6274296637525274e-06,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "time_resolution",
+          "description": "48 / steps per electrical period (below 1: at least 48)",
+          "kind": "validity",
+          "value": 1.0,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-M1",
+          "text": "With the inverter not switching (a fault at top speed), the line-to-line back-EMF peak at 6000 rpm shall not exceed the 500 V maximum bus voltage.",
+          "metric": "back_emf_LL_peak_at_max_speed_V",
+          "operator": "<=",
+          "limit": 500.0,
+          "units": "V",
+          "value": 1028.9102071345246,
+          "margin": -528.9102071345246,
+          "verdict": "FAIL (unverified)"
+        }
+      ]
+    },
+    {
+      "label": "p02_mesh_fineness-8",
+      "parameters": {
+        "machine": "Toyota_Prius_ORNL.json",
+        "speed_rpm": 1000.0,
+        "id_A": 0.0,
+        "iq_A": 0.0,
+        "mesh_fineness": 8.0,
+        "steps_per_period": 48,
+        "angle_points": 2048,
+        "max_speed_rpm": 6000.0,
+        "bus_voltage_V": 500.0,
+        "rated_torque_Nm": 400.0
+      },
+      "derived": {
+        "speed_ratio_to_max": 6.0
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "phase_symmetry",
+          "description": "spread of the three phases' fundamental flux linkage / mean",
+          "kind": "numerical",
+          "value": 9.636588087627732e-05,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "phase_shift",
+          "description": "max |phase shift between phases - 120 deg| (deg)",
+          "kind": "numerical",
+          "value": 0.014422723876577948,
+          "tolerance": 0.5,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "winding_theory",
+          "description": "|2 N k_w1 B_1 R L / p from the air-gap field - FEMM coil flux linkage| / FEMM (model form: mid-gap sampling, slot openings, leakage)",
+          "kind": "numerical",
+          "value": 0.003155464754232147,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "open_circuit_torque",
+          "description": "|mean torque at zero current| / rated torque (no net torque without current)",
+          "kind": "numerical",
+          "value": 3.671762050947251e-06,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "time_resolution",
+          "description": "48 / steps per electrical period (below 1: at least 48)",
+          "kind": "validity",
+          "value": 1.0,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-M1",
+          "text": "With the inverter not switching (a fault at top speed), the line-to-line back-EMF peak at 6000 rpm shall not exceed the 500 V maximum bus voltage.",
+          "metric": "back_emf_LL_peak_at_max_speed_V",
+          "operator": "<=",
+          "limit": 500.0,
+          "units": "V",
+          "value": 1028.4976482914562,
+          "margin": -528.4976482914562,
+          "verdict": "FAIL (unverified)"
+        }
+      ]
+    }
+  ],
+  "run_id": "20261122-013743_motor_prius_ornl_oc_mesh_r2",
+  "generated_utc": "2026-11-22T06:45:52+00:00",
+  "verification_status": "FAIL"
+}
