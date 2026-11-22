@@ -12,6 +12,17 @@ last that many seconds instead of the final values, and verification.steady_meas
 the change of the mean between the two halves of the steady window instead of the peak-to-peak spread. The first FSI1
 run showed why: at Re 20 the lift jitters at every time step (coupling noise, about +-2 % of the lift) with no drift, so
 a final value and a spread both report the noise. Cases without these keys behave as before.
+
+Opt-in (FSI2 / FSI3, periodic): numerics.periodic_periods = N. The benchmark's definition (featflow FSI benchmark,
+"Quantities for comparison"): over the last period, mean = (max + min) / 2 and amplitude = (max - min) / 2; frequency =
+1 / period or the lowest significant FFT peak. Here the period is found from the upward crossings of uy(A) through its
+mean; mean and amplitude come from the last whole period; each quantity's frequency is its dominant FFT peak over the
+last N whole periods (drag and ux oscillate at twice the lift's and uy's frequency, as in the benchmark). Metrics
+<q>_mean, <q>_amp, <q>_freq_Hz for q in ux_A, uy_A, drag, lift, and their deviations from the benchmark parameters
+benchmark_<q>_mean / _amp / _freq_Hz: amplitudes and frequencies relative to the benchmark value, means relative to
+max(|benchmark mean|, benchmark amplitude) (uy(A) and lift swing about zero). Checks: the periodic state (the last two
+periods' uy(A) amplitudes and drag means agree), and force transfer averaged over exactly the last N whole periods (the
+flag's inertia force averages out only over whole periods: in FSI2 it is several times the fluid force).
 """
 
 from __future__ import annotations
@@ -36,6 +47,8 @@ RUNNER = "models/fsi/run_turek_hron_fsi.sh"
 FLAG_WRITER = "models/fea/flag_ccx.py"
 BENCH = ("benchmark_ux_A_m", "benchmark_uy_A_m", "benchmark_drag_N_per_m", "benchmark_lift_N_per_m")
 METRICS = ("ux_A_m", "uy_A_m", "drag_N_per_m", "lift_N_per_m")
+PERIODIC_Q = {"ux_A": "ux_A_m", "uy_A": "uy_A_m", "drag": "drag_N_per_m", "lift": "lift_N_per_m"}
+PERIODIC_METRICS = tuple(f"{q}_{k}" for q in PERIODIC_Q for k in ("mean", "amp", "freq_Hz"))
 V2512_BASHRC = "/usr/lib/openfoam/openfoam2512/etc/bashrc"
 
 
@@ -86,6 +99,63 @@ def _window_means(numerics, Ff, rf_blocks) -> dict:
     return {"flag_fluid_force_mean_N": [float(np.mean(f[:, 1] + f[:, 3])), float(np.mean(f[:, 2] + f[:, 4]))],
             "clamp_reaction_mean_N": [float(np.mean(r[:, 0])), float(np.mean(r[:, 1]))],
             "metric_average_s": float(w)}
+
+
+def _period_means(numerics, wp, Ff, rf_blocks) -> dict:
+    """Means of the flag's fluid force and the clamp reaction over exactly the last N whole periods of uy(A)."""
+    n = int(numerics["periodic_periods"])
+    try:
+        t0, _, t2 = last_periods(wp[:, 0], wp[:, 4], n)
+    except ValueError:
+        return {}
+    f = Ff[(Ff[:, 0] > t0) & (Ff[:, 0] <= t2)]
+    r = np.array([b["rows"][0][:2] for b in rf_blocks if t0 < b["time"] <= t2])
+    if not len(f) or not len(r):
+        return {}
+    return {"flag_fluid_force_mean_N": [float(np.mean(f[:, 1] + f[:, 3])), float(np.mean(f[:, 2] + f[:, 4]))],
+            "clamp_reaction_mean_N": [float(np.mean(r[:, 0])), float(np.mean(r[:, 1]))],
+            "metric_average_s": float(t2 - t0), "metric_average_periods": n}
+
+
+def last_periods(t: np.ndarray, uy: np.ndarray, n: int) -> tuple[float, float, float]:
+    """(start of the last n whole periods, start of the last period, end) from the upward crossings of uy through
+    the mean of the record's last 40 %; linear interpolation between samples. Raises if fewer than n + 1 periods."""
+    tail = t >= t[0] + 0.6 * (t[-1] - t[0])
+    y = uy - np.mean(uy[tail])
+    k = np.flatnonzero((y[:-1] < 0) & (y[1:] >= 0) & tail[1:])
+    tc = t[k] - y[k] * (t[k + 1] - t[k]) / (y[k + 1] - y[k])
+    if len(tc) < n + 2:
+        raise ValueError(f"only {max(len(tc) - 1, 0)} whole periods of uy(A) in the record's last 40 %; need {n + 1}")
+    return float(tc[-1 - n]), float(tc[-2]), float(tc[-1])
+
+
+def periodic_stats(series: dict, n: int) -> dict:
+    """Benchmark statistics over the last whole period(s), plus the previous period's for the steadiness check."""
+    t = np.asarray(series["t_s"])
+    t0, t1, t2 = last_periods(t, np.asarray(series["uy_A_m"]), n)
+    t_prev0 = t1 - (t2 - t1)
+    out = {"period_window_s": [t0, t2], "periods_used": n}
+    for q, col in PERIODIC_Q.items():
+        x = np.asarray(series[col])
+        last = (t >= t1) & (t <= t2)
+        prev = (t >= t_prev0) & (t < t1)
+        hi, lo = float(np.max(x[last])), float(np.min(x[last]))
+        out[f"{q}_mean"], out[f"{q}_amp"] = 0.5 * (hi + lo), 0.5 * (hi - lo)
+        out[f"{q}_prev_mean"] = 0.5 * (float(np.max(x[prev])) + float(np.min(x[prev])))
+        out[f"{q}_prev_amp"] = 0.5 * (float(np.max(x[prev])) - float(np.min(x[prev])))
+        # dominant frequency over the last n whole periods: uniform resample, zero-padded FFT, parabolic peak
+        w = (t >= t0) & (t <= t2)
+        tu = np.linspace(t0, t2, 4096, endpoint=False)
+        xu = np.interp(tu, t[w], x[w]) - np.mean(x[w])
+        nfft = 16 * len(tu)
+        S = np.abs(np.fft.rfft(xu * np.hanning(len(tu)), nfft))
+        fr = np.fft.rfftfreq(nfft, d=tu[1] - tu[0])
+        j = int(np.argmax(S[1:])) + 1
+        a, b, c = S[j - 1], S[j], S[j + 1] if j + 1 < len(S) else S[j]
+        dj = 0.5 * (a - c) / (a - 2 * b + c) if (a - 2 * b + c) != 0 else 0.0
+        out[f"{q}_freq_Hz"] = float(fr[j] + dj * (fr[1] - fr[0]))
+    out["uy_period_freq_Hz"] = 1.0 / (t2 - t1)
+    return out
 
 
 def read_iterations(path: Path) -> np.ndarray:
@@ -160,7 +230,8 @@ class PreciceFSI(Backend):
                           "coupling_iterations_max": int(np.max(it[:, 2])),
                           "flag_fluid_force_N": [float(Ff[-1, 1] + Ff[-1, 3]), float(Ff[-1, 2] + Ff[-1, 4])],
                           "clamp_reaction_N": [float(rf[-1][0]), float(rf[-1][1])] if rf else [float("nan")] * 2,
-                          **_window_means(numerics, Ff, rfb),
+                          **(_period_means(numerics, wp, Ff, rfb) if numerics.get("periodic_periods")
+                             else _window_means(numerics, Ff, rfb)),
                           "inlet_profile_error_max": float(np.max(np.abs(u_in[:, 0] - parabola)) / (1.5 * U))}
         return {"success": True, "message": f"uy(A) {wp[-1, 4] * 1e3:.4f} mm, drag {series['drag_N_per_m'][-1]:.3f} "
                 f"N/m ({len(it)} windows, {outputs['coupling_iterations_mean']:.1f} iterations each)",
@@ -174,7 +245,8 @@ class PreciceFSI(Backend):
 class TurekHronFSIStudy(Study):
     name = "turek_hron_fsi"
     models = {"openfoam_ccx_precice_fsi": PreciceFSI}
-    metrics = frozenset(set(METRICS) | {m.replace("_m", "").replace("_N_per", "") + "_deviation_pct" for m in METRICS})
+    metrics = frozenset(set(METRICS) | {m.replace("_m", "").replace("_N_per", "") + "_deviation_pct" for m in METRICS}
+                        | set(PERIODIC_METRICS) | {f"{m}_deviation_pct" for m in PERIODIC_METRICS})
     param_names = _W.PARAMS + BENCH
     series_file = "history.csv"
     compare_description = "max relative difference of uy(A) over time"
@@ -189,6 +261,20 @@ class TurekHronFSIStudy(Study):
                 "mass_ratio": _p(params, "solid_density_kg_per_m3") / _p(params, "fluid_density_kg_per_m3")}
 
     def compute_metrics(self, series, params, case, outputs=None):
+        n = case.get("numerics", {}).get("periodic_periods")
+        if n:
+            st = periodic_stats(series, int(n))
+            out = {m: st[m] for m in PERIODIC_METRICS}
+            out |= {m: float(np.asarray(series[m])[-1]) for m in METRICS}
+            for q in PERIODIC_Q:
+                bm, ba = _p(params, f"benchmark_{q}_mean"), _p(params, f"benchmark_{q}_amp")
+                out[f"{q}_mean_deviation_pct"] = 100 * abs(st[f"{q}_mean"] - bm) / max(abs(bm), abs(ba))
+                out[f"{q}_amp_deviation_pct"] = 100 * abs(st[f"{q}_amp"] - ba) / abs(ba)
+                bf = _p(params, f"benchmark_{q}_freq_Hz")
+                out[f"{q}_freq_Hz_deviation_pct"] = 100 * abs(st[f"{q}_freq_Hz"] - bf) / bf
+            for m, b in zip(METRICS, BENCH):
+                out[self._dev_name(m)] = float("nan")  # steady metrics do not apply to a periodic case
+            return out
         w = case.get("numerics", {}).get("metric_average_s")
         if w:
             t = np.asarray(series["t_s"])
@@ -204,9 +290,19 @@ class TurekHronFSIStudy(Study):
         tol = case["verification"]
         p, d, out = point["parameters"], point["derived"], point["solver_outputs"]
         t = np.asarray(series["t_s"])
-        tail = t >= t[-1] - tol["steady_window_s"]
+        tail = t >= t[-1] - tol.get("steady_window_s", 2.0)
         drift = tol.get("steady_measure") == "drift"
-        if drift:
+        n_per = case.get("numerics", {}).get("periodic_periods")
+        if n_per:
+            try:
+                st = periodic_stats(series, int(n_per))
+                steady = max(abs(st["uy_A_amp"] - st["uy_A_prev_amp"]) / abs(st["uy_A_amp"]),
+                             abs(st["drag_mean"] - st["drag_prev_mean"]) / abs(st["drag_mean"]))
+            except ValueError:
+                steady = float("inf")
+            steady_text = ("periodic state: max of |uy(A) amplitude, last period - the one before| / amplitude and the "
+                           "same for the drag mean")
+        elif drift:
             def change(x):
                 h = len(x) // 2
                 return abs(np.mean(x[h:]) - np.mean(x[:h])) / max(abs(np.mean(x)), 1e-30)
@@ -226,7 +322,8 @@ class TurekHronFSIStudy(Study):
             check("mesh", "checkMesh reports Mesh OK (1 = failed)", 0.0 if out["mesh_ok"] else 1.0, 0.5),
             check("coupling_converged", "coupling windows that hit the iteration limit without converging",
                   float(out["windows_not_converged"]), 0.5),
-            check("steady", steady_text, steady, tol["steady_rel_tol"]),
+            check("periodic" if n_per else "steady", steady_text, steady,
+                  tol["periodic_rel_tol"] if n_per else tol["steady_rel_tol"]),
             check("force_transfer", "|fluid force on the flag + clamp reaction in the solid| / |fluid force on the "
                   f"flag| {when} (the coupling conserves force)", transfer, tol["force_transfer_rel_tol"]),
             check("inflow_profile", "max over inlet faces |U - benchmark parabola| / (1.5 U_mean), after the ramp",
