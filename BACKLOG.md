@@ -58,7 +58,7 @@ each part on its own: CSM1 to CSM3 (solid only, CalculiX, nothing new needed), C
 only, OpenFOAM 14, nothing new needed), then FSI1 to FSI3 coupled through preCICE. Each part is
 verified before the coupled run, as in study 2.
 
-## Session handoff (2026-11-22, 17:10; first written 2026-11-21, 23:10)
+## Session handoff (2026-11-22, 18:00; first written 2026-11-21, 23:10)
 
 Read this first in a new session. Files under site/, docs/, DASHBOARD.md and `scripts/make_study_renders.py` belong
 to the dashboard session (it commits in this clone: add and commit only your own paths, in one command; never leave
@@ -71,7 +71,7 @@ predictions go into a case header and get committed BEFORE its evidence run; Res
 
 ### Work order (user, 2026-11-22 ~17:05: "keep working through all of this")
 
-1. **Study 7 thermal network** (start now; light CPU, runs beside FSI). Load the frame-requirements skill first. Plan:
+1. **Study 7 thermal network: DONE 2026-11-22 ~18:00** (state below, "Study 7"). Original plan, kept for reference:
    a lumped network built from the machine geometry (`models/motor/`, our ORNL machine): winding in slot, end winding,
    teeth, yoke, housing/jacket, air gap, rotor, magnets; losses per region from the efficiency study (copper from the
    phase resistance; stator and rotor iron from the dq tables' separate coefficients). Independent check: CalculiX 2D
@@ -97,6 +97,8 @@ predictions go into a case header and get committed BEFORE its evidence run; Res
 Check with `ps -ef | grep "[h]arness pipeline"` (WSL jobs: `wsl.exe -e bash -lc "ps -eo etime,cmd | grep -E 'Foam|ccx' | grep -v grep"`).
 A run is finished when its `runs/<timestamp>_<case>/report.md` exists. Logs are in the 13:50-17:10 session's scratchpad,
 `$TEMP/claude/cb67dd1e648f8970/2466259e-97df-49dc-993b-d474fed5635d/scratchpad/` ($TEMP = the user's AppData/Local/Temp).
+
+Logs of the 17:15 session (thermal runs): `$TEMP/claude/cb67dd1e648f8970/4abd5a92-1872-493d-b389-7a0cff188b91/scratchpad/`.
 
 | Job | Run dir (log) | Done about | When it finishes |
 |---|---|---|---|
@@ -132,7 +134,18 @@ A run is finished when its `runs/<timestamp>_<case>/report.md` exists. Logs are 
   to 0.9 point; hot fails the map check in one cell (4500 rpm, 10 N m), REQ-M5 53.7 kW PASS unverified. Peaks 97.41 /
   97.05 %. The 10 N m row above 4000 rpm stays unresolved (stated; not worth a revision before the blind comparison).
 - **Reports rebuilt and republished** (b770fee, artifact version 4: https://claude.ai/artifact/C6dNdzjs1FdP8vVb6MLaRy).
-- **After that, before the ORNL data is opened:** the thermal network; then open the ORNL test data once and compare.
+- **Thermal network done** (user's framing 2026-11-22 ~17:20: envelope + hot-corner check; class H 180 C hotspot and
+  150 C magnets, synthetic; water jacket 65 C, h 3000, synthetic). Cases `motor_prius_thermal` (run 174048, Results)
+  and `motor_prius_thermal_r1` (run 174925, final; commits 1040954 .. f48f01f). Answer: about 230 N m continuous to 2000
+  rpm, 42-48 kW from 2500 to 6000 rpm; the **magnets bind at every speed** (rotor floats at the tooth-tip temperature:
+  no shaft path, gap conduction only); REQ-TH1 (>= 25 kW from 1250 rpm, our synthetic limit) 30.2 kW, 26.2-34.3 kW over
+  ten scenarios. Hot corner: at winding mean 100 C the magnets are 93-105 C (the map's 80 C is optimistic by 13-25 K).
+  Verification: CalculiX slot-pitch check passes mean / teeth / yoke (bar interface 0.01 mm: mean -6.4 %); the slot
+  hotspot is 4-7 % low on its rise after r1's top-of-slot estimate (FAIL in six scenarios by 0.1-2.2 points); a bound in
+  r1's header shows it cannot move the envelope from 1250 rpm. Not revised further (needs a 2D slot model). Portfolio
+  page 20, PORTFOLIO, README and skills updated. **Not yet in `reports/motor/`**: a thermal page (and the copper
+  correction's J values), for `reports/motor/build_report.py`.
+- **Next for study 7: the blind comparison. ASK the user before opening any ORNL measured data** (whitelist only).
 
 ### Study 6 (FSI): FSI1 revision 1
 
