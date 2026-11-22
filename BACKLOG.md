@@ -77,7 +77,7 @@ A run is finished when its `runs/<timestamp>_<case>/report.md` exists. Logs are 
 
 | Job | Run dir (log) | Done about | When it finishes |
 |---|---|---|---|
-| Study 7 low-iq dq tables, cold then hot (FEMM, 91 solves each) | `runs/*_motor_prius_lut_cold_lowiq`, then `*_hot_lowiq` (`motor_prius_lut_cold_lowiq.log`, `..._hot_lowiq.log`) | about 14:30, 15:20 | Score against the case headers (P1, P2, P4; P3 is scored by the efficiency r1), Results blocks, commit. Then `motor_prius_efficiency_r1` (below). |
+| Study 7 hot low-iq dq table (cold done: c569460, iq 25 A row bit-identical; dq check fails at iq 6.25-12.5 A deep in field weakening, up to 1 %), then `motor_prius_efficiency_r1` starts by itself | `runs/20261122-143828_motor_prius_lut_hot_lowiq` (`motor_prius_lut_hot_lowiq.log`), then `runs/*_motor_prius_efficiency_r1` (`motor_eff_r1.log`) | about 15:40, then a minute | Score the hot table (P1, P2, P4), then efficiency r1 (P1-P5; it also scores both low-iq cases' P3). Note in r1's Results that it merges tables whose dq check failed at their lowest currents. |
 | Study 6 FSI1 r1 mesh study (fluid 2.5 / 1.77 / 1.25 mm, coupling 1e-6) | `runs/20261122-125809_turek_hron_fsi1_mesh_r1` (`fsi1_r1.log`) | about 19:00 | Score against the case header (P1-P5), Results block, commit. |
 | Study 19 pipe mesh r1 (n 80 / 160 / 320) | `runs/*_pipe_rans_mesh_r1` (`pipe_rans_mesh_r1.log`) | about 14:30 | Score (P1-P4), Results block, commit. |
 
