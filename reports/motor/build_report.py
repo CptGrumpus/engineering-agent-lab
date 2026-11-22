@@ -546,6 +546,9 @@ inputs, hashes and tool versions with every run.</li>
 <li><time>12:06</time><span>dq look-up table, magnets at 20 °C (169 FEMM solves): verified; the dq torque equation within 0.37 % of FEMM's torque.</span></li>
 <li><time>13:34</time><span>The same table with magnets at 80 °C: open-circuit flux −7.0 % against Br's −6 % (the saturated bridges keep their leakage flux); torque −5.1 to −5.4 % at id = 0.</span></li>
 <li><time>13:38</time><span>First efficiency map: peak 97.4 % cold, 97.0 % hot; rated 50 kW holds to 6000 rpm (58.6 / 53.7 kW). Not verified: the 25 A table does not resolve light load at high speed. Low-current tables (6.25 A steps) started.</span></li>
+<li><time>14:38</time><span>Low-current table, cold: its repeated 25 A row is bit-identical to the main table. The dq torque equation drifts up to 1 % at 6.25-12.5 A deep in field weakening (small torque, large ripple); the map uses FEMM's own torque.</span></li>
+<li><time>15:34</time><span>The same for the hot magnets (up to 1.1 %).</span></li>
+<li><time>15:34</time><span>Efficiency map, revision 1, on the merged tables: cold verified, every check passing (the map from the half table within 0.9 point of the full one); rated 50 kW verified to 6000 rpm (58.6 kW). Hot: one cell (4500 rpm, 10 N m) fails the map check. Peaks 97.41 / 97.05 %. The 10 N m row above 4000 rpm stays unresolved.</span></li>
 </ol>
 
 <h2>Blind protocol log</h2>
@@ -1120,7 +1123,10 @@ EFF_NOTES = {
                               "operating point uses only 2-5 A of q-axis current, inside the table's first cell, and the "
                               "map there moved by up to 10 points between the half and the full table.",
     "motor_prius_efficiency_r1": "The tables gain rows at 6.25 A steps below 50 A of q-axis current, and the map itself "
-                                 "is checked: the map from the half table against the map from the full one.",
+                                 "is checked: the map from the half table against the map from the full one. Cold "
+                                 "passes every check; hot fails one cell (4500 rpm, 10 N m). From 20 N m up the map "
+                                 "is resolved to about 0.5 point; the 10 N m row above 4000 rpm is not (the optimum "
+                                 "uses 2-4 A of q-axis current and switches between field-weakening branches).",
     "motor_prius_lut_mesh": "Mesh study for the tables: fineness 2 within 0.4 % of 8 on torque and iron loss.",
     "motor_prius_lut_cold": "dq table, magnets at 20 °C: id 0 to −300 A, iq 0 to 300 A in 25 A steps (169 FEMM solves).",
     "motor_prius_lut_hot": "The same table with magnets at 80 °C.",
