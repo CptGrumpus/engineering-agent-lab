@@ -21,6 +21,16 @@
 #   Ripple at MTPA 40.9 and 115.0 N m peak to peak (approximate).
 # Bracket (three grades): torque 247.2-251.6 N m at 100 A (1.8 %) and 563.9-569.4 N m at 300 A (1.0 %), the stand-in
 # M330-35A at the top of both; far inside the 10 % validation limit.
+#
+# CORRECTION (2026-11-22 ~09:30, before the ORNL data is opened): the copper area behind REQ-M2 / REQ-M3 was wrong.
+# ORNL/TM-2004/137 defines its 0.84 slot fill as "the ratio of the total SQUARES of insulated wires and the net
+# available slot area" (whitelist re-read of the winding paragraph, design text only). Round wire fills pi/4 of its
+# square and the enamel about a tenth of the wire, so the bare copper is about 0.84 x 0.785 x 0.9 = 0.59 of the net
+# slot area, about 74 mm^2 per slot; Pyleecan's Prius winding (13 strands of 0.912 mm, AWG 19, per turn: 8.49 mm^2,
+# 76.4 mm^2 per slot) agrees within 3 %. These cases used 0.84 x 143.0 = 120.1 mm^2, 1.57 x too much copper.
+# Corrected: 25 A/mm^2 is 212 A rms, not 333 A (J = 9 I / 76.4 mm^2). Torques are unaffected; only the current-density
+# verdicts change, re-derived from the committed runs (J depends on the current alone): see BACKLOG.
+# REQ-M3 re-derived: 100 A pass (11.8 A/mm^2), 300 A FAIL (35.3 A/mm^2).
 
 [case]
 name = "motor_prius_torque_y390"

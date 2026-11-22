@@ -57,6 +57,17 @@
 #      per slot-ripple cycle).
 #   P5 MISSED: 191 s / 667 s / 4022 s, not about 1.5 h in all at the planned split (fineness 8 took 67 min alone, and
 #      shared the CPU with FSI1).
+#
+# CORRECTION (2026-11-22 ~09:30, before the ORNL data is opened): the copper area behind REQ-M2 / REQ-M3 was wrong.
+# ORNL/TM-2004/137 defines its 0.84 slot fill as "the ratio of the total SQUARES of insulated wires and the net
+# available slot area" (whitelist re-read of the winding paragraph, design text only). Round wire fills pi/4 of its
+# square and the enamel about a tenth of the wire, so the bare copper is about 0.84 x 0.785 x 0.9 = 0.59 of the net
+# slot area, about 74 mm^2 per slot; Pyleecan's Prius winding (13 strands of 0.912 mm, AWG 19, per turn: 8.49 mm^2,
+# 76.4 mm^2 per slot) agrees within 3 %. These cases used 0.84 x 143.0 = 120.1 mm^2, 1.57 x too much copper.
+# Corrected: 25 A/mm^2 is 212 A rms, not 333 A (J = 9 I / 76.4 mm^2). Torques are unaffected; only the current-density
+# verdicts change, re-derived from the committed runs (J depends on the current alone): see BACKLOG.
+# REQ-M2 (400 N m within the limit): still PASS, 400 N m needs about 168 A (19.8 A/mm^2); the 333 A points of this
+# case run at 39.2 A/mm^2, beyond the limit.
 
 [case]
 name = "motor_prius_torque_mesh"

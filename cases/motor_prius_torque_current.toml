@@ -36,6 +36,17 @@
 #   P5 MISSED: 88 min (00:08-01:36), not about 65; about 12.5 min per current.
 #   Ripple at MTPA 24.7 / 41.6 / 50.4 / 80.1 / 98.1 / 113.9 / 122.5 N m peak to peak (approximate: about 4 samples per
 #   slot-ripple cycle).
+#
+# CORRECTION (2026-11-22 ~09:30, before the ORNL data is opened): the copper area behind REQ-M2 / REQ-M3 was wrong.
+# ORNL/TM-2004/137 defines its 0.84 slot fill as "the ratio of the total SQUARES of insulated wires and the net
+# available slot area" (whitelist re-read of the winding paragraph, design text only). Round wire fills pi/4 of its
+# square and the enamel about a tenth of the wire, so the bare copper is about 0.84 x 0.785 x 0.9 = 0.59 of the net
+# slot area, about 74 mm^2 per slot; Pyleecan's Prius winding (13 strands of 0.912 mm, AWG 19, per turn: 8.49 mm^2,
+# 76.4 mm^2 per slot) agrees within 3 %. These cases used 0.84 x 143.0 = 120.1 mm^2, 1.57 x too much copper.
+# Corrected: 25 A/mm^2 is 212 A rms, not 333 A (J = 9 I / 76.4 mm^2). Torques are unaffected; only the current-density
+# verdicts change, re-derived from the committed runs (J depends on the current alone): see BACKLOG.
+# REQ-M3 re-derived: 50-200 A pass (up to 23.6 A/mm^2), 250 / 300 / 350 A FAIL (29.4 / 35.3 / 41.2 A/mm^2); 25
+# A/mm^2 at 212 A.
 
 [case]
 name = "motor_prius_torque_current"

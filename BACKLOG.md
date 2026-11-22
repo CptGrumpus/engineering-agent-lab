@@ -107,6 +107,15 @@ educated guess is all we can do without strict material card requirements"); the
 (`motor_prius_ornl_oc_js205`, `motor_prius_torque_js205`, predictions committed in d42d543); the rms/peak eval is added
 (`.claude/skills/build-model/evals/motor-peak-current-trap`, 23cdbff). Keep working on both open studies (6 and 7).
 
+**CORRECTION (2026-11-22 ~09:30): the copper area was 1.57 x too large.** ORNL/TM-2004/137 defines its 0.84 slot
+fill on the SQUARES of the insulated wires (whitelist re-read of its winding paragraph, design text only; logged for
+the report's protocol log). Bare copper is about 0.59 of the net slot area, about 74 mm^2 per slot; Pyleecan's winding
+(13 strands of 0.912 mm per turn, 8.49 mm^2; 76.4 mm^2 per slot) agrees within 3 % and is used from now on. So the
+25 A/mm^2 limit is **212 A rms, not 333 A**. Torques unchanged. Verdicts re-derived from the committed runs (J depends
+on current alone): REQ-M2 still PASS (400 N m at about 168 A, 19.8 A/mm^2; margin about 19 %, not 52 %); REQ-M3 now
+FAILS at 250, 300 and 350 A (29.4 / 35.3 / 41.2 A/mm^2), passes up to 200 A. Notes added to the five torque case
+headers. The reports still show the old J values until rebuilt. The user should hear this plainly.
+
 **Efficiency map framing (user, 2026-11-22 ~09:15):** predict MOTOR-ONLY efficiency (shaft power / terminal power;
 no inverter); a temperature BAND, cold (everything 20 C) and hot (windings 100 C, magnets 80 C); mechanical losses
 (bearings, windage) LEFT OUT and stated (the prediction reads slightly high, most at top speed). Bus 500 V as in
