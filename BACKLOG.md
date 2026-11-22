@@ -9,8 +9,16 @@ Planned studies, not started. Each one follows the usual loop (frame requirement
 | 3 | Bracket optimisation loop: the agent changes geometry, meshes, solves and checks, repeating to minimise mass under stress and stiffness limits | The agent drives a design, not just one case | Every candidate passes the existing checks; optimum spot-checked against beam theory | CadQuery · Gmsh · CalculiX | Medium | **Verified** (3D machined clevis bracket; confirmation run 20261121-115130_clevis_confirm_r2b): lightest design found 371.9 g (lug 10.17 mm, gussets 9.07 x 36.36 mm), 4.1 % under the start, peak 98.3 MPa (98.9 with mesh uncertainty) against 100. Took three optimisation runs: a 1 % margin too small for a fillet peak, a global mesh study that never refined the fillet, and an optimiser stalled in mesh noise (resolved with local fillet refinement and a local response surface); [portfolio/12](portfolio/12-bracket-optimisation.md). First version (tapered cantilever) kept as superseded evidence |
 | 4 | Notched bar with plasticity | Nonlinear material: stress beyond yield, residual stress after unloading | Neuber's rule, Glinka's method | CalculiX | Medium | **Done**: proof test at 15 kN strains the hole edge 0.58 % (limit 1 %), leaves -77 MPa residual; [portfolio/14](portfolio/14-strap-proof-plasticity.md) |
 | 5 | Buckling: column or thin panel, linear eigenvalue, then with a small imperfection | Stability: a load-path problem, not just stress | Euler and Johnson formulas, Southwell plot | CalculiX | Low-medium | **Done**: longest acceptable strut about 587 mm; [portfolio/13](portfolio/13-strut-buckling.md) |
-| 6 | Fluid-structure interaction: flexible flap in a channel | Coupled multiphysics | A published benchmark | OpenFOAM · CalculiX · preCICE | High (a weekend or more) | Not started: needs preCICE and its OpenFOAM and CalculiX adapters installed in WSL (sudo) |
+| 6 | Fluid-structure interaction: flexible flap in a channel | Coupled multiphysics | A published benchmark | OpenFOAM · CalculiX · preCICE | High (a weekend or more) | **In progress** (study 6): CSM1-3, CFD1-2 done; FSI1 revision 1 under way; FSI2, FSI3 to come (handoff) |
 | 7 | Electric motor, an open-source Motor-CAD alternative: the Toyota Prius IPM motor (2004, ORNL) | Three physics on one machine. Electromagnetics: torque, back-EMF, flux-linkage and efficiency maps. Thermal: a lumped network from the geometry. Mechanical: rotor stress at overspeed | The published Prius data (Oak Ridge National Laboratory); an analytic air-gap field; the thermal network against CalculiX heat transfer on a stator section; power balance at every map point | Pyleecan + FEMM (pyFEMM), Python or OpenModelica, CalculiX. Options considered 2026-11-20: SyR-e (needs MATLAB), SWAT-EM (windings), Elmer and GetDP (3D) | High | Not started. Feasibility checked 2026-11-21: Pyleecan's PyPI release (1.5.2, 2024) needs Python < 3.11, but its GitHub master installs and imports on Python 3.14 (numpy 2.5, VTK 9.7, PySide6). Install with `PYTHONUTF8=1`, or setup.py fails on Windows' default encoding. It ships a Toyota Prius IPM model (48 slots, 8 poles, 0.75 mm air gap, 83.8 mm stack), which is the 2004 Prius documented by ORNL, so benchmark against the 2004 report rather than the 2010 one. FEMM 4.2 (x64, 22Oct2023 build) installed by the user at C:emm42 on 2026-11-21 and registered for scripting (femm.ActiveFEMM). A pyFEMM smoke test from Python 3.14 (a 100 A wire, where B = mu0 I / (2 pi r) exactly) agreed within 0.1-0.5 % on FEMM's default mesh. pyFEMM needs pywin32. Keep Pyleecan in its own environment, apart from the repo's pinned .venv |
+| 8 | Pressure vessel with a nozzle, ASME VIII-2 Part 5 elastic stress analysis (study 18) | Design-code verdict from linearised stresses on classification lines; rule vs analysis | Lame cylinder, exact pressure resultants, simplified pressure-area rule | CadQuery · Gmsh · CalculiX | Medium | **In progress**: mesh and thickness cases done (handoff) |
+| 9 | Turbulent CFD: pipe friction, then the backward-facing step against measurements (study 19) | Turbulence modelling; validation against measured data | Prandtl's smooth-pipe law; Driver & Seegmiller's step data | OpenFOAM | Medium | **In progress**: pipe running; step waits on data hosts (handoff) |
+| 10 | Random vibration of the study-4 bracket (C) | Forced response to a PSD; 3-sigma stress; vibration fatigue | Miles' equation; effective mass | CalculiX · Python | Medium | Documented, not started (handoff) |
+| 11 | Natural convection and radiation (D) | Buoyant flow; view-factor radiation | de Vahl Davis cavity benchmark; two-surface exchange | OpenFOAM · CalculiX | Medium | Documented, not started |
+| 12 | O-ring compression (E) | Hyperelastic large strain with self-contact | Published force-squeeze correlation; J about 1 | CalculiX | High | Documented, not started |
+| 13 | Cracked plate, K and crack growth (F) | Fracture mechanics; damage tolerance | Handbook K solutions; G-K consistency | CalculiX · Python | Medium | Documented, not started |
+| 14 | Rotor critical speeds (G) | Rotordynamics, Campbell diagram | Jeffcott rotor closed form | ROSS (Python) | Low-medium | Documented, not started |
+| 15 | Probabilistic uncertainty on an existing study (H) | Sobol indices, failure probability | Monte Carlo convergence; analytic linear case | Python | Low-medium | Documented, not started |
 
 Notes
 - Study 2 can start from the verified heated-channel flow (`studies/heated_channel.py`).
@@ -50,108 +58,129 @@ each part on its own: CSM1 to CSM3 (solid only, CalculiX, nothing new needed), C
 only, OpenFOAM 14, nothing new needed), then FSI1 to FSI3 coupled through preCICE. Each part is
 verified before the coupled run, as in study 2.
 
-## Session handoff (2026-11-22, 04:45; first written 2026-11-21, 23:10)
+## Session handoff (2026-11-22, 10:50; first written 2026-11-21, 23:10)
 
-Read this first in a new session. The dashboard is maintained by another session; files under site/
-and docs/ belong to it. Study 7's own HTML reports live in `reports/motor/`, apart from the dashboard.
+Read this first in a new session. Files under site/, docs/, DASHBOARD.md and `scripts/make_study_renders.py` belong
+to the dashboard session (it commits in this clone: add and commit only your own paths, in one command; never leave
+files staged). Study 7's HTML reports live in `reports/motor/`. Rules that still bind: the ORNL measured data stays
+SEALED until study 7 is complete (ask before opening any; whitelist extraction only; material searches only, never
+search for Prius performance); never run two FEMM cases at once (OpenFOAM/CalculiX may run beside FEMM: 24 cores);
+predictions go into a case header and get committed BEFORE its evidence run; Results blocks after; `scripts/scrub_paths.py
+<run dir>`, commit with `git add -f` leaving out `*.inp`, `*.dat`, `__pycache__` and logs over about 600 KB, then
+`tests/test_privacy.py`.
 
-**Overnight (the user is asleep, 2026-11-22 ~01:05; asked for everything to be watched and the docs kept current).**
-Done and committed since 01:00: torque curve on M400-50A (d1ace08), open circuit r2 on M400-50A (cbbbac4), the
-machine file switched to M330-35A and open circuit r3 (2bc520b, **the blind back-EMF prediction, 110.9 V**), the
-bracket grades' data (bd6b786) and cases (1cbfb70), **torque curve r1 on M330-35A (cc99acc, the blind torque
-prediction)**, the bracket machines registered in `studies/motor_em.py` `MACHINES` (4c3f790), the reports regenerated
-(dcea1ba) and the artifact republished (version 2, 03:25); then **the whole lamination bracket** (25d346a, 7d1533d,
-8509f9f, f58cb8e), the bracket in the reports (1fe5bb8, artifact version 3, 04:35) and the two deferred fixes (6da34c6:
-the privacy scrub now also redacts any other user's home folder, with a test; the torque figure's time axis label).
+### Running at 10:50 (background shells of the 10:50 session; they survive a /clear)
 
-**Nothing is running at 04:45.** FEMM is idle; every run is scored, scrubbed and committed.
+Check with `ps -ef | grep "[h]arness pipeline"` (WSL jobs: `wsl.exe -e bash -lc "ps -eo etime,cmd | grep -E 'Foam|ccx' | grep -v grep"`).
+A run is finished when its `runs/<timestamp>_<case>/report.md` exists. Logs are in the 10:50 session's scratchpad,
+`C:/Users/mrstego/AppData/Local/Temp/claude/cb67dd1e648f8970/4c94c999-0080-4004-9acc-817969cda447/scratchpad/`.
 
-| Case | Run | Result |
-|---|---|---|
-| `motor_prius_torque_current` (M400-50A) | `20261122-000853_...` | PASS. 115.4 / 246.0 / 359.8 / 453.8 / 524.3 / 578.4 / 621.8 N m at 50-350 A; 400 N m at about 171 A; REQ-M3 fails at 350 A |
-| `motor_prius_ornl_oc_mesh_r2` (final machine, M400-50A) | `20261122-013743_...` | FAIL on the peak's GCI only (oscillatory). 109.70 V per 1000 rpm, +1.09 % on r1 (predicted +0.2 %: missed); peak 1028.5 V |
-| `motor_prius_ornl_oc_mesh_r3` (final machine, M330-35A) | `20261122-014658_...` | FAIL on the peak's GCI only (anomalous order 3.8). **110.88 V per 1000 rpm, the blind prediction** (flux GCI 0.16 %), +1.08 % on r2 (predicted +1.0 to +3.5 %); peak 1040.4 V |
-| `motor_prius_torque_current_r1` (M330-35A) | `20261122-015619_...` | PASS. **118.8 / 251.6 / 366.6 / 456.9 / 522.3 / 569.4 / 606.4 N m, the blind torque prediction**; 400 N m at about 168 A. Against M400-50A +3.0 % at 50 A, sign change near 240 A, -2.5 % at 350 A (P2 partly: predicted +1 % at 350 A, range -1 to +3) |
-| `motor_prius_ornl_oc_m250` (bracket, M250-35A) | `20261122-032255_...` | FAIL on the peak's GCI only (anomalous order). 111.02 V, +0.13 % on r3 (predicted -0.35 %: wrong sign; below 1.15 T this grade needs less field, and most of the open-circuit iron runs there) |
-| `motor_prius_torque_m250` (bracket) | `20261122-033236_...` | PASS. 247.2 / 563.9 N m at 100 / 300 A, -1.8 / -1.0 % on r1 (predicted -0.5 / -1.0: the 100 A gap is larger, because the loaded teeth sit at 1.4-1.6 T where the curves differ most) |
-| `motor_prius_ornl_oc_y390` (bracket, powercore 035-190Y390) | `20261122-035642_...` | FAIL on the peak's GCI only. 111.01 V, +0.12 % (predicted -0.1 %, just outside) |
-| `motor_prius_torque_y390` (bracket) | `20261122-040603_...` | PASS. 249.3 / 566.1 N m, -0.9 / -0.6 % (predicted -0.2 / -0.6) |
+| Job | Run dir (log) | Done about | When it finishes |
+|---|---|---|---|
+| Study 7 dq table, cold (FEMM, 169 solves), then the hot one starts by itself | `runs/20261122-102002_motor_prius_lut_cold` (`motor_prius_lut_cold.log`), then `runs/*_motor_prius_lut_hot` (`motor_prius_lut_hot.log`) | cold 12:05, hot 13:50 | Score each against its case header (P1-P4), Results block, commit (curated). Then the efficiency case below. |
+| Study 6 FSI1 prototype B: solid 1.25 mm at the 2.5 mm fluid mesh (scratch, not a case of record) | `runs/20261122-091140_scratch_fsi1_solid125` (`fsi_scratch/solid125.log`) | 13:15 | Compare uy(A) (window mean) with the original 2.5 mm point, 0.817489 mm: does the solid mesh explain the drift away from the benchmark? Then write `turek_hron_fsi1_mesh_r1` (below). Do not commit scratch runs. |
+| Study 19 pipe friction: mesh study, then the Reynolds sweep starts by itself | `runs/20261122-104218_pipe_rans_mesh` (`pipe_rans_mesh.log`), then `runs/*_pipe_rans_reynolds` (`pipe_rans_reynolds.log`) | 11:00, 11:35 | Score against the headers (mesh: P1-P4; Reynolds: P1-P5), Results blocks, commit. |
 
-**The bracket's answer:** across the three 0.35 mm grades the back-EMF spans 0.13 % (110.88-111.02 V) and the torque
-1.8 % at 100 A and 1.0 % at 300 A, the stand-in M330-35A at the top. Far inside the 5 % and 10 % validation limits: the
-unknown grade does not limit the blind comparison. Pattern in the misses: our estimates put the open-circuit teeth near
-1.5 T; the results say most of the open-circuit iron runs below about 1.2 T.
+### Study 7 (motor): state and next steps
 
-**Finding from torque r1, for the ORNL write-up:** above about 200 A the teeth saturate past 1.8 T, the top of Tata's
-M330-35A table, so the high-current torque rests on our extrapolated tail (saturation polarization 2.0 T), which
-carries less flux than Pyleecan's M400-50A curve there. A stated assumption; a cheap sensitivity (Js 2.05 T, the
-torque at 300 / 350 A only) would bound it, before the ORNL data is opened. Not run: the user's call.
+- **Blind predictions (cases, committed):** back-EMF **110.9 V rms line-to-line per 1000 rpm** at 20 C
+  (`motor_prius_ornl_oc_mesh_r3`); MTPA torque **118.8 / 251.6 / 366.6 / 456.9 / 522.3 / 569.4 / 606.4 N m at 50-350 A
+  rms** (`motor_prius_torque_current_r1`), 400 N m at about 168 A. Stand-in steel M330-35A.
+- **Lamination bracket (done):** across M330-35A / M250-35A / 190Y390 the back-EMF spans 0.13 %, torque 1.8 % at 100 A
+  and 1.0 % at 300 A: the unknown grade does not limit the comparison. REQ-M4 (overspeed, 424 MPa) by comparison: M250-35A
+  passes on its typical yield, the other two fail.
+- **B-H tail sensitivity (done, user's request):** saturation polarization 2.05 instead of 2.0 T: torque +1.75 / +1.96 %
+  at 300 / 350 A, back-EMF -0.35 % (`*_js205` cases). The prediction stays on 2.0 T; this is its stated uncertainty.
+- **Copper correction (2026-11-22 ~09:30, 5714743):** ORNL's 0.84 fill is on the squares of insulated wires; bare
+  copper is 76.4 mm^2 per slot (13 x 0.912 mm strands per turn), not 120. **25 A/mm^2 = 212 A rms, not 333.** REQ-M2
+  still PASS (400 N m at 168 A, 19.8 A/mm^2); REQ-M3 now fails from 250 A. Notes in the five torque case headers.
+  **Not yet in `reports/motor/`** (they still show the old J values).
+- **User decisions today:** the 25 A/mm^2 limit stays as a stated assumption; efficiency = motor only, a cold/hot band
+  (cold: all 20 C; hot: windings 100 C, magnets 80 C), mechanical losses left out and stated; bus 500 V.
+- **Efficiency map, built:** `studies/motor_lut.py` (dq table per (id, iq): torque, dq flux, iron-loss coefficients A,
+  B, C with P = A f + B f^2 + C f^1.5), `models/motor/efficiency_map.py` + `studies/motor_efficiency.py` (lowest-loss
+  feasible current per speed and torque under the voltage limit Vdc / sqrt 6 and a current limit). Mesh study
+  `motor_prius_lut_mesh` done: fineness 2 within 0.4 % of 8 (grids revised to 2, reason in the case).
+- **NEXT when both tables are in: write `cases/motor_prius_efficiency.toml`** (model `lut_efficiency`), predictions
+  BEFORE running. Two scenarios: cold (lut_run = the cold table's run id, magnet_temperature_C 20, winding 20) and hot
+  (the hot run id, magnets 80, winding 100). Parameters: series_turns_per_phase 72, turn_copper_area_mm2 8.492,
+  stack_length_m 0.08382, end_connection_length_m 0.1206 (a semicircle over the 6-slot span at the slot mid radius,
+  97.7 mm: its axial height 38.4 mm matches ORNL's "end winding extensions approximately 1.5 in"), copper 1.72e-8 ohm m,
+  alpha 0.00393; phase resistance about 59.6 mOhm at 20 C; bus_voltage_V 500; current_limit_design_A 212;
+  current_limit_map_A 300; speeds 500-6000 step 250; torques 10-400 step 10 (or to the envelope); rated 50 kW / 400 N m;
+  refs for the cold scenario: ref_back_emf_V 111.006 (r3 at fineness 2), ref_mtpa_100A_Nm 251.6, ref_mtpa_200A_Nm 456.9
+  (r1, fineness 4: tolerance 1 %); the hot scenario sets the refs to 0 (skipped). Verification keys: back_emf_rel_tol,
+  mtpa_rel_tol, interp_halfgrid_rel_tol. Requirement suggestion: REQ-M5 rated 50 kW from base speed to 6000 rpm within
+  the voltage and 212 A limits (metric min_power_rated_speed_range_kW >= 50).
+- **Then:** rebuild the reports (`.venv/Scripts/python.exe reports/motor/build_report.py <scratchpad>/motor_index.html`):
+  add the copper correction (REQ-M2/M3 status rows, the torque page's design-limit callout: 212 A), the tail
+  sensitivity, the efficiency map (a new page); republish https://claude.ai/artifact/C6dNdzjs1FdP8vVb6MLaRy (read it
+  first in a new session; main page = that index file; `geometry.html`, `open-circuit.html`, `torque.html` (+ the new
+  page) as files). Add today's whitelist re-read of ORNL/TM-2004/137's winding paragraph to the report's protocol log.
+- **After that, before the ORNL data is opened:** the thermal network; then open the ORNL test data once and compare.
 
-**REQ-M4 (overspeed) against the bracket grades, by comparison, not run:** the 424 MPa linearized bridge stress stays
-with any grade (same geometry; density 7600 against 7650 kg/m^3 lowers the lamination's own load by 0.7 %, the magnet
-load is unchanged; the stress does not depend on E). Against yield: M330-35A 335 (Waelzholz; Tata 315) FAIL; powercore
-035-190Y390 390 guaranteed / 407 typical FAIL; **M250-35A 455 typical (Tata, rolling direction) PASS, margin 7 %**.
-So the lower-loss grade is also the strongest of the three on typical values; the "high-strength" bracket does not
-bound the strength from above. A run per grade would only relabel the yield; worth a case only if the user wants
-the density effect shown.
+### Study 6 (FSI): FSI1 revision 1
 
-To process any new run (unchanged): read its report, score it against its case header's predictions, append a
-Results block; `scripts/scrub_paths.py <run dir>`; commit the case and run with `git add -f` (leave out `*.inp`, `*.dat`,
-`__pycache__`, solver logs over about 600 KB); `tests/test_privacy.py` after committing. Reports: `.venv/Scripts/python.exe
-reports/motor/build_report.py <scratchpad>/motor_index.html`, then republish https://claude.ai/artifact/C6dNdzjs1FdP8vVb6MLaRy
-(main page = that index file; `geometry.html`, `open-circuit.html`, `torque.html` from `reports/motor/` as files; read
-the artifact first in a new session).
+- Code (f61cc9f): opt-in `numerics.metric_average_s` (window-mean metrics and force transfer) and
+  `verification.steady_measure = "drift"`.
+- Prototype A (5 mm fluid, coupling tolerance 1e-6): lift jitter 72 x smaller, means unchanged to 5 digits, iterations
+  +19 %, every point check passes. The jitter was zero-mean coupling noise.
+- **Next:** when prototype B is in, write `cases/turek_hron_fsi1_mesh_r1.toml` (coupling_rel_tol 1e-6,
+  coupling_max_iterations 100, metric_average_s 2.0, steady_measure "drift"; solid mesh per prototype B; fluid
+  5 / 2.5 / 1.25 mm), predictions first, run (about 1 / 1 / 3 h; more at 1e-6). Then FSI2 and FSI3 (periodic).
+  The portfolio page `portfolio/17-fsi-flag-turek-hron.md` stays a draft until study 6 is complete.
 
-**Decided by the user (2026-11-22 morning):** the 25 A/mm^2 copper limit stays as a stated, reasonable assumption ("an
-educated guess is all we can do without strict material card requirements"); the B-H tail sensitivity runs
-(`motor_prius_ornl_oc_js205`, `motor_prius_torque_js205`, predictions committed in d42d543); the rms/peak eval is added
-(`.claude/skills/build-model/evals/motor-peak-current-trap`, 23cdbff). Keep working on both open studies (6 and 7).
+### Study 18 (pressure vessel with a nozzle): two cases done
 
-**CORRECTION (2026-11-22 ~09:30): the copper area was 1.57 x too large.** ORNL/TM-2004/137 defines its 0.84 slot
-fill on the SQUARES of the insulated wires (whitelist re-read of its winding paragraph, design text only; logged for
-the report's protocol log). Bare copper is about 0.59 of the net slot area, about 74 mm^2 per slot; Pyleecan's winding
-(13 strands of 0.912 mm per turn, 8.49 mm^2; 76.4 mm^2 per slot) agrees within 3 % and is used from now on. So the
-25 A/mm^2 limit is **212 A rms, not 333 A**. Torques unchanged. Verdicts re-derived from the committed runs (J depends
-on current alone): REQ-M2 still PASS (400 N m at about 168 A, 19.8 A/mm^2; margin about 19 %, not 52 %); REQ-M3 now
-FAILS at 250, 300 and 350 A (29.4 / 35.3 / 41.2 A/mm^2), passes up to 200 A. Notes added to the five torque case
-headers. The reports still show the old J values until rebuilt. The user should hear this plainly.
+- `pv_nozzle_mesh` (5feb663): PL 205.1 MPa, GCI 0.03 %, REQ-PV2 verified PASS by 0.9 %; Pm exact to 0.03 %; equilibrium
+  exact. `pv_nozzle_thickness` (17fc040): by analysis the nozzle needs about 11.7 mm, by the simplified pressure-area
+  rule about 16 mm; recommendation for review 14 mm.
+- **Next (optional):** a classification-line placement sensitivity (a line through the crotch corner), the head-to-shell
+  junction against shell discontinuity theory; then the portfolio page (`portfolio/18-...`) and a PORTFOLIO.md row.
 
-**Efficiency map framing (user, 2026-11-22 ~09:15):** predict MOTOR-ONLY efficiency (shaft power / terminal power;
-no inverter); a temperature BAND, cold (everything 20 C) and hot (windings 100 C, magnets 80 C); mechanical losses
-(bearings, windage) LEFT OUT and stated (the prediction reads slightly high, most at top speed). Bus 500 V as in
-REQ-M1. Plan: one FEMM solve per (id, iq) grid point gives flux linkages, torque and the iron-loss terms per unit
-frequency (Bertotti: hysteresis ~ f, eddy ~ f^2, excess ~ f^1.5), so any speed follows without re-solving; then MTPA /
-flux weakening under the voltage limit picks the lowest-loss current at each (speed, torque).
+### Study 19 (turbulent flow)
 
-**Study 7 next, all before the ORNL data is opened:** efficiency predictions (M330-35A loss data in
-`models/motor/materials/M330-35A_tata_2009.csv`; a three-term fit, kh 0.0202, alpha 1.791, kc 7.91e-5, ke 3.70e-4, f
-in Hz, B in T, matches it to 6.4 % rms, 13.5 % worst), the thermal network. Then open the ORNL test data once and
-compare everything (see the memory note and the blind protocol log in the reports).
+- Part 1, pipe friction (2f076cf): running (above). Smoke test: f -0.9 % on Prandtl at Re 1e5.
+- Part 2, the backward-facing step against Driver & Seegmiller's measurements: **waiting on data.** On 2026-11-22
+  ~10:20 turbmodels.larc.nasa.gov had a TLS certificate fault and the ERCOFTAC classic database
+  (cfd.mace.manchester.ac.uk) refused connections; the KB wiki (UFR 3-15) gives only secondary values (Re_H 37500,
+  expansion 1.125, inflow BL at x/H = -4: delta 19 mm, theta 1.9 mm). Retry the hosts; never fill values from memory;
+  never bypass a certificate error.
 
+### Documented, not started (user, 2026-11-22: "work on the agreed ones, document the rest")
 
-**New studies decided (user, 2026-11-22 ~10:15), from a gap review of the portfolio** (gaps: design codes beyond VDI
-2230, turbulent flow and validation against measured flow data, transient/forced dynamics, natural convection and
-radiation, hyperelastic large strain, fracture, machine elements and rotordynamics, probabilistic uncertainty):
-- **A (study 18): pressure vessel with a nozzle, ASME VIII-2 Part 5 elastic stress analysis** (stress linearisation on
-  classification lines, Pm / PL / PL+Pb / P+Q against S / 1.5S / 3S). References: Lame thick cylinder, membrane pr/t,
-  the cylinder-head junction from shell discontinuity theory. CalculiX + Gmsh (CadQuery geometry).
-- **B (study 19): turbulent CFD (RANS)**: fully developed pipe friction against Colebrook / Moody, then the 2D
-  backward-facing step against Driver & Seegmiller's measurements (NASA Turbulence Modeling Resource: reattachment,
-  skin friction, pressure). OpenFOAM.
-- **Study 18 status (2026-11-22 ~10:45): two cases done.** Code: `harness/linearize.py` (linearisation, C3D10
-  sampling, tests), `models/fea/pressure_vessel.py`, `studies/pressure_vessel.py`. `pv_nozzle_mesh` (5feb663): PL 205.1
-  MPa (GCI 0.03 %), REQ-PV2 verified PASS by 0.9 %; Pm exact to 0.03 %; equilibrium exact (3e-7). `pv_nozzle_thickness`
-  (17fc040): PL 238.6 / 219.8 / 205.1 / 182.6 MPa at 8 / 10 / 12 / 16 mm; the analysis needs about 11.7 mm against
-  about 16 mm by the simplified pressure-area rule; recommendation for review 14 mm. Next: portfolio page; possibly an
-  SCL-placement sensitivity (through the crotch) and the head-to-shell junction against shell discontinuity theory.
-- **Study 19 status:** part 1 (pipe friction) code committed (2f076cf); `pipe_rans_mesh` then `pipe_rans_reynolds`
-  running from 10:45. Smoke test: f -0.9 % on Prandtl at Re 1e5, force balance 4e-13. Part 2 (backward-facing step
-  against Driver & Seegmiller's measurements) waits on its data: turbmodels.larc.nasa.gov has a TLS certificate
-  fault and the ERCOFTAC classic database (cfd.mace.manchester.ac.uk) refused connections, 2026-11-22 ~10:20; do not
-  fill values from memory; retry later.
-- Next candidates, not started: C random vibration of the study-4 bracket (Miles), D natural convection + radiation
-  (de Vahl Davis, view factors), E O-ring hyperelastic contact, F cracked plate K and crack growth, G rotor critical
-  speeds with ROSS.
+From the portfolio gap review (gaps not covered anywhere: design codes beyond VDI 2230, turbulence and measured-data
+validation, forced and transient dynamics, natural convection and radiation, hyperelastic large strain, fracture, machine
+elements, probabilistic uncertainty). Each with its tools and independent references:
+
+- **C. Random vibration of the study-4 bracket.** Base-excitation PSD (synthetic, e.g. a flat 0.04 g^2/Hz from 20 to
+  2000 Hz) through modal superposition (CalculiX *FREQUENCY + *STEADY STATE DYNAMICS for the transfer functions, or
+  Python from the modes); response PSD, 1-sigma and 3-sigma stress, fatigue by Steinberg's three-band method or Dirlik.
+  References: Miles' equation (exact for a single mode), modal effective mass sum above 90 %, an RMS-integration check.
+- **D. Natural convection and radiation.** Differentially heated square cavity against the de Vahl Davis (1983)
+  benchmark (Nusselt numbers at Ra 1e3-1e6; fetch the values, do not quote from memory), OpenFOAM buoyant solver;
+  enclosure radiation with view factors in CalculiX (*RADIATE, cavity radiation) against two-surface exchange (parallel
+  plates, concentric cylinders); then the combination on an electronics enclosure.
+- **E. O-ring compression.** Hyperelastic (Neo-Hookean / Mooney-Rivlin, CalculiX *HYPERELASTIC), axisymmetric ring
+  squeezed between plates with contact and self-contact; force against squeeze from a published correlation (source to
+  fetch); checks: near-incompressibility (J about 1), contact pressure integral against the reaction, mesh convergence.
+- **F. Fracture.** Edge- or centre-cracked plate, stress intensity factor from the energy release rate (two runs with
+  a small crack extension, G = -dPi/da, K = sqrt(E' G)) and from crack-opening displacement near the tip; against the
+  handbook solutions (Tada, Paris and Irwin); then Paris-law crack-growth life by integration.
+- **G. Rotordynamics with ROSS** (open-source Python package `ross-rotordynamics`): critical speeds, Campbell diagram,
+  unbalance response; verified on the Jeffcott rotor's closed form; applied to the Prius rotor on its shaft (first
+  critical speed against the 6000 rpm maximum).
+- **H. Probabilistic uncertainty.** Latin hypercube or Monte Carlo with a surrogate and Sobol indices on an existing
+  study (the coolant channel or the cantilever); reliability index and failure probability against a requirement.
+- Also noted: transient conduction (exact series for a slab or cylinder), machine elements (a gear tooth by ISO 6336 or
+  AGMA against FE contact; shaft fatigue by DIN 743).
+
+### Waiting on the user
+
+Nothing blocking. For review when convenient: study 18's 14 mm recommendation; whether to publish studies 18/19 as
+portfolio pages once their cases are complete.
+
+### Earlier notes (history: the summary above supersedes anything here that disagrees)
 
 **Study 6 (FSI) status.**
 - **CSM1, CSM2:** verified and committed (e72d395).
