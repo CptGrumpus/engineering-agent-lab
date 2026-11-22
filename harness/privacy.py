@@ -45,8 +45,9 @@ _HOME_RE = _pattern(HOME)
 
 
 def redact(text: str) -> str:
-    """Replace the repository root with <repo> and the home folder with ~."""
-    return _HOME_RE.sub("~", _REPO_RE.sub("<repo>", text))
+    """Replace the repository root with <repo> and the home folder with ~; then any other user's home folder
+    (another computer's path inside copied inputs, e.g. a machine file built elsewhere) with ~ too."""
+    return LEAK.sub("~", _HOME_RE.sub("~", _REPO_RE.sub("<repo>", text)))
 
 
 def scrub_tree(root: Path) -> dict:

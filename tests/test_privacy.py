@@ -29,6 +29,20 @@ def test_redact_handles_every_spelling():
     assert redact("tip deflection 0.953 mm") == "tip deflection 0.953 mm"
 
 
+def test_redact_handles_another_users_home():
+    samples = {
+        "C:\\Users\\someone\\venv\\M400-50A.json": "~\\venv\\M400-50A.json",
+        "D:\\\\Users\\\\someone\\\\x.json": "~\\\\x.json",
+        "c:/users/someone/x.json": "~/x.json",
+        "/mnt/c/Users/someone/x": "~/x",
+        "/home/someone/precice/case": "~/precice/case",
+    }
+    for s, want in samples.items():
+        out = redact(s)
+        assert not LEAK.search(out), (s, out)
+        assert out == want, (s, out)
+
+
 def test_no_committed_file_contains_a_personal_path():
     files = subprocess.run(["git", "ls-files", "-z"], cwd=REPO, capture_output=True, check=True).stdout.split(b"\0")
     leaks = []

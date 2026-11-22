@@ -188,7 +188,7 @@ def torque_figure(path, series, ops, point, *, title):
     t = np.asarray(ops[j]["torque_time_s"]) * 1e3
     a2.plot(t, ops[j]["torque_Nm"], color=SERIES_1, lw=1.4)
     a2.axhline(np.mean(ops[j]["torque_Nm"]), color=TEXT_2, lw=0.8, ls="--")
-    a2.set_xlabel("time (ms), one electrical period")
+    a2.set_xlabel("time (ms), one period of the torque (shorter than the electrical period)")
     a2.set_ylabel(f"torque at {g[j]:g} deg (N m)")
     for ax in (a1, a2):
         _style(ax)
