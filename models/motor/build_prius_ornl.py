@@ -1,6 +1,8 @@
 """Build our 2004 Prius machine definition from published dimensions (study 7 geometry rebuild). Pyleecan environment.
 
-usage: <pyleecan python> models/motor/build_prius_ornl.py   (writes models/motor/Toyota_Prius_ORNL.json, prints the table)
+usage: <pyleecan python> models/motor/build_prius_ornl.py [--steel GRADE] [--out PATH]
+  --steel M330-35A (default) writes models/motor/Toyota_Prius_ORNL.json; any other grade writes
+  models/motor/Toyota_Prius_ORNL_<GRADE>.json. Prints the table of changes.
 
 Source of every dimension changed here: ORNL/TM-2005/33, "Report on Toyota Prius Motor Thermal Management" (FY 2005),
 Fig. 21 "Schematic of Prius motor stator and rotor", report page 25 (PDF page 32),
@@ -31,19 +33,33 @@ Rotor and magnets (ROTOR_CHANGES, MAGNET_CHANGES), checked 2026-11-21 late eveni
   (scratch sensitivity), and 1.12 T matches 1.24 T at about 120 C with the material's -0.1 %/K, so it is probably a
   hot value. Recorded as alternatives.
 
-What stays Pyleecan's: the magnet width (18.9 mm) and the V's other parameters, the laminations' material (M400-50A),
-the winding (9 turns per coil; the thermal report's text gives 9 conductor bundles per slot) and the stack (83.82 mm =
+Laminations (LAMINATIONS, user's decision 2026-11-22 ~00:40): one stand-in grade for every property, M330-35A. ORNL
+gives the thickness (0.014 in = 0.36 mm, ORNL/TM-2004/137) but not the grade; M330-35A is a standard 0.35 mm EN 10106
+grade with full public data, mid-range in its class. Its B-H curve, density, resistivity and modulus replace the
+M400-50A (0.5 mm) that came with Pyleecan's file and was never chosen. Runs before 2026-11-22 used M400-50A; it stays
+available as --steel M400-50A, the "inherited steel" side of the sensitivity. FEMM's magnetostatic solve reads only
+the B-H points (Pyleecan passes no lamination thickness or stacking factor), so the B-H curve is the change that moves
+the results. The curve above 1.8 T is our extrapolation (see _tail): the datasheet stops at 1.8 T, and only regions
+driven harder than that (tooth tips at high current) depend on it.
+
+What stays Pyleecan's: the magnet width (18.9 mm) and the V's other parameters, the winding (9 turns per coil; the thermal report's text gives 9 conductor bundles per slot) and the stack (83.82 mm =
 3.3 in, which ORNL's 2004 design report ORNL/TM-2004/137 confirms).
 """
 
 from __future__ import annotations
 
+import argparse
+import csv
+import math
 from os.path import join
 from pathlib import Path
 
 IN = 0.0254
 SOURCE = "ORNL/TM-2005/33 Fig. 21"
-OUT = Path(__file__).resolve().parent / "Toyota_Prius_ORNL.json"
+HERE = Path(__file__).resolve().parent
+OUT = HERE / "Toyota_Prius_ORNL.json"
+DEFAULT_STEEL = "M330-35A"
+MU0 = 4e-7 * math.pi
 
 # (object path, attribute, value in inches, how the drawing gives it)
 CHANGES = [
@@ -76,6 +92,71 @@ MAGNET_CHANGES = [
 ]
 
 
+def _tail(h_last, b_last, js, h_points):
+    """B-H points above the datasheet's last point: the polarization J = B - mu0 H approaches the saturation value js
+    as J = js - (js - J_last) (H_last / H). With js = 2.0 T this joins M330-35A's last segment with a continuous slope
+    (k = 1.01 from the 1.7-1.8 T secant). js 2.0 T: the textbook saturation polarization of iron with about 3 % Si
+    (2.03 T at 3.2 % Si), the alloy range of 0.35 mm non-oriented grades. An assumption, not datasheet data."""
+    j_last = b_last - MU0 * h_last
+    return [(h, js - (js - j_last) * h_last / h + MU0 * h) for h in h_points]
+
+
+def _csv_rows(path):
+    with open(path, newline="", encoding="utf-8") as f:
+        return list(csv.DictReader(line for line in f if not line.startswith("#")))
+
+
+def _m330_35a():
+    """M330-35A, Tata Steel 'Typical data' sheet (Oct 2009), models/motor/materials/M330-35A_tata_2009.csv."""
+    csv_name = "M330-35A_tata_2009.csv"
+    rows = _csv_rows(HERE / "materials" / csv_name)
+    bh = [(0.0, 0.0)] + [(float(r["H_50Hz_A_per_m"]), float(r["B_T"])) for r in rows if r["H_50Hz_A_per_m"]]
+    h_last, b_last = bh[-1]
+    bh += _tail(h_last, b_last, 2.0, [12e3, 15e3, 20e3, 30e3, 45e3, 70e3, 100e3, 150e3, 220e3, 300e3])
+    return {
+        "name": "M330-35A",
+        "path": csv_name,
+        "bh": bh,
+        "bh_source": (f"Tata Steel M330-35A typical data (Oct 2009), H at 50 Hz, 0.1-{b_last:.1f} T; above {b_last:.1f} T "
+                      "extrapolated (build_prius_ornl._tail, saturation polarization 2.0 T)"),
+        "Wlam": 0.35e-3,  # EN 10106 nominal thickness (ORNL: 0.36 mm)
+        "rho": 7650.0,  # kg/m^3, EN 10106 conventional density for M330-35A
+        "elec_rho": 0.42e-6,  # ohm m, Tata sheet (42 uOhm cm)
+        "Ex": 200e9,  # Pa, Tata sheet, rolling direction (210 GPa transverse)
+    }
+
+
+# lamination grades: name -> function returning the data. Grades without an entry keep Pyleecan's file data (only
+# M400-50A, which came with it).
+LAMINATIONS = {"M330-35A": _m330_35a}
+
+
+def _set_lamination(m, grade):
+    """Replace both laminations' material with the given grade; returns rows for the table."""
+    if grade == "M400-50A":
+        return []
+    data = LAMINATIONS[grade]()
+    bh = data["bh"]
+    hs, bs = [h for h, _ in bh], [b for _, b in bh]
+    if any(b2 <= b1 for b1, b2 in zip(bs, bs[1:])) or any(h2 <= h1 for h1, h2 in zip(hs, hs[1:])):
+        raise ValueError(f"{grade}: B-H curve not strictly increasing")
+    import numpy as np
+    from pyleecan.Classes.ImportMatrixVal import ImportMatrixVal
+
+    rows = []
+    for lam in (m.stator, m.rotor):
+        mat = lam.mat_type
+        old_name = mat.name
+        mat.name, mat.path = data["name"], data["path"]
+        mat.mag.BH_curve = ImportMatrixVal(value=np.array(bh))
+        mat.mag.Wlam = data["Wlam"]
+        # mur_lin is used only by linear models; take the curve's secant at 1.0 T
+        mat.mag.mur_lin = float(1.0 / np.interp(1.0, bs, hs) / MU0)
+        mat.struct.rho, mat.struct.Ex, mat.elec.rho = data["rho"], data["Ex"], data["elec_rho"]
+        rows.append((f"{'stator' if lam is m.stator else 'rotor'}.mat_type", old_name, data["name"], data["bh_source"]))
+    return rows
+
+
 def _materials(m):
     yield m.stator.mat_type
     yield m.rotor.mat_type
@@ -97,7 +178,10 @@ def _get(m, path):
     return m
 
 
-def build():
+def build(steel=DEFAULT_STEEL, out=None):
+    if steel != "M400-50A" and steel not in LAMINATIONS:
+        raise ValueError(f"unknown lamination grade {steel}; known: M400-50A, {', '.join(LAMINATIONS)}")
+    out = Path(out) if out else (OUT if steel == DEFAULT_STEEL else HERE / f"Toyota_Prius_ORNL_{steel}.json")
     from pyleecan.definitions import DATA_DIR
     from pyleecan.Functions.load import load
 
@@ -121,11 +205,12 @@ def build():
         for mag in mags:
             setattr(mag.mat_type.mag, attr, value)
         rows.append((f"magnets.mat_type.mag.{attr}", old.pop(), value, f"{label}: {note}"))
-    m.name = "Toyota_Prius_ORNL"
+    rows += _set_lamination(m, steel)
+    m.name = "Toyota_Prius_ORNL" if steel == DEFAULT_STEEL else f"Toyota_Prius_ORNL_{steel}"
     m.desc = (f"2004 Toyota Prius: Pyleecan's Toyota_Prius.json with the stator, rotor and slot dimensions of {SOURCE}, "
               "the pocket thickness from the same figure, the bridge from ORNL/TM-2004/120 and the magnet B-H line from "
-              "ORNL/TM-2004/137 Fig. 14 (see models/motor/build_prius_ornl.py); magnet width, laminations and winding "
-              "unchanged.")
+              f"ORNL/TM-2004/137 Fig. 14, laminations {steel} (see models/motor/build_prius_ornl.py); magnet width "
+              "and winding unchanged.")
     m.stator.slot.check()
     m.rotor.hole[0].check()
     # Pyleecan's bundled file carries absolute material paths from its authors' computer; keep the file
@@ -133,22 +218,29 @@ def build():
     for mat in {id(x): x for x in _materials(m)}.values():
         if mat.path and ("/" in mat.path or "\\" in mat.path):
             mat.path = mat.path.replace("\\", "/").rsplit("/", 1)[-1]
-    m.save(str(OUT))
-    return m, rows
+    m.save(str(out))
+    return m, rows, out
 
 
 def main():
-    m, rows = build()
+    ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    ap.add_argument("--steel", default=DEFAULT_STEEL, help=f"lamination grade (default {DEFAULT_STEEL})")
+    ap.add_argument("--out", help="output path (default: see the module docstring)")
+    args = ap.parse_args()
+    m, rows, out = build(args.steel, args.out)
     print("| Parameter | Pyleecan file | Ours | Difference | Source |")
     print("|---|---|---|---|---|")
     for name, old, new, note in rows:
+        if isinstance(new, str):
+            print(f"| {name} | {old} | {new} | | {note} |")
+            continue
         diff = "" if not old else f"{100 * (new - old) / old:+.1f} %"
         k, u = (1, "") if name.startswith("magnets.") else (1e3, " mm")
         print(f"| {name} | {k * old:.3f}{u} | {k * new:.3f}{u} | {diff} | {note} |")
     s = m.stator.slot
     print(f"\nair gap {1e3 * (m.stator.Rint - m.rotor.Rext):.4f} mm; slot depth H0+H1+H2 {1e3 * (s.H0 + s.H1 + s.H2):.3f} mm; "
           f"slot area {1e6 * s.comp_surface():.1f} mm^2, active {1e6 * s.comp_surface_active():.1f} mm^2")
-    print(f"wrote {OUT}")
+    print(f"wrote {out}")
 
 
 if __name__ == "__main__":

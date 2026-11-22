@@ -1,0 +1,70 @@
+# Study 7, torque against current, revision 1: the same MTPA curve as motor_prius_torque_current.toml (50 to 350 A rms,
+# fineness 4) with the laminations changed to M330-35A, the study's single stand-in steel (user's decision 2026-11-22
+# ~00:40; the reason and the two B-H curves are in motor_prius_ornl_oc_mesh_r3.toml). Same model, angle sweep, checks
+# and requirement. motor_prius_torque_current (M400-50A, Pyleecan's inherited steel) stays as the other side of the
+# sensitivity.
+#
+# Predictions, written BEFORE the run (no ORNL measured data opened; motor_prius_torque_current had finished 50 and
+# 100 A, 115.4 and 246 N m, when these were written):
+#   P1 Every point check passes at every current.
+#   P2 MTPA torque above the M400-50A curve at every current, by about +3 % at 50-100 A (range +1.5 to +5 %), falling to
+#      about +1 % at 350 A (range -1 to +3 %). At low current the gain follows the magnet flux (about +2 %, r3's P2)
+#      plus easier q-axis flux; at high current the teeth run above 1.8 T, where our M330-35A tail carries less flux
+#      than M400-50A's, so the gain shrinks.
+#   P3 MTPA angle within 2 deg of the M400-50A curve at every current.
+#   P4 REQ-M3 unchanged (the current density does not depend on the steel): every point up to 300 A passes, 350 A fails.
+#   P5 About 15 min per current, about 1 h 45 min in all (the M400-50A run's pace).
+# This curve, once verified, is the BLIND PREDICTION of torque against current (with M330-35A as the stand-in steel).
+
+[case]
+name = "motor_prius_torque_current_r1"
+model = "pyleecan_femm_load"
+description = "2004 Toyota Prius traction motor (our machine from ORNL Fig. 21, laminations M330-35A), MTPA torque at 50-350 A rms, 1000 rpm; Pyleecan + FEMM 4.2 magnetostatics, current angle 0-70 deg from the q axis, mesh fineness 4."
+assumptions = [
+  "2D magnetostatics (FEMM), no end effects; torque is the mean of FEMM's stress-tensor torque over one electrical period.",
+  "Magnets, magnet pockets and materials as in models/motor/Toyota_Prius_ORNL.json; laminations M330-35A, a stand-in grade (Tata Steel typical B-H data to 1.8 T, extrapolated above).",
+  "Magnet temperature 20 C.",
+  "Current-density limit 25 A/mm^2 rms on 0.84 x 143.0 mm^2 of copper per slot (stated assumption).",
+]
+limitations = [
+  "No test data in this case: the ORNL comparison is a separate, blind step at the end of the study.",
+  "Sinusoidal currents; no inverter harmonics, no voltage limit (1000 rpm is below base speed).",
+  "The real lamination grade is unknown; the bracketing grades are separate cases.",
+]
+
+[parameters]
+machine = "Toyota_Prius_ORNL.json"
+speed_rpm = 1000.0
+current_rms_A = 100.0
+angle_min_deg = 0.0
+angle_max_deg = 70.0
+angle_steps = 8
+mesh_fineness = 4.0
+steps_per_period = 48
+angle_points = 2048
+rated_torque_Nm = 400.0
+slot_fill = 0.84
+slot_area_mm2 = 143.0
+turns_per_slot = 9
+
+[sweep]
+parameter = "current_rms_A"
+values = [50.0, 100.0, 150.0, 200.0, 250.0, 300.0, 350.0]
+
+[numerics]
+solver_timeout_s = 7200
+
+[verification]
+power_balance_rel_tol = 0.02
+current_rel_tol = 1e-3
+phase_symmetry_rel_tol = 2e-3
+mesh_noise_rel = 1e-5
+gci_max = 0.01
+
+[[requirements]]
+id = "REQ-M3"
+text = "Each operating point of the torque curve shall stay within the 25 A/mm^2 rms copper current-density limit (marks which points of the curve the motor can sustain for a short time)."
+metric = "current_density_rms_A_per_mm2"
+operator = "<="
+limit = 25.0
+units = "A/mm^2"
