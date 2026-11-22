@@ -30,6 +30,11 @@ VP = [
      "lines": ["Solver: CalculiX 2.22 · C3D10 · 5 758 surface nodes",
                "Deformation scale factor: +2.500e+01",
                "Range capped at the 150 MPa beam-theory stress; the clamp corners are singular"]},
+    {"id": "cantilever_opt", "study": "cantilever_opt", "tab": "Optimised", "legend": "S, Mises", "unit": "MPa",
+     "model": "The same cantilever, optimised · steel, 200 mm × 20 mm wide, tapered 26.0 → 8.7 mm, 1 kN at the tip",
+     "lines": ["Solver: CalculiX 2.22 · C3D10 · the confirmation run's finest mesh (2 mm)",
+               "Deformation scale factor: +2.500e+01 · same scale and framing as study 1's straight bar",
+               "546 g, 30 % under the lightest straight bar that passes · peak 99.5 MPa along the span against 100"]},
     {"id": "contact_detail", "study": "contact", "tab": "Contact", "legend": "S, Mises", "unit": "MPa",
      "model": "Roller on plate · steel, R = 50 mm, 501 N/mm · section through the contact",
      "lines": ["Solver: CalculiX 2.22 · surface-to-surface penalty contact",
@@ -136,6 +141,7 @@ CARDS = [
     ("strut", "13", "struct", "New · Stability", "Strut buckling, with an imperfect strut", "The longest acceptable strut is about 587 mm. The bow costs 4 to 7 % of the buckling load, so a buckling check alone would overstate the capacity.", "pass", "CalculiX"),
     ("contact", "10", "struct", "Contact", "Roller-on-plate contact, nonlinear FEA", "A track roller carrying 500 N/mm. The contact pressure peaks at 609 MPa against a 650 MPa limit, and the shear under the surface reaches 184 MPa against 200. The CalculiX model lands within 0.4 % of the exact Hertz solution.", "pass", "Gmsh · CalculiX"),
     ("fea", "01", "struct", "Structures", "Cantilever bracket, 3D FEA", "Passes with room to spare at 0.953 mm and 150 MPa.", "pass", "FreeCAD · Gmsh · CalculiX"),
+    ("cantilever_opt", "01b", "struct", "Design automation", "The same cantilever, optimised", "Under a 100 MPa fatigue limit a linear taper from 26.0 to 8.7 mm weighs 546 g, 30 % less than the lightest straight bar that passes, and lands within 0.13 % of an independent beam-theory optimum.", "pass", "CadQuery · Gmsh · CalculiX · SciPy"),
     ("strap", "02", "struct", "Structures", "Cable hole in a strap, CAD to FEA", "The hole can go up to about 16.7 mm. 16 mm passes at 117 MPa and 18 mm fails.", "pass", "CadQuery · Gmsh · CalculiX"),
     ("fatigue", "03", "struct", "Fatigue", "Strap fatigue life, chained analysis", "Predicted to last with a wide margin; rated 7.8 kN cyclic for 3 × 10⁷ cycles, the lower of two data sets, extrapolated past the test data.", "pass", "CalculiX · Python"),
     ("modal", "04", "struct", "Vibration", "Bracket arm modal analysis", "7 mm thick puts the first mode at 261.7 Hz and the weight at 206 g.", "pass", "CadQuery · Gmsh · CalculiX"),
@@ -152,6 +158,14 @@ VERDICT = {"pass": "Passes", "fail": "Fails", "mixed": "Depends on speed", "held
 # studies of the same part, shown as one card and one panel; each study keeps its own write-up, viewer
 # result, requirements rows and evidence, and links to a study land on its part of the panel
 GROUPS = {
+    "cantilever_bracket": dict(parts=["fea", "cantilever_opt"], main="cantilever_opt", no="01 · 01b",
+                               d="Two studies", title="Cantilever bracket: stress check, then optimised",
+                               label="Studies 1 and 1b · FreeCAD, CadQuery, Gmsh, CalculiX and SciPy", verdict="pass",
+                               tools="CalculiX · SciPy",
+                               answer="First the straight steel bar: 0.953 mm and 150 MPa, inside its 213 MPa limit. Then a "
+                                      "100 MPa fatigue limit rules that bar out, and the optimiser tapers it from 26.0 to 8.7 mm: "
+                                      "546 g, 30 % under the lightest straight bar that passes, verified against beam theory "
+                                      "to 0.13 %."),
     "strap": dict(parts=["strap", "fatigue", "strap_proof"], main="strap_proof", no="02 · 03 · 14",
                   d="Three studies", title="Aluminium strap: cable hole, fatigue life and proof test",
                   label="Studies 2, 3 and 14 · CadQuery, Gmsh, CalculiX and Python", verdict="pass",
@@ -168,7 +182,8 @@ GROUPS = {
                               "40.99 °C, the coolant warms 7.20 K and the stress reaches 46.8 MPa, all inside their limits."),
 }
 PART_OF = {p: g for g, gd in GROUPS.items() for p in gd["parts"]}
-PART_LABEL = {"strap": "02 · Cable hole", "fatigue": "03 · Fatigue life", "strap_proof": "14 · Proof test",
+PART_LABEL = {"fea": "01 · Stress check", "cantilever_opt": "01b · Optimised",
+              "strap": "02 · Cable hole", "fatigue": "03 · Fatigue life", "strap_proof": "14 · Proof test",
               "heat": "11 · Coolant channel", "cold_plate": "15 · Full thermal chain"}
 WIDE = {"bracket_opt", "strap", "cold_plate"}
 
@@ -304,7 +319,7 @@ WORDS = {15: ("fifteen", "Fifteen"), 16: ("sixteen", "Sixteen"), 17: ("seventeen
 import extras
 import make_og
 facts = extras.repo_facts()
-make_og.make(facts)
+make_og.make({**facts, "studies": len(CARDS)})
 gdata = extras.grader_data()
 gcheck = extras.check_js_against_python(gdata)
 grader_body, grader_js = extras.grader_html(gdata)

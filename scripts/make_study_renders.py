@@ -566,6 +566,105 @@ def make_strap_frames(blender, samples: int, skip_render: bool) -> dict:
                           extra={"label": "Proof test", "recorded_zone_mm": rec["metrics"]["plastic_zone_mm"]})
 
 
+# --------------------------------------------------------------------------- study 1: plain and optimised cantilever
+
+CANT_PLAIN = REPO / "runs/20261119-085818_cantilever_tet10/points/p03_mesh_size_mm-1.95312"
+CANT_OPT = REPO / "runs/20261120-225744_bracket_opt_confirm/points/p02_element_size_mm-2"
+CANT_K = 25.0                                        # deflection magnification, as study 1's render
+CANT_BOX = [[-2.0, -11.0, -13.5 - CANT_K * 0.96], [202.0, 11.0, 13.5]]
+
+
+def cantilever_scene(name: str, pt: Path, mesh: Path, shift, volume: float, title: str, caption: str) -> Path:
+    """A cantilever's von Mises stress on its deflected shape, on study 1's scale (0 to 150 MPa, 12 bands) and
+    one camera and frame for both designs, so the viewer can switch between them without the view moving."""
+    from harness.femesh import compact, read_inp
+    from harness.runio import read_series
+
+    nodes, elems = read_inp(mesh)
+    s = read_series(pt / "nodal_results.csv")
+    tris = mr.surface(nodes, elems, s["node_id"].astype(int))
+    xyz = np.column_stack([s["x_mm"], s["y_mm"], s["z_mm"]]) + np.asarray(shift, float)
+    u = np.column_stack([s["ux_mm"], s["uy_mm"], s["uz_mm"]])
+    vm = mr.von_mises(s)
+    xyz, tris, vm, u = compact(xyz, tris, vm, u)
+    return write_scene(BUILD / name, xyz + CANT_K * u, tris, vm, ghost_xyz=xyz, field="von Mises stress", units="MPa",
+                       vmin=0.0, vmax=150.0, bands=12, band_colors=mr.bands(12), elev=20, azim=-58,
+                       frame_box=CANT_BOX, fill=0.95, resolution=[1400, 900], expected_volume_mm3=volume,
+                       title=title, caption=caption)
+
+
+def cantilever_opt_mesh() -> Path:
+    """The optimised bar's mesh. The run kept its CAD file and Gmsh script but not the mesh, so the mesh is
+    made again with the same Gmsh, and must reproduce the saved results' nodes: every node number, at its
+    saved position to the 0.001 mm the results file is written to."""
+    from harness.femesh import read_inp
+    from harness.runio import read_series
+
+    work = BUILD / "cantilever_opt_mesh"
+    work.mkdir(parents=True, exist_ok=True)
+    for n in ("bracket.step", "mesh.geo"):
+        shutil.copyfile(CANT_OPT / "solver" / n, work / n)
+    if not (work / "mesh.inp").exists():
+        gmsh = Path(str(ccx())).with_name("gmsh.exe")
+        subprocess.run([str(gmsh), "mesh.geo", "-3", "-format", "inp", "-o", "mesh.inp"], cwd=work,
+                       capture_output=True, text=True, timeout=600, check=True)
+    nodes, _ = read_inp(work / "mesh.inp")
+    s = read_series(CANT_OPT / "nodal_results.csv")
+    ids = s["node_id"].astype(int)
+    if len(nodes) != len(ids) or any(int(i) not in nodes for i in ids):
+        raise RuntimeError("the regenerated mesh's nodes are not the ones the run solved on")
+    saved = np.column_stack([s["x_mm"], s["y_mm"], s["z_mm"]])
+    if max(np.abs(np.array(nodes[int(i)]) - x).max() for i, x in zip(ids, saved)) > 1e-3:
+        raise RuntimeError("the regenerated mesh's nodes are not where the run's results put them")
+    return work / "mesh.inp"
+
+
+def scene_cantilever_pair() -> list[Path]:
+    rec = read_json(CANT_OPT / "point.json")
+    p, m = rec["parameters"], rec["metrics"]
+    h0, h1 = p["root_height_mm"], p["tip_height_mm"]
+    vol = p["length_mm"] * p["width_mm"] * (h0 + h1) / 2
+    if abs(vol * p["density_t_per_mm3"] * 1e6 / m["mass_g"] - 1) > 1e-6:
+        raise RuntimeError("the optimised bar's volume doesn't give its recorded mass")
+    plain = cantilever_scene("cantilever", CANT_PLAIN, CANT_PLAIN / "solver" / "Mesh.inp", (0, -10, -10), 200 * 20 * 20,
+                             "Cantilever bracket under 1 kN: von Mises stress",
+                             f"Deflection magnified {CANT_K:g} times; undeformed shape outlined in black. Range capped at "
+                             "the 150 MPa beam-theory root stress (the clamp corners are singular).")
+    opt = cantilever_scene("cantilever_opt", CANT_OPT, cantilever_opt_mesh(), (0, 0, 0), vol,
+                           "Optimised cantilever under 1 kN: von Mises stress",
+                           f"Tapered from {h0:.1f} mm at the root to {h1:.1f} mm at the tip; {m['mass_g']:.0f} g. Same scale "
+                           f"and deflection magnification as the plain bar.")
+    return [plain, opt]
+
+
+def publish_pair(names: list[str], scenes: list[Path]):
+    """Publish renders with one crop box (the union of their silhouettes), so switching between them in the
+    viewer changes the part, not the framing."""
+    from PIL import Image
+
+    ims = [Image.fromarray((np.clip(mr.beauty(sc), 0, 1) * 255).astype(np.uint8), "RGBA") for sc in scenes]
+    alpha = np.max([np.asarray(im)[..., 3] for im in ims], axis=0)
+    ys, xs = np.nonzero(alpha > 60)
+    pad = int(0.10 * max(np.ptp(xs), np.ptp(ys)))
+    crop = (max(0, xs.min() - pad), max(0, ys.min() - pad), min(ims[0].width, xs.max() + pad), min(ims[0].height, ys.max() + pad))
+    allscenes = json.loads((SITE / "scenes.json").read_text(encoding="utf-8"))
+    for name, sc, im in zip(names, scenes, ims):
+        im = im.crop(crop)
+        vp = im.copy()
+        vp.thumbnail((1400, 900), Image.LANCZOS)
+        vp.save(SITE / f"vp_{name}.webp", quality=90, method=6)
+        th = im.copy()
+        th.thumbnail((800, 500), Image.LANCZOS)
+        canvas = Image.new("RGBA", (800, 500), (0, 0, 0, 0))
+        canvas.alpha_composite(th, ((800 - th.width) // 2, (500 - th.height) // 2))
+        canvas.save(SITE / f"th_{name}.webp", quality=88, method=6)
+        meta = json.loads(sc.with_suffix(".json").read_text(encoding="utf-8"))
+        allscenes[name] = {k: meta.get(k) for k in ("field", "units", "vmin", "vmax", "bands", "band_colors", "title",
+                                                     "caption", "data_min", "data_max")}
+        allscenes[name].update(gate(sc))
+    (SITE / "scenes.json").write_text(json.dumps(allscenes, indent=1), encoding="utf-8")
+
+
 SLIP_INC = 30            # the slip run's increments, to SLIP_TO_MM
 SLIP_TO_MM = 0.006
 
@@ -770,8 +869,21 @@ def main():
     ap.add_argument("--samples", type=int, default=128)
     ap.add_argument("--skip-render", action="store_true")
     ap.add_argument("--frames", nargs="+", choices=["strut", "strap_proof", "bolted_joint"], help="load-step frames for the viewer slider")
+    ap.add_argument("--cantilever", action="store_true", help="study 1's plain and optimised bars, one frame for both")
     args = ap.parse_args()
     blender = mr.find_blender()
+    if args.cantilever:
+        scenes = scene_cantilever_pair()
+        for sc in scenes:
+            if not args.skip_render:
+                mr.render(blender, sc, args.samples)
+        publish_pair(["cantilever", "cantilever_opt"], scenes)
+        for sc in scenes:
+            g = gate(sc)
+            meta = json.loads(sc.with_suffix(".json").read_text(encoding="utf-8"))
+            print(sc.stem, f"data {meta['data_min']:.1f} to {meta['data_max']:.1f} MPa, volume {g['volume']['rel_error']:+.1e}, "
+                  f"{g['color']['fraction_on_legend']:.2%} on the legend, {g['legibility']['misread']:.2%} misread")
+        return
     if args.frames:
         makers = {"strut": make_strut_frames, "strap_proof": make_strap_frames, "bolted_joint": make_joint_frames}
         for name in args.frames:

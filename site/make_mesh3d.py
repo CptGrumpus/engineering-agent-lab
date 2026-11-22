@@ -34,7 +34,7 @@ MAGIC = 0x3144334D                                   # "M3D1" little-endian
 # viewer entry -> render scene. The contact close-up stays an image (its 1 mm patch is lost in a
 # rotatable whole model) and so does the strap proof test (an unstructured 331 000-vertex mesh). The
 # cold plate uses a lighter mesh: every fourth node through the thickness (make_study_renders.py)
-SCENES = {"bracket_opt": "opt/bracket_opt_hero", "cantilever": "cantilever", "fatigue": "fatigue",
+SCENES = {"bracket_opt": "opt/bracket_opt_hero", "cantilever": "cantilever", "cantilever_opt": "cantilever_opt", "fatigue": "fatigue",
           "fin": "fin", "mode1": "mode1", "strut": "strut", "bolted_joint": "bolted_joint", "duct": "duct",
           "cold_plate": "cold_plate_3d"}
 

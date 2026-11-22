@@ -58,7 +58,7 @@ def make(facts: dict) -> Path:
     d.text((x, 370), "proof attached.", font=title, fill=ACCENT)
     d.text((x, 462), "Featured: an agent-driven bracket optimisation,", font=body, fill=INK2)
     d.text((x, 494), "with all 78 candidate designs solved and checked", font=body, fill=INK2)
-    stats = f"16 studies  ·  {facts['checks']:,} automated checks  ·  {facts['runs']} saved runs  ·  open-source solvers"
+    stats = f"{facts.get('studies', 16)} studies  ·  {facts['checks']:,} automated checks  ·  {facts['runs']} saved runs  ·  open-source solvers"
     d.rectangle([(0, H - 72), (W, H)], fill=(8, 14, 26, 150))
     d.text((x, H - 50), stats, font=body, fill=INK)
     OUT.parent.mkdir(parents=True, exist_ok=True)

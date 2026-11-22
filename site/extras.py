@@ -28,7 +28,7 @@ REPO_URL = "https://github.com/CptGrumpus/engineering-agent-lab"
 MEMO = "portfolio/deliverables/coolant-channel-memo.md"
 # page key -> the study's write-up in portfolio/, which lists the runs it rests on
 STUDY_DOCS = {
-    "fea": "01-cantilever-bracket", "strap": "02-strap-cable-hole", "fatigue": "03-strap-fatigue",
+    "fea": "01-cantilever-bracket", "cantilever_opt": "01b-cantilever-optimisation", "strap": "02-strap-cable-hole", "fatigue": "03-strap-fatigue",
     "modal": "04-bracket-modal", "cfd": "05-coolant-channel", "thermal": "06-heat-sink-fin",
     "suspension": "07-quarter-car", "cad": "08-mounting-plate", "baseline": "09-mass-spring-damper",
     "contact": "10-roller-contact", "heat": "11-cold-plate-heat-transfer", "bracket_opt": "12-bracket-optimisation",
@@ -459,6 +459,10 @@ REQS = [
     ("fea", "01", "Cantilever bracket", [
         ("Tip deflection", "≤ 1.0 mm", "0.953 mm", "met"),
         ("Root bending stress", "≤ 213 MPa", "150 MPa", "met")]),
+    ("cantilever_opt", "01b", "Cantilever, optimised", [
+        ("Peak bending stress along the span", "≤ 100 MPa", "99.5 MPa", "met"),
+        ("Tip deflection", "≤ 1.0 mm", "0.917 mm", "met"),
+        ("Mass against beam-theory optimum", "independent check", "546.0 g against 545.2 g, 0.13 %", "met")]),
     ("strap", "02", "Cable hole in a strap", [
         ("Hole-edge stress, 16 mm hole", "≤ 120 MPa", "117 MPa", "met")]),
     ("fatigue", "03", "Strap fatigue life", [
