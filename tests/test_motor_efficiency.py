@@ -63,3 +63,51 @@ def test_phase_resistance_from_geometry():
          "series_turns_per_phase": 72, "turn_copper_area_mm2": 8.492}
     assert phase_resistance_20C(p) == pytest.approx(1.72e-8 * 72 * (2 * 0.08382 + 2 * 0.118) / 8.492e-6)
     assert em.resistance(1.0, 100.0) == pytest.approx(1 + 0.00393 * 80)
+
+
+def _fake_run(root, name, ids, iqs, magnet_T=20.0, bump=0.0):
+    """A motor_lut run on disk from the synthetic machine: one point per d-axis current, lut.csv per point."""
+    import csv
+    import json
+
+    run = root / name
+    for k, d in enumerate(ids):
+        pdir = run / "points" / f"p{k:02d}"
+        pdir.mkdir(parents=True)
+        (pdir / "point.json").write_text(json.dumps({"status": "completed", "solver_outputs": {"pole_pairs": P},
+                                                     "parameters": {"magnet_temperature_C": magnet_T}}))
+        with open(pdir / "lut.csv", "w", newline="") as f:
+            w = csv.writer(f)
+            w.writerow(["id_rms_A", "iq_rms_A", "torque_mean_Nm", "phi_d_Wb", "phi_q_Wb"]
+                       + [f"{c}_iron_{x}_W" for c in ("stator", "rotor") for x in "ABC"])
+            for q in iqs:
+                pd, pq = PSI_M + LD * d, LQ * q
+                w.writerow([d, q, 3 * P * (pd * q - pq * d) * (1 + bump), pd, pq, 1.0, 0.004, 0.02, 0.1, 0.0004, 0.002])
+    return run
+
+
+def test_merged_tables_form_the_union_grid_and_report_overlap_agreement(tmp_path):
+    from studies.motor_efficiency import load_lut, run_list
+
+    ids = [-50.0, -25.0, 0.0]
+    main = _fake_run(tmp_path, "main", ids, [0.0, 25.0, 50.0])
+    low = _fake_run(tmp_path, "low", ids, [6.25, 12.5, 25.0])
+    g = load_lut([main, low])
+    assert list(g["iq"]) == [0.0, 6.25, 12.5, 25.0, 50.0]
+    assert g["torque_mean_Nm"].shape == (3, 5)
+    assert g["merge_max_rel_diff"] == 0.0
+    # a supplementary run that does not reproduce the shared row is caught, and the main run's values are kept
+    off = _fake_run(tmp_path, "off", ids, [12.5, 25.0], bump=1e-3)
+    g2 = load_lut([main, off])
+    assert g2["merge_max_rel_diff"] == pytest.approx(1e-3, rel=1e-2)
+    assert np.allclose(g2["torque_mean_Nm"][:, list(g2["iq"]).index(25.0)], g["torque_mean_Nm"][:, 3])
+    assert run_list("a, b") == ["a", "b"] and run_list("a") == ["a"]
+
+
+def test_merging_tables_at_different_magnet_temperatures_is_refused(tmp_path):
+    from studies.motor_efficiency import load_lut
+
+    a = _fake_run(tmp_path, "a", [0.0], [0.0, 25.0], magnet_T=20.0)
+    b = _fake_run(tmp_path, "b", [0.0], [12.5], magnet_T=80.0)
+    with pytest.raises(ValueError, match="magnet temperature"):
+        load_lut([a, b])

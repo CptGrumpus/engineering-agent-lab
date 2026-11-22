@@ -48,8 +48,7 @@ def phase_resistance_20C(p) -> float:
         float(p["turn_copper_area_mm2"]) * 1e-6)
 
 
-def load_lut(run_dir: Path) -> dict:
-    """The regular (id, iq) grid of a motor_lut run: one point per d-axis current, lut.csv per point."""
+def _lut_rows(run_dir: Path) -> tuple[list[dict], int, float]:
     rows = []
     for pj in sorted((run_dir / "points").glob("*/point.json")):
         pt = json.loads(pj.read_text(encoding="utf-8"))
@@ -60,10 +59,44 @@ def load_lut(run_dir: Path) -> dict:
                 rows.append({k: float(v) for k, v in r.items()})
         pole_pairs = int(pt["solver_outputs"]["pole_pairs"])
         magnet_T = float(pt["parameters"]["magnet_temperature_C"])
-    ids = np.unique([r["id_rms_A"] for r in rows])
-    iqs = np.unique([r["iq_rms_A"] for r in rows])
-    grid = {"id": ids, "iq": iqs, "pole_pairs": pole_pairs, "magnet_temperature_C": magnet_T}
-    idx = {(r["id_rms_A"], r["iq_rms_A"]): r for r in rows}
+    return rows, pole_pairs, magnet_T
+
+
+#: table columns compared where two merged runs computed the same (id, iq) node
+MERGE_FIELDS = ("torque_mean_Nm", "phi_d_Wb", "phi_q_Wb", "stator_iron_A_W", "stator_iron_B_W", "stator_iron_C_W",
+                "rotor_iron_A_W", "rotor_iron_B_W", "rotor_iron_C_W")
+
+
+def run_list(lut_run) -> list[str]:
+    """lut_run names one motor_lut run, or several separated by commas (the first is the main table)."""
+    return [s.strip() for s in str(lut_run).split(",") if s.strip()]
+
+
+def load_lut(run_dir: Path | list[Path]) -> dict:
+    """The regular (id, iq) grid of one motor_lut run, or the union of several (one point per d-axis current, lut.csv
+    per point). Where two runs computed the same node, the first run's values are kept and the largest relative
+    difference between them is reported as merge_max_rel_diff (the same model should reproduce itself)."""
+    dirs = [run_dir] if isinstance(run_dir, (str, Path)) else list(run_dir)
+    idx, merge_diff, temps = {}, 0.0, set()
+    for d in dirs:
+        rows, pole_pairs, magnet_T = _lut_rows(Path(d))
+        temps.add(magnet_T)
+        for r in rows:
+            key = (r["id_rms_A"], r["iq_rms_A"])
+            if key in idx:
+                for k in MERGE_FIELDS:
+                    a, b = idx[key][k], r[k]
+                    scale = max(abs(a), abs(b))
+                    if scale > 1e-9:
+                        merge_diff = max(merge_diff, abs(a - b) / scale)
+            else:
+                idx[key] = r
+    if len(temps) != 1:
+        raise ValueError(f"merged tables disagree on the magnet temperature: {sorted(temps)}")
+    ids = np.unique([k[0] for k in idx])
+    iqs = np.unique([k[1] for k in idx])
+    grid = {"id": ids, "iq": iqs, "pole_pairs": pole_pairs, "magnet_temperature_C": temps.pop(),
+            "merge_max_rel_diff": merge_diff}
     missing = [(d, q) for d in ids for q in iqs if (d, q) not in idx]
     if missing:
         raise ValueError(f"table incomplete: {len(missing)} of {len(ids) * len(iqs)} grid points missing")
@@ -82,10 +115,13 @@ class LUTEfficiency(Backend):
         self.model = _load(self.source_path(MODEL, source_dir), "efficiency_map_run")
 
     def solve(self, params, numerics, tolerance_scale=1.0):
-        run_dir = REPO / "runs" / str(params["lut_run"])
-        if not (run_dir / "manifest.json").exists():
-            return failed(f"look-up table run {params['lut_run']} not found")
-        grid = load_lut(run_dir)
+        runs = run_list(params["lut_run"])
+        run_dirs = [REPO / "runs" / r for r in runs]
+        for r, d in zip(runs, run_dirs):
+            if not (d / "manifest.json").exists():
+                return failed(f"look-up table run {r} not found")
+        run_dir = run_dirs[0]
+        grid = load_lut(run_dirs)
         m = self.model
         fine = m.fine_grid(grid, step_A=float(numerics.get("fine_step_A", 1.0)))
         r20 = phase_resistance_20C(params)
@@ -129,8 +165,40 @@ class LUTEfficiency(Backend):
                               for c, e in zip("ABC", (1, 2, 1.5))) for d, q in odd])
         P_hal = sum(hi[f"iron_{c}_W"](odd) * f6 ** e for c, e in zip("ABC", (1, 2, 1.5)))
         interp_P = float(np.max(np.abs(P_hal - P_ref) / np.abs(P_ref)))
+        extra = {}
+        if len(run_dirs) > 1:
+            # the main table alone, interpolated at the nodes only the supplementary runs computed: the interpolation
+            # error the map would carry without them (|T| >= 5 N m)
+            main = load_lut(run_dirs[0])
+            mi = m.interpolants(main)
+            new = [(d, q) for d in grid["id"] for q in grid["iq"] if q not in set(main["iq"]) or d not in set(main["id"])]
+            Tn = np.array([grid["torque_mean_Nm"][list(grid["id"]).index(d), list(grid["iq"]).index(q)] for d, q in new])
+            sel_n = np.abs(Tn) >= 5
+            err_n = np.abs(mi["torque_mean_Nm"](new) - Tn) / np.maximum(np.abs(Tn), 1e-12)
+            k = int(np.argmax(np.where(sel_n, err_n, -1)))
+            extra = {"lut_merge_max_rel_diff": grid["merge_max_rel_diff"], "main_table_new_nodes": len(new),
+                     "main_table_interp_torque_rel_at_new_nodes": float(err_n[k]) if sel_n.any() else 0.0,
+                     "main_table_interp_worst_node_A": [float(new[k][0]), float(new[k][1])]}
+        if numerics.get("halfgrid_map_check"):
+            # the output itself: the whole map from the half table against the full one, in efficiency points, over
+            # the cells both can reach (bounds the full table's interpolation error on the map)
+            emap_h = m.efficiency_map(m.fine_grid(half, step_A=float(numerics.get("fine_step_A", 1.0))),
+                                      speeds_rpm=speeds, torques_Nm=torques,
+                                      i_max_rms=float(params["current_limit_map_A"]), **common)
+            emap_h.pop("t_max_by_speed_Nm")
+            a, b = np.asarray(emap["efficiency_pct"]), np.asarray(emap_h["efficiency_pct"])
+            ok = ~np.isnan(a) & ~np.isnan(b)
+            d = np.abs(a - b)[ok]
+            tq = np.asarray(emap["target_torque_Nm"])[ok]
+            j = int(np.argmax(d))
+            extra |= {"halfgrid_map_eff_diff_max_pts": float(d.max()), "halfgrid_map_eff_diff_median_pts":
+                      float(np.median(d)), "halfgrid_map_eff_diff_max_pts_above_60Nm": float(d[tq >= 60].max())
+                      if (tq >= 60).any() else 0.0, "halfgrid_map_worst_cell": [float(np.asarray(emap["speed_rpm"])[ok][j]),
+                                                                               float(tq[j])],
+                      "halfgrid_map_cells_compared": int(ok.sum())}
         man = (run_dir / "manifest.json").read_bytes()
-        outputs = {"lut_run": str(params["lut_run"]), "lut_manifest_sha256": hashlib.sha256(man).hexdigest(),
+        extra["lut_manifests_sha256"] = [hashlib.sha256((d / "manifest.json").read_bytes()).hexdigest() for d in run_dirs]
+        outputs = extra | {"lut_run": str(params["lut_run"]), "lut_manifest_sha256": hashlib.sha256(man).hexdigest(),
                    "lut_magnet_temperature_C": grid["magnet_temperature_C"], "pole_pairs": grid["pole_pairs"],
                    "grid_id_A": grid["id"].tolist(), "grid_iq_A": grid["iq"].tolist(),
                    "phase_resistance_20C_ohm": r20, "phase_resistance_ohm": r, "voltage_limit_rms_V": v_max,
@@ -204,6 +272,14 @@ class MotorEfficiencyStudy(Study):
             check("magnet_temperature", "|table's magnet temperature - this scenario's| (K)",
                   abs(out["lut_magnet_temperature_C"] - float(p["magnet_temperature_C"])), 0.0, kind="validity"),
         ]
+        if "lut_merge_max_rel_diff" in out and "merge_rel_tol" in tol:
+            checks.append(check("lut_merge", "max relative difference over the nodes two merged table runs both "
+                                "computed (same model, mesh and rotor positions: it must reproduce itself)",
+                                out["lut_merge_max_rel_diff"], tol["merge_rel_tol"]))
+        if "halfgrid_map_eff_diff_max_pts" in out and "interp_map_max_pts" in tol:
+            checks.append(check("interp_map", "max |efficiency from the half table - from the full table| over the map "
+                                "(efficiency points): bounds the full table's interpolation error on the output itself",
+                                out["halfgrid_map_eff_diff_max_pts"], tol["interp_map_max_pts"]))
         efficiency_figure(pdir / "response.png", series, out, point)
         return checks
 
