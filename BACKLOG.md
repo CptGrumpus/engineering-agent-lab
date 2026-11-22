@@ -69,7 +69,7 @@ predictions go into a case header and get committed BEFORE its evidence run; Res
 <run dir>`, commit with `git add -f` leaving out `*.inp`, `*.dat`, `__pycache__` and logs over about 600 KB, then
 `tests/test_privacy.py`.
 
-### Running at 10:50 (background shells of the 10:50 session; they survive a /clear)
+### Running at 10:50 (background shells started by the 10:50 session: they should keep running after a /clear; confirm with the commands below)
 
 Check with `ps -ef | grep "[h]arness pipeline"` (WSL jobs: `wsl.exe -e bash -lc "ps -eo etime,cmd | grep -E 'Foam|ccx' | grep -v grep"`).
 A run is finished when its `runs/<timestamp>_<case>/report.md` exists. Logs are in the 10:50 session's scratchpad,
