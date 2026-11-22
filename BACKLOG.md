@@ -111,11 +111,11 @@ A run is finished when its `runs/<timestamp>_<case>/report.md` exists. Logs are 
   + verification.interp_map_max_pts). **Next:** `cases/motor_prius_efficiency_r1.toml` with lut_run = the 25 A run
   then the low-iq run for each scenario, predictions first (score the low-iq cases' P3 from
   main_table_interp_torque_rel_at_new_nodes).
-- **Then:** rebuild the reports (`.venv/Scripts/python.exe reports/motor/build_report.py <scratchpad>/motor_index.html`):
-  add the copper correction (REQ-M2/M3 status rows, the torque page's design-limit callout: 212 A), the tail
-  sensitivity, the efficiency map (a new page); republish https://claude.ai/artifact/C6dNdzjs1FdP8vVb6MLaRy (read it
-  first in a new session; main page = that index file; `geometry.html`, `open-circuit.html`, `torque.html` (+ the new
-  page) as files). Add today's whitelist re-read of ORNL/TM-2004/137's winding paragraph to the report's protocol log.
+- **Reports (5b9c966, cdc05dd):** copper correction, tail sensitivity, timeline to 13:38, protocol-log entry and a new
+  efficiency page are in `reports/motor/`. **When efficiency r1 is scored:** extend the timeline, rebuild
+  (`.venv/Scripts/python.exe reports/motor/build_report.py <scratchpad>/motor_index.html`), then read and republish
+  https://claude.ai/artifact/C6dNdzjs1FdP8vVb6MLaRy (main page = that index file; `geometry.html`, `open-circuit.html`,
+  `torque.html`, `efficiency.html` as files).
 - **After that, before the ORNL data is opened:** the thermal network; then open the ORNL test data once and compare.
 
 ### Study 6 (FSI): FSI1 revision 1
@@ -185,8 +185,11 @@ elements, probabilistic uncertainty). Each with its tools and independent refere
 
 ### Waiting on the user
 
-Nothing blocking. For review when convenient: study 18's 14 mm recommendation; whether to publish studies 18/19 as
-portfolio pages once their cases are complete.
+Nothing blocking. For review when convenient: study 18's 14 mm recommendation. (User, 2026-11-22 ~15:00: "keep working
+on our studies, updating docs and skills and building out the portfolio": study 18's page is published (0feac56); study
+19's page waits on pipe_rans_mesh_r1; `scripts/make_pipe_figure.py` draws its figure. New evaluation task
+`tasks/nozzle_stress_linearisation` (ea159d0). Skills updated (6eadf71). README study table (4d484d3). Next ideas: a
+skill eval on quoting one mesh's agreement with a correlation (after pipe r1), FSI page when r1 is in.)
 
 ### Earlier notes (history: the summary above supersedes anything here that disagrees)
 
