@@ -100,6 +100,8 @@ other lacks.
   Report this. Do not re-hash.
 - These checks establish **numerical verification** only. Say so. Physical validation needs test
   data, and none exists for synthetic cases.
+- When test data does exist, compare against it once, blind, after the predictions are written
+  (`frame-requirements`, "Blind validation against test data").
 
 ## Artifacts
 

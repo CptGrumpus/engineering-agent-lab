@@ -103,6 +103,19 @@ hand calculation), write the predicted value and how it was derived into the
 case file header before running. A prediction that holds is strong evidence;
 one written afterwards is not.
 
+### 6a. Blind validation against test data
+
+When test data exists for the comparison (study 7: ORNL's Prius measurements), keep it sealed until every
+prediction is written into a case file.
+
+- Read reports that mix design data and test data by **whitelist**: print only lines matching design terms, with
+  numbers masked unless they are what you need. A blacklist of performance words leaks: table values sit on their
+  own lines and labels are abbreviations (study 7 saw ORNL model results this way, and recorded it).
+- Render only the figure you need, cropped to its image block; check what else shares the page.
+- Material properties measured by the same lab are a judgement call for the user, not for you.
+- Keep a protocol log (what was opened, when, why) and declare any prior knowledge in the case headers.
+- Agree the validation limits before the data is seen; after that, any change is a documented revision.
+
 ### 7. Missing information
 
 List what the user has not specified (a width, a tolerance, a temperature

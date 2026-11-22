@@ -354,6 +354,48 @@ Traps found while building the studies in this repo, by tool.
   reads a file with the Windows default encoding and fails: set `PYTHONUTF8=1`. Its bundled
   `Toyota_Prius.json` is the 2004 Prius (48 slots, 8 poles, 0.75 mm air gap).
 
+- **The environment is pinned in `models/motor/pyleecan-env.txt`** (pip freeze, with the recreate steps).
+- **SciDataTool from GitHub master too.** The PyPI 2.5.0 calls `numpy.string_`, which numpy 2 removed; master (2.5.1,
+  commit c6f2497) works. Study 7 pins Pyleecan master 1e940df.
+- **`Nt_tot` counts a mechanical revolution**, not an electrical period: set it to steps per electrical period x pole
+  pairs (24 for the 4-pole-pair Prius gave only 6 samples per electrical period).
+- **`OPdq(Id_ref, Iq_ref)` are RMS currents** (the class docstring says so; an early runner docstring said peak). Guard
+  it: compare the imposed phase-current fundamental with sqrt(2) x the requested rms (`motor_torque`
+  `current_amplitude`, exact to 1e-16).
+- **Pyleecan's phase flux linkage has the opposite sign to the motor convention** v = R i + d(psi)/dt: with its currents
+  and torque, mean(sum i d(phi)/dt) = minus torque x omega_m (magnitudes agreed to 0.05-0.1 %). Apply the sign
+  explicitly in a power-balance check rather than comparing magnitudes, so a convention change fails loudly.
+- **`out.elec.get_Is()` ignores time periodicity**: `get_along("time[oneperiod]")` returns a whole mechanical revolution
+  (192 samples) while the flux linkage returns one electrical period (48). The time steps coincide, so select the
+  current samples on the flux-linkage time axis.
+- **`out.mag.Tem` "oneperiod" is the torque's own period**, shorter than the electrical period. At 48 steps per
+  electrical period the slot-ripple cycle (6 x electrical for 48 slots / 8 poles) gets about 4 samples: the mean torque
+  is fine, the peak-to-peak ripple is only approximate. Use more steps when ripple is a requirement.
+- **SlotW11**: depth = H0 + H1 + H2 (H2 includes the round end); W1 is the width at the top of H1, W2 the width where
+  the round starts; R1 = W2/2 gives a semicircular end.
+- **HoleM50**: H3 is the magnet thickness AND the pocket thickness (the magnet fills it), and it grows inward from the
+  outer edge, whose apex sits at depth H0. The arm angle is set by H0, H1 (bridge) and W0 together, so changing H0
+  alone tilts the arms: re-solve W0 to keep a measured angle (study 7 machine build).
+- **Bundled machine files carry absolute material paths from Pyleecan's authors' computer** (`mat_type.path`).
+  `tests/test_privacy.py` catches them once committed; strip them to file names when you build a machine
+  (`models/motor/build_prius_ornl.py`).
+- **Pyleecan's generic magnet** (Br 1.24 T, recoil permeability 1.05) matched the Prius sample's Br but not its recoil
+  permeability (1.129, ORNL's measured line). Check both, and the temperature the source assumes.
+
+## Reading dimensions from published PDFs (PyMuPDF, study 7)
+
+- Engineering figures in reports are often vector drawings: `page.get_text("words")` gives the dimension labels
+  exactly, and `page.get_drawings()` the outline as line segments you can measure.
+- Scale from a labelled circle, then **check the aspect ratio**: fit an ellipse to a feature that must be round (a rotor
+  OD). ORNL/TM-2005/33 Fig. 21 was stretched 1.1 % in x; it showed as one pole's OD reading 0.7 mm larger than the next.
+  Correct x and y separately before measuring positions; widths and thicknesses suffer less.
+- Measure every repeat of a feature (8 poles, 48 slots) and report the spread; a small spread is the evidence that
+  the reading is right.
+- Labels govern; the outline confirms and fills gaps. Then overlay the model you built on the drawing's outline: that
+  overlay is the check (it found Pyleecan's slot 50 % too large, and a pocket thickened on the wrong side).
+- A dimension arrow placed loosely on a tapered feature is ambiguous; measure the outline at the parameter's own
+  definition point (slot width at the shoulder, not where the arrow happens to sit).
+
 ## preCICE coupling (OpenFOAM v2512 + CalculiX, study 6)
 
 - The preCICE OpenFOAM adapter (v1.4.0) supports the openfoam.com line v1812 to v2606, not

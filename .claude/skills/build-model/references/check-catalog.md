@@ -102,6 +102,20 @@ Fatigue life is extremely sensitive to stress (here a 10 % stress change moves l
 | Exchange-file round trip (STEP re-import: volume, hole count) | numerical | `step_roundtrip_*` |
 | Valid solid | numerical | `shape.isValid()` |
 
+## Electric machines (Pyleecan + FEMM magnetostatics)
+
+| Check | Kind | Example |
+|---|---|---|
+| Three phases' flux-linkage fundamentals equal and 120 deg apart | numerical | `motor_em` `phase_symmetry`, `phase_shift`; `motor_torque` `phase_symmetry_load` |
+| Flux linkage from winding theory and the air-gap field's fundamental (2 N k_w1 B_1 R L / p) vs FEMM's coil integration | model form | `motor_em` `winding_theory` (0.3-0.6 %) |
+| Zero mean torque at zero current | numerical | `motor_em` `open_circuit_torque` |
+| Power balance over a whole period: mean(sum i d(phi)/dt) = mean torque x omega_m, an independent route to the stress-tensor torque | numerical | `motor_torque` `power_balance` (1e-3) |
+| Imposed current amplitude vs the requested value (catches rms/peak mix-ups) | numerical | `motor_torque` `current_amplitude` |
+| Maximum torque per amp found inside the current-angle sweep | validity | `motor_torque` `mtpa_bracketed` |
+| Enough time steps per electrical period for the metric (48 for flux linkage and mean torque; more for ripple) | validity | `time_resolution` |
+| GCI on the flux linkage, the back-EMF peak and the MTPA torque (mesh fineness) | numerical | motor mesh studies |
+| Design inputs overlaid on the published drawing they came from | numerical | study 7 slot and pocket overlays |
+
 ## Heat transfer in a flow (CFD + scalar temperature)
 
 | Check | Kind | Example |
