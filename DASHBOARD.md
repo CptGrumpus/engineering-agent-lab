@@ -50,7 +50,7 @@ Aim: better visuals and more "wow", without loosening any check. Every new visua
 
 - **Scrub through an analysis.** Done for the strut and the strap proof test. The bolted joint's side-load step was considered and left out: the saved run reaches full slip within two of its six increments, so there's only one in-between state to show.
 - **Watch the bolted joint slip.** An animation of the side-load step: the stuck region of the interface shrinking until the whole joint slides, next to the load-displacement curve. The contact output is already in the re-solve.
-- **Animated mode shapes in 3D.** An "Animate" button for the modal and buckling tabs that oscillates the 3D mesh along its mode shape.
+- **Animated mode shapes in 3D.** Done for the modal study's first mode (see below).
 - **Before-and-after slider** for the optimised bracket. Done (see below).
 - **Load-ramp animations for the gallery,** like the optimiser's search animation: short loops that show the result forming, used as the card thumbnails on hover.
 - **Section views.** Cut the bolted joint through its axis to show the pressure cone inside the plates, and the clevis through the lug to show where the stress runs.
@@ -62,6 +62,7 @@ Aim: better visuals and more "wow", without loosening any check. Every new visua
 
 | Date | Item | What changed |
 |---|---|---|
+| 2026-11-22 | Animated mode shape in 3D | In 3D, the bracket arm's first mode swings back and forth ("Animate the mode", pausable; off for reduced-motion users). The 3D file format gained an optional displacement block, flagged in its header and round-trip checked; the static frame is still the checked shape, and the page's 3D check always captures that frame |
 | 2026-11-21 | "What these studies don't cover" removed from the footer | Each limit now sits where it applies: study 11 and study 7 got a note in their panels (study 15 already had one, and study 6 states and sweeps its air-side coefficient). The "pending human review" line was a duplicate of the "A person signs off" rule in "How I work". The two general points, made-up parameters and no measured data yet, are said once in "The work" intro, with the motor study as the first comparison against test data. The footer is now the toolchain only |
 | 2026-11-21 | Intro rewritten to let the work speak | Headline "Simulation, proof attached." The paragraph opens with three results from the studies (a joint that slips 4 % too early, a strut that buckles at 23 kN, a bracket lightened over 78 designs) and ends by inviting the visitor to pick one and check it. No "I am" sentence. The link preview card and page title carry the same headline |
 | 2026-11-21 | Before-and-after wipe for the optimised bracket | The featured section's side-by-side figure is now a wipe: drag across one image from the starting design (387.7 g, 88.9 MPa) to design D (372.0 g, 97.4 MPa). Both rendered with one camera and crop by `scripts/make_clevis_visuals.py --wipe` and both through the three render checks; the legend is built from the render's own bands, with ticks at their true values |

@@ -75,7 +75,7 @@ VP = [
      "model": "Bracket arm · steel, 150 × 25 × 7 mm, clamped",
      "lines": ["Solver: CalculiX 2.22 · *FREQUENCY, mode 1 of 4",
                "261.7 Hz flapwise · requirement ≥ 250 Hz (engine 2nd order + 25 %)",
-               "Within 0.9 % of an independent Timoshenko beam model"]},
+               "Within 0.9 % of an independent Timoshenko beam model · in 3D, the mode can be animated (motion exaggerated)"]},
 ]
 VP += [
     {"id": "strap_detail", "study": "strap", "legend": "S11", "unit": "MPa",

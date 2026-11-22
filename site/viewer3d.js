@@ -15,13 +15,39 @@
 
   let entry = null, active = false, want3d = false, canvas = null, gl = null, prog = null, lineProg = null, mesh = null;
   let az = 0, el = 0, dist = 1, dist0 = 1, az0 = 0, el0 = 0, lit = 1, frame = 0;
+  // mode-shape animation: phase = cos(2 pi t / T); starts at the checked shape, pauses on request
+  let phase = 1, playing = false, t0 = 0, animFrame = 0;
+  const PERIOD = 1.8;
+  const animBtn = document.createElement("button");
+  animBtn.type = "button"; animBtn.className = "vp-3d vp-anim"; animBtn.hidden = true;
+  btn.after(animBtn);
+  const setAnimLabel = () => { animBtn.textContent = playing ? "❚❚ Pause" : "▶ Animate the mode"; animBtn.setAttribute("aria-pressed", playing ? "true" : "false"); };
+  function tick(now) {
+    if (!playing || !active || !mesh || !mesh.disp) { animFrame = 0; return; }
+    if (!t0) t0 = now - Math.acos(Math.max(-1, Math.min(1, phase))) / (2 * Math.PI) * PERIOD * 1000;
+    phase = Math.cos(2 * Math.PI * ((now - t0) / 1000) / PERIOD);
+    draw();
+    animFrame = requestAnimationFrame(tick);
+  }
+  function setPlaying(on) {
+    playing = on; t0 = 0; setAnimLabel();
+    if (on && !animFrame) animFrame = requestAnimationFrame(tick);
+    if (!on) { cancelAnimationFrame(animFrame); animFrame = 0; redraw(); }
+  }
+  animBtn.addEventListener("click", () => setPlaying(!playing));
+  const showAnim = () => {
+    animBtn.hidden = !(active && mesh && mesh.disp);
+    if (animBtn.hidden) { if (playing) setPlaying(false); phase = 1; }
+    else { setAnimLabel(); if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches && !playing) setPlaying(true); }
+  };
   const cache = new Map();
 
   const VS = `#version 300 es
-  in vec3 aQ; in float aS;
-  uniform vec3 uLo, uSpan; uniform mat4 uMVP;
+  in vec3 aQ; in float aS; in vec3 aD;
+  uniform vec3 uLo, uSpan; uniform mat4 uMVP; uniform float uC, uDS;
   out float vS; out vec3 vP;
-  void main() { vec3 p = uLo + aQ * uSpan; vP = p; vS = aS; gl_Position = uMVP * vec4(p, 1.0); }`;
+  // a mode shape swings between the checked shape (uC = 1) and its mirror (uC = -1) about the ghost
+  void main() { vec3 p = uLo + aQ * uSpan + (uC - 1.0) * uDS * aD; vP = p; vS = aS; gl_Position = uMVP * vec4(p, 1.0); }`;
   const FS = `#version 300 es
   precision highp float;
   in float vS; in vec3 vP;
@@ -63,8 +89,10 @@
     const s = new Float32Array(buf, o, nv); o += 4 * nv;
     const idx = ib === 2 ? new Uint16Array(buf, o, 3 * nt) : new Uint32Array(buf, o, 3 * nt);
     o += ib * 3 * nt; o += (4 - o % 4) % 4;
-    const lines = new Float32Array(buf, o, 6 * ne);
-    return { nv, nt, ne, ib, box, q, s, idx, lines };
+    const lines = new Float32Array(buf, o, 6 * ne); o += 24 * ne;
+    let disp = null, ds = 0;
+    if (h[5]) { ds = new Float32Array(buf, o, 1)[0]; o += 4; disp = new Int16Array(buf, o, 3 * nv); }
+    return { nv, nt, ne, ib, box, q, s, idx, lines, disp, ds };
   }
 
   function upload(m) {
@@ -75,6 +103,11 @@
     const bs = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, bs); gl.bufferData(gl.ARRAY_BUFFER, m.s, gl.STATIC_DRAW);
     const ls = gl.getAttribLocation(prog, "aS"); gl.enableVertexAttribArray(ls);
     gl.vertexAttribPointer(ls, 1, gl.FLOAT, false, 0, 0);
+    if (m.disp) {
+      const bd = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, bd); gl.bufferData(gl.ARRAY_BUFFER, m.disp, gl.STATIC_DRAW);
+      const ld = gl.getAttribLocation(prog, "aD"); gl.enableVertexAttribArray(ld);
+      gl.vertexAttribPointer(ld, 3, gl.SHORT, true, 0, 0);
+    }
     const bi = gl.createBuffer(); gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, bi); gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, m.idx, gl.STATIC_DRAW);
     m.vao = vao;
     if (m.ne) {
@@ -122,6 +155,8 @@
     gl.uniform3fv(gl.getUniformLocation(prog, "uSpan"), mesh.span);
     gl.uniform3fv(gl.getUniformLocation(prog, "uEye"), e);
     gl.uniform1f(gl.getUniformLocation(prog, "uLit"), lit);
+    gl.uniform1f(gl.getUniformLocation(prog, "uC"), mesh.disp ? phase : 1);
+    gl.uniform1f(gl.getUniformLocation(prog, "uDS"), mesh.ds || 0);
     const bands = entry.bands.map(hex => [1, 3, 5].map(i => parseInt(hex.slice(i, i + 2), 16) / 255));
     const flatB = new Float32Array(48); bands.forEach((c, i) => flatB.set(c, 3 * i));
     gl.uniform3fv(gl.getUniformLocation(prog, "uBands"), flatB);
@@ -235,11 +270,11 @@
     if (!(await load(entry))) return;
     active = true; vp.classList.add("is-3d");
     btn.textContent = "Back to the render"; btn.setAttribute("aria-pressed", "true");
-    hint.hidden = false; redraw();
+    hint.hidden = false; redraw(); showAnim();
   }
   function leave() {
     active = false; vp.classList.remove("is-3d");
-    btn.textContent = "Rotate in 3D"; btn.setAttribute("aria-pressed", "false"); hint.hidden = true;
+    btn.textContent = "Rotate in 3D"; btn.setAttribute("aria-pressed", "false"); hint.hidden = true; showAnim();
   }
   btn.addEventListener("click", () => { want3d = !active; return active ? leave() : enter(); });
 
@@ -249,8 +284,8 @@
     const v = e.detail;
     entry = v;
     btn.hidden = !v.mesh;
-    if (!v.mesh) { if (active) leave(); return; }
-    if (active) { if (!(await load(v))) leave(); else redraw(); }
+    if (!v.mesh) { if (active) leave(); showAnim(); return; }
+    if (active) { if (!(await load(v))) leave(); else { redraw(); showAnim(); } }
     else if (want3d) enter();
   });
 
@@ -259,8 +294,8 @@
   // for the page's own checks: draw without lighting, to compare the lit view with the true bands
   // (snap draws one frame and reads it back in the same task, so no preserved drawing buffer is needed)
   window.__m3d = {
-    state: () => ({ active, az, el, dist }),
-    snap: k => { lit = k; draw(); const url = canvas.toDataURL("image/png"); lit = 1; redraw(); return url; },
+    state: () => ({ active, az, el, dist, phase, playing }),
+    snap: k => { const ph = phase; phase = 1; lit = k; draw(); const url = canvas.toDataURL("image/png"); lit = 1; phase = ph; redraw(); return url; },
     turn: (daz, del) => { az += daz; el = Math.max(-1.5, Math.min(1.5, el + del)); draw(); },
   };
 })();

@@ -52,7 +52,12 @@ def feature_edges(pts: np.ndarray, tris: np.ndarray, angle_deg: float) -> np.nda
     return e[i][cosang < math.cos(math.radians(angle_deg))]
 
 
-def encode(scene: str) -> tuple[bytes, dict]:
+# mode shapes that can be animated in the 3D view: the scene's deformed surface minus its undeformed
+# ghost is the mode's displacement, and the viewer swings the mesh between ghost + d and ghost - d
+ANIMATE = {"mode1"}
+
+
+def encode(scene: str, animate: bool = False) -> tuple[bytes, dict]:
     d = np.load(BUILD / f"{scene}.npz")
     meta = json.loads((BUILD / f"{scene}.json").read_text(encoding="utf-8"))
     xyz, tris = d["xyz"].astype(np.float64), d["tris"].astype(np.int64)
@@ -62,7 +67,12 @@ def encode(scene: str) -> tuple[bytes, dict]:
         g = d["ghost_xyz"].astype(np.float64)
         e = feature_edges(g, tris, meta.get("sharp_angle_deg", 32))
         outline = np.hstack([g[e[:, 0]], g[e[:, 1]]]).astype(np.float32)
+    disp = None
+    if animate:
+        disp = xyz - d["ghost_xyz"].astype(np.float64)
     allp = xyz if not len(outline) else np.vstack([xyz, outline.reshape(-1, 3)])
+    if disp is not None:                              # the box must hold the opposite swing too
+        allp = np.vstack([allp, xyz - 2 * disp])
     lo, hi = allp.min(axis=0), allp.max(axis=0)
     span = np.where(hi > lo, hi - lo, 1.0)
     q = np.round((xyz - lo) / span * 65535).astype(np.uint16)
@@ -71,14 +81,21 @@ def encode(scene: str) -> tuple[bytes, dict]:
     qb += b"\0" * (-len(qb) % 4)                      # typed arrays in the browser need 4-byte offsets
     idx = tris.astype(np.uint16 if ib == 2 else np.uint32).tobytes()
     idx += b"\0" * (-len(idx) % 4)
-    blob = (struct.pack("<8I", MAGIC, len(xyz), len(tris), len(outline), ib, 0, 0, 0)
+    blob = (struct.pack("<8I", MAGIC, len(xyz), len(tris), len(outline), ib, 1 if disp is not None else 0, 0, 0)
             + np.concatenate([lo, hi]).astype(np.float32).tobytes() + qb + s.tobytes() + idx
             + outline.tobytes())
-    return blob, {"xyz": xyz, "tris": tris, "s": s, "outline": outline, "span": span}
+    out = {"xyz": xyz, "tris": tris, "s": s, "outline": outline, "span": span}
+    if disp is not None:            # displacement: one float32 scale, then int16 per component, padded
+        scale = float(np.abs(disp).max()) or 1.0
+        dq = np.round(disp / scale * 32767).astype(np.int16).tobytes()
+        dq += b"\0" * (-len(dq) % 4)
+        blob += struct.pack("<f", scale) + dq
+        out.update(disp=disp, disp_scale=scale)
+    return blob, out
 
 
 def decode(blob: bytes) -> dict:
-    magic, nv, nt, ne, ib = struct.unpack_from("<5I", blob)
+    magic, nv, nt, ne, ib, anim = struct.unpack_from("<6I", blob)
     assert magic == MAGIC
     o = 32
     box = np.frombuffer(blob, np.float32, 6, o).astype(np.float64); o += 24
@@ -88,10 +105,15 @@ def decode(blob: bytes) -> dict:
     tris = np.frombuffer(blob, np.uint16 if ib == 2 else np.uint32, 3 * nt, o).reshape(nt, 3); o += ib * 3 * nt
     o += -o % 4
     outline = np.frombuffer(blob, np.float32, 6 * ne, o).reshape(ne, 6); o += 24 * ne
+    disp = None
+    if anim:
+        scale = struct.unpack_from("<f", blob, o)[0]; o += 4
+        disp = np.frombuffer(blob, np.int16, 3 * nv, o).reshape(nv, 3).astype(np.float64) / 32767 * scale
+        o += 6 * nv; o += -o % 4
     assert o == len(blob), (o, len(blob))
     lo, hi = box[:3], box[3:]
     xyz = lo + q.astype(np.float64) / 65535 * np.where(hi > lo, hi - lo, 1.0)
-    return {"xyz": xyz, "tris": tris.astype(np.int64), "s": s, "outline": outline}
+    return {"xyz": xyz, "tris": tris.astype(np.int64), "s": s, "outline": outline, "disp": disp}
 
 
 def main() -> dict:
@@ -106,17 +128,19 @@ def main() -> dict:
                 raise FileNotFoundError(f"{vid}: no render data in build/render and no committed 3D file")
             out[vid] = old[vid]
             continue
-        blob, src = encode(scene)
+        blob, src = encode(scene, animate=vid in ANIMATE)
         back = decode(blob)
         err = np.abs(back["xyz"] - src["xyz"]).max(axis=0)
         assert np.all(err <= src["span"] / 65535 * 0.51 + 1e-4), (vid, err)     # quantisation only
         assert np.array_equal(back["tris"], src["tris"]) and np.array_equal(back["s"], src["s"])
         assert np.array_equal(back["outline"], src["outline"])
+        if "disp" in src:            # quantisation of the displacement only
+            assert np.abs(back["disp"] - src["disp"]).max() <= src["disp_scale"] / 32767 * 0.51 + 1e-9, vid
         (OUT / f"m3d_{vid}.bin").write_bytes(blob)
         meta = json.loads((BUILD / f"{scene}.json").read_text(encoding="utf-8"))
         out[vid] = {"file": f"v2/m3d_{vid}.bin", "kb": round(len(blob) / 1024), "vertices": len(src["xyz"]),
                     "elev": meta.get("elev", 24), "azim": meta.get("azim", -55),
-                    "max_position_error_mm": round(float(err.max()), 5)}
+                    "max_position_error_mm": round(float(err.max()), 5), "animated": "disp" in src}
     INDEX.write_text(json.dumps(out, indent=1), encoding="utf-8")
     return out
 
