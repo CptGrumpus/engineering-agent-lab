@@ -151,6 +151,17 @@ the ORNL report is the last step, opened blind.
   rms per 1000 rpm, from lambda_peak x omega_e at 4 pole pairs. This comes from the smoke solve; mesh and
   time-resolution checks are still to come.
 
+**Study 7: geometry rebuild, agreed with the user 2026-11-21.** Build the Prius machine definition ourselves from
+published dimensions, and compare it with Pyleecan's Toyota_Prius.json before trusting it as the design input. That
+covers stator OD and bore, slot shape, rotor OD and ID, V-magnet pockets and magnet size, air gap, stack, winding.
+- Compare dimension by dimension.
+- Then run both machines through the same open-circuit case: the back-EMF difference shows how much any mismatch
+  matters.
+- If they disagree, the published source wins and the deviation is recorded.
+- Source the dimensions from published design data only (ORNL design and teardown reports, papers), never from
+  measured performance.
+- The user wants the inputs, not only the solve, to be ours, with the case study used only to check the results.
+
 **Uncommitted at handoff:** nothing settled. Running cases and their runs are committed once they finish.
 
 ## Action items
