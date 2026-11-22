@@ -50,7 +50,7 @@ each part on its own: CSM1 to CSM3 (solid only, CalculiX, nothing new needed), C
 only, OpenFOAM 14, nothing new needed), then FSI1 to FSI3 coupled through preCICE. Each part is
 verified before the coupled run, as in study 2.
 
-## Session handoff (2026-11-21, evening)
+## Session handoff (2026-11-21, late evening, before /clear)
 
 Read this first in a new session. The dashboard is maintained by another session; files under site/
 and docs/ belong to it.
@@ -66,7 +66,11 @@ alive. Check with `ls -td runs/*` and, if one is still solving, `wsl -e pgrep -a
 
 | Case | Run directory prefix | Expected |
 |---|---|---|
-| `cases/flag_csm3_dt_r3.toml` (CSM3, HHT damping; r1 and r2 diverged at 0.000625 s) | `*_flag_csm3_dt_r3` | dt 0.0025 and 0.00125 done, matching P1-P4. The 0.000625 level was running |
+| `cases/flag_csm3_dt_r3.toml` (CSM3, HHT ALPHA -0.05; r1 and r2 diverged at 0.000625 s) | `*_flag_csm3_dt_r3` | At 20:28 the 0.000625 s main run had COMPLETED all 9600 steps (the damping fixed the divergence); its small-amplitude companion was at 2086 of 9600, so done by about 21:05. Check P1-P4; if verified, CSM3 is closed: fill in portfolio/17 |
+| `cases/turek_hron_fsi1_mesh.toml` (FSI1, coupled, three fluid meshes), RERUN started about 20:35 | the newest `*_turek_hron_fsi1_mesh` (not `20261121-184241_...`, which is the stopped run with the force-parser bug) | About 5.5 h, so about 2:00. The prototype gave uy(A) 0.818 mm (-0.34 %), drag 14.293 (-0.006 %), lift 0.764 (+0.03 %); predictions P1-P5 are in the case header. Check that drag reads about 14.29, not 21.7: if it is 21.7, the parser fix did not take. If verified, study 6's coupled stage is done (FSI2 and FSI3 are periodic and need ALPHA 0 in the solid and a longer run) |
+
+If a run stopped with the session (no report.md, no solver processes running), rerun it from its case file with `.venv/Scripts/python.exe -m harness pipeline cases/<case>.toml`. It takes about 1 h for CSM3 r3's last point and 5.5 h for FSI1.
+
 
 **Study 6 (FSI) status.**
 - **CSM1, CSM2:** verified and committed (e72d395).
