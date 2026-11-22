@@ -1,0 +1,88 @@
+# Study 19, pipe friction, revision 2 of pipe_rans_mesh (read pipe_rans_mesh for the framing and model, and
+# pipe_rans_mesh_r1 for why this revision exists). Same model, checks, requirement and meshes as r1 (n 80 / 160 / 320,
+# first-face y+ 0.5 / 0.25 / 0.125); only the axial length goes back to the default.
+#
+# Why: r1 (run 20261122-134230) tied the axial length to the cells (0.19 / 0.10 / 0.05 mm) to keep checkMesh's aspect
+# ratio low. Comparing its n160 with the first run's (identical but for the axial length: 2 mm) shows that this
+# slowed SIMPLE's convergence by orders of magnitude: 3e-11 in 15000 iterations before, 9e-5 after 80000; n320 did
+# not converge at all. At Re 1e5 the default D/50 = 2 mm keeps the aspect ratio under checkMesh's 1000 up to n320
+# (190 / 379 / 759), so the change was not needed here. (It stays available for Re 2e6 or n640, where the default
+# fails checkMesh; the wall-function cases used it and converged, their wall cells being 1000 times taller.)
+#
+# Evidence so far: f 0.017834 / 0.018130 on n80 / n160 (both converged, first run), 0.018122 on n320 (r1, wall
+# shear, NOT converged: force balance 7e-3).
+#
+# Predictions, written BEFORE the evidence run:
+#   P1 Every point check passes on every mesh, n320 included: checkMesh passes (aspect ratio 759); the gradient
+#      converges to 1e-6 within 40000 iterations; force balance under 1e-4; log law within 5 %.
+#   P2 n80 and n160 reproduce the first run (0.017834, 0.018130) to 1e-6. n320 0.01813 +- 0.0001: the friction factor
+#      has stopped moving between 160 and 320 cells. If n320 lands at or above n160, the run-level check sees a
+#      monotone triple with a small GCI (under 0.2 %) and passes; if below, it reads it as oscillatory with an
+#      uncertainty of about 1.0 % (set by the n80 point) and fails narrowly. I expect the first.
+#   P3 REQ-T1 verified PASS: f about +0.7 % on Prandtl on the two finer meshes, extrapolated within 1 %.
+#   P4 About 3 / 5 / 15 min with the CPU shared by FSI1 r1.
+
+[case]
+name = "pipe_rans_mesh_r2"
+model = "openfoam_pipe_rans"
+description = "Fully developed turbulent pipe flow, Re 1e5 (D 0.1 m, nu 1e-6 m^2/s), axisymmetric periodic wedge, RANS k-omega SST, low-Reynolds wall treatment; mesh study on the radial cells (80 / 160 / 320, wall cell halved with them); friction factor against Prandtl's smooth-pipe law."
+assumptions = [
+  "Fully developed, steady, incompressible, axisymmetric mean flow in a hydraulically smooth pipe.",
+  "RANS with the k-omega SST model (openfoam.org v14 coefficients); its form error is what this study measures.",
+  "Hydraulic diameter of the wedge 2 R cos(2.5 deg) (its wall is a flat face): 0.1 % below D, used consistently.",
+]
+limitations = [
+  "Smooth walls only; roughness (the Colebrook range) not modelled.",
+  "The reference is a correlation of measurements (about +-2 % scatter in Nikuradse's smooth-pipe data), not the measurements themselves.",
+]
+
+[parameters]
+diameter_m = 0.1
+reynolds_number = 100000.0
+kinematic_viscosity_m2_per_s = 1e-6
+n_radial = 80
+first_cell_yplus = 0.5
+wall_treatment = "low_re"
+turbulence_model = "kOmegaSST"
+
+[[sweep.scenarios]]
+name = "n80"
+n_radial = 80
+first_cell_yplus = 0.5
+
+[[sweep.scenarios]]
+name = "n160"
+n_radial = 160
+first_cell_yplus = 0.25
+
+[[sweep.scenarios]]
+name = "n320"
+n_radial = 320
+first_cell_yplus = 0.125
+
+[numerics]
+residual_p = 1.0        # inactive: pressure is a constant in a periodic domain
+residual_U = 1e-9
+residual_turb = 1e-9
+max_iterations = 40000
+solver_timeout_s = 7200
+
+[verification]
+mesh_study = true
+force_balance_rel_tol = 1e-4   # exact in steady periodic flow; above this means unconverged or a sampling error
+bulk_velocity_rel_tol = 1e-6
+iterative_rel_tol = 1e-6
+yplus_max_low_re = 1.0
+yplus_min_wall_function = 30.0
+yplus_max_wall_function = 300.0
+log_law_rel_tol = 0.05         # model form: the log law's constants scatter by a few per cent
+mesh_noise_rel = 1e-6
+gci_max = 0.01
+
+[[requirements]]
+id = "REQ-T1"
+text = "The predicted friction factor shall be within 5 % of Prandtl's smooth-pipe law (the Moody chart's smooth curve), a usable accuracy for pressure-drop budgets."
+metric = "friction_abs_dev_prandtl_pct"
+operator = "<="
+limit = 5.0
+units = "%"
