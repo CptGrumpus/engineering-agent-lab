@@ -58,7 +58,20 @@ each part on its own: CSM1 to CSM3 (solid only, CalculiX, nothing new needed), C
 only, OpenFOAM 14, nothing new needed), then FSI1 to FSI3 coupled through preCICE. Each part is
 verified before the coupled run, as in study 2.
 
-## Session handoff (2026-11-22, 18:00; first written 2026-11-21, 23:10)
+## Session handoff (2026-11-22, 19:10; first written 2026-11-21, 23:10)
+
+**Done this evening (17:15-19:10 session; user, ~18:10: "do as much of this list as you can before I go to bed"; user
+said yes to the blind comparison and to the skill eval):** study 7 thermal network (r1 final); FSI1 r1 scored (29e6655,
+page 9c41e8d); skill eval single-mesh-agreement-trap 8/8 (9031316, `evals/.../results.md`); efficiency figure fixed
+(d69953b); motor reports gained a thermal page; **study 7 blind comparison run: all three limits FAIL** (0f58d8c,
+ebb75f7; `validation/motor_ornl/RESULTS.md`, log `reports/motor/blind_comparison_log.md`): back-EMF +23.5 %, torque +7 to
++24 %, efficiency +5.2 points; the model's magnet flux is about 24 % high. Artifact version 6.
+**For the dashboard session:** study 7 is no longer "blind, sealed": the comparison ran and failed (see above); thermal
+added; study 6 FSI1 reproduces the benchmark within 1 % (drag and lift verified). Pages under `site/` that show study 7
+or study 6 status are stale.
+**Open for the user:** (a) study 7 diagnostic: may I open ORNL/TM-2004/137 Fig. 13 (measured air-gap flux density) to
+split the 24 % between magnets and winding? Then a documented revision with predictions first, the blind verdicts kept.
+(b) the skill eval's no-skills baseline (not run).
 
 Read this first in a new session. Files under site/, docs/, DASHBOARD.md and `scripts/make_study_renders.py` belong
 to the dashboard session (it commits in this clone: add and commit only your own paths, in one command; never leave
@@ -81,12 +94,12 @@ predictions go into a case header and get committed BEFORE its evidence run; Res
    assume): e.g. the continuous torque-speed envelope that keeps the winding under its insulation class limit, and
    whether the efficiency map's hot corner (windings 100 C, magnets 80 C) is a consistent operating state. Thermal
    is NOT in the agreed validation set; ORNL's thermal report pages 20-30 stay sealed (design text only, whitelist).
-2. **FSI1 r1** (~18:20, below): score, Results block, update `portfolio/17-...` draft (CLAUDE.md "Update the record").
+2. **FSI1 r1: DONE** (Results in the case; drift was scatter). Was: score, Results block, update `portfolio/17-...` draft (CLAUDE.md "Update the record").
    Early: 2.5 mm uy(A) -0.41 %, 1.77 mm +0.04 % (the drift may not be real). Then FSI2 / FSI3 (periodic; set up cases,
    predictions first; likely overnight runs).
-3. **Study 7 blind comparison:** only after the thermal network; ASK the user before opening any ORNL measured data.
+3. **Study 7 blind comparison: DONE, FAIL 3/3** (above). Next: the Fig. 13 diagnostic, on the user's call.
 4. **Next new study:** C, random vibration of the study-4 bracket (documented below).
-5. **Small items:** the efficiency-map figure's contour-fill artefact at the map edge (`studies/motor_efficiency.py`
+5. **Small items:** (figure fix and eval DONE) the efficiency-map figure's contour-fill artefact at the map edge (`studies/motor_efficiency.py`
    `efficiency_figure`: use pcolormesh or mask, the data is fine); optionally run the new eval
    (`.claude/skills/verify-against-reference/evals/single-mesh-agreement-trap`) with the skill-eval-runner agent (ask:
    it costs a session); study 18 extras (classification-line placement, head-to-shell junction).
@@ -102,7 +115,7 @@ Logs of the 17:15 session (thermal runs): `$TEMP/claude/cb67dd1e648f8970/4abd5a9
 
 | Job | Run dir (log) | Done about | When it finishes |
 |---|---|---|---|
-| Study 6 FSI1 r1 mesh study (fluid 2.5 / 1.77 / 1.25 mm, coupling 1e-6) | `runs/20261122-125809_turek_hron_fsi1_mesh_r1` (`fsi1_r1.log`) | about 18:20 (1.25 mm mesh, window 2753 of 4800 at 17:05) | Score against the case header (P1-P5), Results block, commit. |
+| (none at 19:10: FSI1 r1 finished 18:09 and is scored) | | | |
 
 ### Study 7 (motor): state and next steps
 
@@ -143,9 +156,8 @@ Logs of the 17:15 session (thermal runs): `$TEMP/claude/cb67dd1e648f8970/4abd5a9
   Verification: CalculiX slot-pitch check passes mean / teeth / yoke (bar interface 0.01 mm: mean -6.4 %); the slot
   hotspot is 4-7 % low on its rise after r1's top-of-slot estimate (FAIL in six scenarios by 0.1-2.2 points); a bound in
   r1's header shows it cannot move the envelope from 1250 rpm. Not revised further (needs a 2D slot model). Portfolio
-  page 20, PORTFOLIO, README and skills updated. **Not yet in `reports/motor/`**: a thermal page (and the copper
-  correction's J values), for `reports/motor/build_report.py`.
-- **Next for study 7: the blind comparison. ASK the user before opening any ORNL measured data** (whitelist only).
+  page 20, PORTFOLIO, README and skills updated; `reports/motor/` has a thermal page (cb6920c).
+- **Blind comparison done (19:00): FAIL 3/3**; see the top of this handoff. Next: the Fig. 13 diagnostic (ask first).
 
 ### Study 6 (FSI): FSI1 revision 1
 
