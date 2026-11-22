@@ -1,0 +1,125 @@
+# Turek-Hron FSI1: the flag behind the cylinder, coupled (steady, Re 20). The coupled stage of study 6, built
+# from the two verified participants: the solid of flag_csm1_mesh / flag_csm3_dt_r1 (CalculiX, plane strain,
+# St. Venant-Kirchhoff, NLGEOM) and the fluid of turek_hron_cfd1_mesh_r1 (Gmsh mesh, exact parabolic inflow),
+# now on OpenFOAM v2512 with a moving mesh, coupled by preCICE 3.4.1 (parallel implicit, IQN-ILS).
+#
+# Reference (featflow.de FSI benchmark, FSI tests, finest level 7+0): FSI1 ux(A) = 2.270493e-05 m,
+# uy(A) = 8.208773e-04 m, drag 1.429426e+01 N/m, lift 7.637460e-01 N/m. Same fluid as CFD1; the solid is
+# CSM1's material (mu_s 0.5 MPa, rho_s 1000) without gravity.
+#
+# Toolchain check before this case: preCICE's perpendicular-flap tutorial (OpenFOAM v2512 + CalculiX)
+# matched its published reference (peak tip displacement to 5 digits, largest difference 0.7 % of the peak).
+#
+# Prototype (scratch, 2.5 mm fluid cells, 2.5 mm solid elements, dt 0.005 s, 20 s, before this case was
+# written; an earlier writer without the force-transfer outputs): steady by about 10 s (uy(A) spread 1e-4
+# over the last 2 s); all 4000 windows converged, 2.46 coupling iterations on average (max 18, at start-up).
+# At 20 s: uy(A) 0.81805 mm (-0.34 %), ux(A) 0.022544 mm (-0.71 %), drag 14.2934 (-0.006 %), lift 0.76401
+# (+0.03 %). During the 2 s inflow ramp the tip first moved down (-0.22 mm at 1.5 s) and drag overshot to
+# 17 N/m: the whole channel accelerates; both settle once the ramp ends.
+#
+# Choices, decided before the run:
+# - Steady target, so the solid uses numerical damping (ALPHA -0.3): it changes how fast the flag settles, not
+#   where. End time 12 s (steady by about 10 s), judged over the last 2 s.
+# - Time step 0.0025 s on every mesh, so the finest (1.25 mm) keeps a Courant number near 1.
+# - Mesh study on the fluid (5 / 2.5 / 1.25 mm at the body); the solid stays at 2.5 mm, where CSM1 put the
+#   tip displacement 0.08 % from its extrapolated value.
+#
+# Predictions, written BEFORE the evidence run:
+#   P1 Every check passes on every mesh: all windows converge; steady to 1e-3; the force on the flag equals
+#      the clamp reaction to 1e-3; the inflow equals the parabola at every face.
+#   P2 Drag converges like CFD1 (order 1-2) to within 0.1 % of 14.294: REQ-FSI-3 verified PASS.
+#   P3 uy(A) converges to about 0.820 mm, within 0.5 % of the benchmark: REQ-FSI-2 verified PASS.
+#   P4 ux(A) within 2 % (a second-order quantity) and lift within 1 % on the finer meshes, but the lift GCI
+#      may fail on the same Gmsh mesh-to-mesh noise as CFD1 and CFD2 (about +-0.6 %).
+#   P5 Wall time about 15 min / 1 h / 4 h for the three meshes (dt halved from the prototype).
+#
+# First evidence run (20261121-184241_turek_hron_fsi1_mesh), stopped during the finest mesh: the 5 mm and 2.5 mm points finished, but their drag (21.58 /
+#   21.73 N/m), lift and force-transfer values were WRONG. The study reused the openfoam.org v14 force parser of the CFD
+#   study, and OpenFOAM v2512 writes force.dat as plain `time total pressure viscous` columns, so it summed total +
+#   pressure. The tip displacements (preCICE watch point) were unaffected: uy(A) 0.8686 / 0.8175 mm. Fixed before the
+#   rerun: studies/turek_hron_fsi.py has its own v2512 parser, tested on a real line (drag 14.2934 N/m = total). The
+#   smoke test had not caught it: at 0.5 s the forces are mid-ramp, so no value could be compared with a known one.
+#   Lesson: a smoke test should compare one parsed number with the raw file it came from. Rerun with the same case.
+
+[case]
+name = "turek_hron_fsi1_mesh"
+model = "openfoam_ccx_precice_fsi"
+description = "Turek-Hron FSI1: steady laminar flow (Re 20) bending the elastic flag behind the cylinder; OpenFOAM v2512 (moving mesh) coupled to CalculiX through preCICE; fluid cell size at the body 5 / 2.5 / 1.25 mm, solid 2.5 mm, dt 0.0025 s to 12 s; tip displacements, drag and lift against the published benchmark."
+assumptions = [
+  "2D: one cell deep in the fluid, plane strain in the solid (one element layer, as deep as the fluid).",
+  "St. Venant-Kirchhoff solid (CalculiX *ELASTIC under NLGEOM), no gravity, as the FSI tests define it.",
+  "Steady target: numerical damping in the solid only speeds up settling (ALPHA -0.3).",
+  "Inflow: the benchmark's parabola with its (1 - cos) ramp over 2 s.",
+]
+limitations = [
+  "The solid mesh is not refined in this study (CSM1 put it within 0.08 % at 2.5 mm).",
+  "The fluid mesh is regenerated at each size (not nested), which made the CFD lift scatter by about +-0.6 %.",
+]
+
+[parameters]
+solid_density_kg_per_m3 = 1000.0
+shear_modulus_Pa = 500000.0
+poisson_ratio = 0.4
+fluid_density_kg_per_m3 = 1000.0
+kinematic_viscosity_m2_per_s = 0.001
+mean_velocity_m_per_s = 0.2
+fluid_cell_size_m = 0.0025
+solid_element_size_mm = 2.5
+time_step_s = 0.0025
+end_time_s = 12.0
+benchmark_ux_A_m = 2.270493e-05
+benchmark_uy_A_m = 8.208773e-04
+benchmark_drag_N_per_m = 14.29426
+benchmark_lift_N_per_m = 0.7637460
+
+[sweep]
+parameter = "fluid_cell_size_m"
+values = [0.005, 0.0025, 0.00125]
+
+[numerics]
+solid_alpha = -0.3
+write_interval_s = 2.0
+ramp_time_s = 2.0
+coupling_rel_tol = 1e-4
+coupling_max_iterations = 50
+rbf_support_radius_m = 0.05
+solver_timeout_s = 43200
+
+[verification]
+steady_window_s = 2.0
+steady_rel_tol = 1e-3
+force_transfer_rel_tol = 1e-3
+profile_rel_tol = 1e-6
+gci_max = 0.01
+
+[[requirements]]
+id = "REQ-FSI-1"
+text = "The coupled model shall reproduce the Turek-Hron FSI1 horizontal displacement of point A within 5 % (a second-order quantity, 3 % of the vertical one)."
+metric = "ux_A_deviation_pct"
+operator = "<="
+limit = 5.0
+units = "%"
+
+[[requirements]]
+id = "REQ-FSI-2"
+text = "It shall reproduce the FSI1 vertical displacement of point A within 3 %."
+metric = "uy_A_deviation_pct"
+operator = "<="
+limit = 3.0
+units = "%"
+
+[[requirements]]
+id = "REQ-FSI-3"
+text = "It shall reproduce the FSI1 drag within 1 %."
+metric = "drag_deviation_pct"
+operator = "<="
+limit = 1.0
+units = "%"
+
+[[requirements]]
+id = "REQ-FSI-4"
+text = "It shall reproduce the FSI1 lift within 5 % (lift is about 5 % of the drag and moved 30 % from the rigid CFD1 value once the flag bends)."
+metric = "lift_deviation_pct"
+operator = "<="
+limit = 5.0
+units = "%"

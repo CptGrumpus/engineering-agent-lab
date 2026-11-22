@@ -7,9 +7,9 @@
 
 | | |
 |---|---|
-| **Answer so far** | Both single-physics halves reproduce the published Turek-Hron benchmark before any coupling. Solid, static (CSM1, CSM2): the tip displacement extrapolates to within 0.015 % of the published values. Fluid (CFD1): drag within 0.07 %, lift within 0.6 % on every mesh. Solid, dynamic (CSM3): frequency 1.0946 Hz, 0.09 % from the published band (verified). Fluid at Re 100 (CFD2): drag within 0.014 % when extrapolated, lift within 0.7 % on the finer meshes. Coupled runs (FSI1 to FSI3): *pending*. |
+| **Answer so far** | Both single-physics halves reproduce the published Turek-Hron benchmark before any coupling. Solid, static (CSM1, CSM2): the tip displacement extrapolates to within 0.015 % of the published values. Fluid (CFD1): drag within 0.07 %, lift within 0.6 % on every mesh. Solid, dynamic (CSM3): frequency 1.0946 Hz, 0.09 % from the published band (verified). Fluid at Re 100 (CFD2): drag within 0.014 % when extrapolated, lift within 0.7 % on the finer meshes. Coupled, steady (FSI1): drag converges to 0.03 % of the published value; the tip displacement is within 1 % but drifts with refinement, and lift carries coupling noise, so FSI1 is not yet verified (a revision is planned). FSI2 and FSI3: *pending*. |
 | **Discipline** | Structures (large deflection, dynamics), fluids, fluid-structure interaction |
-| **Tools** | CalculiX (solid), OpenFOAM 14 with Gmsh (fluid), Python; preCICE with OpenFOAM v2512 for the coupled stage (*pending*) |
+| **Tools** | CalculiX (solid), OpenFOAM 14 with Gmsh (fluid), Python; preCICE 3.4.1 with OpenFOAM v2512 for the coupled stage |
 | **Methods** | Geometrically nonlinear static and dynamic FE, a large-deflection elastica as an independent reference, steady laminar CFD, mesh and time-step refinement with GCI, published benchmark values as the acceptance requirement |
 
 ![The flag bending under its own weight: CalculiX against the elastica and the benchmark point](../runs/20261121-131111_flag_csm1_mesh/points/p02_element_size_mm-1.25/response.png)
@@ -39,7 +39,13 @@ published results first, and only then are they coupled.
 - **Fluid at Re 100 (CFD2).** Drag converges to 136.719 N/m against the published 136.700 (0.014 %, mesh
   uncertainty 0.11 %). Lift is 10.61 on the finest mesh, 0.7 % from the published 10.53, with the same
   mesh-to-mesh scatter as CFD1.
-- **The coupled runs**: *pending*.
+- **Coupled, steady (FSI1).** Three fluid meshes (5 / 2.5 / 1.25 mm), all 4800 coupling windows converged on each.
+  Drag converges at order 2.75 to 14.299 N/m against the published 14.294 (0.03 %). The tip's vertical
+  displacement is 0.4 % and then 1.0 % below the published value as the mesh refines, moving away from it, which is
+  not explained yet; lift jitters by about 2 % from one time step to the next (coupling noise on a force 5 % the
+  size of drag). Not verified: the next run judges steadiness by drift, averages the forces, and refines the solid
+  mesh to test the tip drift.
+- **Coupled, periodic (FSI2, FSI3)**: *pending*.
 
 ## How it works
 
@@ -48,7 +54,7 @@ published results first, and only then are they coupled.
   by a fifth of its length) with the benchmark's St. Venant-Kirchhoff material.
 - **Fluid.** Gmsh meshes the channel round the cylinder and flag. `gmshToFoam` converts it, and OpenFOAM
   solves steady laminar flow with the benchmark's parabolic inflow. Forces are integrated on the body.
-- **Coupled (pending).** preCICE couples OpenFOAM v2512 and CalculiX (its official adapters); the version
+- **Coupled.** preCICE couples OpenFOAM v2512 and CalculiX (its official adapters); the version
   of OpenFOAM the rest of this portfolio uses isn't supported by the adapter.
 
 ## How I know it's right

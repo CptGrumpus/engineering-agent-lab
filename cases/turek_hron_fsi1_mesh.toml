@@ -40,6 +40,29 @@
 #   rerun: studies/turek_hron_fsi.py has its own v2512 parser, tested on a real line (drag 14.2934 N/m = total). The
 #   smoke test had not caught it: at 0.5 s the forces are mid-ramp, so no value could be compared with a known one.
 #   Lesson: a smoke test should compare one parsed number with the raw file it came from. Rerun with the same case.
+#
+# Results (rerun 20261121-203031_turek_hron_fsi1_mesh, finished 2026-11-22 00:35): verification FAIL.
+#   Per mesh (5 / 2.5 / 1.25 mm): uy(A) 0.8686 / 0.8175 / 0.8130 mm (+5.81 / -0.41 / -0.96 % from the benchmark);
+#   ux(A) +1.80 / -0.68 / -0.27 %; drag 14.266 / 14.294 / 14.298 N/m (-0.20 / -0.003 / +0.027 %); lift 0.7425 /
+#   0.7625 / 0.7537 N/m (-2.78 / -0.16 / -1.32 %). All 4800 windows converged on every mesh (2.9 iterations on average).
+#   P1 MISSED: 'steady' fails on every mesh (spread over the last 2 s 1.7 / 4.5 / 4.3 % against 1e-3) and
+#      'force_transfer' on the finest (2.9e-3 against 1e-3). Cause, found after the run: uy(A) (2e-4) and drag (1e-5)
+#      are steady, but lift jitters at every time step (about 600 sign changes in 800 steps, +-2 % peak to peak) with
+#      no drift (1e-4): coupling noise on a small force (lift is 5 % of drag), which a peak-to-peak criterion counts as
+#      unsteadiness and which the end-of-run force-transfer and final-value lift metric pick up too. Not physical
+#      shedding (Re 20).
+#   P2 HELD in substance, formally withheld: drag converges at order 2.75 to 14.2988 N/m (GCI 6.5e-5), 0.031 % from
+#      14.2943; REQ-FSI-3 is PASS (unverified) only because the point checks above failed.
+#   P3 MISSED: uy(A) moves AWAY from the benchmark as the fluid mesh refines (-0.41 % then -0.96 %), anomalous order
+#      3.51, no GCI estimate. Not explained yet; candidates: the solid mesh held at 2.5 mm (CSM1 was checked alone, not
+#      under the coupled load distribution), the fluid mesh motion near the flag tip at 1.25 mm, the coupling's
+#      data mapping between the 1.25 mm fluid faces and the 2.5 mm solid, or the time step.
+#   P4 HELD: ux(A) within 2 % (0.27 % on the finest); lift's GCI fails (oscillatory, 1.66 %), here from the step noise.
+#   P5 MISSED: 53 / 51 / 140 min (15 min / 1 h / 4 h predicted; the coarse mesh is dominated by coupling overhead).
+#   Next revision, decided before any rerun: (1) judge steadiness by drift (window halves) and take forces and lift as
+#   means over the last 2 s; (2) tighten the coupling's convergence limit on forces, or check whether the noise is in
+#   the force mapping; (3) a solid-mesh refinement at the 1.25 mm fluid mesh (2.5 / 1.25 mm solid) to test the uy(A)
+#   drift. Keep this run as evidence.
 
 [case]
 name = "turek_hron_fsi1_mesh"

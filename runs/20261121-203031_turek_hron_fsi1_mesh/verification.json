@@ -1,0 +1,288 @@
+{
+  "run_id": "20261121-203031_turek_hron_fsi1_mesh",
+  "verified_utc": "2026-11-22T05:35:27+00:00",
+  "tolerances": {
+    "steady_window_s": 2.0,
+    "steady_rel_tol": 0.001,
+    "force_transfer_rel_tol": 0.001,
+    "profile_rel_tol": 1e-06,
+    "gci_max": 0.01
+  },
+  "points": [
+    {
+      "label": "p00_fluid_cell_size_m-0.005",
+      "status": "FAIL",
+      "checks": [
+        {
+          "id": "mesh",
+          "description": "checkMesh reports Mesh OK (1 = failed)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.5,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "coupling_converged",
+          "description": "coupling windows that hit the iteration limit without converging",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.5,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "steady",
+          "description": "max over uy(A), drag, lift of the spread over the last 2 s / final value",
+          "kind": "numerical",
+          "value": 0.01695666197704372,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "FAIL"
+        },
+        {
+          "id": "force_transfer",
+          "description": "|fluid force on the flag + clamp reaction in the solid| / |fluid force on the flag| at the end (the coupling conserves force)",
+          "kind": "numerical",
+          "value": 2.472874521873024e-05,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "inflow_profile",
+          "description": "max over inlet faces |U - benchmark parabola| / (1.5 U_mean), after the ramp",
+          "kind": "numerical",
+          "value": 4.56888971100966e-10,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "laminar",
+          "description": "Reynolds number (D) / 200",
+          "kind": "validity",
+          "value": 0.10000000000000002,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p01_fluid_cell_size_m-0.0025",
+      "status": "FAIL",
+      "checks": [
+        {
+          "id": "mesh",
+          "description": "checkMesh reports Mesh OK (1 = failed)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.5,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "coupling_converged",
+          "description": "coupling windows that hit the iteration limit without converging",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.5,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "steady",
+          "description": "max over uy(A), drag, lift of the spread over the last 2 s / final value",
+          "kind": "numerical",
+          "value": 0.04515497335142096,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "FAIL"
+        },
+        {
+          "id": "force_transfer",
+          "description": "|fluid force on the flag + clamp reaction in the solid| / |fluid force on the flag| at the end (the coupling conserves force)",
+          "kind": "numerical",
+          "value": 0.00046647289673301163,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "inflow_profile",
+          "description": "max over inlet faces |U - benchmark parabola| / (1.5 U_mean), after the ramp",
+          "kind": "numerical",
+          "value": 4.663357200396233e-10,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "laminar",
+          "description": "Reynolds number (D) / 200",
+          "kind": "validity",
+          "value": 0.10000000000000002,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p02_fluid_cell_size_m-0.00125",
+      "status": "FAIL",
+      "checks": [
+        {
+          "id": "mesh",
+          "description": "checkMesh reports Mesh OK (1 = failed)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.5,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "coupling_converged",
+          "description": "coupling windows that hit the iteration limit without converging",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.5,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "steady",
+          "description": "max over uy(A), drag, lift of the spread over the last 2 s / final value",
+          "kind": "numerical",
+          "value": 0.04259873258291893,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "FAIL"
+        },
+        {
+          "id": "force_transfer",
+          "description": "|fluid force on the flag + clamp reaction in the solid| / |fluid force on the flag| at the end (the coupling conserves force)",
+          "kind": "numerical",
+          "value": 0.0029115769147085705,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "FAIL"
+        },
+        {
+          "id": "inflow_profile",
+          "description": "max over inlet faces |U - benchmark parabola| / (1.5 U_mean), after the ramp",
+          "kind": "numerical",
+          "value": 5.038072736773812e-10,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "laminar",
+          "description": "Reynolds number (D) / 200",
+          "kind": "validity",
+          "value": 0.10000000000000002,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ]
+    }
+  ],
+  "run_checks": [
+    {
+      "id": "discretization_ux_A_m",
+      "description": "relative discretization uncertainty of ux_A_m, monotone (R = 0.376): GCI_fine, observed order 1.41, extrapolated 2.27018e-05",
+      "kind": "numerical",
+      "value": 0.0031563231070314566,
+      "tolerance": 0.01,
+      "comparison": "<=",
+      "status": "PASS",
+      "metric": "ux_A_deviation_pct"
+    },
+    {
+      "id": "discretization_uy_A_m",
+      "description": "relative discretization uncertainty of uy_A_m, anomalous: observed order 3.51 is far above the design order 2, so the solutions are not in the asymptotic range (singularity or coincidence); no estimate",
+      "kind": "numerical",
+      "value": Infinity,
+      "tolerance": 0.01,
+      "comparison": "<=",
+      "status": "FAIL",
+      "metric": "uy_A_deviation_pct"
+    },
+    {
+      "id": "discretization_drag_N_per_m",
+      "description": "relative discretization uncertainty of drag_N_per_m, monotone (R = 0.149): GCI_fine, observed order 2.75, extrapolated 14.2988",
+      "kind": "numerical",
+      "value": 6.461615950827943e-05,
+      "tolerance": 0.01,
+      "comparison": "<=",
+      "status": "PASS",
+      "metric": "drag_deviation_pct"
+    },
+    {
+      "id": "discretization_lift_N_per_m",
+      "description": "relative discretization uncertainty of lift_N_per_m, oscillatory (R = -0.441): 1.25 x half-range of the 3 finest solutions",
+      "kind": "numerical",
+      "value": 0.01660380614533128,
+      "tolerance": 0.01,
+      "comparison": "<=",
+      "status": "FAIL",
+      "metric": "lift_deviation_pct"
+    }
+  ],
+  "run_check_detail": {
+    "meshes_used": [
+      "p02_fluid_cell_size_m-0.00125",
+      "p01_fluid_cell_size_m-0.0025",
+      "p00_fluid_cell_size_m-0.005"
+    ],
+    "ux_A_m": {
+      "regime": "monotone",
+      "uncertainty": 0.0031563231070314566,
+      "converged_exactly": false,
+      "order": 1.4123102333362738,
+      "extrapolated": 2.2701787962109117e-05,
+      "rel_error_fine": 0.004195713867260876,
+      "rel_error_extrapolated": 0.0025186986242912283,
+      "gci_fine": 0.0031563231070314566,
+      "convergence_ratio": 0.37570956923438303,
+      "r21": 2.0,
+      "r32": 2.0
+    },
+    "uy_A_m": {
+      "converged_exactly": false,
+      "order": 3.509192258098104,
+      "extrapolated": 0.0008126058154683675,
+      "rel_error_fine": 0.005516595593391108,
+      "rel_error_extrapolated": 0.0005314379043467566,
+      "gci_fine": 0.0006639445351410959,
+      "convergence_ratio": 0.08782696388440171,
+      "r21": 2.0,
+      "r32": 2.0,
+      "regime": "anomalous order",
+      "uncertainty": Infinity,
+      "design_order": 2
+    },
+    "drag_N_per_m": {
+      "regime": "monotone",
+      "uncertainty": 6.461615950827943e-05,
+      "converged_exactly": false,
+      "order": 2.7451008818217693,
+      "extrapolated": 14.29884977369939,
+      "rel_error_fine": 0.00029487537196517817,
+      "rel_error_extrapolated": 5.169025558602039e-05,
+      "gci_fine": 6.461615950827943e-05,
+      "convergence_ratio": 0.14915653760165637,
+      "r21": 2.0,
+      "r32": 2.0
+    },
+    "lift_N_per_m": {
+      "regime": "oscillatory",
+      "convergence_ratio": -0.4412125565198302,
+      "uncertainty": 0.01660380614533128
+    }
+  },
+  "status": "FAIL"
+}
