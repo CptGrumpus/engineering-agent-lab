@@ -50,34 +50,42 @@ each part on its own: CSM1 to CSM3 (solid only, CalculiX, nothing new needed), C
 only, OpenFOAM 14, nothing new needed), then FSI1 to FSI3 coupled through preCICE. Each part is
 verified before the coupled run, as in study 2.
 
-## Session handoff (2026-11-22, 01:00; first written 2026-11-21, 23:10)
+## Session handoff (2026-11-22, 02:15; first written 2026-11-21, 23:10)
 
 Read this first in a new session. The dashboard is maintained by another session; files under site/
 and docs/ belong to it. Study 7's own HTML reports live in `reports/motor/`, apart from the dashboard.
 
-**Runs still going at handoff.** They write to `runs/`. Three background shells, one after another (all survive a
-`/clear`; they show in `ps -ef | grep -i "harness pipeline\|sleep 60"`):
-1. the 23:10 session's motor chain (pid 27378), now on `motor_prius_torque_current`, about 15 min per current, so done
-   about 01:55 (not 01:25);
-2. its r2 waiter (pid 27589): starts `motor_prius_ornl_oc_mesh_r2` (M400-50A) when the chain ends, about 02:05;
-3. the 01:00 session's M330 chain (`<scratchpad>/m330_chain.sh`, output in task `boio26z61`): waits for pid 27589 and
-   any harness pipeline to end, then regenerates `models/motor/Toyota_Prius_ORNL.json` with M330-35A
-   (`~/.venvs/pyleecan/Scripts/python.exe models/motor/build_prius_ornl.py`), then runs `motor_prius_ornl_oc_mesh_r3`
-   (about 11 min) and `motor_prius_torque_current_r1` (about 1 h 45 min): done about 04:00.
-If a shell has died, a run has no report.md and no solver is running (`tasklist | grep -i femm`), redo the remaining
-steps by hand in that order: the machine file must be regenerated only after r2 has started (r2 copies it, and must
-run on M400-50A). Rerun a case with `.venv/Scripts/python.exe -m harness pipeline cases/<case>.toml`. Never run two
-FEMM cases at once.
+**Overnight (the user is asleep, 2026-11-22 ~01:05; asked for everything to be watched and the docs kept current).**
+Done and committed since 01:00: torque curve on M400-50A (d1ace08), open circuit r2 on M400-50A (cbbbac4), the
+machine file switched to M330-35A and open circuit r3 (2bc520b, the new blind back-EMF prediction, 110.9 V), the
+bracket grades' data (bd6b786) and cases (1cbfb70).
 
-| Case | Run | State at 23:06 | Expected |
-|---|---|---|---|
-| `turek_hron_fsi1_mesh` (study 6 FSI1, rerun) | `20261121-203031_turek_hron_fsi1_mesh` | DONE 00:35, committed (f8934a8): verification FAIL. Drag 0.031 % from the benchmark (GCI 6.5e-5). 'steady' fails from lift step noise (+-2 % per step, no drift); uy(A) drifts away from the benchmark with refinement (-0.41 then -0.96 %, order 3.5) | revision listed in the case header: drift-based steadiness, averaged forces, tighter coupling on forces, solid 1.25 mm |
-| `motor_prius_torque_mesh` | `20261121-224707_motor_prius_torque_mesh` | DONE, committed: 608.07 / 607.96 / 607.73 N m; verification FAIL on the GCI only (spread 0.055 %, differences growing); REQ-M2 PASS (unverified), margin 52 % | revision: measure the mesh noise, declare `mesh_noise_rel`, rerun |
-| `motor_prius_rotor_overspeed_mesh` (new study `rotor_stress`) | `20261122-001104_motor_prius_rotor_overspeed_mesh` | DONE, committed: verification PASS; REQ-M4 VERIFIED FAIL, 424 MPa linearized against 335 at 7200 rpm (295 MPa at 6000) | sensitivity: 412 MPa grade, pocket corner radii |
-| `motor_prius_torque_current` (50-350 A, fineness 4, M400-50A) | started 00:08 (`20261122-000853_motor_prius_torque_current`) | 00:48: 115.4 N m at 50 A (predicted 122, -5.4 %, outside its 3 %), 246 at 100 A (+1.7 %) | about 01:55 |
-| `motor_prius_ornl_oc_mesh_r2` (final machine, M400-50A) | queued by a waiter after the torque curve | | about 02:05; the "inherited steel" side of the steel sensitivity |
-| `motor_prius_ornl_oc_mesh_r3` (final machine, M330-35A) | queued by the M330 chain | | about 02:20; its finest-mesh back-EMF is the blind prediction (P2: +2.0 % on r2, range +1.0 to +3.5 %) |
-| `motor_prius_torque_current_r1` (50-350 A, M330-35A) | queued by the M330 chain | | about 04:00; the blind torque curve (P2: +3 % at low current falling to +1 % at 350 A, against the M400-50A curve) |
+**Running at 02:15.** One background shell, the 01:00 session's M330 chain (`<scratchpad>/m330_chain.sh`, task
+`boio26z61`), now on `motor_prius_torque_current_r1` (run `20261122-015619_motor_prius_torque_current_r1`, 7 currents
+at about 12.5 min, done about 03:25). Alive if `ps -ef | grep "[h]arness pipeline"` shows it and `tasklist | grep -i
+femm` shows FEMM. If it died without a report.md, rerun with `.venv/Scripts/python.exe -m harness pipeline
+cases/motor_prius_torque_current_r1.toml`. Never run two FEMM cases at once.
+
+**Queued next (not started; needs a code change first, made once no run is loading `studies/motor_em.py`):** add
+`models/motor/Toyota_Prius_ORNL_M250-35A.json` and `..._190Y390.json` to `MACHINES` in `studies/motor_em.py`, then
+run in order `motor_prius_ornl_oc_m250`, `motor_prius_torque_m250`, `motor_prius_ornl_oc_y390`,
+`motor_prius_torque_y390` (about 8 + 25 + 8 + 25 min).
+
+| Case | Run | Result |
+|---|---|---|
+| `motor_prius_torque_current` (M400-50A) | `20261122-000853_...` | PASS. 115.4 / 246.0 / 359.8 / 453.8 / 524.3 / 578.4 / 621.8 N m at 50-350 A; 400 N m at about 171 A; REQ-M3 fails at 350 A |
+| `motor_prius_ornl_oc_mesh_r2` (final machine, M400-50A) | `20261122-013743_...` | FAIL on the peak's GCI only (oscillatory). 109.70 V per 1000 rpm, +1.09 % on r1 (predicted +0.2 %: missed); peak 1028.5 V |
+| `motor_prius_ornl_oc_mesh_r3` (final machine, M330-35A) | `20261122-014658_...` | FAIL on the peak's GCI only (anomalous order 3.8). **110.88 V per 1000 rpm, the blind prediction** (flux GCI 0.16 %), +1.08 % on r2 (predicted +1.0 to +3.5 %); peak 1040.4 V |
+| `motor_prius_torque_current_r1` (M330-35A) | running | the blind torque curve |
+| bracket: `motor_prius_ornl_oc_m250` / `_y390`, `motor_prius_torque_m250` / `_y390` | queued (see above) | predictions in their headers |
+
+**REQ-M4 (overspeed) against the bracket grades, by comparison, not run:** the 424 MPa linearized bridge stress stays
+with any grade (same geometry; density 7600 against 7650 kg/m^3 lowers the lamination's own load by 0.7 %, the magnet
+load is unchanged; the stress does not depend on E). Against yield: M330-35A 335 (Waelzholz; Tata 315) FAIL; powercore
+035-190Y390 390 guaranteed / 407 typical FAIL; **M250-35A 455 typical (Tata, rolling direction) PASS, margin 7 %**.
+So the lower-loss grade is also the strongest of the three on typical values; the "high-strength" bracket does not
+bound the strength from above. A run per grade would only relabel the yield; worth a case only if the user wants
+the density effect shown.
 
 When each finishes:
 1. Read its report; compare with the predictions in its case header; append a Results block (the torque cases also
