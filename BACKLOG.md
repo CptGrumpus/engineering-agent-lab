@@ -77,8 +77,8 @@ A run is finished when its `runs/<timestamp>_<case>/report.md` exists. Logs are 
 
 | Job | Run dir (log) | Done about | When it finishes |
 |---|---|---|---|
-| Study 7 dq table, cold (FEMM, 169 solves), then the hot one starts by itself | `runs/20261122-102002_motor_prius_lut_cold` (`motor_prius_lut_cold.log`), then `runs/*_motor_prius_lut_hot` (`motor_prius_lut_hot.log`) | cold 12:05, hot 13:50 | Score each against its case header (P1-P4), Results block, commit (curated). Then the efficiency case below. |
-| Study 6 FSI1 prototype B: solid 1.25 mm at the 2.5 mm fluid mesh (scratch, not a case of record) | `runs/20261122-091140_scratch_fsi1_solid125` (`fsi_scratch/solid125.log`) | 13:15 | Compare uy(A) (window mean) with the original 2.5 mm point, 0.817489 mm: does the solid mesh explain the drift away from the benchmark? Then write `turek_hron_fsi1_mesh_r1` (below). Do not commit scratch runs. |
+| Study 7 dq table, hot (the cold one is done: 2bf53fc, PASS) | `runs/20261122-115824_motor_prius_lut_hot` (`motor_prius_lut_hot.log`) | 13:36 | Score against its case header (P1-P4), Results block, commit. Then the efficiency case below. |
+| Study 6 FSI1 prototype B: solid 1.25 mm at the 2.5 mm fluid mesh (scratch, not a case of record) | `runs/20261122-091140_scratch_fsi1_solid125` (`fsi_scratch/solid125.log`) | 13:10 (time window 3568 of about 4800 at 12:05) | Compare uy(A) (window mean) with the original 2.5 mm point, 0.817489 mm: does the solid mesh explain the drift away from the benchmark? Then write `turek_hron_fsi1_mesh_r1` (below). Do not commit scratch runs. |
 
 ### Study 7 (motor): state and next steps
 
