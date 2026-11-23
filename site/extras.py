@@ -545,12 +545,15 @@ REQS = [
         ("Friction factor against Prandtl's law, Re 10⁵", "within 5 %", "+2.4 % when converged, mesh uncertainty 1.05 %", "met"),
         ("Same, with wall functions", "within 5 %", "5.0 to 5.4 % low at every Reynolds number", "fail")]),
     ("motor", "20", "Traction motor", [
-        ("Open-circuit voltage at 6,000 rpm if the inverter stops switching", "≤ 500 V", "about 1,040 V", "fail"),
-        ("Rated 400 N m within the copper's current-density limit", "≤ 25 A/mm²", "19.8 A/mm², at about 168 A", "met"),
-        ("Every point of the torque curve within that limit", "≤ 212 A", "250 A and above exceed it: a short-time rating", "fail"),
+        ("Blind test: back-EMF against the measured motor", "within 5 %", "23.5 % high (110.9 against 89.8 V per 1,000 rpm)", "fail"),
+        ("Blind test: peak torque, 50 to 250 A", "within 10 %", "7 % high at low current, rising to 24 % high", "fail"),
+        ("Blind test: efficiency at 393 measured points", "within 2 points", "5.2 points high (median)", "fail"),
+        ("Open-circuit voltage at 6,000 rpm if the inverter stops switching", "≤ 500 V", "about 1,040 V predicted; 850 V measured", "fail"),
         ("Rotor bridge stress at 7,200 rpm overspeed", "≤ 335 MPa", "424 MPa; elastic at 6,000 rpm (295 MPa)", "fail"),
-        ("Rated power from base speed to 6,000 rpm", "≥ 50 kW", "58.6 kW cold, verified; 53.7 kW hot, unverified", "met"),
-        ("Continuous power from 1,250 to 6,000 rpm", "≥ 25 kW", "30.2 kW at the worst speed; 26.2 to 34.3 kW over ten scenarios", "met")]),
+        ("Every point of the torque curve within the copper limit", "≤ 212 A", "250 A and above exceed it: a short-time rating", "fail"),
+        ("Rated 400 N m within the copper's current-density limit", "≤ 25 A/mm²", "19.8 A/mm² on a model with 24 % too much flux", "held"),
+        ("Rated power from base speed to 6,000 rpm", "≥ 50 kW", "58.6 kW on a model with 24 % too much flux", "held"),
+        ("Continuous power from 1,250 to 6,000 rpm", "≥ 25 kW", "30.2 kW modelled; the laboratory reports 15 to 21 kW at base speed", "held")]),
     ("strut", "13", "Strut buckling", [
         ("Load before first yield, 500 mm strut with an L/1000 bow", "≥ 16 kN", "21.8 kN (the longest that passes is about 587 mm)", "met")]),
     ("strap_proof", "14", "Strap proof test", [
@@ -691,7 +694,7 @@ CAPS = """<div class="table-wrap">
           <tr><td>Pressure equipment: design by analysis with stress linearisation on classification lines, in the manner of ASME VIII-2 Part 5, against a design-by-rule check</td><td>CadQuery, Gmsh, CalculiX</td><td><a href="#pv_nozzle">18</a></td></tr>
           <tr><td>Buckling: linear eigenvalue and geometrically nonlinear with imperfections, checked against Euler, Southwell and Perry-Robertson</td><td>CalculiX</td><td><a href="#strut">13</a></td></tr>
           <tr><td>Plasticity with loading and unloading, and the residual stress left behind, checked against Neuber and Glinka</td><td>CadQuery, Gmsh, CalculiX</td><td><a href="#strap_proof">14</a></td></tr>
-          <tr><td>Electric machines: back-EMF, torque and efficiency maps from 2D magnetostatics, a lumped thermal network and rotor stress at overspeed, with predictions written blind</td><td>Pyleecan, FEMM, CalculiX</td><td><a href="#motor">20</a></td></tr>
+          <tr><td>Electric machines: back-EMF, torque and efficiency maps from 2D magnetostatics, a lumped thermal network and rotor stress at overspeed, tested blind against a laboratory's measurements</td><td>Pyleecan, FEMM, CalculiX</td><td><a href="#motor">20</a></td></tr>
           <tr><td>Vibration and modal analysis, including identifying the modes and keeping clear of engine orders</td><td>CadQuery, Gmsh, CalculiX</td><td><a href="#modal">4</a></td></tr>
           <tr><td>Fatigue life using notch factors, mean-stress correction and S-N curves fitted to published test data</td><td>CalculiX, Python</td><td><a href="#fatigue">3</a></td></tr>
           <tr><td>Chained multiphysics: coolant flow, then conduction through the part, then thermal stress, with an energy balance at every handoff</td><td>OpenFOAM, CalculiX</td><td><a href="#cold_plate">15</a></td></tr>

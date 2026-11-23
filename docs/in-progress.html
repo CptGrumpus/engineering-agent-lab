@@ -4,11 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>In progress · Justin Smith</title>
-<meta name="description" content="A flexible flag behind a cylinder (fluid-structure interaction), still running, and the traction motor&#x27;s last step: the comparison with a laboratory&#x27;s test data.">
+<meta name="description" content="A flexible flag behind a cylinder (fluid-structure interaction), with its coupled cases running, and the diagnosis of the traction motor&#x27;s missed blind test.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://cptgrumpus.github.io/engineering-agent-lab/in-progress.html">
-<meta property="og:title" content="One study running, one comparison to come">
-<meta property="og:description" content="A flexible flag behind a cylinder (fluid-structure interaction), still running, and the traction motor&#x27;s last step: the comparison with a laboratory&#x27;s test data.">
+<meta property="og:title" content="Studies in progress">
+<meta property="og:description" content="A flexible flag behind a cylinder (fluid-structure interaction), with its coupled cases running, and the diagnosis of the traction motor&#x27;s missed blind test.">
 <meta property="og:image" content="https://cptgrumpus.github.io/engineering-agent-lab/v2/og_card.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -17,7 +17,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
-<link rel="stylesheet" href="assets/site.css?v=2029ee494c">
+<link rel="stylesheet" href="assets/site.css?v=e178accde1">
 </head>
 <body>
 <nav class="topbar" aria-label="Site">
@@ -52,25 +52,25 @@
 
     <div class="page-head">
       <p class="eyebrow">Now working on</p>
-      <h1>One study running, one comparison to come</h1>
-      <p>Eight harder studies are finished and have their own pages: friction contact, plasticity, buckling, a chained thermal model, the optimisation loop, a design-code pressure vessel check, turbulent pipe flow and a production traction motor. One more is still running, and the motor has one step left.</p>
+      <h1>One study running, one diagnosis to come</h1>
+      <p>The fluid-structure study is still running its coupled cases. The traction motor's model is finished and published, but it missed its blind test, so finding out why comes next. As with every study, I pick the independent check before I start modelling, and I write down my predictions before each run.</p>
     </div>
     <div class="skills plan now">
       <article class="skill">
         <span class="plan-meta"><span class="no">Study 17 · Fluid-structure interaction</span><span class="plan-tag">In progress</span></span>
         <b>Flexible flag behind a cylinder</b>
         <p><b>Why it's harder</b>Two-way fluid-structure interaction, where the flow bends the flag and the bent flag changes the flow.</p>
-        <p><b>So far</b>Each half has to reproduce the published Turek-Hron benchmark before the two are coupled. The solid's sag matches to 0.01 %, and it swings at 1.095 Hz against the published 1.096 to 1.100. The fluid's drag matches to 0.07 % and 0.014 % at the two flow speeds. Lift is within 0.7 % but scatters from mesh to mesh, so I'm holding that verdict back. The first coupled case has run: its drag converges to within 0.03 % of the benchmark, and the flag tip lands within 1 %, but the tip still drifts as the mesh is refined and the lift carries noise from the coupling, so it isn't verified yet. A revision is running.</p>
+        <p><b>So far</b>Each half has to reproduce the published Turek-Hron benchmark before the two are coupled. The solid's sag matches to 0.015 %, and it swings at 1.095 Hz against the published 1.096 to 1.100. The fluid's drag matches to 0.07 % and 0.014 % at the two flow speeds. The first coupled case, the steady one, is now verified on drag and lift: 0.03 % and 0.18 % from the published values. The flag-tip position is within 1 % on every mesh but scatters by about half a percent between meshes, so I can't put an uncertainty on it and that part stays unverified. The two oscillating cases are running.</p>
         <p class="plan-link"><a href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/portfolio/17-fsi-flag-turek-hron.md">Read the draft write-up</a></p>
         <p><b>How I'll check it</b>The benchmark's published values, for each half and for the coupled runs.</p>
         <span class="tools">OpenFOAM · CalculiX · preCICE</span>
       </article>
       <article class="skill">
         <span class="plan-meta"><span class="no">Study 20 · Test data</span><span class="plan-tag">Next step</span></span>
-        <b>Traction motor: the comparison with test data</b>
-        <p><b>Where it stands</b>The model is finished and has <a href="traction-motor.html">its own page</a>: the design checks, the efficiency map, the continuous rating and the rotor stress. Every prediction was written down before any measurement was opened.</p>
-        <p><b>What's left</b>Opening Oak Ridge National Laboratory's test data, once, and scoring each prediction against the limits agreed beforehand: back-EMF within 5 %, torque within 10 % and efficiency within 2 points.</p>
-        <p><b>Why it waits</b>The data stays sealed until the model can't be changed any more. That's what makes the comparison mean something.</p>
+        <b>Traction motor: finding the flux error</b>
+        <p><b>Where it stands</b>The model is finished and has <a href="traction-motor.html">its own page</a>. Its blind comparison with a laboratory's measurements was run once and missed all three agreed limits, because the model carries about 24 % too much magnet flux.</p>
+        <p><b>What's next</b>A diagnosis, not a fit. The laboratory's design report has a measured air-gap field, still unopened, that separates the magnets from the winding as the cause. Then a documented revision, with its predictions written first, compared again.</p>
+        <p><b>What stays</b>The three failed verdicts. They're the blind result, and a later revision doesn't replace them.</p>
         <span class="tools">Pyleecan · FEMM · CalculiX</span>
       </article>
     </div>
@@ -106,6 +106,6 @@
   </div>
 </footer>
 
-<script src="assets/site.js?v=2029ee494c"></script>
+<script src="assets/site.js?v=e178accde1"></script>
 </body>
 </html>
