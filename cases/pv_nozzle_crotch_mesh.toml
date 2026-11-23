@@ -1,0 +1,115 @@
+# Study 18, classification-line placement, case 1: the crotch lines, mesh study (closes "placement sensitivity not
+# yet quantified" on portfolio/18 and in pv_nozzle_mesh's limitations).
+#
+# Why: REQ-PV2 passed by 0.9 % with the classification lines at the weld-fillet toes (pv_nozzle_mesh). The usual
+# alternative at a nozzle is a line through the crotch: from the sharp inner corner to the outer weld surface.
+# models/fea/pressure_vessel.py now also linearises CROTCH_LONG (24.1 mm, in the plane along the vessel) and
+# CROTCH_TRANS (20.9 mm, transverse plane), each from the inner corner towards the fillet's centre, ending on the
+# fillet. The toe lines are unchanged (same points as pv_nozzle_mesh at scl_toe_offset_mm = 0).
+#
+# Smoke test (scratch, h_local 4 mm, 2026-11-22 19:49, the middle mesh of this case): every point check as before
+# (toe lines bit-for-bit: PL shell_long 205.1, Pm 96.23); crotch-line samples inside the mesh to 9e-8 (the tolerance
+# below allows the fillet's chord error, h^2 / 8 rf, a few %). CROTCH_LONG: PL 256.6 MPa, P + Q 352.0 MPa (its
+# membrane is mostly the shell's hoop direction, 280 MPa); CROTCH_TRANS: PL 57.2, P + Q 77.7. Nothing else changed.
+#
+# Predictions, written BEFORE the evidence run:
+#   P1 Every point check passes on every mesh (as pv_nozzle_mesh, plus the crotch sampling check).
+#   P2 The toe-line metrics repeat pv_nozzle_mesh exactly (same mesh, same points): PL 205.04 / 205.13 / 205.13.
+#   P3 PL on CROTCH_LONG converges although the line starts at a singular corner (the singularity is integrable):
+#      250-262 MPa on every mesh, GCI under 3 %. REQ-PV2C verified FAIL, about 24 % over 1.5 S.
+#   P4 P + Q on CROTCH_LONG converges more slowly (the bending moment weights the corner end): 335-370 MPa, GCI may
+#      exceed 3 % (then reported unverified); REQ-PV3C PASS either way (margin about 15 %).
+#   P5 About 6 min for the three meshes.
+
+[case]
+name = "pv_nozzle_crotch_mesh"
+model = "cadquery_ccx_vessel"
+description = "Cylindrical shell (Ri 500 mm, t 16 mm) with a set-in radial nozzle (ri 100 mm, tn 12 mm, 10 mm outer weld fillet) at 3.5 MPa; as pv_nozzle_mesh, with the stresses also linearised on classification lines through the crotch corner; local element size 6 / 4 / 2.67 mm at the junction."
+assumptions = [
+  "Linear elastic steel, E 200 GPa, nu 0.3; small displacement (checked).",
+  "Closed vessel: the end thrusts of the shell and the nozzle are applied as uniform axial tractions on their cut ends (the far field is then the Lame closed-end cylinder exactly).",
+  "Symmetry about the planes through the nozzle axis; no external nozzle loads (piping loads would add to the junction stresses).",
+  "Outer weld modelled as a 10 mm fillet; the inner corner of the bore is sharp (affects peak stress, not the linearised values on the toe lines).",
+  "Classification: membrane at the junction lines is local primary (PL), membrane plus bending there is primary plus secondary (P + Q); far from the nozzle the membrane is general primary (Pm). S_PS taken as 3 S.",
+  "Crotch lines (CROTCH_LONG, CROTCH_TRANS): from the sharp inner corner towards the weld fillet's centre, ending on the fillet surface, in each symmetry plane; the weld metal is the same steel. Their membrane is classified local primary (PL) and membrane plus bending primary plus secondary, as at the toe lines.",
+  "Allowable S = 138 MPa: synthetic, of the order of carbon-steel plate values; not from ASME Section II.",
+]
+limitations = [
+  "Elastic analysis only: no limit-load or elastic-plastic route, no fatigue (peak stress reported, not assessed), no external loads, no corrosion allowance.",
+  "The inner corner is sharp: the crotch line starts at a stress singularity (integrable, so its linearised membrane converges); a fabricated corner radius would lower the crotch values somewhat.",
+  "The pressure-area cross-check is a simplified form of the rule, not the standard's full procedure.",
+]
+
+[parameters]
+shell_inner_radius_mm = 500.0
+shell_thickness_mm = 16.0
+shell_half_length_mm = 1000.0
+nozzle_inner_radius_mm = 100.0
+nozzle_thickness_mm = 12.0
+nozzle_length_mm = 350.0
+weld_fillet_radius_mm = 10.0
+pressure_MPa = 3.5
+youngs_modulus_MPa = 200000.0
+poisson_ratio = 0.3
+element_size_local_mm = 4.0
+element_size_far_mm = 14.0
+refine_radius_mm = 140.0
+mesh_growth = 0.08
+allowable_stress_MPa = 138.0
+
+[sweep]
+parameter = "element_size_local_mm"
+values = [6.0, 4.0, 2.6667]
+
+[numerics]
+solver_timeout_s = 7200
+scl_points = 21
+
+[verification]
+volume_rel_tol = 0.01        # mesh volume from straight-sided tets vs the CAD volume
+equilibrium_rel_tol = 1e-5   # exact resultants: anything above solver precision means a load face was missed
+lame_rel_tol = 0.01          # exact far field; the bore hoop is a nodal extrapolation to the surface
+scl_violation_tol = 0.01     # SCL end points on curved surfaces lie about h^2/8R outside straight-sided elements
+scl_crotch_violation_tol = 0.05  # the crotch line ends on the 10 mm fillet: chord error about h^2 / 8 rf
+mesh_noise_rel = 1e-5
+gci_max = 0.03
+
+[[requirements]]
+id = "REQ-PV1"
+text = "General primary membrane stress in the shell away from the nozzle shall not exceed S (138 MPa)."
+metric = "pm_general_MPa"
+operator = "<="
+limit = 138.0
+units = "MPa"
+
+[[requirements]]
+id = "REQ-PV2"
+text = "Local primary membrane stress at the nozzle junction (all classification lines) shall not exceed 1.5 S (207 MPa)."
+metric = "pl_max_MPa"
+operator = "<="
+limit = 207.0
+units = "MPa"
+
+[[requirements]]
+id = "REQ-PV3"
+text = "Primary plus secondary stress at the nozzle junction (membrane plus bending, all classification lines) shall not exceed S_PS = 3 S (414 MPa)."
+metric = "pq_max_MPa"
+operator = "<="
+limit = 414.0
+units = "MPa"
+
+[[requirements]]
+id = "REQ-PV2C"
+text = "Local primary membrane stress on the crotch classification lines shall not exceed 1.5 S (207 MPa) (REQ-PV2 with the lines through the crotch corner instead of at the fillet toes)."
+metric = "pl_crotch_max_MPa"
+operator = "<="
+limit = 207.0
+units = "MPa"
+
+[[requirements]]
+id = "REQ-PV3C"
+text = "Primary plus secondary stress on the crotch classification lines shall not exceed S_PS = 3 S (414 MPa)."
+metric = "pq_crotch_max_MPa"
+operator = "<="
+limit = 414.0
+units = "MPa"

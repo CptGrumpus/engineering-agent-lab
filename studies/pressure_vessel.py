@@ -45,8 +45,9 @@ def _load(path: Path):
 
 _W = _load(Path(__file__).resolve().parent.parent / WRITER)
 PARAMS = _W.PARAMS + ("allowable_stress_MPa",)
-LINES = ("shell_long", "shell_trans", "nozzle_long", "nozzle_trans", "far")
+LINES = ("shell_long", "shell_trans", "nozzle_long", "nozzle_trans", "far", "crotch_long", "crotch_trans")
 JUNCTION = LINES[:4]
+CROTCH = LINES[5:]
 
 
 class CadQueryCalculiXVessel(Backend):
@@ -101,10 +102,13 @@ class CadQueryCalculiXVessel(Backend):
         D = frd["DISP"]
         umax = float(np.max(np.sqrt(D["D1"] ** 2 + D["D2"] ** 2 + D["D3"] ** 2)))
         smp = Tet10Sampler(ids, xyz, elems)
-        lines, viol, profiles = {}, 0.0, {}
+        lines, viol, viol_crotch, profiles = {}, 0.0, 0.0, {}
         for name, (pts, axes, cls) in W.scl_lines(params, int(numerics.get("scl_points", 21))).items():
             vals, v = smp.sample(pts, stress)
-            viol = max(viol, v)
+            if cls == "crotch":
+                viol_crotch = max(viol_crotch, v)
+            else:
+                viol = max(viol, v)
             s_pos = np.linalg.norm(pts - pts[0], axis=1)
             res = linearize(s_pos, vals, axes)
             lines[name] = {k: (v_.tolist() if isinstance(v_, np.ndarray) else v_) for k, v_ in res.items()} | {
@@ -123,7 +127,7 @@ class CadQueryCalculiXVessel(Backend):
                    "reaction_symz_N": [float(x) for x in tot["NSYMZ"][:3]],
                    "reaction_back_N": [float(x) for x in back[1:4]],
                    "expected": W.expected_reactions(params), "lines": lines, "profiles": profiles,
-                   "sample_violation_max": viol, "max_displacement_mm": umax,
+                   "sample_violation_max": viol, "sample_violation_crotch": viol_crotch, "max_displacement_mm": umax,
                    "peak_vm_MPa": float(np.nanmax(von_mises(stress))),
                    "lame_far_hoop_MPa": W.lame(params, r_far)[1].tolist()}
         series = {k: np.asarray(profiles["shell_long"][k], float) for k in ("s_mm", "vm_MPa")}
@@ -144,7 +148,8 @@ class PressureVesselStudy(Study):
     name = "pressure_vessel"
     models = {"cadquery_ccx_vessel": CadQueryCalculiXVessel}
     metrics = frozenset({"pm_general_MPa", "pl_max_MPa", "pq_max_MPa", "peak_vm_MPa"}
-                        | {f"pl_{n}_MPa" for n in JUNCTION} | {f"pq_{n}_MPa" for n in JUNCTION})
+                        | {f"pl_{n}_MPa" for n in JUNCTION + CROTCH} | {f"pq_{n}_MPa" for n in JUNCTION + CROTCH}
+                        | {"pl_crotch_max_MPa", "pq_crotch_max_MPa"})
     param_names = PARAMS
     series_file = "scl_shell_long.csv"
     compare_description = "max relative difference of the von Mises stress along the shell SCL"
@@ -165,6 +170,12 @@ class PressureVesselStudy(Study):
             out[f"pq_{n}_MPa"] = L[n]["membrane_plus_bending_vm"]
         out["pl_max_MPa"] = max(out[f"pl_{n}_MPa"] for n in JUNCTION)
         out["pq_max_MPa"] = max(out[f"pq_{n}_MPa"] for n in JUNCTION)
+        if all(n in L for n in CROTCH):  # runs before the crotch lines existed have none
+            for n in CROTCH:
+                out[f"pl_{n}_MPa"] = L[n]["membrane_vm"]
+                out[f"pq_{n}_MPa"] = L[n]["membrane_plus_bending_vm"]
+            out["pl_crotch_max_MPa"] = max(out[f"pl_{n}_MPa"] for n in CROTCH)
+            out["pq_crotch_max_MPa"] = max(out[f"pq_{n}_MPa"] for n in CROTCH)
         return out
 
     def verify_point(self, case, point, pdir, series, backend):
@@ -194,6 +205,10 @@ class PressureVesselStudy(Study):
             check("scl_inside_mesh", "max barycentric violation of the SCL sample points (0 = inside an element; points on "
                   "a curved surface lie about h^2 / 8R outside the straight-sided element, where the quadratic shape "
                   "functions extrapolate smoothly)", out["sample_violation_max"], tol["scl_violation_tol"], kind="validity"),
+            check("scl_crotch_inside_mesh", "max barycentric violation of the crotch-line sample points (their outer "
+                  "end lies on the weld fillet, radius rf, so about h^2 / 8 rf outside the straight-sided element: a "
+                  "larger chord error than on the shell's surfaces)", out.get("sample_violation_crotch", 0.0),
+                  tol.get("scl_crotch_violation_tol", tol["scl_violation_tol"]), kind="validity"),
             check("small_displacement", "max displacement / shell thickness (linear geometry)",
                   out["max_displacement_mm"] / d["t"], 0.1, kind="validity"),
         ]
@@ -247,9 +262,12 @@ def _lame_linearized_pm(p):
 def vessel_figure(path, out, point):
     from harness.plotting import SERIES_1, SERIES_2, SURFACE, TEXT, _style, plt
 
-    fig, axes = plt.subplots(1, 2, figsize=(12, 4))
+    groups = [("shell_long", "shell_trans"), ("nozzle_long", "nozzle_trans")]
+    if all(n in out["profiles"] for n in CROTCH):
+        groups.append(CROTCH)
+    fig, axes = plt.subplots(1, len(groups), figsize=(6 * len(groups), 4))
     fig.patch.set_facecolor(SURFACE)
-    for ax, names in ((axes[0], ("shell_long", "shell_trans")), (axes[1], ("nozzle_long", "nozzle_trans"))):
+    for ax, names in zip(axes, groups):
         for name, col in zip(names, (SERIES_1, SERIES_2)):
             pr, ln = out["profiles"][name], out["lines"][name]
             s = np.asarray(pr["s_mm"])

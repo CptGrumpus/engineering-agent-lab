@@ -187,26 +187,43 @@ def expected_reactions(p) -> dict:
 def scl_lines(p, n_points: int = 21) -> dict:
     """Stress classification lines: name -> (points (n, 3), axes (3, 3) rows n/m/h, class). Junction lines sit at the
     weld-fillet toes (shell: rno + rf from the nozzle axis; nozzle: rf above the shell surface), in the two planes of
-    symmetry; FAR is on the back of the shell, half way along, where the shell is the Lame cylinder."""
+    symmetry; FAR is on the back of the shell, half way along, where the shell is the Lame cylinder.
+
+    Optional parameter scl_toe_offset_mm (default 0) moves the four toe lines that far further from the junction
+    (along the shell surface, or up the nozzle), for a placement sensitivity. In the transverse plane (z = 0) the toe
+    lines sit where the shell's or the nozzle's outer surface is rno + rf from the other axis, about 2 mm outboard of
+    the true fillet toe (the ball centre is at y = rno + rf on the circle Ro + rf); in the longitudinal plane they are
+    exact. CROTCH_LONG and CROTCH_TRANS run from the sharp inner corner towards the fillet's centre (the rolling ball's
+    centre lies in each symmetry plane) and end on the fillet surface: the shortest line through the corner, the usual
+    alternative placement at a nozzle crotch."""
     d = dims(p)
     Ri, Ro, rni, rno, rf, L = (d[k] for k in ("Ri", "Ro", "rni", "rno", "rf", "L"))
+    off = float(p.get("scl_toe_offset_mm", 0.0))
     s = np.linspace(0, 1, n_points)[:, None]
     out = {}
-    zt = rno + rf
+    zt = rno + rf + off
     a, b = np.array([Ri, 0, zt]), np.array([Ro, 0, zt])
     out["shell_long"] = (a + s * (b - a), np.array([[1, 0, 0], [0, 0, 1], [0, 1, 0]], float), "junction")
-    th = math.asin((rno + rf) / Ro)
+    th = math.asin((rno + rf) / Ro) + off / Ro
     c, sn = math.cos(th), math.sin(th)
     a, b = np.array([Ri * c, Ri * sn, 0]), np.array([Ro * c, Ro * sn, 0])
     out["shell_trans"] = (a + s * (b - a), np.array([[c, sn, 0], [-sn, c, 0], [0, 0, 1]], float), "junction")
-    xn = Ro + rf
+    xn = Ro + rf + off
     a, b = np.array([xn, 0, rni]), np.array([xn, 0, rno])
     out["nozzle_long"] = (a + s * (b - a), np.array([[0, 0, 1], [1, 0, 0], [0, 1, 0]], float), "junction")
-    xn = math.sqrt(Ro ** 2 - rno ** 2) + rf
+    xn = math.sqrt(Ro ** 2 - rno ** 2) + rf + off
     a, b = np.array([xn, rni, 0]), np.array([xn, rno, 0])
     out["nozzle_trans"] = (a + s * (b - a), np.array([[0, 1, 0], [1, 0, 0], [0, 0, 1]], float), "junction")
     a, b = np.array([-Ri, 0, L / 2]), np.array([-Ro, 0, L / 2])
     out["far"] = (a + s * (b - a), np.array([[-1, 0, 0], [0, 0, 1], [0, 1, 0]], float), "general")
+    # crotch lines: inner corner A, fillet ball centre C, end on the fillet surface C - rf u
+    for name, A, C, h in (("crotch_long", (Ri, 0.0, rni), (Ro + rf, 0.0, rno + rf), (0.0, 1.0, 0.0)),
+                          ("crotch_trans", (math.sqrt(Ri ** 2 - rni ** 2), rni, 0.0),
+                           (math.sqrt((Ro + rf) ** 2 - (rno + rf) ** 2), rno + rf, 0.0), (0.0, 0.0, 1.0))):
+        A, C, h = np.array(A), np.array(C), np.array(h)
+        u = (C - A) / np.linalg.norm(C - A)
+        b = C - rf * u
+        out[name] = (A + s * (b - A), np.array([u, np.cross(h, u), h], float), "crotch")
     return out
 
 
