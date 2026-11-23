@@ -163,3 +163,23 @@ Only the speed and motor-rotor columns were transcribed (`tm2006_423_table_3_7.c
   iron and magnet losses the 2D sinusoidal-current model leaves out (PWM ripple from the inverter, field-weakening
   harmonics, magnet eddy currents under armature reaction). AC strand effects are small (0.91 mm strands, skin depth
   about 3.3 mm at 400 Hz).
+
+## Revision 3 (2026-11-23 ~10:50): each test point's measured winding temperature
+*Why:* revision 2 left the gap load-dependent, with copper loss about 1.5x ours at the hot, high-torque points. The
+efficiency maps assume one winding temperature (100 C hot, 20 C cold); ORNL recorded the stator-winding temperature
+at every Table B-1 point. Using a test's measured operating condition as an input matches conditions; the measured
+efficiencies stay unused until the score.
+*Transcription repair (found while preparing this; no new data opened, Table B-1 was opened 2026-11-22 18:48):* the
+committed `tm2006_423_table_b1.csv` had the stator temperature empty in all 428 rows and, in 345 rows, the dc voltage
+in the `v_ph` column and `i_ph` empty (the parser shifted columns where three rows lack the dc current). None of these
+columns was used in any score. Rebuilt by matching each row to the report text on its dc, mechanical and ac powers
+(428 of 428 unique); the scored columns (speed, torque, efficiencies, powers) are unchanged, checked row by row;
+`v_dc` and `i_dc` added. Every row's speed x torque matches its mechanical power within 2 % (it always did).
+*Method:* as revision 1 (hypothesis A, committed dq tables, same 393 points, same 2-point limit), but the phase
+resistance at each point is R20 (1 + 0.00393 (T_winding - 20)) with ORNL's measured T_winding, in both scenarios; the
+scenarios then differ only in magnet temperature (20 C or 80 C tables). Operating points re-optimised. Reported also
+with revision 2's additive no-load residual.
+*Predictions (before computing):*
+- P1 Median gap (hot magnets minus ORNL) 4.3-4.7 points (median winding temperature 108 C, about the assumed 100 C):
+  the hot points (150-207 C) improve, the cool ones (43-80 C) get slightly worse. Still FAIL.
+- P2 In the 500-1500 rpm, 200-400 N m bin (windings mostly 130-200 C), the missing loss falls by 20-40 %.
