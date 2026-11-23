@@ -444,3 +444,30 @@ Agreed plan: a hand estimate first; a 3D model only if it says 5 % or more; incl
   model (no correction factors); reported as a bound. Remaining candidates: the bridges' steel (step 2, running), an
   independent 2D model (ElmerFEM) of the same geometry, and the magnetisation level (reported as a hypothesis with
   the client test that settles it).
+
+### The 18 % flux excess, step 3b: an independent 2D model in ElmerFEM (predictions 2026-11-23 18:43, before any motor solve)
+*Why:* if the FEMM model's field were wrong (setup, mesh, the sliding band, magnet directions), every revision would
+share the error. A second solver on the same geometry separates "2D field wrong" from "2D model of this motor reads
+high". The Chalmers thesis found ElmerFEM and ANSYS Maxwell 30 % apart on "the same" 2D Prius model, unresolved, so
+the check is not a formality.
+*Model:* `models/motor/elmer_em.py` (Elmer 26.1 package, solver banner "9.0", MagnetoDynamics2D; gmsh 4.15). The
+geometry and materials come from `scripts/export_motor_elmer.py`, which calls the same Pyleecan functions FEMM's
+driver calls (exact segments and arcs; magnetisation angles; winding phases and turns; Hc(25 C) 880,163 A/m, mu_r
+1.129; the M330-35A table to 300 kA/m). Different on purpose: the full machine (FEMM: one pole, anti-periodic),
+plain air in the gap remeshed per rotor position (FEMM: sliding band), gmsh second-order triangles, Newton iterations,
+the B-H table densified by PCHIP (FEMM interpolates its own way). Same: A = 0 at the stator OD, natural boundary at
+the rotor bore, solid laminations. Revision-5 machine, gap 0.775 mm, magnets at 25 C. Comparison: FEMM run
+20261123-141642 point p00 (lambda1 0.20499 Wb, 105.16 V per 1000 rpm).
+*Checks already run (setup, not the comparison):* a uniformly magnetised cylinder in air against B = Br / (1 + mu_r):
+-0.07 % (the other magnetisation convention would read -11 %), so Elmer's M = Hc, the value FEMM receives.
+*Predictions:*
+- P1 Elmer's lambda1 (mean of the three phases, fundamental over 48 rotor positions per electrical period, finest
+  usable mesh) is within +-2 % of FEMM's 0.20499 Wb (0.2009-0.2091): the 2D field is right, and the 18 % is not a
+  FEMM artefact.
+- P2 Mesh: lambda_a at one position changes under 0.3 % between refinement 1.0, 0.7 and 0.5 (sizes 0.40 / 0.80 /
+  6.0 mm at 1.0 in the gap, around the holes, far away; second-order triangles; 0.5 is about 690,000 nodes).
+- P3 Phase balance: the three phases' lambda1 within 0.5 % of each other; anti-periodicity lambda_a(theta + 45 deg) =
+  -lambda_a(theta) within 0.3 %.
+- P4 Waveform: phase-a flux linkage, aligned to FEMM's by the fundamental's phase, differs from FEMM's by under 3 % of
+  lambda1 at every position; the gap's radial flux density fundamental within 2 % of FEMM's.
+- P5 Each solve under 60 s; the Newton iterations converge (relative change under 1e-8).
