@@ -115,6 +115,24 @@ prediction is written into a case file.
 - Material properties measured by the same lab are a judgement call for the user, not for you.
 - Keep a protocol log (what was opened, when, why) and declare any prior knowledge in the case headers.
 - Agree the validation limits before the data is seen; after that, any change is a documented revision.
+- Agree how the data will be read at the same time: line-to-line or phase, peak or rms, which table or figure, what
+  temperature. Test reports often don't say (study 7: the back-EMF and locked-rotor tables state neither, and the
+  torque comparison swings from +7 % to +60 % on the current convention).
+- Give each prediction a band from its largest input uncertainties, and check the agreed limit is reachable with it.
+  Study 7 bracketed inputs that hardly mattered (lamination grade, 0.13 %) and carried none of the one that did: two
+  sources gave the magnet's remanence as 1.24 and 1.12 T (11 % in back-EMF). The blind back-EMF missed by 24 %; a band
+  would have shown before the data that a 5 % limit was a gamble.
+- When sources conflict, carry both until the data decides; don't pick one and explain the other away ("probably a
+  hot value" was never checked).
+- Predict the quantity that is measured. A loss model that leaves terms out by design (mechanical, inverter
+  harmonics) gives an upper bound, not a prediction of a measured efficiency: estimate the missing terms, or set the
+  limit with them in mind (study 7: 5.2 points high against a 2-point limit).
+- Internal checks verify the solver on your inputs, not the inputs: study 7 passed every one (power balance, winding
+  theory, mesh studies) with the magnet flux 24 % high.
+- After a blind miss, keep the verdict on the record. Test data used to diagnose or calibrate stops being evidence;
+  validate the revision on quantities that weren't used (calibrate one, predict the rest).
+- Transcribe a test table before reasoning from it: run-together PDF text puts a frequency column where the voltage
+  should be (study 7, caught before scoring).
 
 ### 7. Missing information
 
