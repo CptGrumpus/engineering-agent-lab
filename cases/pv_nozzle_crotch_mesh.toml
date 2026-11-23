@@ -20,6 +20,20 @@
 #   P4 P + Q on CROTCH_LONG converges more slowly (the bending moment weights the corner end): 335-370 MPa, GCI may
 #      exceed 3 % (then reported unverified); REQ-PV3C PASS either way (margin about 15 %).
 #   P5 About 6 min for the three meshes.
+#
+# Results (run 20261122-195433_pv_nozzle_crotch_mesh): verification FAIL on three run-level GCI classifications only.
+#   P1 HELD: every point check passes on every mesh (crotch sampling 1e-7 against 0.05).
+#   P2 HELD: toe lines identical to pv_nozzle_mesh (PL 205.04 / 205.13 / 205.13; P + Q 240.41 / 240.23 / 239.57).
+#   P3 HELD in value, MISSED in the check: PL on CROTCH_LONG 256.642 / 256.627 / 256.671 MPa (inside 250-262; spread
+#      1.7e-4), but the differences oscillate and grow (R = -2.9), so the GCI gives no estimate. REQ-PV2C FAIL by 24 %
+#      (49.6 MPa over 207), formally unverified; the spread is 1/1400 of the exceedance. CROTCH_TRANS PL 57.0-57.2.
+#   P4 HELD: P + Q on CROTCH_LONG 351.30 / 351.96 / 352.04 MPa (anomalous observed order 5.3, no estimate); REQ-PV3C
+#      PASS, margin 15 %. The toe P + Q again reads divergent (R 3.7), as in pv_nozzle_mesh.
+#   P5 HELD: about 7 min.
+# Next: these sub-0.4 % differences look like the mesh regenerating, not discretization error: measure the scatter at
+# one nominal size (pv_nozzle_crotch_noise), declare it, rerun (r1).
+# Design answer: the verdict on REQ-PV2 depends on where the classification line sits. At the fillet toes the 12 mm
+# nozzle passes (205.1 against 207); through the crotch it fails (256.6). Pending human review.
 
 [case]
 name = "pv_nozzle_crotch_mesh"
