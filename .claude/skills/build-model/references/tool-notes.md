@@ -529,8 +529,12 @@ Traps found while building the studies in this repo, by tool.
   equalled the end value to every digit. Fine for a steady case; a periodic case cannot average the reaction over
   whole periods from it, and the end-of-run balance of an oscillating body includes its inertia (FSI2's check read
   1.52 against 1e-2 and meant nothing). For a periodic force-transfer check compare what the solid RECEIVES each
-  window (a preCICE export of the Force data on the solid mesh, summed) with the fluid's force at the same instant.
-  Take per-window histories from the watchpoint log (written every window), not from the `.dat`.
+  window with the fluid's force at the same instant: `<watch-integral mesh="..." name="Wet"
+  scale-with-connectivity="false" />` in each participant writes `precice-<Participant>-watchintegral-Wet.log`
+  (Time and the sums of every data on the mesh, columns named `Force0 Force1 ...`, every window; preCICE 3.4.1).
+  FSI1 smoke (5 mm, 40 windows): received against written 0.0 (the conservative RBF mapping keeps the sum exactly),
+  written against OpenFOAM's forcesFlag 2.8e-9. Take per-window histories from these logs and the watchpoint log,
+  not from the `.dat`.
 - **Test that a fallback path cannot replace the quantity a check is defined on.** The periodic force-transfer
   check fell back, silently, to end values when its whole-period means were empty; report "not evaluable"
   (a NaN value fails visibly) instead.

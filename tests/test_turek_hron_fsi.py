@@ -120,3 +120,30 @@ def test_averaged_metrics_ignore_step_jitter():
     m = _window_means({"metric_average_s": 2.0}, Ff, blocks)
     assert np.allclose(np.array(m["flag_fluid_force_mean_N"]) + np.array(m["clamp_reaction_mean_N"]), 0, atol=1e-12)
     assert _window_means({}, Ff, blocks) == {}
+
+
+def test_transfer_per_window_ignores_inertia(tmp_path):
+    """The per-window transfer check compares forces at the same instant, so a large oscillating force (whose
+    end-of-run balance with a clamp reaction would include the body's inertia) passes when the transfer is exact,
+    and a 1 % loss in the mapping shows up as 1e-2."""
+    from studies.turek_hron_fsi import read_watchintegral, transfer_per_window
+
+    t = np.arange(1, 2001) * 1e-3
+    fx, fy = 2.0 + 0.5 * np.sin(2 * np.pi * 4 * t), 2.4 * np.sin(2 * np.pi * 2 * t)
+    for name, k in (("fluid", 1.0), ("solid", 0.99)):
+        rows = "\n".join(f"{a:.6e}  {b:.9e}  {c:.9e}  0.0  0.0" for a, b, c in zip(t, k * fx, k * fy))
+        (tmp_path / f"{name}.log").write_text("  Time  Force0  Force1  Displacement0  Displacement1\n" + rows + "\n",
+                                              encoding="utf-8")
+    wf, ws = read_watchintegral(tmp_path / "fluid.log"), read_watchintegral(tmp_path / "solid.log")
+    Ff = np.column_stack([t, fx * 0.9, fy * 0.8, fx * 0.1, fy * 0.2])  # pressure + viscous parts of the same force
+    r = transfer_per_window(wf, ws, Ff, 1.0, 2.0)
+    assert r["transfer_windows"] == 1000
+    assert r["transfer_fluid_max_rel"] < 1e-8
+    assert r["transfer_mapping_max_rel"] == pytest.approx(0.01, rel=1e-6)
+
+
+def test_precice_config_has_watch_integrals(tmp_path):
+    info = W.write_case(FSI1, {}, tmp_path / "case")
+    xml = (tmp_path / "case" / "precice-config.xml").read_text(encoding="utf-8")
+    assert '<watch-integral mesh="Fluid-Mesh" name="Wet" scale-with-connectivity="false" />' in xml
+    assert '<watch-integral mesh="Solid-Mesh" name="Wet" scale-with-connectivity="false" />' in xml

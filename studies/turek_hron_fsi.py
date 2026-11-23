@@ -88,6 +88,34 @@ def read_watchpoint(path: Path) -> np.ndarray:
     return np.loadtxt(path, skiprows=1, ndmin=2)
 
 
+def read_watchintegral(path: Path) -> dict:
+    """preCICE watch-integral log (scale-with-connectivity false: plain sums over the mesh's vertices), by column."""
+    lines = [ln for ln in Path(path).read_text(encoding="utf-8").splitlines() if ln.strip()]
+    head = lines[0].split()
+    v = np.loadtxt(lines[1:], ndmin=2)
+    if v.shape[1] != len(head):
+        raise ValueError(f"{path}: {len(head)} header names, {v.shape[1]} columns")
+    return {h: v[:, k] for k, h in enumerate(head)}
+
+
+def transfer_per_window(wi_fluid: dict, wi_solid: dict, Ff: np.ndarray, t0: float, t2: float) -> dict:
+    """Force transfer, window by window over (t0, t2], with no inertia involved:
+    mapping: |sum of Force the solid receives - sum the fluid writes| / max |sum the fluid writes|;
+    fluid:   |sum the fluid writes - OpenFOAM's own force on the flag (forcesFlag, at the same time)| / max |that|."""
+    t = wi_solid["Time"]
+    sel = (t > t0) & (t <= t2)
+    fs = np.column_stack([wi_solid["Force0"], wi_solid["Force1"]])[sel]
+    tf = wi_fluid["Time"]
+    fw = np.column_stack([np.interp(t[sel], tf, wi_fluid["Force0"]), np.interp(t[sel], tf, wi_fluid["Force1"])])
+    ff = np.column_stack([np.interp(t[sel], Ff[:, 0], Ff[:, 1] + Ff[:, 3]),
+                          np.interp(t[sel], Ff[:, 0], Ff[:, 2] + Ff[:, 4])])
+    scale_w = float(np.max(np.linalg.norm(fw, axis=1)))
+    scale_f = float(np.max(np.linalg.norm(ff, axis=1)))
+    return {"transfer_mapping_max_rel": float(np.max(np.linalg.norm(fs - fw, axis=1)) / scale_w),
+            "transfer_fluid_max_rel": float(np.max(np.linalg.norm(fw - ff, axis=1)) / scale_f),
+            "transfer_windows": int(sel.sum()), "transfer_from_s": float(t0), "transfer_to_s": float(t2)}
+
+
 def _window_means(numerics, Ff, rf_blocks) -> dict:
     """Means of the flag's fluid force and the clamp reaction over the last numerics.metric_average_s (opt-in).
     Caution: under the preCICE adapter CalculiX prints the reaction only at the last increment, so its 'mean' is the
@@ -235,6 +263,18 @@ class PreciceFSI(Backend):
                           **(_period_means(numerics, wp, Ff, rfb) if numerics.get("periodic_periods")
                              else _window_means(numerics, Ff, rfb)),
                           "inlet_profile_error_max": float(np.max(np.abs(u_in[:, 0] - parabola)) / (1.5 * U))}
+        wif, wis = fl / "precice-Fluid-watchintegral-Wet.log", so / "precice-Solid-watchintegral-Wet.log"
+        if wif.is_file() and wis.is_file():
+            if numerics.get("periodic_periods"):
+                try:
+                    t0, _, t2 = last_periods(wp[:, 0], wp[:, 4], int(numerics["periodic_periods"]))
+                except ValueError:
+                    t0, t2 = float("nan"), float("nan")
+            else:
+                t2 = float(wp[-1, 0])
+                t0 = t2 - float(numerics.get("metric_average_s", 2.0))
+            if np.isfinite(t0):
+                outputs |= transfer_per_window(read_watchintegral(wif), read_watchintegral(wis), Ff, t0, t2)
         return {"success": True, "message": f"uy(A) {wp[-1, 4] * 1e3:.4f} mm, drag {series['drag_N_per_m'][-1]:.3f} "
                 f"N/m ({len(it)} windows, {outputs['coupling_iterations_mean']:.1f} iterations each)",
                 "nfev": int(np.sum(it[:, 2])), "series": series, "outputs": outputs, "files": files(),
@@ -320,7 +360,13 @@ class TurekHronFSIStudy(Study):
         rf = np.array(out["clamp_reaction_mean_N" if means else "clamp_reaction_N"])
         transfer = float(np.linalg.norm(ff + rf) / np.linalg.norm(ff))
         when = f"averaged over the last {out['metric_average_s']:g} s" if means else "at the end"
-        if n_per and not means:
+        if "transfer_mapping_max_rel" in out:
+            # Window by window (preCICE watch-integrals): no inertia, valid for steady and periodic cases alike.
+            transfer = max(out["transfer_mapping_max_rel"], out["transfer_fluid_max_rel"])
+            when = (f"per coupling window over {out['transfer_from_s']:g}-{out['transfer_to_s']:g} s: the larger of "
+                    "|force the solid receives - force the fluid writes| and |force the fluid writes - OpenFOAM's "
+                    "force on the flag|, each over the largest force in the window")
+        elif n_per and not means:
             # An accelerating flag's end-of-run balance includes its inertia, so it says nothing about the transfer.
             # Under the preCICE adapter CalculiX prints the clamp reaction only at the last increment (found
             # 2026-11-23, FSI2), so whole-period means cannot be formed: reported as not evaluable, never as a value.
@@ -333,8 +379,10 @@ class TurekHronFSIStudy(Study):
                   float(out["windows_not_converged"]), 0.5),
             check("periodic" if n_per else "steady", steady_text, steady,
                   tol["periodic_rel_tol"] if n_per else tol["steady_rel_tol"]),
-            check("force_transfer", "|fluid force on the flag + clamp reaction in the solid| / |fluid force on the "
-                  f"flag| {when} (the coupling conserves force)", transfer, tol["force_transfer_rel_tol"]),
+            check("force_transfer", (f"force transfer {when}" if "transfer_mapping_max_rel" in out else
+                                      "|fluid force on the flag + clamp reaction in the solid| / |fluid force on the "
+                                      f"flag| {when} (the coupling conserves force)"),
+                  transfer, tol["force_transfer_rel_tol"]),
             check("inflow_profile", "max over inlet faces |U - benchmark parabola| / (1.5 U_mean), after the ramp",
                   out["inlet_profile_error_max"], tol["profile_rel_tol"]),
             check("laminar", "Reynolds number (D) / 200", d["reynolds_D"] / 200, 1.0, kind="validity"),

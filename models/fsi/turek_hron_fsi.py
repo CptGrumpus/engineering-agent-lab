@@ -340,6 +340,7 @@ def write_precice(params: dict, numerics: dict, path: Path) -> None:
     <receive-mesh name="Solid-Mesh" from="Solid" />
     <write-data name="Force" mesh="Fluid-Mesh" />
     <read-data name="Displacement" mesh="Fluid-Mesh" />
+    <watch-integral mesh="Fluid-Mesh" name="Wet" scale-with-connectivity="false" />
     <mapping:rbf direction="write" from="Fluid-Mesh" to="Solid-Mesh" constraint="conservative">
       <basis-function:compact-polynomial-c6 support-radius="{radius!r}" />
     </mapping:rbf>
@@ -351,6 +352,7 @@ def write_precice(params: dict, numerics: dict, path: Path) -> None:
     <provide-mesh name="Solid-Mesh" />
     <write-data name="Displacement" mesh="Solid-Mesh" />
     <read-data name="Force" mesh="Solid-Mesh" />
+    <watch-integral mesh="Solid-Mesh" name="Wet" scale-with-connectivity="false" />
     <watch-point mesh="Solid-Mesh" name="A" coordinate="{XC + R + FLAG_L!r};{YC!r}" />
   </participant>
   <m2n:sockets acceptor="Fluid" connector="Solid" exchange-directory=".." />
