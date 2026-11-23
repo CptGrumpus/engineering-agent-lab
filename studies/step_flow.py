@@ -205,8 +205,9 @@ class StepFlowStudy(Study):
                   tol["yplus_max"], kind="validity"),
             check("mesh", "checkMesh failures other than the aspect-ratio test (0 = none)",
                   0.0 if out["checkmesh_only_aspect"] else float(out["checkmesh_failed_checks"]), 0.0),
-            check("reattachment_found", "number of reattachment points found on the floor (1 or more = found; "
-                  "0 = none)", 0.0 if out["reattachment_crossings_over_h"] else 1.0, 0.0),
+            # Description corrected 2026-11-23: it read '1 or more = found; 0 = none', the inverse of the value.
+            check("reattachment_found", "reattachment point on the floor missing (0 = found, 1 = none)",
+                  0.0 if out["reattachment_crossings_over_h"] else 1.0, 0.0),
         ]
         step_figure(pdir / "response.png", series, out, point)
         return checks
