@@ -306,3 +306,15 @@ test (not stated; the test is a routine room-temperature spin); (2) the extrapol
 (measured points span -7.2 to -4.7 kOe). Both move the primary back-EMF by a few percent.
 *Hot-magnet use of the 1.12 T run:* if 1.12 T is the value at about 120 C, this run is the hot-magnet back-EMF on the
 revision-4 geometry (useful for the hot efficiency and REQ-M5 checks later; REQ-M1's worst case is the cold magnet).
+
+## Revision 4 overturned by the client's data (2026-11-23 13:55; see CLIENT_DATA.md)
+From about 13:50 the study runs as a regular client project (user's decision): the client data pack is collected first.
+ORNL/TM-2010/253 (Burress et al., 2011) Table 2.7 gives the 2004 Prius magnet as 83.1 x 18.9 x 6.5 mm, 10.2 cm3,
+77 g (bare NdFeB density 7.55 g/cm3; a 5.31 mm magnet would need 9.1 g/cm3), 16 magnets, 1.232 kg. Revision 4's
+5.31 mm came from ORNL's design-study model (TM-2004/120 Table 5.3, SPEED's LM), not the hardware. The 1.5 mm
+non-magnetic layer does not exist; about 0.3 mm of polymer does. Revision 4's finding ("the drawn magnet explains most
+of the blind miss") is withdrawn; its runs stay as the record of a model built on a wrong input. The same report's
+Fig. 2.72 measures the 2004 Prius magnet at 1.255 T (20 C), about -0.10 %/C: our 1.243 T was right, and 1.12 T is the
+magnet at about 125 C. With every client input now measured and matching, the blind geometry's +24 % is a model-form
+or manufacturing gap. Next: revision 5 (the client-data model) with predictions, then the candidate causes one at a time
+(STATUS.md).

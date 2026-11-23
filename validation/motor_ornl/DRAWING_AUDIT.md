@@ -1,5 +1,9 @@
 # Study 7: the motor model against its drawings, part by part
 
+> **2026-11-23 13:55: superseded in part by `CLIENT_DATA.md`.** The magnet is 83.1 x 18.9 x 6.5 mm (ORNL/TM-2010/253
+> Table 2.7), not the 19.24 x 5.31 mm of the design report audited below, and its remanence is measured (1.255 T at
+> 20 C). The magnet rows below describe the revision-4 model, which used the wrong thickness.
+
 Audit of the revision-4 primary machine (`models/motor/Toyota_Prius_ORNL_mag531centre.json`: drawn pocket, 5.31 mm
 magnet centred in a polymer shell, Br 1.243 T) against every source a client would provide. Done 2026-11-23
 13:35-13:40 (times from `date`), after the revision-4 and 1.12 T runs, as build-model step 3 asks. Nothing in the model was changed by

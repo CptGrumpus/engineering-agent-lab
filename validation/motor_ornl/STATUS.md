@@ -1,61 +1,55 @@
 # Study 7 (2004 Prius motor against ORNL's tests): where it stands
 
-Updated 2026-11-23 13:40. The record of each step is in `RESULTS.md` (the blind comparison) and `CALIBRATION_PLAN.md`
-(every revision since, with its predictions written before the run). This page is the short version.
+Updated 2026-11-23 14:00 (time from `date`). Since about 13:50 the study runs as a **regular client project**
+(user's decision): every piece of information a client would hand over is collected in `CLIENT_DATA.md` and used as
+input; what the job must predict (torque, efficiency) stays a validation target. The record of earlier steps:
+`RESULTS.md` (the blind pass), `CALIBRATION_PLAN.md` (revisions 1-4, predictions before each run), `DRAWING_AUDIT.md`.
+
+## What the blind pass was for, and why it has ended
+
+The blind pass measured how far a model built from drawings alone can be trusted before any test data (+24 % on
+back-EMF, +5 points on efficiency), and it exposed process faults that open data would have hidden: a template that
+silently filled the magnet pocket, a flawed estimate used to dismiss a source, and a calibration that made back-EMF
+match while hiding the error in torque and efficiency. Those lessons are in the project skills. Its cost: it held back
+data a client gives on day one, so later revisions guessed values that should have been looked up. Revision 4 is the
+clearest case (below).
 
 ## Back-EMF, every model so far
 
-Line-to-line, V rms per 1000 rpm, fundamental. ORNL's routine test: 89.78 V full waveform, about 89.38 V fundamental.
+Line-to-line, V rms per 1000 rpm, fundamental. ORNL's test: 89.78 V full waveform, about 89.38 V fundamental
+(room temperature, power meter, line to line: settled in `CLIENT_DATA.md`).
 
-| Model | Magnet | Remanence | Back-EMF | Against ORNL | Calibrated? |
+| Model | Magnet | Remanence | Back-EMF | Against ORNL | Status |
 |---|---|---|---|---|---|
-| Blind (2026-11-21) | fills the 6.80 mm pocket | 1.243 T (ORNL sample curve) | 110.9 | +24 % | no |
-| Revision 1, hypothesis A | fills the pocket | 1.036 T (fitted) | 89.4 | 0 % by construction | **yes** |
-| Revision 4, centred (primary) | 5.31 mm magnet in a polymer shell | 1.243 T | 82.4 | -7.8 % | no |
-| Revision 4, outer / inner (bounds) | same, shell thicker on one face | 1.243 T | 85.3 / 79.3 | -4.6 / -11.3 % | no |
-| Revision 4 at ORNL's design value | same, centred | 1.12 T | 72.6 | -18.8 % | no |
-| (outer / inner) | | 1.12 T | 75.2 / 69.8 | -15.9 / -21.9 % | no |
+| Blind (2026-11-21) | 18.9 x 6.80 mm, fills the pocket | 1.243 T | 110.9 | +24 % | closest to the measured hardware |
+| Revision 1 | fills the pocket | 1.036 T (fitted) | 89.4 | 0 % by construction | calibration; withdrawn as a model |
+| Revision 4, centred | 19.24 x 5.31 mm + 1.5 mm non-magnetic layer | 1.243 T | 82.4 | -7.8 % | **overturned**: the magnet is 6.5 mm thick |
+| Revision 4 at 1.12 T | same | 1.12 T | 72.6 | -18.8 % | 1.12 T is the magnet at about 125 C |
 
-Peak voltage at 6000 rpm, REQ-M1 (limit 500 V): fails on every model (ORNL measured 850 V).
+## What the client data settled (2026-11-23 13:55)
 
-## Is ORNL's study wrong?
+- **Magnet: 83.1 x 18.9 x 6.5 mm, 77 g each** (ORNL/TM-2010/253 Table 2.7; size, volume and mass agree). Revision 4
+  used 5.31 mm from ORNL's design-study model, which is not the hardware. Its "geometry explains the miss" is wrong.
+- **Magnet material: 1.255 T at 20 C, about -0.10 %/C** (measured on a 2004 Prius magnet, TM-2010/253 Fig. 2.72).
+  Our 1.243 T was right within 1 %.
+- **Winding, stack, stator geometry, copper mass**: all match the model.
+- **Phase resistance: 69 mOhm at 21 C measured**; our computed 59.6 mOhm was 14 % low. The measured value is used
+  from now on.
+- **Air gap: 0.73 mm** in the BOM against 0.775 mm from the drawing: a band to carry.
 
-No. ORNL's reports hold three different kinds of information, and they should not be mixed up:
+So with the client's own data the model sits near the blind geometry and reads about 20 % high on back-EMF, and the
+cause is **not** in any input a client supplies. Is ORNL wrong? No: the test is a careful room-temperature
+power-meter measurement, and ORNL's design-study model (filled pocket, 1.12 T hot) is a design tool, not a claim about
+this motor's back-EMF.
 
-1. **Test measurements** (TM-2006/423: back-EMF, locked-rotor torque, efficiency map, inductances). These are the
-   reference. Our models are scored against them.
-2. **Hardware facts** (TM-2005/33 lamination drawing; TM-2004/137 teardown: magnet sample B-H curve, polymer-moulded
-   magnets). These are what a client's drawings and specs would give us, and revision 4 is built from them.
-3. **A design-study model** (TM-2004/120: a SPEED lumped-parameter model plus Flux2D, used to explore design trends).
-   It draws the magnet filling its pocket and uses a "magnet strength" BrT of 1.12 T. Its own parameter list defines Br
-   as the remanence at 20 C, and 1.243 T at -0.1 %/C is 1.12 T at about 119 C, so 1.12 T is most likely a hot design
-   value, not a fudge. A design-trend model is allowed to simplify; it was never presented as a validated model of
-   this motor.
+## Next steps (no calibration)
 
-An earlier note (12:24) read the 1.12 T as a lower remanence that compensates for the filled pocket. That was an
-inference from a sketch; the report's own definitions point to a hot value instead. Corrected in `CALIBRATION_PLAN.md`.
-
-## Is our model more accurate?
-
-On back-EMF, the revision-4 model is closer to the hardware and gets within 8 % (centred) **with nothing fitted**. The
-calibrated model (revision 1) matches back-EMF exactly, but only because its remanence was fitted to it; it then
-missed torque per ampere by 12-14 % and efficiency by 4.5 points. A model that is close without fitting is better
-evidence than one that is exact because of fitting.
-
-It is not yet shown to be more accurate overall. Still open:
-- **The remaining -8 %**, not explained. The drawing audit (`DRAWING_AUDIT.md`, 13:40) checked every dimension and
-  material value: the winding is now confirmed by ORNL's design report (9 turns per coil, one layer, series), the
-  hub ring and other small items add up to about 1-1.5 %, and the live candidates are the magnet's remanence and
-  temperature, where the magnet sits along its pocket (the drawn stops, not yet measured), and what ORNL's "scaled"
-  back-EMF means. 2D end effects would lower the value further, not raise it.
-- **Inductances and torque.** Revision 4 is predicted NOT to fix the d-axis inductance (saliency 3.2 in the model
-  against 2.6 measured). That test comes next; if it fails as predicted, a second effect remains to find.
-- **Efficiency and the design verdicts** (REQ-M1, REQ-M5, thermal rating) must be recomputed on the revision-4 machine.
-
-## Next, one effect at a time
-
-1. Done 13:40: the drawing-against-model audit (`DRAWING_AUDIT.md`).
-2. Static inductances on the centred machine against ORNL's Ld 1.92 / Lq 5.0 mH (prediction P3 first).
-3. Torque per ampere (locked rotor), then efficiency and the design verdicts, each with predictions first, carrying
-   the placement band (outer / inner) throughout.
-4. Refresh `reports/motor/` (the published report, version 8, does not include revisions 2-4).
+1. **Revision 5, the client-data model**: magnet 83.1 x 18.9 x 6.5 mm centred in the 6.80 mm pocket, Br 1.255 T at
+   20 C (test at 25 C), lamination 0.33 mm, air gap at both band ends; predictions first.
+2. **Find the model-form cause** of what remains, one effect at a time, each with a hand estimate first:
+   (a) how fully the magnets are magnetised in the assembled rotor (a question for the client's production engineer;
+   the literature on in-rotor magnetising of high-coercivity NdFeB gives the typical range); (b) 3D end effects;
+   (c) a check of the 2D model against an independent hand magnetic circuit for the same geometry.
+3. **Static inductances** against Ld 1.92 / Lq 5.0 mH on the revision-5 machine.
+4. Torque per ampere, efficiency (with the measured resistance) and the design verdicts; then refresh
+   `reports/motor/`.
