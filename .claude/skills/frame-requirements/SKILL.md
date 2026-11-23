@@ -193,6 +193,13 @@ prediction is written into a case file.
   errors. Study 7 read ORNL's design-report "magnet strength" of 1.12 T as a value lowered to compensate a filled pocket;
   the report labels it BrT and defines Br as the remanence at 20 C, and 1.243 T at -0.1 %/C is 1.12 T at about
   119 C: most likely a hot value (corrected the same day, CALIBRATION_PLAN.md). Do not infer intent from a sketch.
+- Assemble the client data pack BEFORE the first model revision, not one item per revision: drawings, bill of
+  materials with masses, material data, routine tests, and the reports that benchmark the same hardware later.
+  Cross-check every dimension that drives a revision against an independent quantity (mass, volume, density). Study
+  7 revision 4 rested on a 5.31 mm magnet from a design-study table; a later benchmark report (ORNL/TM-2010/253
+  Table 2.7) gives 6.5 mm, 10.2 cm3 and 77 g, and 77 g at 5.31 mm would need 9.1 g/cm3, impossible for NdFeB. One
+  search for "2004 Prius magnet mass" would have prevented a revision built on a wrong input (user, 2026-11-23:
+  "stop guessing values ... stop being afraid to view things that we would usually have").
 
 ### 7. Missing information
 
