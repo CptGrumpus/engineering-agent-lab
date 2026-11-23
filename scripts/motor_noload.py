@@ -1,5 +1,5 @@
-"""Study 7, revision 2 (validation/motor_ornl/CALIBRATION_PLAN.md): ORNL's no-load spin-loss test as calibration data,
-then the efficiency score again.
+"""Study 7, revisions 2 and 3 (validation/motor_ornl/CALIBRATION_PLAN.md): ORNL's no-load spin-loss test as calibration
+data, then the efficiency score again (2); each test point's measured winding temperature for the resistance (3).
 
 usage: .venv/Scripts/python.exe scripts/motor_noload.py
 Reads validation/motor_ornl/tm2006_423_table_3_7.csv (motor-rotor loss against motor-shaft speed, windings not
@@ -55,6 +55,19 @@ def score(recs, key):
             "within_2pts_of_band": int(np.sum(np.array(band) <= 2.0))}
 
 
+def missing_bin(recs, keys, n_rng=(500, 1500), t_rng=(200, 400)):
+    """Median (ORNL loss - our loss, hot magnets) in one speed-torque bin, per revision."""
+    out = {}
+    for key in keys:
+        m = []
+        for x in recs:
+            if n_rng[0] <= x["speed_rpm"] < n_rng[1] and t_rng[0] <= x["torque_Nm"] < t_rng[1] and np.isfinite(x[f"hot_{key}"]):
+                P = x["torque_Nm"] * 2 * math.pi * x["speed_rpm"] / 60
+                m.append(P * (100 / x["ornl_pct"] - 1) - P * (100 / x[f"hot_{key}"] - 1))
+        out[key] = {"median_W": float(np.median(m)), "points": len(m)}
+    return out
+
+
 def main():
     case = tomllib.loads(CASE.read_text(encoding="utf-8"))
     p = dict(case["parameters"])
@@ -88,21 +101,29 @@ def main():
             ea = 100 * P_out / (P_out + loss0 + Rn) if np.isfinite(e0) else math.nan
             fine_b = dict(t["fine"]) | {k: t["fine"][k] * kn for k in ("iron_A_W", "iron_B_W", "iron_C_W")}
             eb = float(em.operating_points(fine_b, **kw)["efficiency_pct"][0])
-            rec |= {f"{name}_rev1": e0, f"{name}_a": ea, f"{name}_b": eb}
+            # revision 3: the point's measured winding temperature (both scenarios; they differ in magnets only)
+            kw3 = kw | {"r_ohm": em.resistance(r20, r["stator_C"], float(p["copper_alpha_per_K"]))}
+            e3 = float(em.operating_points(t["fine"], **kw3)["efficiency_pct"][0])
+            e3a = 100 * P_out / (P_out + P_out * (100 / e3 - 1) + Rn) if np.isfinite(e3) else math.nan
+            rec |= {f"{name}_rev1": e0, f"{name}_a": ea, f"{name}_b": eb, f"{name}_rev3": e3, f"{name}_rev3a": e3a,
+                    "winding_C": r["stator_C"]}
         recs.append(rec)
     out = {"case": str(CASE.relative_to(REPO)), "table": "TM-2006/423 Table 3.7, motor-rotor losses",
            "spin_test": [{"speed_rpm": float(n), "measured_W": float(m), "model_oc_iron_W": float(mo),
                           "residual_W": float(rr), "ratio": float(kk)}
                          for n, m, mo, rr, kk in zip(n_t, P_t, model_t, R_t, k_t)],
            "residual_fit_W": {"a_per_rpm": float(a), "b_per_rpm2": float(b)},
-           "rev1": score(recs, "rev1"), "rev2_additive": score(recs, "a"), "rev2_multiplicative": score(recs, "b")}
+           "rev1": score(recs, "rev1"), "rev2_additive": score(recs, "a"), "rev2_multiplicative": score(recs, "b"),
+           "rev3_winding_temperature": score(recs, "rev3"), "rev3_plus_noload": score(recs, "rev3a"),
+           "missing_loss_bin_500_1500rpm_200_400Nm": missing_bin(recs, ("rev1", "rev3"))}
     (V / "noload_revision2.json").write_text(json.dumps(out, indent=1), encoding="utf-8")
     print("speed  measured  model  residual  ratio")
     for s in out["spin_test"]:
         print(f"{s['speed_rpm']:6.0f} {s['measured_W']:8.1f} {s['model_oc_iron_W']:7.1f} {s['residual_W']:+8.1f} "
               f"{s['ratio']:6.3f}")
     print("fit R = a n + b n^2:", out["residual_fit_W"])
-    for k in ("rev1", "rev2_additive", "rev2_multiplicative"):
+    for k in ("rev1", "rev2_additive", "rev2_multiplicative", "rev3_winding_temperature", "rev3_plus_noload",
+              "missing_loss_bin_500_1500rpm_200_400Nm"):
         print(k, out[k])
 
 

@@ -183,3 +183,14 @@ with revision 2's additive no-load residual.
 - P1 Median gap (hot magnets minus ORNL) 4.3-4.7 points (median winding temperature 108 C, about the assumed 100 C):
   the hot points (150-207 C) improve, the cool ones (43-80 C) get slightly worse. Still FAIL.
 - P2 In the 500-1500 rpm, 200-400 N m bin (windings mostly 130-200 C), the missing loss falls by 20-40 %.
+
+### Result (computed once, 2026-11-23; `scripts/motor_noload.py` -> `noload_revision2.json`, keys rev3_*)
+- **P1 MISSED, in the good direction.** Median gap 4.50 -> **4.05 points** (predicted 4.3-4.7); with revision 2's
+  no-load residual 4.03. 10th-90th percentile 2.7-7.0 (was 2.9-7.7). Points within 2 points of the band: 6 -> 14 of
+  393. The median moved more than the median temperature suggested because the points with most copper loss are the
+  hot ones. The 2-point limit still FAILS.
+- **P2 HELD.** Missing loss at 500-1500 rpm, 200-400 N m (79 points): 1918 -> 1429 W, -25 %.
+- **What is left:** about 4 points, growing with speed at load. Copper is now at the measured temperature; the rest
+  points at load-dependent iron and magnet losses the 2D model with sinusoidal currents leaves out: the inverter's PWM
+  ripple (switching frequency is routine inverter data), field-weakening harmonics, magnet eddy currents. Sizing them
+  needs a PWM-current time-stepping model: a separate piece of work, scoped before starting.
