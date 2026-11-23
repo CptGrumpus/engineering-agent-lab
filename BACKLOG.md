@@ -67,16 +67,29 @@ project would have"**; predictions go into a case header and get committed BEFOR
 after; `scripts/scrub_paths.py <run dir>`, `git add -f` without `*.inp`, `*.dat`, `__pycache__`, logs > 600 kB, then
 `tests/test_privacy.py`; never two FEMM cases at once (OpenFOAM/CalculiX may run beside FEMM).
 
-### Running at 20:30 (logs in session e47de8ef's scratchpad `$TEMP/claude/cb67dd1e648f8970/e47de8ef-a563-4e37-9ceb-087236e5c275/scratchpad/`; FSI logs in session 4abd5a92's)
+### Running at 22:25 (logs in session e47de8ef's scratchpad; FSI logs in session 4abd5a92's)
 
 | Job | Run dir (log) | Done about | When it finishes |
 |---|---|---|---|
-| Study 7 calibration, torque at Br 1.036 T (FEMM, 8 currents) | `runs/<ts>_motor_prius_cal_torque_br` (`cal_torque.log`) | ~22:05 | Results block in `cases/motor_prius_cal_torque_br.toml` (P1-P4); `scripts/motor_calibration.py --torque-run <run id>` (rewrites `validation/motor_ornl/calibration.json`, untracked until then); select A or B by the smaller rms torque error; efficiency for the selected one (B's is scored; A's needs dq tables at 1.036 T: hours of FEMM, ask first); write CALIBRATION_PLAN.md Results, portfolio 20, `reports/motor/build_report.py`, republish artifact C6dNdzjs1FdP8vVb6MLaRy. |
-| Study 19 pipe friction r3 (n 160 / 320 / 640 at 1 mm axial length) | `runs/<ts>_pipe_rans_mesh_r3` (`pipe_r3.log`) | ~22:30 | Score P1-P4 in the case; if the GCI passes, REQ-T1 is verified: update portfolio/19 (answer, mesh table, "What the checks caught"), PORTFOLIO row. |
-| Study 6 FSI2 / FSI3 (session 4abd5a92's) | `runs/20261122-184933_turek_hron_fsi2`, `..._185044_turek_hron_fsi3` (`fsi2.log`, `fsi3.log`) | ~23:50 / ~01:45 (slowed to 48 / 35 windows/min by the CPU share) | As before: score P1-P7, Results, evidence (no postProcessing, .sta, .dat, logs > 600 kB), portfolio/17, PORTFOLIO row. Then start the FSI1 noise runs (work order item 3). |
+| Study 7: dq tables at 1.036 T, four cases in sequence (FEMM) | `runs/<ts>_motor_prius_lut_{cold,cold_lowiq,hot,hot_lowiq}_br` (`motor_prius_lut_*_br.log`) | ~03:30 | Results in each case; then an efficiency case for A (copy `motor_prius_efficiency_r1`, lut_run = the new run ids, predictions from CALIBRATION_PLAN), score with `scripts/motor_calibration.py` (add A's efficiency), CALIBRATION_PLAN Results, page 20, reports. |
+| Study 19 pipe r3 (n640 at 1 mm axial length) | `runs/<ts>_pipe_rans_mesh_r3` (`pipe_r3.log`) | ~23:30? (n640 slow: gradient still creeping at 80000 iterations) | Score P1-P4; if the GCI passes, REQ-T1 verified: portfolio/19, PORTFOLIO row. |
+| Study 19 part 2: step smoke test (scratch, level 0.7) | scratch `runs/*_step_smoke` (`step_smoke.log`) | ~22:35 | Read the inflow theta / delta / U_ref at x = -4 H; tune upstream_length_m and inlet_velocity_m_per_s; then the cases (inflow match, mesh study levels 0.7 / 1 / 1.41, outlet length) with predictions; then `validation/step_driver_seegmiller/compare.py` (open the data only after predictions are committed). |
+| Study 6 FSI2 / FSI3 (session 4abd5a92's) | `runs/20261122-184933_turek_hron_fsi2`, `..._185044_turek_hron_fsi3` | ~23:50 / ~01:45 | As before; then the FSI1 noise runs. |
 
-Alive check: `ps -ef | grep "[h]arness pipeline"`; WSL: `wsl.exe -e bash -lc "ps -eo etime,cmd | grep -E 'Foam|ccx' | grep -v grep"`.
-FSI progress: the two newest `$TEMP/fsi_*/case/fluid/precice-Fluid-iterations.log` (one line per window).
+### Done 20:30-22:25
+- **Study 18 reviewed** (147170e): the inner corner is not singular (peak converges, 351 MPa); a Kirsch hand check
+  explains the crotch value (2.56 x nominal hoop against 2.50 at an unreinforced hole edge); recommendation: judge the
+  opening by the crotch line (about 21 mm or a pad).
+- **Study 7 calibration:** A selected first on torque (f097624), then, after the user asked whether a client would
+  have torque data, re-decided on ORNL's static inductances (TM-2006/423 p. 51, opened with the user's OK; predictions
+  first, 9082d9f): Ld 1.92 / Lq 5 mH against A 1.70 / 5.38 and B 1.11 / 3.50 (per phase): **A** (3b6a5eb). Torque
+  stays 12-14 % high at 150-250 A. dq tables at 1.036 T running for the efficiency test. Page 20 has a revision
+  section (06274d9). Skill frame-requirements: choose between hypotheses with the cheapest routine test (44f187e).
+- **Study 19 part 2:** limits agreed (REQ-S1 10 %, REQ-S2 15 % rms, REQ-S3 0.02); model, study, tests committed
+  (9374d60). SST start-up fix: first-order k, omega for 500 iterations, then limitedLinear 1 (linearUpwind diverged).
+- Process: a `| tail` pipe masked two test failures (a home path in BACKLOG, since fixed; missing skill-table rows,
+  since added). Use `set -o pipefail` or no pipe before committing. The home path remains in commits bee3774..3167966
+  (matters only if the repo goes public).
 
 ### Done 19:45-20:30 (work order below)
 - **Study 7:** open-circuit calibration scored (d6ddf02): back-EMF linear in Br, **calibrated remanence 1.036 T**
