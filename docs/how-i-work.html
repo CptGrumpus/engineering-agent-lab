@@ -21,7 +21,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
-<link rel="stylesheet" href="assets/site.css?v=f4170e14a1">
+<link rel="stylesheet" href="assets/site.css?v=eb5c36098b">
 </head>
 <body>
 <nav class="topbar" aria-label="Site">
@@ -108,7 +108,7 @@
           <tr><td>Pressure equipment: design by analysis with stress linearisation on classification lines, in the manner of ASME VIII-2 Part 5, against a design-by-rule check</td><td>CadQuery, Gmsh, CalculiX</td><td><a href="pressure-vessel-nozzle.html">18</a></td></tr>
           <tr><td>Buckling: linear eigenvalue and geometrically nonlinear with imperfections, checked against Euler, Southwell and Perry-Robertson</td><td>CalculiX</td><td><a href="strut-buckling.html">13</a></td></tr>
           <tr><td>Plasticity with loading and unloading, and the residual stress left behind, checked against Neuber and Glinka</td><td>CadQuery, Gmsh, CalculiX</td><td><a href="aluminium-strap.html#strap_proof">14</a></td></tr>
-          <tr><td>Electric machines: back-EMF, torque and efficiency maps from 2D magnetostatics, a lumped thermal network and rotor stress at overspeed, tested blind against a laboratory's measurements</td><td>Pyleecan, FEMM, CalculiX</td><td><a href="traction-motor.html">20</a></td></tr>
+          <tr><td>Electric machines: back-EMF, torque and efficiency maps from 2D magnetostatics, a lumped thermal network and rotor stress at overspeed, checked against a laboratory's test data</td><td>Pyleecan, FEMM, CalculiX</td><td><a href="traction-motor.html">20</a></td></tr>
           <tr><td>Vibration and modal analysis, including identifying the modes and keeping clear of engine orders</td><td>CadQuery, Gmsh, CalculiX</td><td><a href="bracket-modal.html#modal">4</a></td></tr>
           <tr><td>Fatigue life using notch factors, mean-stress correction and S-N curves fitted to published test data</td><td>CalculiX, Python</td><td><a href="aluminium-strap.html#fatigue">3</a></td></tr>
           <tr><td>Chained multiphysics: coolant flow, then conduction through the part, then thermal stress, with an energy balance at every handoff</td><td>OpenFOAM, CalculiX</td><td><a href="cold-plate.html#cold_plate">15</a></td></tr>
@@ -123,7 +123,7 @@
         </tbody>
       </table>
     </div>
-    <p class="code-facts">It's all Python, about 62,000 lines across 351 files: the harness that runs and checks everything, the models, the independent reference solutions and the graders, with 344 automated tests that run on every push.</p>
+    <p class="code-facts">It's all Python, about 65,000 lines across 371 files: the harness that runs and checks everything, the models, the independent reference solutions and the graders, with 352 automated tests that run on every push.</p>
       <h3 class="sub" id="images">How the Images Are Checked</h3>
     <p class="sub-lede">These images are rendered in Blender straight from the solver output. Before one goes on the page it has to pass three checks. The rendered surface has to enclose the part's actual volume, which catches missing or flipped faces. Every coloured pixel has to match a colour in the legend, which catches a shader that has shifted the contours. And the lit image has to read as the right band, which catches a shaded face that looks like a different value. Most results can also be turned in 3D: that view uses the same surface and colour bands, and it's checked the same way from four angles.</p>
   </div>
@@ -136,7 +136,7 @@
     <div class="findings">
       <article class="finding"><span class="label">Bracket optimisation · design automation</span><h3>Two Answers That Failed Their Own Checks</h3><p>The optimiser's first pick read 94 MPa, but its mesh study put it at 101.7 MPa once the uncertainty was added: a peak in a fillet needs far more margin than a smooth bending stress. The second pick failed because the mesh study wasn't refining the fillet at all. The design on the page passed only once the peak itself was refined.</p><a href="bracket-optimisation.html">Read the study</a></article>
       <article class="finding"><span class="label">Pressure vessel · design code</span><h3>A Pass That Depended on Where One Line Was Drawn</h3><p>Read on lines at the weld toes, the nozzle passed its design-code limit with 0.9 % to spare, and I recommended a wall on that basis. Measuring the other usual placement, a line through the inner corner, gave 25 % more stress on the same converged model. The verdict flipped and the recommendation was withdrawn.</p><a href="pressure-vessel-nozzle.html">Read the study</a></article>
-      <article class="finding"><span class="label">Traction motor · blind test</span><h3>A Model That Missed Its Blind Test</h3><p>I predicted a production motor's back-EMF, torque and efficiency before looking at the laboratory's measurements. All three missed their limits, with one cause behind most of it: about 24 % too much magnet flux. Calibrating on a routine test afterwards turned a passing design check into a fail. Then a part-by-part check against the drawings found the real cause: the library's template had filled the magnet pocket, where the drawn magnet is thinner and sits in a plastic shell. Modelled as drawn, with nothing calibrated, most of the miss goes away. The blind predictions stay on record as they were made.</p><a href="traction-motor.html">Read the study</a></article>
+      <article class="finding"><span class="label">Traction motor · electric machines</span><h3>A Library Model That Wasn't the Motor It Was Named After</h3><p>The open-source motor library ships a model of the 2004 Prius motor, so the obvious start was to use it. Rebuilt from the laboratory's dimensioned drawing, the real slot is 145 mm², not 218, and the air gap 0.775 mm, not 0.750. The drawing itself turned out to be stretched 1.1 % in one direction. The study uses its own machine definition, checked against the parts list's masses.</p><a href="traction-motor.html">Read the study</a></article>
       <article class="finding"><span class="label">Strap · stress concentration</span><h3>A Model That Converged Neatly to the Wrong Answer</h3><p>The mesh study looked textbook, but it settled 2 % away from the handbook value. Running a case with a known exact answer through the same pipeline showed the problem was in how the solver's elements behaved, which no amount of mesh refinement would have revealed.</p><a href="aluminium-strap.html#strap">Read the study</a></article>
       <article class="finding"><span class="label">Coolant channel · CFD</span><h3>A Simplified Inlet That Flipped the Answer</h3><p>The simple model said the channel passed. It never converged at the sharp inlet corner, though, and once I modelled the inlet properly the channel failed its pressure budget.</p><a href="coolant-channel.html">Read the study</a></article>
       <article class="finding"><span class="label">Quarter car · vehicle dynamics</span><h3>A Wheel That Left the Road</h3><p>Every numerical check passed, but the tire was leaving the ground, which the simple model can't represent, so I held the verdict back. When I built a tire model that can lift off, it showed the simple one had overstated the peak body acceleration by up to 29 %.</p><a href="quarter-car.html">Read the study</a></article>
@@ -175,6 +175,6 @@
   </div>
 </footer>
 
-<script src="assets/site.js?v=f4170e14a1"></script>
+<script src="assets/site.js?v=eb5c36098b"></script>
 </body>
 </html>

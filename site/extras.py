@@ -38,6 +38,10 @@ STUDY_DOCS = {
     "random_vib": "21-bracket-random-vibration",
 }
 RUN_PREFIX = {"pipe": "pipe_", "step": "step_"}
+# studies whose page cites a chosen set of runs instead of every run its write-up mentions, and links no write-up
+# until it's rewritten to match the page (the motor: the page shows the client-data model; user, 2026-11-23)
+RUN_LIST = {"motor": ["20261123-141642_motor_prius_rev5_oc", "20261123-150432_motor_prius_rev5_inductance",
+                      "20261123-151023_motor_prius_rev5_torque", "20261122-001104_motor_prius_rotor_overspeed_mesh"]}
 _RUN = re.compile(r"runs/(\d{8}-(\d{2})(\d{2})\d{2}_[A-Za-z0-9_]+)")
 _tracked: set[str] | None = None
 
@@ -61,6 +65,10 @@ def evidence(key: str) -> dict | None:
     doc = f"portfolio/{STUDY_DOCS[key]}.md"
     if not tracked(doc):
         return None
+    if key in RUN_LIST:
+        runs = [r for r in RUN_LIST[key] if tracked(f"runs/{r}/report.md")]
+        links = [(r.split("_", 1)[1], gh(f"runs/{r}/report.md")) for r in runs]
+        return {"doc": None, "memo": None, "runs": links}
     runs = sorted(set(m.group(1) for m in _RUN.finditer((REPO / doc).read_text(encoding="utf-8"))))
     runs = [r for r in runs if tracked(f"runs/{r}/report.md")]
     if key in RUN_PREFIX:                       # two parts share one write-up: each lists its own runs
@@ -560,15 +568,11 @@ REQS = [
         ("Pressure recovery to 30 step heights", "within 0.02", "0.153 against 0.131 measured: 0.023 high", "fail"),
         ("Design use: flow reattached before the heated surface at 8 step heights", "≤ 8 H", "6.40 H", "met")]),
     ("motor", "20", "Traction motor", [
-        ("Blind test: back-EMF against the measured motor", "within 5 %", "23.5 % high (110.9 against 89.8 V per 1,000 rpm)", "fail"),
-        ("Blind test: peak torque, 50 to 250 A", "within 10 %", "7 % high at low current, rising to 24 % high", "fail"),
-        ("Blind test: efficiency at 393 measured points", "within 2 points", "5.2 points high (median)", "fail"),
-        ("Open-circuit voltage at 6,000 rpm if the inverter stops switching", "≤ 500 V", "about 1,040 V blind; 856 V after calibration; 850 V measured", "fail"),
+        ("Back-EMF against the test", "within 5 %", "17.7 % high (105.2 against 89.4 V per 1,000 rpm)", "fail"),
+        ("Locked-rotor torque against the test, 50 to 250 A", "within 10 %", "17 to 19 % high at five of seven currents", "fail"),
+        ("Voltage at 6,000 rpm if the inverter stops switching", "≤ 500 V", "850 V peak measured; about 1,000 V in the model", "fail"),
         ("Rotor bridge stress at 7,200 rpm overspeed", "≤ 335 MPa", "424 MPa; elastic at 6,000 rpm (295 MPa)", "fail"),
-        ("Every point of the torque curve within the copper limit", "≤ 212 A", "250 A and above exceed it: a short-time rating", "fail"),
-        ("Rated 400 N m within the copper's current-density limit", "≤ 25 A/mm²", "19.8 A/mm² on the blind model; not yet rerun after calibration", "held"),
-        ("Rated power from base speed to 6,000 rpm", "≥ 50 kW", "48.0 kW cold, 44.5 kW hot after calibration (58.6 kW on the blind model)", "fail"),
-        ("Continuous power from 1,250 to 6,000 rpm", "≥ 25 kW", "28.1 kW after calibration at the nominal housing fit; 24.3 kW at the loosest fit tried", "met")]),
+        ("Efficiency, rated torque within the copper limit, rated and continuous power", "within 2 points; ≤ 212 A; ≥ 50 kW; ≥ 25 kW", "wait until the model's 18 % flux excess is explained", "held")]),
     ("strut", "13", "Strut buckling", [
         ("Load before first yield, 500 mm strut with an L/1000 bow", "≥ 16 kN", "21.8 kN (the longest that passes is about 587 mm)", "met")]),
     ("strap_proof", "14", "Strap proof test", [
@@ -709,7 +713,7 @@ CAPS = """<div class="table-wrap">
           <tr><td>Pressure equipment: design by analysis with stress linearisation on classification lines, in the manner of ASME VIII-2 Part 5, against a design-by-rule check</td><td>CadQuery, Gmsh, CalculiX</td><td><a href="#pv_nozzle">18</a></td></tr>
           <tr><td>Buckling: linear eigenvalue and geometrically nonlinear with imperfections, checked against Euler, Southwell and Perry-Robertson</td><td>CalculiX</td><td><a href="#strut">13</a></td></tr>
           <tr><td>Plasticity with loading and unloading, and the residual stress left behind, checked against Neuber and Glinka</td><td>CadQuery, Gmsh, CalculiX</td><td><a href="#strap_proof">14</a></td></tr>
-          <tr><td>Electric machines: back-EMF, torque and efficiency maps from 2D magnetostatics, a lumped thermal network and rotor stress at overspeed, tested blind against a laboratory's measurements</td><td>Pyleecan, FEMM, CalculiX</td><td><a href="#motor">20</a></td></tr>
+          <tr><td>Electric machines: back-EMF, torque and efficiency maps from 2D magnetostatics, a lumped thermal network and rotor stress at overspeed, checked against a laboratory's test data</td><td>Pyleecan, FEMM, CalculiX</td><td><a href="#motor">20</a></td></tr>
           <tr><td>Vibration and modal analysis, including identifying the modes and keeping clear of engine orders</td><td>CadQuery, Gmsh, CalculiX</td><td><a href="#modal">4</a></td></tr>
           <tr><td>Fatigue life using notch factors, mean-stress correction and S-N curves fitted to published test data</td><td>CalculiX, Python</td><td><a href="#fatigue">3</a></td></tr>
           <tr><td>Chained multiphysics: coolant flow, then conduction through the part, then thermal stress, with an energy balance at every handoff</td><td>OpenFOAM, CalculiX</td><td><a href="#cold_plate">15</a></td></tr>

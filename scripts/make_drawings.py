@@ -666,13 +666,13 @@ def baseline():
 
 
 def motor():
-    src = REPO / "build" / "drawings" / "motor_geometry.json"
+    # the client-data machine (models/motor/Toyota_Prius_ORNL_rev5centre.json): magnet 18.9 x 6.5 mm from the
+    # bill of materials, centred in its 6.80 mm pocket
+    src = REPO / "build" / "drawings" / "motor_geometry_rev5.json"
     if not src.exists():
         print("skip motor: run scripts/export_motor_geometry.py in the Pyleecan environment first")
         return
     d = json.loads(src.read_text())
-    src4 = REPO / "build" / "drawings" / "motor_geometry_rev4.json"
-    d4 = json.loads(src4.read_text()) if src4.exists() else None     # magnet as drawn, centred (revision 4)
     Re = d["Rext"] * 1000
     fig, ax = new(9.5, (-Re - 12, Re * 3.25), (-Re - 12, Re + 12))
     col = {"Stator-0_Lamination": FILL, "Rotor-0_Lamination": "#d3dceb", "Winding": "#d98a4e", "HoleMag": ACC, "HoleVoid": PLATE,
@@ -688,6 +688,10 @@ def motor():
             if clip is not None:
                 patch.set_clip_path(clip)
     draw(0, 0, 1)
+    # Pyleecan closes each lamination's outline with a seam along 0 degrees (through a tooth and a pole): hide them
+    ax.plot([d["Rbore"] * 1000 + 0.4, Re - 0.4], [0, 0], color=FILL, lw=1.6, zorder=2.5, solid_capstyle="butt")
+    ax.plot([d["Rint"] * 1000 + 0.4, d["Rrot"] * 1000 - 0.4], [0, 0], color=col["Rotor-0_Lamination"], lw=1.6, zorder=2.5,
+            solid_capstyle="butt")
     ax.add_patch(Circle((0, 0), d["Rint"] * 1000, fc=PLATE, ec=INK, lw=0.6, zorder=4))
     dim(ax, (-Re, -Re), (Re, -Re), -5, f"Ø{2 * Re:.1f}")
     # one pole, enlarged
@@ -698,24 +702,12 @@ def motor():
     P = lambda r, a: (cx + k * r * np.cos(np.radians(a)), cy + k * r * np.sin(np.radians(a)))  # noqa: E731
     th = np.linspace(67.5, 112.5, 30)
     wedge = Polygon([P(r0, a) for a in th] + [P(Re + 1, a) for a in th[::-1]], closed=True, transform=ax.transData)
-    draw(cx, cy, k, clip=wedge, geo=d4)
-    if d4 is not None:                         # the blind model's magnet, which filled the pocket, dashed
-        for s in d["surfaces"]:
-            if "HoleMag" in s["label"]:
-                pts = np.array(s["pts"]) * 1000 * k + [cx, cy]
-                patch = Polygon(pts, closed=True, fc="none", ec=HOT, lw=0.9, ls=(0, (3, 2)), zorder=7)
-                ax.add_patch(patch)
-                patch.set_clip_path(wedge)
+    draw(cx, cy, k, clip=wedge)
     ax.add_patch(Polygon([(r0 * np.cos(np.radians(a)), r0 * np.sin(np.radians(a))) for a in th] +
                          [((Re + 1) * np.cos(np.radians(a)), (Re + 1) * np.sin(np.radians(a))) for a in th[::-1]],
                          closed=True, fc="none", ec=HOT, lw=0.9, zorder=6))
     top = P(Re + 1, 90)[1]
-    if d4 is not None:
-        note(ax, P(66, 104), (f0 + 5, P(46, 90)[1]), "magnets in a V: 5.31 mm thick\nin a 6.80 mm pocket, the rest\na plastic shell", color=ACC, ha="left",
-             va="top")
-        text(ax, f1 - 5, P(r0, 90)[1] - 9, "dashed: the blind model's magnet,\nwhich filled the pocket", fs=7, color=HOT, ha="right", va="top")
-    else:
-        note(ax, P(69, 101), (f0 + 5, P(60, 90)[1]), "magnets in a V,\nburied in the rotor", color=ACC, ha="left")
+    note(ax, P(66, 104), (f0 + 5, P(46, 90)[1]), "magnets in a V,\n18.9 × 6.5 mm in\n6.80 mm pockets", color=ACC, ha="left", va="top")
     note(ax, P(100, 86.25), (f1 - 5, top - 14), "48 slots,\ncopper winding", color="#a8581f", ha="right", va="top")
     note(ax, P(79.0, 72), (f1 - 5, P(64, 90)[1]), "thin steel bridges\nhold the magnets", color=HOT, ha="right")
     note(ax, P(80.6, 104), (f0 + 5, P(92, 90)[1]), "air gap\n0.775 mm", ha="left")

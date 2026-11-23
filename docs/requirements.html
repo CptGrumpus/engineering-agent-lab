@@ -4,11 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Every Requirement · Justin Smith</title>
-<meta name="description" content="All 57 requirements across the simulation studies, each with its limit, result and verdict.">
+<meta name="description" content="All 53 requirements across the simulation studies, each with its limit, result and verdict.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://cptgrumpus.github.io/engineering-agent-lab/requirements.html">
 <meta property="og:title" content="Every Requirement in One Table">
-<meta property="og:description" content="All 57 requirements across the simulation studies, each with its limit, result and verdict.">
+<meta property="og:description" content="All 53 requirements across the simulation studies, each with its limit, result and verdict.">
 <meta property="og:image" content="https://cptgrumpus.github.io/engineering-agent-lab/v2/og_card.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -21,7 +21,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
-<link rel="stylesheet" href="assets/site.css?v=f4170e14a1">
+<link rel="stylesheet" href="assets/site.css?v=eb5c36098b">
 </head>
 <body>
 <nav class="topbar" aria-label="Site">
@@ -56,7 +56,7 @@
     <div class="page-head">
       <p class="eyebrow">Requirements</p>
       <h1>Every Requirement in One Table</h1>
-      <p>57 requirements across the studies: <b class="c-pass">40 met</b>, <b class="c-fail">16 not met</b>, <b class="c-warn">1 withheld</b>. "Not met" is still a verified answer: the design fails, and the study explains what would fix it. "Withheld" means the checks didn't support calling it either way. Each study's name links to its page.</p>
+      <p>53 requirements across the studies: <b class="c-pass">39 met</b>, <b class="c-fail">13 not met</b>, <b class="c-warn">1 withheld</b>. "Not met" is still a verified answer: the design fails, and the study explains what would fix it. "Withheld" means the checks didn't support calling it either way. Each study's name links to its page.</p>
     </div>
     <div class="reqs open">
       <div class="table-wrap">
@@ -103,15 +103,11 @@
           <tr><td></td><td>Skin friction on the floor, 10 to 30 step heights</td><td class="num">within 15 % rms</td><td>7.0 % rms, low at every station</td><td><span class="chip pass">Met</span></td></tr>
           <tr><td></td><td>Pressure recovery to 30 step heights</td><td class="num">within 0.02</td><td>0.153 against 0.131 measured: 0.023 high</td><td><span class="chip fail">Not met</span></td></tr>
           <tr><td></td><td>Design use: flow reattached before the heated surface at 8 step heights</td><td class="num">≤ 8 H</td><td>6.40 H</td><td><span class="chip pass">Met</span></td></tr>
-          <tr class="r-first"><td><a href="traction-motor.html"><span class="r-no">20</span> Traction Motor</a></td><td>Blind test: back-EMF against the measured motor</td><td class="num">within 5 %</td><td>23.5 % high (110.9 against 89.8 V per 1,000 rpm)</td><td><span class="chip fail">Not met</span></td></tr>
-          <tr><td></td><td>Blind test: peak torque, 50 to 250 A</td><td class="num">within 10 %</td><td>7 % high at low current, rising to 24 % high</td><td><span class="chip fail">Not met</span></td></tr>
-          <tr><td></td><td>Blind test: efficiency at 393 measured points</td><td class="num">within 2 points</td><td>5.2 points high (median)</td><td><span class="chip fail">Not met</span></td></tr>
-          <tr><td></td><td>Open-circuit voltage at 6,000 rpm if the inverter stops switching</td><td class="num">≤ 500 V</td><td>about 1,040 V blind; 856 V after calibration; 850 V measured</td><td><span class="chip fail">Not met</span></td></tr>
+          <tr class="r-first"><td><a href="traction-motor.html"><span class="r-no">20</span> Traction Motor</a></td><td>Back-EMF against the test</td><td class="num">within 5 %</td><td>17.7 % high (105.2 against 89.4 V per 1,000 rpm)</td><td><span class="chip fail">Not met</span></td></tr>
+          <tr><td></td><td>Locked-rotor torque against the test, 50 to 250 A</td><td class="num">within 10 %</td><td>17 to 19 % high at five of seven currents</td><td><span class="chip fail">Not met</span></td></tr>
+          <tr><td></td><td>Voltage at 6,000 rpm if the inverter stops switching</td><td class="num">≤ 500 V</td><td>850 V peak measured; about 1,000 V in the model</td><td><span class="chip fail">Not met</span></td></tr>
           <tr><td></td><td>Rotor bridge stress at 7,200 rpm overspeed</td><td class="num">≤ 335 MPa</td><td>424 MPa; elastic at 6,000 rpm (295 MPa)</td><td><span class="chip fail">Not met</span></td></tr>
-          <tr><td></td><td>Every point of the torque curve within the copper limit</td><td class="num">≤ 212 A</td><td>250 A and above exceed it: a short-time rating</td><td><span class="chip fail">Not met</span></td></tr>
-          <tr><td></td><td>Rated 400 N m within the copper&#x27;s current-density limit</td><td class="num">≤ 25 A/mm²</td><td>19.8 A/mm² on the blind model; not yet rerun after calibration</td><td><span class="chip warn">Withheld</span></td></tr>
-          <tr><td></td><td>Rated power from base speed to 6,000 rpm</td><td class="num">≥ 50 kW</td><td>48.0 kW cold, 44.5 kW hot after calibration (58.6 kW on the blind model)</td><td><span class="chip fail">Not met</span></td></tr>
-          <tr><td></td><td>Continuous power from 1,250 to 6,000 rpm</td><td class="num">≥ 25 kW</td><td>28.1 kW after calibration at the nominal housing fit; 24.3 kW at the loosest fit tried</td><td><span class="chip pass">Met</span></td></tr>
+          <tr><td></td><td>Efficiency, rated torque within the copper limit, rated and continuous power</td><td class="num">within 2 points; ≤ 212 A; ≥ 50 kW; ≥ 25 kW</td><td>wait until the model&#x27;s 18 % flux excess is explained</td><td><span class="chip warn">Withheld</span></td></tr>
           <tr class="r-first"><td><a href="strut-buckling.html"><span class="r-no">13</span> Strut Buckling</a></td><td>Load before first yield, 500 mm strut with an L/1000 bow</td><td class="num">≥ 16 kN</td><td>21.8 kN (the longest that passes is about 587 mm)</td><td><span class="chip pass">Met</span></td></tr>
           <tr class="r-first"><td><a href="aluminium-strap.html#strap_proof"><span class="r-no">14</span> Strap Proof Test</a></td><td>Hole-edge strain during the 15 kN proof test</td><td class="num">≤ 1.0 %</td><td>0.58 %</td><td><span class="chip pass">Met</span></td></tr>
           <tr><td></td><td>Residual stress at the hole edge after unloading</td><td class="num">≤ 0 MPa (compressive)</td><td>−77 MPa</td><td><span class="chip pass">Met</span></td></tr>
@@ -156,6 +152,6 @@
   </div>
 </footer>
 
-<script src="assets/site.js?v=f4170e14a1"></script>
+<script src="assets/site.js?v=eb5c36098b"></script>
 </body>
 </html>

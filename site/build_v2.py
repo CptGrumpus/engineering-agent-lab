@@ -118,10 +118,10 @@ VP += [
                "Skin friction and pressure along the floor against the measurements, scored once",
                "Reattachment +2.3 % and friction 7.0 % rms pass · pressure recovery 0.023 high against 0.02 misses"]},
     {"id": "motor", "study": "motor", "kind": "figure", "img": "v2/fig_motor_comparison.svg",
-     "model": "2004 Toyota Prius traction motor · blind predictions against Oak Ridge National Laboratory's measurements",
-     "lines": ["Model: FEMM 4.2 magnetostatics through Pyleecan · every prediction committed before any measurement was opened",
-               "Left to right: back-EMF against speed, peak torque against current, and efficiency at 393 test points with the ±2 point band",
-               "All three agreed limits missed · back-EMF +23.5 %, torque +7 to +24 %, efficiency +5.2 points · about 24 % too much magnet flux"]},
+     "model": "2004 Toyota Prius traction motor · the client-data model against Oak Ridge National Laboratory's test",
+     "lines": ["Model: FEMM 4.2 magnetostatics through Pyleecan · drawing, parts list and measured magnet material as inputs, nothing tuned",
+               "Left: back-EMF against speed. Right: locked-rotor torque against current, the largest over shaft angle, as the test reports it",
+               "Back-EMF +17.7 %, torque 17 to 19 % high at most currents · about 18 % too much magnet flux, cause being tested"]},
     {"id": "suspension", "study": "suspension", "kind": "figure", "img": "img/anim_quarter_car.webp",
      "model": "Quarter car over a bump · SciPy and OpenModelica",
      "lines": ["Drawn from the simulation at 36 km/h and 600 N·s/m, with the tire load and body acceleration",
@@ -162,7 +162,7 @@ for v in VP:
 CARDS = [
     ("bracket_opt", "12", "struct", "Featured · Design automation", "Bracket optimisation loop, driven by the agent", "The agent searched 78 designs over three runs for the lightest machined clevis bracket that stays under 100 MPa. The checks threw out its first two answers. The final one is 372 g, 4 % lighter than the start, at 98.3 MPa, and its own mesh study confirms it.", "pass", "CadQuery · Gmsh · CalculiX · SciPy"),
     ("pv_nozzle", "18", "struct", "New · Design code", "Pressure vessel nozzle, design code check", "Passes ASME-style design by analysis on lines at the weld toes (205.1 MPa against 207), fails by 24 % on a line through the corner. I'd judge it by the corner: about 21 mm, or a pad.", "line", "CadQuery · Gmsh · CalculiX"),
-    ("motor", "20", "em", "New · Electric machines", "Traction motor, rebuilt and tested blind", "The 2004 Prius motor, rebuilt from published drawings and predicted before any test data was opened. The blind comparison missed all three agreed limits: back-EMF 23.5 % high, torque 7 to 24 % high, efficiency 5 points high. One cause explains most of it, about 24 % too much magnet flux, in a model that had passed every internal check. Calibrated afterwards on routine data, it's still 4 points high on efficiency, and the rated power to top speed now fails. Modelling the magnet at its drawn size, uncalibrated, explains most of the miss.", "blind", "Pyleecan · FEMM · CalculiX"),
+    ("motor", "20", "em", "New · Electric machines", "Traction motor, modelled from client data and checked against test", "The 2004 Prius motor, modelled from the drawings, parts list and measured magnet material, with nothing tuned. Against the laboratory's test it reads about 18 % high on both back-EMF and torque, so the model carries too much magnet flux. Every client input matches the hardware, so I'm testing the model's own assumptions one at a time. Two design checks fail regardless: the voltage at top speed if the inverter stops, and the rotor bridges at overspeed.", "wip", "Pyleecan · FEMM · CalculiX"),
     ("bolted_joint", "16", "struct", "New · Friction contact", "Bolted joint, slip and opening", "Fails narrowly: once the joint settles it slips at 2.39 kN, 4.4 % short of the 2.5 kN it must carry. A 15.6 kN preload fixes it, and it stays closed to 13.1 kN.", "fail", "CalculiX"),
     ("strap_proof", "14", "struct", "New · Plasticity", "Strap proof test, notch plasticity", "A 15 kN proof test strains the hole edge to 0.58 %, inside a 1 % limit, and leaves −77 MPa of compression behind, which helps fatigue.", "pass", "CadQuery · Gmsh · CalculiX"),
     ("strut", "13", "struct", "New · Stability", "Strut buckling, with an imperfect strut", "The longest acceptable strut is about 587 mm. The bow costs 4 to 7 % of the buckling load, so a buckling check alone would overstate the capacity.", "pass", "CalculiX"),
@@ -184,7 +184,7 @@ CARDS = [
     ("baseline", "09", "workflow", "Workflow", "Mass-spring-damper baseline", "All 72 checks pass, and the two tools agree to a few parts per million.", "pass", "SciPy · OpenModelica"),
 ]
 VERDICT = {"pass": "Passes", "fail": "Fails", "mixed": "Depends on speed", "held": "One result on hold",
-           "blind": "Missed its blind test", "line": "Depends on one judgement call", "most": "Passes, with one miss"}
+           "wip": "In progress", "line": "Depends on one judgement call", "most": "Passes, with one miss"}
 
 # studies of the same part, shown as one card and one panel; each study keeps its own write-up, viewer
 # result, requirements rows and evidence, and links to a study land on its part of the panel
@@ -277,7 +277,7 @@ CASES = {"fea": ["cantilever_tet10"], "cantilever_opt": ["bracket_opt"], "strap"
          "pv_nozzle": ["pv_nozzle_mesh", "pv_nozzle_crotch_mesh_r1"], "bracket_opt": ["clevis_opt_r2"], "cfd": ["channel_header_tolerance", "duct_side_walls"],
          "thermal": ["fin_tolerance"], "heat": ["heated_channel_mesh_r2"], "cold_plate": ["cold_plate_mesh_r1"],
          "pipe": ["pipe_rans_mesh_r3"], "step": ["step_mesh"], "random_vib": ["bracket_random_mesh"], "suspension": ["qc_speed_bump", "qc_bump_liftoff"], "cad": ["mounting_plate"],
-         "baseline": ["msd_step"], "motor": ["motor_prius_ornl_oc_mesh_r3", "motor_prius_efficiency_r1"]}
+         "baseline": ["msd_step"], "motor": ["motor_prius_rev5_torque"]}
 # drawings from scripts/make_drawings.py (site/v2/dwg_<key>.webp), shown in each study's model section
 DRAWINGS = {
     "fea": ("Side view of the bar with its fixed root and tip load, and its square section", "The bar as modelled: fixed at the root, 1 kN at the tip."),
@@ -297,7 +297,7 @@ DRAWINGS = {
     "pipe": ("The pipe's cross-section with a thin wedge marked, and the wedge enlarged with its mesh", "Left: the pipe and the thin wedge that's modelled. Right: the wedge, with its cells graded towards the wall."),
     "suspension": ("Schematic of the body on a spring and damper, on a wheel, on a tire, crossing a bump", "The quarter-car model: one corner of the car as two masses, a spring, a damper and a tire."),
     "baseline": ("Schematic of a mass on a spring and a damper with a force applied", "The system: one mass on a spring and a damper, pushed by a sudden force."),
-    "motor": ("Cross-section of the motor, with one pole enlarged to show the magnets in their pockets, the slots and the air gap; the blind model's larger magnets dashed", "The motor's cross-section, drawn from the study's machine definitions: eight poles of magnets in the rotor and 48 slots of copper in the stator. The enlarged pole shows the magnet at its drawn size, centred in a plastic shell that fills the rest of the pocket. Dashed: the blind model's magnet, which filled the pocket. That one difference explains most of the blind miss."),
+    "motor": ("Cross-section of the motor, with one pole enlarged to show the magnets in their pockets, the slots and the air gap", "The motor's cross-section, drawn from the study's machine definition: eight poles of magnets in the rotor and 48 slots of copper in the stator. The magnets are 18.9 × 6.5 mm, from the parts list, centred in 6.80 mm pockets; the thin gap either side is polymer moulding."),
     "step": ("The channel in side view: the step, the inlet duct, the separation bubble behind the step and the reattachment point, with the stretch where skin friction is scored", "The channel as modelled, heights to scale and the length cut short. The flow separates at the step, turns back under the dashed line and reattaches at the dot. Skin friction is scored from 10 to 30 step heights; the pressure recovery from 4 step heights before the step to 30 after it."),
     "random_vib": ("Side view of the arm clamped to a shaker table, with the three shaking directions and the flat input spectrum", "The test: the arm clamped to a shaker table and shaken on one axis at a time. The stress is read on the surface near the clamp and extrapolated to it; the tip clearance is drawn six times larger so it can be seen."),
 }
@@ -434,11 +434,11 @@ def evidence_block(key: str) -> str:
     ev = extras.evidence(key)
     if not ev:
         return ""
-    items = [f'<li><a class="ext" href="{ev["doc"]}">Full write-up on GitHub</a></li>']
+    items = [f'<li><a class="ext" href="{ev["doc"]}">Full write-up on GitHub</a></li>'] if ev["doc"] else []
     if ev.get("memo"):
         items.append(f'<li><a class="ext" href="{ev["memo"]}">Sample client memo from this study</a></li>')
     runs = "".join(f'<li><a class="ext" href="{u}">{esc(label)}</a></li>' for label, u in ev["runs"])
-    return ('    <div class="side-card"><ul class="ev-list">' + "".join(items) + "</ul>"
+    return ('    <div class="side-card">' + (f'<ul class="ev-list">{"".join(items)}</ul>' if items else "")
             + (f'<p class="label">Run reports, with every check and the saved inputs</p><ul class="ev-list ev-runs">{runs}</ul>' if runs else "")
             + "</div>")
 
@@ -631,7 +631,7 @@ pages = [home_page(facts)] + [study_page(c[0]) for c in GALLERY] + [
               "grading", {"{{GRADER}}": grader_body, "{{TASK_COUNT_WORD}}": TASK_WORDS[len(gdata)]},
               scripts=f"<script>\n{grader_js}\n</script>"),
     text_page("in-progress.html", "progress.html", "In progress", "Studies in progress",
-              "The traction motor's revision after its blind test, a flexible flag behind a cylinder (fluid-structure "
+              "The traction motor against its test data, a flexible flag behind a cylinder (fluid-structure "
               "interaction) and an uncertainty study on a random-vibration pass.", "in-progress", {}),
     reqs_page(),
 ]

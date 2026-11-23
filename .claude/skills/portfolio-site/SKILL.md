@@ -57,7 +57,8 @@ card. The pieces, all in `site/`:
    either a `SLUG` of its own or a place in `GROUPS` with a `PART_LABEL` when it's another study of the same part
    (study 21 joined study 4's bracket arm; the step joined study 19). Keep an existing page's slug so shared links work.
 3. `extras.py`: `STUDY_DOCS`, its `REQS` rows, and `RUN_PREFIX` when two parts share one write-up, so each part lists
-   only its own runs.
+   only its own runs. `RUN_LIST` instead names the exact runs and drops the write-up link, for a page whose write-up
+   tells a different story than the page (the motor, until `portfolio/20` is rewritten).
 4. A chart in `scripts/make_figures.py` read from the run and the case file, never copied from the run's PNG. Render
    a PNG preview and look at it before publishing: label collisions and clipped headings only show up there.
 5. Take the study off the in-progress page in the same commit.
@@ -65,7 +66,8 @@ card. The pieces, all in `site/`:
 ## Editing the source safely
 
 - Write patch scripts with the Write tool, not a Git Bash heredoc: the heredoc turns `\\n` into a real newline
-  inside Python strings and the patch silently stops matching.
+  inside Python strings and the patch silently stops matching. A quoted heredoc (`<<'EOF'`) does it too; it broke
+  a chart label on 2026-11-23. No heredocs for Python at all.
 - Make a patch script safe to run twice. Check for the whole new text, not just the old: when the old text is a
   prefix of the new (adding entries after a line), a second run inserts them again. The build's
   one-viewer-entry-per-study assert caught that once.

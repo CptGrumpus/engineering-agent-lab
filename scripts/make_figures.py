@@ -1133,57 +1133,50 @@ def pipe_friction():
 # ---------------------------------------------------------------------------------------- study 20, the motor
 
 def motor_comparison():
-    """The blind predictions against the laboratory's measurements: back-EMF, peak torque and efficiency."""
-    c = json.loads((REPO / "validation" / "motor_ornl" / "comparison.json").read_text(encoding="utf-8"))
+    """The client-data model against the laboratory's test: back-EMF over speed and locked-rotor torque over current.
+
+    Back-EMF from the open-circuit run (fundamental, line to line); torque as the test reports it, the largest over
+    shaft angle with the rotor locked, from scripts/motor_locked_rotor.py on the torque run's saved torque."""
+    import re
+    import subprocess
+    oc = point("20261123-141642_motor_prius_rev5_oc", "p00_gap0775")["metrics"]["back_emf_LL_rms_per_krpm_V"]
+    oc2 = point("20261123-141642_motor_prius_rev5_oc", "p01_gap0730")["metrics"]["back_emf_LL_rms_per_krpm_V"]
+    ref = 89.38                                  # the test's fundamental, V rms line to line per 1000 rpm (CLIENT_DATA.md)
     emf = read_series(REPO / "validation" / "motor_ornl" / "tm2006_423_back_emf.csv")
-    fig, gs = fk.new(FULL, 3.9, 1, 3, wspace=0.3, top=1.0)
+    out = subprocess.run([sys.executable, str(REPO / "scripts" / "motor_locked_rotor.py"),
+                          str(RUNS / "20261123-151023_motor_prius_rev5_torque")], capture_output=True, text=True, check=True).stdout
+    rows = [tuple(map(float, m)) for m in re.findall(r"(\d+) A peak:.*locked-rotor max\s+([\d.]+) N m.*ORNL (\d+):", out)]
+    assert len(rows) == 7, out
+    I, T, R = (np.array(c) for c in zip(*rows))
+    e = 100 * (T / R - 1)
+    fig, gs = fk.new(FULL, 3.9, 1, 2, wspace=0.28, top=1.0)
     ax = fig.add_subplot(gs[0, 0])
     fk.style(ax)
-    k = c["back_emf"]["ours"]["LL_fundamental"]
     rpm = np.array([0, 6200.0])
-    ax.plot(rpm, k * rpm / 1000, color=MODEL, zorder=3)
+    ax.plot(rpm, oc * rpm / 1000, color=MODEL, zorder=3)
     fk.dots(ax, emf["motor_shaft_speed_rpm"], emf["back_emf_Vrms"], color=REF, size=40)
     ax.set_xlim(0, 6300)
     ax.set_ylim(0, 720)
-    fk.label(ax, 4200, k * 4.2, f"predicted\n{k:.1f} V per 1,000 rpm", dx=-8, dy=6, ha="right", va="bottom", color=INK2, size=8.5)
-    fk.label(ax, 5000, c["back_emf"]["ornl_Vrms_per_krpm"] * 5.0, f"measured\n{c['back_emf']['ornl_Vrms_per_krpm']:.1f}", dx=14, dy=-22, va="top", color=INK2, size=8.5)
+    fk.label(ax, 4200, oc * 4.2, f"model\n{oc:.1f} V per 1,000 rpm\n({oc2:.1f} at a 0.730 mm gap)", dx=-8, dy=6, ha="right", va="bottom", color=INK2, size=8.5)
+    fk.label(ax, 5000, ref * 5.0, f"measured\n{ref:.1f}", dx=14, dy=-22, va="top", color=INK2, size=8.5)
     ax.set_xlabel("speed, rpm")
-    ax.set_ylabel("back-EMF, V")
-    fk.panel(ax, f"Back-EMF: {100 * c['back_emf']['err_LL_prediction']:+.1f} %")
-
+    ax.set_ylabel("back-EMF, V rms line to line")
+    fk.panel(ax, f"Back-EMF: {100 * (oc / ref - 1):+.1f} % (limit 5 %)")
     ax = fig.add_subplot(gs[0, 1])
     fk.style(ax)
-    I = [r["ornl_current_A"] for r in c["torque"]]
-    ax.plot(I, [r["ours_if_peak_Nm"] for r in c["torque"]], color=MODEL, zorder=3)
-    fk.dots(ax, I, [r["ornl_fig_Nm"] for r in c["torque"]], color=REF, size=40)
-    ax.set_xlim(40, 262)
-    ax.set_ylim(0, 500)
-    e = [100 * r["err_if_peak"] for r in c["torque"]]
-    fk.label(ax, I[0], c["torque"][0]["ours_if_peak_Nm"], f"{e[0]:+.0f} %", dx=-2, dy=12, ha="center", va="bottom", size=8.5)
-    fk.label(ax, I[-1], c["torque"][-1]["ours_if_peak_Nm"], f"{e[-1]:+.0f} %", dx=-4, dy=8, ha="right", va="bottom", size=8.5)
-    ax.set_xlabel("current, A")
-    ax.set_ylabel("peak torque, N m")
-    fk.panel(ax, f"Torque: {min(e):+.0f} to {max(e):+.0f} %")
-
-    ax = fig.add_subplot(gs[0, 2])
-    fk.style(ax)
-    pts_ = c["efficiency_points"]
-    x = np.array([q["ornl_motor_eff_pct"] for q in pts_])
-    y = np.array([q["ours_hot_pct"] for q in pts_])
-    lo, hi = 62, 100
-    ax.fill_between([lo, hi], [lo - 2, hi - 2], [lo + 2, hi + 2], color=REF, alpha=0.16, linewidth=0, zorder=1)
-    ax.plot([lo, hi], [lo, hi], color=REF, linewidth=1.2, zorder=2)
-    ax.scatter(x, y, s=9, facecolor=MODEL, edgecolor="none", alpha=0.7, zorder=4)
-    ax.set_xlim(lo, hi)
-    ax.set_ylim(lo, hi)
-    ax.set_aspect("equal")
-    fk.label(ax, 78, 78, "agreement,\n±2 points", dx=12, dy=-10, va="top", color=INK2, size=8.5)
-    ax.set_xlabel("measured efficiency, %")
-    ax.set_ylabel("predicted efficiency, %")
-    fk.panel(ax, f"Efficiency: {c['efficiency_summary']['hot_minus_ornl_median_pts']:+.1f} points")
-    fk.heading(fig, "The blind test: all three predictions came out high, and all three missed their limits",
-               "Predictions committed before the data was opened, against Oak Ridge National Laboratory's measurements of the motor")
-    fk.key(fig, [("measured", "dot", REF), ("predicted", "line", MODEL)], y_in=0.66)
+    ax.plot(I, T, color=MODEL, zorder=3)
+    fk.dots(ax, I, R, color=REF, size=40)
+    ax.set_xlim(35, 265)
+    ax.set_ylim(0, 480)
+    fk.label(ax, I[0], T[0], f"{e[0]:+.0f} %", dx=0, dy=10, ha="center", va="bottom", size=8.5)
+    fk.label(ax, I[-1], T[-1], f"{e[-1]:+.0f} %", dx=-4, dy=8, ha="right", va="bottom", size=8.5)
+    ax.set_xlabel("current, A peak")
+    ax.set_ylabel("locked-rotor torque, N m")
+    band = (e > 16) & (e < 20)
+    fk.panel(ax, f"Torque: {e[band].min():.0f} to {e[band].max():.0f} % high at {band.sum()} of {len(e)} currents (limit 10 %)")
+    fk.heading(fig, "Built from the client's data, the model reads about 18 % high on both back-EMF and torque",
+               "2D FEMM model against Oak Ridge National Laboratory's test; torque as the test reports it, the largest over shaft angle")
+    fk.key(fig, [("measured", "dot", REF), ("model", "line", MODEL)], y_in=0.66)
     fk.save(fig, "motor_comparison")
 
 
