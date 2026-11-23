@@ -2,7 +2,7 @@
 
 Audit of the revision-4 primary machine (`models/motor/Toyota_Prius_ORNL_mag531centre.json`: drawn pocket, 5.31 mm
 magnet centred in a polymer shell, Br 1.243 T) against every source a client would provide. Done 2026-11-23
-13:40-14:30, after the revision-4 and 1.12 T runs, as build-model step 3 asks. Nothing in the model was changed by
+13:35-13:40 (times from `date`), after the revision-4 and 1.12 T runs, as build-model step 3 asks. Nothing in the model was changed by
 this audit; differences become hypotheses, each tested on its own later.
 
 Sources (all opened before this audit; nothing new used):

@@ -1,6 +1,6 @@
 # Study 7 (2004 Prius motor against ORNL's tests): where it stands
 
-Updated 2026-11-23 14:30. The record of each step is in `RESULTS.md` (the blind comparison) and `CALIBRATION_PLAN.md`
+Updated 2026-11-23 13:40. The record of each step is in `RESULTS.md` (the blind comparison) and `CALIBRATION_PLAN.md`
 (every revision since, with its predictions written before the run). This page is the short version.
 
 ## Back-EMF, every model so far
@@ -43,7 +43,7 @@ missed torque per ampere by 12-14 % and efficiency by 4.5 points. A model that i
 evidence than one that is exact because of fitting.
 
 It is not yet shown to be more accurate overall. Still open:
-- **The remaining -8 %**, not explained. The drawing audit (`DRAWING_AUDIT.md`, 14:30) checked every dimension and
+- **The remaining -8 %**, not explained. The drawing audit (`DRAWING_AUDIT.md`, 13:40) checked every dimension and
   material value: the winding is now confirmed by ORNL's design report (9 turns per coil, one layer, series), the
   hub ring and other small items add up to about 1-1.5 %, and the live candidates are the magnet's remanence and
   temperature, where the magnet sits along its pocket (the drawn stops, not yet measured), and what ORNL's "scaled"
@@ -54,7 +54,7 @@ It is not yet shown to be more accurate overall. Still open:
 
 ## Next, one effect at a time
 
-1. Done 14:30: the drawing-against-model audit (`DRAWING_AUDIT.md`).
+1. Done 13:40: the drawing-against-model audit (`DRAWING_AUDIT.md`).
 2. Static inductances on the centred machine against ORNL's Ld 1.92 / Lq 5.0 mH (prediction P3 first).
 3. Torque per ampere (locked rotor), then efficiency and the design verdicts, each with predictions first, carrying
    the placement band (outer / inner) throughout.
