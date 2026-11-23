@@ -122,7 +122,8 @@ prediction is written into a case file.
 - Material properties measured by the same lab are a judgement call for the user, not for you.
 - Keep a protocol log (what was opened, when, why) and declare any prior knowledge in the case headers. Take every
   time from the clock (`date`), never from memory: study 7's revision log carried two times 15-25 min ahead of the
-  clock until they were corrected.
+  clock until they were corrected, and a third because `date` ran in the same command that wrote the entry. Run
+  `date` on its own first, read it, then write.
 - Agree the validation limits before the data is seen; after that, any change is a documented revision.
 - Agree how the data will be read at the same time: line-to-line or phase, peak or rms, which table or figure, what
   temperature. Test reports often don't say (study 7: the back-EMF and locked-rotor tables state neither, and the
