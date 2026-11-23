@@ -1,0 +1,60 @@
+{
+  "label": "p02_element_size_mm-1.2207",
+  "status": "PASS",
+  "checks": [
+    {
+      "id": "harmonic_vs_calculix",
+      "description": "max over the 3 axes and CalculiX's frequencies of |modal sum - CalculiX harmonic tip displacement| / max |CalculiX| (modal sum with CalculiX's absolute damping and the base motion added)",
+      "kind": "numerical",
+      "value": 2.314999902158082e-07,
+      "tolerance": 0.0001,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "miles_mode1",
+      "description": "|mode-1 tip rms integrated over the band / Miles' closed form - 1|",
+      "kind": "numerical",
+      "value": 0.0009849109496927744,
+      "tolerance": 0.01,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "effective_mass",
+      "description": "1 - least effective-mass fraction over x, y, z (modes kept)",
+      "kind": "numerical",
+      "value": 0.06923099260665588,
+      "tolerance": 0.09999999999999998,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "modes_cover_band",
+      "description": "highest mode kept / (1.5 x the band's top frequency), must be >= 1 (reported as 1 / that)",
+      "kind": "numerical",
+      "value": 0.05697634513079205,
+      "tolerance": 1.0,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "psd_grid",
+      "description": "max over axes of the change in tip rms and hot-spot von Mises rms when the frequency grid is doubled",
+      "kind": "numerical",
+      "value": 0.00020361787146791014,
+      "tolerance": 0.001,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "root_stress_vs_beam",
+      "description": "max of |surface-extrapolated root sigma_xx rms / beam M c / I - 1| on the top centre (z axis) and the side centre (y axis); M from the rotational participation factors (model form: the clamp's Poisson restraint, shear lag)",
+      "kind": "numerical",
+      "value": 0.050811613273929135,
+      "tolerance": 0.1,
+      "comparison": "<=",
+      "status": "PASS"
+    }
+  ]
+}

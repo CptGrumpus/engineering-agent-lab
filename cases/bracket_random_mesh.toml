@@ -31,6 +31,22 @@
 #      0.5) by two orders. The damage is close to zero because the 3 sigma range (about 80 MPa) sits near the S-N
 #      cut-off (88 MPa): it is very sensitive to the stress, so a 10 % stress change moves it by a factor of 2 or more.
 #   P5 About 1 h 40 min (3 + 18 + about 75 min).
+#
+# Results (run 20261123-100907_bracket_random_mesh, 10:09-10:46, 37 min): VERIFICATION PASS, 18/18 point checks, both
+# run-level GCIs. A first attempt (run 20261123-075030, 07:50, not kept) was stopped at 10:05: on the 1.22 mm mesh the
+# modal step's *NODE FILE / *EL FILE requests carried into the three harmonic steps, wrote a 16.5 GB .frd and the
+# reader took 38 of 64 GB of RAM. Deck fixed (39b2557; tool-notes), modal basis kept for study H (d72df07); its first
+# two meshes had given the same numbers as this run, to every printed digit.
+#   P1 HELD: 6/6 checks on every mesh (harmonic 2e-7 to 1e-6, Miles 0.1 %, effective mass >= 93 %, hot-spot / beam
+#      5-8 %).
+#   P2 HELD on the values: 3 sigma von Mises 44.17 / 39.75 / 38.60 MPa, monotone. MISSED on the uncertainty: GCI 1.3 %
+#      (order 2.9, extrapolated 38.20 MPa), not 3-8 %; the check passes. REQ-RV1 PASS, verified: 38.6 against 236.7 MPa
+#      (factor 6.1). Worst axis z (flapwise), 12.9 MPa rms at the top face's centre line.
+#   P3 HELD: tip 3 sigma 0.3450 / 0.3451 / 0.3452 mm, GCI 0.10 % (the 0.1 % predicted, just). REQ-RV3 PASS, verified
+#      (factor 2.9).
+#   P4 HELD: Dirlik damage 2.85e-3 / 2.46e-3 / 2.43e-3; Steinberg 3.14e-3 / 2.81e-3 / 2.78e-3 (10-14 % above Dirlik).
+#      REQ-RV2 PASS by a factor of about 200 (damage is not a GCI metric; it follows the stress).
+#   P5 MISSED: 37 min (46 s / 3 min / 34 min); the 1 h 40 min estimate carried the frd bloat's cost.
 
 [case]
 name = "bracket_random_mesh"

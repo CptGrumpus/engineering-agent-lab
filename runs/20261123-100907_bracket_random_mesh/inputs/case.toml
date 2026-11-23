@@ -1,0 +1,109 @@
+# Study C: random vibration of study 4's bracket arm (150 x 25 x 7 mm steel, rigidly clamped, first mode 261.7 Hz).
+# Decision: does the arm survive a random-vibration qualification, 1 h per axis of a base PSD, flat 0.04 g^2/Hz from 20 to
+# 2000 Hz (8.9 g rms)? Inputs approved by the user 2026-11-22 ~19:35, all synthetic: the PSD and duration, 2 % modal
+# damping, S355-type steel (yield 355 MPa) with a published S-N curve (EN 1993-1-9, detail category 160: rolled plate,
+# no welds or holes; a real clamp edge frets and would need its own detail). The 1.0 mm clearance in REQ-RV3 is my
+# choice (synthetic, not given by the user).
+#
+# Method: modes, modal stresses and participation factors from CalculiX; the response by modal superposition in Python,
+# damping on the relative velocity; root stress by the IIW hot-spot rule (surface stresses read at 0.4 t and 1.0 t from
+# the clamp, extrapolated linearly), on the top face across the width and the side face through the thickness; von
+# Mises rms by Segalman's quadratic form; fatigue on the root sigma_xx by Dirlik (requirement) and Steinberg's three
+# bands (comparison), Miner's sum over the three axes. The raw clamp-corner stress is singular and not used.
+#
+# Before any run, hand estimate (Miles, mode 1 only, beam mode shape): tip relative displacement about 0.12 mm rms
+# (0.35 mm 3 sigma); root bending stress about 13 MPa rms (40 MPa 3 sigma). Then two scratch prototypes (2026-11-23,
+# to build and test the checks; declared, they inform the predictions):
+#   3.125 mm: 3 sigma von Mises 44.2 MPa, tip 0.345 mm, Dirlik damage 2.9e-3 (Steinberg 3.1e-3); harmonic check 5e-7;
+#             Miles 0.1 %; hot-spot / beam stress 1.075 (top, z) and 1.026 (side, y).
+#   1.95 mm:  39.7 MPa, 0.345 mm, 2.5e-3 (2.8e-3); harmonic 1e-6; hot-spot / beam 1.052 and 0.992. 18 min.
+# A CalculiX finding on the way (tool-notes): its harmonic base-motion output is absolute displacement and its modal
+# damping acts on the absolute velocity; the Python sum reproduces it to 1e-6 with that term, then drops it.
+# Tolerance for root_stress_vs_beam: 10 %, from the physics (the hot-spot value includes the clamp's plane-strain
+# restraint, which the beam formula lacks), set after the prototypes (3-8 %).
+#
+# Predictions, written BEFORE the evidence run:
+#   P1 Every point check passes on every mesh.
+#   P2 3 sigma von Mises 44.2 / 39.7 / 37-39 MPa (3.125 / 1.95 / 1.22 mm), converging monotonically, uncertainty 3-8 %:
+#      the GCI against its 5 % may fail. REQ-RV1 PASS by a factor of about 6 (limit 236.7 MPa) either way.
+#   P3 Tip 3 sigma 0.345 mm on every mesh (converged to under 0.1 %); REQ-RV3 PASS (limit 1.0 mm).
+#   P4 Dirlik damage 2-3e-3 for the three hours (z axis all of it), Steinberg within 20 % of it; REQ-RV2 PASS (limit
+#      0.5) by two orders. The damage is close to zero because the 3 sigma range (about 80 MPa) sits near the S-N
+#      cut-off (88 MPa): it is very sensitive to the stress, so a 10 % stress change moves it by a factor of 2 or more.
+#   P5 About 1 h 40 min (3 + 18 + about 75 min).
+
+[case]
+name = "bracket_random_mesh"
+model = "cadquery_ccx_random"
+description = "Study C: study 4's steel bracket arm (150 x 25 x 7 mm, clamped) under a flat 0.04 g^2/Hz base PSD from 20 to 2000 Hz, 1 h per axis, 2 % damping; CalculiX modes and modal stresses, modal superposition in Python; 3 sigma root stress (hot-spot), fatigue damage (Dirlik, EN 1993-1-9 detail 160) and tip displacement; quadratic-tetrahedron mesh 3.125 / 1.95 / 1.22 mm."
+assumptions = [
+  "Linear elastic steel (E 210 GPa, nu 0.3, 7850 kg/m^3); stationary Gaussian base acceleration, one axis at a time; zero mean stress.",
+  "Rigid clamp over the whole root face (as study 4); 2 % modal damping on every mode (synthetic).",
+  "Root stress by surface extrapolation from 0.4 t and 1.0 t (IIW hot-spot rule) applied to each mode; the clamp-corner nodal value is singular and not used.",
+  "Fatigue on the root's axial stress (sigma_xx), the dominant component; Dirlik's range distribution; Miner's sum over the three axes.",
+]
+limitations = [
+  "Synthetic excitation, damping, clearance and S-N detail; no attached component, no bolt-joint flexibility (it would lower the first mode, the main risk, as in study 4).",
+  "No fretting at the clamp edge (the S-N detail is for plain rolled plate).",
+]
+
+[parameters]
+length_mm = 150.0
+width_mm = 25.0
+thickness_mm = 7.0
+youngs_modulus_MPa = 210000.0
+poisson_ratio = 0.3
+density_t_per_mm3 = 7.85e-9
+element_size_mm = 1.953125
+n_modes = 30
+damping_ratio = 0.02
+psd_g2_per_Hz = 0.04
+f_low_Hz = 20.0
+f_high_Hz = 2000.0
+duration_per_axis_s = 3600.0
+yield_MPa = 355.0
+detail_category_MPa = 160.0
+clearance_mm = 1.0
+
+[sweep]
+parameter = "element_size_mm"
+values = [3.125, 1.953125, 1.220703125]
+
+[numerics]
+solver = "CalculiX 2.22 *FREQUENCY (30 modes, STORAGE=YES) and *STEADY STATE DYNAMICS (check), C3D10 from Gmsh 4.15; modal superposition in numpy"
+harmonic_points = 40
+n_log = 400
+n_res = 80
+solver_timeout_s = 14400
+
+[verification]
+harmonic_rel_tol = 1e-4      # ccx prints 7 digits; the prototypes agreed to 1e-6
+miles_rel_tol = 0.01         # the closed form integrates 0 to infinity, the band 20-2000 Hz
+effective_mass_min = 0.9
+grid_rel_tol = 1e-3
+beam_rel_tol = 0.10          # model form: plane-strain restraint at the clamp (see the header)
+gci_max = 0.05
+
+[[requirements]]
+id = "REQ-RV1"
+text = "The 3 sigma von Mises stress at the clamp (hot-spot) shall not exceed yield / 1.5 (355 / 1.5 = 236.7 MPa) on any axis."
+metric = "stress_3sigma_MPa"
+operator = "<="
+limit = 236.7
+units = "MPa"
+
+[[requirements]]
+id = "REQ-RV2"
+text = "The fatigue damage of the qualification (1 h per axis, three axes, Miner) shall not exceed 0.5 (Dirlik, EN 1993-1-9 detail 160)."
+metric = "damage_dirlik"
+operator = "<="
+limit = 0.5
+units = "-"
+
+[[requirements]]
+id = "REQ-RV3"
+text = "The 3 sigma tip displacement relative to the base shall not exceed the 1.0 mm clearance (synthetic) on any axis."
+metric = "tip_disp_3sigma_mm"
+operator = "<="
+limit = 1.0
+units = "mm"

@@ -1,0 +1,361 @@
+{
+  "points": [
+    {
+      "label": "p00_element_size_mm-3.125",
+      "parameters": {
+        "length_mm": 150.0,
+        "width_mm": 25.0,
+        "thickness_mm": 7.0,
+        "youngs_modulus_MPa": 210000.0,
+        "poisson_ratio": 0.3,
+        "density_t_per_mm3": 7.85e-09,
+        "element_size_mm": 3.125,
+        "n_modes": 30,
+        "damping_ratio": 0.02,
+        "psd_g2_per_Hz": 0.04,
+        "f_low_Hz": 20.0,
+        "f_high_Hz": 2000.0,
+        "duration_per_axis_s": 3600.0,
+        "yield_MPa": 355.0,
+        "detail_category_MPa": 160.0,
+        "clearance_mm": 1.0
+      },
+      "derived": {
+        "base_grms_g": 8.899438184514796,
+        "stress_limit_MPa": 236.66666666666666
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "harmonic_vs_calculix",
+          "description": "max over the 3 axes and CalculiX's frequencies of |modal sum - CalculiX harmonic tip displacement| / max |CalculiX| (modal sum with CalculiX's absolute damping and the base motion added)",
+          "kind": "numerical",
+          "value": 5.49452205197298e-07,
+          "tolerance": 0.0001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "miles_mode1",
+          "description": "|mode-1 tip rms integrated over the band / Miles' closed form - 1|",
+          "kind": "numerical",
+          "value": 0.0009867884836785024,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "effective_mass",
+          "description": "1 - least effective-mass fraction over x, y, z (modes kept)",
+          "kind": "numerical",
+          "value": 0.06723328673747098,
+          "tolerance": 0.09999999999999998,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "modes_cover_band",
+          "description": "highest mode kept / (1.5 x the band's top frequency), must be >= 1 (reported as 1 / that)",
+          "kind": "numerical",
+          "value": 0.056778501388234356,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "psd_grid",
+          "description": "max over axes of the change in tip rms and hot-spot von Mises rms when the frequency grid is doubled",
+          "kind": "numerical",
+          "value": 0.00020684729076699896,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "root_stress_vs_beam",
+          "description": "max of |surface-extrapolated root sigma_xx rms / beam M c / I - 1| on the top centre (z axis) and the side centre (y axis); M from the rotational participation factors (model form: the clamp's Poisson restraint, shear lag)",
+          "kind": "numerical",
+          "value": 0.07552051777931412,
+          "tolerance": 0.1,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-RV1",
+          "text": "The 3 sigma von Mises stress at the clamp (hot-spot) shall not exceed yield / 1.5 (355 / 1.5 = 236.7 MPa) on any axis.",
+          "metric": "stress_3sigma_MPa",
+          "operator": "<=",
+          "limit": 236.7,
+          "units": "MPa",
+          "value": 44.16849098687162,
+          "margin": 192.53150901312836,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-RV2",
+          "text": "The fatigue damage of the qualification (1 h per axis, three axes, Miner) shall not exceed 0.5 (Dirlik, EN 1993-1-9 detail 160).",
+          "metric": "damage_dirlik",
+          "operator": "<=",
+          "limit": 0.5,
+          "units": "-",
+          "value": 0.002850669166232887,
+          "margin": 0.4971493308337671,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-RV3",
+          "text": "The 3 sigma tip displacement relative to the base shall not exceed the 1.0 mm clearance (synthetic) on any axis.",
+          "metric": "tip_disp_3sigma_mm",
+          "operator": "<=",
+          "limit": 1.0,
+          "units": "mm",
+          "value": 0.3449603975193849,
+          "margin": 0.6550396024806151,
+          "verdict": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p01_element_size_mm-1.95312",
+      "parameters": {
+        "length_mm": 150.0,
+        "width_mm": 25.0,
+        "thickness_mm": 7.0,
+        "youngs_modulus_MPa": 210000.0,
+        "poisson_ratio": 0.3,
+        "density_t_per_mm3": 7.85e-09,
+        "element_size_mm": 1.953125,
+        "n_modes": 30,
+        "damping_ratio": 0.02,
+        "psd_g2_per_Hz": 0.04,
+        "f_low_Hz": 20.0,
+        "f_high_Hz": 2000.0,
+        "duration_per_axis_s": 3600.0,
+        "yield_MPa": 355.0,
+        "detail_category_MPa": 160.0,
+        "clearance_mm": 1.0
+      },
+      "derived": {
+        "base_grms_g": 8.899438184514796,
+        "stress_limit_MPa": 236.66666666666666
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "harmonic_vs_calculix",
+          "description": "max over the 3 axes and CalculiX's frequencies of |modal sum - CalculiX harmonic tip displacement| / max |CalculiX| (modal sum with CalculiX's absolute damping and the base motion added)",
+          "kind": "numerical",
+          "value": 1.0821362904615564e-06,
+          "tolerance": 0.0001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "miles_mode1",
+          "description": "|mode-1 tip rms integrated over the band / Miles' closed form - 1|",
+          "kind": "numerical",
+          "value": 0.0009854914854404706,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "effective_mass",
+          "description": "1 - least effective-mass fraction over x, y, z (modes kept)",
+          "kind": "numerical",
+          "value": 0.0684679450618646,
+          "tolerance": 0.09999999999999998,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "modes_cover_band",
+          "description": "highest mode kept / (1.5 x the band's top frequency), must be >= 1 (reported as 1 / that)",
+          "kind": "numerical",
+          "value": 0.05693335324735511,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "psd_grid",
+          "description": "max over axes of the change in tip rms and hot-spot von Mises rms when the frequency grid is doubled",
+          "kind": "numerical",
+          "value": 0.00022425454616396972,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "root_stress_vs_beam",
+          "description": "max of |surface-extrapolated root sigma_xx rms / beam M c / I - 1| on the top centre (z axis) and the side centre (y axis); M from the rotational participation factors (model form: the clamp's Poisson restraint, shear lag)",
+          "kind": "numerical",
+          "value": 0.0515766655673795,
+          "tolerance": 0.1,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-RV1",
+          "text": "The 3 sigma von Mises stress at the clamp (hot-spot) shall not exceed yield / 1.5 (355 / 1.5 = 236.7 MPa) on any axis.",
+          "metric": "stress_3sigma_MPa",
+          "operator": "<=",
+          "limit": 236.7,
+          "units": "MPa",
+          "value": 39.74869864743231,
+          "margin": 196.95130135256767,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-RV2",
+          "text": "The fatigue damage of the qualification (1 h per axis, three axes, Miner) shall not exceed 0.5 (Dirlik, EN 1993-1-9 detail 160).",
+          "metric": "damage_dirlik",
+          "operator": "<=",
+          "limit": 0.5,
+          "units": "-",
+          "value": 0.0024617190291644398,
+          "margin": 0.4975382809708356,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-RV3",
+          "text": "The 3 sigma tip displacement relative to the base shall not exceed the 1.0 mm clearance (synthetic) on any axis.",
+          "metric": "tip_disp_3sigma_mm",
+          "operator": "<=",
+          "limit": 1.0,
+          "units": "mm",
+          "value": 0.3451227530539122,
+          "margin": 0.6548772469460877,
+          "verdict": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p02_element_size_mm-1.2207",
+      "parameters": {
+        "length_mm": 150.0,
+        "width_mm": 25.0,
+        "thickness_mm": 7.0,
+        "youngs_modulus_MPa": 210000.0,
+        "poisson_ratio": 0.3,
+        "density_t_per_mm3": 7.85e-09,
+        "element_size_mm": 1.220703125,
+        "n_modes": 30,
+        "damping_ratio": 0.02,
+        "psd_g2_per_Hz": 0.04,
+        "f_low_Hz": 20.0,
+        "f_high_Hz": 2000.0,
+        "duration_per_axis_s": 3600.0,
+        "yield_MPa": 355.0,
+        "detail_category_MPa": 160.0,
+        "clearance_mm": 1.0
+      },
+      "derived": {
+        "base_grms_g": 8.899438184514796,
+        "stress_limit_MPa": 236.66666666666666
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "harmonic_vs_calculix",
+          "description": "max over the 3 axes and CalculiX's frequencies of |modal sum - CalculiX harmonic tip displacement| / max |CalculiX| (modal sum with CalculiX's absolute damping and the base motion added)",
+          "kind": "numerical",
+          "value": 2.314999902158082e-07,
+          "tolerance": 0.0001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "miles_mode1",
+          "description": "|mode-1 tip rms integrated over the band / Miles' closed form - 1|",
+          "kind": "numerical",
+          "value": 0.0009849109496927744,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "effective_mass",
+          "description": "1 - least effective-mass fraction over x, y, z (modes kept)",
+          "kind": "numerical",
+          "value": 0.06923099260665588,
+          "tolerance": 0.09999999999999998,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "modes_cover_band",
+          "description": "highest mode kept / (1.5 x the band's top frequency), must be >= 1 (reported as 1 / that)",
+          "kind": "numerical",
+          "value": 0.05697634513079205,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "psd_grid",
+          "description": "max over axes of the change in tip rms and hot-spot von Mises rms when the frequency grid is doubled",
+          "kind": "numerical",
+          "value": 0.00020361787146791014,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "root_stress_vs_beam",
+          "description": "max of |surface-extrapolated root sigma_xx rms / beam M c / I - 1| on the top centre (z axis) and the side centre (y axis); M from the rotational participation factors (model form: the clamp's Poisson restraint, shear lag)",
+          "kind": "numerical",
+          "value": 0.050811613273929135,
+          "tolerance": 0.1,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-RV1",
+          "text": "The 3 sigma von Mises stress at the clamp (hot-spot) shall not exceed yield / 1.5 (355 / 1.5 = 236.7 MPa) on any axis.",
+          "metric": "stress_3sigma_MPa",
+          "operator": "<=",
+          "limit": 236.7,
+          "units": "MPa",
+          "value": 38.601214681994534,
+          "margin": 198.09878531800547,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-RV2",
+          "text": "The fatigue damage of the qualification (1 h per axis, three axes, Miner) shall not exceed 0.5 (Dirlik, EN 1993-1-9 detail 160).",
+          "metric": "damage_dirlik",
+          "operator": "<=",
+          "limit": 0.5,
+          "units": "-",
+          "value": 0.0024286286708127473,
+          "margin": 0.4975713713291873,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-RV3",
+          "text": "The 3 sigma tip displacement relative to the base shall not exceed the 1.0 mm clearance (synthetic) on any axis.",
+          "metric": "tip_disp_3sigma_mm",
+          "operator": "<=",
+          "limit": 1.0,
+          "units": "mm",
+          "value": 0.3452372121515297,
+          "margin": 0.6547627878484703,
+          "verdict": "PASS"
+        }
+      ]
+    }
+  ],
+  "run_id": "20261123-100907_bracket_random_mesh",
+  "generated_utc": "2026-11-23T15:46:56+00:00",
+  "verification_status": "PASS"
+}

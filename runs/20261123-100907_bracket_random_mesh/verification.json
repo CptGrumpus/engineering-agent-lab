@@ -1,0 +1,250 @@
+{
+  "run_id": "20261123-100907_bracket_random_mesh",
+  "verified_utc": "2026-11-23T15:46:54+00:00",
+  "tolerances": {
+    "harmonic_rel_tol": 0.0001,
+    "miles_rel_tol": 0.01,
+    "effective_mass_min": 0.9,
+    "grid_rel_tol": 0.001,
+    "beam_rel_tol": 0.1,
+    "gci_max": 0.05
+  },
+  "points": [
+    {
+      "label": "p00_element_size_mm-3.125",
+      "status": "PASS",
+      "checks": [
+        {
+          "id": "harmonic_vs_calculix",
+          "description": "max over the 3 axes and CalculiX's frequencies of |modal sum - CalculiX harmonic tip displacement| / max |CalculiX| (modal sum with CalculiX's absolute damping and the base motion added)",
+          "kind": "numerical",
+          "value": 5.49452205197298e-07,
+          "tolerance": 0.0001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "miles_mode1",
+          "description": "|mode-1 tip rms integrated over the band / Miles' closed form - 1|",
+          "kind": "numerical",
+          "value": 0.0009867884836785024,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "effective_mass",
+          "description": "1 - least effective-mass fraction over x, y, z (modes kept)",
+          "kind": "numerical",
+          "value": 0.06723328673747098,
+          "tolerance": 0.09999999999999998,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "modes_cover_band",
+          "description": "highest mode kept / (1.5 x the band's top frequency), must be >= 1 (reported as 1 / that)",
+          "kind": "numerical",
+          "value": 0.056778501388234356,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "psd_grid",
+          "description": "max over axes of the change in tip rms and hot-spot von Mises rms when the frequency grid is doubled",
+          "kind": "numerical",
+          "value": 0.00020684729076699896,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "root_stress_vs_beam",
+          "description": "max of |surface-extrapolated root sigma_xx rms / beam M c / I - 1| on the top centre (z axis) and the side centre (y axis); M from the rotational participation factors (model form: the clamp's Poisson restraint, shear lag)",
+          "kind": "numerical",
+          "value": 0.07552051777931412,
+          "tolerance": 0.1,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p01_element_size_mm-1.95312",
+      "status": "PASS",
+      "checks": [
+        {
+          "id": "harmonic_vs_calculix",
+          "description": "max over the 3 axes and CalculiX's frequencies of |modal sum - CalculiX harmonic tip displacement| / max |CalculiX| (modal sum with CalculiX's absolute damping and the base motion added)",
+          "kind": "numerical",
+          "value": 1.0821362904615564e-06,
+          "tolerance": 0.0001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "miles_mode1",
+          "description": "|mode-1 tip rms integrated over the band / Miles' closed form - 1|",
+          "kind": "numerical",
+          "value": 0.0009854914854404706,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "effective_mass",
+          "description": "1 - least effective-mass fraction over x, y, z (modes kept)",
+          "kind": "numerical",
+          "value": 0.0684679450618646,
+          "tolerance": 0.09999999999999998,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "modes_cover_band",
+          "description": "highest mode kept / (1.5 x the band's top frequency), must be >= 1 (reported as 1 / that)",
+          "kind": "numerical",
+          "value": 0.05693335324735511,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "psd_grid",
+          "description": "max over axes of the change in tip rms and hot-spot von Mises rms when the frequency grid is doubled",
+          "kind": "numerical",
+          "value": 0.00022425454616396972,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "root_stress_vs_beam",
+          "description": "max of |surface-extrapolated root sigma_xx rms / beam M c / I - 1| on the top centre (z axis) and the side centre (y axis); M from the rotational participation factors (model form: the clamp's Poisson restraint, shear lag)",
+          "kind": "numerical",
+          "value": 0.0515766655673795,
+          "tolerance": 0.1,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p02_element_size_mm-1.2207",
+      "status": "PASS",
+      "checks": [
+        {
+          "id": "harmonic_vs_calculix",
+          "description": "max over the 3 axes and CalculiX's frequencies of |modal sum - CalculiX harmonic tip displacement| / max |CalculiX| (modal sum with CalculiX's absolute damping and the base motion added)",
+          "kind": "numerical",
+          "value": 2.314999902158082e-07,
+          "tolerance": 0.0001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "miles_mode1",
+          "description": "|mode-1 tip rms integrated over the band / Miles' closed form - 1|",
+          "kind": "numerical",
+          "value": 0.0009849109496927744,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "effective_mass",
+          "description": "1 - least effective-mass fraction over x, y, z (modes kept)",
+          "kind": "numerical",
+          "value": 0.06923099260665588,
+          "tolerance": 0.09999999999999998,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "modes_cover_band",
+          "description": "highest mode kept / (1.5 x the band's top frequency), must be >= 1 (reported as 1 / that)",
+          "kind": "numerical",
+          "value": 0.05697634513079205,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "psd_grid",
+          "description": "max over axes of the change in tip rms and hot-spot von Mises rms when the frequency grid is doubled",
+          "kind": "numerical",
+          "value": 0.00020361787146791014,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "root_stress_vs_beam",
+          "description": "max of |surface-extrapolated root sigma_xx rms / beam M c / I - 1| on the top centre (z axis) and the side centre (y axis); M from the rotational participation factors (model form: the clamp's Poisson restraint, shear lag)",
+          "kind": "numerical",
+          "value": 0.050811613273929135,
+          "tolerance": 0.1,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ]
+    }
+  ],
+  "run_checks": [
+    {
+      "id": "discretization_stress_3sigma_MPa",
+      "description": "relative discretization uncertainty of stress_3sigma_MPa, monotone (R = 0.260): GCI_fine, observed order 2.87, extrapolated 38.1988",
+      "kind": "numerical",
+      "value": 0.013030109620109748,
+      "tolerance": 0.05,
+      "comparison": "<=",
+      "status": "PASS",
+      "metric": "stress_3sigma_MPa"
+    },
+    {
+      "id": "discretization_tip_disp_3sigma_mm",
+      "description": "relative discretization uncertainty of tip_disp_3sigma_mm, monotone (R = 0.705): GCI_fine, observed order 0.74, extrapolated 0.345511",
+      "kind": "numerical",
+      "value": 0.0009903525874850913,
+      "tolerance": 0.05,
+      "comparison": "<=",
+      "status": "PASS",
+      "metric": "tip_disp_3sigma_mm"
+    }
+  ],
+  "run_check_detail": {
+    "meshes_used": [
+      "p02_element_size_mm-1.2207",
+      "p01_element_size_mm-1.95312",
+      "p00_element_size_mm-3.125"
+    ],
+    "stress_3sigma_MPa": {
+      "regime": "monotone",
+      "uncertainty": 0.013030109620109748,
+      "converged_exactly": false,
+      "order": 2.8691715120210737,
+      "extrapolated": 38.19883223497391,
+      "rel_error_fine": 0.029726628420660053,
+      "rel_error_extrapolated": 0.010533893930197595,
+      "gci_fine": 0.013030109620109748,
+      "convergence_ratio": 0.25962395454609727,
+      "r21": 1.6,
+      "r32": 1.6
+    },
+    "tip_disp_3sigma_mm": {
+      "regime": "monotone",
+      "uncertainty": 0.0009903525874850913,
+      "converged_exactly": false,
+      "order": 0.7437624588144869,
+      "extrapolated": 0.3455107374046101,
+      "rel_error_fine": 0.00033153754458903193,
+      "rel_error_extrapolated": 0.0007916548560401905,
+      "gci_fine": 0.0009903525874850913,
+      "convergence_ratio": 0.7049904270323756,
+      "r21": 1.6,
+      "r32": 1.6
+    }
+  },
+  "status": "PASS"
+}
