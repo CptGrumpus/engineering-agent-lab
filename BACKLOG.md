@@ -157,7 +157,7 @@ plainly as final:
 Then study C.
 
 ### Open for the user
-(0) **Study 19 part 2 framing, drafted for approval (user said start it, 2026-11-22 ~20:45; nothing built).**
+(0) **Study 19 part 2 framing: LIMITS AGREED by the user 2026-11-22 ~20:50 (REQ-S1 10 %, REQ-S2 15 % rms, REQ-S3 0.02; nothing built yet; next: the build plan below, in a fresh session).**
 *Decision:* can the setup part 1 verified (k-omega SST, sublayer resolved, OpenFOAM 14) predict a separated,
 reattaching flow well enough for design use: where the flow reattaches behind a sudden step, how much pressure it
 recovers, and the wall shear downstream (e.g. placing a heat-transfer surface or a sensor in a duct with a step)?
