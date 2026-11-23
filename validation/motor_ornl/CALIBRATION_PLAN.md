@@ -210,3 +210,33 @@ magnet losses at load, PWM.
 gap); ORNL's design report (TM-2004/120) gives the magnet as 19.24 x 5.31 mm, so the pocket holds about 1.5 mm of air.
 That changes the magnet's working point, the d-axis path (Ld) and the leakage through the bridges. A drawing a client
 would provide; it was set aside on 2026-11-21 for a 0.4 % back-EMF estimate, which did not look at inductance.
+
+## Revision 4 (2026-11-23 ~11:00, before any computation): the magnet at its design size, no calibration
+*Why:* every model so far fills the 6.80 mm V pocket (ORNL/TM-2005/33 Fig. 21, measured) with magnet (Pyleecan's
+HoleM50 cannot leave a gap), 18.9 mm wide. ORNL's design report (TM-2004/120 Table 5.3, re-downloaded 2026-11-23,
+sha256 6548edc4...) gives the magnet as 5.31 mm thick, 38.48 mm for the pair (19.24 each), with the same bridge
+(1.45 mm), stack (83.57 mm) and turns (9 per coil, one layer) as ours. A drawing a client would provide. Set aside on
+2026-11-21 on a scratch estimate of -0.4 % back-EMF: that estimate thinned the POCKET with the magnet (no air). A
+5.31 mm magnet in the drawn 6.80 mm pocket leaves about 1.5 mm of air (or glue: magnetically the same) in series
+with the magnet face, which a magnetic-circuit estimate puts at about -25 % on the magnet flux: the size of the blind
+model's error, which revision 1 absorbed into the remanence (1.243 -> 1.036 T).
+*Hypothesis:* the blind flux error is the magnet geometry, not the magnet material. Test it with the material as
+measured (ORNL/TM-2004/137 Fig. 14: Br 1.243 T, recoil permeability 1.129, as the blind model) and NO calibration.
+*Model:* Pyleecan HoleUD from the HoleM50 pocket (convert_to_UD): each magnet rectangle replaced by a 19.24 x 5.31 mm
+magnet and an air strip, three placements bracketing the unknown fit: against the outer (air-gap side) face, centred,
+against the inner face. Same stator, steel (M330-35A), mesh fineness 8, open circuit at 1000 rpm.
+*Magnetic-circuit estimate (per magnet, flux = (Br t / mu_r) / (t / (mu_r A) + air strip / A + gap reluctance), less a
+saturated-bridge leakage of about 2.6 T mm):* blind geometry 17.5 Br; design magnet without air 17.4 Br (-0.4 %, the
+old scratch); design magnet with the 1.49 mm strip 13.5 Br; useful flux ratio about 0.74.
+*Predictions:*
+- P1 Back-EMF at Br 1.243 T: 75-95 V rms line-to-line per 1000 rpm on every placement (estimate about 82; the blind
+  model 110.9; ORNL measured 89.78). If it lands within 5 % of 89.78 (85.3-94.3), the geometry explains the blind
+  miss without touching the material.
+- P2 The placement moves the back-EMF by under 3 % (the strip is in series wherever it sits; only the bridge
+  saturation pattern shifts).
+- P3 Ld changes by under 5 % from the blind model's (the magnet plus strip present about the same air-equivalent
+  thickness, 6.19 against 6.02 mm), so revision 4 does NOT fix the saliency (2.6 measured against 3.2): the
+  torque-per-ampere gap stays for a later revision.
+*Then, if P1 holds:* the design-magnet machine at Br 1.243 T replaces hypothesis A (remanence 1.036 T) as the
+calibrated model; static inductances, locked-rotor torque, efficiency and the design verdicts are re-run on it, each
+with predictions first.
