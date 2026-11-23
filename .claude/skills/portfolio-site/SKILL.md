@@ -41,6 +41,29 @@ Plain, first person, the way an engineer would say it to a colleague. No stock p
 a crutch, no claims a number doesn't back. After a wording change, reread the changed pages and check every
 statement against the runs (a "the problems are made up" line went out after two studies used published data).
 
+## Adding a finished study to the site
+
+A study the study session has written up (`portfolio/NN-*.md`) gets a section on the site, not just an in-progress
+card. The pieces, all in `site/`:
+
+1. `studies/<key>.html`: the hand-written section (same headings as the others, `{{CASE}}` where the case record goes).
+2. `build_v2.py`: a `CARDS` row, one `VP` viewer entry (a chart can be the viewer: `"kind": "figure"`), `CASES`, and
+   either a `SLUG` of its own or a place in `GROUPS` with a `PART_LABEL` when it's another study of the same part
+   (study 21 joined study 4's bracket arm; the step joined study 19). Keep an existing page's slug so shared links work.
+3. `extras.py`: `STUDY_DOCS`, its `REQS` rows, and `RUN_PREFIX` when two parts share one write-up, so each part lists
+   only its own runs.
+4. A chart in `scripts/make_figures.py` read from the run and the case file, never copied from the run's PNG. Render
+   a PNG preview and look at it before publishing: label collisions and clipped headings only show up there.
+5. Take the study off the in-progress page in the same commit.
+
+## Editing the source safely
+
+- Write patch scripts with the Write tool, not a Git Bash heredoc: the heredoc turns `\\n` into a real newline
+  inside Python strings and the patch silently stops matching.
+- Make a patch script safe to run twice. Check for the whole new text, not just the old: when the old text is a
+  prefix of the new (adding entries after a line), a second run inserts them again. The build's
+  one-viewer-entry-per-study assert caught that once.
+
 ## Building and publishing
 
 ```

@@ -7,8 +7,8 @@
     <p>Can this OpenFOAM turbulence setup (the k-omega SST model) be trusted for pressure-drop budgets, such as a coolant line? The requirement: the pipe friction factor within 5 % of Prandtl's smooth-pipe law, the fit to Nikuradse's measurements behind the Moody chart. It's the portfolio's first comparison with measured data, through that correlation.</p>
     <h3>The answer</h3>
     <div class="answer">
-      <div class="chips"><span class="chip pass">+2.4 % when converged</span><span class="chip pass">Passes from Re 2 × 10⁴ to 2 × 10⁶</span><span class="chip fail">Wall functions: 5 % low</span></div>
-      <p><strong>Yes, with the thin layer of flow at the wall resolved.</strong> Converged, the friction factor at a Reynolds number of 10⁵ is 2.4 % above Prandtl's law, with 0.5 % mesh uncertainty, well inside the 5 %.</p>
+      <div class="chips"><span class="chip pass">+2.4 %, extrapolated to zero cell size</span><span class="chip pass">Passes from Re 2 × 10⁴ to 2 × 10⁶</span><span class="chip fail">Wall functions: 5 % low</span></div>
+      <p><strong>Yes, with the thin layer of flow at the wall resolved.</strong> Extrapolated to zero cell size from three meshes, the friction factor at a Reynolds number of 10⁵ is 2.4 % above Prandtl's law, with 0.5 % mesh uncertainty, well inside the 5 %. The meshes never stop changing; what settles is the estimate, because each halving of the cells halves the change.</p>
       <p>The cheaper option, wall functions, sits about 5 % low whatever the mesh and wherever the first cell is placed, so it can't be used to 5 %.</p>
     </div>
     <h3>Why it matters</h3>

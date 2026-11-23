@@ -34,8 +34,10 @@ STUDY_DOCS = {
     "contact": "10-roller-contact", "heat": "11-cold-plate-heat-transfer", "bracket_opt": "12-bracket-optimisation",
     "strut": "13-strut-buckling", "strap_proof": "14-strap-proof-plasticity", "cold_plate": "15-cold-plate-thermal-chain",
     "bolted_joint": "16-bolted-joint-slip", "pv_nozzle": "18-pressure-vessel-nozzle",
-    "pipe": "19-turbulent-pipe-friction", "motor": "20-prius-traction-motor",
+    "pipe": "19-turbulent-pipe-friction", "motor": "20-prius-traction-motor", "step": "19-turbulent-pipe-friction",
+    "random_vib": "21-bracket-random-vibration",
 }
+RUN_PREFIX = {"pipe": "pipe_", "step": "step_"}
 _RUN = re.compile(r"runs/(\d{8}-(\d{2})(\d{2})\d{2}_[A-Za-z0-9_]+)")
 _tracked: set[str] | None = None
 
@@ -61,6 +63,8 @@ def evidence(key: str) -> dict | None:
         return None
     runs = sorted(set(m.group(1) for m in _RUN.finditer((REPO / doc).read_text(encoding="utf-8"))))
     runs = [r for r in runs if tracked(f"runs/{r}/report.md")]
+    if key in RUN_PREFIX:                       # two parts share one write-up: each lists its own runs
+        runs = [r for r in runs if r.split("_", 1)[1].startswith(RUN_PREFIX[key])]
     names = [r.split("_", 1)[1] for r in runs]
     links = [(name if names.count(name) == 1 else f"{name} · {r[9:11]}:{r[11:13]}", gh(f"runs/{r}/report.md"))
              for r, name in zip(runs, names)]
@@ -515,6 +519,10 @@ REQS = [
     ("modal", "04", "Bracket arm modal", [
         ("First natural frequency, 7 mm arm", "≥ 250 Hz", "261.7 Hz", "met"),
         ("Arm mass", "≤ 220 g", "206 g", "met")]),
+    ("random_vib", "21", "Bracket arm random vibration", [
+        ("3-sigma stress at the clamp", "≤ 236.7 MPa", "38.6 MPa; mesh uncertainty 1.3 %", "met"),
+        ("Fatigue damage over the test, three axes", "≤ 0.5", "0.0024", "met"),
+        ("3-sigma tip movement", "≤ 1.0 mm", "0.345 mm", "met")]),
     ("cfd", "05", "Coolant channel", [
         ("Supply pressure", "≤ 30 Pa", "33.4 Pa nominal, 28–42 Pa over tolerances", "fail"),
         ("Wall shear stress", "≥ 0.5 Pa", "0.43 Pa with warm coolant", "fail"),
@@ -544,13 +552,18 @@ REQS = [
         ("Membrane plus bending at the junction, P + Q", "≤ 414 MPa", "240 MPa at the toe (unverified, 42 % margin); 352 MPa through the corner", "met"),
         ("Hemispherical head: membrane, and the junction with the shell", "≤ 138 / 207 / 414 MPa", "about 6.5 mm; the head's own membrane governs (135.5 MPa at 6.5 mm)", "met")]),
     ("pipe", "19", "Turbulent pipe friction", [
-        ("Friction factor against Prandtl's law, Re 10⁵", "within 5 %", "+2.4 % when converged, mesh uncertainty 0.5 %", "met"),
+        ("Friction factor against Prandtl's law, Re 10⁵", "within 5 %", "+2.4 % extrapolated to zero cell size, mesh uncertainty 0.5 %", "met"),
         ("Same, with wall functions", "within 5 %", "5.0 to 5.4 % low at every Reynolds number", "fail")]),
+    ("step", "19", "Backward-facing step", [
+        ("Reattachment length against the measured 6.26 step heights", "within 10 %", "6.40 step heights, 2.3 % long", "met"),
+        ("Skin friction on the floor, 10 to 30 step heights", "within 15 % rms", "7.0 % rms, low at every station", "met"),
+        ("Pressure recovery to 30 step heights", "within 0.02", "0.153 against 0.131 measured: 0.023 high", "fail"),
+        ("Design use: flow reattached before the heated surface at 8 step heights", "≤ 8 H", "6.40 H", "met")]),
     ("motor", "20", "Traction motor", [
         ("Blind test: back-EMF against the measured motor", "within 5 %", "23.5 % high (110.9 against 89.8 V per 1,000 rpm)", "fail"),
         ("Blind test: peak torque, 50 to 250 A", "within 10 %", "7 % high at low current, rising to 24 % high", "fail"),
         ("Blind test: efficiency at 393 measured points", "within 2 points", "5.2 points high (median)", "fail"),
-        ("Open-circuit voltage at 6,000 rpm if the inverter stops switching", "≤ 500 V", "about 1,040 V predicted; 850 V measured", "fail"),
+        ("Open-circuit voltage at 6,000 rpm if the inverter stops switching", "≤ 500 V", "about 1,040 V blind; 856 V after calibration; 850 V measured", "fail"),
         ("Rotor bridge stress at 7,200 rpm overspeed", "≤ 335 MPa", "424 MPa; elastic at 6,000 rpm (295 MPa)", "fail"),
         ("Every point of the torque curve within the copper limit", "≤ 212 A", "250 A and above exceed it: a short-time rating", "fail"),
         ("Rated 400 N m within the copper's current-density limit", "≤ 25 A/mm²", "19.8 A/mm² on the blind model; not yet rerun after calibration", "held"),

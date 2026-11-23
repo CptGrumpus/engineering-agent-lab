@@ -1,0 +1,50 @@
+  <section class="study" id="random_vib">
+    <div class="study-head">
+      <span class="label">Study 21 · CadQuery, Gmsh, CalculiX and Python, random vibration</span>
+      <h2>Bracket Arm on a Shaker Table, Random Vibration</h2>
+    </div>
+    <h3>The Question</h3>
+    <p>The 7 mm arm from study 4 passed its modal target. A qualification test then shakes it on a table with a random acceleration spectrum: flat at 0.04 g²/Hz from 20 to 2,000 Hz, about 8.9 g rms, for one hour on each of the three axes. Does it survive? Three requirements: the 3-sigma stress at the clamp stays below yield divided by 1.5 (236.7 MPa for an S355-type steel); the fatigue damage of the whole test stays below 0.5; and the tip moves less than 1 mm relative to its base, 3-sigma. The spectrum, the 2 % damping, the fatigue detail and the clearance are assumed values, stated as such.</p>
+    <h3>The Answer</h3>
+    <div class="answer">
+      <div class="chips"><span class="chip pass">Stress 38.6 MPa, limit 236.7</span><span class="chip pass">Fatigue damage 0.0024, limit 0.5</span><span class="chip pass">Tip 0.345 mm, limit 1.0</span><span class="chip pass">Mesh uncertainty 1.3 %</span></div>
+      <p><strong>Yes, with wide margins.</strong> The stress at the clamp is a sixth of its limit and the fatigue damage about a two-hundredth. The tip clearance is the closest of the three, at about a third of the 1 mm allowed. Shaking it flapwise governs: the first bending mode at 262 Hz carries almost all of the response.</p>
+      <p><strong>The fatigue margin is less comfortable than it looks.</strong> The 3-sigma stress range, about 77 MPa, sits just above the fatigue curve's cut-off of 65 MPa for this detail, so most cycles do no damage at all. That also makes the damage very sensitive: 10 % more stress roughly doubles it. The uncertainty study now running puts numbers on that.</p>
+    </div>
+    <figure><div class="plate"><img src="v2/fig_random_vibration.svg" alt="Stress spectrum at the clamp for each shaking direction, peaking at the first mode, and each of the three requirements plotted as a share of its limit" loading="lazy"></div><figcaption><b>Where the stress comes from, and how close each limit is.</b> Left: the stress at the clamp across the test's frequency range for each shaking direction. The flapwise peak at the first mode dominates. Right: each requirement as a share of its limit, on a log scale.</figcaption></figure>
+    <h3>Why It Matters</h3>
+    <p>A frequency check like study 4's only says the arm won't sit on a resonance. Anything mounted near an engine or on a vehicle also sees broadband vibration, and that's what qualification tests reproduce. Random vibration can't be checked with a single load case: the answer is statistical, a stress that's exceeded a known fraction of the time, and fatigue builds up from millions of cycles of different sizes.</p>
+    <h3>The Model</h3>
+    <dl class="spec">
+      <dt>Part</dt><dd>The study 4 arm: steel, 150 × 25 × 7 mm, clamped at the root.</dd>
+      <dt>Material</dt><dd>Steel: Young's modulus 210 GPa, Poisson's ratio 0.3, density 7850 kg/m³, yield 355 MPa. Fatigue from the EN 1993-1-9 curve for plain rolled plate (detail category 160).</dd>
+      <dt>Test</dt><dd>A flat input of 0.04 g²/Hz from 20 to 2,000 Hz, one hour per axis, 2 % damping on every mode.</dd>
+      <dt>Mesh</dt><dd>Quadratic tetrahedra of 3.1, 1.95 and 1.22 mm for the mesh study.</dd>
+      <dt>Analysis</dt><dd>30 modes from CalculiX, up to about 53 kHz, then the random response summed over the modes in Python.</dd>
+    </dl>
+    {{CASE}}
+    <h3>How It Works</h3>
+    <p>CalculiX finds the arm's modes, with their stresses and how strongly each one is driven by shaking the base. The random response is then a sum over the modes, one axis at a time: each mode responds to the base acceleration like a damped spring and mass, and the stresses add with their phases. From the response spectra come the rms values, the rms of the full 3D stress state, and the spectral moments the fatigue methods need.</p>
+    <p>The stress right at the clamp corner is singular: it keeps growing as the mesh is refined. So I use the hot-spot rule for clamped and welded details: read the surface stress at 0.4 and 1.0 times the thickness from the clamp and extrapolate to the clamp line. Fatigue damage comes from two independent methods, Dirlik's and Steinberg's three bands, which agree within 14 %.</p>
+    <h3>How I Checked It</h3>
+    <ul class="proof">
+      <li><strong>The solver's own harmonic analysis against my modal sum,</strong> at every frequency on all three axes: they agree to one part in a million.</li>
+      <li><strong>Miles' equation,</strong> exact for a single mode under a flat input, against the first mode's share: 0.1 %, the difference being the ends of the band.</li>
+      <li><strong>Effective mass:</strong> the kept modes carry at least 93 % of the mass on every axis, so no significant mode is missing.</li>
+      <li><strong>The root stress against beam theory,</strong> from the bending moment: within 5 %. The rest is the clamp stopping the root from contracting sideways, which a beam doesn't model.</li>
+      <li><strong>Mesh study:</strong> stress 44.2, 39.8 and 38.6 MPa on the three meshes, mesh uncertainty 1.3 %; tip 0.1 %. Doubling the frequency grid changes the rms values by 0.02 %.</li>
+    </ul>
+    <div class="caught">
+      <h3>What I Caught Along the Way</h3>
+      <ul>
+        <li><strong>The solver's base excitation isn't the textbook one.</strong> The harmonic check first missed by 4 % at resonance and by far more below it. CalculiX reports absolute displacement, and its damping acts on the absolute velocity, base included, which adds a forcing term the textbook equation doesn't have. With that term my sum matches it to one part in a million. The study keeps the physical form and uses CalculiX only as the check.</li>
+        <li><strong>A check that ate the memory.</strong> On the finest mesh, the output requests from the modal step carried over silently into the three harmonic check steps, so every frequency rewrote the whole mesh: a 16.5 GB result file and 38 GB of memory to read it. The run was stopped, the check steps now write only the tip, and the rerun reproduced the first two meshes to every printed digit.</li>
+      </ul>
+    </div>
+    <h3>Limits, and What I'd Do Next</h3>
+    <ul>
+      <li>The test level, damping, fatigue detail and clearance are assumed. Damping matters most, and the uncertainty study running now quantifies it.</li>
+      <li>A rigid clamp and no attached mass. A real bolted clamp is softer and would lower the first mode, and a clamp edge frets, which needs a lower fatigue detail than plain plate.</li>
+      <li>Gaussian, stationary input, one axis at a time, with no mean stress.</li>
+    </ul>
+  </section>

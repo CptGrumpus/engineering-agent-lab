@@ -86,6 +86,11 @@ VP = [
      "lines": ["Solver: CalculiX 2.22 · *FREQUENCY, mode 1 of 4",
                "261.7 Hz flapwise · requirement ≥ 250 Hz (engine 2nd order + 25 %)",
                "Within 0.9 % of an independent Timoshenko beam model · in 3D, the mode can be animated (motion exaggerated)"]},
+    {"id": "random_vib", "study": "random_vib", "kind": "figure", "img": "v2/fig_random_vibration.svg",
+     "model": "Bracket arm on a shaker table · 0.04 g²/Hz from 20 to 2,000 Hz, one hour per axis",
+     "lines": ["Solver: CalculiX 2.22 modes, summed in Python · finest of three meshes (1.22 mm)",
+               "Stress at the clamp across the frequency range, and each requirement against its limit",
+               "3-sigma stress 38.6 MPa against 236.7 · damage 0.0024 against 0.5 · tip 0.345 mm against 1.0"]},
 ]
 VP += [
     {"id": "strap_detail", "study": "strap", "legend": "S11", "unit": "MPa",
@@ -106,7 +111,12 @@ VP += [
      "model": "Smooth pipe, fully developed turbulent flow · 100 mm bore, Re 2 × 10⁴ to 2 × 10⁶",
      "lines": ["Solver: OpenFOAM 14 · k-omega SST on a periodic 5° wedge",
                "Friction factor against Prandtl's law: the mesh study, the Reynolds sweep and the wall-function placement",
-               "+2.4 % when converged against a 5 % limit · one mesh alone gave the wrong sign"]},
+               "+2.4 % extrapolated to zero cell size, against a 5 % limit · one mesh alone gave the wrong sign"]},
+    {"id": "step", "study": "step", "kind": "figure", "img": "v2/fig_step_comparison.svg",
+     "model": "Backward-facing step · Driver and Seegmiller's experiment, 12.7 mm step, air at 44.2 m/s",
+     "lines": ["Solver: OpenFOAM 14 · 2D k-omega SST, walls resolved, finest of three meshes",
+               "Skin friction and pressure along the floor against the measurements, scored once",
+               "Reattachment +2.3 % and friction 7.0 % rms pass · pressure recovery 0.023 high against 0.02 misses"]},
     {"id": "motor", "study": "motor", "kind": "figure", "img": "v2/fig_motor_comparison.svg",
      "model": "2004 Toyota Prius traction motor · blind predictions against Oak Ridge National Laboratory's measurements",
      "lines": ["Model: FEMM 4.2 magnetostatics through Pyleecan · every prediction committed before any measurement was opened",
@@ -152,7 +162,7 @@ for v in VP:
 CARDS = [
     ("bracket_opt", "12", "struct", "Featured · Design automation", "Bracket optimisation loop, driven by the agent", "The agent searched 78 designs over three runs for the lightest machined clevis bracket that stays under 100 MPa. The checks threw out its first two answers. The final one is 372 g, 4 % lighter than the start, at 98.3 MPa, and its own mesh study confirms it.", "pass", "CadQuery · Gmsh · CalculiX · SciPy"),
     ("pv_nozzle", "18", "struct", "New · Design code", "Pressure vessel nozzle, design code check", "Passes ASME-style design by analysis on lines at the weld toes (205.1 MPa against 207), fails by 24 % on a line through the corner. I'd judge it by the corner: about 21 mm, or a pad.", "line", "CadQuery · Gmsh · CalculiX"),
-    ("motor", "20", "em", "New · Electric machines", "Traction motor, rebuilt and tested blind", "The 2004 Prius motor, rebuilt from published drawings and predicted before any test data was opened. The blind comparison missed all three agreed limits: back-EMF 23.5 % high, torque 7 to 24 % high, efficiency 5 points high. One cause explains most of it, about 24 % too much magnet flux, in a model that had passed every internal check. Calibrated afterwards on routine data, it's still 4.5 points high on efficiency, and the rated power to top speed now fails.", "blind", "Pyleecan · FEMM · CalculiX"),
+    ("motor", "20", "em", "New · Electric machines", "Traction motor, rebuilt and tested blind", "The 2004 Prius motor, rebuilt from published drawings and predicted before any test data was opened. The blind comparison missed all three agreed limits: back-EMF 23.5 % high, torque 7 to 24 % high, efficiency 5 points high. One cause explains most of it, about 24 % too much magnet flux, in a model that had passed every internal check. Calibrated afterwards on routine data, it's still 4 points high on efficiency, and the rated power to top speed now fails. Modelling the magnet at its drawn size, uncalibrated, explains most of the miss.", "blind", "Pyleecan · FEMM · CalculiX"),
     ("bolted_joint", "16", "struct", "New · Friction contact", "Bolted joint, slip and opening", "Fails narrowly: once the joint settles it slips at 2.39 kN, 4.4 % short of the 2.5 kN it must carry. A 15.6 kN preload fixes it, and it stays closed to 13.1 kN.", "fail", "CalculiX"),
     ("strap_proof", "14", "struct", "New · Plasticity", "Strap proof test, notch plasticity", "A 15 kN proof test strains the hole edge to 0.58 %, inside a 1 % limit, and leaves −77 MPa of compression behind, which helps fatigue.", "pass", "CadQuery · Gmsh · CalculiX"),
     ("strut", "13", "struct", "New · Stability", "Strut buckling, with an imperfect strut", "The longest acceptable strut is about 587 mm. The bow costs 4 to 7 % of the buckling load, so a buckling check alone would overstate the capacity.", "pass", "CalculiX"),
@@ -162,8 +172,10 @@ CARDS = [
     ("strap", "02", "struct", "Structures", "Cable hole in a strap, CAD to FEA", "The hole can go up to about 16.7 mm. 16 mm passes at 117 MPa and 18 mm fails.", "pass", "CadQuery · Gmsh · CalculiX"),
     ("fatigue", "03", "struct", "Fatigue", "Strap fatigue life, chained analysis", "Predicted to last with a wide margin; rated 7.8 kN cyclic for 3 × 10⁷ cycles, the lower of two data sets, extrapolated past the test data.", "pass", "CalculiX · Python"),
     ("modal", "04", "struct", "Vibration", "Bracket arm modal analysis", "7 mm thick puts the first mode at 261.7 Hz and the weight at 206 g.", "pass", "CadQuery · Gmsh · CalculiX"),
+    ("random_vib", "21", "struct", "New · Random vibration", "Bracket arm on a shaker table, random vibration", "Passes one hour per axis of random vibration with wide margins: 38.6 MPa at the clamp against 236.7, fatigue damage 0.0024 against 0.5, tip 0.345 mm against 1.0.", "pass", "CalculiX · Python"),
     ("cold_plate", "15", "fluid", "New · Multiphysics", "Cold plate, the full thermal chain", "Passes on all three counts, from the coolant flow through the plate's conduction to its thermal stress: 40.99 °C, a 7.20 K coolant rise and 46.8 MPa.", "pass", "OpenFOAM · CalculiX"),
-    ("pipe", "19", "fluid", "New · Turbulence", "Turbulent pipe friction, against measured data", "Passes: converged, the turbulence model lands 2.4 % above Prandtl's law against a 5 % limit. The first mesh agreed to 0.9 %, with the wrong sign. Wall functions sit 5 % low on every mesh.", "pass", "OpenFOAM"),
+    ("pipe", "19", "fluid", "New · Turbulence", "Turbulent pipe friction, against measured data", "Passes: extrapolated to zero cell size, the turbulence model lands 2.4 % above Prandtl's law against a 5 % limit. The first mesh agreed to 0.9 %, with the wrong sign. Wall functions sit 5 % low on every mesh.", "pass", "OpenFOAM"),
+    ("step", "19", "fluid", "New · Measured data", "Flow over a backward-facing step, against measurements", "Two of three agreed limits pass: reattachment 2.3 % long and skin friction 7.0 % rms. The pressure recovers 0.023 too far against a 0.02 limit, most likely because a 2D model has no tunnel side walls.", "most", "OpenFOAM"),
     ("cfd", "05", "fluid", "CFD", "Coolant channel pressure budget", "Fails. It needs 33.4 Pa against a 30 Pa budget, and no gap size fixes it.", "fail", "OpenFOAM"),
     ("thermal", "06", "fluid", "Heat transfer", "Heat-sink fin temperature", "The tip sits at 73.2 °C, and still 65.9 °C with every input at its worst.", "pass", "CalculiX"),
     ("heat", "11", "fluid", "Heat transfer", "Cold-plate channel heat transfer", "Passes, verified: the wall peaks at 44.03 °C against 45, and the coolant warms 7.2 K. A finer mesh study was needed to settle the peak.", "pass", "OpenFOAM"),
@@ -172,7 +184,7 @@ CARDS = [
     ("baseline", "09", "workflow", "Workflow", "Mass-spring-damper baseline", "All 72 checks pass, and the two tools agree to a few parts per million.", "pass", "SciPy · OpenModelica"),
 ]
 VERDICT = {"pass": "Passes", "fail": "Fails", "mixed": "Depends on speed", "held": "One result on hold",
-           "blind": "Missed its blind test", "line": "Depends on one judgement call"}
+           "blind": "Missed its blind test", "line": "Depends on one judgement call", "most": "Passes, with one miss"}
 
 # studies of the same part, shown as one card and one panel; each study keeps its own write-up, viewer
 # result, requirements rows and evidence, and links to a study land on its part of the panel
@@ -200,10 +212,26 @@ GROUPS = {
                               "the full chain, coolant to plate conduction to thermal stress: the component face peaks at "
                               "40.99 °C, the coolant warms 7.20 K and the stress reaches 46.8 MPa, all inside their limits."),
 }
+GROUPS["bracket_arm"] = dict(parts=["modal", "random_vib"], main="modal", no="04 · 21", d="Two studies",
+                             title="Bracket arm: modal analysis, then random vibration",
+                             label="Studies 4 and 21 · CadQuery, Gmsh, CalculiX and Python", verdict="pass",
+                             tools="CadQuery · Gmsh · CalculiX · Python",
+                             answer="7 mm thick puts the first mode at 261.7 Hz and the weight at 206 g. Then the same arm on a "
+                                    "shaker table, one hour per axis of random vibration: 38.6 MPa at the clamp against 236.7, "
+                                    "fatigue damage 0.0024 against 0.5 and 0.345 mm of tip movement against 1 mm.")
+GROUPS["turbulent_flow"] = dict(parts=["pipe", "step"], main="pipe", no="19", d="Two parts",
+                                title="Turbulent flow: pipe friction, then flow over a step",
+                                label="Study 19 · OpenFOAM, against measured data", verdict="most", tools="OpenFOAM",
+                                answer="Attached flow first: resolved at the wall, the friction factor lands 2.4 % above "
+                                       "Prandtl's law against a 5 % limit, while wall functions sit 5 % low. Then separated flow "
+                                       "behind a step, scored once against measurements: reattachment and skin friction pass, "
+                                       "and the pressure recovers 0.023 too far against a 0.02 limit.")
 PART_OF = {p: g for g, gd in GROUPS.items() for p in gd["parts"]}
 PART_LABEL = {"fea": "01 · Stress check", "cantilever_opt": "01b · Optimised",
               "strap": "02 · Cable hole", "fatigue": "03 · Fatigue life", "strap_proof": "14 · Proof test",
-              "heat": "11 · Coolant channel", "cold_plate": "15 · Full thermal chain"}
+              "heat": "11 · Coolant channel", "cold_plate": "15 · Full thermal chain",
+              "modal": "04 · Modal analysis", "random_vib": "21 · Random vibration",
+              "pipe": "19 · Pipe friction", "step": "19, part 2 · Flow over a step"}
 WIDE = {"bracket_opt", "pv_nozzle", "strap", "cold_plate"}
 
 GALLERY, _seen = [], set()        # (key, no, group, d, title, answer, verdict, tools, thumb key)
@@ -225,8 +253,8 @@ DOCS = REPO / "docs"
 PAGES = HERE / "pages"
 SLUG = {"bracket_opt": "bracket-optimisation", "pv_nozzle": "pressure-vessel-nozzle", "bolted_joint": "bolted-joint",
         "strap": "aluminium-strap", "strut": "strut-buckling", "contact": "roller-contact",
-        "cantilever_bracket": "cantilever-bracket", "modal": "bracket-modal", "cold_plate": "cold-plate",
-        "pipe": "turbulent-pipe-friction", "cfd": "coolant-channel", "thermal": "heat-sink-fin",
+        "cantilever_bracket": "cantilever-bracket", "bracket_arm": "bracket-modal", "cold_plate": "cold-plate",
+        "turbulent_flow": "turbulent-pipe-friction", "cfd": "coolant-channel", "thermal": "heat-sink-fin",
         "suspension": "quarter-car", "cad": "mounting-plate", "baseline": "mass-spring-damper",
         "motor": "traction-motor"}
 assert set(SLUG) == {c[0] for c in GALLERY}, "every gallery card needs a page name"
@@ -248,7 +276,7 @@ CASES = {"fea": ["cantilever_tet10"], "cantilever_opt": ["bracket_opt"], "strap"
          "modal": ["bracket_modal_thickness"], "strut": ["strut_length"], "bolted_joint": ["bolted_joint_mesh_r1"],
          "pv_nozzle": ["pv_nozzle_mesh", "pv_nozzle_crotch_mesh_r1"], "bracket_opt": ["clevis_opt_r2"], "cfd": ["channel_header_tolerance", "duct_side_walls"],
          "thermal": ["fin_tolerance"], "heat": ["heated_channel_mesh_r2"], "cold_plate": ["cold_plate_mesh_r1"],
-         "pipe": ["pipe_rans_mesh_r2"], "suspension": ["qc_speed_bump", "qc_bump_liftoff"], "cad": ["mounting_plate"],
+         "pipe": ["pipe_rans_mesh_r3"], "step": ["step_mesh"], "random_vib": ["bracket_random_mesh"], "suspension": ["qc_speed_bump", "qc_bump_liftoff"], "cad": ["mounting_plate"],
          "baseline": ["msd_step"], "motor": ["motor_prius_ornl_oc_mesh_r3", "motor_prius_efficiency_r1"]}
 # drawings from scripts/make_drawings.py (site/v2/dwg_<key>.webp), shown in each study's model section
 DRAWINGS = {
@@ -578,7 +606,8 @@ def text_page(file, tpl, title, og_title, desc, nav, repl, scripts="") -> dict:
 
 
 WORDS = {15: ("fifteen", "Fifteen"), 16: ("sixteen", "Sixteen"), 17: ("seventeen", "Seventeen"),
-         18: ("eighteen", "Eighteen"), 19: ("nineteen", "Nineteen"), 20: ("twenty", "Twenty")}
+         18: ("eighteen", "Eighteen"), 19: ("nineteen", "Nineteen"), 20: ("twenty", "Twenty"),
+         21: ("twenty-one", "Twenty-one"), 22: ("twenty-two", "Twenty-two"), 23: ("twenty-three", "Twenty-three")}
 TASK_WORDS = {4: "four", 5: "five", 6: "six", 7: "seven"}
 
 facts = extras.repo_facts()
@@ -601,8 +630,7 @@ pages = [home_page(facts)] + [study_page(c[0]) for c in GALLERY] + [
               scripts=f"<script>\n{grader_js}\n</script>"),
     text_page("in-progress.html", "progress.html", "In progress", "Studies in progress",
               "The traction motor's revision after its blind test, a flexible flag behind a cylinder (fluid-structure "
-              "interaction) and an uncertainty study on a random-vibration pass; flow over a step and the random-vibration "
-              "study just finished.", "in-progress", {}),
+              "interaction) and an uncertainty study on a random-vibration pass.", "in-progress", {}),
     reqs_page(),
 ]
 

@@ -2,23 +2,23 @@
 
     <div class="page-head">
       <p class="eyebrow">Now working on</p>
-      <h1>Three Studies Running, Two Just Finished</h1>
-      <p>The coupled flag benchmark, the traction motor's revision after its blind test, and an uncertainty study on the random-vibration result. Two studies finished today and get their full pages next. As with every study, I pick the independent check before I start modelling, and I write down my predictions before each run.</p>
+      <h1>Three Studies Running</h1>
+      <p>The traction motor's revision after its blind test, the coupled flag benchmark, and an uncertainty study on the random-vibration result. As with every study, I pick the independent check before I start modelling, and I write down my predictions before each run. Finished today and now on their own pages: <a href="#step">flow over a backward-facing step</a> and <a href="#random_vib">the bracket arm under random vibration</a>.</p>
     </div>
     <div class="skills plan now">
       <article class="skill">
         <span class="plan-meta"><span class="no">Study 20 · Test data</span><span class="plan-tag">In progress</span></span>
         <b>Traction Motor: Finding the Missing Flux</b>
         <p><b>Where it stands</b>The model and its blind test are on <a href="#motor">its own page</a>. The test missed all three agreed limits, mostly because the model carried about 24 % too much magnet flux. Those verdicts stay on record.</p>
-        <p><b>Today</b>I worked through the gap using only data a client would normally have. A no-load spin test and the measured winding temperature at each test point took the efficiency gap from 4.5 to 4.05 points, still outside the 2-point limit. Then I modelled the magnet at its design size from the published drawings, 5.31 mm thick in a 6.80 mm pocket, where my model had filled the pocket. With nothing calibrated, the back-EMF error went from 23.5 % high to between 4.6 % and 11.3 % low, depending on where the magnet sits in its pocket. So the drawn magnet size explains most of the blind miss.</p>
-        <p><b>Still open</b>The laboratory's own design sketch shows the magnet filling the pocket, so the gap around the magnet stays a hypothesis until a lamination or magnet drawing settles it.</p>
+        <p><b>Found today</b>Every model so far had filled the magnet pocket with magnet. The published drawings give the magnet as 5.31 mm thick in a 6.80 mm pocket, and the teardown report shows the magnets are moulded into a plastic shell that fills the rest. Modelled that way, with the published magnet material and nothing calibrated, the back-EMF is 7.8 % low instead of 23.5 % high. So the drawn magnet size explains most of the blind miss.</p>
+        <p><b>Next</b>Rerun the rest on the drawn magnet, one effect at a time and with predictions first: a full check of the model against the drawings, then the inductances, the torque per amp, the efficiency and the design checks.</p>
         <span class="tools">Pyleecan · FEMM · CalculiX</span>
       </article>
       <article class="skill">
         <span class="plan-meta"><span class="no">Study 17 · Fluid-structure interaction</span><span class="plan-tag">In progress</span></span>
         <b>Flexible Flag Behind a Cylinder</b>
         <p><b>Why it's harder</b>Two-way fluid-structure interaction, where the flow bends the flag and the bent flag changes the flow.</p>
-        <p><b>So far</b>Each half reproduced the published Turek-Hron benchmark on its own before the two were coupled. Coupled and steady, drag and lift are verified at 0.03 % and 0.18 % from the published values. In the two cases where the flag swings by itself, every published quantity comes out within 2.1 % and 9 % on one mesh, inside the benchmark's own spread between meshes. Those aren't verified yet: the check on the force passed between the two solvers turned out to be defective, so I've replaced it and the runs will be repeated with a mesh study.</p>
+        <p><b>So far</b>Each half reproduced the published Turek-Hron benchmark on its own before the two were coupled. Coupled and steady, drag and lift are verified at 0.03 % and 0.18 % from the published values. In the two cases where the flag swings by itself, every published quantity comes out within 2.1 % and 9 % on one mesh, inside the benchmark's own spread between meshes. Those aren't verified yet: the check on the force passed between the two solvers turned out to be defective, so I've replaced it, and the first swinging case is now running on three meshes side by side.</p>
         <p><b>Caught on the way</b>One regenerated mesh wrapped a single cell around the flag's tip corner and read the tip deflection 28 % low, with every other check passing. There's now a check on the cells next to the flag, and 24 earlier meshes were scanned with it. Only that one was affected.</p>
         <p class="plan-link"><a href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/portfolio/17-fsi-flag-turek-hron.md">Read the draft write-up</a></p>
         <span class="tools">OpenFOAM · CalculiX · preCICE</span>
@@ -29,22 +29,6 @@
         <p><b>The question</b>The bracket arm passes its random-vibration test with its fatigue damage about 200 times under the limit, on nominal inputs. Does that pass hold up when the damping, the test level, the fatigue strength and the plate thickness are only known within a range? And which of them would be worth measuring first?</p>
         <p><b>How I'll check it</b>The statistics code is tested against cases with exact answers first. Then the probability of failing comes from Monte Carlo sampling, with a second method (FORM with importance sampling) for when no sample fails, and sensitivity indices show which input drives the result. The input ranges are assumed values, stated as such.</p>
         <p><b>My prediction</b>A robust pass, with the damping and the fatigue strength driving the damage.</p>
-        <span class="tools">CalculiX · Python</span>
-      </article>
-      <article class="skill">
-        <span class="plan-meta"><span class="no">Study 19, part 2 · Measured data</span><span class="plan-tag">Finished</span></span>
-        <b>Flow Over a Backward-Facing Step</b>
-        <p><b>The result</b>Compared once with Driver and Seegmiller's measurements, against limits set before the data was opened. The reattachment length is 2.3 % long (limit 10 %) and the velocity profiles are within 7.0 % rms (limit 15 %), so both pass. The pressure recovery behind the step misses: 0.0227 in pressure coefficient against a limit of 0.02. The likely cause is that a 2D model has no side walls.</p>
-        <p><b>One thing to flag</b>The finest mesh reached its cell limit before it converged, so the mesh check is reported as a fail even though the three meshes agree on the reattachment length to 0.2 %.</p>
-        <p class="plan-link"><a href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/portfolio/19-turbulent-pipe-friction.md">Read the write-up</a></p>
-        <span class="tools">OpenFOAM</span>
-      </article>
-      <article class="skill">
-        <span class="plan-meta"><span class="no">Study 21 · Random vibration</span><span class="plan-tag">Finished</span></span>
-        <b>Bracket Arm on a Shaker Table</b>
-        <p><b>The result</b>The steel bracket arm from study 4 passes one hour per axis of a flat 20 to 2,000 Hz input with wide margins, verified on three meshes: peak 3-sigma stress at the clamp 38.6 MPa against 236.7, fatigue damage 0.0024 against 0.5, and tip movement 0.345 mm against 1.0. The test level and 2 % damping are assumed values.</p>
-        <p><b>Caught on the way</b>The solver's own harmonic check disagreed with my modal sum until I found that it damps the absolute motion, not the motion relative to the base. Accounting for that, the two agree to one part in a million.</p>
-        <p class="plan-link"><a href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/portfolio/21-bracket-random-vibration.md">Read the write-up</a></p>
         <span class="tools">CalculiX · Python</span>
       </article>
     </div>

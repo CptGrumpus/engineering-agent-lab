@@ -3,16 +3,16 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Turbulent Pipe Friction, Against Measured Data · Justin Smith</title>
-<meta name="description" content="Passes: converged, the turbulence model lands 2.4 % above Prandtl&#x27;s law against a 5 % limit. The first mesh agreed to 0.9 %, with the wrong sign. Wall functions sit 5 % low on every mesh.">
+<title>Turbulent Flow: Pipe Friction, Then Flow Over a Step · Justin Smith</title>
+<meta name="description" content="Attached flow first: resolved at the wall, the friction factor lands 2.4 % above Prandtl&#x27;s law against a 5 % limit, while wall functions sit 5 % low. Then separated flow behind a step, scored once against measurements: reattachment and skin friction pass, and the pressure recovers 0.023 too far against a 0.02 limit.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://cptgrumpus.github.io/engineering-agent-lab/turbulent-pipe-friction.html">
-<meta property="og:title" content="Turbulent Pipe Friction, Against Measured Data">
-<meta property="og:description" content="Passes: converged, the turbulence model lands 2.4 % above Prandtl&#x27;s law against a 5 % limit. The first mesh agreed to 0.9 %, with the wrong sign. Wall functions sit 5 % low on every mesh.">
+<meta property="og:title" content="Turbulent Flow: Pipe Friction, Then Flow Over a Step">
+<meta property="og:description" content="Attached flow first: resolved at the wall, the friction factor lands 2.4 % above Prandtl&#x27;s law against a 5 % limit, while wall functions sit 5 % low. Then separated flow behind a step, scored once against measurements: reattachment and skin friction pass, and the pressure recovers 0.023 too far against a 0.02 limit.">
 <meta property="og:image" content="https://cptgrumpus.github.io/engineering-agent-lab/v2/og_turbulent-pipe-friction.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="Turbulent pipe friction, against measured data: result render">
+<meta property="og:image:alt" content="Turbulent flow: pipe friction, then flow over a step: result render">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="canonical" href="https://cptgrumpus.github.io/engineering-agent-lab/turbulent-pipe-friction.html">
 <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
@@ -21,7 +21,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
-<link rel="stylesheet" href="assets/site.css?v=029308e977">
+<link rel="stylesheet" href="assets/site.css?v=f4170e14a1">
 </head>
 <body>
 <nav class="topbar" aria-label="Site">
@@ -55,10 +55,10 @@
   <div class="wrap">
     <nav class="crumbs" aria-label="Breadcrumb"><a href="index.html#work">All studies</a><span>/</span><span>Thermal and fluids</span></nav>
     <header class="study-hero">
-      <p class="eyebrow">Study 19, part 1 · OpenFOAM, turbulence modelling</p>
-      <h1>Turbulent Pipe Friction, Against Measured Data</h1>
-      <span class="v v-pass">Passes</span>
-      <p class="study-lede">Passes: converged, the turbulence model lands 2.4 % above Prandtl&#x27;s law against a 5 % limit. The first mesh agreed to 0.9 %, with the wrong sign. Wall functions sit 5 % low on every mesh.</p>
+      <p class="eyebrow">Study 19 · OpenFOAM, against measured data</p>
+      <h1>Turbulent Flow: Pipe Friction, Then Flow Over a Step</h1>
+      <span class="v v-most">Passes, with one miss</span>
+      <p class="study-lede">Attached flow first: resolved at the wall, the friction factor lands 2.4 % above Prandtl&#x27;s law against a 5 % limit, while wall functions sit 5 % low. Then separated flow behind a step, scored once against measurements: reattachment and skin friction pass, and the pressure recovers 0.023 too far against a 0.02 limit.</p>
     </header>
     <div class="vp" id="vp" role="region" aria-label="Result viewer">
       <div class="legend">
@@ -85,19 +85,20 @@
 
     <div class="study-layout">
       <article class="study-main">
-
-    <h2 id="the-question">The Question</h2>
+      <section class="part" id="pipe" data-part="pipe">
+        <div class="part-head"><span class="label">Study 19, part 1 · OpenFOAM, turbulence modelling</span><h2>Turbulent Pipe Friction, Against Measured Data</h2></div>
+    <h3 id="pipe-the-question">The Question</h3>
     <p>Can this OpenFOAM turbulence setup (the k-omega SST model) be trusted for pressure-drop budgets, such as a coolant line? The requirement: the pipe friction factor within 5 % of Prandtl's smooth-pipe law, the fit to Nikuradse's measurements behind the Moody chart. It's the portfolio's first comparison with measured data, through that correlation.</p>
-    <h2 id="the-answer">The Answer</h2>
+    <h3 id="pipe-the-answer">The Answer</h3>
     <div class="answer">
-      <div class="chips"><span class="chip pass">+2.4 % when converged</span><span class="chip pass">Passes from Re 2 × 10⁴ to 2 × 10⁶</span><span class="chip fail">Wall functions: 5 % low</span></div>
-      <p><strong>Yes, with the thin layer of flow at the wall resolved.</strong> Converged, the friction factor at a Reynolds number of 10⁵ is 2.4 % above Prandtl's law, with 0.5 % mesh uncertainty, well inside the 5 %.</p>
+      <div class="chips"><span class="chip pass">+2.4 %, extrapolated to zero cell size</span><span class="chip pass">Passes from Re 2 × 10⁴ to 2 × 10⁶</span><span class="chip fail">Wall functions: 5 % low</span></div>
+      <p><strong>Yes, with the thin layer of flow at the wall resolved.</strong> Extrapolated to zero cell size from three meshes, the friction factor at a Reynolds number of 10⁵ is 2.4 % above Prandtl's law, with 0.5 % mesh uncertainty, well inside the 5 %. The meshes never stop changing; what settles is the estimate, because each halving of the cells halves the change.</p>
       <p>The cheaper option, wall functions, sits about 5 % low whatever the mesh and wherever the first cell is placed, so it can't be used to 5 %.</p>
     </div>
-    <h2 id="why-it-matters">Why It Matters</h2>
+    <h3 id="pipe-why-it-matters">Why It Matters</h3>
     <p>Every study before this one has laminar flow, where the equations can be solved exactly and the model either matches or it doesn't. Most real flows are turbulent, and turbulence can't be solved directly at engineering scale. A turbulence model stands in for it, and a model is an approximation with its own error, separate from the mesh error. So the question changes from "did I solve the equations right?" to "are these the right equations?", and only measured data can answer that.</p>
     <p>Pipe friction is the place to start because it has been measured more carefully than almost anything else in fluid mechanics. If a setup can't reproduce it, there's no reason to trust it on a harder flow.</p>
-    <h2 id="the-model">The Model</h2>
+    <h3 id="pipe-the-model">The Model</h3>
     <dl class="spec">
       <dt>Geometry</dt><dd>A smooth pipe, 100 mm bore, modelled as a thin 5° wedge one cell thick, with its two ends joined so the flow repeats. That gives fully developed flow with no inlet to model.</dd>
       <dt>Fluid and flow</dt><dd>Kinematic viscosity 10⁻⁶ m²/s (water). The mean velocity is held fixed, and the solver reports the pressure gradient needed. Reynolds numbers from 2 × 10⁴ to 2 × 10⁶.</dd>
@@ -108,11 +109,11 @@
       <dt>What's measured</dt><dd>The Darcy friction factor, the number a pressure-drop calculation uses.</dd>
     </dl>
     <figure class="drawing"><div class="plate"><img src="v2/dwg_pipe.webp" alt="The pipe&#x27;s cross-section with a thin wedge marked, and the wedge enlarged with its mesh" loading="lazy"></div><figcaption>Left: the pipe and the thin wedge that's modelled. Right: the wedge, with its cells graded towards the wall.</figcaption></figure>
-    <details class="record"><summary>The case file: recorded assumptions, limits and inputs</summary><div class="record-body"><p>This is the study's own record, written before the run and saved with it, in the shorthand of the case file.</p><p class="case"><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/cases/pipe_rans_mesh_r2.toml">cases/pipe_rans_mesh_r2.toml ↗</a></p><p>Fully developed turbulent pipe flow, Re 1e5 (D 0.1 m, nu 1e-6 m^2/s), axisymmetric periodic wedge, RANS k-omega SST, low-Reynolds wall treatment; mesh study on the radial cells (80 / 160 / 320, wall cell halved with them); friction factor against Prandtl&#x27;s smooth-pipe law.</p><h3>Assumptions, and How Each Is Checked</h3><ul><li>Fully developed, steady, incompressible, axisymmetric mean flow in a hydraulically smooth pipe.</li><li>RANS with the k-omega SST model (openfoam.org v14 coefficients); its form error is what this study measures.</li><li>Hydraulic diameter of the wedge 2 R cos(2.5 deg) (its wall is a flat face): 0.1 % below D, used consistently.</li></ul><h3>Limits</h3><ul><li>Smooth walls only; roughness (the Colebrook range) not modelled.</li><li>The reference is a correlation of measurements (about +-2 % scatter in Nikuradse&#x27;s smooth-pipe data), not the measurements themselves.</li></ul><h3>Inputs</h3><div class="table-wrap"><table><thead><tr><th>Input</th><th>Value</th></tr></thead><tbody><tr><td>diameter_m</td><td>0.1</td></tr><tr><td>reynolds_number</td><td>100000</td></tr><tr><td>kinematic_viscosity_m2_per_s</td><td>1e-06</td></tr><tr><td>n_radial</td><td>80</td></tr><tr><td>first_cell_yplus</td><td>0.5</td></tr><tr><td>wall_treatment</td><td>low_re</td></tr><tr><td>turbulence_model</td><td>kOmegaSST</td></tr></tbody></table></div></div></details>
-    <h2 id="how-it-works">How It Works</h2>
+    <details class="record"><summary>The case file: recorded assumptions, limits and inputs</summary><div class="record-body"><p>This is the study's own record, written before the run and saved with it, in the shorthand of the case file.</p><p class="case"><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/cases/pipe_rans_mesh_r3.toml">cases/pipe_rans_mesh_r3.toml ↗</a></p><p>Fully developed turbulent pipe flow, Re 1e5 (D 0.1 m, nu 1e-6 m^2/s), axisymmetric periodic wedge, RANS k-omega SST, low-Reynolds wall treatment; mesh study on the radial cells (160 / 320 / 640, wall cell halved with them; axial length 1 mm); friction factor against Prandtl&#x27;s smooth-pipe law.</p><h4>Assumptions, and How Each Is Checked</h4><ul><li>Fully developed, steady, incompressible, axisymmetric mean flow in a hydraulically smooth pipe.</li><li>RANS with the k-omega SST model (openfoam.org v14 coefficients); its form error is what this study measures.</li><li>Hydraulic diameter of the wedge 2 R cos(2.5 deg) (its wall is a flat face): 0.1 % below D, used consistently.</li></ul><h4>Limits</h4><ul><li>Smooth walls only; roughness (the Colebrook range) not modelled.</li><li>The reference is a correlation of measurements (about +-2 % scatter in Nikuradse&#x27;s smooth-pipe data), not the measurements themselves.</li></ul><h4>Inputs</h4><div class="table-wrap"><table><thead><tr><th>Input</th><th>Value</th></tr></thead><tbody><tr><td>diameter_m</td><td>0.1</td></tr><tr><td>reynolds_number</td><td>100000</td></tr><tr><td>kinematic_viscosity_m2_per_s</td><td>1e-06</td></tr><tr><td>n_radial</td><td>160</td></tr><tr><td>first_cell_yplus</td><td>0.25</td></tr><tr><td>wall_treatment</td><td>low_re</td></tr><tr><td>turbulence_model</td><td>kOmegaSST</td></tr></tbody></table></div></div></details>
+    <h3 id="pipe-how-it-works">How It Works</h3>
     <p>Because the wedge's ends are joined, the flow that comes out is the flow that goes in, and the solution settles into the fully developed state a long pipe would reach. A momentum source holds the mean velocity at the requested value and reports the pressure gradient it had to apply. The friction factor follows directly from that gradient.</p>
     <p>Three studies make up the answer: a mesh study at one Reynolds number, a sweep across Reynolds numbers, and a wall-function study that moves the first cell in and out to see whether its placement can fix the offset.</p>
-    <h2 id="how-i-checked-it">How I Checked It</h2>
+    <h3 id="pipe-how-i-checked-it">How I Checked It</h3>
     <ul class="proof">
       <li><strong>An exact force balance.</strong> In steady flow the friction on the wall and the applied pressure gradient must balance exactly, which gives the friction factor two independent ways. They agree to 10⁻⁹ or better on every converged mesh, and they disagree on an unconverged one, so the same check catches runs that haven't finished.</li>
       <li><strong>The reported value isn't one mesh.</strong> Every mesh level halves every cell, and the reported value is the one extrapolated to an infinitely fine mesh.</li>
@@ -120,14 +121,14 @@
       <li><strong>The flow is settled.</strong> The mean velocity is held to 10⁻¹³, the wall shear is uniform along the wall, and the pressure gradient changes by under 10⁻⁸ over the last tenth of the run.</li>
     </ul>
     <div class="caught">
-      <h2 id="what-i-caught-along-the-way">What I Caught Along the Way</h2>
+      <h3 id="pipe-what-i-caught-along-the-way">What I Caught Along the Way</h3>
       <ul>
         <li><strong>A good agreement that was mesh error.</strong> The first mesh agreed with Prandtl to 0.9 %, which looked reassuring and was wrong. Refining moved it to +0.7 % and then +1.6 %, converging at only first order, and the converged answer is 2.4 % <em>above</em> the law. Quoting the first mesh would have got the sign of the error wrong.</li>
         <li><strong>A fix that broke convergence.</strong> At the highest Reynolds number the mesh checker flagged very long, thin cells. Shortening them removed the warning and left the converged answer unchanged, but it slowed the solver by orders of magnitude: a mesh that had converged in 15,000 iterations no longer converged in 80,000, and its unconverged result even looked plausible. The force balance exposed it, and I went back to the original mesh, which converged in minutes.</li>
         <li><strong>A suspect that wasn't guilty.</strong> The wall-function offset first looked like a coarse mesh in the core of the pipe. Four times the cells moved the answer by 0.1 %, and a placement sweep confirmed the wall treatment itself is the cause.</li>
       </ul>
     </div>
-    <h2 id="limits-and-what-i-d-do-next">Limits, and What I'd Do Next</h2>
+    <h3 id="pipe-limits-and-what-i-d-do-next">Limits, and What I'd Do Next</h3>
     <ul>
       <li>Smooth walls only. Rough pipes, the Colebrook range of the Moody chart, aren't modelled.</li>
       <li>The reference is a correlation of measurements, with about ±2 % scatter, not the raw measurements.</li>
@@ -135,11 +136,58 @@
       <li>The first converged mesh study (80, 160 and 320 cells) left a mesh uncertainty of 1.05 %, just over the 1 % I set, so the pass was formally unverified. One finer level (640 cells) brought it to 0.5 % with the same answer, and it's now verified.</li>
       <li>Part 2 compares the same setup against measured velocity profiles behind a backward-facing step, a flow that separates and reattaches. It's waiting on the data source, whose servers were unreachable on 22 November.</li>
     </ul>
-    <h2 id="evidence">Evidence</h2>
-    <div class="side-card"><ul class="ev-list"><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/portfolio/19-turbulent-pipe-friction.md">Full write-up on GitHub</a></li></ul><p class="label">Run reports, with every check and the saved inputs</p><ul class="ev-list ev-runs"><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261122-104218_pipe_rans_mesh/report.md">pipe_rans_mesh</a></li><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261122-104744_pipe_rans_reynolds/report.md">pipe_rans_reynolds</a></li><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261122-134230_pipe_rans_mesh_r1/report.md">pipe_rans_mesh_r1</a></li><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261122-135114_pipe_rans_wf_mesh/report.md">pipe_rans_wf_mesh</a></li><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261122-140211_pipe_rans_wf_yplus/report.md">pipe_rans_wf_yplus</a></li><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261122-153857_pipe_rans_mesh_r2/report.md">pipe_rans_mesh_r2</a></li><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261122-202459_pipe_rans_mesh_r3/report.md">pipe_rans_mesh_r3</a></li><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261122-233146_step_mesh/report.md">step_mesh</a></li><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261122-233146_step_outlet/report.md">step_outlet</a></li><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261123-035753_step_inlet_tu/report.md">step_inlet_tu</a></li></ul></div>
+    <h3 id="pipe-evidence">Evidence</h3>
+    <div class="side-card"><ul class="ev-list"><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/portfolio/19-turbulent-pipe-friction.md">Full write-up on GitHub</a></li></ul><p class="label">Run reports, with every check and the saved inputs</p><ul class="ev-list ev-runs"><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261122-104218_pipe_rans_mesh/report.md">pipe_rans_mesh</a></li><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261122-104744_pipe_rans_reynolds/report.md">pipe_rans_reynolds</a></li><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261122-134230_pipe_rans_mesh_r1/report.md">pipe_rans_mesh_r1</a></li><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261122-135114_pipe_rans_wf_mesh/report.md">pipe_rans_wf_mesh</a></li><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261122-140211_pipe_rans_wf_yplus/report.md">pipe_rans_wf_yplus</a></li><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261122-153857_pipe_rans_mesh_r2/report.md">pipe_rans_mesh_r2</a></li><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261122-202459_pipe_rans_mesh_r3/report.md">pipe_rans_mesh_r3</a></li></ul></div>
+      </section>
+      <section class="part" id="step" data-part="step">
+        <div class="part-head"><span class="label">Study 19, part 2 · OpenFOAM, against measured data</span><h2>Flow Over a Backward-Facing Step, Against Measurements</h2></div>
+    <h3 id="step-the-question">The Question</h3>
+    <p>Part 1 showed this setup gets the friction of attached flow right. Is it good enough when the flow separates and reattaches, for example to decide where a heat-transfer surface or a sensor can go in a duct with a step? The test is Driver and Seegmiller's backward-facing step: a 12.7 mm step in a wind tunnel, air at 44.2 m/s, a Reynolds number of 37,500 on the step height. Three limits were agreed before any of the comparison data was opened: where the flow reattaches, within 10 %; the skin friction on the floor from 10 to 30 step heights, within 15 % rms; and how far the pressure recovers by 30 step heights, within 0.02 in pressure coefficient.</p>
+    <h3 id="step-the-answer">The Answer</h3>
+    <div class="answer">
+      <div class="chips"><span class="chip pass">Reattachment 2.3 % long, limit 10 %</span><span class="chip pass">Skin friction 7.0 % rms, limit 15 %</span><span class="chip fail">Pressure recovery 0.023 high, limit 0.02</span></div>
+      <p><strong>Two of three.</strong> The flow reattaches 6.40 step heights downstream against a measured 6.26, and the skin friction after it is 1 to 10 % low at every measured station, 7.0 % rms. Both pass. The pressure recovers to 0.153 against a measured 0.131, which misses the 0.02 limit by 0.003.</p>
+      <p><strong>The miss has a likely cause, and it's one I'd stated before the comparison.</strong> The pressure peak behind reattachment is close (about 0.177 against 0.163). Further downstream the measured pressure falls back faster than mine. That's what the tunnel's side walls do: their boundary layers thicken, squeeze the core flow and lower the pressure. The tunnel is 12 step heights wide, and a 2D model has no side walls at all.</p>
+    </div>
+    <figure><div class="plate"><img src="v2/fig_step_comparison.svg" alt="Skin friction and pressure along the floor behind the step, the model's curve against the measured points: friction agrees, the model's pressure stays higher downstream" loading="lazy"></div><figcaption><b>The one comparison.</b> Left: skin friction along the floor, with the scored range shaded and the reattachment point marked. Right: the pressure along the floor. Up to the peak the model follows the measurements; after it, the measured pressure falls away and mine doesn't.</figcaption></figure>
+    <h3 id="step-why-it-matters">Why It Matters</h3>
+    <p>Most real ducts have steps, bends and sudden expansions, and the flow separates at them. Where it reattaches decides where heat transfer peaks and where a sensor would read sensibly. Turbulence models are known to struggle with separated flow, so a setup that passes on a straight pipe has to be tested again here, against measurements, before it's trusted.</p>
+    <h3 id="step-the-model">The Model</h3>
+    <dl class="spec">
+      <dt>Geometry</dt><dd>The experiment's channel: a 12.7 mm step, an inlet duct 8 step heights tall, a parallel top wall and an outlet 50 step heights downstream.</dd>
+      <dt>Flow</dt><dd>Air at a reference speed of 44.2 m/s, steady and incompressible. The inlet sits 1.15 m upstream, so both walls grow their own boundary layers, matched to the measured one 4 step heights before the step.</dd>
+      <dt>Turbulence</dt><dd>k-omega SST, the same setup as part 1, with the thin layer at every wall resolved.</dd>
+      <dt>Mesh</dt><dd>About 36,000, 71,000 and 142,000 cells for the mesh study.</dd>
+      <dt>What's compared</dt><dd>Reattachment length, skin friction on the floor and the pressure recovery, against the published tables for the parallel-wall case.</dd>
+    </dl>
+    <details class="record"><summary>The case file: recorded assumptions, limits and inputs</summary><div class="record-body"><p>This is the study's own record, written before the run and saved with it, in the shorthand of the case file.</p><p class="case"><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/cases/step_mesh.toml">cases/step_mesh.toml ↗</a></p><p>Backward-facing step (Driver and Seegmiller, ERCOFTAC 030, parallel walls), 2D RANS k-omega SST, walls resolved; mesh study, levels 0.7 / 1 / 1.41 (about 35k / 71k / 142k cells).</p><h4>Assumptions, and How Each Is Checked</h4><ul><li>2D, steady, incompressible RANS (M 0.128); k-omega SST (openfoam.org v14), walls resolved (y+ under 1 on the floors and the top wall).</li><li>Geometry from the case description: step H 12.7 mm, inlet duct 8 H (expansion 1.125), parallel top wall; Re_H 37500 at U_ref 44.2 m/s (nu 1.497e-5 m^2/s).</li><li>Inflow: uniform velocity 1.153 m upstream of the step (as the experiment&#x27;s trip, 1.0 m), turbulence intensity 1 % and eddy-viscosity ratio 10; both walls grow their own boundary layers; matched on the step-side momentum thickness and edge velocity at x = -4 H.</li><li>Outlet at 50 H, fixed pressure; Cp referred to the floor at x = -4 H.</li></ul><h4>Limits</h4><ul><li>2D: the tunnel&#x27;s span is 12 H, so the side walls&#x27; boundary layers and any spanwise flow are not modelled.</li><li>One turbulence model; its boundary layer is fuller than the measured one at the same momentum thickness (delta99 15 against 19 mm).</li><li>Steady RANS: the shear layer&#x27;s unsteadiness is not resolved.</li></ul><h4>Inputs</h4><div class="table-wrap"><table><thead><tr><th>Input</th><th>Value</th></tr></thead><tbody><tr><td>step_height_m</td><td>0.0127</td></tr><tr><td>inlet_height_ratio</td><td>8</td></tr><tr><td>reynolds_number_h</td><td>37500</td></tr><tr><td>inlet_velocity_m_per_s</td><td>41.95</td></tr><tr><td>reference_velocity_m_per_s</td><td>44.2</td></tr><tr><td>upstream_length_m</td><td>1.153</td></tr><tr><td>downstream_length_over_h</td><td>50</td></tr><tr><td>inlet_turbulence_intensity</td><td>0.01</td></tr><tr><td>inlet_viscosity_ratio</td><td>10</td></tr><tr><td>mesh_level</td><td>1</td></tr><tr><td>turbulence_model</td><td>kOmegaSST</td></tr></tbody></table></div></div></details>
+    <h3 id="step-how-i-checked-it">How I Checked It</h3>
+    <ul class="proof">
+      <li><strong>The inflow first.</strong> The momentum thickness of the boundary layer arriving at the step matches the case description to 0.7 %. That's the input the separating flow inherits, and it was matched on what the description gives, not on the answer.</li>
+      <li><strong>Mesh study.</strong> The reattachment length is 6.414, 6.408 and 6.404 step heights on the three meshes, a mesh uncertainty of 0.2 %. Skin friction at 20 step heights: 1.9 %. The pressure recovery moves by less than 0.001 between meshes, far less than the 0.003 it fails by.</li>
+      <li><strong>Outlet length and inlet turbulence.</strong> Moving the outlet from 30 to 50 step heights changes the reattachment by one part in a million. Inlet turbulence from 0.5 to 2 % changes it by 0.06 %. Neither matters.</li>
+      <li><strong>Scored once.</strong> The comparison ran a single time, from a script written after the predictions were committed.</li>
+    </ul>
+    <div class="caught">
+      <h3 id="step-what-i-caught-along-the-way">What I Caught Along the Way</h3>
+      <ul>
+        <li><strong>A finest mesh that didn't quite finish.</strong> It stopped at its 80,000-iteration cap just short of its velocity residual target. That's a verification fail on that mesh, and it's reported as one. Its effect on the verdicts is bounded by the spread between the meshes above.</li>
+        <li><strong>A wrong prediction about where the friction would be low.</strong> I expected the model to read low just after reattachment, at 10 step heights. It reads low further on, from 16 to 28. It still passes, but the prediction was wrong and it's recorded as wrong.</li>
+        <li><strong>A number I'd seen early, declared.</strong> The measured reattachment length was visible when the data was downloaded. It's declared in every case file, so that one result isn't blind. The friction and pressure tables stayed closed until the comparison.</li>
+      </ul>
+    </div>
+    <h3 id="step-limits-and-what-i-d-do-next">Limits, and What I'd Do Next</h3>
+    <ul>
+      <li>2D: no tunnel side walls, which is the likely cause of the pressure miss. A 3D model of the full span, or a correction for side-wall blockage, would test that directly.</li>
+      <li>One geometry, one Reynolds number and one turbulence model. Steady flow, so the shear layer's unsteadiness isn't resolved.</li>
+      <li>The model's boundary layer is fuller than the measured one at the same momentum thickness. The reattachment was insensitive to that in the smoke tests, but it's a stated difference.</li>
+    </ul>
+    <h3 id="step-evidence">Evidence</h3>
+    <div class="side-card"><ul class="ev-list"><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/portfolio/19-turbulent-pipe-friction.md">Full write-up on GitHub</a></li></ul><p class="label">Run reports, with every check and the saved inputs</p><ul class="ev-list ev-runs"><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261122-233146_step_mesh/report.md">step_mesh</a></li><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261122-233146_step_outlet/report.md">step_outlet</a></li><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261123-035753_step_inlet_tu/report.md">step_inlet_tu</a></li></ul></div>
+      </section>
       </article>
       <aside class="study-side" aria-label="Summary of this study">
-        <div class="side-card"><h2>At a Glance</h2><dl><div><dt>Study</dt><dd>19</dd></div><div><dt>Discipline</dt><dd>Thermal and fluids</dd></div><div><dt>Tools</dt><dd>OpenFOAM</dd></div><div><dt>Verdict</dt><dd><span class="v v-pass">Passes</span></dd></div></dl></div><div class="side-card"><h2>Requirements</h2><ul class="side-reqs"><li><span class="r-what">Friction factor against Prandtl&#x27;s law, Re 10⁵</span><span class="r-num">within 5 % · +2.4 % when converged, mesh uncertainty 0.5 %</span><span class="chip pass">Met</span></li><li><span class="r-what">Same, with wall functions</span><span class="r-num">within 5 % · 5.0 to 5.4 % low at every Reynolds number</span><span class="chip fail">Not met</span></li></ul></div><div class="side-card side-toc"><h2>On This Page</h2><ul class="toc"><li><a href="#the-question">The question</a></li><li><a href="#the-answer">The answer</a></li><li><a href="#why-it-matters">Why it matters</a></li><li><a href="#the-model">The model</a></li><li><a href="#how-it-works">How it works</a></li><li><a href="#how-i-checked-it">How I checked it</a></li><li><a href="#what-i-caught-along-the-way">What I caught along the way</a></li><li><a href="#limits-and-what-i-d-do-next">Limits, and what I&#x27;d do next</a></li><li><a href="#evidence">Evidence</a></li></ul></div>
+        <div class="side-card"><h2>At a Glance</h2><dl><div><dt>Study</dt><dd>19</dd></div><div><dt>Discipline</dt><dd>Thermal and fluids</dd></div><div><dt>Tools</dt><dd>OpenFOAM</dd></div><div><dt>Verdict</dt><dd><span class="v v-most">Passes, with one miss</span></dd></div></dl></div><div class="side-card"><h2>Requirements</h2><ul class="side-reqs"><li class="r-study"><a href="#pipe">19 · Pipe friction</a></li><li><span class="r-what">Friction factor against Prandtl&#x27;s law, Re 10⁵</span><span class="r-num">within 5 % · +2.4 % extrapolated to zero cell size, mesh uncertainty 0.5 %</span><span class="chip pass">Met</span></li><li><span class="r-what">Same, with wall functions</span><span class="r-num">within 5 % · 5.0 to 5.4 % low at every Reynolds number</span><span class="chip fail">Not met</span></li><li class="r-study"><a href="#step">19, part 2 · Flow over a step</a></li><li><span class="r-what">Reattachment length against the measured 6.26 step heights</span><span class="r-num">within 10 % · 6.40 step heights, 2.3 % long</span><span class="chip pass">Met</span></li><li><span class="r-what">Skin friction on the floor, 10 to 30 step heights</span><span class="r-num">within 15 % rms · 7.0 % rms, low at every station</span><span class="chip pass">Met</span></li><li><span class="r-what">Pressure recovery to 30 step heights</span><span class="r-num">within 0.02 · 0.153 against 0.131 measured: 0.023 high</span><span class="chip fail">Not met</span></li><li><span class="r-what">Design use: flow reattached before the heated surface at 8 step heights</span><span class="r-num">≤ 8 H · 6.40 H</span><span class="chip pass">Met</span></li></ul></div><div class="side-card side-toc"><h2>On This Page</h2><ul class="toc"><li class="t-part"><a href="#pipe">19 · Pipe friction</a></li><li class="t-sub"><a href="#pipe-the-question">The question</a></li><li class="t-sub"><a href="#pipe-the-answer">The answer</a></li><li class="t-sub"><a href="#pipe-why-it-matters">Why it matters</a></li><li class="t-sub"><a href="#pipe-the-model">The model</a></li><li class="t-sub"><a href="#pipe-how-it-works">How it works</a></li><li class="t-sub"><a href="#pipe-how-i-checked-it">How I checked it</a></li><li class="t-sub"><a href="#pipe-what-i-caught-along-the-way">What I caught along the way</a></li><li class="t-sub"><a href="#pipe-limits-and-what-i-d-do-next">Limits, and what I&#x27;d do next</a></li><li class="t-sub"><a href="#pipe-evidence">Evidence</a></li><li class="t-part"><a href="#step">19, part 2 · Flow over a step</a></li><li class="t-sub"><a href="#step-the-question">The Question</a></li><li class="t-sub"><a href="#step-the-answer">The Answer</a></li><li class="t-sub"><a href="#step-why-it-matters">Why It Matters</a></li><li class="t-sub"><a href="#step-the-model">The Model</a></li><li class="t-sub"><a href="#step-how-i-checked-it">How I Checked It</a></li><li class="t-sub"><a href="#step-what-i-caught-along-the-way">What I Caught Along the Way</a></li><li class="t-sub"><a href="#step-limits-and-what-i-d-do-next">Limits, and What I&#x27;d Do Next</a></li><li class="t-sub"><a href="#step-evidence">Evidence</a></li></ul></div>
       </aside>
     </div>
     <nav class="pager" aria-label="More studies"><a class="prev" href="cold-plate.html"><small>← Previous study</small><b>Cold Plate: The Coolant Channel, Then the Full Thermal Chain</b></a><a class="next" href="coolant-channel.html"><small>Next study →</small><b>Coolant Channel Pressure Budget</b></a></nav>
@@ -174,8 +222,8 @@
     </div>
   </div>
 </footer>
-<script>window.VP = [{"id": "pipe", "study": "pipe", "kind": "figure", "img": "v2/fig_pipe_friction.svg", "model": "Smooth pipe, fully developed turbulent flow · 100 mm bore, Re 2 × 10⁴ to 2 × 10⁶", "lines": ["Solver: OpenFOAM 14 · k-omega SST on a periodic 5° wedge", "Friction factor against Prandtl's law: the mesh study, the Reynolds sweep and the wall-function placement", "+2.4 % when converged against a 5 % limit · one mesh alone gave the wrong sign"], "check": "", "card": "pipe"}];</script>
-<script src="assets/viewer.js?v=029308e977"></script>
-<script src="assets/site.js?v=029308e977"></script>
+<script>window.VP = [{"id": "pipe", "study": "pipe", "kind": "figure", "img": "v2/fig_pipe_friction.svg", "model": "Smooth pipe, fully developed turbulent flow · 100 mm bore, Re 2 × 10⁴ to 2 × 10⁶", "lines": ["Solver: OpenFOAM 14 · k-omega SST on a periodic 5° wedge", "Friction factor against Prandtl's law: the mesh study, the Reynolds sweep and the wall-function placement", "+2.4 % extrapolated to zero cell size, against a 5 % limit · one mesh alone gave the wrong sign"], "check": "", "card": "turbulent_flow", "part": "19 · Pipe friction", "main": true}, {"id": "step", "study": "step", "kind": "figure", "img": "v2/fig_step_comparison.svg", "model": "Backward-facing step · Driver and Seegmiller's experiment, 12.7 mm step, air at 44.2 m/s", "lines": ["Solver: OpenFOAM 14 · 2D k-omega SST, walls resolved, finest of three meshes", "Skin friction and pressure along the floor against the measurements, scored once", "Reattachment +2.3 % and friction 7.0 % rms pass · pressure recovery 0.023 high against 0.02 misses"], "check": "", "card": "turbulent_flow", "part": "19, part 2 · Flow over a step", "main": false}];</script>
+<script src="assets/viewer.js?v=f4170e14a1"></script>
+<script src="assets/site.js?v=f4170e14a1"></script>
 </body>
 </html>

@@ -4,11 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Every Requirement · Justin Smith</title>
-<meta name="description" content="All 50 requirements across the simulation studies, each with its limit, result and verdict.">
+<meta name="description" content="All 57 requirements across the simulation studies, each with its limit, result and verdict.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://cptgrumpus.github.io/engineering-agent-lab/requirements.html">
 <meta property="og:title" content="Every Requirement in One Table">
-<meta property="og:description" content="All 50 requirements across the simulation studies, each with its limit, result and verdict.">
+<meta property="og:description" content="All 57 requirements across the simulation studies, each with its limit, result and verdict.">
 <meta property="og:image" content="https://cptgrumpus.github.io/engineering-agent-lab/v2/og_card.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -21,7 +21,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
-<link rel="stylesheet" href="assets/site.css?v=029308e977">
+<link rel="stylesheet" href="assets/site.css?v=f4170e14a1">
 </head>
 <body>
 <nav class="topbar" aria-label="Site">
@@ -56,7 +56,7 @@
     <div class="page-head">
       <p class="eyebrow">Requirements</p>
       <h1>Every Requirement in One Table</h1>
-      <p>50 requirements across the studies: <b class="c-pass">34 met</b>, <b class="c-fail">15 not met</b>, <b class="c-warn">1 withheld</b>. "Not met" is still a verified answer: the design fails, and the study explains what would fix it. "Withheld" means the checks didn't support calling it either way. Each study's name links to its page.</p>
+      <p>57 requirements across the studies: <b class="c-pass">40 met</b>, <b class="c-fail">16 not met</b>, <b class="c-warn">1 withheld</b>. "Not met" is still a verified answer: the design fails, and the study explains what would fix it. "Withheld" means the checks didn't support calling it either way. Each study's name links to its page.</p>
     </div>
     <div class="reqs open">
       <div class="table-wrap">
@@ -72,8 +72,11 @@
           <tr><td></td><td>Mass against beam-theory optimum</td><td class="num">independent check</td><td>546.0 g against 545.2 g, 0.13 %</td><td><span class="chip pass">Met</span></td></tr>
           <tr class="r-first"><td><a href="aluminium-strap.html#strap"><span class="r-no">02</span> Cable Hole in a Strap</a></td><td>Hole-edge stress, 16 mm hole</td><td class="num">≤ 120 MPa</td><td>117 MPa</td><td><span class="chip pass">Met</span></td></tr>
           <tr class="r-first"><td><a href="aluminium-strap.html#fatigue"><span class="r-no">03</span> Strap Fatigue Life</a></td><td>Life at the 0–5 kN service cycle</td><td class="num">≥ 3 × 10⁷ cycles</td><td>about 8 × 10⁹</td><td><span class="chip pass">Met</span></td></tr>
-          <tr class="r-first"><td><a href="bracket-modal.html"><span class="r-no">04</span> Bracket Arm Modal</a></td><td>First natural frequency, 7 mm arm</td><td class="num">≥ 250 Hz</td><td>261.7 Hz</td><td><span class="chip pass">Met</span></td></tr>
+          <tr class="r-first"><td><a href="bracket-modal.html#modal"><span class="r-no">04</span> Bracket Arm Modal</a></td><td>First natural frequency, 7 mm arm</td><td class="num">≥ 250 Hz</td><td>261.7 Hz</td><td><span class="chip pass">Met</span></td></tr>
           <tr><td></td><td>Arm mass</td><td class="num">≤ 220 g</td><td>206 g</td><td><span class="chip pass">Met</span></td></tr>
+          <tr class="r-first"><td><a href="bracket-modal.html#random_vib"><span class="r-no">21</span> Bracket Arm Random Vibration</a></td><td>3-sigma stress at the clamp</td><td class="num">≤ 236.7 MPa</td><td>38.6 MPa; mesh uncertainty 1.3 %</td><td><span class="chip pass">Met</span></td></tr>
+          <tr><td></td><td>Fatigue damage over the test, three axes</td><td class="num">≤ 0.5</td><td>0.0024</td><td><span class="chip pass">Met</span></td></tr>
+          <tr><td></td><td>3-sigma tip movement</td><td class="num">≤ 1.0 mm</td><td>0.345 mm</td><td><span class="chip pass">Met</span></td></tr>
           <tr class="r-first"><td><a href="coolant-channel.html"><span class="r-no">05</span> Coolant Channel</a></td><td>Supply pressure</td><td class="num">≤ 30 Pa</td><td>33.4 Pa nominal, 28–42 Pa over tolerances</td><td><span class="chip fail">Not met</span></td></tr>
           <tr><td></td><td>Wall shear stress</td><td class="num">≥ 0.5 Pa</td><td>0.43 Pa with warm coolant</td><td><span class="chip fail">Not met</span></td></tr>
           <tr><td></td><td>2D assumption: side-wall effect</td><td class="num">≤ 5 %</td><td>3.2 %</td><td><span class="chip pass">Met</span></td></tr>
@@ -94,12 +97,16 @@
           <tr><td></td><td>Local membrane stress, PL, on the line through the inner corner</td><td class="num">≤ 207 MPa</td><td>256.7 MPa, 24 % over; needs about 21 mm or a pad (the line I judge it by)</td><td><span class="chip fail">Not met</span></td></tr>
           <tr><td></td><td>Membrane plus bending at the junction, P + Q</td><td class="num">≤ 414 MPa</td><td>240 MPa at the toe (unverified, 42 % margin); 352 MPa through the corner</td><td><span class="chip pass">Met</span></td></tr>
           <tr><td></td><td>Hemispherical head: membrane, and the junction with the shell</td><td class="num">≤ 138 / 207 / 414 MPa</td><td>about 6.5 mm; the head&#x27;s own membrane governs (135.5 MPa at 6.5 mm)</td><td><span class="chip pass">Met</span></td></tr>
-          <tr class="r-first"><td><a href="turbulent-pipe-friction.html"><span class="r-no">19</span> Turbulent Pipe Friction</a></td><td>Friction factor against Prandtl&#x27;s law, Re 10⁵</td><td class="num">within 5 %</td><td>+2.4 % when converged, mesh uncertainty 0.5 %</td><td><span class="chip pass">Met</span></td></tr>
+          <tr class="r-first"><td><a href="turbulent-pipe-friction.html#pipe"><span class="r-no">19</span> Turbulent Pipe Friction</a></td><td>Friction factor against Prandtl&#x27;s law, Re 10⁵</td><td class="num">within 5 %</td><td>+2.4 % extrapolated to zero cell size, mesh uncertainty 0.5 %</td><td><span class="chip pass">Met</span></td></tr>
           <tr><td></td><td>Same, with wall functions</td><td class="num">within 5 %</td><td>5.0 to 5.4 % low at every Reynolds number</td><td><span class="chip fail">Not met</span></td></tr>
+          <tr class="r-first"><td><a href="turbulent-pipe-friction.html#step"><span class="r-no">19</span> Backward-Facing Step</a></td><td>Reattachment length against the measured 6.26 step heights</td><td class="num">within 10 %</td><td>6.40 step heights, 2.3 % long</td><td><span class="chip pass">Met</span></td></tr>
+          <tr><td></td><td>Skin friction on the floor, 10 to 30 step heights</td><td class="num">within 15 % rms</td><td>7.0 % rms, low at every station</td><td><span class="chip pass">Met</span></td></tr>
+          <tr><td></td><td>Pressure recovery to 30 step heights</td><td class="num">within 0.02</td><td>0.153 against 0.131 measured: 0.023 high</td><td><span class="chip fail">Not met</span></td></tr>
+          <tr><td></td><td>Design use: flow reattached before the heated surface at 8 step heights</td><td class="num">≤ 8 H</td><td>6.40 H</td><td><span class="chip pass">Met</span></td></tr>
           <tr class="r-first"><td><a href="traction-motor.html"><span class="r-no">20</span> Traction Motor</a></td><td>Blind test: back-EMF against the measured motor</td><td class="num">within 5 %</td><td>23.5 % high (110.9 against 89.8 V per 1,000 rpm)</td><td><span class="chip fail">Not met</span></td></tr>
           <tr><td></td><td>Blind test: peak torque, 50 to 250 A</td><td class="num">within 10 %</td><td>7 % high at low current, rising to 24 % high</td><td><span class="chip fail">Not met</span></td></tr>
           <tr><td></td><td>Blind test: efficiency at 393 measured points</td><td class="num">within 2 points</td><td>5.2 points high (median)</td><td><span class="chip fail">Not met</span></td></tr>
-          <tr><td></td><td>Open-circuit voltage at 6,000 rpm if the inverter stops switching</td><td class="num">≤ 500 V</td><td>about 1,040 V predicted; 850 V measured</td><td><span class="chip fail">Not met</span></td></tr>
+          <tr><td></td><td>Open-circuit voltage at 6,000 rpm if the inverter stops switching</td><td class="num">≤ 500 V</td><td>about 1,040 V blind; 856 V after calibration; 850 V measured</td><td><span class="chip fail">Not met</span></td></tr>
           <tr><td></td><td>Rotor bridge stress at 7,200 rpm overspeed</td><td class="num">≤ 335 MPa</td><td>424 MPa; elastic at 6,000 rpm (295 MPa)</td><td><span class="chip fail">Not met</span></td></tr>
           <tr><td></td><td>Every point of the torque curve within the copper limit</td><td class="num">≤ 212 A</td><td>250 A and above exceed it: a short-time rating</td><td><span class="chip fail">Not met</span></td></tr>
           <tr><td></td><td>Rated 400 N m within the copper&#x27;s current-density limit</td><td class="num">≤ 25 A/mm²</td><td>19.8 A/mm² on the blind model; not yet rerun after calibration</td><td><span class="chip warn">Withheld</span></td></tr>
@@ -149,6 +156,6 @@
   </div>
 </footer>
 
-<script src="assets/site.js?v=029308e977"></script>
+<script src="assets/site.js?v=f4170e14a1"></script>
 </body>
 </html>

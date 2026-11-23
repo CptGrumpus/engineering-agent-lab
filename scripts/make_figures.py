@@ -1079,16 +1079,18 @@ def pipe_friction():
     ns = sorted(seen)
     ax.plot([1 / n for n in ns], [seen[n] for n in ns], color=MODEL, linewidth=1.6, alpha=0.5, zorder=3)
     fk.dots(ax, [1 / n for n in ns], [seen[n] for n in ns], size=44)
+    place = {40: (6, 8, "left", "bottom"), 80: (6, -9, "left", "top"), 160: (7, -6, "left", "top"),
+             320: (0, -10, "center", "top"), 640: (7, 3, "left", "bottom")}
     for n in ns:
-        if n < 640:
-            fk.label(ax, 1 / n, seen[n], f"{n}", dx=6, dy=-9, va="top", color=INK2, size=8.5)
+        dx, dy, ha, va = place.get(n, (6, -9, "left", "top"))
+        fk.label(ax, 1 / n, seen[n], f"{n}", dx=dx, dy=dy, ha=ha, va=va, color=INK2, size=8.5)
     v = json.loads((RUNS / "20261122-202459_pipe_rans_mesh_r3" / "verification.json").read_text(encoding="utf-8"))
     u = v["run_check_detail"]["friction_factor"]
     m0 = fin[0]["metrics"]
     pr = m0["friction_factor"] / (1 + m0["friction_dev_prandtl_pct"] / 100)
     ye, ue = 100 * (u["extrapolated"] / pr - 1), 100 * u["uncertainty"] * u["extrapolated"] / pr
     ax.errorbar([0.0006], [ye], yerr=[ue], color=INK, marker="D", markersize=6, capsize=3, linewidth=1.2, zorder=5)
-    fk.label(ax, 0.0006, ye, f"converged: {ye:+.1f} %", dx=9, dy=8, va="bottom", size=8.5)
+    fk.label(ax, 0.0006, ye + ue, f"extrapolated to zero\ncell size: {ye:+.1f} ± {ue:.1f} %", dx=8, dy=2, va="bottom", size=8.5)
     fk.label(ax, 1 / ns[1], seen[ns[1]], "one mesh alone\nreads −0.9 %", dx=-4, dy=-22, ha="center", va="top", color=INK2, size=8.5)
     ax.set_xlim(0, 0.028)
     ax.set_xlabel("1 ÷ cells across the radius (finer to the left)")
@@ -1122,7 +1124,7 @@ def pipe_friction():
     fk.label(ax, xs[len(xs) // 2], ys[len(xs) // 2], "about 5 % low wherever\nthe first cell sits", dx=0, dy=14, ha="center", va="bottom", color=INK2, size=8.5)
     ax.set_xlabel("where the first cell sits (y+)")
     fk.panel(ax, "Wall functions: moving the first cell")
-    fk.heading(fig, "Resolved at the wall, the model converges 2.4 % above the measured law; wall functions sit 5 % low",
+    fk.heading(fig, "Resolved at the wall, the model lands 2.4 % above the measured law; wall functions sit 5 % low",
                "Smooth-pipe friction factor from the turbulence model against Prandtl's law, the fit to Nikuradse's measurements")
     fk.key(fig, [("wall layer resolved", "dot", MODEL), ("wall functions", "dot", REF)], y_in=0.66)
     fk.save(fig, "pipe_friction")
@@ -1362,11 +1364,139 @@ def pv_nozzle():
     fk.save(fig, "pv_nozzle")
 
 
+# ---------------------------------------------------------------------------------------- study 19 part 2, the step
+
+STEP_RUN, STEP_PT = "20261122-233146_step_mesh", "p02_mesh_level-1.4142"
+
+
+def step_comparison():
+    """The step against Driver and Seegmiller: skin friction and pressure along the step-side wall."""
+    import csv
+    sys.path.insert(0, str(REPO / "validation" / "step_driver_seegmiller"))
+    import compare as sc                       # the same readers the one scored comparison used
+    data = Path.home() / "data" / "ercoftac_case030" / "files"
+    res = json.loads((REPO / "validation" / "step_driver_seegmiller" / "comparison.json").read_text(encoding="utf-8"))
+    assert res["run"] == STEP_RUN and res["point"] == STEP_PT
+    cf_m, cp_m = sc.measured_cf(data), sc.measured_cp(data)
+    pdir = RUNS / STEP_RUN / "points" / STEP_PT
+    with open(pdir / "wall.csv", newline="", encoding="utf-8") as f:
+        rows = [{k: float(v) for k, v in r.items()} for r in csv.DictReader(f)]
+    o = point(STEP_RUN, STEP_PT)["solver_outputs"]
+    xs, cfs = np.array([r["x_over_h"] for r in rows]), np.array([r["cf"] for r in rows])
+    xu, cfu = np.array(o["profiles"]["x_up_over_h"]), np.array(o["profiles"]["cf_up"])
+    xp, cp = np.array(o["profiles"]["x_p_over_h"]), np.array(o["profiles"]["cp"])
+
+    fig, gs = fk.new(FULL, 3.9, 1, 2, wspace=0.22, top=1.0)
+    ax = fig.add_subplot(gs[0, 0])
+    fk.style(ax)
+    ax.axvspan(10, 30, color=MODEL, alpha=0.06, linewidth=0, zorder=0.5)
+    ax.axhline(0, color=fk.AXIS, linewidth=1.0, zorder=1)
+    for x_, c_ in ((xu, cfu), (xs, cfs)):              # the wall before the step, then the floor after it
+        k = (x_ >= -4) & (x_ <= 32)
+        ax.plot(x_[k], 1e3 * c_[k], color=MODEL, zorder=3)
+    m = (cf_m[:, 0] >= -4) & (cf_m[:, 0] <= 32)
+    ax.errorbar(cf_m[m, 0], 1e3 * cf_m[m, 1], yerr=1e3 * np.abs(cf_m[m, 1]) * cf_m[m, 2], fmt="none", ecolor=REF,
+                elinewidth=1, capsize=2, zorder=3)
+    fk.dots(ax, cf_m[m, 0], 1e3 * cf_m[m, 1], color=REF, size=34)
+    s1 = res["REQ-S1"]
+    ax.set_xlim(-4.5, 32)
+    ax.set_ylim(-2.0, 3.9)
+    fk.status_dot(ax, s1["ours"], 0, "meets" if s1["pass"] else "misses", size=48)
+    fk.label(ax, s1["ours"], 0, f"reattaches at {s1['ours']:.2f} H\n(measured {s1['measured']:.2f})", dx=6, dy=-8, va="top",
+             color=INK2, size=8.5)
+    fk.label(ax, 20, 3.8, f"scored from 10 to 30 H: {100 * res['REQ-S2']['rms_rel_error']:.1f} % rms, limit 15 %", ha="center",
+             va="top", color=INK2, size=8.5)
+    ax.set_xlabel("distance from the step, step heights")
+    ax.set_ylabel("skin friction coefficient × 1000")
+    fk.panel(ax, "Skin friction along the floor: passes")
+
+    ax = fig.add_subplot(gs[0, 1])
+    fk.style(ax)
+    sel = (xp >= -4) & (xp <= 32)
+    ax.plot(xp[sel], cp[sel], color=MODEL, zorder=3)
+    m = (cp_m[:, 0] >= -4) & (cp_m[:, 0] <= 32)
+    fk.dots(ax, cp_m[m, 0], cp_m[m, 1], color=REF, size=34)
+    s3 = res["REQ-S3"]
+    ax.set_xlim(-4.5, 32)
+    y30 = float(np.interp(30, xp, cp))
+    fk.status_dot(ax, 30, y30, "meets" if s3["pass"] else "misses", size=48)
+    fk.label(ax, 31, 0.03, f"recovery to 30 H: {s3['ours']:.3f}\nmeasured {s3['measured']:.3f}, limit ±0.02", ha="right",
+             va="center", color=INK2, size=8.5)
+    ax.set_xlabel("distance from the step, step heights")
+    ax.set_ylabel("pressure coefficient")
+    fk.panel(ax, f"Pressure along the floor: recovery {s3['difference']:+.3f}, misses")
+    fk.heading(fig, "Behind the step the model passes on reattachment and friction, but the pressure recovers too far",
+               "2D k-omega SST on the finest mesh against Driver and Seegmiller's measurements, scored once against limits agreed beforehand")
+    fk.key(fig, [("measured", "dot", REF), ("model", "line", MODEL), ("meets", "meets", None), ("misses", "misses", None)], y_in=0.66)
+    fk.save(fig, "step_comparison")
+
+
+# ---------------------------------------------------------------------------------------- study 21, random vibration
+
+RV_RUN, RV_PT = "20261123-100907_bracket_random_mesh", "p02_element_size_mm-1.2207"
+
+
+def random_vibration():
+    """The root stress spectrum on each axis, and each requirement as a share of its limit."""
+    from matplotlib.ticker import FixedLocator, NullFormatter
+    s = read_series(RUNS / RV_RUN / "points" / RV_PT / "response_psd.csv")
+    pt = point(RV_RUN, RV_PT)
+    mt = pt["metrics"]
+    L = limits("bracket_random_mesh")
+    ok = verified(RV_RUN)[RV_PT]
+    fig, gs = fk.new(FULL, 3.9, 1, 2, wspace=0.12, top=1.0, width_ratios=[1.5, 1])
+    ax = fig.add_subplot(gs[0, 0])
+    fk.style(ax, grid="both")
+    f = np.asarray(s["f_Hz"])
+    for axis, color, text, at in (("z", MODEL, "shaken flapwise (z)", None), ("y", REF, "shaken sideways (y)", None),
+                                  ("x", fk.THIRD, "shaken along the arm (x)", 60.0)):
+        y = np.asarray(s[f"sxx_psd_{axis}_MPa2_per_Hz"])
+        ax.plot(f, y, color=color, linewidth=1.6, zorder=3)
+        i = int(np.argmax(y)) if at is None else int(np.argmin(abs(f - at)))
+        fk.label(ax, f[i], y[i], text, dx=6 if at is None else 0, dy=2 if at is None else 5, ha="left" if at is None else "center",
+                 va="bottom", color=INK2, size=8.5)
+    ax.set_xscale("log")
+    ax.set_yscale("log")
+    ax.set_xlim(20, 2000)
+    ax.set_ylim(1e-6, 1e2)
+    fq = pt["solver_outputs"]["frequency_Hz"]
+    ax.axvline(fq[0], color=fk.AXIS, linewidth=0.8, linestyle=(0, (3, 3)), zorder=1)
+    fk.label(ax, fq[0], 1e2, f"first mode,\n{fq[0]:.0f} Hz", dx=-4, dy=-4, ha="right", va="top", color=INK2, size=8.5)
+    ax.set_xlabel("frequency, Hz (input flat at 0.04 g²/Hz)")
+    ax.set_ylabel("stress at the clamp, MPa²/Hz")
+    fk.panel(ax, "Where the stress comes from")
+
+    ax = fig.add_subplot(gs[0, 1])
+    fk.style(ax, grid="x")
+    reqs = [("3-sigma stress", "stress_3sigma_MPa", "{:.1f} of {:.1f} MPa"), ("fatigue damage", "damage_dirlik", "{:.4f} of {:.1f}"),
+            ("3-sigma tip movement", "tip_disp_3sigma_mm", "{:.3f} of {:.1f} mm")]
+    ax.set_xscale("log")
+    ax.set_xlim(1e-3, 3)
+    ax.set_ylim(2.7, -0.7)
+    for i, (name, key_, fmt) in enumerate(reqs):
+        lim = L[key_][1]
+        r = mt[key_] / lim
+        fk.status_dot(ax, r, i, ("meets" if r <= 1 else "misses") if ok else "held")
+        fk.label(ax, r, i, name, dx=0, dy=10, ha="center", va="bottom", size=9)
+        fk.label(ax, r, i, fmt.format(mt[key_], lim), dx=0, dy=-10, ha="center", va="top", color=INK2, size=8.5)
+    ax.set_yticks([])
+    fk.limit(ax, 1.0, "limit", "above", axis="x", at=0.99)
+    ax.xaxis.set_major_locator(FixedLocator([1e-3, 1e-2, 1e-1, 1]))
+    ax.set_xticklabels(["0.001", "0.01", "0.1", "1"])
+    ax.xaxis.set_minor_formatter(NullFormatter())
+    ax.set_xlabel("share of the limit used")
+    fk.panel(ax, "Each requirement against its limit")
+    fk.heading(fig, "The arm passes one hour per axis on the shaker, with room to spare on all three limits",
+               "Modal superposition on the finest of three meshes (1.22 mm), 2 % damping; the test level and damping are assumed")
+    fk.key(fig, [("meets", "meets", None)], y_in=0.66)
+    fk.save(fig, "random_vibration")
+
+
 ALL = {f.__name__: f for f in (cfd_tolerance, cfd_duct, cfd_response, cfd_field, fea_tet4, strap_sweep, fatigue_sweep,
                                strut_sweep, strut_response, proof_response, joint_response, contact_response, fea_response, strap_response,
                                fatigue_sn, fin_response, fin_h_sweep, qc_bump_sweep, cad_sweep, heat_response,
                                qc_liftoff, qc_iso, coldplate_response, pipe_friction, motor_comparison, motor_efficiency, motor_thermal,
-                               motor_rotor, pv_nozzle)}
+                               motor_rotor, pv_nozzle, step_comparison, random_vibration)}
 
 if __name__ == "__main__":
     for name in sys.argv[1:] or ALL:

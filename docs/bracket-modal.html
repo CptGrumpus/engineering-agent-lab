@@ -3,16 +3,16 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Bracket Arm Modal Analysis · Justin Smith</title>
-<meta name="description" content="7 mm thick puts the first mode at 261.7 Hz and the weight at 206 g.">
+<title>Bracket Arm: Modal Analysis, Then Random Vibration · Justin Smith</title>
+<meta name="description" content="7 mm thick puts the first mode at 261.7 Hz and the weight at 206 g. Then the same arm on a shaker table, one hour per axis of random vibration: 38.6 MPa at the clamp against 236.7, fatigue damage 0.0024 against 0.5 and 0.345 mm of tip movement against 1 mm.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://cptgrumpus.github.io/engineering-agent-lab/bracket-modal.html">
-<meta property="og:title" content="Bracket Arm Modal Analysis">
-<meta property="og:description" content="7 mm thick puts the first mode at 261.7 Hz and the weight at 206 g.">
+<meta property="og:title" content="Bracket Arm: Modal Analysis, Then Random Vibration">
+<meta property="og:description" content="7 mm thick puts the first mode at 261.7 Hz and the weight at 206 g. Then the same arm on a shaker table, one hour per axis of random vibration: 38.6 MPa at the clamp against 236.7, fatigue damage 0.0024 against 0.5 and 0.345 mm of tip movement against 1 mm.">
 <meta property="og:image" content="https://cptgrumpus.github.io/engineering-agent-lab/v2/og_bracket-modal.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="Bracket arm modal analysis: result render">
+<meta property="og:image:alt" content="Bracket arm: modal analysis, then random vibration: result render">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="canonical" href="https://cptgrumpus.github.io/engineering-agent-lab/bracket-modal.html">
 <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
@@ -21,7 +21,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
-<link rel="stylesheet" href="assets/site.css?v=029308e977">
+<link rel="stylesheet" href="assets/site.css?v=f4170e14a1">
 </head>
 <body>
 <nav class="topbar" aria-label="Site">
@@ -55,10 +55,10 @@
   <div class="wrap">
     <nav class="crumbs" aria-label="Breadcrumb"><a href="index.html#work">All studies</a><span>/</span><span>Structures and vibration</span></nav>
     <header class="study-hero">
-      <p class="eyebrow">Study 4 · CadQuery, Gmsh and CalculiX, modal analysis</p>
-      <h1>Bracket Arm Modal Analysis</h1>
+      <p class="eyebrow">Studies 4 and 21 · CadQuery, Gmsh, CalculiX and Python</p>
+      <h1>Bracket Arm: Modal Analysis, Then Random Vibration</h1>
       <span class="v v-pass">Passes</span>
-      <p class="study-lede">7 mm thick puts the first mode at 261.7 Hz and the weight at 206 g.</p>
+      <p class="study-lede">7 mm thick puts the first mode at 261.7 Hz and the weight at 206 g. Then the same arm on a shaker table, one hour per axis of random vibration: 38.6 MPa at the clamp against 236.7, fatigue damage 0.0024 against 0.5 and 0.345 mm of tip movement against 1 mm.</p>
     </header>
     <div class="vp" id="vp" role="region" aria-label="Result viewer">
       <div class="legend">
@@ -85,18 +85,19 @@
 
     <div class="study-layout">
       <article class="study-main">
-
-    <h2 id="the-question">The Question</h2>
+      <section class="part" id="modal" data-part="modal">
+        <div class="part-head"><span class="label">Study 4 · CadQuery, Gmsh and CalculiX, modal analysis</span><h2>Bracket Arm Vibration, Modal Analysis</h2></div>
+    <h3 id="modal-the-question">The Question</h3>
     <p>A steel bracket arm, 150 by 25 mm, bolts on near an engine whose second order reaches 200 Hz at 6000 rpm. Its first natural frequency needs to stay above 250 Hz for 25 % separation, and it has to weigh 220 g or less. How thin can it be?</p>
-    <h2 id="the-answer">The Answer</h2>
+    <h3 id="modal-the-answer">The Answer</h3>
     <div class="answer">
       <div class="chips"><span class="chip pass">7 mm: first mode 261.7 Hz</span><span class="chip pass">206 g, within budget</span><span class="chip pass">Mesh uncertainty 0.03 %</span></div>
       <p><strong>7 mm.</strong> At 6 mm the first mode drops to 224 Hz, right in the band I'm trying to stay out of. At 8 mm it's 299 Hz, but the arm weighs 236 g and goes over budget. 7 mm is the only whole-millimetre thickness that does both.</p>
     </div>
-    <h2 id="why-it-matters">Why It Matters</h2>
+    <h3 id="modal-why-it-matters">Why It Matters</h3>
     <p>Every part has natural frequencies at which it likes to vibrate. If something nearby shakes it at one of them, the motion builds up, and a bracket that is strong enough for its static load can still crack from fatigue. An engine is a strong source. Its second order, two pulses per revolution, reaches 200 Hz at 6000 rpm, and it shakes everything bolted nearby. The usual rule is to keep a part's first natural frequency well clear of that, here 25 % above it.</p>
     <p>Making the arm thicker raises the frequency but adds mass, so the two requirements pull against each other and only a narrow range of thickness satisfies both.</p>
-    <h2 id="the-model">The Model</h2>
+    <h3 id="modal-the-model">The Model</h3>
     <dl class="spec">
       <dt>Part</dt><dd>A flat steel arm, 150 × 25 mm, clamped at one end. Thicknesses from 5 to 9 mm are tried.</dd>
       <dt>Material</dt><dd>Steel: Young's modulus 210 GPa, Poisson's ratio 0.3, density 7850 kg/m³.</dd>
@@ -106,8 +107,8 @@
       <dt>What's measured</dt><dd>The first natural frequency and the arm's mass. Each mode is identified automatically as flapwise bending, in-plane bending or torsion from how its mass moves.</dd>
     </dl>
     <figure class="drawing"><div class="plate"><img src="v2/dwg_modal.webp" alt="Plan and side view of the clamped arm with its first mode shape" loading="lazy"></div><figcaption>The arm in plan and side view, with the shape of its first mode sketched in blue.</figcaption></figure>
-    <details class="record"><summary>The case file: recorded assumptions, limits and inputs</summary><div class="record-body"><p>This is the study's own record, written before the run and saved with it, in the shorthand of the case file.</p><p class="case"><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/cases/bracket_modal_thickness.toml">cases/bracket_modal_thickness.toml ↗</a></p><p>Steel bracket arm, 150 x 25 mm, clamped at one end, thickness swept from 5 to 9 mm on 1.95 mm quadratic tetrahedra (the mesh study level). Finds the thinnest arm that keeps the first natural frequency above 250 Hz within a 220 g mass budget.</p><h3>Assumptions, and How Each Is Checked</h3><ul><li>Linear elastic steel (E = 210 GPa, nu = 0.3, density 7850 kg/m^3); small-amplitude vibration.</li><li>Ideal rigid clamp over the whole root face. A real bolted joint is softer and lowers the frequencies; this is the main model-form risk.</li><li>No attached mass at the tip (the carried component is light or mounted at the root).</li><li>The beam references assume a slender arm; checked: thickness / length below 0.2.</li></ul><h3>Limits</h3><ul><li>Synthetic geometry and requirement.</li><li>Beam theory is a model-form reference for a 3D clamped solid, especially for in-plane bending (length / width = 6) and torsion (warping restraint).</li><li>No damping, no prestress, no physical test data.</li></ul><h3>Inputs</h3><div class="table-wrap"><table><thead><tr><th>Input</th><th>Value</th></tr></thead><tbody><tr><td>length_mm</td><td>150</td></tr><tr><td>width_mm</td><td>25</td></tr><tr><td>thickness_mm</td><td>7</td></tr><tr><td>youngs_modulus_MPa</td><td>210000</td></tr><tr><td>poisson_ratio</td><td>0.3</td></tr><tr><td>density_t_per_mm3</td><td>7.85e-09</td></tr><tr><td>element_size_mm</td><td>1.95312</td></tr><tr><td>n_modes</td><td>6</td></tr></tbody></table></div></div></details>
-    <h2 id="how-it-works">How It Works</h2>
+    <details class="record"><summary>The case file: recorded assumptions, limits and inputs</summary><div class="record-body"><p>This is the study's own record, written before the run and saved with it, in the shorthand of the case file.</p><p class="case"><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/cases/bracket_modal_thickness.toml">cases/bracket_modal_thickness.toml ↗</a></p><p>Steel bracket arm, 150 x 25 mm, clamped at one end, thickness swept from 5 to 9 mm on 1.95 mm quadratic tetrahedra (the mesh study level). Finds the thinnest arm that keeps the first natural frequency above 250 Hz within a 220 g mass budget.</p><h4>Assumptions, and How Each Is Checked</h4><ul><li>Linear elastic steel (E = 210 GPa, nu = 0.3, density 7850 kg/m^3); small-amplitude vibration.</li><li>Ideal rigid clamp over the whole root face. A real bolted joint is softer and lowers the frequencies; this is the main model-form risk.</li><li>No attached mass at the tip (the carried component is light or mounted at the root).</li><li>The beam references assume a slender arm; checked: thickness / length below 0.2.</li></ul><h4>Limits</h4><ul><li>Synthetic geometry and requirement.</li><li>Beam theory is a model-form reference for a 3D clamped solid, especially for in-plane bending (length / width = 6) and torsion (warping restraint).</li><li>No damping, no prestress, no physical test data.</li></ul><h4>Inputs</h4><div class="table-wrap"><table><thead><tr><th>Input</th><th>Value</th></tr></thead><tbody><tr><td>length_mm</td><td>150</td></tr><tr><td>width_mm</td><td>25</td></tr><tr><td>thickness_mm</td><td>7</td></tr><tr><td>youngs_modulus_MPa</td><td>210000</td></tr><tr><td>poisson_ratio</td><td>0.3</td></tr><tr><td>density_t_per_mm3</td><td>7.85e-09</td></tr><tr><td>element_size_mm</td><td>1.95312</td></tr><tr><td>n_modes</td><td>6</td></tr></tbody></table></div></div></details>
+    <h3 id="modal-how-it-works">How It Works</h3>
     <p>CadQuery builds the arm, Gmsh meshes it and CalculiX extracts the first six modes. A modal analysis has no load: it solves for the shapes and frequencies the part would vibrate at if disturbed.</p>
     <p>The order of the modes isn't assumed. For each one the model works out how much of the arm's mass moves in each direction (the effective modal mass), which says whether it's the arm flapping, bending sideways or twisting. That matters because the order changes with thickness, and a requirement on "the first bending mode" has to follow the right one.</p>
     <figure><div class="plate"><img src="img/bracket_modes.webp" alt="First four mode shapes, animated" loading="lazy"></div><figcaption>The first four mode shapes from CalculiX. Each one is identified automatically from its effective mass.</figcaption></figure>
@@ -115,7 +116,7 @@
       <figure><div class="plate"><img src="img/render_bracket_modes.png" alt="First four mode shapes, rendered in Blender" loading="lazy"></div><figcaption>The same four modes rendered in Blender. The colour shows how far each point moves.</figcaption></figure>
       <figure><div class="plate"><img src="img/bracket_render.png" alt="Bracket arm, CadQuery geometry" loading="lazy"></div><figcaption>The arm as CadQuery builds it.</figcaption></figure>
     </div>
-    <h2 id="how-i-checked-it">How I Checked It</h2>
+    <h3 id="modal-how-i-checked-it">How I Checked It</h3>
     <ul class="proof">
       <li><strong>Against an independent beam model.</strong> I built a separate 1D Timoshenko beam model, which includes shear deformation and rotary inertia, and tested it against the textbook frequencies first. It agrees with the 3D bending modes within 0.9 % and with the in-plane mode within 0.4 %. The 3D arm is slightly stiffer, as a wide, fully clamped solid should be.</li>
       <li><strong>Mode shape and mass.</strong> The first mode shape matches the beam model almost perfectly, with a modal assurance criterion of 0.99999 (1 is a perfect match). Its effective mass is within 0.002 of the textbook 61.4 % of the arm's mass.</li>
@@ -123,20 +124,70 @@
       <li><strong>Predictions.</strong> Every thickness landed within 0.7 to 0.9 % of the values I wrote down before running.</li>
     </ul>
     <div class="caught">
-      <h2 id="what-i-caught-along-the-way">What I Caught Along the Way</h2>
+      <h3 id="modal-what-i-caught-along-the-way">What I Caught Along the Way</h3>
       <ul><li>One of my predictions was wrong. The frequencies converged more slowly than the textbook rate, because the clamped corners are singular and that slows convergence everywhere. Slower convergence still gives an honest uncertainty, 0.03 % here. Convergence much faster than the textbook rate would have been the real warning sign, and the checks now flag that automatically.</li></ul>
     </div>
-    <h2 id="limits-and-what-i-d-do-next">Limits, and What I'd Do Next</h2>
+    <h3 id="modal-limits-and-what-i-d-do-next">Limits, and What I'd Do Next</h3>
     <ul>
       <li>The clamp is perfectly rigid. A real bolted joint is softer and lowers the frequencies. The margin is 4.7 %, so the joint stiffness is the main risk, and I'd measure or model it before signing this off.</li>
       <li>No attached component mass, damping or prestress. A component hung on the arm would lower the frequency.</li>
       <li>The geometry, the excitation and the mass budget are made up, and there's no test data. A tap test with an accelerometer would check it directly.</li>
     </ul>
-    <h2 id="evidence">Evidence</h2>
+    <h3 id="modal-evidence">Evidence</h3>
     <div class="side-card"><ul class="ev-list"><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/portfolio/04-bracket-modal.md">Full write-up on GitHub</a></li></ul><p class="label">Run reports, with every check and the saved inputs</p><ul class="ev-list ev-runs"><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261120-010318_bracket_modal_mesh/report.md">bracket_modal_mesh</a></li><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261120-010521_bracket_modal_thickness/report.md">bracket_modal_thickness</a></li></ul></div>
+      </section>
+      <section class="part" id="random_vib" data-part="random_vib">
+        <div class="part-head"><span class="label">Study 21 · CadQuery, Gmsh, CalculiX and Python, random vibration</span><h2>Bracket Arm on a Shaker Table, Random Vibration</h2></div>
+    <h3 id="random_vib-the-question">The Question</h3>
+    <p>The 7 mm arm from study 4 passed its modal target. A qualification test then shakes it on a table with a random acceleration spectrum: flat at 0.04 g²/Hz from 20 to 2,000 Hz, about 8.9 g rms, for one hour on each of the three axes. Does it survive? Three requirements: the 3-sigma stress at the clamp stays below yield divided by 1.5 (236.7 MPa for an S355-type steel); the fatigue damage of the whole test stays below 0.5; and the tip moves less than 1 mm relative to its base, 3-sigma. The spectrum, the 2 % damping, the fatigue detail and the clearance are assumed values, stated as such.</p>
+    <h3 id="random_vib-the-answer">The Answer</h3>
+    <div class="answer">
+      <div class="chips"><span class="chip pass">Stress 38.6 MPa, limit 236.7</span><span class="chip pass">Fatigue damage 0.0024, limit 0.5</span><span class="chip pass">Tip 0.345 mm, limit 1.0</span><span class="chip pass">Mesh uncertainty 1.3 %</span></div>
+      <p><strong>Yes, with wide margins.</strong> The stress at the clamp is a sixth of its limit and the fatigue damage about a two-hundredth. The tip clearance is the closest of the three, at about a third of the 1 mm allowed. Shaking it flapwise governs: the first bending mode at 262 Hz carries almost all of the response.</p>
+      <p><strong>The fatigue margin is less comfortable than it looks.</strong> The 3-sigma stress range, about 77 MPa, sits just above the fatigue curve's cut-off of 65 MPa for this detail, so most cycles do no damage at all. That also makes the damage very sensitive: 10 % more stress roughly doubles it. The uncertainty study now running puts numbers on that.</p>
+    </div>
+    <figure><div class="plate"><img src="v2/fig_random_vibration.svg" alt="Stress spectrum at the clamp for each shaking direction, peaking at the first mode, and each of the three requirements plotted as a share of its limit" loading="lazy"></div><figcaption><b>Where the stress comes from, and how close each limit is.</b> Left: the stress at the clamp across the test's frequency range for each shaking direction. The flapwise peak at the first mode dominates. Right: each requirement as a share of its limit, on a log scale.</figcaption></figure>
+    <h3 id="random_vib-why-it-matters">Why It Matters</h3>
+    <p>A frequency check like study 4's only says the arm won't sit on a resonance. Anything mounted near an engine or on a vehicle also sees broadband vibration, and that's what qualification tests reproduce. Random vibration can't be checked with a single load case: the answer is statistical, a stress that's exceeded a known fraction of the time, and fatigue builds up from millions of cycles of different sizes.</p>
+    <h3 id="random_vib-the-model">The Model</h3>
+    <dl class="spec">
+      <dt>Part</dt><dd>The study 4 arm: steel, 150 × 25 × 7 mm, clamped at the root.</dd>
+      <dt>Material</dt><dd>Steel: Young's modulus 210 GPa, Poisson's ratio 0.3, density 7850 kg/m³, yield 355 MPa. Fatigue from the EN 1993-1-9 curve for plain rolled plate (detail category 160).</dd>
+      <dt>Test</dt><dd>A flat input of 0.04 g²/Hz from 20 to 2,000 Hz, one hour per axis, 2 % damping on every mode.</dd>
+      <dt>Mesh</dt><dd>Quadratic tetrahedra of 3.1, 1.95 and 1.22 mm for the mesh study.</dd>
+      <dt>Analysis</dt><dd>30 modes from CalculiX, up to about 53 kHz, then the random response summed over the modes in Python.</dd>
+    </dl>
+    <details class="record"><summary>The case file: recorded assumptions, limits and inputs</summary><div class="record-body"><p>This is the study's own record, written before the run and saved with it, in the shorthand of the case file.</p><p class="case"><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/cases/bracket_random_mesh.toml">cases/bracket_random_mesh.toml ↗</a></p><p>Study C: study 4&#x27;s steel bracket arm (150 x 25 x 7 mm, clamped) under a flat 0.04 g^2/Hz base PSD from 20 to 2000 Hz, 1 h per axis, 2 % damping; CalculiX modes and modal stresses, modal superposition in Python; 3 sigma root stress (hot-spot), fatigue damage (Dirlik, EN 1993-1-9 detail 160) and tip displacement; quadratic-tetrahedron mesh 3.125 / 1.95 / 1.22 mm.</p><h4>Assumptions, and How Each Is Checked</h4><ul><li>Linear elastic steel (E 210 GPa, nu 0.3, 7850 kg/m^3); stationary Gaussian base acceleration, one axis at a time; zero mean stress.</li><li>Rigid clamp over the whole root face (as study 4); 2 % modal damping on every mode (synthetic).</li><li>Root stress by surface extrapolation from 0.4 t and 1.0 t (IIW hot-spot rule) applied to each mode; the clamp-corner nodal value is singular and not used.</li><li>Fatigue on the root&#x27;s axial stress (sigma_xx), the dominant component; Dirlik&#x27;s range distribution; Miner&#x27;s sum over the three axes.</li></ul><h4>Limits</h4><ul><li>Synthetic excitation, damping, clearance and S-N detail; no attached component, no bolt-joint flexibility (it would lower the first mode, the main risk, as in study 4).</li><li>No fretting at the clamp edge (the S-N detail is for plain rolled plate).</li></ul><h4>Inputs</h4><div class="table-wrap"><table><thead><tr><th>Input</th><th>Value</th></tr></thead><tbody><tr><td>length_mm</td><td>150</td></tr><tr><td>width_mm</td><td>25</td></tr><tr><td>thickness_mm</td><td>7</td></tr><tr><td>youngs_modulus_MPa</td><td>210000</td></tr><tr><td>poisson_ratio</td><td>0.3</td></tr><tr><td>density_t_per_mm3</td><td>7.85e-09</td></tr><tr><td>element_size_mm</td><td>1.95312</td></tr><tr><td>n_modes</td><td>30</td></tr><tr><td>damping_ratio</td><td>0.02</td></tr><tr><td>psd_g2_per_Hz</td><td>0.04</td></tr><tr><td>f_low_Hz</td><td>20</td></tr><tr><td>f_high_Hz</td><td>2000</td></tr><tr><td>duration_per_axis_s</td><td>3600</td></tr><tr><td>yield_MPa</td><td>355</td></tr><tr><td>detail_category_MPa</td><td>160</td></tr><tr><td>clearance_mm</td><td>1</td></tr></tbody></table></div></div></details>
+    <h3 id="random_vib-how-it-works">How It Works</h3>
+    <p>CalculiX finds the arm's modes, with their stresses and how strongly each one is driven by shaking the base. The random response is then a sum over the modes, one axis at a time: each mode responds to the base acceleration like a damped spring and mass, and the stresses add with their phases. From the response spectra come the rms values, the rms of the full 3D stress state, and the spectral moments the fatigue methods need.</p>
+    <p>The stress right at the clamp corner is singular: it keeps growing as the mesh is refined. So I use the hot-spot rule for clamped and welded details: read the surface stress at 0.4 and 1.0 times the thickness from the clamp and extrapolate to the clamp line. Fatigue damage comes from two independent methods, Dirlik's and Steinberg's three bands, which agree within 14 %.</p>
+    <h3 id="random_vib-how-i-checked-it">How I Checked It</h3>
+    <ul class="proof">
+      <li><strong>The solver's own harmonic analysis against my modal sum,</strong> at every frequency on all three axes: they agree to one part in a million.</li>
+      <li><strong>Miles' equation,</strong> exact for a single mode under a flat input, against the first mode's share: 0.1 %, the difference being the ends of the band.</li>
+      <li><strong>Effective mass:</strong> the kept modes carry at least 93 % of the mass on every axis, so no significant mode is missing.</li>
+      <li><strong>The root stress against beam theory,</strong> from the bending moment: within 5 %. The rest is the clamp stopping the root from contracting sideways, which a beam doesn't model.</li>
+      <li><strong>Mesh study:</strong> stress 44.2, 39.8 and 38.6 MPa on the three meshes, mesh uncertainty 1.3 %; tip 0.1 %. Doubling the frequency grid changes the rms values by 0.02 %.</li>
+    </ul>
+    <div class="caught">
+      <h3 id="random_vib-what-i-caught-along-the-way">What I Caught Along the Way</h3>
+      <ul>
+        <li><strong>The solver's base excitation isn't the textbook one.</strong> The harmonic check first missed by 4 % at resonance and by far more below it. CalculiX reports absolute displacement, and its damping acts on the absolute velocity, base included, which adds a forcing term the textbook equation doesn't have. With that term my sum matches it to one part in a million. The study keeps the physical form and uses CalculiX only as the check.</li>
+        <li><strong>A check that ate the memory.</strong> On the finest mesh, the output requests from the modal step carried over silently into the three harmonic check steps, so every frequency rewrote the whole mesh: a 16.5 GB result file and 38 GB of memory to read it. The run was stopped, the check steps now write only the tip, and the rerun reproduced the first two meshes to every printed digit.</li>
+      </ul>
+    </div>
+    <h3 id="random_vib-limits-and-what-i-d-do-next">Limits, and What I'd Do Next</h3>
+    <ul>
+      <li>The test level, damping, fatigue detail and clearance are assumed. Damping matters most, and the uncertainty study running now quantifies it.</li>
+      <li>A rigid clamp and no attached mass. A real bolted clamp is softer and would lower the first mode, and a clamp edge frets, which needs a lower fatigue detail than plain plate.</li>
+      <li>Gaussian, stationary input, one axis at a time, with no mean stress.</li>
+    </ul>
+    <h3 id="random_vib-evidence">Evidence</h3>
+    <div class="side-card"><ul class="ev-list"><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/portfolio/21-bracket-random-vibration.md">Full write-up on GitHub</a></li></ul><p class="label">Run reports, with every check and the saved inputs</p><ul class="ev-list ev-runs"><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261123-100907_bracket_random_mesh/report.md">bracket_random_mesh</a></li></ul></div>
+      </section>
       </article>
       <aside class="study-side" aria-label="Summary of this study">
-        <div class="side-card"><h2>At a Glance</h2><dl><div><dt>Study</dt><dd>04</dd></div><div><dt>Discipline</dt><dd>Structures and vibration</dd></div><div><dt>Tools</dt><dd>CadQuery · Gmsh · CalculiX</dd></div><div><dt>Verdict</dt><dd><span class="v v-pass">Passes</span></dd></div></dl></div><div class="side-card"><h2>Requirements</h2><ul class="side-reqs"><li><span class="r-what">First natural frequency, 7 mm arm</span><span class="r-num">≥ 250 Hz · 261.7 Hz</span><span class="chip pass">Met</span></li><li><span class="r-what">Arm mass</span><span class="r-num">≤ 220 g · 206 g</span><span class="chip pass">Met</span></li></ul></div><div class="side-card side-toc"><h2>On This Page</h2><ul class="toc"><li><a href="#the-question">The question</a></li><li><a href="#the-answer">The answer</a></li><li><a href="#why-it-matters">Why it matters</a></li><li><a href="#the-model">The model</a></li><li><a href="#how-it-works">How it works</a></li><li><a href="#how-i-checked-it">How I checked it</a></li><li><a href="#what-i-caught-along-the-way">What I caught along the way</a></li><li><a href="#limits-and-what-i-d-do-next">Limits, and what I&#x27;d do next</a></li><li><a href="#evidence">Evidence</a></li></ul></div>
+        <div class="side-card"><h2>At a Glance</h2><dl><div><dt>Study</dt><dd>04 · 21</dd></div><div><dt>Discipline</dt><dd>Structures and vibration</dd></div><div><dt>Tools</dt><dd>CadQuery · Gmsh · CalculiX · Python</dd></div><div><dt>Verdict</dt><dd><span class="v v-pass">Passes</span></dd></div></dl></div><div class="side-card"><h2>Requirements</h2><ul class="side-reqs"><li class="r-study"><a href="#modal">04 · Modal analysis</a></li><li><span class="r-what">First natural frequency, 7 mm arm</span><span class="r-num">≥ 250 Hz · 261.7 Hz</span><span class="chip pass">Met</span></li><li><span class="r-what">Arm mass</span><span class="r-num">≤ 220 g · 206 g</span><span class="chip pass">Met</span></li><li class="r-study"><a href="#random_vib">21 · Random vibration</a></li><li><span class="r-what">3-sigma stress at the clamp</span><span class="r-num">≤ 236.7 MPa · 38.6 MPa; mesh uncertainty 1.3 %</span><span class="chip pass">Met</span></li><li><span class="r-what">Fatigue damage over the test, three axes</span><span class="r-num">≤ 0.5 · 0.0024</span><span class="chip pass">Met</span></li><li><span class="r-what">3-sigma tip movement</span><span class="r-num">≤ 1.0 mm · 0.345 mm</span><span class="chip pass">Met</span></li></ul></div><div class="side-card side-toc"><h2>On This Page</h2><ul class="toc"><li class="t-part"><a href="#modal">04 · Modal analysis</a></li><li class="t-sub"><a href="#modal-the-question">The question</a></li><li class="t-sub"><a href="#modal-the-answer">The answer</a></li><li class="t-sub"><a href="#modal-why-it-matters">Why it matters</a></li><li class="t-sub"><a href="#modal-the-model">The model</a></li><li class="t-sub"><a href="#modal-how-it-works">How it works</a></li><li class="t-sub"><a href="#modal-how-i-checked-it">How I checked it</a></li><li class="t-sub"><a href="#modal-what-i-caught-along-the-way">What I caught along the way</a></li><li class="t-sub"><a href="#modal-limits-and-what-i-d-do-next">Limits, and what I&#x27;d do next</a></li><li class="t-sub"><a href="#modal-evidence">Evidence</a></li><li class="t-part"><a href="#random_vib">21 · Random vibration</a></li><li class="t-sub"><a href="#random_vib-the-question">The Question</a></li><li class="t-sub"><a href="#random_vib-the-answer">The Answer</a></li><li class="t-sub"><a href="#random_vib-why-it-matters">Why It Matters</a></li><li class="t-sub"><a href="#random_vib-the-model">The Model</a></li><li class="t-sub"><a href="#random_vib-how-it-works">How It Works</a></li><li class="t-sub"><a href="#random_vib-how-i-checked-it">How I Checked It</a></li><li class="t-sub"><a href="#random_vib-what-i-caught-along-the-way">What I Caught Along the Way</a></li><li class="t-sub"><a href="#random_vib-limits-and-what-i-d-do-next">Limits, and What I&#x27;d Do Next</a></li><li class="t-sub"><a href="#random_vib-evidence">Evidence</a></li></ul></div>
       </aside>
     </div>
     <nav class="pager" aria-label="More studies"><a class="prev" href="cantilever-bracket.html"><small>← Previous study</small><b>Cantilever Bracket: Stress Check, Then Optimised</b></a><a class="next" href="cold-plate.html"><small>Next study →</small><b>Cold Plate: The Coolant Channel, Then the Full Thermal Chain</b></a></nav>
@@ -171,9 +222,9 @@
     </div>
   </div>
 </footer>
-<script>window.VP = [{"id": "mode1", "study": "modal", "tab": "Modal", "legend": "U, Magnitude", "unit": "normalised", "model": "Bracket arm · steel, 150 × 25 × 7 mm, clamped", "lines": ["Solver: CalculiX 2.22 · *FREQUENCY, mode 1 of 4", "261.7 Hz flapwise · requirement ≥ 250 Hz (engine 2nd order + 25 %)", "Within 0.9 % of an independent Timoshenko beam model · in 3D, the mode can be animated (motion exaggerated)"], "mesh": "v2/m3d_mode1.bin", "mesh_kb": 93, "elev": 24, "azim": -60, "img": "v2/vp_mode1.webp", "bands": ["#3d358b", "#477bf2", "#28bceb", "#20eaac", "#79fe59", "#c3f134", "#f6c33a", "#fb7e21", "#dd3d08", "#a11201"], "vmin": 0.0, "vmax": 1.0, "check": "Render check: encloses 26 250.0 mm³ of 26 250.0 design · 100.0 % of pixels on the legend", "card": "modal"}];</script>
-<script src="assets/viewer.js?v=029308e977"></script>
-<script src="assets/viewer3d.js?v=029308e977"></script>
-<script src="assets/site.js?v=029308e977"></script>
+<script>window.VP = [{"id": "mode1", "study": "modal", "tab": "Modal", "legend": "U, Magnitude", "unit": "normalised", "model": "Bracket arm · steel, 150 × 25 × 7 mm, clamped", "lines": ["Solver: CalculiX 2.22 · *FREQUENCY, mode 1 of 4", "261.7 Hz flapwise · requirement ≥ 250 Hz (engine 2nd order + 25 %)", "Within 0.9 % of an independent Timoshenko beam model · in 3D, the mode can be animated (motion exaggerated)"], "mesh": "v2/m3d_mode1.bin", "mesh_kb": 93, "elev": 24, "azim": -60, "img": "v2/vp_mode1.webp", "bands": ["#3d358b", "#477bf2", "#28bceb", "#20eaac", "#79fe59", "#c3f134", "#f6c33a", "#fb7e21", "#dd3d08", "#a11201"], "vmin": 0.0, "vmax": 1.0, "check": "Render check: encloses 26 250.0 mm³ of 26 250.0 design · 100.0 % of pixels on the legend", "card": "bracket_arm", "part": "04 · Modal analysis", "main": true}, {"id": "random_vib", "study": "random_vib", "kind": "figure", "img": "v2/fig_random_vibration.svg", "model": "Bracket arm on a shaker table · 0.04 g²/Hz from 20 to 2,000 Hz, one hour per axis", "lines": ["Solver: CalculiX 2.22 modes, summed in Python · finest of three meshes (1.22 mm)", "Stress at the clamp across the frequency range, and each requirement against its limit", "3-sigma stress 38.6 MPa against 236.7 · damage 0.0024 against 0.5 · tip 0.345 mm against 1.0"], "check": "", "card": "bracket_arm", "part": "21 · Random vibration", "main": false}];</script>
+<script src="assets/viewer.js?v=f4170e14a1"></script>
+<script src="assets/viewer3d.js?v=f4170e14a1"></script>
+<script src="assets/site.js?v=f4170e14a1"></script>
 </body>
 </html>
