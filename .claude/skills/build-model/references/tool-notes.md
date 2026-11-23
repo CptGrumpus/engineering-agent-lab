@@ -134,6 +134,22 @@ Traps found while building the studies in this repo, by tool.
   order 1.8, not the textbook 4: the clamp corners are singular. A rate below
   the design order is fine for the GCI; only a rate far above it is suspect.
 
+## CalculiX axisymmetric (CAX8, study 18 head-to-shell junction)
+
+- x is radial, y axial; nodes on the axis need u_r = 0 (dof 1). CalculiX expands CAX elements into a 2-degree wedge,
+  and `*NODE PRINT ... RF` totals are for that segment: the axial reaction matched p pi Ri^2 to 6e-8 only after
+  dividing by 2/360. The .frd keeps the 2D node numbers; S is SXX radial, SYY axial, SZZ hoop.
+- A structured quad mesh written in Python (no CAD, no Gmsh) puts classification lines on element boundaries, so a
+  line's corner and mid-side nodes are 2 n + 1 equally spaced points for Simpson's rule: no field sampling needed
+  (`models/fea/vessel_head_axi.py`).
+
+## CalculiX linear buckling (`*BUCKLE`, study 13)
+
+- **The .dat prints the static pre-buckling solution before the first eigenvector.** A parser that takes the first
+  displacement block as mode 1 reads the axial pre-buckling field, and the mode-shape check fails (two wrong
+  explanations came first: solver accuracy, support layout). Reuse `studies/strut_buckling.py` `read_dat_blocks` /
+  the mode parser, which skip it (`tests/test_strut_buckling.py`).
+
 ## CalculiX structural, NLGEOM (static and dynamic; the Turek-Hron flag)
 
 - **Plane strain from hexes:** one layer of C3D8I with every node held in z. The flag's
@@ -187,8 +203,10 @@ Traps found while building the studies in this repo, by tool.
   thin analysed layer of the strap study and scale concentrated loads by the same factor.
 - A symmetry line that is not a coordinate axis: `*TRANSFORM, NSET=..., TYPE=R` with the line's direction as the first
   vector, then fix local dof 2 (the normal).
-- **`*CLOAD` rejects numbers longer than about 21 characters** ("ERROR reading *CLOAD", card image shown): Python's repr
-  of a small load (17 digits plus an exponent) crossed it only on a finer mesh. Format loads with `:.12e`.
+- **CalculiX rejects numbers longer than about 21 characters, on any card** ("ERROR reading *CLOAD" / "*NODE", card
+  image shown): Python's repr of a small load (17 digits plus an exponent) crossed it only on a finer mesh, and a node
+  at r = 3.07e-14 (cos 90 deg) did in study 18's head model. Write every number with `:.12g` / `:.12e`, and snap
+  points that belong on an axis or plane to exactly 0.
 - Check the pipeline on a plain annulus against the exact rotating disk (plane stress, free edges) before the pocketed
   part: 4e-4 on CPS6.
 - Sharp pocket corners make the corner peak a singularity (742 / 929 / 1221 MPa over three meshes): judge a bridge by

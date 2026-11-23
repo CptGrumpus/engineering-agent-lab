@@ -131,8 +131,6 @@ never converge, so measure convergence and extrapolation on the reported states,
 | Imposed current amplitude vs the requested value (catches rms/peak mix-ups) | numerical | `motor_torque` `current_amplitude` |
 | Maximum torque per amp found inside the current-angle sweep | validity | `motor_torque` `mtpa_bracketed` |
 | dq torque equation 3 p (phi_d iq - phi_q id) (rms dq) against the stress-tensor torque: checks the mean dq flux linkages a look-up table interpolates | numerical (model form: harmonics) | `motor_lut` `dq_torque` |
-| Exact pressure resultant on each symmetry plane (p x projected wetted area + end thrusts) and zero reaction at a single support of a closed vessel | numerical (exact) | `pressure_vessel` `equilibrium_y`, `equilibrium_z`, `self_balance_x` |
-| Linearised membrane of the Lame cylinder (mean hoop = p Ri / t exactly) on a classification line far from discontinuities | analytical (exact) | `pressure_vessel` `lame_membrane` |
 | Enough time steps per electrical period for the metric (48 for flux linkage and mean torque; more for ripple) | validity | `time_resolution` |
 | GCI on the flux linkage, the back-EMF peak and the MTPA torque (mesh fineness) | numerical | motor mesh studies |
 | Design inputs overlaid on the published drawing they came from | numerical | study 7 slot and pocket overlays |
@@ -143,6 +141,15 @@ never converge, so measure convergence and extrapolation on the reported states,
 | Merged dq tables: the row both runs computed agrees (same model, mesh and rotor positions) | numerical | `motor_efficiency` `lut_merge` (bit-identical in practice) |
 | Efficiency map from the half table against the map from the full table, in efficiency points: the interpolation error on the output itself | numerical | `motor_efficiency` `interp_map` |
 | The table's own back-EMF and MTPA torque against the open-circuit and torque-curve studies | numerical | `motor_efficiency` `lut_back_emf`, `lut_mtpa_100A` |
+
+## Pressure vessels (design by analysis, linearised stresses)
+
+| Check | Kind | Example |
+|---|---|---|
+| Exact pressure resultant on each symmetry plane (p x projected wetted area + end thrusts) and zero reaction at a single support of a closed vessel | numerical (exact) | `pressure_vessel` `equilibrium_y`, `equilibrium_z`, `self_balance_x` |
+| Linearised membrane of the Lame cylinder (mean hoop = p Ri / t exactly) on a classification line far from discontinuities | analytical (exact) | `pressure_vessel` `lame_membrane` |
+| Classification-line sample points inside the mesh (barycentric violation; a point on a curved surface lies about h^2 / 8R outside the straight-sided element, so the tolerance follows the smallest radius the line ends on) | validity | `pressure_vessel` `scl_inside_mesh`, `scl_crotch_inside_mesh` |
+| GCI on the linearised membrane and membrane plus bending (they converge at a sharp corner where the peak does not) | numerical | `pressure_vessel` mesh studies |
 
 ## Turbulent CFD (RANS, fully developed pipe flow)
 
