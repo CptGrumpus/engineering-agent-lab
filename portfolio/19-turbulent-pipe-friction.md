@@ -2,8 +2,10 @@
 
 [Portfolio index](../PORTFOLIO.md) · Thermal and fluids
 
-> **Part 1 of study 19.** Part 2, the backward-facing step against Driver and Seegmiller's measured profiles, waits
-> on its data source (the hosts were unreachable on 2026-11-22).
+> **Study 19 has two parts.** Part 1 (below): attached flow, pipe friction against a correlation of measurements.
+> [Part 2](#part-2-separated-flow-behind-a-step-against-measurements): separated flow behind a backward-facing step,
+> scored once against Driver and Seegmiller's measurements: reattachment and skin friction pass, pressure recovery
+> fails by 0.0027 against a 0.02 limit.
 
 | | |
 |---|---|
@@ -72,11 +74,54 @@ needs. Radial cells grade towards the wall so the first cell sits at the request
 - **A suspect mesh that wasn't the problem.** The wall-function offset first looked like a coarse outer mesh (25-40
   cells). A probe at four times the cells moved f by 0.1 %; a placement sweep confirmed the wall treatment itself.
 
+## Part 2: separated flow behind a step, against measurements
+
+**The question.** Part 1 showed the setup (k-omega SST, wall layer resolved) gets attached-flow friction right. Is
+it good enough for separated flow, for example placing a heat-transfer surface or a sensor in a duct with a step?
+The test is Driver and Seegmiller's backward-facing step (ERCOFTAC case 030: step 12.7 mm, Re 37,500 on the step
+height, air at 44.2 m/s). Three limits, agreed before any comparison data was opened: where the flow reattaches
+within 10 %; the skin friction from 10 to 30 step heights within 15 % rms; the pressure recovery to 30 step heights
+within 0.02.
+
+**The answer: two of three.**
+
+| | Ours | Measured | Limit | Verdict |
+|---|---|---|---|---|
+| Reattachment length (step heights) | 6.40 | 6.26 ± 0.10 | 10 % | **Pass**, +2.3 % |
+| Skin friction, 10-30 step heights | 1-10 % low at every station | | 15 % rms | **Pass**, 7.0 % rms |
+| Pressure recovery to 30 step heights | 0.153 | 0.131 | 0.02 | **Fail**, +0.023 |
+
+![Skin friction and pressure along the step-side wall against the measurements](../validation/step_driver_seegmiller/comparison.png)
+
+The pressure peak behind reattachment is close (about 0.177 against 0.163, read from the plot); downstream, the measured pressure falls back
+faster than ours. That is what the tunnel's side-wall boundary layers do (the span is 12 step heights): they thicken,
+squeeze the core flow and lower the pressure. A 2D model has no side walls. It was stated as a limit in the framing;
+the comparison puts it at about 0.023 in recovery, just over what the limit allows.
+
+**How I know it's the model and not the numerics.**
+- **Inflow matched first,** on what the case description gives (not the answer): the momentum thickness 4 step
+  heights upstream within 0.7 %.
+- **Mesh study** (about 36k, 71k and 142k cells): reattachment 6.414, 6.408, 6.404, mesh uncertainty 0.2 %; skin
+  friction at 20 step heights 1.9 %. The pressure recovery changes by under 0.001 between meshes (its steps grow,
+  so no formal uncertainty), far below the 0.0027 by which it fails.
+- **Outlet length** (30 or 50 step heights): reattachment changes by 1 × 10⁻⁶. **Inlet turbulence** (0.5-2 %):
+  0.06 %. Neither matters.
+- **Reported, not hidden:** the finest mesh stopped at its 80,000-iteration cap just short of its velocity residual
+  target (3.6 × 10⁻⁷ against 2 × 10⁻⁷). That is a verification fail on that mesh. Its effect on the verdicts is
+  bounded by the mesh-to-mesh spread above.
+- **Honest about what was known:** the measured reattachment length was seen when the data was downloaded and is
+  declared in every case file; the skin friction and pressure tables were opened only to write the comparison script
+  after the predictions were committed, and the comparison ran once.
+
+**Predictions against outcome:** reattachment within about 3 % (held, +2.3 %); skin friction passes, low near 10
+step heights (passed, but low at 16-28 instead); pressure recovery passes, moderate confidence (missed).
+
 ## Limits
 
 - Smooth walls only; no roughness (the Colebrook range).
 - The reference is a correlation of measurements, with about ±2 % scatter, not the measurements themselves.
 - One turbulence model (k-omega SST as implemented in openfoam.org v14).
+- Part 2: 2D, so no tunnel side walls (the pressure-recovery miss); one geometry and Reynolds number.
 
 ## Evidence
 
@@ -90,3 +135,7 @@ needs. Radial cells grade towards the wall so the first cell sits at the request
 - case files: `cases/pipe_rans_*.toml` (predictions before each run, results scored after)
 - code: `models/cfd/pipe_openfoam.py`, `models/cfd/run_pipe.sh`, `studies/pipe_flow.py`, `tests/test_pipe_flow.py`;
   figure `scripts/make_pipe_figure.py`
+- part 2: [mesh study](../runs/20261122-233146_step_mesh/report.md), [outlet length](../runs/20261122-233146_step_outlet/report.md),
+  [inlet turbulence](../runs/20261123-035753_step_inlet_tu/report.md); the one comparison
+  `validation/step_driver_seegmiller/RESULTS.md` and its protocol log `PROTOCOL.md`; case files `cases/step_*.toml`;
+  code `models/cfd/step_openfoam.py`, `studies/step_flow.py`, `tests/test_step_flow.py`
