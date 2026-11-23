@@ -50,7 +50,10 @@ check that the metric measures that, not a convenient proxy:
   metric is unweighted, say so as a limitation.
 
 If the definition is a judgement call, state it in the requirement text and the
-assumptions, so a reviewer can disagree with it explicitly.
+assumptions, so a reviewer can disagree with it explicitly. When the judgement could
+decide the verdict, plan a case that varies it before reporting a thin margin: study
+18's nozzle passed by 0.9 % on lines at the weld toes and failed by 24 % on a line
+through the crotch, on the same verified model.
 
 ### 3. Operating conditions and input ranges
 

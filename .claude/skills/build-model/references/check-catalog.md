@@ -150,6 +150,14 @@ never converge, so measure convergence and extrapolation on the reported states,
 | Linearised membrane of the Lame cylinder (mean hoop = p Ri / t exactly) on a classification line far from discontinuities | analytical (exact) | `pressure_vessel` `lame_membrane` |
 | Classification-line sample points inside the mesh (barycentric violation; a point on a curved surface lies about h^2 / 8R outside the straight-sided element, so the tolerance follows the smallest radius the line ends on) | validity | `pressure_vessel` `scl_inside_mesh`, `scl_crotch_inside_mesh` |
 | GCI on the linearised membrane and membrane plus bending (they converge at a sharp corner where the peak does not) | numerical | `pressure_vessel` mesh studies |
+| Classification-line placement sensitivity: lines at the weld toes and through the crotch corner, and the toe lines moved out by a weld size; report each verdict | sensitivity | `pv_nozzle_crotch_*`, `pv_nozzle_scl_offset` |
+| Equal-thickness head on a cylinder against thin-shell discontinuity theory (Q0 = delta beta^3 D, M0 = 0: largest shell bending at pi / (4 beta), junction hoop membrane) | model form (about t / R) | `vessel_head` `theory_*` |
+| Far head against the thick-wall sphere (Lame) | analytical (exact) | `vessel_head` `lame_head_membrane` |
+
+Lesson (study 18): the placement of the classification line can decide the verdict. At the nozzle the toe line passed
+by 0.9 % and the crotch line failed by 24 % on the same verified model; moving the toe line a weld size out changed
+PL by only 10 %. Quantify the placement before reporting a thin margin, and say which placement the verdict uses;
+a limit-load or elastic-plastic analysis removes the judgement.
 
 ## Turbulent CFD (RANS, fully developed pipe flow)
 

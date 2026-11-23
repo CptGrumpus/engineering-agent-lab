@@ -24,6 +24,10 @@ and 0.14 % on P + Q.
 The margin on PL is thin, but it is real for this model: the same line on three meshes gave
 205.04 / 205.13 / 205.13 MPa (GCI 0.03 %).
 
+The verdict is for this line, as the task fixes it. For the nozzle as a design, the placement is a
+judgement: a line through the crotch corner gives PL 256.7 MPa and fails (study 18's placement cases).
+A grader should not accept "the nozzle needs no pad" as a design conclusion beyond the stated line.
+
 **Evidence.** Portfolio study 18 ([page](../../portfolio/18-pressure-vessel-nozzle.md)): run
 `20261122-102842_pv_nozzle_mesh`, finest mesh, line `shell_long`. The table in the task is that
 run's sampled profile rounded to 0.01 MPa; `harness/linearize.py` on the rounded table gives the
