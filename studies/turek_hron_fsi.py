@@ -49,6 +49,9 @@ BENCH = ("benchmark_ux_A_m", "benchmark_uy_A_m", "benchmark_drag_N_per_m", "benc
 METRICS = ("ux_A_m", "uy_A_m", "drag_N_per_m", "lift_N_per_m")
 PERIODIC_Q = {"ux_A": "ux_A_m", "uy_A": "uy_A_m", "drag": "drag_N_per_m", "lift": "lift_N_per_m"}
 PERIODIC_METRICS = tuple(f"{q}_{k}" for q in PERIODIC_Q for k in ("mean", "amp", "freq_Hz"))
+# the periodic metrics a mesh study converges (the requirement metrics; the means of uy and lift swing about zero, so
+# their relative uncertainty means nothing)
+PERIODIC_GCI_METRICS = ("uy_A_amp", "uy_A_freq_Hz", "drag_mean", "drag_amp", "lift_amp", "ux_A_mean")
 V2512_BASHRC = "/usr/lib/openfoam/openfoam2512/etc/bashrc"
 
 
@@ -460,13 +463,15 @@ class TurekHronFSIStudy(Study):
         # (regenerated, unstructured meshes; turek_hron_fsi1_noise_a-d), as one number or a table by metric. Three
         # levels spreading less than it are converged within the noise (uncertainty 1.25 x half the spread).
         noise = tol.get("mesh_noise_rel", 1e-5)
-        for m in METRICS:
+        periodic = bool(case.get("numerics", {}).get("periodic_periods"))
+        for m in (PERIODIC_GCI_METRICS if periodic else METRICS):
             floor = float(noise.get(m, 1e-5) if isinstance(noise, dict) else noise)
             u = discretization_uncertainty(hs, tuple(pt["metrics"][m] for pt in fine), design_order=2,
                                            noise_floor=floor)
             detail[m] = u
             checks.append(check(f"discretization_{m}", f"relative discretization uncertainty of {m}, {describe(u)}",
-                                u["uncertainty"], tol["gci_max"]) | {"metric": self._dev_name(m)})
+                                u["uncertainty"], tol["gci_max"]) | {"metric": f"{m}_deviation_pct" if periodic
+                                                                      else self._dev_name(m)})
         return checks, detail
 
 

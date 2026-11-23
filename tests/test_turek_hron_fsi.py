@@ -186,3 +186,17 @@ def test_mesh_noise_table_classes_a_spread_under_the_noise_as_converged():
     assert d1["uy_A_m"]["regime"] == "converged"
     assert d1["uy_A_m"]["uncertainty"] == pytest.approx(1.25 * 0.5 * (0.82119 - 0.81300) / 0.81300, rel=1e-6)
     assert d1["drag_N_per_m"] == d0["drag_N_per_m"]                     # metrics not in the table: unchanged
+
+
+def test_periodic_mesh_study_converges_the_periodic_metrics_not_the_snapshot():
+    import studies.turek_hron_fsi as T
+    pts = []
+    for i, h in enumerate((0.0035355339, 0.0025, 0.0017677670)):
+        m = {k: 1.0 + 0.01 / (i + 1) for k in T.PERIODIC_METRICS}
+        m |= {"ux_A_m": 1.0 + i, "uy_A_m": -1.0 * i, "drag_N_per_m": 10.0 * i, "lift_N_per_m": 5.0 - i}   # snapshots
+        pts.append({"status": "completed", "parameters": {"fluid_cell_size_m": h}, "metrics": m, "label": f"p{i}"})
+    case = {"sweep": {"parameter": "fluid_cell_size_m"}, "numerics": {"periodic_periods": 4},
+            "verification": {"gci_max": 0.01}}
+    checks, d = T.STUDY.verify_run_level(case, {"points": pts}, None)
+    assert set(d) - {"meshes_used"} == set(T.PERIODIC_GCI_METRICS)
+    assert {c["metric"] for c in checks} == {f"{m}_deviation_pct" for m in T.PERIODIC_GCI_METRICS}
