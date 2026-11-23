@@ -12,7 +12,7 @@ To rebuild after a change: run `site/build_v2.py`, then `site/export_docs.py`, t
 
 Decided 2026-11-21:
 
-- **Contact:** an email button only. No LinkedIn yet; LinkedIn can be added once my profile is updated. (Updated 2026-11-22: my name, Justin Smith, now appears in a byline at the top and in the contact section.)
+- **Contact:** an email button only. No LinkedIn yet; LinkedIn can be added once my profile is updated. (Updated 2026-11-22: my name, Justin Smith, now appears in a byline at the top and in the contact section.) Confirmed 2026-11-23: the name stays; no need to ask again.
 - **Services:** no services list. The page showcases the work and ends with a simple contact section, so people can ask for whatever they need. One line says I'm available for remote contract work.
 
 ## Biggest impact
