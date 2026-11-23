@@ -1,0 +1,134 @@
+{
+  "points": [
+    {
+      "label": "p00_baseline",
+      "parameters": {
+        "solid_density_kg_per_m3": 1000.0,
+        "shear_modulus_Pa": 500000.0,
+        "poisson_ratio": 0.4,
+        "fluid_density_kg_per_m3": 1000.0,
+        "kinematic_viscosity_m2_per_s": 0.001,
+        "mean_velocity_m_per_s": 0.2,
+        "fluid_cell_size_m": 0.00172,
+        "solid_element_size_mm": 2.5,
+        "time_step_s": 0.0025,
+        "end_time_s": 12.0,
+        "benchmark_ux_A_m": 2.270493e-05,
+        "benchmark_uy_A_m": 0.0008208773,
+        "benchmark_drag_N_per_m": 14.29426,
+        "benchmark_lift_N_per_m": 0.763746
+      },
+      "derived": {
+        "reynolds_D": 20.000000000000004,
+        "mass_ratio": 1.0
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "mesh",
+          "description": "checkMesh reports Mesh OK (1 = failed)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.5,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "coupling_converged",
+          "description": "coupling windows that hit the iteration limit without converging",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.5,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "steady",
+          "description": "max over uy(A), drag, lift of the change of the mean between the two halves of the last 2 s / mean (drift, not jitter)",
+          "kind": "numerical",
+          "value": 0.00014711325105731574,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "force_transfer",
+          "description": "|fluid force on the flag + clamp reaction in the solid| / |fluid force on the flag| averaged over the last 2 s (the coupling conserves force)",
+          "kind": "numerical",
+          "value": 4.3377827924251856e-05,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "inflow_profile",
+          "description": "max over inlet faces |U - benchmark parabola| / (1.5 U_mean), after the ramp",
+          "kind": "numerical",
+          "value": 4.893579349611136e-10,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "laminar",
+          "description": "Reynolds number (D) / 200",
+          "kind": "validity",
+          "value": 0.10000000000000002,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-FSI-1",
+          "text": "The coupled model shall reproduce the Turek-Hron FSI1 horizontal displacement of point A within 5 % (a second-order quantity, 3 % of the vertical one).",
+          "metric": "ux_A_deviation_pct",
+          "operator": "<=",
+          "limit": 5.0,
+          "units": "%",
+          "value": 2.0475413443855626,
+          "margin": 2.9524586556144374,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-FSI-2",
+          "text": "It shall reproduce the FSI1 vertical displacement of point A within 3 %.",
+          "metric": "uy_A_deviation_pct",
+          "operator": "<=",
+          "limit": 3.0,
+          "units": "%",
+          "value": 27.780213473850118,
+          "margin": -24.780213473850118,
+          "verdict": "FAIL"
+        },
+        {
+          "id": "REQ-FSI-3",
+          "text": "It shall reproduce the FSI1 drag within 1 %.",
+          "metric": "drag_deviation_pct",
+          "operator": "<=",
+          "limit": 1.0,
+          "units": "%",
+          "value": 0.06963181611152573,
+          "margin": 0.9303681838884743,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-FSI-4",
+          "text": "It shall reproduce the FSI1 lift within 5 % (lift is about 5 % of the drag and moved 30 % from the rigid CFD1 value once the flag bends).",
+          "metric": "lift_deviation_pct",
+          "operator": "<=",
+          "limit": 5.0,
+          "units": "%",
+          "value": 1.7258198685967687,
+          "margin": 3.2741801314032313,
+          "verdict": "PASS"
+        }
+      ]
+    }
+  ],
+  "run_id": "20261123-031538_turek_hron_fsi1_noise_a",
+  "generated_utc": "2026-11-23T10:04:05+00:00",
+  "verification_status": "PASS"
+}

@@ -1,0 +1,98 @@
+# Study 6 (portfolio 17), FSI1 mesh noise, one of four single-mesh cases (a-d: fluid cells 1.72 / 1.75 / 1.80 /
+# 1.83 mm), run concurrently: the regenerated-mesh scatter at one nominal size (r1's middle mesh, 1.7678 mm), so a
+# revision of the FSI1 mesh study can declare it as verification.mesh_noise_rel (the method in
+# build-model/references/convergence-diagnosis.md; study 18 did the same). Same model, numerics and checks as
+# turek_hron_fsi1_mesh_r1 (read it); only the fluid cell size changes, by under 3.5 %.
+#
+# Why: r1 gave uy(A) 0.81749 / 0.82119 / 0.81300 mm on 2.5 / 1.77 / 1.25 mm, +0.45 % then -1.00 %: no GCI estimate,
+# REQ-FSI-1 and REQ-FSI-2 PASS but unverified.
+#
+# Predictions (for the four together), written BEFORE the runs:
+#   P1 Every point check passes on every mesh.
+#   P2 uy(A) scatters over about 0.5-1 % (0.815-0.826 mm), around r1's 0.82119; ux(A) about as much; drag under
+#      0.05 %; lift (window mean) 0.2-0.6 %. If the uy(A) scatter is at least about 1 %, r1's differences are noise
+#      and the revision verifies REQ-FSI-2 within the declared noise; if it is far smaller (under 0.2 %), the
+#      movement in r1 is real and the scatter explanation is wrong.
+#   P3 About 2-3 h each, concurrently (r1's 1.77 mm level took about 1 h 45 min alone).
+#   This one: fluid cells 1.72 mm.
+
+[case]
+name = "turek_hron_fsi1_noise_a"
+model = "openfoam_ccx_precice_fsi"
+description = "Turek-Hron FSI1: steady laminar flow (Re 20) bending the elastic flag behind the cylinder; OpenFOAM v2512 (moving mesh) coupled to CalculiX through preCICE; fluid cell size at the body 2.5 / 1.77 / 1.25 mm, solid 2.5 mm, dt 0.0025 s to 12 s; tip displacements, drag and lift against the published benchmark."
+assumptions = [
+  "2D: one cell deep in the fluid, plane strain in the solid (one element layer, as deep as the fluid).",
+  "St. Venant-Kirchhoff solid (CalculiX *ELASTIC under NLGEOM), no gravity, as the FSI tests define it.",
+  "Steady target: numerical damping in the solid only speeds up settling (ALPHA -0.3).",
+  "Inflow: the benchmark's parabola with its (1 - cos) ramp over 2 s.",
+]
+limitations = [
+  "The solid mesh is not refined in this study (CSM1 put it within 0.08 % at 2.5 mm; at the coupled load, 1.25 mm moved uy(A) by 0.035 %: prototype B).",
+  "The fluid mesh is regenerated at each size (not nested), which made the CFD lift scatter by about +-0.6 %.",
+]
+
+[parameters]
+solid_density_kg_per_m3 = 1000.0
+shear_modulus_Pa = 500000.0
+poisson_ratio = 0.4
+fluid_density_kg_per_m3 = 1000.0
+kinematic_viscosity_m2_per_s = 0.001
+mean_velocity_m_per_s = 0.2
+fluid_cell_size_m = 0.00172
+solid_element_size_mm = 2.5
+time_step_s = 0.0025
+end_time_s = 12.0
+benchmark_ux_A_m = 2.270493e-05
+benchmark_uy_A_m = 8.208773e-04
+benchmark_drag_N_per_m = 14.29426
+benchmark_lift_N_per_m = 0.7637460
+
+[numerics]
+metric_average_s = 2.0
+solid_alpha = -0.3
+write_interval_s = 2.0
+ramp_time_s = 2.0
+coupling_rel_tol = 1e-6
+coupling_max_iterations = 100
+rbf_support_radius_m = 0.05
+solver_timeout_s = 43200
+
+[verification]
+steady_measure = "drift"
+steady_window_s = 2.0
+steady_rel_tol = 1e-3
+force_transfer_rel_tol = 1e-3
+profile_rel_tol = 1e-6
+gci_max = 0.01
+
+[[requirements]]
+id = "REQ-FSI-1"
+text = "The coupled model shall reproduce the Turek-Hron FSI1 horizontal displacement of point A within 5 % (a second-order quantity, 3 % of the vertical one)."
+metric = "ux_A_deviation_pct"
+operator = "<="
+limit = 5.0
+units = "%"
+
+[[requirements]]
+id = "REQ-FSI-2"
+text = "It shall reproduce the FSI1 vertical displacement of point A within 3 %."
+metric = "uy_A_deviation_pct"
+operator = "<="
+limit = 3.0
+units = "%"
+
+[[requirements]]
+id = "REQ-FSI-3"
+text = "It shall reproduce the FSI1 drag within 1 %."
+metric = "drag_deviation_pct"
+operator = "<="
+limit = 1.0
+units = "%"
+
+[[requirements]]
+id = "REQ-FSI-4"
+text = "It shall reproduce the FSI1 lift within 5 % (lift is about 5 % of the drag and moved 30 % from the rigid CFD1 value once the flag bends)."
+metric = "lift_deviation_pct"
+operator = "<="
+limit = 5.0
+units = "%"
