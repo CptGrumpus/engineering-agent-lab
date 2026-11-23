@@ -1,0 +1,48 @@
+  <section class="study" id="fan_rotor">
+    <div class="study-head">
+      <span class="label">Study 23 · ROSS (Python), rotordynamics</span>
+      <h2>Fan Rotor: Critical Speeds and Unbalance Response</h2>
+    </div>
+    <h3>The Question</h3>
+    <p>A fan's impeller, a 400 mm steel disc 25 mm thick, sits in the middle of a steel shaft between two rolling bearings 1 m apart. It runs anywhere from 1,000 to 3,000 rpm on a variable-speed drive. A rotor running near one of its critical speeds vibrates hard, so the requirement, simplified from API 684, is that every forward critical speed sits at least 15 % outside the operating range: none between 850 and 3,450 rpm. The impeller's response to the standard API unbalance must also stay under 50 µm.</p>
+    <p>The bearing pedestals' stiffness isn't known well, so it's a band, 10⁷ to 10⁸ N/m, and the answer must hold across it. The drawing shows a 50 mm shaft. Is that enough, and if not, what is? The geometry, speeds and bearings are assumed values, stated as such.</p>
+    <h3>The Answer</h3>
+    <div class="answer">
+      <div class="chips"><span class="chip fail">50 mm: critical speed inside the range</span><span class="chip fail">60 mm: 14.3 % on soft bearings, limit 15 %</span><span class="chip pass">65 mm: 23.8 % or more</span><span class="chip pass">65 mm response: 5.0 µm, limit 50</span></div>
+      <p><strong>No: use a 65 mm shaft.</strong> The 50 mm shaft's first critical speed, 2,710 to 2,911 rpm across the bearing band, falls inside the operating range, and the impeller swings 335 to 345 µm as it passes through. A 60 mm shaft clears the range on stiff bearings but only by 14.3 % on soft ones, just short of 15 %. At 65 mm the margin is at least 23.8 % anywhere in the band, and the response stays under 5 µm.</p>
+      <p><strong>The soft end of the bearing band decides it.</strong> Softer supports lower every critical speed. The 60 mm shaft would pass on stiff pedestals and fail on soft ones, which is exactly the uncertainty the band is there to cover.</p>
+    </div>
+    <h3>Why It Matters</h3>
+    <p>A shaft sized for strength alone can still be unusable if it runs at its own critical speed. Variable-speed drives make this common: a fan that was fine at one fixed speed now sweeps through a range, and any critical speed inside it becomes a place where the machine shakes itself apart. Catching it at the drawing stage costs a shaft diameter; catching it in service costs a rebuild.</p>
+    <h3>The Model</h3>
+    <dl class="spec">
+      <dt>Rotor</dt><dd>Solid steel shaft (205 GPa, 7,850 kg/m³), 1 m between bearings; the impeller a rigid steel disc 400 × 25 mm at mid-span, about 24 kg.</dd>
+      <dt>Bearings</dt><dd>Two equal linear bearings, 10⁷ and 10⁸ N/m to bracket the unknown pedestals, 500 N s/m of damping each.</dd>
+      <dt>Elements</dt><dd>20 Timoshenko beam elements with shear deformation, rotary inertia and gyroscopic coupling, in ROSS 3.1, the open-source rotordynamics library.</dd>
+      <dt>Unbalance</dt><dd>API 684's standard unbalance, 6350 W / N g·mm with W the rotor mass and N the top speed: 84 to 106 g·mm at the disc.</dd>
+    </dl>
+    {{CASE}}
+    <h3>How It Works</h3>
+    <p>ROSS builds the rotor from beam elements, the disc and the two bearings. Its Campbell diagram tracks each vibration mode's frequency as the running speed rises, split into forward whirl (the shaft orbits the way it spins) and backward whirl. A critical speed is where a forward-whirl mode crosses the line of once-per-revolution excitation, which is what an unbalance produces. The unbalance response then gives the impeller's actual vibration amplitude at every speed in the range.</p>
+    <h3>How I Checked It</h3>
+    <ul class="proof">
+      <li><strong>The Jeffcott rotor.</strong> A massless shaft with the disc in the middle on rigid supports, against the closed form √(48EI / mL³): within 0.27 to 0.46 %, the difference being shear deformation and the disc's width.</li>
+      <li><strong>The same rotor on the study's bearings,</strong> against the closed form with shaft and bearings as springs in series: within 0.24 to 0.44 %.</li>
+      <li><strong>The bare shaft</strong> on rigid supports, against the Euler-Bernoulli pinned-pinned beam: within 0.30 to 0.50 %.</li>
+      <li><strong>Two ways to the critical speed.</strong> The Campbell crossings and ROSS's own critical-speed search agree to 6 × 10⁻⁶ or better.</li>
+      <li><strong>Element convergence:</strong> 10, 20 and 40 elements give the same critical speed and response.</li>
+    </ul>
+    <div class="caught">
+      <h3>What I Caught Along the Way</h3>
+      <ul>
+        <li><strong>A library search that didn't converge.</strong> ROSS's own critical-speed search failed over the full 0 to 9,000 rpm range. The study takes the critical speeds from the Campbell diagram's crossings instead and keeps ROSS's search, over its default range, as a cross-check.</li>
+        <li><strong>My hand estimate ran 2 % high on soft bearings.</strong> Rayleigh's method, with 17/35 of the shaft's mass at mid-span, matched within 0.2 % on stiff bearings. But that factor assumes the shaft bends as if simply supported; on soft bearings the whole shaft also moves, so more of its mass takes part. That 2 % put the 60 mm shaft just under the limit, outside the range I had predicted for it.</li>
+      </ul>
+    </div>
+    <h3>Limits</h3>
+    <ul>
+      <li>Linear bearings. A rolling bearing's stiffness rises with load and speed; the band is meant to cover that.</li>
+      <li>No aerodynamic cross-coupling, foundation mass or seal forces; the blades are lumped into the disc.</li>
+      <li>API 684 sets the separation margin from each mode's amplification; a fixed 15 % is a simplification.</li>
+    </ul>
+  </section>

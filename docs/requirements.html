@@ -4,11 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Every Requirement · Justin Smith</title>
-<meta name="description" content="All 53 requirements across the simulation studies, each with its limit, result and verdict.">
+<meta name="description" content="All 60 requirements across the simulation studies, each with its limit, result and verdict.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://cptgrumpus.github.io/engineering-agent-lab/requirements.html">
 <meta property="og:title" content="Every Requirement in One Table">
-<meta property="og:description" content="All 53 requirements across the simulation studies, each with its limit, result and verdict.">
+<meta property="og:description" content="All 60 requirements across the simulation studies, each with its limit, result and verdict.">
 <meta property="og:image" content="https://cptgrumpus.github.io/engineering-agent-lab/v2/og_card.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -21,7 +21,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
-<link rel="stylesheet" href="assets/site.css?v=eb5c36098b">
+<link rel="stylesheet" href="assets/site.css?v=485bb4c68b">
 </head>
 <body>
 <nav class="topbar" aria-label="Site">
@@ -56,7 +56,7 @@
     <div class="page-head">
       <p class="eyebrow">Requirements</p>
       <h1>Every Requirement in One Table</h1>
-      <p>53 requirements across the studies: <b class="c-pass">39 met</b>, <b class="c-fail">13 not met</b>, <b class="c-warn">1 withheld</b>. "Not met" is still a verified answer: the design fails, and the study explains what would fix it. "Withheld" means the checks didn't support calling it either way. Each study's name links to its page.</p>
+      <p>60 requirements across the studies: <b class="c-pass">44 met</b>, <b class="c-fail">15 not met</b>, <b class="c-warn">1 withheld</b>. "Not met" is still a verified answer: the design fails, and the study explains what would fix it. "Withheld" means the checks didn't support calling it either way. Each study's name links to its page.</p>
     </div>
     <div class="reqs open">
       <div class="table-wrap">
@@ -77,6 +77,13 @@
           <tr class="r-first"><td><a href="bracket-modal.html#random_vib"><span class="r-no">21</span> Bracket Arm Random Vibration</a></td><td>3-sigma stress at the clamp</td><td class="num">≤ 236.7 MPa</td><td>38.6 MPa; mesh uncertainty 1.3 %</td><td><span class="chip pass">Met</span></td></tr>
           <tr><td></td><td>Fatigue damage over the test, three axes</td><td class="num">≤ 0.5</td><td>0.0024</td><td><span class="chip pass">Met</span></td></tr>
           <tr><td></td><td>3-sigma tip movement</td><td class="num">≤ 1.0 mm</td><td>0.345 mm</td><td><span class="chip pass">Met</span></td></tr>
+          <tr class="r-first"><td><a href="bracket-modal.html#bracket_uq"><span class="r-no">22</span> Bracket Arm Uncertainty</a></td><td>Chance of failing any of study 21&#x27;s three requirements</td><td class="num">≤ 1 in 1,000</td><td>2.2 in a million; the tip clearance governs (reliability index 4.55)</td><td><span class="chip pass">Met</span></td></tr>
+          <tr class="r-first"><td><a href="fan-rotor.html"><span class="r-no">23</span> Fan Rotor</a></td><td>Critical speeds 15 % clear of 1,000–3,000 rpm, 50 mm shaft as drawn</td><td class="num">≥ 15 %</td><td>first critical speed 2,710–2,911 rpm, inside the range</td><td><span class="chip fail">Not met</span></td></tr>
+          <tr><td></td><td>Same, 60 mm shaft</td><td class="num">≥ 15 %</td><td>14.3 % on soft bearings, 31.9 % on stiff</td><td><span class="chip fail">Not met</span></td></tr>
+          <tr><td></td><td>Same, 65 mm shaft</td><td class="num">≥ 15 %</td><td>23.8 % on soft bearings, 49.8 % on stiff</td><td><span class="chip pass">Met</span></td></tr>
+          <tr><td></td><td>Impeller vibration under the standard unbalance, 65 mm shaft</td><td class="num">≤ 50 µm</td><td>5.0 µm (the 50 mm shaft: 345 µm)</td><td><span class="chip pass">Met</span></td></tr>
+          <tr class="r-first"><td><a href="cracked-plate.html"><span class="r-no">24</span> Cracked Plate</a></td><td>Stress intensity at the detectable 2 mm crack</td><td class="num">≤ 50 MPa√m</td><td>13.4 MPa√m</td><td><span class="chip pass">Met</span></td></tr>
+          <tr><td></td><td>Crack growth life from 2 mm to critical</td><td class="num">≥ 80,000 cycles</td><td>about 92,000 cycles, ±0.2 %; critical crack 37.0 mm</td><td><span class="chip pass">Met</span></td></tr>
           <tr class="r-first"><td><a href="coolant-channel.html"><span class="r-no">05</span> Coolant Channel</a></td><td>Supply pressure</td><td class="num">≤ 30 Pa</td><td>33.4 Pa nominal, 28–42 Pa over tolerances</td><td><span class="chip fail">Not met</span></td></tr>
           <tr><td></td><td>Wall shear stress</td><td class="num">≥ 0.5 Pa</td><td>0.43 Pa with warm coolant</td><td><span class="chip fail">Not met</span></td></tr>
           <tr><td></td><td>2D assumption: side-wall effect</td><td class="num">≤ 5 %</td><td>3.2 %</td><td><span class="chip pass">Met</span></td></tr>
@@ -152,6 +159,6 @@
   </div>
 </footer>
 
-<script src="assets/site.js?v=eb5c36098b"></script>
+<script src="assets/site.js?v=485bb4c68b"></script>
 </body>
 </html>

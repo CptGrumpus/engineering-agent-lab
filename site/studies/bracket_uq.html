@@ -1,0 +1,57 @@
+  <section class="study" id="bracket_uq">
+    <div class="study-head">
+      <span class="label">Study 22 · CalculiX and Python, probabilistic uncertainty</span>
+      <h2>How Robust Is the Bracket Arm's Pass?</h2>
+    </div>
+    <h3>The Question</h3>
+    <p>Study 21's arm passed its shaker test on nominal inputs. A real project never knows those exactly. How likely is the arm to fail any of its three requirements when four inputs are only known within a range? And which of them is worth measuring first? The ranges, all assumed and stated as such:</p>
+    <ul>
+      <li><strong>Damping:</strong> median 2 %, nine times in ten between 1 % and 4 % (lognormal).</li>
+      <li><strong>Test level:</strong> within ±1.5 dB of the specified spectrum, the shaker's control tolerance.</li>
+      <li><strong>Fatigue strength:</strong> the EN 1993-1-9 curve scaled by a factor with 10 % scatter.</li>
+      <li><strong>Plate thickness:</strong> 7.0 mm with a standard deviation of 0.1 mm, a ±0.3 mm drawing tolerance taken as three standard deviations.</li>
+    </ul>
+    <p>The requirement: the chance of failing any of the three stays below 1 in 1,000.</p>
+    <h3>The Answer</h3>
+    <div class="answer">
+      <div class="chips"><span class="chip pass">Chance of failing: 2.2 in a million, limit 1 in 1,000</span><span class="chip pass">Tip clearance governs, reliability index 4.55</span><span class="chip pass">Damping: 71 % of the fatigue spread</span></div>
+      <p><strong>Robust.</strong> The chance that the arm fails any of its three requirements is about 2 in a million, some 450 times under the limit. The tip clearance is the closest of the three. Plain sampling never saw a failure in 32,768 tries, which is consistent with a number that small.</p>
+      <p><strong>Measure the damping first.</strong> It drives 71 % of the spread in the fatigue damage and over 80 % of the spread in stress and tip movement. The test level comes second, and the plate thickness hardly matters. To fail any requirement on its own, the damping would have to fall to 0.24 % or below, a quarter of the 1 % that bounds the assumed range from below. A bolted steel bracket shows well over 1 %.</p>
+      <p><strong>At the 99th percentile</strong> the fatigue damage is 0.055 against 0.5, the stress 66 MPa against 237, and the tip 0.59 mm against 1.0.</p>
+    </div>
+    <figure><div class="plate"><img src="v2/fig_bracket_uncertainty.svg" alt="Bar chart of how much each uncertain input drives each result, with damping dominant, and each requirement's probability of failing on a log scale, all far below the one-in-a-thousand limit" loading="lazy"></div><figcaption><b>What drives the result, and how unlikely failure is.</b> Left: each input's share of the variance of each result. Right: the probability of failing each requirement, and of failing any of them, on a log scale against the limit.</figcaption></figure>
+    <h3>Why It Matters</h3>
+    <p>A pass on nominal inputs says nothing about how close the design is to the edge. Margins on each input stacked up by hand get very conservative very fast. A probabilistic study answers two questions a project actually asks: how likely is this to fail, and which measurement would reduce that uncertainty most? Here the answer is the damping, which a quick tap test on the first part could pin down.</p>
+    <h3>The Model</h3>
+    <dl class="spec">
+      <dt>Base model</dt><dd>Study 21's arm and random-vibration analysis, on its finest mesh (1.22 mm).</dd>
+      <dt>Solves</dt><dd>Six CalculiX modal solves: five plate thicknesses from 6.5 to 7.5 mm, plus one in between as a check. Damping, test level and fatigue strength enter the random-response sum and the fatigue calculation directly, so the only interpolation is in thickness.</dd>
+      <dt>Statistics</dt><dd>Monte Carlo with 2,048, 8,192 and 32,768 samples; Sobol sensitivity indices with bootstrap intervals; FORM for each requirement's most likely failure point, then importance sampling around it for probabilities too small for plain sampling.</dd>
+    </dl>
+    {{CASE}}
+    <h3>How It Works</h3>
+    <p>Each sample draws the four inputs, runs the random-response sum and fatigue calculation, and checks the three requirements. Thickness changes the modes, so the modal results are solved at five thicknesses and interpolated between them. The thicknesses are made by scaling one mesh through its thickness, not by remeshing: remeshing added a 1 % scatter to the stress, which the fatigue calculation amplified to 5 %.</p>
+    <p>Sobol indices split the variance of each result between the inputs. For the probability of failing, sampling alone can't reach numbers like 2 in a million, so FORM finds the most likely combination of inputs that just fails, and importance sampling concentrates samples around it to get the probability.</p>
+    <h3>How I Checked It</h3>
+    <ul class="proof">
+      <li><strong>The interpolation against direct solves.</strong> At a thickness between the grid points, the stress and tip match a direct CalculiX solve within 1.1 × 10⁻⁴, the damage within 3.6 × 10⁻⁴.</li>
+      <li><strong>The nominal point reproduces study 21</strong> to rounding.</li>
+      <li><strong>The statistics code against exact answers.</strong> A linear case with a known failure probability, and functions with known Sobol indices, are unit tests.</li>
+      <li><strong>Two methods for the failure probability.</strong> FORM and importance sampling agree within a factor of 1.8 on every requirement, which is normal for small probabilities; the importance-sampling scatter is 2.6 %, and plain Monte Carlo is consistent with both.</li>
+      <li><strong>Sample-size convergence.</strong> The Sobol indices move by 0.002 from 8,192 to 32,768 samples, with intervals of ±0.012.</li>
+      <li><strong>Predictions before the run.</strong> Five of six held. The fatigue reliability index came in at 4.82 against a predicted 4.9 to 5.2.</li>
+    </ul>
+    <div class="caught">
+      <h3>What I Caught Along the Way</h3>
+      <ul>
+        <li><strong>Remeshing noise posing as a thickness effect.</strong> The first version remeshed the arm at each thickness. The stress picked up a 1 % scatter from the meshes alone, and because the damage rises steeply with stress near the fatigue cut-off, that became 5 % in the damage. Scaling one mesh through the thickness removed it.</li>
+      </ul>
+    </div>
+    <h3>Limits</h3>
+    <ul>
+      <li>Every input range is assumed. The probability is only as good as the damping range, which is why the answer is to measure it.</li>
+      <li>One damping value for all modes; the clamp's stiffness and fretting aren't uncertain inputs here, and study 21's limits still apply.</li>
+      <li>The thickness is uniform over the plate.</li>
+      <li>The failure probability adds the three requirements' probabilities, an upper bound on the chance of failing any of them.</li>
+    </ul>
+  </section>

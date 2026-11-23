@@ -21,7 +21,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
-<link rel="stylesheet" href="assets/site.css?v=eb5c36098b">
+<link rel="stylesheet" href="assets/site.css?v=485bb4c68b">
 </head>
 <body>
 <nav class="topbar" aria-label="Site">
@@ -109,8 +109,10 @@
           <tr><td>Buckling: linear eigenvalue and geometrically nonlinear with imperfections, checked against Euler, Southwell and Perry-Robertson</td><td>CalculiX</td><td><a href="strut-buckling.html">13</a></td></tr>
           <tr><td>Plasticity with loading and unloading, and the residual stress left behind, checked against Neuber and Glinka</td><td>CadQuery, Gmsh, CalculiX</td><td><a href="aluminium-strap.html#strap_proof">14</a></td></tr>
           <tr><td>Electric machines: back-EMF, torque and efficiency maps from 2D magnetostatics, a lumped thermal network and rotor stress at overspeed, checked against a laboratory's test data</td><td>Pyleecan, FEMM, CalculiX</td><td><a href="traction-motor.html">20</a></td></tr>
-          <tr><td>Vibration and modal analysis, including identifying the modes and keeping clear of engine orders</td><td>CadQuery, Gmsh, CalculiX</td><td><a href="bracket-modal.html#modal">4</a></td></tr>
-          <tr><td>Fatigue life using notch factors, mean-stress correction and S-N curves fitted to published test data</td><td>CalculiX, Python</td><td><a href="aluminium-strap.html#fatigue">3</a></td></tr>
+          <tr><td>Vibration and modal analysis, including identifying the modes and keeping clear of engine orders; random vibration by modal superposition</td><td>CadQuery, Gmsh, CalculiX, Python</td><td><a href="bracket-modal.html#modal">4</a>, <a href="bracket-modal.html#random_vib">21</a></td></tr>
+          <tr><td>Rotordynamics: Campbell diagrams, critical speeds and unbalance response, checked against the Jeffcott rotor</td><td>ROSS (Python)</td><td><a href="fan-rotor.html">23</a></td></tr>
+          <tr><td>Fatigue life using notch factors, mean-stress correction and S-N curves fitted to published test data; spectral fatigue under random vibration</td><td>CalculiX, Python</td><td><a href="aluminium-strap.html#fatigue">3</a>, <a href="bracket-modal.html#random_vib">21</a></td></tr>
+          <tr><td>Fracture mechanics: stress intensity by energy release and crack opening, critical crack and fatigue crack growth to BS 7910, checked against Tada's handbook</td><td>Gmsh, CalculiX, Python</td><td><a href="cracked-plate.html">24</a></td></tr>
           <tr><td>Chained multiphysics: coolant flow, then conduction through the part, then thermal stress, with an energy balance at every handoff</td><td>OpenFOAM, CalculiX</td><td><a href="cold-plate.html#cold_plate">15</a></td></tr>
           <tr><td>Design optimisation, with an optimiser driving the CAD-to-FEA pipeline and every candidate checked before it counts</td><td>SciPy, CadQuery, Gmsh, CalculiX</td><td><a href="cantilever-bracket.html#cantilever_opt">1b</a>, <a href="bracket-optimisation.html">12</a></td></tr>
           <tr><td>Scripted pipelines from parametric CAD through STEP export, meshing and solving</td><td>CadQuery, Gmsh, CalculiX</td><td><a href="aluminium-strap.html#strap">2</a>, <a href="bracket-modal.html#modal">4</a>, <a href="mounting-plate.html">8</a>, <a href="bracket-optimisation.html">12</a>, <a href="aluminium-strap.html#strap_proof">14</a></td></tr>
@@ -120,6 +122,7 @@
           <tr><td>Ride, road holding and frequency response, including ISO 2631 comfort weighting</td><td>Python (SciPy), OpenModelica</td><td><a href="quarter-car.html">7</a>, <a href="mass-spring-damper.html">9</a></td></tr>
           <tr><td>Renders of FE results and CAD parts in Blender, with the legend colours and geometry checked automatically</td><td>Blender (Cycles), Python</td><td><a href="cantilever-bracket.html#fea">1</a>, <a href="aluminium-strap.html#strap">2</a>, <a href="bracket-modal.html#modal">4</a>, <a href="heat-sink-fin.html">6</a>, <a href="mounting-plate.html">8</a>, <a href="bracket-optimisation.html">12</a>, <a href="strut-buckling.html">13</a>, <a href="aluminium-strap.html#strap_proof">14</a>, <a href="cold-plate.html#cold_plate">15</a>, <a href="bolted-joint.html">16</a></td></tr>
           <tr><td>Verification against exact and handbook solutions, the Grid Convergence Index, and tolerance and sensitivity studies</td><td>Python</td><td>All</td></tr>
+          <tr><td>Probabilistic uncertainty: Monte Carlo, Sobol sensitivity indices, FORM and importance sampling for small failure probabilities</td><td>Python</td><td><a href="bracket-modal.html#bracket_uq">22</a></td></tr>
         </tbody>
       </table>
     </div>
@@ -175,6 +178,6 @@
   </div>
 </footer>
 
-<script src="assets/site.js?v=eb5c36098b"></script>
+<script src="assets/site.js?v=485bb4c68b"></script>
 </body>
 </html>

@@ -2,8 +2,8 @@
 
     <div class="page-head">
       <p class="eyebrow">Now working on</p>
-      <h1>Three Studies Running</h1>
-      <p>The traction motor against its test data, the coupled flag benchmark, and an uncertainty study on the random-vibration result. As with every study, I pick the independent check before I start modelling, and I write down my predictions before each run. Finished today and now on their own pages: <a href="#step">flow over a backward-facing step</a> and <a href="#random_vib">the bracket arm under random vibration</a>.</p>
+      <h1>Two Studies Running</h1>
+      <p>The traction motor against its test data, and the coupled flag benchmark. As with every study, I pick the independent check before I start modelling, and I write down my predictions before each run. Finished today and now on their own pages: <a href="#step">flow over a backward-facing step</a>, <a href="#random_vib">the bracket arm under random vibration</a> and <a href="#bracket_uq">how robust its pass is</a>, <a href="#fan_rotor">a fan rotor's critical speeds</a> and <a href="#crack">crack growth in a steel plate</a>.</p>
     </div>
     <div class="skills plan now">
       <article class="skill">
@@ -11,7 +11,7 @@
         <b>Traction Motor: Finding the Missing Flux</b>
         <p><b>Where it stands</b>Modelled from the client's data with nothing tuned, the motor reads 17.7 % high on back-EMF and 17 to 19 % high on torque against the laboratory's test, so the model carries about 18 % more magnet flux than the real motor. Every client input matches the parts list. <a href="#motor">Its own page</a> has the results and the design checks.</p>
         <p><b>Testing now</b>The lamination steel in the rotor's bridges, which sets how much magnet flux leaks round the magnets' ends. My estimate, written before the run: under 1 %, so not the cause.</p>
-        <p><b>Next</b>One effect at a time, each with a prediction first: how fully the magnets are magnetised in the assembled rotor, the end effects a 2D model leaves out (about 4 % in a published 3D study, so not the whole answer), and a hand check of the model's magnetic circuit. Then the efficiency map and the power ratings, once the flux is explained.</p>
+        <p><b>Next</b>One effect at a time, each with a prediction first: the end effects a 2D model leaves out (about 4 % in a published 3D study, so not the whole answer), then a second, independent 2D model in ElmerFEM to check the field. The leading suspect is how fully the magnets are magnetised in the assembled rotor, which a test on one magnet would settle. Then the efficiency map and the power ratings, once the flux is explained.</p>
         <span class="tools">Pyleecan · FEMM · CalculiX</span>
       </article>
       <article class="skill">
@@ -22,14 +22,6 @@
         <p><b>Caught on the way</b>One regenerated mesh wrapped a single cell around the flag's tip corner and read the tip deflection 28 % low, with every other check passing. There's now a check on the cells next to the flag, and 24 earlier meshes were scanned with it. Only that one was affected.</p>
         <p class="plan-link"><a href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/portfolio/17-fsi-flag-turek-hron.md">Read the draft write-up</a></p>
         <span class="tools">OpenFOAM · CalculiX · preCICE</span>
-      </article>
-      <article class="skill">
-        <span class="plan-meta"><span class="no">Study 21, part 2 · Uncertainty</span><span class="plan-tag">In progress</span></span>
-        <b>How Robust Is the Bracket's Pass?</b>
-        <p><b>The question</b>The bracket arm passes its random-vibration test with its fatigue damage about 200 times under the limit, on nominal inputs. Does that pass hold up when the damping, the test level, the fatigue strength and the plate thickness are only known within a range? And which of them would be worth measuring first?</p>
-        <p><b>How I'll check it</b>The statistics code is tested against cases with exact answers first. Then the probability of failing comes from Monte Carlo sampling, with a second method (FORM with importance sampling) for when no sample fails, and sensitivity indices show which input drives the result. The input ranges are assumed values, stated as such.</p>
-        <p><b>My prediction</b>A robust pass, with the damping and the fatigue strength driving the damage.</p>
-        <span class="tools">CalculiX · Python</span>
       </article>
     </div>
     </div>

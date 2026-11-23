@@ -91,6 +91,21 @@ VP = [
      "lines": ["Solver: CalculiX 2.22 modes, summed in Python · finest of three meshes (1.22 mm)",
                "Stress at the clamp across the frequency range, and each requirement against its limit",
                "3-sigma stress 38.6 MPa against 236.7 · damage 0.0024 against 0.5 · tip 0.345 mm against 1.0"]},
+    {"id": "bracket_uq", "study": "bracket_uq", "kind": "figure", "img": "v2/fig_bracket_uncertainty.svg",
+     "model": "Bracket arm on a shaker table · damping, test level, fatigue strength and thickness uncertain",
+     "lines": ["Monte Carlo, Sobol indices, FORM and importance sampling · study 21's finest mesh (1.22 mm)",
+               "Left: what drives each result. Right: the chance of failing each requirement against the 1-in-1,000 limit",
+               "Chance of failing 2.2 × 10⁻⁶ · tip clearance governs · damping drives 71 % of the fatigue spread"]},
+    {"id": "fan_rotor", "study": "fan_rotor", "kind": "figure", "img": "v2/fig_fan_rotor.svg",
+     "model": "Fan rotor, 400 mm impeller on a 1 m shaft · 1,000 to 3,000 rpm · bearings 10⁷ to 10⁸ N/m",
+     "lines": ["ROSS 3.1 · 20 Timoshenko elements with gyroscopic terms · Campbell diagram and API 684 unbalance response",
+               "Left: impeller vibration through the operating range. Right: first critical speed against the keep-out band",
+               "50 mm fails (critical speed in the range) · 60 mm fails on soft bearings (14.3 %) · 65 mm passes (23.8 % or more)"]},
+    {"id": "crack", "study": "crack", "kind": "figure", "img": "v2/fig_crack_growth.svg",
+     "model": "Edge-cracked S355 plate, 100 × 10 mm · 150 MPa peak, R = 0.1 · detectable crack 2 mm",
+     "lines": ["CalculiX plane strain · K by energy release and by crack opening · finest tip mesh 0.025 mm",
+               "Left: stress intensity against Tada's handbook. Right: crack growth from 2 mm to critical",
+               "Critical crack 37.0 mm · life about 92,000 cycles · inspect at least every 46,000"]},
 ]
 VP += [
     {"id": "strap_detail", "study": "strap", "legend": "S11", "unit": "MPa",
@@ -173,6 +188,9 @@ CARDS = [
     ("fatigue", "03", "struct", "Fatigue", "Strap fatigue life, chained analysis", "Predicted to last with a wide margin; rated 7.8 kN cyclic for 3 × 10⁷ cycles, the lower of two data sets, extrapolated past the test data.", "pass", "CalculiX · Python"),
     ("modal", "04", "struct", "Vibration", "Bracket arm modal analysis", "7 mm thick puts the first mode at 261.7 Hz and the weight at 206 g.", "pass", "CadQuery · Gmsh · CalculiX"),
     ("random_vib", "21", "struct", "New · Random vibration", "Bracket arm on a shaker table, random vibration", "Passes one hour per axis of random vibration with wide margins: 38.6 MPa at the clamp against 236.7, fatigue damage 0.0024 against 0.5, tip 0.345 mm against 1.0.", "pass", "CalculiX · Python"),
+    ("bracket_uq", "22", "struct", "New · Uncertainty", "How robust is the bracket arm's pass?", "With damping, test level, fatigue strength and thickness uncertain, the chance of failing is about 2 in a million against a 1-in-1,000 limit. Damping drives the spread: measure it first.", "pass", "CalculiX · Python"),
+    ("fan_rotor", "23", "struct", "New · Rotordynamics", "Fan rotor: critical speeds and unbalance response", "The drawn 50 mm shaft runs through its first critical speed inside the 1,000 to 3,000 rpm range, and 60 mm fails on soft bearings. A 65 mm shaft clears the range by at least 23.8 % on any bearing in the band, with the impeller's vibration under 5 µm.", "fix", "ROSS · Python"),
+    ("crack", "24", "struct", "New · Fracture mechanics", "Cracked steel plate: critical crack and fatigue crack growth", "A 2 mm edge crack, the smallest inspection finds, grows to the critical 37.0 mm in about 92,000 cycles. Inspect at least every 46,000 cycles; the planned 40,000 has margin. Stress intensity checked against the handbook to 0.66 %.", "pass", "Gmsh · CalculiX · Python"),
     ("cold_plate", "15", "fluid", "New · Multiphysics", "Cold plate, the full thermal chain", "Passes on all three counts, from the coolant flow through the plate's conduction to its thermal stress: 40.99 °C, a 7.20 K coolant rise and 46.8 MPa.", "pass", "OpenFOAM · CalculiX"),
     ("pipe", "19", "fluid", "New · Turbulence", "Turbulent pipe friction, against measured data", "Passes: extrapolated to zero cell size, the turbulence model lands 2.4 % above Prandtl's law against a 5 % limit. The first mesh agreed to 0.9 %, with the wrong sign. Wall functions sit 5 % low on every mesh.", "pass", "OpenFOAM"),
     ("step", "19", "fluid", "New · Measured data", "Flow over a backward-facing step, against measurements", "Two of three agreed limits pass: reattachment 2.3 % long and skin friction 7.0 % rms. The pressure recovers 0.023 too far against a 0.02 limit, most likely because a 2D model has no tunnel side walls.", "most", "OpenFOAM"),
@@ -184,7 +202,7 @@ CARDS = [
     ("baseline", "09", "workflow", "Workflow", "Mass-spring-damper baseline", "All 72 checks pass, and the two tools agree to a few parts per million.", "pass", "SciPy · OpenModelica"),
 ]
 VERDICT = {"pass": "Passes", "fail": "Fails", "mixed": "Depends on speed", "held": "One result on hold",
-           "wip": "In progress", "line": "Depends on one judgement call", "most": "Passes, with one miss"}
+           "wip": "In progress", "fix": "Fails as drawn; fix found", "line": "Depends on one judgement call", "most": "Passes, with one miss"}
 
 # studies of the same part, shown as one card and one panel; each study keeps its own write-up, viewer
 # result, requirements rows and evidence, and links to a study land on its part of the panel
@@ -212,13 +230,15 @@ GROUPS = {
                               "the full chain, coolant to plate conduction to thermal stress: the component face peaks at "
                               "40.99 °C, the coolant warms 7.20 K and the stress reaches 46.8 MPa, all inside their limits."),
 }
-GROUPS["bracket_arm"] = dict(parts=["modal", "random_vib"], main="modal", no="04 · 21", d="Two studies",
-                             title="Bracket arm: modal analysis, then random vibration",
-                             label="Studies 4 and 21 · CadQuery, Gmsh, CalculiX and Python", verdict="pass",
+GROUPS["bracket_arm"] = dict(parts=["modal", "random_vib", "bracket_uq"], main="modal", no="04 · 21 · 22", d="Three studies",
+                             title="Bracket arm: modal analysis, random vibration and how robust the pass is",
+                             label="Studies 4, 21 and 22 · CadQuery, Gmsh, CalculiX and Python", verdict="pass",
                              tools="CadQuery · Gmsh · CalculiX · Python",
                              answer="7 mm thick puts the first mode at 261.7 Hz and the weight at 206 g. Then the same arm on a "
                                     "shaker table, one hour per axis of random vibration: 38.6 MPa at the clamp against 236.7, "
-                                    "fatigue damage 0.0024 against 0.5 and 0.345 mm of tip movement against 1 mm.")
+                                    "fatigue damage 0.0024 against 0.5 and 0.345 mm of tip movement against 1 mm. With the damping, "
+                                    "test level, fatigue strength and thickness uncertain, the chance of failing that test is "
+                                    "about 2 in a million; damping is the input to measure.")
 GROUPS["turbulent_flow"] = dict(parts=["pipe", "step"], main="pipe", no="19", d="Two parts",
                                 title="Turbulent flow: pipe friction, then flow over a step",
                                 label="Study 19 · OpenFOAM, against measured data", verdict="most", tools="OpenFOAM",
@@ -230,7 +250,7 @@ PART_OF = {p: g for g, gd in GROUPS.items() for p in gd["parts"]}
 PART_LABEL = {"fea": "01 · Stress check", "cantilever_opt": "01b · Optimised",
               "strap": "02 · Cable hole", "fatigue": "03 · Fatigue life", "strap_proof": "14 · Proof test",
               "heat": "11 · Coolant channel", "cold_plate": "15 · Full thermal chain",
-              "modal": "04 · Modal analysis", "random_vib": "21 · Random vibration",
+              "modal": "04 · Modal analysis", "random_vib": "21 · Random vibration", "bracket_uq": "22 · How robust the pass is",
               "pipe": "19 · Pipe friction", "step": "19, part 2 · Flow over a step"}
 WIDE = {"bracket_opt", "pv_nozzle", "strap", "cold_plate"}
 
@@ -256,7 +276,7 @@ SLUG = {"bracket_opt": "bracket-optimisation", "pv_nozzle": "pressure-vessel-noz
         "cantilever_bracket": "cantilever-bracket", "bracket_arm": "bracket-modal", "cold_plate": "cold-plate",
         "turbulent_flow": "turbulent-pipe-friction", "cfd": "coolant-channel", "thermal": "heat-sink-fin",
         "suspension": "quarter-car", "cad": "mounting-plate", "baseline": "mass-spring-damper",
-        "motor": "traction-motor"}
+        "motor": "traction-motor", "fan_rotor": "fan-rotor", "crack": "cracked-plate"}
 assert set(SLUG) == {c[0] for c in GALLERY}, "every gallery card needs a page name"
 FILE = {k: f"{s}.html" for k, s in SLUG.items()}
 DISC = {"struct": "Structures and vibration", "fluid": "Thermal and fluids", "vehicle": "Vehicle dynamics",
@@ -276,7 +296,8 @@ CASES = {"fea": ["cantilever_tet10"], "cantilever_opt": ["bracket_opt"], "strap"
          "modal": ["bracket_modal_thickness"], "strut": ["strut_length"], "bolted_joint": ["bolted_joint_mesh_r1"],
          "pv_nozzle": ["pv_nozzle_mesh", "pv_nozzle_crotch_mesh_r1"], "bracket_opt": ["clevis_opt_r2"], "cfd": ["channel_header_tolerance", "duct_side_walls"],
          "thermal": ["fin_tolerance"], "heat": ["heated_channel_mesh_r2"], "cold_plate": ["cold_plate_mesh_r1"],
-         "pipe": ["pipe_rans_mesh_r3"], "step": ["step_mesh"], "random_vib": ["bracket_random_mesh"], "suspension": ["qc_speed_bump", "qc_bump_liftoff"], "cad": ["mounting_plate"],
+         "pipe": ["pipe_rans_mesh_r3"], "step": ["step_mesh"], "random_vib": ["bracket_random_mesh"], "bracket_uq": ["bracket_random_uq"],
+         "fan_rotor": ["rotor_fan_design"], "crack": ["edge_crack_mesh_r2"], "suspension": ["qc_speed_bump", "qc_bump_liftoff"], "cad": ["mounting_plate"],
          "baseline": ["msd_step"], "motor": ["motor_prius_rev5_torque"]}
 # drawings from scripts/make_drawings.py (site/v2/dwg_<key>.webp), shown in each study's model section
 DRAWINGS = {
@@ -609,7 +630,8 @@ def text_page(file, tpl, title, og_title, desc, nav, repl, scripts="") -> dict:
 
 WORDS = {15: ("fifteen", "Fifteen"), 16: ("sixteen", "Sixteen"), 17: ("seventeen", "Seventeen"),
          18: ("eighteen", "Eighteen"), 19: ("nineteen", "Nineteen"), 20: ("twenty", "Twenty"),
-         21: ("twenty-one", "Twenty-one"), 22: ("twenty-two", "Twenty-two"), 23: ("twenty-three", "Twenty-three")}
+         21: ("twenty-one", "Twenty-one"), 22: ("twenty-two", "Twenty-two"), 23: ("twenty-three", "Twenty-three"),
+         24: ("twenty-four", "Twenty-four"), 25: ("twenty-five", "Twenty-five"), 26: ("twenty-six", "Twenty-six")}
 TASK_WORDS = {4: "four", 5: "five", 6: "six", 7: "seven"}
 
 facts = extras.repo_facts()
@@ -631,8 +653,8 @@ pages = [home_page(facts)] + [study_page(c[0]) for c in GALLERY] + [
               "grading", {"{{GRADER}}": grader_body, "{{TASK_COUNT_WORD}}": TASK_WORDS[len(gdata)]},
               scripts=f"<script>\n{grader_js}\n</script>"),
     text_page("in-progress.html", "progress.html", "In progress", "Studies in progress",
-              "The traction motor against its test data, a flexible flag behind a cylinder (fluid-structure "
-              "interaction) and an uncertainty study on a random-vibration pass.", "in-progress", {}),
+              "The traction motor against its test data and a flexible flag behind a cylinder (fluid-structure "
+              "interaction).", "in-progress", {}),
     reqs_page(),
 ]
 

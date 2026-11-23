@@ -28,6 +28,26 @@ from harness.runio import read_series  # noqa: E402
 RUNS = REPO / "runs"
 
 
+def thumb(fig, ax, key: str):
+    """The gallery card's thumbnail (site/v2/th_<key>.webp, 800 x 500): one panel of the chart, with its labels.
+    Call before fk.save, which closes the figure. Keeps a card's picture in step with its chart."""
+    import io
+    from PIL import Image
+    dpi = 220
+    fig.canvas.draw()
+    bb = ax.get_tightbbox(fig.canvas.get_renderer()).padded(6)
+    buf = io.BytesIO()
+    fig.savefig(buf, format="png", dpi=dpi, facecolor=SURFACE)
+    im = Image.open(buf).convert("RGB")
+    s = dpi / fig.dpi
+    H = im.height
+    im = im.crop((int(bb.x0 * s), int(H - bb.y1 * s), int(bb.x1 * s), int(H - bb.y0 * s)))
+    im.thumbnail((760, 470), Image.LANCZOS)
+    canvas = Image.new("RGB", (800, 500), (252, 252, 251))
+    canvas.paste(im, ((800 - im.width) // 2, (500 - im.height) // 2))
+    canvas.save(fk.OUT / f"th_{key}.webp", "WEBP", quality=88, method=6)
+
+
 def point(run: str, label: str) -> dict:
     return json.loads((RUNS / run / "points" / label / "point.json").read_text(encoding="utf-8"))
 
@@ -1095,6 +1115,7 @@ def pipe_friction():
     ax.set_xlim(0, 0.028)
     ax.set_xlabel("1 ÷ cells across the radius (finer to the left)")
     fk.panel(ax, "Refining the mesh")
+    mesh_ax = ax
 
     ax = axes[1]
     rows = [r for _, r, _ in pts("20261122-104744_pipe_rans_reynolds")]
@@ -1127,6 +1148,7 @@ def pipe_friction():
     fk.heading(fig, "Resolved at the wall, the model lands 2.4 % above the measured law; wall functions sit 5 % low",
                "Smooth-pipe friction factor from the turbulence model against Prandtl's law, the fit to Nikuradse's measurements")
     fk.key(fig, [("wall layer resolved", "dot", MODEL), ("wall functions", "dot", REF)], y_in=0.66)
+    thumb(fig, mesh_ax, "pipe")
     fk.save(fig, "pipe_friction")
 
 
@@ -1162,6 +1184,7 @@ def motor_comparison():
     ax.set_xlabel("speed, rpm")
     ax.set_ylabel("back-EMF, V rms line to line")
     fk.panel(ax, f"Back-EMF: {100 * (oc / ref - 1):+.1f} % (limit 5 %)")
+    emf_ax = ax
     ax = fig.add_subplot(gs[0, 1])
     fk.style(ax)
     ax.plot(I, T, color=MODEL, zorder=3)
@@ -1177,6 +1200,7 @@ def motor_comparison():
     fk.heading(fig, "Built from the client's data, the model reads about 18 % high on both back-EMF and torque",
                "2D FEMM model against Oak Ridge National Laboratory's test; torque as the test reports it, the largest over shaft angle")
     fk.key(fig, [("measured", "dot", REF), ("model", "line", MODEL)], y_in=0.66)
+    thumb(fig, emf_ax, "motor")
     fk.save(fig, "motor_comparison")
 
 
@@ -1485,11 +1509,208 @@ def random_vibration():
     fk.save(fig, "random_vibration")
 
 
+# ---------------------------------------------------------------------------------------- study 22, uncertainty
+
+UQ_RUN, UQ_PT = "20261123-104847_bracket_random_uq", "p02_n_samples-32768"
+
+
+def bracket_uncertainty():
+    """Which input drives each output (Sobol total indices), and each requirement's failure probability."""
+    from matplotlib.ticker import FixedLocator, NullFormatter
+    pt = point(UQ_RUN, UQ_PT)
+    so = pt["solver_outputs"]
+    ok = verified(UQ_RUN)[UQ_PT]
+    fig, gs = fk.new(FULL, 4.4, 1, 2, wspace=0.14, top=1.0, width_ratios=[1.2, 1])
+    gs.update(left=0.15)
+    ax = fig.add_subplot(gs[0, 0])
+    fk.style(ax, grid="x")
+    inputs = [("damping", "damping"), ("test_level_dB", "test level"), ("sn_factor", "fatigue strength"),
+              ("thickness_mm", "plate thickness")]
+    outs = [("stress", "3-sigma stress", MODEL), ("tip", "tip movement", REF), ("logdamage", "fatigue damage", fk.THIRD)]
+    h = 0.24
+    for j, (ok_, name, color) in enumerate(outs):
+        st = so["sobol"][ok_]["ST"]
+        ys = [i + (j - 1) * (h + 0.03) for i in range(len(inputs))]
+        ax.barh(ys, [max(st[k], 0.0) for k, _ in inputs], height=h, color=color, zorder=3)
+    for i, (k, _) in enumerate(inputs):
+        top = max(so["sobol"][o]["ST"][k] for o, _, _ in outs)
+        if top > 0.05:
+            fk.label(ax, top, i, f"{top:.2f}", dx=5, ha="left", color=INK2, size=8.5)
+    ax.set_yticks(range(len(inputs)))
+    ax.set_yticklabels([n for _, n in inputs])
+    ax.set_ylim(len(inputs) - 0.5, -0.5)
+    ax.set_xlim(0, 1)
+    ax.set_xlabel("share of the output's variance (Sobol total index)")
+    fk.panel(ax, "What drives each result")
+
+    ax = fig.add_subplot(gs[0, 1])
+    fk.style(ax, grid="x")
+    rel = {r["output"]: r for r in so["reliability"]}
+    rows = [("3-sigma stress", "stress_3sigma_MPa"), ("fatigue damage", "damage"), ("3-sigma tip movement", "tip_disp_3sigma_mm")]
+    lim = limits("bracket_random_uq")["pf_any"][1]
+    ax.set_xscale("log")
+    ax.set_xlim(1e-17, 1)
+    ax.set_ylim(3.6, -0.75)
+    for i, (name, key_) in enumerate(rows):
+        r = rel[key_]
+        fk.status_dot(ax, r["pf_is"], i, ("meets" if r["pf_is"] <= lim else "misses") if ok else "held")
+        fk.label(ax, r["pf_is"], i, name, dx=0, dy=10, ha="center", va="bottom", size=9)
+        fk.label(ax, r["pf_is"], i, f"{r['pf_is']:.1e}, reliability index {r['beta']:.1f}", dx=0, dy=-10, ha="center", va="top",
+                 color=INK2, size=8.5)
+    pf = so["pf_any"]
+    fk.status_dot(ax, pf, 3, ("meets" if pf <= lim else "misses") if ok else "held")
+    fk.label(ax, pf, 3, "any of the three", dx=0, dy=10, ha="center", va="bottom", size=9, bold=True)
+    fk.label(ax, pf, 3, f"{pf:.1e}", dx=0, dy=-10, ha="center", va="top", color=INK2, size=8.5)
+    ax.set_yticks([])
+    fk.limit(ax, lim, "limit", "above", axis="x", at=0.99)
+    ax.xaxis.set_major_locator(FixedLocator([1e-15, 1e-12, 1e-9, 1e-6, 1e-3]))
+    ax.set_xticklabels(["10⁻¹⁵", "10⁻¹²", "10⁻⁹", "10⁻⁶", "10⁻³"])
+    ax.xaxis.set_minor_formatter(NullFormatter())
+    ax.set_xlabel("probability of failing, per test")
+    fk.panel(ax, "Chance of failing each requirement")
+    fk.heading(fig, "Damping drives the result, and the chance of the arm failing its test is about 2 in a million",
+               "Monte Carlo, Sobol indices and FORM with importance sampling on study 21's finest mesh; the input ranges are assumed")
+    fk.key(fig, [(n, "line", c) for _, n, c in outs] + [("meets", "meets", None)], y_in=0.66)
+    fk.save(fig, "bracket_uncertainty")
+
+
+# ---------------------------------------------------------------------------------------- study 23, fan rotor
+
+ROTOR_RUN = "20261123-162721_rotor_fan_design"
+
+
+def fan_rotor():
+    """Unbalance response over the operating range, and the first forward critical speed against the keep-out band."""
+    from matplotlib.ticker import FixedLocator, NullFormatter
+    L = limits("rotor_fan_design")
+    ok = verified(ROTOR_RUN)
+    pts_ = sorted((RUNS / ROTOR_RUN / "points").iterdir())
+    rec = [(p.name, point(ROTOR_RUN, p.name)) for p in pts_]
+    fig, gs = fk.new(FULL, 3.9, 1, 2, wspace=0.26, top=1.0, width_ratios=[1.2, 1])
+    ax = fig.add_subplot(gs[0, 0])
+    fk.style(ax, grid="both")
+    colors = {0.05: fk.FAIL, 0.06: REF, 0.065: MODEL}
+    for name, r in rec:
+        d, kb = r["parameters"]["shaft_diameter_m"], r["parameters"]["bearing_stiffness_N_per_m"]
+        s = read_series(RUNS / ROTOR_RUN / "points" / name / "unbalance_response.csv")
+        ax.plot(s["speed_rpm"], np.asarray(s["disc_amp_x_m"]) * 1e6, color=colors[d], linewidth=1.8 if kb < 5e7 else 1.2,
+                linestyle="-" if kb < 5e7 else (0, (4, 3)), zorder=3)
+        if kb < 5e7:
+            y = np.asarray(s["disc_amp_x_m"]) * 1e6
+            fk.label(ax, 3000, y[-1], f"{d * 1000:.0f} mm", dx=5, ha="left", color=INK2, size=8.5)
+    ax.set_yscale("log")
+    ax.set_xlim(1000, 3250)
+    ax.set_ylim(0.1, 1000)
+    op, lim = L["unbalance_amp_max_um"]
+    fk.limit(ax, lim, f"limit, {lim:g} µm", "above", axis="y", at=0.03)
+    ax.yaxis.set_major_locator(FixedLocator([0.1, 1, 10, 100, 1000]))
+    ax.set_yticklabels(["0.1", "1", "10", "100", "1000"])
+    ax.yaxis.set_minor_formatter(NullFormatter())
+    ax.set_xticks([1000, 1500, 2000, 2500, 3000])
+    ax.set_xlabel("running speed, rpm (the operating range)")
+    ax.set_ylabel("impeller vibration, µm")
+    fk.panel(ax, "Response to the standard unbalance")
+    resp_ax = ax
+
+    ax = fig.add_subplot(gs[0, 1])
+    fk.style(ax, grid="x")
+    ax.set_xlim(0, 6400)                            # keep-out: 15 % outside the 1000-3000 rpm range (REQ-G1)
+    ax.set_ylim(2.6, -0.6)
+    ax.axvspan(850, 3450, color=fk.FAIL, alpha=0.07, linewidth=0, zorder=0.5)
+    ax.axvspan(1000, 3000, color=fk.FAIL, alpha=0.07, linewidth=0, zorder=0.6)
+    ax.annotate("keep out: 850 to 3,450 rpm", (2150, 0.99), xycoords=("data", "axes fraction"), ha="center", va="top",
+                fontsize=8.5, color=INK2)
+    for i, dia in enumerate((0.05, 0.06, 0.065)):
+        rr = [(r["parameters"]["bearing_stiffness_N_per_m"], r["metrics"], ok[n]) for n, r in rec
+              if r["parameters"]["shaft_diameter_m"] == dia]
+        xs = [m["first_forward_critical_rpm"] for _, m, _ in rr]
+        ax.plot(xs, [i, i], color=fk.AXIS, linewidth=1.2, zorder=2)
+        for kb, m, v in rr:
+            good = m["separation_margin_pct"] >= L["separation_margin_pct"][1]
+            fk.status_dot(ax, m["first_forward_critical_rpm"], i, ("meets" if good else "misses") if v else "held")
+        fk.label(ax, min(xs), i, f"{dia * 1000:.0f} mm shaft", dx=0, dy=11, ha="left", va="bottom", size=9)
+        fk.label(ax, max(xs), i, f"{min(xs):,.0f} to {max(xs):,.0f} rpm", dx=8, ha="left", color=INK2, size=8.5)
+    ax.set_yticks([])
+    ax.set_xlabel("first critical speed, rpm (soft to stiff bearings)")
+    fk.panel(ax, "First critical speed against the keep-out band")
+    fk.heading(fig, "The 50 mm shaft passes through a critical speed in service; a 65 mm shaft clears the range",
+               "ROSS rotor model, bearing stiffness 10⁷ (solid) to 10⁸ N/m (dashed); geometry, speeds and bearings are assumed")
+    fk.key(fig, [("meets", "meets", None), ("misses", "misses", None)], y_in=0.66)
+    thumb(fig, resp_ax, "fan_rotor")
+    fk.save(fig, "fan_rotor")
+
+
+# ---------------------------------------------------------------------------------------- study 24, cracked plate
+
+CRACK_RUN, CRACK_PT = "20261123-164649_edge_crack_mesh_r2", "p02_tip_element_size_mm-0.025"
+
+
+def crack_growth():
+    """K against crack length with the toughness, and the crack's growth from the detectable size to critical."""
+    from scipy.integrate import cumulative_simpson
+    from scipy.interpolate import CubicSpline
+    from studies.edge_crack import MPA_SQRT_M
+    pt = point(CRACK_RUN, CRACK_PT)
+    p, m = pt["parameters"], pt["metrics"]
+    ok = verified(CRACK_RUN)[CRACK_PT]
+    s = read_series(RUNS / CRACK_RUN / "points" / CRACK_PT / "k_of_a.csv")
+    a = np.asarray(s["a_mm"])
+    K = np.asarray(s["K_energy"]) / MPA_SQRT_M
+    Kt = np.asarray(s["K_tada"]) / MPA_SQRT_M
+    kmat = float(p["k_mat_MPa_sqrt_m"])
+    fig, gs = fk.new(FULL, 3.9, 1, 2, wspace=0.26, top=1.0)
+    ax = fig.add_subplot(gs[0, 0])
+    fk.style(ax)
+    ax.plot(a, Kt, color=REF, zorder=2)
+    fk.dots(ax, a, K, color=MODEL, size=36)
+    ax.set_xlim(0, 47)
+    ax.set_ylim(0, 150)
+    fk.limit(ax, kmat, f"fracture toughness, {kmat:g} MPa√m", "above", axis="y", at=0.03)
+    ac = m["crit_crack_mm"]
+    ax.axvline(ac, color=fk.AXIS, linewidth=0.8, linestyle=(0, (3, 3)), zorder=1)
+    fk.label(ax, ac, 8, f"critical crack\n{ac:.1f} mm", dx=-5, ha="right", va="bottom", color=INK2, size=8.5)
+    fk.status_dot(ax, float(p["initial_crack_mm"]), m["K_a0_MPa_sqrt_m"], "meets" if ok else "held")
+    fk.label(ax, float(p["initial_crack_mm"]), m["K_a0_MPa_sqrt_m"], f"at 2 mm: {m['K_a0_MPa_sqrt_m']:.1f}\n(limit {kmat / 2:g})",
+             dx=10, dy=-6, ha="left", va="top", color=INK2, size=8.5)
+    ax.set_xlabel("crack length, mm")
+    ax.set_ylabel("stress intensity at peak load, MPa√m")
+    fk.panel(ax, "Stress intensity: model against Tada's handbook")
+
+    # the life curve: the study's own growth law and geometry factor, integrated cumulatively
+    smax, R = float(p["sigma_max_MPa"]), float(p["stress_ratio"])
+    F = CubicSpline(a, np.asarray(s["K_energy"]) / (smax * np.sqrt(np.pi * a)))
+    xs = np.linspace(float(p["initial_crack_mm"]), ac, 4001)
+    dK = (1 - R) * F(xs) * smax * np.sqrt(np.pi * xs)
+    N = cumulative_simpson(1 / (float(p["paris_C"]) * dK ** float(p["paris_m"])), x=xs, initial=0)
+    assert abs(N[-1] / m["growth_life_cycles"] - 1) < 2e-3, (N[-1], m["growth_life_cycles"])
+    ax = fig.add_subplot(gs[0, 1])
+    fk.style(ax)
+    ax.plot(N / 1000, xs, color=MODEL, zorder=3)
+    ax.set_xlim(0, 100)
+    ax.set_ylim(0, 40)
+    life = m["growth_life_cycles"]
+    insp = m["inspection_interval_cycles"]
+    ax.axvline(insp / 1000, color=fk.AXIS, linewidth=0.8, linestyle=(0, (3, 3)), zorder=1)
+    fk.label(ax, insp / 1000, 38, f"inspect at least\nevery {insp / 1000:,.0f},000", dx=-5, ha="right", va="top", color=INK2, size=8.5)
+    fk.status_dot(ax, life / 1000, ac, "meets" if ok else "held")
+    fk.label(ax, life / 1000, ac, f"{life / 1000:,.0f},000 cycles", dx=-8, dy=0, ha="right", va="center", size=9)
+    ax.set_xlabel("load cycles, thousands")
+    ax.set_ylabel("crack length, mm")
+    fk.panel(ax, "Growth from the detectable 2 mm crack")
+    fk.heading(fig, "A 2 mm edge crack takes about 92,000 cycles to reach the critical 37 mm: inspect at least every 46,000",
+               "CalculiX plane strain, K by energy release on the finest tip mesh; BS 7910 growth law; loads and toughness are assumed")
+    fk.key(fig, [("model", "dot", MODEL), ("handbook", "line", REF)], y_in=0.66)
+    thumb(fig, ax, "crack")
+    fk.save(fig, "crack_growth")
+
+
 ALL = {f.__name__: f for f in (cfd_tolerance, cfd_duct, cfd_response, cfd_field, fea_tet4, strap_sweep, fatigue_sweep,
                                strut_sweep, strut_response, proof_response, joint_response, contact_response, fea_response, strap_response,
                                fatigue_sn, fin_response, fin_h_sweep, qc_bump_sweep, cad_sweep, heat_response,
-                               qc_liftoff, qc_iso, coldplate_response, pipe_friction, motor_comparison, motor_efficiency, motor_thermal,
-                               motor_rotor, pv_nozzle, step_comparison, random_vibration)}
+                               qc_liftoff, qc_iso, coldplate_response, pipe_friction, motor_comparison,
+                               motor_rotor, pv_nozzle, step_comparison, random_vibration, bracket_uncertainty,
+                               fan_rotor, crack_growth)}
+# not on the site while the motor's flux is being explained (they're the earlier model's): motor_efficiency, motor_thermal
 
 if __name__ == "__main__":
     for name in sys.argv[1:] or ALL:

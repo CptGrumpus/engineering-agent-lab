@@ -35,7 +35,8 @@ STUDY_DOCS = {
     "strut": "13-strut-buckling", "strap_proof": "14-strap-proof-plasticity", "cold_plate": "15-cold-plate-thermal-chain",
     "bolted_joint": "16-bolted-joint-slip", "pv_nozzle": "18-pressure-vessel-nozzle",
     "pipe": "19-turbulent-pipe-friction", "motor": "20-prius-traction-motor", "step": "19-turbulent-pipe-friction",
-    "random_vib": "21-bracket-random-vibration",
+    "random_vib": "21-bracket-random-vibration", "bracket_uq": "22-bracket-random-uncertainty",
+    "fan_rotor": "23-fan-rotor-critical-speeds", "crack": "24-cracked-plate-growth",
 }
 RUN_PREFIX = {"pipe": "pipe_", "step": "step_"}
 # studies whose page cites a chosen set of runs instead of every run its write-up mentions, and links no write-up
@@ -531,6 +532,16 @@ REQS = [
         ("3-sigma stress at the clamp", "≤ 236.7 MPa", "38.6 MPa; mesh uncertainty 1.3 %", "met"),
         ("Fatigue damage over the test, three axes", "≤ 0.5", "0.0024", "met"),
         ("3-sigma tip movement", "≤ 1.0 mm", "0.345 mm", "met")]),
+    ("bracket_uq", "22", "Bracket arm uncertainty", [
+        ("Chance of failing any of study 21's three requirements", "≤ 1 in 1,000", "2.2 in a million; the tip clearance governs (reliability index 4.55)", "met")]),
+    ("fan_rotor", "23", "Fan rotor", [
+        ("Critical speeds 15 % clear of 1,000–3,000 rpm, 50 mm shaft as drawn", "≥ 15 %", "first critical speed 2,710–2,911 rpm, inside the range", "fail"),
+        ("Same, 60 mm shaft", "≥ 15 %", "14.3 % on soft bearings, 31.9 % on stiff", "fail"),
+        ("Same, 65 mm shaft", "≥ 15 %", "23.8 % on soft bearings, 49.8 % on stiff", "met"),
+        ("Impeller vibration under the standard unbalance, 65 mm shaft", "≤ 50 µm", "5.0 µm (the 50 mm shaft: 345 µm)", "met")]),
+    ("crack", "24", "Cracked plate", [
+        ("Stress intensity at the detectable 2 mm crack", "≤ 50 MPa√m", "13.4 MPa√m", "met"),
+        ("Crack growth life from 2 mm to critical", "≥ 80,000 cycles", "about 92,000 cycles, ±0.2 %; critical crack 37.0 mm", "met")]),
     ("cfd", "05", "Coolant channel", [
         ("Supply pressure", "≤ 30 Pa", "33.4 Pa nominal, 28–42 Pa over tolerances", "fail"),
         ("Wall shear stress", "≥ 0.5 Pa", "0.43 Pa with warm coolant", "fail"),
@@ -714,8 +725,10 @@ CAPS = """<div class="table-wrap">
           <tr><td>Buckling: linear eigenvalue and geometrically nonlinear with imperfections, checked against Euler, Southwell and Perry-Robertson</td><td>CalculiX</td><td><a href="#strut">13</a></td></tr>
           <tr><td>Plasticity with loading and unloading, and the residual stress left behind, checked against Neuber and Glinka</td><td>CadQuery, Gmsh, CalculiX</td><td><a href="#strap_proof">14</a></td></tr>
           <tr><td>Electric machines: back-EMF, torque and efficiency maps from 2D magnetostatics, a lumped thermal network and rotor stress at overspeed, checked against a laboratory's test data</td><td>Pyleecan, FEMM, CalculiX</td><td><a href="#motor">20</a></td></tr>
-          <tr><td>Vibration and modal analysis, including identifying the modes and keeping clear of engine orders</td><td>CadQuery, Gmsh, CalculiX</td><td><a href="#modal">4</a></td></tr>
-          <tr><td>Fatigue life using notch factors, mean-stress correction and S-N curves fitted to published test data</td><td>CalculiX, Python</td><td><a href="#fatigue">3</a></td></tr>
+          <tr><td>Vibration and modal analysis, including identifying the modes and keeping clear of engine orders; random vibration by modal superposition</td><td>CadQuery, Gmsh, CalculiX, Python</td><td><a href="#modal">4</a>, <a href="#random_vib">21</a></td></tr>
+          <tr><td>Rotordynamics: Campbell diagrams, critical speeds and unbalance response, checked against the Jeffcott rotor</td><td>ROSS (Python)</td><td><a href="#fan_rotor">23</a></td></tr>
+          <tr><td>Fatigue life using notch factors, mean-stress correction and S-N curves fitted to published test data; spectral fatigue under random vibration</td><td>CalculiX, Python</td><td><a href="#fatigue">3</a>, <a href="#random_vib">21</a></td></tr>
+          <tr><td>Fracture mechanics: stress intensity by energy release and crack opening, critical crack and fatigue crack growth to BS 7910, checked against Tada's handbook</td><td>Gmsh, CalculiX, Python</td><td><a href="#crack">24</a></td></tr>
           <tr><td>Chained multiphysics: coolant flow, then conduction through the part, then thermal stress, with an energy balance at every handoff</td><td>OpenFOAM, CalculiX</td><td><a href="#cold_plate">15</a></td></tr>
           <tr><td>Design optimisation, with an optimiser driving the CAD-to-FEA pipeline and every candidate checked before it counts</td><td>SciPy, CadQuery, Gmsh, CalculiX</td><td><a href="#cantilever_opt">1b</a>, <a href="#bracket_opt">12</a></td></tr>
           <tr><td>Scripted pipelines from parametric CAD through STEP export, meshing and solving</td><td>CadQuery, Gmsh, CalculiX</td><td><a href="#strap">2</a>, <a href="#modal">4</a>, <a href="#cad">8</a>, <a href="#bracket_opt">12</a>, <a href="#strap_proof">14</a></td></tr>
@@ -725,6 +738,7 @@ CAPS = """<div class="table-wrap">
           <tr><td>Ride, road holding and frequency response, including ISO 2631 comfort weighting</td><td>Python (SciPy), OpenModelica</td><td><a href="#suspension">7</a>, <a href="#baseline">9</a></td></tr>
           <tr><td>Renders of FE results and CAD parts in Blender, with the legend colours and geometry checked automatically</td><td>Blender (Cycles), Python</td><td><a href="#fea">1</a>, <a href="#strap">2</a>, <a href="#modal">4</a>, <a href="#thermal">6</a>, <a href="#cad">8</a>, <a href="#bracket_opt">12</a>, <a href="#strut">13</a>, <a href="#strap_proof">14</a>, <a href="#cold_plate">15</a>, <a href="#bolted_joint">16</a></td></tr>
           <tr><td>Verification against exact and handbook solutions, the Grid Convergence Index, and tolerance and sensitivity studies</td><td>Python</td><td>All</td></tr>
+          <tr><td>Probabilistic uncertainty: Monte Carlo, Sobol sensitivity indices, FORM and importance sampling for small failure probabilities</td><td>Python</td><td><a href="#bracket_uq">22</a></td></tr>
         </tbody>
       </table>
     </div>"""

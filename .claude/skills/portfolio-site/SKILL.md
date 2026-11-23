@@ -61,6 +61,10 @@ card. The pieces, all in `site/`:
    tells a different story than the page (the motor, until `portfolio/20` is rewritten).
 4. A chart in `scripts/make_figures.py` read from the run and the case file, never copied from the run's PNG. Render
    a PNG preview and look at it before publishing: label collisions and clipped headings only show up there.
+   A study with its own card needs a gallery thumbnail, `site/v2/th_<key>.webp`: call `thumb(fig, ax, key)` before
+   `fk.save` so the card's picture is cut from the chart and changes with it. Hand-cut thumbnails went stale twice
+   (the motor card kept a withdrawn result, the pipe card the word "converged"). On a study's own page the chart is
+   already the viewer, so don't repeat it in the body; a part of a grouped page does show its chart in the body.
 5. Take the study off the in-progress page in the same commit.
 
 ## Editing the source safely

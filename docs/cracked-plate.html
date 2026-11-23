@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Cracked Steel Plate: Critical Crack and Fatigue Crack Growth · Justin Smith</title>
+<meta name="description" content="A 2 mm edge crack, the smallest inspection finds, grows to the critical 37.0 mm in about 92,000 cycles. Inspect at least every 46,000 cycles; the planned 40,000 has margin. Stress intensity checked against the handbook to 0.66 %.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://cptgrumpus.github.io/engineering-agent-lab/cracked-plate.html">
+<meta property="og:title" content="Cracked Steel Plate: Critical Crack and Fatigue Crack Growth">
+<meta property="og:description" content="A 2 mm edge crack, the smallest inspection finds, grows to the critical 37.0 mm in about 92,000 cycles. Inspect at least every 46,000 cycles; the planned 40,000 has margin. Stress intensity checked against the handbook to 0.66 %.">
+<meta property="og:image" content="https://cptgrumpus.github.io/engineering-agent-lab/v2/og_cracked-plate.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Cracked steel plate: critical crack and fatigue crack growth: result render">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://cptgrumpus.github.io/engineering-agent-lab/cracked-plate.html">
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#141b24" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3CclipPath id='c'%3E%3Crect width='24' height='24' rx='5'/%3E%3C/clipPath%3E%3Cg clip-path='url(%23c)'%3E%3Crect width='4' height='24' fill='%2330123b'/%3E%3Crect x='4' width='4' height='24' fill='%234686fb'/%3E%3Crect x='8' width='4' height='24' fill='%231ae4b6'/%3E%3Crect x='12' width='4' height='24' fill='%23a2fc3c'/%3E%3Crect x='16' width='4' height='24' fill='%23fb8022'/%3E%3Crect x='20' width='4' height='24' fill='%237a0403'/%3E%3C/g%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="assets/site.css?v=485bb4c68b">
+</head>
+<body>
+<nav class="topbar" aria-label="Site">
+  <div class="wrap">
+    <a class="brand" href="index.html"><span class="brand-mark" aria-hidden="true"><i style="background:#30123b"></i><i style="background:#4686fb"></i><i style="background:#1ae4b6"></i><i style="background:#a2fc3c"></i><i style="background:#fb8022"></i><i style="background:#7a0403"></i></span>Justin Smith <small>Simulation Portfolio</small></a>
+    <div class="navgroup">
+      <div class="topnav">
+        <a href="index.html#work" aria-current="page">Studies</a>
+        <a href="how-i-work.html">How I Work</a>
+        <a href="grading.html">Grading</a>
+        <a href="in-progress.html">In Progress</a>
+        <a href="requirements.html">Requirements</a>
+      </div>
+      <a class="nav-contact" href="#contact">Contact</a>
+      <details class="menu">
+        <summary>Menu</summary>
+        <div class="menu-panel">
+        <a href="index.html#work" aria-current="page">Studies</a>
+        <a href="how-i-work.html">How I Work</a>
+        <a href="grading.html">Grading</a>
+        <a href="in-progress.html">In Progress</a>
+        <a href="requirements.html">Requirements</a>
+          <a href="#contact">Contact</a>
+        </div>
+      </details>
+    </div>
+  </div>
+</nav>
+
+<main id="top">
+  <div class="wrap">
+    <nav class="crumbs" aria-label="Breadcrumb"><a href="index.html#work">All studies</a><span>/</span><span>Structures and vibration</span></nav>
+    <header class="study-hero">
+      <p class="eyebrow">Study 24 · Gmsh, CalculiX and Python, fracture mechanics</p>
+      <h1>Cracked Steel Plate: Critical Crack and Fatigue Crack Growth</h1>
+      <span class="v v-pass">Passes</span>
+      <p class="study-lede">A 2 mm edge crack, the smallest inspection finds, grows to the critical 37.0 mm in about 92,000 cycles. Inspect at least every 46,000 cycles; the planned 40,000 has margin. Stress intensity checked against the handbook to 0.66 %.</p>
+    </header>
+    <div class="vp" id="vp" role="region" aria-label="Result viewer">
+      <div class="legend">
+        <div class="legend-title" id="lg-title"></div>
+        <div class="legend-body"><div class="swatches" id="lg-sw"></div><div class="ticks" id="lg-ticks"></div></div>
+      </div>
+      <div class="stage"><div class="vp-parts" id="vp-parts" role="group" aria-label="Results on this page" hidden></div><button class="vp-3d" id="vp-3d" type="button" aria-pressed="false" hidden>Rotate in 3D</button>
+      <p class="vp-hint" id="vp-hint" hidden><span class="long">Same surface and colour bands as the render · </span>Drag to turn · <span class="long">scroll or </span>pinch to zoom<span class="long"> · double-click to reset</span></p>
+      <img id="vp-img" src="v2/fig_crack_growth.svg" alt="Edge-cracked S355 plate, 100 × 10 mm · 150 MPa peak, R = 0.1 · detectable crack 2 mm">
+      <svg class="triad" viewBox="0 0 54 54" aria-hidden="true">
+        <g stroke-width="1.6" fill="none" stroke-linecap="round">
+          <line x1="14" y1="40" x2="44" y2="46" stroke="#ff8f6b"/><line x1="14" y1="40" x2="34" y2="28" stroke="#8fe3a8"/><line x1="14" y1="40" x2="14" y2="8" stroke="#8fb4ff"/>
+        </g>
+        <g font-family="JetBrains Mono, monospace" font-size="8" fill="#edf1f8"><text x="46" y="50">X</text><text x="36" y="27">Y</text><text x="11" y="6">Z</text></g>
+      </svg>
+      </div>
+      <div class="vp-scrub" id="vp-scrub" hidden>
+        <button type="button" class="vp-play" id="vp-play" aria-label="Play the analysis step by step">▶</button>
+        <input type="range" id="vp-range" min="0" max="0" step="1" value="0" aria-label="Load step">
+        <output id="vp-step" for="vp-range"></output>
+      </div>
+      <div class="status" id="vp-status" aria-live="polite"></div>
+    </div>
+
+    <div class="study-layout">
+      <article class="study-main">
+
+    <h2 id="the-question">The Question</h2>
+    <p>A steel plate, S355, 100 mm wide and 10 mm thick, carries cyclic tension: 150 MPa at the peak of each cycle, 15 MPa at the bottom. Inspection can find an edge crack once it's 2 mm deep. How long does a crack that size take to grow to failure, and how often must the plate be inspected? Two requirements: at the detectable crack, the stress intensity stays below half the fracture toughness; and the growth life is at least twice the planned inspection interval of 40,000 cycles. The loads, the toughness (100 MPa√m) and the detectable size are assumed values; the crack growth law is the published BS 7910 one for steels in air.</p>
+    <h2 id="the-answer">The Answer</h2>
+    <div class="answer">
+      <div class="chips"><span class="chip pass">Stress intensity at 2 mm: 13.4 MPa√m, limit 50</span><span class="chip pass">Life about 92,000 cycles, limit 80,000</span><span class="chip pass">Critical crack 37.0 mm</span></div>
+      <p><strong>Yes: inspect at least every 46,000 cycles, so the planned 40,000 has margin.</strong> A 2 mm crack grows to the critical size, 37.0 mm, in about 92,000 cycles. The toughness sets the critical size; the remaining ligament wouldn't yield until 57.7 mm. At the detectable crack the stress intensity is 13.4 MPa√m, about a quarter of the toughness.</p>
+      <p><strong>Most of the life is spent while the crack is small.</strong> 81 % of the cycles go into growing from 2 to 10 mm. That slow early growth is what gives inspection its chance, and it's why the size inspection can find matters so much.</p>
+    </div>
+    <h2 id="why-it-matters">Why It Matters</h2>
+    <p>A stress check assumes the part has no cracks. Welded and heavily cycled structures are managed differently: assume a crack just below what inspection can find, and make sure it can't grow to failure between two inspections. That's damage tolerance, and it sets inspection intervals for bridges, cranes, pressure equipment and aircraft. The answer depends on the stress intensity at the crack tip, which is what this model computes.</p>
+    <h2 id="the-model">The Model</h2>
+    <dl class="spec">
+      <dt>Part</dt><dd>S355 plate, 100 mm wide and 10 mm thick, with a straight edge crack through the thickness; half the plate is modelled, because the crack plane is a plane of symmetry.</dd>
+      <dt>Mesh</dt><dd>Quadratic triangles in plane strain, from Gmsh, shrinking to 0.1, 0.05 and 0.025 mm at the crack tip for the mesh study.</dd>
+      <dt>Crack lengths</dt><dd>Eleven, from 2 to 45 mm.</dd>
+      <dt>Growth</dt><dd>BS 7910's simplified law for steels in air: da/dN = 5.21 × 10⁻¹³ ΔK³ (mm per cycle, ΔK in N/mm^1.5), integrated from 2 mm to the critical crack.</dd>
+    </dl>
+    <details class="record"><summary>The case file: recorded assumptions, limits and inputs</summary><div class="record-body"><p>This is the study's own record, written before the run and saved with it, in the shorthand of the case file.</p><p class="case"><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/cases/edge_crack_mesh_r2.toml">cases/edge_crack_mesh_r2.toml ↗</a></p><p>Edge-cracked S355 plate (100 mm wide, 10 mm thick) in cyclic tension, 150 MPa maximum, R = 0.1: K(a) by FE at 11 crack lengths 2-45 mm (energy release rate and crack opening, CalculiX plane strain on a Gmsh half model refined at the tip), critical crack against Kmat 100 MPa sqrt m and net-section yield, BS 7910 crack growth life from 2 mm; tip element sizes 0.1 / 0.05 / 0.025 mm.</p><h3>Assumptions, and How Each Is Checked</h3><ul><li>Linear elastic fracture mechanics, plane strain (K from G with E / (1 - nu^2)); the plastic zone at Kmax 13-100 MPa sqrt m in S355 (r_p = (K / sigma_y)^2 / 6 pi up to 4 mm at the critical crack) is small against the ligament until the last few millimetres. [model form]</li><li>Uniform remote tension with the plate&#x27;s ends free to rotate (Tada&#x27;s case); the half model&#x27;s height (200 mm, 2 W) makes the end conditions irrelevant at the crack.</li><li>Crack growth by the BS 7910 / IIW simplified law for steels in air (R &lt; 0.5): da/dN = 5.21e-13 dK^3 mm/cycle, dK in N/mm^1.5, threshold 63 N/mm^1.5. [published design law]</li><li>Fracture toughness Kmat 100 MPa sqrt m [synthetic: a client would give CTOD or Charpy results]; net-section yield at 355 MPa (S355) [standard].</li><li>Constant-amplitude loading, 150 MPa maximum at R = 0.1 [synthetic]; detectable crack 2 mm (magnetic particle inspection) [synthetic].</li></ul><h3>Limits</h3><ul><li>Through-thickness straight crack front; a real surface crack starts semi-elliptical (BS 7910 Annex M would give its K).</li><li>No crack closure, no load sequence effects, no environment (air).</li><li>Net-section yield by the simple uniform-stress formula; the eccentric ligament also bends.</li></ul><h3>Inputs</h3><div class="table-wrap"><table><thead><tr><th>Input</th><th>Value</th></tr></thead><tbody><tr><td>width_mm</td><td>100</td></tr><tr><td>half_height_mm</td><td>200</td></tr><tr><td>thickness_mm</td><td>10</td></tr><tr><td>sigma_max_MPa</td><td>150</td></tr><tr><td>stress_ratio</td><td>0.1</td></tr><tr><td>youngs_modulus_MPa</td><td>210000</td></tr><tr><td>poisson_ratio</td><td>0.3</td></tr><tr><td>yield_strength_MPa</td><td>355</td></tr><tr><td>k_mat_MPa_sqrt_m</td><td>100</td></tr><tr><td>paris_C</td><td>5.21e-13</td></tr><tr><td>paris_m</td><td>3</td></tr><tr><td>dK_threshold</td><td>63</td></tr><tr><td>initial_crack_mm</td><td>2</td></tr><tr><td>tip_element_size_mm</td><td>0.05</td></tr><tr><td>far_element_size_mm</td><td>5</td></tr></tbody></table></div></div></details>
+    <h2 id="how-it-works">How It Works</h2>
+    <p>CalculiX solves the plate at each crack length, and the stress intensity K comes out two independent ways, neither needing special crack-tip elements:</p>
+    <ul>
+      <li><strong>Energy release rate.</strong> The strain energy at the crack length and 0.2 mm either side gives the energy released per unit of crack growth, G, and K = √(E′G).</li>
+      <li><strong>Crack opening.</strong> Near the tip the crack faces open in proportion to K√r. Fitting the opening along the face and extrapolating to the tip gives K.</li>
+    </ul>
+    <p>K against crack length then gives the critical crack, where K reaches the toughness, and, integrated through the growth law, the life.</p>
+    <h2 id="how-i-checked-it">How I Checked It</h2>
+    <ul class="proof">
+      <li><strong>Tada's handbook solution</strong> for an edge crack in a finite strip: the energy route agrees within 0.66 % at every crack length, against the handbook's own stated accuracy of 0.5 %. The small wave in the difference is the same on every mesh, so it comes from the handbook's curve fit, not the model.</li>
+      <li><strong>Two routes to K</strong> agree within 1.9 to 2.2 %, and the crack-opening route moves towards the energy route as the tip mesh is refined.</li>
+      <li><strong>Equilibrium</strong> to 10⁻¹⁶, and the life integral by two methods to 3 × 10⁻⁹.</li>
+      <li><strong>Tip mesh study:</strong> the critical crack converges, with a mesh uncertainty of 0.02 %.</li>
+      <li><strong>Measured mesh noise:</strong> five meshes at one tip size, perturbed away from the crack, scatter the life by 0.11 %. So the life is known to about ±0.2 %, against a 15 % margin to the requirement.</li>
+    </ul>
+    <div class="caught">
+      <h2 id="what-i-caught-along-the-way">What I Caught Along the Way</h2>
+      <ul>
+        <li><strong>A life that wouldn't converge cleanly, and three tries to fix it.</strong> The first energy step, 2 % of the crack length, was 0.04 mm at a 2 mm crack, about one element at the tip, so the energy difference picked up the mesh's own noise. A 10 % step cured that but added 1.2 % of error at long cracks, where K rises steeply. A fixed 0.2 mm step, a few tip elements long and small against the long cracks, satisfies both.</li>
+        <li><strong>A noise level I'd assumed instead of measured.</strong> The first version declared a mesh-noise level for the life without measuring it. Measured, the scatter was eleven times larger, and even against the measured level the life misses the automatic mesh check by 0.05 %, so it stays formally unverified. With a 15 % margin to the requirement, no further refinement could change the answer, so I stopped there and say so.</li>
+      </ul>
+    </div>
+    <h2 id="limits">Limits</h2>
+    <ul>
+      <li>A straight crack through the thickness. Real cracks usually start as a semi-ellipse at a surface; BS 7910 gives their K.</li>
+      <li>Constant-amplitude loading; no crack closure, load-sequence effects or corrosion.</li>
+      <li>Linear elastic fracture mechanics: valid while the plastic zone at the tip, up to about 4 mm near the critical crack, stays small against the remaining ligament.</li>
+    </ul>
+    <h2 id="evidence">Evidence</h2>
+    <div class="side-card"><ul class="ev-list"><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/portfolio/24-cracked-plate-growth.md">Full write-up on GitHub</a></li></ul><p class="label">Run reports, with every check and the saved inputs</p><ul class="ev-list ev-runs"><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261123-164649_edge_crack_mesh_r2/report.md">edge_crack_mesh_r2</a></li><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261123-165115_edge_crack_noise/report.md">edge_crack_noise</a></li></ul></div>
+      </article>
+      <aside class="study-side" aria-label="Summary of this study">
+        <div class="side-card"><h2>At a Glance</h2><dl><div><dt>Study</dt><dd>24</dd></div><div><dt>Discipline</dt><dd>Structures and vibration</dd></div><div><dt>Tools</dt><dd>Gmsh · CalculiX · Python</dd></div><div><dt>Verdict</dt><dd><span class="v v-pass">Passes</span></dd></div></dl></div><div class="side-card"><h2>Requirements</h2><ul class="side-reqs"><li><span class="r-what">Stress intensity at the detectable 2 mm crack</span><span class="r-num">≤ 50 MPa√m · 13.4 MPa√m</span><span class="chip pass">Met</span></li><li><span class="r-what">Crack growth life from 2 mm to critical</span><span class="r-num">≥ 80,000 cycles · about 92,000 cycles, ±0.2 %; critical crack 37.0 mm</span><span class="chip pass">Met</span></li></ul></div><div class="side-card side-toc"><h2>On This Page</h2><ul class="toc"><li><a href="#the-question">The Question</a></li><li><a href="#the-answer">The Answer</a></li><li><a href="#why-it-matters">Why It Matters</a></li><li><a href="#the-model">The Model</a></li><li><a href="#how-it-works">How It Works</a></li><li><a href="#how-i-checked-it">How I Checked It</a></li><li><a href="#what-i-caught-along-the-way">What I Caught Along the Way</a></li><li><a href="#limits">Limits</a></li><li><a href="#evidence">Evidence</a></li></ul></div>
+      </aside>
+    </div>
+    <nav class="pager" aria-label="More studies"><a class="prev" href="fan-rotor.html"><small>← Previous study</small><b>Fan Rotor: Critical Speeds and Unbalance Response</b></a><a class="next" href="cold-plate.html"><small>Next study →</small><b>Cold Plate: The Coolant Channel, Then the Full Thermal Chain</b></a></nav>
+  </div>
+
+</main>
+
+<footer class="site-foot">
+  <div class="wrap">
+    <section class="contact" id="contact" aria-labelledby="contact-title">
+      <div class="band-head">
+        <p class="eyebrow">Contact</p>
+        <h2 id="contact-title">Get in Touch</h2>
+        <p class="contact-name"><b>Justin Smith</b>, mechanical engineer (MS), with a background in automotive.</p>
+        <p>If something here is close to what you need, or you have a model that needs building or checking, send me a note and tell me about it. I'm available for remote contract work.</p>
+      </div>
+      <div class="contact-actions">
+        <!-- the address is stored reversed and base64-encoded so scrapers reading the page or the repository don't pick it up; site.js decodes it -->
+        <a class="cta" id="contact-mail" href="#contact" data-m="bW9jLmxpYW1nQDg1MW5pdHN1amh0aW1z">Email me</a>
+        <button class="cta-2" id="contact-show" type="button">Show the address</button>
+        <span class="contact-addr" id="contact-addr" hidden></span>
+      </div>
+    </section>
+    <div class="foot-nav">
+      <a href="index.html#work">All studies</a>
+      <a href="requirements.html">Every requirement</a>
+      <a href="how-i-work.html">How I work</a>
+      <a href="grading.html">Grading tasks</a>
+      <a href="in-progress.html">In progress</a>
+      <a href="https://github.com/CptGrumpus/engineering-agent-lab">Source on GitHub ↗</a>
+      <span>Open-source tools throughout: CalculiX, OpenFOAM, Gmsh, CadQuery, OpenModelica, Blender.</span>
+    </div>
+  </div>
+</footer>
+<script>window.VP = [{"id": "crack", "study": "crack", "kind": "figure", "img": "v2/fig_crack_growth.svg", "model": "Edge-cracked S355 plate, 100 × 10 mm · 150 MPa peak, R = 0.1 · detectable crack 2 mm", "lines": ["CalculiX plane strain · K by energy release and by crack opening · finest tip mesh 0.025 mm", "Left: stress intensity against Tada's handbook. Right: crack growth from 2 mm to critical", "Critical crack 37.0 mm · life about 92,000 cycles · inspect at least every 46,000"], "check": "", "card": "crack"}];</script>
+<script src="assets/viewer.js?v=485bb4c68b"></script>
+<script src="assets/site.js?v=485bb4c68b"></script>
+</body>
+</html>
