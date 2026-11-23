@@ -35,6 +35,12 @@ Why: titles in sentence case after the first word read as unfinished on a portfo
 Read BACKLOG.md's newest handoff and `git log` first. The study session may be ahead of the repo or of an older
 handoff; the first motor page was written from a handoff an hour old and said a comparison hadn't run.
 
+## Numbers handed over by the study session
+
+Check any summary number against the data before it goes in a caption. The motor field export came with "stator
+≤ 0.8 T"; the data says 95 % of the stator is under 0.9 T and the tooth tips reach 1.76 T. A one-line percentile
+check is cheap; a wrong number on the page isn't.
+
 ## Wording
 
 Plain, first person, the way an engineer would say it to a colleague. No stock phrases or filler, no em dashes as

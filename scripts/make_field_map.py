@@ -1,0 +1,134 @@
+"""The motor's magnetic field for the site: |B| over the whole cross-section and one pole enlarged.
+
+    .venv\\Scripts\\python.exe scripts\\make_field_map.py
+
+Reads the FEMM solution exported by scripts/export_femm_field.py (build/render/motor_rev4_centre/field.npz and
+field.json: one pole, 45 degrees, anti-periodic) and writes site/v2/fig_motor_field.webp. The full section is the solved
+pole rotated by k x 45 degrees; |B| doesn't change with the anti-periodic sign flip. Before drawing, it checks the export's
+own gate (phase fluxes against the run's flux_linkage.csv) passed, and that the drawn field's peak is the export's.
+
+The bands are the site's render bands (site/v2/scenes.json), 12 of 0.2 T from 0 to 2.4 T, so the saturated bridges
+(about 2.3 T) get the top bands. The winding carries no current at open circuit; it's drawn flat, not banded.
+"""
+from __future__ import annotations
+
+import json
+import sys
+from pathlib import Path
+
+import matplotlib
+
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt  # noqa: E402
+import numpy as np  # noqa: E402
+from matplotlib.collections import PolyCollection  # noqa: E402
+
+REPO = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(REPO / "scripts"))
+import figkit as fk  # noqa: E402
+
+SRC = REPO / "build" / "render" / "motor_rev4_centre"
+OUT = REPO / "site" / "v2" / "fig_motor_field.webp"
+VMAX, NB = 2.4, 12
+COIL, AIRGAP, STATOR_AIR, ROTOR, VOID, MAG_A, MAG_B, STATOR = 11, 0, 15, 20, 26, 220, 221, 10
+
+
+def main():
+    meta = json.loads((SRC / "field.json").read_text(encoding="utf-8"))
+    assert meta["gate"]["result"].startswith("match"), "the export's flux gate did not pass"
+    d = np.load(SRC / "field.npz")
+    xy, tri, b, grp = d["nodes_m"] * 1000, d["tri"], d["bmag_T"], d["group"]
+    assert abs(b.max() - meta["bmag_max_T"]) < 1e-9 and b.max() < VMAX
+    bands = json.loads((REPO / "site" / "v2" / "scenes.json").read_text(encoding="utf-8"))["cantilever"]["band_colors"]
+    assert len(bands) == NB
+    cols = np.array(bands)
+    face = cols[np.clip((b / VMAX * NB).astype(int), 0, NB - 1)]
+    coil = grp == COIL
+    face[coil] = matplotlib.colors.to_rgb("#e9dccb")
+    show = grp != STATOR_AIR                        # slot openings: air, left blank like the outside
+    rot0 = np.radians(90 - 22.5)                    # the solved pole, centred at the top
+
+    def polys(k):
+        a = rot0 + k * np.pi / 4
+        R = np.array([[np.cos(a), -np.sin(a)], [np.sin(a), np.cos(a)]])
+        return (xy @ R.T)[tri[show]]
+
+    fig = plt.figure(figsize=(fk.FULL, 4.9), dpi=220)
+    fk.heading(fig, "The magnets' field at open circuit: the thin bridges above the magnets saturate, near 2.3 T",
+               "Revision 4 (magnet as drawn, centred), FEMM 2D magnetostatics, one pole solved and repeated; flux density |B| in tesla")
+    axL = fig.add_axes([0.0, 0.08, 0.47, 0.80])
+    axR = fig.add_axes([0.45, 0.08, 0.47, 0.80])
+    for ax in (axL, axR):
+        ax.set_aspect("equal")
+        ax.axis("off")
+    for k in range(8):
+        axL.add_collection(PolyCollection(polys(k), facecolors=face[show], edgecolors="face", linewidths=0.05, antialiased=False))
+    axL.set_xlim(-136, 136)
+    axL.set_ylim(-136, 136)
+    axR.add_collection(PolyCollection(polys(0), facecolors=face[show], edgecolors="face", linewidths=0.05, antialiased=False))
+    axR.set_xlim(-38, 38)
+    axR.set_ylim(54, 112)
+    # outlines of the magnets and the non-magnetic pockets: edges used by only one triangle of the group
+    from matplotlib.collections import LineCollection
+
+    def outline(sel):
+        e = np.sort(np.concatenate([tri[sel][:, [0, 1]], tri[sel][:, [1, 2]], tri[sel][:, [2, 0]]]), axis=1)
+        u, n = np.unique(e, axis=0, return_counts=True)
+        return u[n == 1]
+    edges = [outline(grp == gid) for gid in (MAG_A, MAG_B, VOID)]
+
+    def draw_outlines(ax, k, lw):
+        a = rot0 + k * np.pi / 4
+        R = np.array([[np.cos(a), -np.sin(a)], [np.sin(a), np.cos(a)]])
+        q = xy @ R.T
+        for e in edges:
+            ax.add_collection(LineCollection(q[e], colors=fk.INK, linewidths=lw, zorder=3))
+    for k in range(8):
+        draw_outlines(axL, k, 0.3)
+    draw_outlines(axR, 0, 0.8)
+    # where the enlarged view is
+    axL.plot([-38, 38, 38, -38, -38], [54, 54, 112, 112, 54], color=fk.INK, lw=0.8)
+
+    def lab(ax, xy_, txt, xytext, ha="left"):
+        ax.annotate(txt, xy_, xytext=xytext, textcoords="data", ha=ha, va="center", fontsize=8.5, color=fk.INK,
+                    arrowprops=dict(arrowstyle="-", color=fk.INK, lw=0.7, shrinkA=2, shrinkB=1),
+                    bbox=dict(fc=fk.SURFACE, ec="none", pad=1.2))
+
+    # labels at the elements that carry each feature, found from the data rather than placed by eye
+    P = polys(0)
+    cen = P.mean(axis=1)
+    g = grp[show]
+    bs = b[show]
+    left = cen[:, 0] < 0
+    hot = cen[left][np.argmax(bs[left])]
+    lab(axR, hot, f"bridge, {bs[left].max():.1f} T", (hot[0] - 6, hot[1] + 14), ha="right")
+    mag_l, mag_r = (MAG_A, MAG_B) if cen[g == MAG_A][:, 0].mean() < 0 else (MAG_B, MAG_A)
+    m = cen[g == mag_l].mean(axis=0)
+    lab(axR, m, "magnet", (m[0] - 10, m[1] - 14), ha="right")
+    v = cen[(g == VOID) & (cen[:, 0] > 0)]
+    mb = cen[g == mag_r].mean(axis=0)
+    vv = v[np.argmin(np.hypot(*(v - mb).T))]
+    lab(axR, vv, "non-magnetic shell", (vv[0] + 8, vv[1] - 16), ha="left")
+    c = cen[g == COIL]
+    cc = c[np.argmax(c[:, 1])]
+    lab(axR, cc, "winding, no current", (cc[0] + 10, cc[1] + 1), ha="left")
+    # the key: the 12 bands, 0 to 2.4 T
+    kx = fig.add_axes([0.935, 0.16, 0.018, 0.62])
+    kx.imshow(cols[:, None, :], origin="lower", aspect="auto", extent=(0, 1, 0, VMAX))
+    kx.set_xticks([])
+    kx.yaxis.tick_right()
+    kx.set_yticks(np.arange(0, VMAX + 1e-9, 0.4))
+    kx.tick_params(length=0, labelsize=8, colors=fk.INK2)
+    for s in kx.spines.values():
+        s.set_visible(False)
+    kx.set_title("T", fontsize=8.5, color=fk.INK2, pad=4)
+    fig.savefig(OUT.with_suffix(".png"), dpi=220, facecolor=fk.SURFACE)
+    plt.close(fig)
+    from PIL import Image
+    Image.open(OUT.with_suffix(".png")).convert("RGB").save(OUT, "WEBP", quality=90, method=6)
+    OUT.with_suffix(".png").unlink()
+    print("field map", OUT.name, f"{OUT.stat().st_size // 1024} KB, peak {b.max():.2f} T")
+
+
+if __name__ == "__main__":
+    main()
