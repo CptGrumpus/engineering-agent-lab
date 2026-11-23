@@ -71,11 +71,17 @@ after; `scripts/scrub_paths.py <run dir>`, `git add -f` without `*.inp`, `*.dat`
 
 | Job | Run dir (log) | Done about | When it finishes |
 |---|---|---|---|
-| Study 7: dq table hot_lowiq at 1.036 T (FEMM; the other three are done, Results in b2d7092) | `runs/20261123-023248_motor_prius_lut_hot_lowiq_br` | ~03:30 | Results; commit the four runs; run `cases/motor_prius_efficiency_br.toml` (predictions committed); `scripts/motor_calibration.py --torque-run 20261122-195712_motor_prius_cal_torque_br --a-eff-case cases/motor_prius_efficiency_br.toml`; CALIBRATION_PLAN Results, page 20, `reports/motor/build_report.py`, republish the report artifact. |
 | Study 19 part 2: step_mesh, then step_outlet -> step_inlet_tu | `runs/<ts>_step_{mesh,outlet,inlet_tu}` (`step_*.log`) | ~04:00 / ~04:30 | Results; `validation/step_driver_seegmiller/compare.py <step_mesh run> <finest label>` ONCE; PROTOCOL.md log; page 19 part 2; PORTFOLIO row. |
 | Study 6: FSI1 noise a->b and c->d (two chains) | `runs/<ts>_turek_hron_fsi1_noise_{a..d}` (`fsi1_noise_*.log`) | ~05:30 / ~08:00 | Scatter of uy(A) etc. between meshes at 1.72-1.83 mm; then `turek_hron_fsi1_mesh_r2` declaring `mesh_noise_rel`, predictions, rerun (~5 h). |
 
 ### Done 22:25-03:30
+- **Study 7 post-test calibration finished** (c6d39dc, 7189003, 652c7b6; report artifact version 7): A's efficiency
+  is 4.5 points high at the median over ORNL's 393 points (blind 5.2, B 5.3): the 2-point limit is still missed, the
+  rest being losses the model leaves out. **REQ-M5 flips to FAIL** with A (48.0 kW cold, 44.5 kW hot at 6000 rpm, from
+  58.6 / 53.7): weaker magnets, less field-weakening torque per ampere; I predicted the opposite. The efficiency case's
+  verification failed on three checks that do not touch the comparison (my back-EMF reference from a fineness-8 run;
+  half-table iron loss 7 %; the 10 N m row). Open: the thermal rating is not recomputed with A; a fineness-2
+  open-circuit point at 1.036 T would clear the back-EMF check; the d-axis saliency (2.6 against 3.2).
 - **FSI2 and FSI3 scored** (3b5c533, 8720c51, page bf16065): every benchmark quantity within 2.1 % (FSI2) and 9 %
   (FSI3) on one mesh; every requirement passes but is UNVERIFIED: the force-transfer check was defective. Under the
   preCICE adapter CalculiX writes the `.dat` (clamp reaction) only at the last increment (FSI3's stayed empty 8 h,
