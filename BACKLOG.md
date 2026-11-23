@@ -9,7 +9,7 @@ Planned studies, not started. Each one follows the usual loop (frame requirement
 | 3 | Bracket optimisation loop: the agent changes geometry, meshes, solves and checks, repeating to minimise mass under stress and stiffness limits | The agent drives a design, not just one case | Every candidate passes the existing checks; optimum spot-checked against beam theory | CadQuery · Gmsh · CalculiX | Medium | **Verified** (3D machined clevis bracket; confirmation run 20261121-115130_clevis_confirm_r2b): lightest design found 371.9 g (lug 10.17 mm, gussets 9.07 x 36.36 mm), 4.1 % under the start, peak 98.3 MPa (98.9 with mesh uncertainty) against 100. Took three optimisation runs: a 1 % margin too small for a fillet peak, a global mesh study that never refined the fillet, and an optimiser stalled in mesh noise (resolved with local fillet refinement and a local response surface); [portfolio/12](portfolio/12-bracket-optimisation.md). First version (tapered cantilever) kept as superseded evidence |
 | 4 | Notched bar with plasticity | Nonlinear material: stress beyond yield, residual stress after unloading | Neuber's rule, Glinka's method | CalculiX | Medium | **Done**: proof test at 15 kN strains the hole edge 0.58 % (limit 1 %), leaves -77 MPa residual; [portfolio/14](portfolio/14-strap-proof-plasticity.md) |
 | 5 | Buckling: column or thin panel, linear eigenvalue, then with a small imperfection | Stability: a load-path problem, not just stress | Euler and Johnson formulas, Southwell plot | CalculiX | Low-medium | **Done**: longest acceptable strut about 587 mm; [portfolio/13](portfolio/13-strut-buckling.md) |
-| 6 | Fluid-structure interaction: flexible flap in a channel | Coupled multiphysics | A published benchmark | OpenFOAM · CalculiX · preCICE | High (a weekend or more) | **In progress** (study 6): CSM1-3, CFD1-2, FSI1 r1 done; FSI2, FSI3 run on one mesh (within 2 % / 9 %, unverified: defective transfer check, fixed); FSI1 noise runs, then FSI2/3 mesh study (handoff) |
+| 6 | Fluid-structure interaction: flexible flap in a channel | Coupled multiphysics | A published benchmark | OpenFOAM · CalculiX · preCICE | High (a weekend or more) | **In progress** (study 6): CSM1-3, CFD1-2, FSI1 r1 done; FSI2, FSI3 run on one mesh (within 2 % / 9 %, unverified: defective transfer check, fixed); FSI1 noise done (one mesh defect found, new check); FSI1 r2 running, then FSI2/3 mesh study (handoff) |
 | 7 | Electric motor, an open-source Motor-CAD alternative: the Toyota Prius IPM motor (2004, ORNL) | Three physics on one machine. Electromagnetics: torque, back-EMF, flux-linkage and efficiency maps. Thermal: a lumped network from the geometry. Mechanical: rotor stress at overspeed | The published Prius data (Oak Ridge National Laboratory); an analytic air-gap field; the thermal network against CalculiX heat transfer on a stator section; power balance at every map point | Pyleecan + FEMM (pyFEMM), Python or OpenModelica, CalculiX. Options considered 2026-11-20: SyR-e (needs MATLAB), SWAT-EM (windings), Elmer and GetDP (3D) | High | Not started. Feasibility checked 2026-11-21: Pyleecan's PyPI release (1.5.2, 2024) needs Python < 3.11, but its GitHub master installs and imports on Python 3.14 (numpy 2.5, VTK 9.7, PySide6). Install with `PYTHONUTF8=1`, or setup.py fails on Windows' default encoding. It ships a Toyota Prius IPM model (48 slots, 8 poles, 0.75 mm air gap, 83.8 mm stack), which is the 2004 Prius documented by ORNL, so benchmark against the 2004 report rather than the 2010 one. FEMM 4.2 (x64, 22Oct2023 build) installed by the user at C:emm42 on 2026-11-21 and registered for scripting (femm.ActiveFEMM). A pyFEMM smoke test from Python 3.14 (a 100 A wire, where B = mu0 I / (2 pi r) exactly) agreed within 0.1-0.5 % on FEMM's default mesh. pyFEMM needs pywin32. Keep Pyleecan in its own environment, apart from the repo's pinned .venv |
 | 8 | Pressure vessel with a nozzle, ASME VIII-2 Part 5 elastic stress analysis (study 18) | Design-code verdict from linearised stresses on classification lines; rule vs analysis | Lame cylinder, exact pressure resultants, simplified pressure-area rule | CadQuery · Gmsh · CalculiX | Medium | **Done**: [portfolio/18](portfolio/18-pressure-vessel-nozzle.md). Placement decides: toe lines PL 205.1 against 207 (about 11.7 mm), crotch line 256.7 (about 20 mm), rule 16 mm; hemispherical head about 6.5 mm (axisymmetric model, checked against shell theory) |
 | 9 | Turbulent CFD: pipe friction, then the backward-facing step against measurements (study 19) | Turbulence modelling; validation against measured data | Prandtl's smooth-pipe law; Driver & Seegmiller's step data | OpenFOAM | Medium | **In progress**: part 1 (pipe friction) done, [portfolio/19](portfolio/19-turbulent-pipe-friction.md): +2.4 % on Prandtl converged, wall functions -5 %; part 1 verified (r3, GCI 0.48 %); part 2 (step): limits agreed, mesh / outlet / inlet-turbulence cases running, scored once against Driver & Seegmiller when done (handoff) |
@@ -58,7 +58,7 @@ each part on its own: CSM1 to CSM3 (solid only, CalculiX, nothing new needed), C
 only, OpenFOAM 14, nothing new needed), then FSI1 to FSI3 coupled through preCICE. Each part is
 verified before the coupled run, as in study 2.
 
-## Session handoff (2026-11-23, 03:30; first written 2026-11-21, 23:10)
+## Session handoff (2026-11-23, 07:40; first written 2026-11-21, 23:10)
 
 Read this first. Files under site/, docs/, DASHBOARD.md, `scripts/make_study_renders.py`, `scripts/figkit.py` and
 `.claude/skills/publication-figures/` belong to the dashboard session (it commits in this clone: add and commit only
@@ -67,12 +67,22 @@ project would have"**; predictions go into a case header and get committed BEFOR
 after; `scripts/scrub_paths.py <run dir>`, `git add -f` without `*.inp`, `*.dat`, `__pycache__`, logs > 600 kB, then
 `tests/test_privacy.py`; never two FEMM cases at once (OpenFOAM/CalculiX may run beside FEMM).
 
-### Running at 03:30 (logs in session e47de8ef's scratchpad)
+### Running at 07:40 (logs in session e47de8ef's scratchpad)
 
 | Job | Run dir (log) | Done about | When it finishes |
 |---|---|---|---|
-| Study 19 part 2: step_mesh, then step_outlet -> step_inlet_tu | `runs/<ts>_step_{mesh,outlet,inlet_tu}` (`step_*.log`) | ~04:00 / ~04:30 | Results; `validation/step_driver_seegmiller/compare.py <step_mesh run> <finest label>` ONCE; PROTOCOL.md log; page 19 part 2; PORTFOLIO row. |
-| Study 6: FSI1 noise a->b and c->d (two chains) | `runs/<ts>_turek_hron_fsi1_noise_{a..d}` (`fsi1_noise_*.log`) | ~05:30 / ~08:00 | Scatter of uy(A) etc. between meshes at 1.72-1.83 mm; then `turek_hron_fsi1_mesh_r2` declaring `mesh_noise_rel`, predictions, rerun (~5 h). |
+| Study 19 part 2: step_mesh (finest level 1.41, iteration ~44k of 80k at 06:50, residuals still falling) | `runs/20261122-233146_step_mesh` (`step_mesh.log`) | ~10:30 | Results; `validation/step_driver_seegmiller/compare.py <step_mesh run> p02_mesh_level-1.4142` ONCE; PROTOCOL.md log; page 19 part 2; PORTFOLIO row. |
+| Study 19 part 2: step_inlet_tu (3 points; step_outlet done: Xr/H 6.408 at 30 and 50 H) | `runs/20261123-035753_step_inlet_tu` (`step_inlet_tu.log`) | ~13:00 | Results in the case; step_outlet Results too (run 20261122-233146_step_outlet, not yet written). |
+| Study 6: turek_hron_fsi1_mesh_r2 (noise declared, flag_cells check, per-window transfer; predictions committed 7c4038f) | `runs/20261123-070600_turek_hron_fsi1_mesh_r2` (`fsi1_r2.log`) | ~12:30 | Results in the case; page 17 (noise, the noise_a mesh defect, r2 verdicts); PORTFOLIO row. Then the FSI2/FSI3 mesh / time-step study (~8 h each). |
+
+### Done 03:30-07:40
+- **FSI1 noise (study 6):** four meshes at 1.72-1.83 mm. b, c, d (with r1's 1.77 mm mesh) scatter uy(A) 1.94 %, ux(A)
+  0.20 %, drag 0.075 %, lift 1.12 % peak to peak: r1's uy, drag and lift differences are within the noise, ux's are
+  not. **Mesh a gave uy(A) 28 % low with every check passing**: one quad wrapped around the flag's upper tip corner
+  (165 deg), found by rebuilding its mesh from the kept mesh.geo; 24 Turek-Hron meshes scanned, only a is affected
+  (FSI2 / FSI3 / r1 / CFD clean, 128 deg at most). New point check `flag_cells` (140 deg), `mesh_noise_rel` per metric in
+  the FSI run level, tests (7c4038f); runs committed (6b074fd); skills (bafc496). Optional: the same check in
+  `studies/turek_hron_cfd.py` (its meshes are clean; future runs only).
 
 ### Done 22:25-03:30
 - **Study 7 post-test calibration finished** (c6d39dc, 7189003, 652c7b6; report artifact version 7): A's efficiency
