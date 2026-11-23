@@ -42,7 +42,11 @@ MACHINES = ("models/motor/Toyota_Prius_ORNL.json", "models/motor/Toyota_Prius_OR
             "models/motor/Toyota_Prius_ORNL_Br1p1200_mag531inner.json",
             # study 7 revision 5: the client data pack (validation/motor_ornl/CLIENT_DATA.md)
             "models/motor/Toyota_Prius_ORNL_rev5centre.json",
-            "models/motor/Toyota_Prius_ORNL_rev5centre_gap0p730.json")
+            "models/motor/Toyota_Prius_ORNL_rev5centre_gap0p730.json",
+            # ... and with other lamination steels (the bridges' saturation): step 2 of the 18 % diagnosis
+            "models/motor/Toyota_Prius_ORNL_M250-35A_rev5centre.json",
+            "models/motor/Toyota_Prius_ORNL_M330-35A-Js205_rev5centre.json",
+            "models/motor/Toyota_Prius_ORNL_190Y390_rev5centre.json")
 PARAMS = ("machine", "speed_rpm", "id_A", "iq_A", "mesh_fineness", "steps_per_period", "angle_points",
           "max_speed_rpm", "bus_voltage_V", "rated_torque_Nm")
 NUMERIC = PARAMS[1:]
