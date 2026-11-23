@@ -10,6 +10,22 @@
 # 1.03 T.
 #
 # Requirements: REQ-M1 kept for the record (it fails at any of these: about 820-860 V peak at 6000 rpm).
+#
+# Results (run 20261122-192029_motor_prius_cal_oc_br): verification PASS (15/15 point checks: phase symmetry 1.1e-4,
+# winding theory within 0.15 %, open-circuit torque 3e-6 of rated).
+#   Back-EMF (fundamental, the case metric) 85.66 / 88.76 / 91.86 V per 1000 rpm at 1.00 / 1.03 / 1.06 T; full
+#   waveform (from flux_linkage.csv, spectral derivative of phi_a - phi_b over the 48 steps) 86.04 / 89.14 / 92.24 V,
+#   full / fundamental 1.0045 / 1.0044 / 1.0042 (falling with remanence; extrapolated to 1.243 T it gives r3's 1.0034).
+#   The back-EMF is linear in remanence over this range (3.10 V per 0.03 T both steps).
+#   PREDICTION MISSED, by about 1.5 % at every point and in the curvature: predicted 87 / 90 / 92.5 V; the local
+#   sensitivity is 1.20 % of back-EMF per 1 % of remanence here, more (not less) than the 1.14 % near 1.2 T. The match
+#   still lies near 1.03 T as predicted.
+#   CALIBRATED REMANENCE: 1.0362 T (linear interpolation of the full waveform to ORNL's 89.78 V); interpolating the
+#   fundamental to 89.78 / 1.0034 = 89.48 V gives 1.0370 T, 0.07 % apart (under 0.1 V of back-EMF). 1.036 T is
+#   used: 16.6 % below the 1.243 T read from ORNL's magnet curve (TM-2004/137 Fig. 14). The cause stays open (the
+#   magnet's real temperature or grade, the thinner 5.31 mm magnet, 3D leakage, the series turns): hypothesis A
+#   puts it all on the remanence; the torque case decides between A and B.
+#   REQ-M1 FAIL at every point (822 / 851 / 879 V peak against 500), as predicted (879 just above the 820-860 range).
 
 [case]
 name = "motor_prius_cal_oc_br"
