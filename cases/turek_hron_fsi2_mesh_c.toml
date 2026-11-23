@@ -22,6 +22,14 @@
 #      not tuned.
 #   P5 About 3 h / 8 h / 21 h side by side (2.7x per level, sharing the CPU with study H).
 # This file: level c, 1.77 mm.
+#
+# First run (20261123-123413, 12:34-18:05): FAILED at 8.835 s simulated, a floating point exception in pimpleFoam.
+# No warning before it: forces normal at the last step, tip uy -58 mm mid-swing, coupling iterations rising slowly
+# with the growing swing (mean 6.4 per window at 5-5.5 s, 9.2 at 8.5-8.8 s, at most 13). The fluid log (53 MB) was
+# over the 20 MB keep limit and deleted with the work dir, so the error message is lost; the study now keeps the
+# last 400 lines of such logs (e92aceb). Rerun with the same settings started 18:06 to capture the error (the solve is
+# deterministic, so it should fail at the same time, about 23:30) before anything is changed. Predictions are scored
+# on the run that finishes.
 
 [case]
 name = "turek_hron_fsi2_mesh_c"
