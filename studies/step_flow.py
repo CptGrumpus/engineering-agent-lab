@@ -153,9 +153,11 @@ class OpenFOAMStep(Backend):
                "yplus": {k: v for k, v in yp.items() if k in WALLS},
                "checkmesh_failed_checks": cm.count("***"), "checkmesh_only_aspect": all(
                    "aspect ratio" in ln.lower() for ln in cm.splitlines() if "***" in ln)}
-        series = {"x_over_h": xw / H, "cf": cf, "x_up_over_h": xu / H, "cf_up": cfu,
-                  "x_p_over_h": xp / H, "cp": cp,
-                  "inflow_y_mm": (y[col] - H) * 1e3, "inflow_u_over_uref": U[col, 0] / u_ref}
+        # the harness's series file takes equal-length columns: the floor behind the step; the rest in outputs
+        series = {"x_over_h": xw / H, "cf": cf}
+        out["profiles"] = {"x_up_over_h": (xu / H).tolist(), "cf_up": cfu.tolist(), "x_p_over_h": (xp / H).tolist(),
+                           "cp": cp.tolist(), "inflow_y_mm": ((y[col] - H) * 1e3).tolist(),
+                           "inflow_u_over_uref": (U[col, 0] / u_ref).tolist()}
         return out, series
 
     def tool_versions(self):
@@ -235,13 +237,14 @@ def step_figure(path, series, out, point):
     fig, axes = plt.subplots(1, 3, figsize=(15, 4))
     fig.patch.set_facecolor(SURFACE)
     ax = axes[0]
-    ax.plot(series["inflow_u_over_uref"], series["inflow_y_mm"], "-", color=SERIES_1, lw=1.5)
+    pr = out["profiles"]
+    ax.plot(pr["inflow_u_over_uref"], pr["inflow_y_mm"], "-", color=SERIES_1, lw=1.5)
     ax.set_xlabel("u / U_ref at x = -4 H")
     ax.set_ylabel("distance from the step-side wall (mm)")
     ax.set_ylim(0, 40)
     _style(ax)
     ax = axes[1]
-    ax.plot(series["x_up_over_h"], series["cf_up"] * 1e3, "-", color=SERIES_2, lw=1.2, label="upstream floor")
+    ax.plot(pr["x_up_over_h"], np.asarray(pr["cf_up"]) * 1e3, "-", color=SERIES_2, lw=1.2, label="upstream floor")
     ax.plot(series["x_over_h"], series["cf"] * 1e3, "-", color=SERIES_1, lw=1.5, label="floor behind the step")
     ax.axhline(0, color=TEXT, lw=0.6)
     ax.axvline(out["xr_over_h"], color=TEXT, lw=0.6, ls="--")
@@ -253,7 +256,7 @@ def step_figure(path, series, out, point):
     ax.legend(frameon=False, fontsize=8)
     _style(ax)
     ax = axes[2]
-    ax.plot(series["x_p_over_h"], series["cp"], "-", color=SERIES_1, lw=1.5)
+    ax.plot(pr["x_p_over_h"], pr["cp"], "-", color=SERIES_1, lw=1.5)
     ax.set_xlim(-8, 35)
     ax.set_xlabel("x / H")
     ax.set_ylabel("C_p (from x = -4 H)")

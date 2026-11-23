@@ -35,7 +35,7 @@ HEADER = """FoamFile
 }}
 """
 #: base mesh (mesh_level 1): cell counts and the finest sizes
-BASE = {"ny_duct": 120, "ny_step": 60, "nx_up": 200, "nx_near": 160, "nx_far": 100, "y1_m": 8e-6, "dx_lip_over_h": 1 / 40}
+BASE = {"ny_duct": 120, "ny_step": 60, "nx_up": 200, "nx_near": 160, "nx_far": 100, "y1_m": 3e-6, "dx_lip_over_h": 1 / 40}
 X_NEAR_OVER_H = 15.0
 
 
