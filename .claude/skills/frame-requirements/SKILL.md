@@ -168,6 +168,11 @@ prediction is written into a case file.
   Study 7 revision 2 predicted that ORNL's no-load spin loss would exceed the model's open-circuit iron loss 1.3-2.5
   times and close a 4.5-point efficiency gap; it matched the model (0.87-1.35) and moved the gap by 0.02 points. The
   miss was the finding: the gap is load-dependent.
+- Isolate each effect and test it locally before carrying the model further (user, 2026-11-23: "otherwise
+  calibration moves error elsewhere and hides it"): one change per revision, scored on its own against its own
+  reference or measurement, with every geometry difference and assumption tracked in the case. Calibration is
+  sometimes acceptable but is the risky option: when used, state what it could be hiding and re-test the quantities
+  it was not fitted to.
 - A calibrated value far outside its own measurement is a model-form alarm, not a material finding. Study 7's
   back-EMF fit needed the remanence at 1.036 T against the 1.243 T measured on a sample (-17 %, about four times any
   plausible material scatter). Both hypotheses on the table were knobs (remanence, turns); none was "the model is
