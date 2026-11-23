@@ -75,3 +75,16 @@ Reading rules, agreed before the page is read: (1) compare at the current the pa
 in a reading the page supports is selected; if the readings disagree or the conditions make the 35 % gap unreadable,
 neither is selected and both are carried as a band. Lq / Ld (3.2 in both) does not discriminate and is reported only.
 
+### Result (2026-11-22 22:21; TM-2006/423 p. 51: Lq 5 mH, Ld 1.92 mH, "static measurements", no current or convention stated)
+| Reading | Ld 1.92: A 1.70 / B 1.11 | Lq 5.0: A 5.38 / B 3.50 | Nearer on both |
+|---|---|---|---|
+| per-phase dq | A +13 %, B +73 % | A -7 %, B +43 % | **A** |
+| line-to-line (measured / 2 per phase) | A -44 %, B -14 % | A -54 %, B -29 % | B (far from both) |
+Rule 2 reports both readings; rule 3 selects in the reading the page supports: the page uses the values as Ld and Lq in
+the dq torque equation, which defines them per phase. **Hypothesis A is selected on the static inductances.** Caveat,
+stated: this rule was written after the torque scores were known (both rules pick A). With selection now on
+inductance, A's torque against ORNL (rms error 8.7 %, -3.6 % to +13.5 %, three of seven points outside the original
+10 % band) is reported as a comparison, with that caveat, not as a fit. Also reported: the measured saliency Lq / Ld is
+2.6 against the model's 3.2 (Ld 13 % above the model): the d-axis path is not quite ours (the thinner 5.31 mm magnet
+and its pocket clearance are the first suspect; not modelled). Next: the out-of-sample efficiency for A (dq tables at
+1.036 T, cold and hot).
