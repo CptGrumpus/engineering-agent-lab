@@ -7,7 +7,7 @@
 
 | | |
 |---|---|
-| **Answer** | Yes, with the viscous sublayer resolved. k-omega SST predicts the smooth-pipe friction factor at Re 10⁵ about 2.4 % above Prandtl's law once the mesh is converged (mesh uncertainty about 1 %), inside the 5 % a pressure-drop budget needs. Within 2 % across Re 2 × 10⁴ to 2 × 10⁶. With wall functions instead it sits about 5 % low whatever the mesh and wherever the wall cell sits: not usable to 5 %. |
+| **Answer** | Yes, with the viscous sublayer resolved. k-omega SST predicts the smooth-pipe friction factor at Re 10⁵ about 2.4 % above Prandtl's law once the mesh is converged (mesh uncertainty 0.5 %, verified), inside the 5 % a pressure-drop budget needs. Within 2 % across Re 2 × 10⁴ to 2 × 10⁶. With wall functions instead it sits about 5 % low whatever the mesh and wherever the wall cell sits: not usable to 5 %. |
 | **Discipline** | Fluids, turbulence modelling, validation against measured data |
 | **Tools** | OpenFOAM 14 (k-omega SST), Python |
 | **Methods** | Fully developed RANS on a periodic axisymmetric wedge; low-Reynolds and wall-function wall treatments; an exact force balance; mesh studies with GCI; comparison with Prandtl's smooth-pipe law (Nikuradse's measurements), Blasius and Petukhov |
@@ -23,8 +23,10 @@ chart, so this is the portfolio's first comparison with measured data, through a
 
 ## The answer
 
-- **Resolved sublayer (y+ below 1):** f = 0.01783 / 0.01813 / 0.01828 on 80 / 160 / 320 radial cells, extrapolating
-  to 0.01843, **+2.4 %** on Prandtl, with a mesh uncertainty of 1.05 %. REQ-T1 passes with a clear margin.
+- **Resolved sublayer (y+ below 1):** f = 0.01813 / 0.01828 / 0.01835 on 160 / 320 / 640 radial cells, extrapolating
+  to 0.01842, **+2.4 %** on Prandtl, with a mesh uncertainty of 0.48 %. REQ-T1 passes, verified, with a clear margin.
+  (The coarser study, 80 / 160 / 320 cells, gave the same extrapolation with an uncertainty of 1.05 %, just over the
+  1 % limit; one finer level settled it.)
 - **Across Reynolds numbers** (Re 2 × 10⁴ to 2 × 10⁶, on 60-120 cells): within 1.4 % of Prandtl at every point. Those
   meshes carry the same kind of mesh error as the 80-cell point above, so read them as about 2-3 % high when converged.
 - **Wall functions** (first cell in the log layer): 5.0-5.4 % below Prandtl at every Reynolds number. Refining the
@@ -59,7 +61,9 @@ needs. Radial cells grade towards the wall so the first cell sits at the request
   unchanged, but it slowed the solver by orders of magnitude on the finest meshes: a 160-cell mesh that converged in
   15,000 iterations no longer converged in 80,000, and the 320-cell point never did. Its unconverged value even looked
   plausible (flat against 160 cells). The force balance exposed it (7 × 10⁻³ instead of 10⁻⁹ or better). The revision went back
-  to the fixed length, which checkMesh accepts at this Reynolds number, and every point converged in minutes.
+  to the fixed length, which checkMesh accepts at this Reynolds number, and every point converged in minutes. The
+  finest level (640 cells) needed the length halved, not cut twenty-fold: a probe showed it still converges, slowly
+  (300,000 iterations), and the two coarser levels repeated their earlier values exactly at the shorter length.
 - **A suspect mesh that wasn't the problem.** The wall-function offset first looked like a coarse outer mesh (25-40
   cells). A probe at four times the cells moved f by 0.1 %; a placement sweep confirmed the wall treatment itself.
 
@@ -68,14 +72,13 @@ needs. Radial cells grade towards the wall so the first cell sits at the request
 - Smooth walls only; no roughness (the Colebrook range).
 - The reference is a correlation of measurements, with about ±2 % scatter, not the measurements themselves.
 - One turbulence model (k-omega SST as implemented in openfoam.org v14).
-- The mesh uncertainty (1.05 %) is just over the 1 % the case set, so REQ-T1's pass is formally unverified, though the
-  margin to 5 % is clear. A finer level would need the shorter axial cells that stall the solver.
 
 ## Evidence
 
 - low-Re mesh studies: [first](../runs/20261122-104218_pipe_rans_mesh/report.md) (40 / 80 / 160),
   [revision 1](../runs/20261122-134230_pipe_rans_mesh_r1/report.md) (the stalled solver),
-  [revision 2](../runs/20261122-153857_pipe_rans_mesh_r2/report.md) (80 / 160 / 320, converged)
+  [revision 2](../runs/20261122-153857_pipe_rans_mesh_r2/report.md) (80 / 160 / 320, converged),
+  [revision 3](../runs/20261122-202459_pipe_rans_mesh_r3/report.md) (160 / 320 / 640: verified)
 - [Reynolds sweep](../runs/20261122-104744_pipe_rans_reynolds/report.md), wall functions:
   [core mesh study](../runs/20261122-135114_pipe_rans_wf_mesh/report.md) and
   [first-cell placement](../runs/20261122-140211_pipe_rans_wf_yplus/report.md)
