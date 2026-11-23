@@ -539,8 +539,10 @@ REQS = [
         ("Peak wall temperature", "≤ 45 °C", "44.03 °C, mesh uncertainty 0.23 % of the rise", "met")]),
     ("pv_nozzle", "18", "Pressure vessel nozzle", [
         ("General membrane stress away from the nozzle, Pm", "≤ 138 MPa", "96.2 MPa", "met"),
-        ("Local membrane stress at the junction, PL", "≤ 207 MPa", "205.1 MPa, mesh uncertainty 0.03 %", "met"),
-        ("Membrane plus bending at the junction, P + Q", "≤ 414 MPa", "240 MPa (refinement not converged; 42 % margin)", "met")]),
+        ("Local membrane stress, PL, on lines at the weld toes", "≤ 207 MPa", "205.1 MPa, mesh uncertainty 0.03 %; about 11.7 mm would do", "met"),
+        ("Local membrane stress, PL, on the line through the inner corner", "≤ 207 MPa", "256.7 MPa, 24 % over; needs about 20 mm (the placement I'd judge by)", "fail"),
+        ("Membrane plus bending at the junction, P + Q", "≤ 414 MPa", "240 MPa at the toe (unverified, 42 % margin); 352 MPa through the corner", "met"),
+        ("Hemispherical head: membrane, and the junction with the shell", "≤ 138 / 207 / 414 MPa", "about 6.5 mm; the head's own membrane governs (135.5 MPa at 6.5 mm)", "met")]),
     ("pipe", "19", "Turbulent pipe friction", [
         ("Friction factor against Prandtl's law, Re 10⁵", "within 5 %", "+2.4 % when converged, mesh uncertainty 1.05 %", "met"),
         ("Same, with wall functions", "within 5 %", "5.0 to 5.4 % low at every Reynolds number", "fail")]),

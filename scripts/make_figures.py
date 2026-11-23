@@ -1297,17 +1297,19 @@ def motor_rotor():
 # ---------------------------------------------------------------------------------------- study 18, pressure vessel
 
 def pv_nozzle():
-    """The governing classification line, and the membrane stress against nozzle wall thickness."""
+    """Where the classification line is drawn decides the verdict: the line through the crotch corner, and the
+    membrane stress against nozzle wall on the weld-toe line and on the crotch line."""
     from harness.linearize import von_mises
 
-    rec = point("20261122-102842_pv_nozzle_mesh", "p02_element_size_local_mm-2.6667")
-    line = rec["solver_outputs"]["lines"]["shell_long"]
-    prof = rec["solver_outputs"]["profiles"]["shell_long"]
+    rec = point("20261122-201431_pv_nozzle_crotch_mesh_r1", "p02_element_size_local_mm-2.6667")
+    line = rec["solver_outputs"]["lines"]["crotch_long"]
+    prof = rec["solver_outputs"]["profiles"]["crotch_long"]
     sx, vm = np.asarray(prof["s_mm"]), np.asarray(prof["vm_MPa"])
     th, mem, ben = line["thickness"], np.asarray(line["membrane"]), np.asarray(line["bending"])
     lin = von_mises(mem[None, :] + ben[None, :] * (1 - 2 * sx[:, None] / th))
     pl = line["membrane_vm"]
-    op, L = limits("pv_nozzle_mesh")["pl_max_MPa"] if "pl_max_MPa" in limits("pv_nozzle_mesh") else ("<=", 207.0)
+    L = limits("pv_nozzle_crotch_mesh_r1" if (REPO / "cases" / "pv_nozzle_crotch_mesh_r1.toml").exists()
+               else "pv_nozzle_mesh").get("pl_max_MPa", ("<=", 207.0))[1]
     fig, gs = fk.new(FULL, 3.9, 1, 2, wspace=0.24, top=1.0)
     ax = fig.add_subplot(gs[0, 0])
     fk.style(ax)
@@ -1315,28 +1317,46 @@ def pv_nozzle():
     ax.plot(sx, lin, color=fk.THIRD, zorder=3)
     ax.axhline(pl, color=fk.THIRD, linewidth=1.2, zorder=3)
     ax.set_xlim(0, th)
-    ax.set_ylim(180, 250)
-    fk.limit(ax, L, f"membrane limit {L:g} MPa", bad="above", axis="y", at=0.03)
-    fk.label(ax, 0.3, pl, f"membrane (the average): {pl:.1f} MPa", dx=0, dy=-6, va="top", size=8.5)
-    ax.set_xlabel("through the shell wall, inside to outside, mm")
+    ax.set_ylim(150, 380)
+    fk.limit(ax, L, f"membrane limit {L:g} MPa", bad="above", axis="y", at=0.97)
+    fk.label(ax, 0.4, pl, f"membrane: {pl:.1f} MPa", dx=0, dy=-5, va="top", size=8.5)
+    fk.label(ax, 0.4, vm[0], f"corner peak {vm[0]:.0f} MPa, excluded by design", dx=4, dy=0, va="center", color=INK2, size=8.5)
+    m = int(np.argmin(abs(sx - 8)))
+    fk.label(ax, sx[m], vm[m], "stress from the model", dx=-6, dy=-6, ha="right", va="top", color=MODEL, size=8.5)
+    fk.label(ax, sx[-1], lin[-1], "straight-line fit", dx=-4, dy=-8, ha="right", va="top", color=fk.THIRD, size=8.5)
+    ax.set_xlabel("from the sharp inner corner to the weld fillet, mm")
     ax.set_ylabel("stress, MPa")
-    fk.panel(ax, "The governing line through the wall")
+    fk.panel(ax, "The line through the corner, 12 mm nozzle")
 
     ax = fig.add_subplot(gs[0, 1])
-    rows = pts("20261122-103521_pv_nozzle_thickness")
-    xs = [r["parameters"]["nozzle_thickness_mm"] for _, r, _ in rows]
-    ys = [r["metrics"]["pl_max_MPa"] for _, r, _ in rows]
-    sweep_panel(ax, xs, ys, [True] * len(xs), "<=", L, f"limit {L:g} MPa", fmt="{:.1f}", ylim=(172, 250), at=0.97)
-    k = int(np.argmax(np.array(ys) <= L))
-    need = xs[k - 1] + (L - ys[k - 1]) * (xs[k] - xs[k - 1]) / (ys[k] - ys[k - 1])
-    ax.plot([need, need], [172, L], color=INK2, linewidth=0.9, zorder=2)
-    fk.label(ax, need, 174, f"needs {need:.1f} mm", dx=-5, ha="right", va="bottom", size=8.5)
+    fk.style(ax)
+    toe = pts("20261122-103521_pv_nozzle_thickness")
+    cro = pts("20261122-200149_pv_nozzle_crotch_thickness")
+    series = [("weld-toe line", [(r["parameters"]["nozzle_thickness_mm"], r["metrics"]["pl_max_MPa"], ok) for _, r, ok in toe], MODEL),
+              ("line through the corner", [(r["parameters"]["nozzle_thickness_mm"], r["metrics"]["pl_crotch_max_MPa"], ok) for _, r, ok in cro], fk.THIRD)]
+    ax.set_xlim(6.5, 25.5)
+    ax.set_ylim(140, 290)
+    fk.limit(ax, L, f"limit {L:g} MPa", bad="above", axis="y", at=0.97)
+    needs = []
+    for name, rows, color in series:
+        xs, ys = [r[0] for r in rows], [r[1] for r in rows]
+        ax.plot(xs, ys, color=color, linewidth=1.8, zorder=3)
+        for x, y, ok in rows:
+            fk.status_dot(ax, x, y, "held" if not ok else ("meets" if y <= L else "misses"))
+        k = int(np.argmax(np.array(ys) <= L))
+        needs.append(xs[k - 1] + (L - ys[k - 1]) * (xs[k] - xs[k - 1]) / (ys[k] - ys[k - 1]))
+        fk.label(ax, xs[-1], ys[-1], name, dx=-2, dy=-12, ha="right", va="top", color=color, size=8.5, bold=True)
+    for x, text in ((needs[0], f"{needs[0]:.1f}"), (16.0, "rule 16"), (needs[1], f"{needs[1]:.1f}")):
+        ax.plot([x, x], [140, L], color=INK2, linewidth=0.9, linestyle=(0, (3, 2)), zorder=2)
+        fk.label(ax, x, 143, text, dx=3, ha="left", va="bottom", color=INK2, size=8.5)
+    ax.axvline(12, color=MUTED, linewidth=0.8, zorder=1)
+    fk.label(ax, 12, 288, "the 12 mm design", dx=3, va="top", color=INK2, size=8.5)
     ax.set_xlabel("nozzle wall thickness, mm")
-    ax.set_ylabel("membrane stress at the junction, MPa")
-    fk.panel(ax, "The same check at four nozzle walls")
-    fk.heading(fig, f"The 12 mm nozzle passes at {pl:.1f} MPa against {L:g}; the wall needs about {need:.1f} mm",
-               "Linearising splits the stress through the wall into its average (membrane) and a straight-line bending part")
-    fk.key(fig, [("stress from the model", "line", MODEL), ("its straight-line fit", "line", fk.THIRD)], y_in=0.66)
+    ax.set_ylabel("membrane stress PL, MPa")
+    fk.panel(ax, "Wall needed on each line")
+    fk.heading(fig, f"Where the line is drawn decides it: 12 mm passes at the weld toe and fails through the corner",
+               f"Through the corner PL is {pl:.1f} MPa against {L:g}; that line needs about {needs[1]:.1f} mm, the toe line {needs[0]:.1f}")
+    fk.key(fig, [("meets the limit", "meets", None), ("misses it", "misses", None)], y_in=0.66)
     fk.save(fig, "pv_nozzle")
 
 

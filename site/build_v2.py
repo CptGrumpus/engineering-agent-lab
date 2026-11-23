@@ -48,8 +48,8 @@ VP = [
     {"id": "pv_nozzle", "study": "pv_nozzle", "tab": "Vessel", "legend": "S, Mises", "unit": "MPa",
      "model": "Shell with a radial nozzle · steel, 1000 mm bore × 16 mm, 200 mm nozzle × 12 mm, 3.5 MPa inside",
      "lines": ["Solver: CalculiX 2.22 · C3D10 · the mesh study's finest mesh, a quarter model mirrored into the whole vessel",
-               "Range stops at 240 MPa · the sharp inner corner peaks higher, and the code's limits exclude it",
-               "Linearised through the wall beside the weld: PL 205.1 MPa against 207 · passes with a 0.9 % margin"]},
+               "Range stops at 240 MPa · the inner corner peaks at 351 MPa, a peak stress the membrane limits exclude",
+               "Linearised beside the weld: PL 205.1 MPa, passes · through the corner: 256.7 MPa, fails · limit 207"]},
     {"id": "strap_proof", "study": "strap_proof", "tab": "Plasticity", "legend": "S11", "unit": "MPa",
      "model": "Strap through its proof test · 6061-T6, 40 × 4 mm, 16 mm hole, loaded to 15 kN and back",
      "lines": ["Solver: CalculiX 2.22 · elastic-plastic, quarter model mirrored",
@@ -151,7 +151,7 @@ for v in VP:
 # --- case gallery ---------------------------------------------------------------
 CARDS = [
     ("bracket_opt", "12", "struct", "Featured · Design automation", "Bracket optimisation loop, driven by the agent", "The agent searched 78 designs over three runs for the lightest machined clevis bracket that stays under 100 MPa. The checks threw out its first two answers. The final one is 372 g, 4 % lighter than the start, at 98.3 MPa, and its own mesh study confirms it.", "pass", "CadQuery · Gmsh · CalculiX · SciPy"),
-    ("pv_nozzle", "18", "struct", "New · Design code", "Pressure vessel nozzle, design code check", "Passes ASME-style design by analysis with a 0.9 % margin: 205.1 MPa against 207, verified to 0.03 %. The wall needs 11.7 mm, where a simpler rule asks for 16.", "pass", "CadQuery · Gmsh · CalculiX"),
+    ("pv_nozzle", "18", "struct", "New · Design code", "Pressure vessel nozzle, design code check", "Passes ASME-style design by analysis on lines at the weld toes (205.1 MPa against 207), fails by 24 % on a line through the corner. I'd judge it by the corner: about 21 mm, or a pad.", "line", "CadQuery · Gmsh · CalculiX"),
     ("motor", "20", "em", "New · Electric machines", "Traction motor, rebuilt and tested blind", "The 2004 Prius motor, rebuilt from published drawings and predicted before any test data was opened. The blind comparison missed all three agreed limits: back-EMF 23.5 % high, torque 7 to 24 % high, efficiency 5 points high. One cause explains them, about 24 % too much magnet flux, in a model that had passed every internal check. The verdicts stand; a diagnosis is next.", "blind", "Pyleecan · FEMM · CalculiX"),
     ("bolted_joint", "16", "struct", "New · Friction contact", "Bolted joint, slip and opening", "Fails narrowly: once the joint settles it slips at 2.39 kN, 4.4 % short of the 2.5 kN it must carry. A 15.6 kN preload fixes it, and it stays closed to 13.1 kN.", "fail", "CalculiX"),
     ("strap_proof", "14", "struct", "New · Plasticity", "Strap proof test, notch plasticity", "A 15 kN proof test strains the hole edge to 0.58 %, inside a 1 % limit, and leaves −77 MPa of compression behind, which helps fatigue.", "pass", "CadQuery · Gmsh · CalculiX"),
@@ -172,7 +172,7 @@ CARDS = [
     ("baseline", "09", "workflow", "Workflow", "Mass-spring-damper baseline", "All 72 checks pass, and the two tools agree to a few parts per million.", "pass", "SciPy · OpenModelica"),
 ]
 VERDICT = {"pass": "Passes", "fail": "Fails", "mixed": "Depends on speed", "held": "One result on hold",
-           "blind": "Missed its blind test"}
+           "blind": "Missed its blind test", "line": "Depends on one judgement call"}
 
 # studies of the same part, shown as one card and one panel; each study keeps its own write-up, viewer
 # result, requirements rows and evidence, and links to a study land on its part of the panel
@@ -246,7 +246,7 @@ SECTION_URL = {"work": "index.html#work", "tasks": "grading.html", "findings": "
 CASES = {"fea": ["cantilever_tet10"], "cantilever_opt": ["bracket_opt"], "strap": ["strap_hole_size"],
          "fatigue": ["strap_fatigue_load"], "strap_proof": ["strap_proof_r1"], "contact": ["contact_roller_mesh"],
          "modal": ["bracket_modal_thickness"], "strut": ["strut_length"], "bolted_joint": ["bolted_joint_mesh_r1"],
-         "pv_nozzle": ["pv_nozzle_mesh"], "bracket_opt": ["clevis_opt_r2"], "cfd": ["channel_header_tolerance", "duct_side_walls"],
+         "pv_nozzle": ["pv_nozzle_mesh", "pv_nozzle_crotch_mesh_r1"], "bracket_opt": ["clevis_opt_r2"], "cfd": ["channel_header_tolerance", "duct_side_walls"],
          "thermal": ["fin_tolerance"], "heat": ["heated_channel_mesh_r2"], "cold_plate": ["cold_plate_mesh_r1"],
          "pipe": ["pipe_rans_mesh_r2"], "suspension": ["qc_speed_bump", "qc_bump_liftoff"], "cad": ["mounting_plate"],
          "baseline": ["msd_step"], "motor": ["motor_prius_ornl_oc_mesh_r3", "motor_prius_efficiency_r1"]}
@@ -259,7 +259,7 @@ DRAWINGS = {
     "strut": ("Side view of the strut on its pinned ends with the bow drawn enlarged", "The strut, its pinned ends and its initial bow, which is drawn 40 times larger than it is."),
     "contact": ("The roller on its plate, with the contact strip enlarged in a circle", "The roller on its plate. The contact is too small to see at this scale, so it's enlarged on the right."),
     "bolted_joint": ("Section through the two plates and the bolt hole, with the clamp force on the washer faces and the side load", "A section through the bolt axis. The bolt is drawn dashed for reference; in the model it's represented by its clamp force on the washer faces."),
-    "pv_nozzle": ("Section through the shell and nozzle walls at the junction, with the weld fillet and the two assessed lines through the wall", "A section through both axes at the junction, with the two lines through the wall that are assessed in this plane."),
+    "pv_nozzle": ("Section through the shell and nozzle walls at the junction, with the weld fillet, the lines at the weld toes and the line through the inner corner", "A section through both axes at the junction. Right: the lines at the weld toes, where the 12 mm nozzle passes. Left: the line through the sharp inner corner, where it fails. The junction is symmetric, so each side shows one placement."),
     "bracket_opt": ("Front, side and three-quarter views of the clevis bracket with its main dimensions", "The chosen design, drawn from its CAD model: hidden-line views with the dimensions the optimiser set."),
     "cad": ("Plan and edge view of the plate with six holes and its dimensions", "The plate with the 9 mm holes, the only size that meets both rules."),
     "cfd": ("The flow domain: a supply header narrowing smoothly into a long thin channel", "The flow domain: the supply header, the smooth contraction and the 1 mm channel. Heights are drawn larger so the channel can be seen."),

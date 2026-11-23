@@ -361,7 +361,13 @@ def pv_nozzle():
     zs = rno + rf                                            # classification lines at the fillet toes
     ax.plot([zs, zs], [Ri, Ro], color=HOT, lw=2.2, zorder=6, solid_capstyle="butt")
     ax.plot([rni, rno], [Ro + rf, Ro + rf], color=HOT, lw=2.2, zorder=6, solid_capstyle="butt")
-    note(ax, (zs, Ri + t / 2), (205, 590), "line through the shell wall: the one that governs,\nPL 205.1 MPa against 207", color=HOT, va="center")
+    note(ax, (zs, Ri + t / 2), (205, 590), "line at the weld toe, through the shell:\nPL 205.1 MPa, passes against 207", color=HOT, va="center")
+    # the line through the crotch: from the sharp inner corner towards the fillet's centre, ending on the fillet
+    c0, cc = np.array([-rni, Ri]), np.array([-(rno + rf), Ro + rf])
+    u = (cc - c0) / np.linalg.norm(cc - c0)
+    c1 = c0 + u * (np.linalg.norm(cc - c0) - rf)
+    ax.plot([c0[0], c1[0]], [c0[1], c1[1]], color=HOT, lw=2.2, zorder=6, solid_capstyle="butt")
+    note(ax, tuple((c0 + c1) / 2), (-205, 600), "line through the corner:\nPL 256.7 MPa, fails against 207", color=HOT, ha="right", va="center")
     note(ax, (rni + tn / 2, Ro + rf), (205, 760), "line through the nozzle wall:\nPL 181.7 MPa", color=HOT, va="center")
     note(ax, (rno + 3, Ro + 3), (205, 675), f"weld fillet R{rf:g}, both sides", ha="left")
     note(ax, (-rni, Ri), (-150, 440), "inner corner left sharp", ha="right")
