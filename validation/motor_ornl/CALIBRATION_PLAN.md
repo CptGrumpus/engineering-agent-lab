@@ -407,3 +407,20 @@ current torque disagree" is withdrawn:** it compared a measured maximum over sha
 Conclusion now: the model's magnet-driven flux is about 18 % high, consistently in two independent tests; every input
 a client supplies is measured and in the model, so the cause is model form or manufacturing (magnetisation level, end
 effects, the bridges' steel), to be tested one at a time.
+
+### The 18 % flux excess, step 1: other models of this motor (17:29; literature, no runs)
+Question: do other 2D models of the 2004 Prius also read about 105-110 V per 1000 rpm against the measured 89.8 V (then
+the 18 % belongs to 2D models of this motor), or do they match the test (then ours has a specific error)?
+- No accessible published model states its inputs AND gives numbers against ORNL's back-EMF. R. Kaczmarek (Cobham,
+  Opera 2D, Magnetics Business & Technology 2013): comparison in plots only, "slight difference", M19 steel and an
+  interpolated magnet curve. MDPI Machines 2019, 7(4) 75 (MotorAnalysis-PM, reports "high correlation" with ORNL's
+  peak back-EMF): its server refuses automated access; no other copy found; not read.
+- J. Fan and X. Wu, "Electric Machine 3D FEM Modeling and Design Impact on Torque Ripple", Chalmers master's thesis
+  (odr.chalmers.se, downloaded 2026-11-23, sha256 da917079ef65): inputs from ANSYS's own Prius 2004 example, no
+  comparison with ORNL. Two findings: (1) 3D against 2D on this motor (extruded, no skew): fundamental back-EMF
+  162 -> 156 V (-3.7 %), peak flux linkage 130 -> 128 mWb: end effects of a few percent, not 18 %; (2) ANSYS Maxwell
+  and ElmerFEM on the "same" 2D model disagree by about 30 % in flux linkage (0.17 against 0.13 Wb), unresolved by the
+  authors: a single published 2D value would not settle the question anyway.
+**Result of step 1:** inconclusive on the main question; it bounds step 3 (end effects about 4 %, so they can explain
+part of the 18 %, not most of it). An independent check of our 2D field now needs our own second model (a different
+solver on the same geometry), not the literature.
