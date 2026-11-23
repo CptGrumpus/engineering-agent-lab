@@ -8,7 +8,7 @@
     <h3>The answer</h3>
     <div class="answer">
       <div class="chips"><span class="chip pass">+2.4 % when converged</span><span class="chip pass">Passes from Re 2 × 10⁴ to 2 × 10⁶</span><span class="chip fail">Wall functions: 5 % low</span></div>
-      <p><strong>Yes, with the thin layer of flow at the wall resolved.</strong> Converged, the friction factor at a Reynolds number of 10⁵ is 2.4 % above Prandtl's law, with about 1 % mesh uncertainty, well inside the 5 %.</p>
+      <p><strong>Yes, with the thin layer of flow at the wall resolved.</strong> Converged, the friction factor at a Reynolds number of 10⁵ is 2.4 % above Prandtl's law, with 0.5 % mesh uncertainty, well inside the 5 %.</p>
       <p>The cheaper option, wall functions, sits about 5 % low whatever the mesh and wherever the first cell is placed, so it can't be used to 5 %.</p>
     </div>
     <h3>Why it matters</h3>
@@ -20,7 +20,7 @@
       <dt>Fluid and flow</dt><dd>Kinematic viscosity 10⁻⁶ m²/s (water). The mean velocity is held fixed, and the solver reports the pressure gradient needed. Reynolds numbers from 2 × 10⁴ to 2 × 10⁶.</dd>
       <dt>Turbulence model</dt><dd>k-omega SST, a widely used two-equation model, as implemented in OpenFOAM 14.</dd>
       <dt>Wall treatment</dt><dd>Two options, compared. Resolved: cells fine enough to capture the thin viscous layer at the wall (first cell at y+ below 1). Wall functions: a coarser mesh that bridges that layer with a formula (first cell at y+ 30 to 200).</dd>
-      <dt>Mesh</dt><dd>80, 160 and 320 cells across the radius, graded towards the wall. Every level halves every cell.</dd>
+      <dt>Mesh</dt><dd>80 to 640 cells across the radius, graded towards the wall. Every level halves every cell.</dd>
       <dt>Analysis</dt><dd>Steady Reynolds-averaged (RANS) flow.</dd>
       <dt>What's measured</dt><dd>The Darcy friction factor, the number a pressure-drop calculation uses.</dd>
     </dl>
@@ -48,7 +48,7 @@
       <li>Smooth walls only. Rough pipes, the Colebrook range of the Moody chart, aren't modelled.</li>
       <li>The reference is a correlation of measurements, with about ±2 % scatter, not the raw measurements.</li>
       <li>One turbulence model. Others would give somewhat different offsets.</li>
-      <li>The mesh uncertainty (1.05 %) is just over the 1 % I set for it, so the pass is formally unverified, though the margin to 5 % is clear. A finer mesh would need the shorter cells that stall the solver.</li>
+      <li>The first converged mesh study (80, 160 and 320 cells) left a mesh uncertainty of 1.05 %, just over the 1 % I set, so the pass was formally unverified. One finer level (640 cells) brought it to 0.5 % with the same answer, and it's now verified.</li>
       <li>Part 2 compares the same setup against measured velocity profiles behind a backward-facing step, a flow that separates and reattaches. It's waiting on the data source, whose servers were unreachable on 22 November.</li>
     </ul>
   </section>

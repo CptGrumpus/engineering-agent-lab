@@ -1071,18 +1071,20 @@ def pipe_friction():
 
     ax = axes[0]
     first, rev = dev("20261122-104218_pipe_rans_mesh", "n_radial"), dev("20261122-153857_pipe_rans_mesh_r2", "n_radial")
+    fin = dev("20261122-202459_pipe_rans_mesh_r3", "n_radial")
     seen = {}
-    for rows in (first, rev):
+    for rows in (first, rev, fin):
         for r in rows:
             seen[r["parameters"]["n_radial"]] = r["metrics"]["friction_dev_prandtl_pct"]
     ns = sorted(seen)
     ax.plot([1 / n for n in ns], [seen[n] for n in ns], color=MODEL, linewidth=1.6, alpha=0.5, zorder=3)
     fk.dots(ax, [1 / n for n in ns], [seen[n] for n in ns], size=44)
     for n in ns:
-        fk.label(ax, 1 / n, seen[n], f"{n}", dx=6, dy=-9, va="top", color=INK2, size=8.5)
-    v = json.loads((RUNS / "20261122-153857_pipe_rans_mesh_r2" / "verification.json").read_text(encoding="utf-8"))
+        if n < 640:
+            fk.label(ax, 1 / n, seen[n], f"{n}", dx=6, dy=-9, va="top", color=INK2, size=8.5)
+    v = json.loads((RUNS / "20261122-202459_pipe_rans_mesh_r3" / "verification.json").read_text(encoding="utf-8"))
     u = v["run_check_detail"]["friction_factor"]
-    m0 = rev[0]["metrics"]
+    m0 = fin[0]["metrics"]
     pr = m0["friction_factor"] / (1 + m0["friction_dev_prandtl_pct"] / 100)
     ye, ue = 100 * (u["extrapolated"] / pr - 1), 100 * u["uncertainty"] * u["extrapolated"] / pr
     ax.errorbar([0.0006], [ye], yerr=[ue], color=INK, marker="D", markersize=6, capsize=3, linewidth=1.2, zorder=5)

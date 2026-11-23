@@ -540,11 +540,11 @@ REQS = [
     ("pv_nozzle", "18", "Pressure vessel nozzle", [
         ("General membrane stress away from the nozzle, Pm", "≤ 138 MPa", "96.2 MPa", "met"),
         ("Local membrane stress, PL, on lines at the weld toes", "≤ 207 MPa", "205.1 MPa, mesh uncertainty 0.03 %; about 11.7 mm would do", "met"),
-        ("Local membrane stress, PL, on the line through the inner corner", "≤ 207 MPa", "256.7 MPa, 24 % over; needs about 20 mm (the placement I'd judge by)", "fail"),
+        ("Local membrane stress, PL, on the line through the inner corner", "≤ 207 MPa", "256.7 MPa, 24 % over; needs about 21 mm or a pad (the line I judge it by)", "fail"),
         ("Membrane plus bending at the junction, P + Q", "≤ 414 MPa", "240 MPa at the toe (unverified, 42 % margin); 352 MPa through the corner", "met"),
         ("Hemispherical head: membrane, and the junction with the shell", "≤ 138 / 207 / 414 MPa", "about 6.5 mm; the head's own membrane governs (135.5 MPa at 6.5 mm)", "met")]),
     ("pipe", "19", "Turbulent pipe friction", [
-        ("Friction factor against Prandtl's law, Re 10⁵", "within 5 %", "+2.4 % when converged, mesh uncertainty 1.05 %", "met"),
+        ("Friction factor against Prandtl's law, Re 10⁵", "within 5 %", "+2.4 % when converged, mesh uncertainty 0.5 %", "met"),
         ("Same, with wall functions", "within 5 %", "5.0 to 5.4 % low at every Reynolds number", "fail")]),
     ("motor", "20", "Traction motor", [
         ("Blind test: back-EMF against the measured motor", "within 5 %", "23.5 % high (110.9 against 89.8 V per 1,000 rpm)", "fail"),
@@ -553,9 +553,9 @@ REQS = [
         ("Open-circuit voltage at 6,000 rpm if the inverter stops switching", "≤ 500 V", "about 1,040 V predicted; 850 V measured", "fail"),
         ("Rotor bridge stress at 7,200 rpm overspeed", "≤ 335 MPa", "424 MPa; elastic at 6,000 rpm (295 MPa)", "fail"),
         ("Every point of the torque curve within the copper limit", "≤ 212 A", "250 A and above exceed it: a short-time rating", "fail"),
-        ("Rated 400 N m within the copper's current-density limit", "≤ 25 A/mm²", "19.8 A/mm² on a model with 24 % too much flux", "held"),
-        ("Rated power from base speed to 6,000 rpm", "≥ 50 kW", "58.6 kW on a model with 24 % too much flux", "held"),
-        ("Continuous power from 1,250 to 6,000 rpm", "≥ 25 kW", "30.2 kW modelled; the laboratory reports 15 to 21 kW at base speed", "held")]),
+        ("Rated 400 N m within the copper's current-density limit", "≤ 25 A/mm²", "19.8 A/mm² on the blind model; not yet rerun after calibration", "held"),
+        ("Rated power from base speed to 6,000 rpm", "≥ 50 kW", "48.0 kW cold, 44.5 kW hot after calibration (58.6 kW on the blind model)", "fail"),
+        ("Continuous power from 1,250 to 6,000 rpm", "≥ 25 kW", "28.1 kW after calibration at the nominal housing fit; 24.3 kW at the loosest fit tried", "met")]),
     ("strut", "13", "Strut buckling", [
         ("Load before first yield, 500 mm strut with an L/1000 bow", "≥ 16 kN", "21.8 kN (the longest that passes is about 587 mm)", "met")]),
     ("strap_proof", "14", "Strap proof test", [

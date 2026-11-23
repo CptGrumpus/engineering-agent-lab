@@ -79,7 +79,7 @@
       </div>
     </div>
     <h3 class="sub">Where the agent fits</h3>
-    <p class="sub-lede">I use Claude Code, guided by six skills I wrote and tested. The skills set the order of the work and which checks have to pass. The agent writes and runs the code.</p>
+    <p class="sub-lede">I use Claude Code, guided by seven skills I wrote and tested. The skills set the order of the work and which checks have to pass. The agent writes and runs the code.</p>
     <div class="skills">
       <div class="skill"><code>frame-requirements</code><b>Requirements first</b><p>Pins down the decision, the metrics, the input ranges, the assumptions and how to check them, the tolerances and my predictions, all before anything runs.</p></div>
       <div class="skill"><code>build-model</code><b>Model preparation</b><p>Covers file layout, choosing the checks, a quick smoke test and diagnosing failures, plus notes on solver traps I found the hard way.</p></div>
@@ -87,6 +87,7 @@
       <div class="skill"><code>verify-against-reference</code><b>Verification</b><p>Compares against independent references, conservation and reaction balance, runs mesh convergence with the Grid Convergence Index, and cross-checks between tools.</p></div>
       <div class="skill"><code>requirements-report</code><b>Review report</b><p>Links each requirement to its result, checks and saved files, and ends with "pending human review".</p></div>
       <div class="skill"><code>render-results</code><b>Result renders</b><p>Renders solver output in Blender, and only keeps an image if it passes a geometry check, a pixel-by-pixel legend colour check and a check that the lit image reads as the right band.</p></div>
+      <div class="skill"><code>publication-figures</code><b>Charts and drawings</b><p>Redraws a run's working plots as clean vector charts and dimensioned drawings, with every number read from the saved run, the limits from its case file and pass or fail from its verification record.</p></div>
     </div>
     <ul class="rules" aria-label="Rules the agent works under">
       <li>No loosening a tolerance to get a pass</li>
@@ -121,7 +122,7 @@
         </tbody>
       </table>
     </div>
-    <p class="code-facts">It's all Python, about 52,000 lines across 306 files: the harness that runs and checks everything, the models, the independent reference solutions and the graders, with 308 automated tests that run on every push.</p>
+    <p class="code-facts">It's all Python, about 59,000 lines across 338 files: the harness that runs and checks everything, the models, the independent reference solutions and the graders, with 333 automated tests that run on every push.</p>
       <h3 class="sub" id="images">How the images are checked</h3>
     <p class="sub-lede">These images are rendered in Blender straight from the solver output. Before one goes on the page it has to pass three checks. The rendered surface has to enclose the part's actual volume, which catches missing or flipped faces. Every coloured pixel has to match a colour in the legend, which catches a shader that has shifted the contours. And the lit image has to read as the right band, which catches a shaded face that looks like a different value. Most results can also be turned in 3D: that view uses the same surface and colour bands, and it's checked the same way from four angles.</p>
   </div>
@@ -134,7 +135,7 @@
     <div class="findings">
       <article class="finding"><span class="label">Bracket optimisation · design automation</span><h3>Two answers that failed their own checks</h3><p>The optimiser's first pick read 94 MPa, but its mesh study put it at 101.7 MPa once the uncertainty was added: a peak in a fillet needs far more margin than a smooth bending stress. The second pick failed because the mesh study wasn't refining the fillet at all. The design on the page passed only once the peak itself was refined.</p><a href="bracket-optimisation.html">Read the study</a></article>
       <article class="finding"><span class="label">Pressure vessel · design code</span><h3>A pass that depended on where one line was drawn</h3><p>Read on lines at the weld toes, the nozzle passed its design-code limit with 0.9 % to spare, and I recommended a wall on that basis. Measuring the other usual placement, a line through the inner corner, gave 25 % more stress on the same converged model. The verdict flipped and the recommendation was withdrawn.</p><a href="pressure-vessel-nozzle.html">Read the study</a></article>
-      <article class="finding"><span class="label">Traction motor · blind test</span><h3>A model that missed its blind test</h3><p>I predicted a production motor's back-EMF, torque and efficiency before looking at the laboratory's measurements. All three missed their limits, with one cause behind them: about 24 % too much magnet flux. The predictions stay on record as they were made.</p><a href="traction-motor.html">Read the study</a></article>
+      <article class="finding"><span class="label">Traction motor · blind test</span><h3>A model that missed its blind test</h3><p>I predicted a production motor's back-EMF, torque and efficiency before looking at the laboratory's measurements. All three missed their limits, with one cause behind most of it: about 24 % too much magnet flux. Calibrating on a routine test afterwards turned a passing design check into a fail. The blind predictions stay on record as they were made.</p><a href="traction-motor.html">Read the study</a></article>
       <article class="finding"><span class="label">Strap · stress concentration</span><h3>A model that converged neatly to the wrong answer</h3><p>The mesh study looked textbook, but it settled 2 % away from the handbook value. Running a case with a known exact answer through the same pipeline showed the problem was in how the solver's elements behaved, which no amount of mesh refinement would have revealed.</p><a href="aluminium-strap.html#strap">Read the study</a></article>
       <article class="finding"><span class="label">Coolant channel · CFD</span><h3>A simplified inlet that flipped the answer</h3><p>The simple model said the channel passed. It never converged at the sharp inlet corner, though, and once I modelled the inlet properly the channel failed its pressure budget.</p><a href="coolant-channel.html">Read the study</a></article>
       <article class="finding"><span class="label">Quarter car · vehicle dynamics</span><h3>A wheel that left the road</h3><p>Every numerical check passed, but the tire was leaving the ground, which the simple model can't represent, so I held the verdict back. When I built a tire model that can lift off, it showed the simple one had overstated the peak body acceleration by up to 29 %.</p><a href="quarter-car.html">Read the study</a></article>

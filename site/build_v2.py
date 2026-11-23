@@ -152,7 +152,7 @@ for v in VP:
 CARDS = [
     ("bracket_opt", "12", "struct", "Featured · Design automation", "Bracket optimisation loop, driven by the agent", "The agent searched 78 designs over three runs for the lightest machined clevis bracket that stays under 100 MPa. The checks threw out its first two answers. The final one is 372 g, 4 % lighter than the start, at 98.3 MPa, and its own mesh study confirms it.", "pass", "CadQuery · Gmsh · CalculiX · SciPy"),
     ("pv_nozzle", "18", "struct", "New · Design code", "Pressure vessel nozzle, design code check", "Passes ASME-style design by analysis on lines at the weld toes (205.1 MPa against 207), fails by 24 % on a line through the corner. I'd judge it by the corner: about 21 mm, or a pad.", "line", "CadQuery · Gmsh · CalculiX"),
-    ("motor", "20", "em", "New · Electric machines", "Traction motor, rebuilt and tested blind", "The 2004 Prius motor, rebuilt from published drawings and predicted before any test data was opened. The blind comparison missed all three agreed limits: back-EMF 23.5 % high, torque 7 to 24 % high, efficiency 5 points high. One cause explains them, about 24 % too much magnet flux, in a model that had passed every internal check. The verdicts stand; a diagnosis is next.", "blind", "Pyleecan · FEMM · CalculiX"),
+    ("motor", "20", "em", "New · Electric machines", "Traction motor, rebuilt and tested blind", "The 2004 Prius motor, rebuilt from published drawings and predicted before any test data was opened. The blind comparison missed all three agreed limits: back-EMF 23.5 % high, torque 7 to 24 % high, efficiency 5 points high. One cause explains most of it, about 24 % too much magnet flux, in a model that had passed every internal check. Calibrated afterwards on routine data, it's still 4.5 points high on efficiency, and the rated power to top speed now fails.", "blind", "Pyleecan · FEMM · CalculiX"),
     ("bolted_joint", "16", "struct", "New · Friction contact", "Bolted joint, slip and opening", "Fails narrowly: once the joint settles it slips at 2.39 kN, 4.4 % short of the 2.5 kN it must carry. A 15.6 kN preload fixes it, and it stays closed to 13.1 kN.", "fail", "CalculiX"),
     ("strap_proof", "14", "struct", "New · Plasticity", "Strap proof test, notch plasticity", "A 15 kN proof test strains the hole edge to 0.58 %, inside a 1 % limit, and leaves −77 MPa of compression behind, which helps fatigue.", "pass", "CadQuery · Gmsh · CalculiX"),
     ("strut", "13", "struct", "New · Stability", "Strut buckling, with an imperfect strut", "The longest acceptable strut is about 587 mm. The bow costs 4 to 7 % of the buckling load, so a buckling check alone would overstate the capacity.", "pass", "CalculiX"),
@@ -599,8 +599,8 @@ pages = [home_page(facts)] + [study_page(c[0]) for c in GALLERY] + [
               "grading", {"{{GRADER}}": grader_body, "{{TASK_COUNT_WORD}}": TASK_WORDS[len(gdata)]},
               scripts=f"<script>\n{grader_js}\n</script>"),
     text_page("in-progress.html", "progress.html", "In progress", "Studies in progress",
-              "A flexible flag behind a cylinder (fluid-structure interaction), with its coupled cases running, and the "
-              "diagnosis of the traction motor's missed blind test.", "in-progress", {}),
+              "A flexible flag behind a cylinder (fluid-structure interaction), flow over a backward-facing step against "
+              "measured data, and a bracket arm under random vibration.", "in-progress", {}),
     reqs_page(),
 ]
 
