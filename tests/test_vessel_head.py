@@ -55,3 +55,17 @@ def test_discontinuity_theory_thin_limit():
     assert th["hoop_membrane_junction_MPa"] == pytest.approx(0.75 * 3.5 * 508 / 16, rel=0.03)
     assert th["x_bending_max_mm"] == pytest.approx(math.pi / 4 / th["beta_per_mm"])
     assert W.discontinuity_theory(P | {"head_thickness_mm": 8.0}) == {}
+
+
+def test_peak_locates_the_maximum_between_lines():
+    from studies.vessel_head import peak
+
+    s = np.arange(0.0, 20.0, 2.0)
+    v = 10 - (s - 7.3) ** 2  # a parabola: exact
+    val, x = peak(s, v)
+    assert val == pytest.approx(10.0) and x == pytest.approx(7.3)
+    # the same peak sampled on a finer set of lines gives the same answer (smooth in the line spacing)
+    s2 = np.arange(0.0, 20.0, 0.5)
+    assert peak(s2, 10 - (s2 - 7.3) ** 2)[0] == pytest.approx(val)
+    # a maximum at an end is the end sample
+    assert peak(s, -s) == (0.0, 0.0)

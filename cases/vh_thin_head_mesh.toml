@@ -14,6 +14,21 @@
 #      head's membrane plus the local hoop change). REQ-HJ2 and REQ-HJ3 verified PASS.
 #   P4 The linearised values converge although the step's corner is singular: GCI under 3 % on all three metrics.
 #   P5 Under 2 min.
+#
+# Results (run 20261122-201317_vh_thin_head_mesh): verification FAIL on two run-level GCI classifications.
+#   P1 HELD: 18/18 point checks (equilibrium 6.3e-8, far head 5.7e-5 of the thick sphere).
+#   P2 HELD: Pm head 110.2345 MPa on every mesh: REQ-HJ1 verified PASS, margin 20 %.
+#   P3 HELD in value: the head governs the junction. P + Q 173.28 / 172.82 / 171.80 MPa (head side, 2-4 mm from the
+#      junction), PL 127.018 / 127.018 / 127.023 MPa (head, 12-14 mm out); shell side P + Q 126.3-126.8, its bending
+#      largest at the step itself (61.6 / 60.8 / 60.4 MPa). REQ-HJ2 and REQ-HJ3 PASS (margins 39 % and 58 %), but
+#   P4 MISSED: the GCI reads both as divergent (R 6.4 and 2.2), no estimate, so both PASS unverified. Cause, from the
+#      line positions: the requirement metric is a maximum over lines spaced one element length apart (4 / 2 / 1 mm),
+#      so each mesh samples the peak at different points (P + Q at s = 4, 2 and 3 mm). The meshes are nested, so this
+#      is not regeneration noise; it is the sampled-maximum trap (build-model/references/tool-notes.md, contact: a
+#      sampled maximum is not smooth in h). Fix in r1: locate the peak between lines with a parabola
+#      (studies/vessel_head.py peak). The line at the step plane ends at the re-entrant corner (singular); its P + Q
+#      rises 153 / 157 / 159 MPa with refinement but stays below the peak a few mm away.
+#   P5 HELD: about 1 min.
 
 [case]
 name = "vh_thin_head_mesh"

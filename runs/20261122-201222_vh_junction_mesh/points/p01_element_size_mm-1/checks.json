@@ -1,0 +1,87 @@
+{
+  "label": "p01_element_size_mm-1",
+  "status": "PASS",
+  "checks": [
+    {
+      "id": "equilibrium_z",
+      "description": "|axial reaction on the mid-length plane / 2-degree segment - p pi Ri^2| / p pi Ri^2 (exact: the pressure on the head's projected area)",
+      "kind": "numerical",
+      "value": 6.253100185375747e-08,
+      "tolerance": 1e-05,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "lame_shell_membrane",
+      "description": "|far-shell linearised membrane (von Mises) - the same linearisation of Lame| / Lame (exact)",
+      "kind": "numerical",
+      "value": 0.0005654917123715841,
+      "tolerance": 0.005,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "lame_head_membrane",
+      "description": "|far-head linearised membrane (von Mises) - the thick sphere's| / exact",
+      "kind": "numerical",
+      "value": 5.931210306098836e-06,
+      "tolerance": 0.005,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "lame_shell_hoop_range",
+      "description": "|far-shell hoop stress, bore minus outside, FE - Lame| / Lame (the through-wall gradient, not only the mean)",
+      "kind": "numerical",
+      "value": 0.00017669971044234875,
+      "tolerance": 0.005,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "small_displacement",
+      "description": "max displacement / shell thickness (linear geometry)",
+      "kind": "validity",
+      "value": 0.016304991474776646,
+      "tolerance": 0.1,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "far_lines_far",
+      "description": "junction region / distance of the far lines (the far shell line at L / 2; the head line at the stated angle): far lines outside the bending zone",
+      "kind": "validity",
+      "value": 0.5409325281400629,
+      "tolerance": 1.0,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "theory_bending_max",
+      "description": "|largest axial bending in the shell - thin-shell theory 6 M_max / t^2| / theory (model form: shell theory error of order t / R)",
+      "kind": "numerical",
+      "value": 0.015354322374269605,
+      "tolerance": 0.05,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "theory_bending_location",
+      "description": "|x of the largest bending - pi / (4 beta)| / (pi / (4 beta)) (the lines are one element length apart)",
+      "kind": "numerical",
+      "value": 0.01659263716398435,
+      "tolerance": 0.1,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "theory_hoop_junction",
+      "description": "|hoop membrane at the junction - (p Ri / t - E delta / (2 Rm))| / theory",
+      "kind": "numerical",
+      "value": 0.0003983572506577035,
+      "tolerance": 0.05,
+      "comparison": "<=",
+      "status": "PASS"
+    }
+  ]
+}

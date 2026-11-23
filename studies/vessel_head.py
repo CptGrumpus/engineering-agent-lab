@@ -170,13 +170,14 @@ class VesselHeadStudy(Study):
 
     def compute_metrics(self, series, params, case, outputs=None):
         sh, hd = outputs["shell_lines"], outputs["head_lines"]
-        kb = int(np.argmax([abs(ln["bending"][1]) for ln in sh]))
+        xs, ss = [ln["x_mm"] for ln in sh], [ln["s_mm"] for ln in hd]
+        b_max, x_b = peak(xs, [abs(ln["bending"][1]) for ln in sh])
         out = {"pm_shell_MPa": outputs["far_shell"]["membrane_vm"], "pm_head_MPa": outputs["far_head"]["membrane_vm"],
-               "pl_shell_junction_MPa": max(ln["membrane_vm"] for ln in sh),
-               "pl_head_junction_MPa": max(ln["membrane_vm"] for ln in hd),
-               "pq_shell_junction_MPa": max(ln["membrane_plus_bending_vm"] for ln in sh),
-               "pq_head_junction_MPa": max(ln["membrane_plus_bending_vm"] for ln in hd),
-               "bending_shell_max_MPa": abs(sh[kb]["bending"][1]), "x_bending_shell_max_mm": sh[kb]["x_mm"],
+               "pl_shell_junction_MPa": peak(xs, [ln["membrane_vm"] for ln in sh])[0],
+               "pl_head_junction_MPa": peak(ss, [ln["membrane_vm"] for ln in hd])[0],
+               "pq_shell_junction_MPa": peak(xs, [ln["membrane_plus_bending_vm"] for ln in sh])[0],
+               "pq_head_junction_MPa": peak(ss, [ln["membrane_plus_bending_vm"] for ln in hd])[0],
+               "bending_shell_max_MPa": b_max, "x_bending_shell_max_mm": x_b,
                "hoop_membrane_junction_MPa": sh[0]["membrane"][2]}
         out["pl_junction_MPa"] = max(out["pl_shell_junction_MPa"], out["pl_head_junction_MPa"])
         out["pq_junction_MPa"] = max(out["pq_shell_junction_MPa"], out["pq_head_junction_MPa"])
@@ -245,6 +246,22 @@ class VesselHeadStudy(Study):
             checks.append(check(f"discretization_{metric}", f"relative discretization uncertainty of {metric}, "
                                 f"{describe(u)}", u["uncertainty"], tol["gci_max"]) | {"metric": metric})
         return checks, detail
+
+
+def peak(s, v):
+    """Largest value of v over the lines at positions s, located between lines by a parabola through the largest
+    sample and its two neighbours (a sampled maximum is not smooth in the mesh size: the line spacing halves with
+    each refinement, so each mesh samples the peak at different points). At either end, the end sample itself.
+    Returns (value, position)."""
+    s, v = np.asarray(s, float), np.asarray(v, float)
+    k = int(np.argmax(v))
+    if k == 0 or k == len(v) - 1:
+        return float(v[k]), float(s[k])
+    a, b, c = np.polyfit(s[k - 1:k + 2], v[k - 1:k + 2], 2)
+    if a >= 0:
+        return float(v[k]), float(s[k])
+    x = -b / (2 * a)
+    return float(np.polyval([a, b, c], x)), float(x)
 
 
 def head_figure(path, out, point):

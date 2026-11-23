@@ -1,0 +1,95 @@
+# Study 18, the head-to-shell junction, case 1: equal thicknesses, mesh study, against thin-shell discontinuity theory
+# (closes the BACKLOG item "the head-to-shell junction against shell discontinuity theory").
+#
+# Decision this informs (with cases 2 and 3): how thin can the hemispherical head on the study-18 shell be? A thin
+# sphere carries half the hoop membrane of a cylinder of the same radius, so by the membrane rule the head needs about
+# p Ri / (2 S) = 6.3 mm against the shell's 16; the question is whether the junction then governs. This case verifies
+# the model where an independent solution exists: equal thicknesses, where the membrane expansions differ by delta
+# and an edge shear Q0 = delta beta^3 D (p / (8 beta) in the thin limit) closes the gap with no edge moment.
+#
+# Model (models/fea/vessel_head_axi.py): axisymmetric CAX8, structured, generated in Python; lines through the wall
+# on element boundaries. Theory (discontinuity_theory): largest axial bending in the shell 16.26 MPa at x = 55.1 mm,
+# junction hoop membrane 81.60 MPa (Lame mean 109.4 minus 27.8).
+#
+# Smoke test (scratch, dr 2 mm, 2026-11-22 20:10, this case's coarsest mesh): 9/9 point checks. The axial reaction
+# matched p pi Ri^2 to 6e-8 only when read as a 2-degree segment (CalculiX expands CAX elements into a 2-degree
+# wedge; now a constant in the study). Bending 16.01 MPa (-1.5 % on theory) at x 56 mm; hoop at the junction 81.57
+# (-0.04 %); far shell and head within 6e-4 and 1e-5 of Lame. PL 97.8 MPa (shell side), P + Q 98.8; Pm head 55.5.
+# (First attempt: CalculiX rejected a node card, r = 3.07e-14 written as a 22-character repr; the axis is now exactly
+# 0 and every number is written with 12 significant digits.)
+#
+# Predictions, written BEFORE the evidence run:
+#   P1 Every point check passes on every mesh, the three theory checks included.
+#   P2 The bending peak within 1-2 % of theory on every mesh (shear deformation and the t / R terms make the FE a
+#      little lower), its location within one element length; the junction hoop within 0.1 %.
+#   P3 PL 97-99 MPa, P + Q 98-100 MPa, Pm head 55.5 MPa, each with a GCI under 0.5 % (no singular corner here).
+#      All three requirements verified PASS with large margins: at equal thickness the junction is benign.
+#   P4 Under 2 min for the three meshes.
+
+[case]
+name = "vh_junction_mesh"
+model = "ccx_vessel_head_axi"
+description = "Cylindrical shell (Ri 500 mm, t 16 mm) closed by a hemispherical head of the same thickness, 3.5 MPa; axisymmetric CAX8 in CalculiX; mesh 2 / 1 / 0.5 mm through the wall (aspect 2); stresses linearised through the wall near the junction, against thin-shell discontinuity theory."
+assumptions = [
+  "Linear elastic steel, E 200 GPa, nu 0.3; small displacement (checked).",
+  "Axisymmetric: the study-18 shell (Ri 500 mm, t 16 mm, 3.5 MPa) closed by a hemispherical head with the same bore; the shell's far end is the vessel's mid-length plane (symmetry, u_z = 0), 1000 mm (11 sqrt(R t)) from the junction. No nozzle (the nozzle sits mid-shell, far from the head).",
+  "With a head thinner than the shell the outside steps down at the junction with no taper and no weld detail (a fabricated joint would taper the thicker plate; the step makes a re-entrant corner whose peak is not assessed here).",
+  "Classification as at the nozzle: membrane on the lines within the junction region (3 sqrt(R t) = 270 mm of the junction, along the wall, on both sides) is local primary (PL), membrane plus bending there primary plus secondary (P + Q); the far head line (60 deg from the junction) is general primary (Pm). S_PS = 3 S.",
+  "Allowable S = 138 MPa: synthetic, as in the rest of study 18; not from ASME Section II.",
+]
+limitations = [
+  "Elastic analysis only; pressure only (no weight, no supports, no thermal gradients, no fatigue).",
+  "Thin-shell discontinuity theory is an independent check only with equal thicknesses; with a thinner head the FE is checked by its exact far fields, equilibrium and the mesh study.",
+]
+
+[parameters]
+shell_inner_radius_mm = 500.0
+shell_thickness_mm = 16.0
+head_thickness_mm = 16.0
+shell_length_mm = 1000.0
+pressure_MPa = 3.5
+youngs_modulus_MPa = 200000.0
+poisson_ratio = 0.3
+element_size_mm = 2.0
+element_aspect = 2.0
+allowable_stress_MPa = 138.0
+
+[sweep]
+parameter = "element_size_mm"
+values = [2.0, 1.0, 0.5]
+
+[numerics]
+solver_timeout_s = 3600
+far_head_deg = 60.0
+
+[verification]
+equilibrium_rel_tol = 1e-5     # exact resultant; the .dat prints 7 digits
+lame_rel_tol = 0.005           # exact far fields (the far lines sit 7-8 decay lengths from the junction)
+theory_rel_tol = 0.05          # thin-shell theory's own error is of order t / R (about 3 %)
+theory_location_rel_tol = 0.1  # the lines are one element length apart
+mesh_noise_rel = 1e-5
+gci_max = 0.03
+
+[[requirements]]
+id = "REQ-HJ1"
+text = "General primary membrane stress in the head away from the junction shall not exceed S (138 MPa)."
+metric = "pm_head_MPa"
+operator = "<="
+limit = 138.0
+units = "MPa"
+
+[[requirements]]
+id = "REQ-HJ2"
+text = "Local primary membrane stress in the head-to-shell junction region (shell and head lines) shall not exceed 1.5 S (207 MPa)."
+metric = "pl_junction_MPa"
+operator = "<="
+limit = 207.0
+units = "MPa"
+
+[[requirements]]
+id = "REQ-HJ3"
+text = "Primary plus secondary stress in the head-to-shell junction region shall not exceed S_PS = 3 S (414 MPa)."
+metric = "pq_junction_MPa"
+operator = "<="
+limit = 414.0
+units = "MPa"

@@ -13,6 +13,20 @@
 #      to about 150-170 MPa at 6.5 mm: REQ-HJ2 passes throughout. So the general membrane in the head governs, not the
 #      junction, and the head can be about 6.5 mm by elastic analysis (with the step, no taper).
 #   P5 About 3 min.
+#
+# Results (run 20261122-201358_vh_head_thickness): verification PASS (39/39 point checks).
+#   P1 HELD.  P2 HELD: 16 mm and 8 mm repeat cases 1 and 2's finest meshes.
+#   P3 HELD: Pm head 55.5 / 73.8 / 88.4 / 110.2 / 125.9 / 135.5 MPa at 16 / 12 / 10 / 8 / 7 / 6.5 mm (the exact
+#      sphere values); REQ-HJ1 passes throughout, by 1.8 % at 6.5 mm.
+#   P4 PARTLY: PL (head side from 12 mm down) 97.8 / 96.8 / 104.1 / 127.0 / 143.0 / 152.6 MPa: 152.6 at 6.5 mm, inside
+#      the predicted 150-170. P + Q 98.8 / 103.5 / 131.9 / 171.8 / 196.6 / 210.4 MPa: 210 at 6.5 mm, BELOW the
+#      predicted 250-330 (the shell takes more of the eccentric moment than the edge-stiffness estimate gave).
+#      REQ-HJ2 and REQ-HJ3 pass throughout (margins 26 % and 49 % at 6.5 mm). From 10 mm down the head side governs.
+#   P5 HELD: 4 min.
+# Design answer: by elastic analysis the hemispherical head can be about 6.5 mm (the membrane rule gives 6.34 mm);
+# the general membrane in the head governs, not the junction, even with a plain step and no taper. These are single
+# meshes at 0.5 mm; case 2 (8 mm) gives their mesh behaviour, and r1 relocates the peaks between lines. Pending human
+# review.
 
 [case]
 name = "vh_head_thickness"

@@ -1,0 +1,83 @@
+# Study 18, the head-to-shell junction, case 3: head thickness sweep, the decision.
+#
+# Why: how thin can the head be? The membrane rule gives p Ri / (2 S) = 6.34 mm; the exact thick-sphere membrane is
+# 55.5 / 73.8 / 88.4 / 110.2 / 125.9 / 135.5 MPa at 16 / 12 / 10 / 8 / 7 / 6.5 mm, so REQ-HJ1 alone allows down to
+# about 6.4 mm. Does the junction (PL, P + Q) take over before that? Mesh dr 0.5 mm (case 1's and case 2's finest).
+#
+# Predictions, written BEFORE the evidence run:
+#   P1 Every point check passes at every thickness (the theory checks at 16 mm only).
+#   P2 16 mm repeats case 1's finest mesh; 8 mm repeats case 2's finest.
+#   P3 REQ-HJ1 passes at every thickness in the sweep, with 2 % margin at 6.5 mm (135.5 MPa).
+#   P4 P + Q rises as the head thins (the eccentricity grows and the head's bending stiffness falls as t_h^3), from
+#      about 99 MPa at 16 mm to 250-330 MPa at 6.5 mm: REQ-HJ3 passes throughout. PL rises with the head's membrane,
+#      to about 150-170 MPa at 6.5 mm: REQ-HJ2 passes throughout. So the general membrane in the head governs, not the
+#      junction, and the head can be about 6.5 mm by elastic analysis (with the step, no taper).
+#   P5 About 3 min.
+
+[case]
+name = "vh_head_thickness"
+model = "ccx_vessel_head_axi"
+description = "Cylindrical shell (Ri 500 mm, t 16 mm) closed by a hemispherical head 16 / 12 / 10 / 8 / 7 / 6.5 mm thick (flush bore, a step outside), 3.5 MPa; axisymmetric CAX8 in CalculiX, mesh 0.5 mm through the wall; stresses linearised through the wall near the junction."
+assumptions = [
+  "Linear elastic steel, E 200 GPa, nu 0.3; small displacement (checked).",
+  "Axisymmetric: the study-18 shell (Ri 500 mm, t 16 mm, 3.5 MPa) closed by a hemispherical head with the same bore; the shell's far end is the vessel's mid-length plane (symmetry, u_z = 0), 1000 mm (11 sqrt(R t)) from the junction. No nozzle (the nozzle sits mid-shell, far from the head).",
+  "With a head thinner than the shell the outside steps down at the junction with no taper and no weld detail (a fabricated joint would taper the thicker plate; the step makes a re-entrant corner whose peak is not assessed here).",
+  "Classification as at the nozzle: membrane on the lines within the junction region (3 sqrt(R t) = 270 mm of the junction, along the wall, on both sides) is local primary (PL), membrane plus bending there primary plus secondary (P + Q); the far head line (60 deg from the junction) is general primary (Pm). S_PS = 3 S.",
+  "Allowable S = 138 MPa: synthetic, as in the rest of study 18; not from ASME Section II.",
+]
+limitations = [
+  "Elastic analysis only; pressure only (no weight, no supports, no thermal gradients, no fatigue).",
+  "Thin-shell discontinuity theory is an independent check only with equal thicknesses; with a thinner head the FE is checked by its exact far fields, equilibrium and the mesh study.",
+]
+
+[parameters]
+shell_inner_radius_mm = 500.0
+shell_thickness_mm = 16.0
+head_thickness_mm = 8.0
+shell_length_mm = 1000.0
+pressure_MPa = 3.5
+youngs_modulus_MPa = 200000.0
+poisson_ratio = 0.3
+element_size_mm = 0.5
+element_aspect = 2.0
+allowable_stress_MPa = 138.0
+
+[sweep]
+parameter = "head_thickness_mm"
+values = [16.0, 12.0, 10.0, 8.0, 7.0, 6.5]
+
+[numerics]
+solver_timeout_s = 3600
+far_head_deg = 60.0
+
+[verification]
+equilibrium_rel_tol = 1e-5     # exact resultant; the .dat prints 7 digits
+lame_rel_tol = 0.005           # exact far fields (the far lines sit 7-8 decay lengths from the junction)
+theory_rel_tol = 0.05          # thin-shell theory's own error is of order t / R (about 3 %)
+theory_location_rel_tol = 0.1  # the lines are one element length apart
+mesh_noise_rel = 1e-5
+gci_max = 0.03
+
+[[requirements]]
+id = "REQ-HJ1"
+text = "General primary membrane stress in the head away from the junction shall not exceed S (138 MPa)."
+metric = "pm_head_MPa"
+operator = "<="
+limit = 138.0
+units = "MPa"
+
+[[requirements]]
+id = "REQ-HJ2"
+text = "Local primary membrane stress in the head-to-shell junction region (shell and head lines) shall not exceed 1.5 S (207 MPa)."
+metric = "pl_junction_MPa"
+operator = "<="
+limit = 207.0
+units = "MPa"
+
+[[requirements]]
+id = "REQ-HJ3"
+text = "Primary plus secondary stress in the head-to-shell junction region shall not exceed S_PS = 3 S (414 MPa)."
+metric = "pq_junction_MPa"
+operator = "<="
+limit = 414.0
+units = "MPa"
