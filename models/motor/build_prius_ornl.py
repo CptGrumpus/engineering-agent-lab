@@ -235,9 +235,17 @@ def _get(m, path):
 DESIGN_MAGNET = {"width": 19.24e-3, "thickness": 5.31e-3,
                  "source": "ORNL/TM-2004/120 Table 5.3: magnet width 38.48 mm for the pair (19.24 each), thickness 5.31 mm"}
 PLACEMENTS = ("outer", "centre", "inner")
+# Study 7 revision 5 (client data pack, validation/motor_ornl/CLIENT_DATA.md): the magnet as measured on the hardware
+CLIENT_MAGNET = {"width": 18.9e-3, "thickness": 6.5e-3, "length": 83.1e-3,
+                 "source": "ORNL/TM-2010/253 Table 2.7 (2004 Prius): one magnet 83.1 x 18.9 x 6.5 mm, 10.2 cm3, 77 g"}
+CLIENT_MAGNET_MATERIAL = [
+    ("Brm20", 1.255, "1.255 T", "ORNL/TM-2010/253 Fig. 2.72, 2004 Prius motor magnet, hysteresisgraph, 12.55 kG at 20 C"),
+    ("alpha_Br", -0.0010, "-0.10 %/C", "ORNL/TM-2010/253 Fig. 2.72: 12.55 kG at 20 C to about 10.9 kG at 150 C"),
+    ("mur_lin", 1.129, "1.129", "ORNL/TM-2004/137 Fig. 14, slope of the measured line (unchanged)"),
+]
 
 
-def design_magnet(m, placement: str) -> list:
+def design_magnet(m, placement: str, spec: dict = DESIGN_MAGNET, tag: str = "study 7 revision 4") -> list:
     """Study 7 revision 4: the magnet at its design size inside the drawn pocket. Sets HoleM50's magnet width (W4) to
     the design width, converts the hole to HoleUD, and replaces each magnet rectangle (pocket thickness H3) by a
     design-thickness magnet plus air strip(s): against the outer (air-gap side) face, centred, or against the inner
@@ -249,11 +257,10 @@ def design_magnet(m, placement: str) -> list:
     if placement not in PLACEMENTS:
         raise ValueError(f"placement must be one of {PLACEMENTS}")
     hole = m.rotor.hole[0]
-    rows = [("rotor.hole.0.W4", hole.W4, DESIGN_MAGNET["width"], f"{DESIGN_MAGNET['width'] * 1e3:.2f} mm: "
-             f"{DESIGN_MAGNET['source']}")]
-    hole.W4 = DESIGN_MAGNET["width"]
+    rows = [("rotor.hole.0.W4", hole.W4, spec["width"], f"{spec['width'] * 1e3:.2f} mm: {spec['source']}")]
+    hole.W4 = spec["width"]
     hole.check()
-    H, t = hole.H3, DESIGN_MAGNET["thickness"]
+    H, t = hole.H3, spec["thickness"]
     if not 0 < t < H:
         raise ValueError(f"design magnet thickness {t} must be inside the pocket thickness {H}")
     a = {"outer": 0.0, "centre": (H - t) / 2, "inner": H - t}[placement]
@@ -288,15 +295,18 @@ def design_magnet(m, placement: str) -> list:
     ud.surf_list = new
     m.rotor.hole[0] = ud
     rows.append(("rotor.hole.0 (HoleUD)", H, t, f"{t * 1e3:.2f} mm magnet in the {H * 1e3:.2f} mm pocket, placed "
-                 f"{placement}; air strip {(H - t) * 1e3:.2f} mm: {DESIGN_MAGNET['source']} (study 7 revision 4)"))
+                 f"{placement}; air strip {(H - t) * 1e3:.2f} mm: {spec['source']} ({tag})"))
     return rows
 
 
-def build(steel=DEFAULT_STEEL, out=None, br=None, magnet=None):
+def build(steel=DEFAULT_STEEL, out=None, br=None, magnet=None, client_magnet=None, airgap_mm=None):
+    if magnet and client_magnet:
+        raise ValueError("--design-magnet and --client-magnet are alternatives")
     if steel != "M400-50A" and steel not in LAMINATIONS:
         raise ValueError(f"unknown lamination grade {steel}; known: M400-50A, {', '.join(LAMINATIONS)}")
     stem = "Toyota_Prius_ORNL" + ("" if steel == DEFAULT_STEEL else f"_{steel}") + (
-        "" if br is None else f"_Br{br:.4f}".replace(".", "p")) + ("" if magnet is None else f"_mag531{magnet}")
+        "" if br is None else f"_Br{br:.4f}".replace(".", "p")) + ("" if magnet is None else f"_mag531{magnet}") + (
+        "" if client_magnet is None else f"_rev5{client_magnet}") + ("" if airgap_mm is None else f"_gap{airgap_mm:.3f}".replace(".", "p"))
     out = Path(out) if out else (OUT if stem == "Toyota_Prius_ORNL" else HERE / f"{stem}.json")
     from pyleecan.definitions import DATA_DIR
     from pyleecan.Functions.load import load
@@ -313,8 +323,16 @@ def build(steel=DEFAULT_STEEL, out=None, br=None, magnet=None):
         old = getattr(obj, attr)
         setattr(obj, attr, value)
         rows.append((f"{path}.{attr}", old, value, f"{label}: {note}"))
+    if airgap_mm is not None:
+        # the bore stays the drawing's; the rotor OD moves, and the pocket (H0, H1 measured from the OD) moves with it
+        old = m.rotor.Rext
+        m.rotor.Rext = m.stator.Rint - airgap_mm * 1e-3
+        rows.append(("rotor.Rext", old, m.rotor.Rext, f"air gap {airgap_mm:.3f} mm (ORNL/TM-2010/253 Table 2.7 states "
+                     "0.730 mm; the drawing's bore and OD give 0.775 mm)"))
     mags = [mag for hole in m.rotor.hole for mag in (hole.magnet_0, hole.magnet_1)]
-    changes = MAGNET_CHANGES if br is None else [
+    if client_magnet is not None and br is not None:
+        raise ValueError("--br (calibration) is not combined with the client data")
+    changes = CLIENT_MAGNET_MATERIAL if client_magnet is not None else MAGNET_CHANGES if br is None else [
         (a, br, f"{br:.4f} T", "POST-TEST CALIBRATION (study 7, hypothesis A): remanence scaled so the open-circuit "
          "back-EMF matches ORNL's routine back-EMF test; not a design input") if a == "Brm20" else (a, v, l, n)
         for a, v, l, n in MAGNET_CHANGES]
@@ -327,6 +345,11 @@ def build(steel=DEFAULT_STEEL, out=None, br=None, magnet=None):
         rows.append((f"magnets.mat_type.mag.{attr}", old.pop(), value, f"{label}: {note}"))
     if magnet is not None:
         rows += design_magnet(m, magnet)
+    if client_magnet is not None:
+        rows += design_magnet(m, client_magnet, CLIENT_MAGNET, "study 7 revision 5, client data")
+        for hole in m.rotor.hole:                     # 83.1 mm: recorded; FEMM's 2D solve uses the stack length
+            for mag in hole.get_magnet_dict().values():
+                mag.Lmag = CLIENT_MAGNET["length"]
     rows += _set_lamination(m, steel)
     m.name = stem
     m.desc = (f"2004 Toyota Prius: Pyleecan's Toyota_Prius.json with the stator, rotor and slot dimensions of {SOURCE}, "
@@ -353,8 +376,12 @@ def main():
     ap.add_argument("--design-magnet", choices=PLACEMENTS, help="study 7 revision 4: the design magnet (19.24 x 5.31 mm, "
                     "TM-2004/120) in the drawn pocket, placed against its outer face, centred or against its inner face; "
                     "writes Toyota_Prius_ORNL_mag531<placement>.json")
+    ap.add_argument("--client-magnet", choices=PLACEMENTS, help="study 7 revision 5: the measured magnet (18.9 x 6.5 mm, "
+                    "ORNL/TM-2010/253) and its measured material (1.255 T at 20 C, -0.10 %%/C) in the drawn pocket; writes "
+                    "Toyota_Prius_ORNL_rev5<placement>[_gap<mm>].json")
+    ap.add_argument("--airgap-mm", type=float, help="air gap (mm): the rotor OD moves, the bore stays")
     args = ap.parse_args()
-    m, rows, out = build(args.steel, args.out, args.br, args.design_magnet)
+    m, rows, out = build(args.steel, args.out, args.br, args.design_magnet, args.client_magnet, args.airgap_mm)
     print("| Parameter | Pyleecan file | Ours | Difference | Source |")
     print("|---|---|---|---|---|")
     for name, old, new, note in rows:

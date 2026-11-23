@@ -318,3 +318,21 @@ Fig. 2.72 measures the 2004 Prius magnet at 1.255 T (20 C), about -0.10 %/C: our
 magnet at about 125 C. With every client input now measured and matching, the blind geometry's +24 % is a model-form
 or manufacturing gap. Next: revision 5 (the client-data model) with predictions, then the candidate causes one at a time
 (STATUS.md).
+
+## Revision 5 (2026-11-23 14:16, before any computation): the client-data model
+*Why:* the client data pack (CLIENT_DATA.md) measures every input a client supplies: magnet 83.1 x 18.9 x 6.5 mm,
+remanence 1.255 T at 20 C (-0.10 %/C), winding, stack, stator geometry and copper (masses agree), the test at 25 C.
+*Model:* revision 4's HoleUD construction with the measured magnet, centred in the drawn 6.80 mm pocket (0.15 mm of
+polymer each side), Br 1.255 T at 20 C, alpha -0.10 %/C, magnet at 25 C; air gap 0.775 mm (drawing) and 0.730 mm (BOM).
+Machines: build_prius_ornl.py --client-magnet centre [--airgap-mm 0.73]; case cases/motor_prius_rev5_oc.toml.
+*Hand estimate (made before the run):* on a fixed geometry EMF = a Br - b, the bridges saturated so b does not scale
+with Br. Revision 4's two remanences (82.37 V at 1.243 T, 72.58 V at 1.12 T) give a = 79.6 V/T, b = 16.6 V. With the
+same b, the blind geometry has a = 102.5 V/T. Scaling a by magnet width x (t/mu_r) / (t/mu_r + strip + G) between the
+blind and revision-4 geometries fixes an effective series gap G = 1.07 mm. Revision 5 (t 6.5 mm, strip 0.30 mm):
+a = 97.5 V/T, Br(25 C) = 1.2487 T, EMF = 105.2 V; at the 0.730 mm gap (G about 0.05 mm smaller) 106.1 V.
+*Predictions:*
+- P1 Gap 0.775 mm: 103-108 V rms line to line per 1000 rpm (+15 to +21 % on ORNL's 89.38).
+- P2 Gap 0.730 mm: 0.5-1.5 % above P1's value.
+- P3 The client data does NOT close the gap: both outside +-5 %. The cause is then model form or manufacturing.
+- P4 Peak at 6000 rpm 980-1060 V; REQ-M1 FAIL (ORNL measured 850 V).
+- P5 Every point check passes; 35-60 min.

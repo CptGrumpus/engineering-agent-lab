@@ -39,7 +39,10 @@ MACHINES = ("models/motor/Toyota_Prius_ORNL.json", "models/motor/Toyota_Prius_OR
             # ... and at the design report's 1.12 T (TM-2004/120 Table 5.4)
             "models/motor/Toyota_Prius_ORNL_Br1p1200_mag531outer.json",
             "models/motor/Toyota_Prius_ORNL_Br1p1200_mag531centre.json",
-            "models/motor/Toyota_Prius_ORNL_Br1p1200_mag531inner.json")
+            "models/motor/Toyota_Prius_ORNL_Br1p1200_mag531inner.json",
+            # study 7 revision 5: the client data pack (validation/motor_ornl/CLIENT_DATA.md)
+            "models/motor/Toyota_Prius_ORNL_rev5centre.json",
+            "models/motor/Toyota_Prius_ORNL_rev5centre_gap0p730.json")
 PARAMS = ("machine", "speed_rpm", "id_A", "iq_A", "mesh_fineness", "steps_per_period", "angle_points",
           "max_speed_rpm", "bus_voltage_V", "rated_torque_Nm")
 NUMERIC = PARAMS[1:]
@@ -93,6 +96,8 @@ class PyleecanFEMM(Backend):
     def solve(self, params, numerics, tolerance_scale=1.0):
         work = Path(tempfile.mkdtemp(prefix="motor_"))
         run_params = {k: params[k] for k in self.runner_params}
+        if "magnet_temperature_C" in params:  # optional: the test's magnet temperature (Br follows the magnet's alpha_Br)
+            run_params["magnet_temperature_C"] = float(params["magnet_temperature_C"])
         if run_params["machine"] in self.machines:  # ours, from the run's inputs (hashed), not Pyleecan's data folder
             run_params["machine"] = str(self.machines[run_params["machine"]])
         (work / "params.json").write_text(json.dumps(run_params), encoding="utf-8")
