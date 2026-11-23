@@ -374,3 +374,20 @@ motor_prius_rev5_torque.toml, predictions before the run).
 VERIFICATION PASS. Ld 1.72 mH (ORNL 1.92: -10.6 %), Lq 5.50 mH (ORNL 5.0: +10 %), Lq / Ld 3.20 (ORNL 2.6). P1-P3 held:
 the client data leaves the inductances where the blind model had them (1.70 / 5.38). FEMM's torque at ORNL's
 locked-rotor currents (case motor_prius_rev5_torque, running) is the next comparison.
+
+### Result of revision 5's torque (run 20261123-151023, ended 17:09)
+VERIFICATION PASS; P1-P5 held. Model MTPA mean torque against ORNL's locked-rotor torque: +3.9 / +5.4 / +12.0 / +9.7 /
++18.5 / +19.3 / +21.8 % at 50-250 A peak. At 50 A the model sits within 4 % (the hand diagnostic predicted the flux
+reproduces it within 1 %, with ORNL's inductances).
+
+### Locked-rotor emulation from the saved torque (predictions 17:10, before computing; no new FEMM run)
+ORNL's test fixes the stator current vector (Ia, -Ia/2, -Ia/2) and turns the locked shaft; it reports the largest
+torque over shaft angle. In the model's sweep the current angle gamma is fixed while the rotor turns, and each point
+saves the instantaneous torque at 24 rotor positions for 8 values of gamma. At locked rotor, turning the shaft by an
+electrical angle theta changes gamma by -theta and moves the rotor against the slots by theta, so the locked-rotor
+curve is T(gamma0 - theta, theta): interpolated in gamma (cubic over the 8 values) and in position (the saved torque
+is periodic). The phase-a axis's offset to the slots is not known exactly, so the maximum is reported over all offsets
+(the band from the least to the largest maximum).
+- P1 At 50 A peak: locked-rotor maximum 80-84 N m (mean 76.9 plus most of half the 15.6 N m ripple): +8 to +14 % on
+  ORNL's 74, so the comparison at low current moves from +4 % to about +10 %.
+- P2 At 250 A: 425-445 N m (ripple 68 N m pp): +26 to +32 %.

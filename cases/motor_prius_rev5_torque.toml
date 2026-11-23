@@ -15,6 +15,21 @@
 #   P4 150 / 200 / 250 A: 256-263 / 335-344 / 403-413 N m (ORNL 221 / 286 / 337: +16 to +23 %): the high-current excess
 #      stays, a separate effect (saturation, the steel's B-H, or the test at high current).
 #   P5 Every point check passes; 2-3.5 h.
+#
+# Results (run 20261123-151023_motor_prius_rev5_torque, 15:10-17:09): VERIFICATION PASS, 35/35 checks.
+#   A peak (rms)     model MTPA mean   ORNL    difference   ripple pp at MTPA
+#   50 (35.4)        76.9 N m          74      +3.9 %        15.6
+#   75 (53.0)        124.4             118     +5.4 %        28.0
+#   100 (70.7)       172.4             154     +12.0 %       34.3
+#   125 (88.4)       218.4             199     +9.7 %        38.5
+#   150 (106.1)      261.8             221     +18.5 %       41.2
+#   200 (141.4)      341.1             286     +19.3 %       46.4
+#   250 (176.8)      410.5             337     +21.8 %       68.2
+#   P1-P5 HELD (every value inside its band; 2 h).
+#   Reading: at low current the model's mean torque is within 4-5 % of ORNL's locked-rotor torque while its back-EMF
+#   is 18 % high; the excess grows with current to 22 %. Caveat: ORNL takes the largest torque over shaft angle, which
+#   includes ripple (15.6 N m peak to peak at 50 A in the model); the like-for-like comparison is the locked-rotor
+#   emulation in CALIBRATION_PLAN.md.
 
 [case]
 name = "motor_prius_rev5_torque"
