@@ -17,6 +17,17 @@
 #      anomalous order); the flux-linkage GCI under 1 %.
 #   P4 Against ORNL's measured 850 V peak at 5998 rpm: within 1 % (our 6000 rpm value scaled by 5998 / 6000).
 #   P5 About 9 min (21 s / 79 s / 438 s as r3).
+#
+# Results (run 20261123-103057_motor_prius_cal_oc_mesh, 10:30-10:51): VERIFICATION PASS, 15/15 point checks and both GCIs.
+#   P1 HELD: 15/15 (winding theory 0.15 %, open-circuit torque 3e-6 of rated).
+#   P2 HELD: peak at 6000 rpm 858.7 / 857.2 / 856.5 V (fineness 2 / 4 / 8; it falls with refinement, where r3's rose);
+#      back-EMF fundamental 89.46 / 89.41 / 89.37 V per 1000 rpm.
+#   P3 HELD, better than allowed for: REQ-M1 FAIL, VERIFIED this time (peak GCI 0.07 %, order 1.2, extrapolated 856.0 V);
+#      flux-linkage GCI 0.43 %. 1.71x the 500 V bus.
+#   P4 HELD: 856.5 x 5998 / 6000 = 856.2 V against ORNL's 850 V peak at 5998 rpm, +0.7 % (consistent with the
+#      calibration; the waveform's peak-to-rms ratio carries over).
+#   P5 MISSED: 21 min (1.4 / 2.0 / 17.3 min; the finest level shared the CPU with three other jobs).
+# Page 20's REQ-M1 row now quotes this (calibrated) value beside the blind 1040 V.
 
 [case]
 name = "motor_prius_cal_oc_mesh"
