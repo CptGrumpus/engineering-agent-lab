@@ -65,6 +65,10 @@ Plan a scenario sweep (`[[sweep.scenarios]]`, each a named set of parameters)
 for the corners of the input ranges. State what is held fixed (e.g. flow rate
 fixed by the pump, so velocity follows the gap).
 
+Tag every input with where a real project would get it (CLAUDE.md, "Use only information a real project would
+have"): spec or datasheet (with its tolerance), a routine test on existing hardware, or teardown / answer-key data,
+which a workflow may not lean on. When unsure, treat it as available and say so.
+
 ### 4. Assumptions, each with a check where possible
 
 Every modelling assumption either gets a validity check or is listed as a

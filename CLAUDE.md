@@ -29,6 +29,21 @@ skill tables, a dead reference link, an oversized SKILL.md); this rule covers th
 List skill changes in the end-of-task summary, one line each. Settings, hooks and agent files still
 need the user's approval first.
 
+## Use only information a real project would have
+
+Studies here rehearse contract engineering work, so build each workflow only on information that would
+realistically exist for that kind of job (user's rule, 2026-11-22):
+
+- **New design (no hardware):** specifications, datasheets with their tolerances, drawings, standards,
+  published correlations.
+- **Existing hardware (benchmarking, retrofit, a field problem):** the tests a client would normally run
+  (for a motor: back-EMF, phase resistance, inductance; for a structure: a modal tap test), as well as the above.
+- **Not:** measurements only a research teardown or a benchmark's answer key provides (e.g. a measured air-gap
+  flux map), used to set inputs or to choose between hypotheses.
+
+Tag each input in the case file with its source class. If unsure whether something would be available, treat it
+as available and say so in the case. Test data held back for validation is still opened only for the comparison.
+
 ## Update the record as results come in
 
 Every finished run updates everything that shows its result, in the same working session, without
