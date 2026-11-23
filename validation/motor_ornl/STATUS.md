@@ -55,7 +55,8 @@ this motor's back-EMF.
    (a) how fully the magnets are magnetised in the assembled rotor (a question for the client's production engineer;
    the literature on in-rotor magnetising of high-coercivity NdFeB gives the typical range); (b) 3D end effects;
    (c) a check of the 2D model against an independent hand magnetic circuit for the same geometry.
-3. **Static inductances** against Ld 1.92 / Lq 5.0 mH on the revision-5 machine.
+3. Done 15:10: **static inductances** on revision 5: Ld 1.72 mH (-10.6 % on ORNL's 1.92), Lq 5.50 mH (+10 % on 5.0),
+   saliency 3.2 against 2.6, as predicted: the client data does not fix them.
 4. **Torque per ampere at low current on the revision-5 machine against ORNL's locked-rotor test**, moved up: it
    tells whether the model's magnet flux is high (torque high too) or the back-EMF comparison carries something
    else (torque close). Then efficiency (with the measured resistance) and the design verdicts; then refresh
