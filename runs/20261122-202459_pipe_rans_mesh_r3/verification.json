@@ -1,0 +1,253 @@
+{
+  "run_id": "20261122-202459_pipe_rans_mesh_r3",
+  "verified_utc": "2026-11-23T04:12:06+00:00",
+  "tolerances": {
+    "mesh_study": true,
+    "force_balance_rel_tol": 0.0001,
+    "bulk_velocity_rel_tol": 1e-06,
+    "iterative_rel_tol": 1e-06,
+    "yplus_max_low_re": 1.0,
+    "yplus_min_wall_function": 30.0,
+    "yplus_max_wall_function": 300.0,
+    "log_law_rel_tol": 0.05,
+    "mesh_noise_rel": 1e-06,
+    "gci_max": 0.01
+  },
+  "points": [
+    {
+      "label": "p00_n160",
+      "status": "PASS",
+      "checks": [
+        {
+          "id": "mesh",
+          "description": "checkMesh reports Mesh OK (1 = failed)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.5,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "force_balance",
+          "description": "|f from the wall shear - f from the applied pressure gradient| / f (periodic flow: dp/dx A = tau_w P exactly)",
+          "kind": "numerical",
+          "value": 1.0319634162317472e-11,
+          "tolerance": 0.0001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "bulk_velocity",
+          "description": "|bulk velocity of the cell field - target| / target",
+          "kind": "numerical",
+          "value": 3.0342395263005533e-13,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "iterative_convergence",
+          "description": "max change of the pressure gradient over the last 10 % of iterations / final",
+          "kind": "numerical",
+          "value": 4.077780586252079e-11,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "wall_uniform",
+          "description": "spread of the wall shear along the wall / mean (fully developed: 0)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.0001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "yplus_range",
+          "description": "first-cell y+ against the wall treatment's range (below 1 = inside)",
+          "kind": "validity",
+          "value": 0.1253542381445,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "log_law",
+          "description": "max |u+ - (ln y+ / 0.41 + 5.2)| / u+ for 50 <= y+ <= 0.15 Re_tau (model form: the log law's constants scatter by a few per cent between experiments)",
+          "kind": "numerical",
+          "value": 0.02539888847093154,
+          "tolerance": 0.05,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p01_n320",
+      "status": "PASS",
+      "checks": [
+        {
+          "id": "mesh",
+          "description": "checkMesh reports Mesh OK (1 = failed)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.5,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "force_balance",
+          "description": "|f from the wall shear - f from the applied pressure gradient| / f (periodic flow: dp/dx A = tau_w P exactly)",
+          "kind": "numerical",
+          "value": 3.1897001102420188e-12,
+          "tolerance": 0.0001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "bulk_velocity",
+          "description": "|bulk velocity of the cell field - target| / target",
+          "kind": "numerical",
+          "value": 3.408384685599231e-13,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "iterative_convergence",
+          "description": "max change of the pressure gradient over the last 10 % of iterations / final",
+          "kind": "numerical",
+          "value": 4.0442989806395675e-11,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "wall_uniform",
+          "description": "spread of the wall shear along the wall / mean (fully developed: 0)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.0001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "yplus_range",
+          "description": "first-cell y+ against the wall treatment's range (below 1 = inside)",
+          "kind": "validity",
+          "value": 0.06293658038085,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "log_law",
+          "description": "max |u+ - (ln y+ / 0.41 + 5.2)| / u+ for 50 <= y+ <= 0.15 Re_tau (model form: the log law's constants scatter by a few per cent between experiments)",
+          "kind": "numerical",
+          "value": 0.02756272507528293,
+          "tolerance": 0.05,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p02_n640",
+      "status": "PASS",
+      "checks": [
+        {
+          "id": "mesh",
+          "description": "checkMesh reports Mesh OK (1 = failed)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.5,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "force_balance",
+          "description": "|f from the wall shear - f from the applied pressure gradient| / f (periodic flow: dp/dx A = tau_w P exactly)",
+          "kind": "numerical",
+          "value": 4.100751687460854e-11,
+          "tolerance": 0.0001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "bulk_velocity",
+          "description": "|bulk velocity of the cell field - target| / target",
+          "kind": "numerical",
+          "value": 1.2356782264077995e-13,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "iterative_convergence",
+          "description": "max change of the pressure gradient over the last 10 % of iterations / final",
+          "kind": "numerical",
+          "value": 1.5894649571297096e-10,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "wall_uniform",
+          "description": "spread of the wall shear along the wall / mean (fully developed: 0)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.0001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "yplus_range",
+          "description": "first-cell y+ against the wall treatment's range (below 1 = inside)",
+          "kind": "validity",
+          "value": 0.03153166286365,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "log_law",
+          "description": "max |u+ - (ln y+ / 0.41 + 5.2)| / u+ for 50 <= y+ <= 0.15 Re_tau (model form: the log law's constants scatter by a few per cent between experiments)",
+          "kind": "numerical",
+          "value": 0.031325276947154736,
+          "tolerance": 0.05,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ]
+    }
+  ],
+  "run_checks": [
+    {
+      "id": "discretization_friction_factor",
+      "description": "relative discretization uncertainty of the friction factor, monotone (R = 0.490): GCI_fine, observed order 1.03, extrapolated 0.0184241",
+      "kind": "numerical",
+      "value": 0.004811390259141612,
+      "tolerance": 0.01,
+      "comparison": "<=",
+      "status": "PASS",
+      "metric": "friction_factor"
+    }
+  ],
+  "run_check_detail": {
+    "friction_factor": {
+      "regime": "monotone",
+      "uncertainty": 0.004811390259141612,
+      "converged_exactly": false,
+      "order": 1.0292587652830012,
+      "extrapolated": 0.018424123524254883,
+      "rel_error_fine": 0.004006830965540358,
+      "rel_error_extrapolated": 0.0038343533510225834,
+      "gci_fine": 0.004811390259141612,
+      "convergence_ratio": 0.48996181904853464,
+      "r21": 2.0,
+      "r32": 2.0
+    }
+  },
+  "status": "PASS"
+}
