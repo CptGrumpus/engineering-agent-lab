@@ -443,8 +443,15 @@ def build_index(cases, runs, full=True):
         if not (r and r["complete"]):
             return torque_status(r)
         nom = next(pt for pt in r["points"] if pt["label"].endswith("nominal"))
-        return (pill("PASS") + f' REQ-TH1 {nom["metrics"]["min_continuous_power_kW"]:.1f} kW · '
-                + pill(r["report"]["verification_status"]) + " verification (slot hotspot check, see the page)")
+        s = (pill("PASS") + f' REQ-TH1 {nom["metrics"]["min_continuous_power_kW"]:.1f} kW · '
+             + pill(r["report"]["verification_status"]) + " verification (slot hotspot check, see the page)")
+        c = runs.get("motor_prius_thermal_br")
+        if c and c["complete"]:
+            cn = next(pt for pt in c["points"] if pt["label"].endswith("nominal"))
+            low = min(c["points"], key=lambda pt: pt["metrics"]["min_continuous_power_kW"])
+            s += (f'<br>Calibrated (A): {pill("PASS")} {cn["metrics"]["min_continuous_power_kW"]:.1f} kW nominal · '
+                  f'{pill("FAIL")} {low["metrics"]["min_continuous_power_kW"]:.1f} kW at the loosest housing fit')
+        return s
 
     def eff_status(runs):
         r = runs.get("motor_prius_efficiency_r1") or runs.get("motor_prius_efficiency")
@@ -489,7 +496,8 @@ def build_index(cases, runs, full=True):
          "efficiency +5.2 points (see the validation table above)", ""],
         ["Post-test calibration (after the blind comparison)", "Two hypotheses fit the back-EMF; ORNL's static "
          "inductances choose A (magnet remanence 1.036 T); efficiency then scored once, out of sample",
-         pill("FAIL") + " efficiency 4.5 points high (limit 2); REQ-M5 48.0 / 44.5 kW (cold / hot) against 50",
+         pill("FAIL") + " efficiency 4.5 points high (limit 2); REQ-M5 48.0 / 44.5 kW (cold / hot) against 50; "
+         "continuous rating 28.1 kW (30.2 blind), failing at the loosest housing fit",
          '<a href="#calibration">below</a>'],
     ]
 
@@ -604,6 +612,7 @@ inputs, hashes and tool versions with every run.</li>
 <li><time>22:15</time><span>Back-EMF calibration: A needs remanence 1.036 T (from 1.243), B the turns × 0.807. A first chosen on the locked-rotor torque (8.7 % against 10.7 % rms error).</span></li>
 <li><time>22:30</time><span>Re-decided on a test a client would actually have: ORNL's static inductances (Ld 1.92, Lq 5 mH) sit near A (1.70, 5.38) and far from B (1.11, 3.50). A selected; the calibrated torque is still 12-14 % high at 150-250 A.</span></li>
 <li><time>03:30</time><span>(Next day.) Out of sample, with A's dq tables: efficiency 4.5 points high at the median over ORNL's 393 points (blind 5.2): still far outside the 2-point limit, the rest being losses the model leaves out. REQ-M5 flips to a fail: 48.0 kW cold, 44.5 kW hot at 6000 rpm, because weaker magnets give less torque per ampere in field weakening.</span></li>
+<li><time>07:10</time><span>Continuous rating recomputed on the calibrated machine: 28.1 kW at 1250 rpm (30.2 blind; same current, 7 % less torque). REQ-TH1 still passes nominally but fails at the loosest stator-to-housing fit (24.3 kW). My prediction that the high-speed torque would rise had the direction wrong.</span></li>
 </ol>
 
 {calibration_section()}
@@ -1307,33 +1316,51 @@ geometry: 59.6 mΩ per phase at 20 °C, 78.4 mΩ at 100 °C.</li>
     return page("efficiency.html", "Prius Efficiency Map", body, "Study 7: motor-only efficiency map of the Prius motor.")
 
 
-THERMAL_CASES = ["motor_prius_thermal", "motor_prius_thermal_r1"]
+THERMAL_CASES = ["motor_prius_thermal", "motor_prius_thermal_r1", "motor_prius_thermal_br"]
+
+
+def thermal_scenarios(run):
+    """Scenario table (continuous torque by speed, least power, hot corner, checks) of one thermal run."""
+    speeds = (1250, 2000, 3000, 4000, 5000, 6000)
+    rows = []
+    for pt in run["points"]:
+        m = pt["metrics"]
+        ok, n = point_pass(pt)
+        rows.append([E(pt["label"].split("_", 1)[1])] + [f'{m[f"continuous_torque_{v}rpm_Nm"]:.0f}' for v in speeds]
+                    + [f'{m["min_continuous_power_kW"]:.1f}',
+                       f'{m["magnet_at_winding_100C_min_C"]:.0f}-{m["magnet_at_winding_100C_max_C"]:.0f}',
+                       pill("PASS") if ok == n else pill(f"{ok}/{n}")])
+    return table(["Scenario"] + [f"{v} rpm (N m)" for v in speeds] + ["Least power from 1250 rpm (kW)",
+                 "Magnets at winding mean 100 °C (°C)", "Checks"], rows, "num")
 
 
 def build_thermal(runs):
     tcases = [case_record(c) for c in THERMAL_CASES]
     best = runs.get("motor_prius_thermal_r1")
+    cal = runs.get("motor_prius_thermal_br")
     figs, scen, fe_rows = "", "", []
+    cal_html = ('<p class="muted">The calibrated run appears when it has finished.</p>' if not (cal and cal["complete"])
+                else f"""<div class="col"><p>The same network and scenarios on hypothesis A's dq tables (magnet remanence
+1.036 T, chosen on ORNL's static inductances after the blind comparison; see the overview). At 1250 rpm the same heat
+allows the same current (97 A), and the weaker magnets give 7 % less torque for it: <b>28.1 kW against 30.2</b>. The 25
+kW requirement still passes in the nominal scenario but now <b>fails at the loosest stator-to-housing fit</b> (0.08 mm
+interface gap, 24.3 kW, every check passing), so the rating depends on the press-fit interference or a measured interface
+resistance, which a client would be asked for. I predicted the torque at 4000-6000 rpm would rise (less field-weakening
+current to carry); it fell 5-10 %: below 90 A the lowest-loss search picks the same currents (6000 rpm: id -74, iq 16 A in
+both runs), so there was no field-weakening current to free, and the iron loss there fell only 3 %. Run
+{E(cal["id"])}.</p></div>
+{thermal_scenarios(cal)}""")
     if best and best["complete"]:
         nom = next(pt for pt in best["points"] if pt["label"].endswith("nominal"))
         figs = (f'<figure>{img64(nom["dir"] / "response.png", "Continuous envelope")}<figcaption>Nominal scenario: the '
                 "continuous torque and power over speed (left), and the winding hotspot, winding mean and magnet "
                 "temperatures along the envelope, with the magnet temperature where the winding mean reaches 100 °C "
                 f'(right). Run {E(best["id"])}.</figcaption></figure>')
-        speeds = (1250, 2000, 3000, 4000, 5000, 6000)
-        rows = []
         for pt in best["points"]:
-            m = pt["metrics"]
-            ok, n = point_pass(pt)
-            rows.append([E(pt["label"].split("_", 1)[1])] + [f'{m[f"continuous_torque_{v}rpm_Nm"]:.0f}' for v in speeds]
-                        + [f'{m["min_continuous_power_kW"]:.1f}',
-                           f'{m["magnet_at_winding_100C_min_C"]:.0f}-{m["magnet_at_winding_100C_max_C"]:.0f}',
-                           pill("PASS") if ok == n else pill(f"{ok}/{n}")])
             fe = pt["solver_outputs"]["section_fe"]
             fe_rows.append([E(pt["label"].split("_", 1)[1])] + [f'{100 * fe[f"rise_err_{k}"]:+.1f} %' for k in
                                                                 ("wind_mean", "wind_peak", "teeth_mean", "yoke_mean")])
-        scen = table(["Scenario"] + [f"{v} rpm (N m)" for v in speeds] + ["Least power from 1250 rpm (kW)",
-                     "Magnets at winding mean 100 °C (°C)", "Checks"], rows, "num")
+        scen = thermal_scenarios(best)
     fe_table = table(["Scenario", "Winding mean", "Winding hotspot", "Teeth mean", "Yoke mean"], fe_rows, "num")         if fe_rows else ""
     sections = "".join(eff_section(c, runs.get(c["name"])) for c in tcases)
     body = f"""
@@ -1377,6 +1404,9 @@ shaft path and only conduction across the 0.77 mm gap, the rotor floats at the t
 hottest iron. Where the winding mean reaches 100 °C the magnets are at 93-105 °C, so the efficiency map's hot corner
 (80 °C) is optimistic for them by 13-25 K.</p></div>
 {scen}
+
+<h2>On the calibrated machine</h2>
+{cal_html}
 
 <h2>The CalculiX check</h2>
 <div class="col"><p>Network against CalculiX, rise above the coolant on the stator cross-section (tolerance 5 %, model

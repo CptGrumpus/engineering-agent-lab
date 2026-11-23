@@ -142,6 +142,18 @@ hottest iron. Where the winding mean reaches 100 째C the magnets are at 93-105 �
 (80 째C) is optimistic for them by 13-25 K.</p></div>
 <div class="tablewrap"><table class="num"><thead><tr><th>Scenario</th><th>1250 rpm (N m)</th><th>2000 rpm (N m)</th><th>3000 rpm (N m)</th><th>4000 rpm (N m)</th><th>5000 rpm (N m)</th><th>6000 rpm (N m)</th><th>Least power from 1250 rpm (kW)</th><th>Magnets at winding mean 100 째C (째C)</th><th>Checks</th></tr></thead><tbody><tr><td>nominal</td><td>231</td><td>222</td><td>154</td><td>113</td><td>86</td><td>68</td><td>30.2</td><td>93-105</td><td><span class="pill warn">8/9</span></td></tr><tr><td>jacket_h1000</td><td>214</td><td>207</td><td>147</td><td>105</td><td>78</td><td>64</td><td>28.0</td><td>94-103</td><td><span class="pill pass">PASS</span></td></tr><tr><td>jacket_h6000</td><td>236</td><td>227</td><td>159</td><td>115</td><td>87</td><td>68</td><td>30.8</td><td>93-104</td><td><span class="pill warn">8/9</span></td></tr><tr><td>interface_0p01</td><td>262</td><td>247</td><td>166</td><td>119</td><td>91</td><td>75</td><td>34.3</td><td>93-109</td><td><span class="pill warn">7/9</span></td></tr><tr><td>interface_0p08</td><td>200</td><td>197</td><td>142</td><td>104</td><td>78</td><td>60</td><td>26.2</td><td>94-101</td><td><span class="pill pass">PASS</span></td></tr><tr><td>end_space_half</td><td>211</td><td>201</td><td>139</td><td>97</td><td>74</td><td>53</td><td>27.6</td><td>95-110</td><td><span class="pill pass">PASS</span></td></tr><tr><td>air_gap_x3</td><td>226</td><td>221</td><td>154</td><td>114</td><td>86</td><td>68</td><td>29.6</td><td>95-104</td><td><span class="pill pass">PASS</span></td></tr><tr><td>winding_k_half</td><td>228</td><td>221</td><td>153</td><td>113</td><td>86</td><td>68</td><td>29.9</td><td>92-105</td><td><span class="pill warn">8/9</span></td></tr><tr><td>teeth_0p40</td><td>231</td><td>224</td><td>158</td><td>114</td><td>87</td><td>68</td><td>30.3</td><td>93-105</td><td><span class="pill warn">8/9</span></td></tr><tr><td>teeth_0p75</td><td>230</td><td>222</td><td>153</td><td>113</td><td>86</td><td>67</td><td>30.1</td><td>93-104</td><td><span class="pill warn">8/9</span></td></tr></tbody></table></div>
 
+<h2>On the calibrated machine</h2>
+<div class="col"><p>The same network and scenarios on hypothesis A's dq tables (magnet remanence
+1.036 T, chosen on ORNL's static inductances after the blind comparison; see the overview). At 1250 rpm the same heat
+allows the same current (97 A), and the weaker magnets give 7 % less torque for it: <b>28.1 kW against 30.2</b>. The 25
+kW requirement still passes in the nominal scenario but now <b>fails at the loosest stator-to-housing fit</b> (0.08 mm
+interface gap, 24.3 kW, every check passing), so the rating depends on the press-fit interference or a measured interface
+resistance, which a client would be asked for. I predicted the torque at 4000-6000 rpm would rise (less field-weakening
+current to carry); it fell 5-10 %: below 90 A the lowest-loss search picks the same currents (6000 rpm: id -74, iq 16 A in
+both runs), so there was no field-weakening current to free, and the iron loss there fell only 3 %. Run
+20261123-071007_motor_prius_thermal_br.</p></div>
+<div class="tablewrap"><table class="num"><thead><tr><th>Scenario</th><th>1250 rpm (N m)</th><th>2000 rpm (N m)</th><th>3000 rpm (N m)</th><th>4000 rpm (N m)</th><th>5000 rpm (N m)</th><th>6000 rpm (N m)</th><th>Least power from 1250 rpm (kW)</th><th>Magnets at winding mean 100 째C (째C)</th><th>Checks</th></tr></thead><tbody><tr><td>nominal</td><td>214</td><td>207</td><td>143</td><td>104</td><td>78</td><td>64</td><td>28.1</td><td>93-105</td><td><span class="pill warn">8/9</span></td></tr><tr><td>jacket_h1000</td><td>199</td><td>193</td><td>136</td><td>99</td><td>74</td><td>60</td><td>26.0</td><td>94-104</td><td><span class="pill pass">PASS</span></td></tr><tr><td>jacket_h6000</td><td>219</td><td>211</td><td>145</td><td>105</td><td>79</td><td>65</td><td>28.7</td><td>93-106</td><td><span class="pill warn">8/9</span></td></tr><tr><td>interface_0p01</td><td>244</td><td>229</td><td>151</td><td>107</td><td>81</td><td>65</td><td>31.9</td><td>93-109</td><td><span class="pill warn">7/9</span></td></tr><tr><td>interface_0p08</td><td>186</td><td>184</td><td>134</td><td>98</td><td>74</td><td>60</td><td>24.3</td><td>93-102</td><td><span class="pill pass">PASS</span></td></tr><tr><td>end_space_half</td><td>195</td><td>186</td><td>129</td><td>95</td><td>70</td><td>54</td><td>25.6</td><td>95-111</td><td><span class="pill pass">PASS</span></td></tr><tr><td>air_gap_x3</td><td>210</td><td>205</td><td>143</td><td>104</td><td>79</td><td>64</td><td>27.5</td><td>95-105</td><td><span class="pill pass">PASS</span></td></tr><tr><td>winding_k_half</td><td>211</td><td>206</td><td>142</td><td>104</td><td>78</td><td>64</td><td>27.7</td><td>92-105</td><td><span class="pill warn">8/9</span></td></tr><tr><td>teeth_0p40</td><td>214</td><td>207</td><td>143</td><td>104</td><td>79</td><td>64</td><td>28.1</td><td>93-105</td><td><span class="pill warn">8/9</span></td></tr><tr><td>teeth_0p75</td><td>213</td><td>206</td><td>143</td><td>104</td><td>78</td><td>64</td><td>27.9</td><td>93-105</td><td><span class="pill warn">8/9</span></td></tr></tbody></table></div>
+
 <h2>The CalculiX check</h2>
 <div class="col"><p>Network against CalculiX, rise above the coolant on the stator cross-section (tolerance 5 %, model
 form). The slot hotspot reads 4-7 % low after revision 1 placed it at the top of the slot, by the tooth tips; a bound
@@ -308,7 +320,48 @@ stays under the end-turn hotspot and under 180 C at every speed in every scenari
 it; the network&#x27;s slot hotspot is reported as about 5 % low on its rise. Not revised further: the decision does not
 move, and a better slot hotspot needs a 2D model of the slot, which is what the check is.
 
-Requirements and tolerances were fixed BEFORE the first run (motor_prius_thermal) and are unchanged.</pre></details><p class="muted mono">run 20261122-174925_motor_prius_thermal_r1, verification FAIL</p>
+Requirements and tolerances were fixed BEFORE the first run (motor_prius_thermal) and are unchanged.</pre></details><p class="muted mono">run 20261122-174925_motor_prius_thermal_r1, verification FAIL</p><h3 id="motor_prius_thermal_br">motor_prius_thermal_br</h3><p>2004 Toyota Prius traction motor (our machine): steady lumped thermal network from the geometry, coupled to the verified dq tables (losses at the network&#x27;s temperatures); continuous torque-speed envelope 500-6000 rpm within a 180 C winding hotspot and 150 C magnets under a synthetic 65 C water jacket, and the magnet temperature where the winding mean reaches the efficiency map&#x27;s 100 C; nominal and nine sensitivity scenarios; CalculiX slot-pitch conduction check.</p><p>4 of 10 columns pass every check; verification <span class="pill fail">FAIL</span>.</p><details><summary>Case record: predictions before the run, results after</summary><pre>Study 7, thermal network on the calibrated machine (hypothesis A, remanence 1.036 T): motor_prius_thermal_r1 (read
+it, and motor_prius_thermal for the decision, sources and hand estimate) with the four dq tables and the efficiency
+run replaced by their calibrated versions (motor_prius_lut_*_br, motor_prius_efficiency_br). Network, cooling,
+scenarios, requirement and tolerances unchanged. Why: the calibration lowered the magnet flux by 19 %, which changes
+the current needed for a torque (copper loss) and the iron loss, so the continuous rating on page 20 was still the
+blind machine&#x27;s (BACKLOG, open item since 03:30).
+
+Predictions, written BEFORE the run (hand reasoning from r1&#x27;s envelope and the tables&#x27; MTPA, no run of this case):
+  P1 Checks as r1: balance, coupling, efficiency consistency (against the br efficiency run) and every GCI pass;
+     section_wind_peak FAILs in the same six scenarios (-4 to -7 %), interface_0p01 also section_wind_mean: the
+     lumped-network model form does not depend on the magnets.
+  P2 Magnets still bind at every speed. At 1250 rpm, where the minimum sits, copper loss dominates (2.7 kW against
+     0.2 kW iron in r1), so the allowed current stays about 97 A while the torque per ampere falls (MTPA at 100 A:
+     233.4 against 251.6 N m cold, -7 %): REQ-TH1 about 28.0-29.0 kW nominal (30.2 blind), still PASS, unverified in
+     the nominal scenario as before; 24.5-33 kW over the scenarios (jacket_h1000 or interface_0p08 the lowest, may
+     dip near 25).
+  P3 At 4000-6000 rpm the continuous torque RISES: weaker magnets need less field-weakening current (blind 6000 rpm:
+     id -74 of 75.7 A) and make less iron loss (1.75 kW of 3.3 kW at 6000 rpm in r1): 6000 rpm 75-95 N m (67.5
+     blind). The minimum stays at 1250 rpm.
+  P4 Magnet temperature where the winding mean reaches 100 C: within 5 K of r1&#x27;s 93.4-104.6 C.
+  P5 About 5 min.
+
+Results (run 20261123-071007_motor_prius_thermal_br, 07:10-07:14): verification PASS in four scenarios, FAIL in six on
+section_wind_peak (as r1). REQ-TH1 28.07 kW nominal, PASS (unverified); over the scenarios 24.32-31.90 kW, and
+interface_0p08 FAILS it, verified (24.32 kW, 9/9 checks pass).
+  P1 HELD: the same six scenarios fail section_wind_peak (5.1-7.2 %; nominal 5.25 %, as r1), interface_0p01 also
+     section_wind_mean (6.39 %); balance, coupling, efficiency consistency and every GCI pass.
+  P2 HELD nominal (28.07 kW, magnets binding at 22 of 23 speeds; 1250 rpm: 96.9 A as r1&#x27;s 97.0, 214.4 against 230.8
+     N m, -7.1 %); PARTLY over the scenarios: 24.32-31.90 kW against 24.5-33 predicted, and the low end crosses the
+     limit (interface_0p08 24.32, jacket_h1000 25.99, end_space_half 25.58 kW).
+  P3 MISSED (wrong direction): the high-speed torque FELL, 103.8 / 78.1 / 64.0 N m at 4000 / 5000 / 6000 rpm against
+     113.4 / 86.5 / 67.5 (-8 / -10 / -5 %). The operating currents are unchanged to 1 A (6000 rpm: id -74, iq 16 A in
+     both) and the iron loss fell only 3 % (1.70 against 1.75 kW). The efficiency model picks the minimum-loss current
+     for each torque within the voltage and current limits; at under 90 A the negative id is chosen to cut loss, not
+     forced by the voltage (it would have moved), so weaker magnets just give less torque for the same heat. The
+     minimum stays at 1250 rpm.
+  P4 HELD: 93.4-105.2 C (r1 93.4-104.6).
+  P5 HELD: 4 min.
+Engineering reading: on the calibrated machine the continuous rating falls 7 % (30.2 to 28.1 kW nominal) and the 25 kW
+requirement now depends on the stator-to-housing fit: it passes at the literature-average interface gap (0.037 mm)
+and fails at 0.08 mm (24.3 kW). A client would be asked for the press-fit interference or a measured interface
+resistance before the rating is quoted.</pre></details><p class="muted mono">run 20261123-071007_motor_prius_thermal_br, verification FAIL</p>
 
 <p class="muted">Generated by <code>reports/motor/build_report.py</code>.</p>
 
