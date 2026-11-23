@@ -591,7 +591,7 @@ def cold_plate():
 
 
 def pipe():
-    p = case("pipe_rans_mesh_r2")
+    p = case("pipe_rans_mesh_r3")
     R = p["diameter_m"] * 500
     fig, ax = new(9, (-70, 200), (-66, 66))
     ax.add_patch(Circle((0, 0), R, fc="#dbe7f6", ec=INK, lw=1.3, zorder=2))
@@ -612,7 +612,7 @@ def pipe():
     ax.plot([x1, x1], [-hh, hh], color=INK, lw=2.2, zorder=5, solid_capstyle="butt")
     text(ax, x1 + 3, 0, "wall", ha="left", fs=7, color=INK)
     text(ax, x0 - 3, 0, "axis", ha="right", fs=7)
-    text(ax, (x0 + x1) / 2, -hh - 12, "cells graded towards the wall: 80, 160 and 320 across the radius,\nthe first one inside the thin viscous layer", fs=7)
+    text(ax, (x0 + x1) / 2, -hh - 12, "cells graded towards the wall: 160, 320 and 640 across the radius,\nthe first one inside the thin viscous layer", fs=7)
     text(ax, (x0 + x1) / 2, hh + 9, "front and back faces joined, so the flow repeats", fs=7, color=ACC)
     finish(fig, "pipe", "Study 19 · turbulent pipe flow · the periodic wedge and its mesh", "dimensions in mm, the wedge drawn wider than 5°")
 
@@ -671,13 +671,15 @@ def motor():
         print("skip motor: run scripts/export_motor_geometry.py in the Pyleecan environment first")
         return
     d = json.loads(src.read_text())
+    src4 = REPO / "build" / "drawings" / "motor_geometry_rev4.json"
+    d4 = json.loads(src4.read_text()) if src4.exists() else None     # magnet as drawn, centred (revision 4)
     Re = d["Rext"] * 1000
     fig, ax = new(9.5, (-Re - 12, Re * 3.25), (-Re - 12, Re + 12))
     col = {"Stator-0_Lamination": FILL, "Rotor-0_Lamination": "#d3dceb", "Winding": "#d98a4e", "HoleMag": ACC, "HoleVoid": PLATE,
            "Shaft": "#c4cbd6"}
 
-    def draw(ox, oy, k, clip=None):
-        for s in d["surfaces"]:
+    def draw(ox, oy, k, clip=None, geo=None):
+        for s in (geo or d)["surfaces"]:
             pts = np.array(s["pts"]) * 1000 * k + [ox, oy]
             kind = next((v for key, v in col.items() if key in s["label"]), FILL)
             z = 2 if "Lamination" in s["label"] or "Shaft" in s["label"] else 3
@@ -696,12 +698,24 @@ def motor():
     P = lambda r, a: (cx + k * r * np.cos(np.radians(a)), cy + k * r * np.sin(np.radians(a)))  # noqa: E731
     th = np.linspace(67.5, 112.5, 30)
     wedge = Polygon([P(r0, a) for a in th] + [P(Re + 1, a) for a in th[::-1]], closed=True, transform=ax.transData)
-    draw(cx, cy, k, clip=wedge)
+    draw(cx, cy, k, clip=wedge, geo=d4)
+    if d4 is not None:                         # the blind model's magnet, which filled the pocket, dashed
+        for s in d["surfaces"]:
+            if "HoleMag" in s["label"]:
+                pts = np.array(s["pts"]) * 1000 * k + [cx, cy]
+                patch = Polygon(pts, closed=True, fc="none", ec=HOT, lw=0.9, ls=(0, (3, 2)), zorder=7)
+                ax.add_patch(patch)
+                patch.set_clip_path(wedge)
     ax.add_patch(Polygon([(r0 * np.cos(np.radians(a)), r0 * np.sin(np.radians(a))) for a in th] +
                          [((Re + 1) * np.cos(np.radians(a)), (Re + 1) * np.sin(np.radians(a))) for a in th[::-1]],
                          closed=True, fc="none", ec=HOT, lw=0.9, zorder=6))
     top = P(Re + 1, 90)[1]
-    note(ax, P(69, 101), (f0 + 5, P(60, 90)[1]), "magnets in a V,\nburied in the rotor", color=ACC, ha="left")
+    if d4 is not None:
+        note(ax, P(66, 104), (f0 + 5, P(46, 90)[1]), "magnets in a V: 5.31 mm thick\nin a 6.80 mm pocket, the rest\na plastic shell", color=ACC, ha="left",
+             va="top")
+        text(ax, f1 - 5, P(r0, 90)[1] - 9, "dashed: the blind model's magnet,\nwhich filled the pocket", fs=7, color=HOT, ha="right", va="top")
+    else:
+        note(ax, P(69, 101), (f0 + 5, P(60, 90)[1]), "magnets in a V,\nburied in the rotor", color=ACC, ha="left")
     note(ax, P(100, 86.25), (f1 - 5, top - 14), "48 slots,\ncopper winding", color="#a8581f", ha="right", va="top")
     note(ax, P(79.0, 72), (f1 - 5, P(64, 90)[1]), "thin steel bridges\nhold the magnets", color=HOT, ha="right")
     note(ax, P(80.6, 104), (f0 + 5, P(92, 90)[1]), "air gap\n0.775 mm", ha="left")
@@ -710,8 +724,94 @@ def motor():
     finish(fig, "motor", "Study 20 · 2004 Prius traction motor · cross-section, as rebuilt from the published drawings")
 
 
+# ---------------------------------------------------------------------------------------- study 19 part 2, the step
+
+def step():
+    p = case("step_mesh")
+    H = p["step_height_m"] * 1000
+    hin = p["inlet_height_ratio"]                  # inlet duct height, in step heights
+    xr = 6.40                                      # the finest mesh's reattachment length (comparison.json)
+    x0, x1 = -7.0, 33.0
+    fig, ax = new(9.5, (x0 - 1.5, x1 + 1.5), (-3.2, hin + 2.6))
+    # walls: top wall, upstream floor at the step lip (y = 1), the step face, the downstream floor (y = 0)
+    ax.fill_between([x0, 0], 1, -0.6, color=FILL, lw=0, zorder=1)
+    ax.fill_between([0, x1], 0, -0.6, color=FILL, lw=0, zorder=1)
+    ax.fill_between([x0, x1], 1 + hin, 1 + hin + 0.6, color=FILL, lw=0, zorder=1)
+    ax.plot([x0, 0, 0, x1], [1, 1, 0, 0], color=INK, lw=1.3, zorder=3)
+    ax.plot([x0, x1], [1 + hin, 1 + hin], color=INK, lw=1.3, zorder=3)
+    for xb in (x0, x1):                            # the channel carries on beyond the drawing
+        ax.plot([xb, xb], [0 if xb > 0 else 1, 1 + hin], color=CUT, lw=0.8, ls=(0, (2, 2)), zorder=2)
+    # the flow and the separation bubble
+    for y in (3.0, 5.5, 7.5):
+        force(ax, (x0 + 0.6, y), (x0 + 3.2, y), "", color=ACC, lw=1.2)
+    text(ax, x0 + 0.6, 1 + hin - 0.7, "air, 44.2 m/s", fs=7, ha="left", color=ACC, box=False)
+    bx = np.linspace(0, xr, 60)
+    ax.plot(bx, 1.0 * np.sqrt(np.clip(1 - (bx / xr) ** 2, 0, 1)) * (1 - 0.15 * bx / xr), color=ACC, lw=1.0, ls=(0, (4, 2)), zorder=4)
+    text(ax, xr * 0.42, 0.38, "flow turns back here", fs=6.5, color=ACC, box=False)
+    ax.plot([xr], [0], marker="o", ms=4.5, color=HOT, zorder=6)
+    note(ax, (xr, 0), (xr + 2.5, 2.4), f"flow reattaches: {xr:.2f} step heights\n(measured 6.26)", color=HOT, ha="left")
+    # what is scored
+    ax.plot([10, 30], [-1.75, -1.75], color=HOT, lw=2.2, solid_capstyle="butt", zorder=5)
+    text(ax, 20, -2.15, "skin friction scored from 10 to 30 step heights", fs=7, color=HOT, va="top", box=False)
+    ax.plot([-4, -4], [1, 0.55], color=DIMC, lw=0.8, zorder=5)
+    ax.plot([30, 30], [0, -0.45], color=DIMC, lw=0.8, zorder=5)
+    text(ax, -4, 1.35, "pressure from −4 H …", fs=6.5, va="bottom", box=False)
+    text(ax, 30, 0.35, "… to 30 H", fs=6.5, va="bottom", box=False)
+    dim(ax, (0, 0), (0, 1), 1.0, f"step {H:g}", outside=True)
+    dim(ax, (x0 + 4.5, 1), (x0 + 4.5, 1 + hin), -0.9, f"{hin:g} H")
+    for xt in (0, 10, 20, 30):
+        ax.plot([xt, xt], [-0.6, -0.8], color=DIMC, lw=0.6)
+        text(ax, xt, -0.95, f"{xt} H", fs=6.5, va="top", box=False)
+    text(ax, (x0 + x1) / 2, 1 + hin + 1.4, "inlet 1.15 m upstream of the step · outlet 50 step heights downstream, both off the drawing",
+         fs=6.5, box=False)
+    finish(fig, "step", "Study 19, part 2 · backward-facing step · the channel, with what is compared",
+           "dimensions in mm and step heights (H); heights drawn to scale, the channel cut short")
+
+
+# ---------------------------------------------------------------------------------------- study 21, random vibration
+
+def random_vib():
+    p = case("bracket_random_mesh")
+    L, w, t_ = p["length_mm"], p["width_mm"], p["thickness_mm"]
+    fig, ax = new(9.5, (-60, 215), (-78, 42))
+    # the clamp block on the shaker table, and the arm in side view
+    rect(ax, -34, -14, 0, 24, hatch="////")
+    rect(ax, -50, -24, 60, -14, fc="#d3dceb")
+    text(ax, 5, -19, "shaker table", fs=7, color=INK, box=False)
+    rect(ax, 0, 0, L, t_)
+    text(ax, 62, t_ + 5, f"steel arm, {L:g} × {w:g} × {t_:g} (side view)", fs=7.5, color=INK, box=False, va="bottom")
+    dim(ax, (0, 0), (L, 0), -10)
+    dim(ax, (L, 0), (L, t_), -12, f"{t_:g}", outside=True)
+    # the tip clearance
+    ax.plot([L - 14, L], [t_ + 6, t_ + 6], color=HOT, lw=1.0, ls=(0, (3, 2)), zorder=5)
+    text(ax, L - 16, t_ + 6, "tip may move 1 mm (3-sigma,\ndrawn 6× larger)", fs=7, color=HOT, ha="right")
+    # hot-spot read points beside the clamp
+    note(ax, (2, t_), (40, 30), "stress read at 0.4 and 1.0 × the thickness\nfrom the clamp and extrapolated to it", ha="left")
+    # the input: shaken on each axis in turn
+    ox, oy = -40, -56
+    force(ax, (ox, oy), (ox, oy + 20), "", color=ACC)
+    force(ax, (ox, oy), (ox + 22, oy), "", color=ACC)
+    ax.add_patch(Circle((ox, oy), 2.2, fc=PLATE, ec=ACC, lw=1.2, zorder=6))
+    ax.plot([ox], [oy], marker="o", ms=1.6, color=ACC, zorder=7)
+    text(ax, ox + 3, oy + 19, "z, flapwise", fs=7.5, color=ACC, ha="left", box=False, bold=True)
+    text(ax, ox + 25, oy, "x, along the arm", fs=7.5, color=ACC, ha="left", box=False, bold=True)
+    text(ax, ox + 3, oy - 5, "y, sideways (out of the page)", fs=7.5, color=ACC, ha="left", va="top", box=False, bold=True)
+    text(ax, -50, -72, "shaken on one axis at a time, one hour each", fs=7, ha="left", va="center", box=False)
+    # the input spectrum, inset
+    gx0, gx1, gy0, gy1 = 105, 205, -70, -26
+    rect(ax, gx0, gy0, gx1, gy1, fc=PLATE, ec=CUT, lw=0.8)
+    fx = lambda f: gx0 + 8 + (gx1 - gx0 - 16) * (np.log10(f) - 1) / 2.5          # noqa: E731
+    ax.plot([fx(20), fx(20), fx(2000), fx(2000)], [gy0 + 6, gy0 + 26, gy0 + 26, gy0 + 6], color=ACC, lw=1.4, zorder=4)
+    ax.plot([gx0 + 6, gx1 - 6], [gy0 + 6, gy0 + 6], color=DIMC, lw=0.6)
+    text(ax, (gx0 + gx1) / 2, gy0 + 30, "input: flat 0.04 g²/Hz, about 8.9 g rms", fs=7, color=ACC, va="bottom", box=False)
+    text(ax, fx(20), gy0 + 3, "20 Hz", fs=6.5, va="top", box=False)
+    text(ax, fx(2000), gy0 + 3, "2,000 Hz", fs=6.5, va="top", box=False)
+    finish(fig, "random_vib", "Study 21 · bracket arm on a shaker table · the test and what is measured",
+           "dimensions in mm, the clamp and table schematic")
+
+
 ALL = {f.__name__: f for f in (fea, cantilever_opt, strap, modal, strut, contact, bolted_joint, pv_nozzle, bracket_opt, cad,
-                               cfd, thermal, heat, cold_plate, pipe, suspension, baseline, motor)}
+                               cfd, thermal, heat, cold_plate, pipe, suspension, baseline, motor, step, random_vib)}
 
 if __name__ == "__main__":
     for name in sys.argv[1:] or ALL:

@@ -1,11 +1,11 @@
 """Run in the Pyleecan environment: writes the motor cross-section (every surface as a labelled polygon, in metres)
 for scripts/make_drawings.py.
 
-    PYTHONUTF8=1 ~/.venvs/pyleecan/Scripts/python.exe scripts/export_motor_geometry.py build/drawings/motor_geometry.json
+    PYTHONUTF8=1 ~/.venvs/pyleecan/Scripts/python.exe scripts/export_motor_geometry.py build/drawings/motor_geometry.json [machine.json]
 """
 import json, sys
 from pyleecan.Functions.load import load
-m = load("models/motor/Toyota_Prius_ORNL.json")
+m = load(sys.argv[2] if len(sys.argv) > 2 else "models/motor/Toyota_Prius_ORNL.json")
 out = []
 for surf in m.build_geometry(sym=1):
     pts = []
