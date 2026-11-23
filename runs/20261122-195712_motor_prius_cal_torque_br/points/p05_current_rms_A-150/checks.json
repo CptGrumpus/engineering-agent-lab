@@ -1,0 +1,51 @@
+{
+  "label": "p05_current_rms_A-150",
+  "status": "PASS",
+  "checks": [
+    {
+      "id": "power_balance",
+      "description": "max over current angles of |mean(sum i dphi/dt) - mean torque x omega_m| / (mean torque x omega_m): energy conservation, an independent route to FEMM's stress-tensor torque",
+      "kind": "numerical",
+      "value": 0.0005785062109619055,
+      "tolerance": 0.02,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "current_amplitude",
+      "description": "max |imposed phase current fundamental - sqrt(2) x requested rms| / peak (Pyleecan's dq currents are rms)",
+      "kind": "numerical",
+      "value": 4.019436694230464e-16,
+      "tolerance": 0.001,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "phase_symmetry_load",
+      "description": "max over angles of the spread of the three phases' fundamental flux linkage / mean, under load",
+      "kind": "numerical",
+      "value": 0.00019432102919421894,
+      "tolerance": 0.002,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "mtpa_bracketed",
+      "description": "maximum torque inside the angle sweep (0 = yes)",
+      "kind": "validity",
+      "value": 0.0,
+      "tolerance": 0.0,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "time_resolution",
+      "description": "48 / steps per electrical period (below 1: at least 48)",
+      "kind": "validity",
+      "value": 1.0,
+      "tolerance": 1.0,
+      "comparison": "<=",
+      "status": "PASS"
+    }
+  ]
+}

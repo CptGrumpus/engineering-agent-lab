@@ -40,3 +40,16 @@ reported as the size of gap the omitted losses would have to explain, not as a f
 - Efficiency (out of sample): B leaves it within 0.5 point of the blind map below base speed (same copper loss for the
   same torque); A lowers it by 1-2 points at high torque (more current) and raises it slightly at light load (less iron
   loss). Either way the median gap stays 3-5 points: most of it is the omitted losses, not the flux.
+
+## Results (2026-11-22 22:15; predictions above unchanged)
+- **Back-EMF calibration** (`motor_prius_cal_oc_br`, run 20261122-192029): hypothesis A needs a remanence of
+  **1.036 T** (16.6 % below the 1.243 T read from TM-2004/137 Fig. 14); predicted about 1.03 T. Hypothesis B needs
+  the series turns x 0.807.
+- **Selection on torque** (`motor_prius_cal_torque_br`, run 20261122-195712; `scripts/motor_calibration.py`,
+  `calibration.json`): **A with the peak reading, rms error 8.7 %** (-3.6 % to +13.5 % over ORNL's seven currents);
+  B 10.7 % (-17 % to +4 %); the rms reading is far worse for both (47 % and 31 %). As predicted, A narrowly. Three of
+  the seven points remain outside the original 10 % band (high current), so even the calibrated model over-predicts
+  torque at high current by 12-14 %.
+- **Out-of-sample efficiency for A: not yet run.** It needs dq tables at 1.036 T (cold and hot, several hours of
+  FEMM); B's is scored (median 5.3 points high, unchanged from the blind map's 5.2), which supports the prediction that
+  most of the efficiency gap is the omitted losses, not the flux.

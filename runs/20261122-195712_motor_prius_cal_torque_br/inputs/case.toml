@@ -1,0 +1,71 @@
+# Study 7, POST-TEST CALIBRATION, hypothesis A (validation/motor_ornl/CALIBRATION_PLAN.md): the MTPA torque curve of
+# the committed machine (motor_prius_torque_current_r1: same mesh, angle sweep, speed) with only the magnet remanence
+# changed to the value calibrated on ORNL's back-EMF (case motor_prius_cal_oc_br). Currents 25-250 A rms, to cover
+# ORNL's seven locked-rotor currents under both readings (peak: 35-177 A rms; rms: 50-250 A).
+# Used to choose between hypotheses A and B (torque becomes calibration data); not validation.
+#
+# The calibrated remanence is filled in by a separate commit once motor_prius_cal_oc_br has run; until then the
+# machine name below cannot run. Predictions do not depend on its exact value (about 1.03 T expected).
+# Filled in (2026-11-22 ~20:05, after motor_prius_cal_oc_br): 1.036 T, Toyota_Prius_ORNL_Br1p0360.json. The
+# predictions below are unchanged.
+#
+# Predictions (before the run; hypothesis B was scored before this case was written: 10.7 % rms torque error with the
+# peak reading, -17 % at 50 A to +4 % at 250 A):
+#   P1 Against the blind curve: -15 to -19 % at 25-75 A rms (torque roughly proportional to magnet flux where the
+#      iron is not saturated), shrinking to -8 to -12 % at 250 A (saturation and reluctance torque take a larger share).
+#   P2 Against ORNL with the peak reading: within 10 % at every current, rms error 4-8 %, so A is selected over B.
+#   P3 Every point check passes (as r1: power balance, current amplitude, symmetry, MTPA bracketed).
+#   P4 About 2 h (8 currents at fineness 4).
+
+[case]
+name = "motor_prius_cal_torque_br"
+model = "pyleecan_femm_load"
+description = "2004 Toyota Prius traction motor (our machine from ORNL Fig. 21, laminations M330-35A), magnet remanence 1.036 T (calibrated on ORNL's back-EMF), MTPA torque at 25-250 A rms, 1000 rpm; Pyleecan + FEMM 4.2 magnetostatics, current angle 0-70 deg from the q axis, mesh fineness 4."
+assumptions = [
+  "2D magnetostatics (FEMM), no end effects; torque is the mean of FEMM's stress-tensor torque over one electrical period.",
+  "Magnets, magnet pockets and materials as in models/motor/Toyota_Prius_ORNL.json except the remanence, 1.036 T at 20 C (calibrated on ORNL's routine back-EMF test, case motor_prius_cal_oc_br; hypothesis A of validation/motor_ornl/CALIBRATION_PLAN.md); laminations M330-35A, a stand-in grade (Tata Steel typical B-H data to 1.8 T, extrapolated above).",
+  "Magnet temperature 20 C.",
+  "Current-density limit 25 A/mm^2 rms on 0.84 x 143.0 mm^2 of copper per slot (stated assumption).",
+]
+limitations = [
+  "Post-test calibration, not a blind prediction: the remanence is fitted to ORNL's back-EMF, and this curve is scored against ORNL's locked-rotor torque to choose between hypotheses (scripts/motor_calibration.py).",
+  "Sinusoidal currents; no inverter harmonics, no voltage limit (1000 rpm is below base speed).",
+  "The real lamination grade is unknown; the bracketing grades are separate cases.",
+]
+
+[parameters]
+machine = "Toyota_Prius_ORNL_Br1p0360.json"
+speed_rpm = 1000.0
+current_rms_A = 100.0
+angle_min_deg = 0.0
+angle_max_deg = 70.0
+angle_steps = 8
+mesh_fineness = 4.0
+steps_per_period = 48
+angle_points = 2048
+rated_torque_Nm = 400.0
+slot_fill = 0.84
+slot_area_mm2 = 143.0
+turns_per_slot = 9
+
+[sweep]
+parameter = "current_rms_A"
+values = [25.0, 50.0, 75.0, 100.0, 125.0, 150.0, 200.0, 250.0]
+
+[numerics]
+solver_timeout_s = 7200
+
+[verification]
+power_balance_rel_tol = 0.02
+current_rel_tol = 1e-3
+phase_symmetry_rel_tol = 2e-3
+mesh_noise_rel = 1e-5
+gci_max = 0.01
+
+[[requirements]]
+id = "REQ-M3"
+text = "Each operating point of the torque curve shall stay within the 25 A/mm^2 rms copper current-density limit (marks which points of the curve the motor can sustain for a short time)."
+metric = "current_density_rms_A_per_mm2"
+operator = "<="
+limit = 25.0
+units = "A/mm^2"

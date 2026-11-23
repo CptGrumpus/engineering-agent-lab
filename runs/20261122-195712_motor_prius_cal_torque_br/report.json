@@ -1,0 +1,671 @@
+{
+  "points": [
+    {
+      "label": "p00_current_rms_A-25",
+      "parameters": {
+        "machine": "Toyota_Prius_ORNL_Br1p0360.json",
+        "speed_rpm": 1000.0,
+        "current_rms_A": 25.0,
+        "angle_min_deg": 0.0,
+        "angle_max_deg": 70.0,
+        "angle_steps": 8,
+        "mesh_fineness": 4.0,
+        "steps_per_period": 48,
+        "angle_points": 2048,
+        "rated_torque_Nm": 400.0,
+        "slot_fill": 0.84,
+        "slot_area_mm2": 143.0,
+        "turns_per_slot": 9
+      },
+      "derived": {
+        "current_density_rms_A_per_mm2": 1.8731268731268733
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "power_balance",
+          "description": "max over current angles of |mean(sum i dphi/dt) - mean torque x omega_m| / (mean torque x omega_m): energy conservation, an independent route to FEMM's stress-tensor torque",
+          "kind": "numerical",
+          "value": 0.00174917807375535,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "current_amplitude",
+          "description": "max |imposed phase current fundamental - sqrt(2) x requested rms| / peak (Pyleecan's dq currents are rms)",
+          "kind": "numerical",
+          "value": 2.009718347115232e-16,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "phase_symmetry_load",
+          "description": "max over angles of the spread of the three phases' fundamental flux linkage / mean, under load",
+          "kind": "numerical",
+          "value": 4.8967318993833966e-05,
+          "tolerance": 0.002,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "mtpa_bracketed",
+          "description": "maximum torque inside the angle sweep (0 = yes)",
+          "kind": "validity",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "time_resolution",
+          "description": "48 / steps per electrical period (below 1: at least 48)",
+          "kind": "validity",
+          "value": 1.0,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-M3",
+          "text": "Each operating point of the torque curve shall stay within the 25 A/mm^2 rms copper current-density limit (marks which points of the curve the motor can sustain for a short time).",
+          "metric": "current_density_rms_A_per_mm2",
+          "operator": "<=",
+          "limit": 25.0,
+          "units": "A/mm^2",
+          "value": 1.8731268731268733,
+          "margin": 23.126873126873125,
+          "verdict": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p01_current_rms_A-50",
+      "parameters": {
+        "machine": "Toyota_Prius_ORNL_Br1p0360.json",
+        "speed_rpm": 1000.0,
+        "current_rms_A": 50.0,
+        "angle_min_deg": 0.0,
+        "angle_max_deg": 70.0,
+        "angle_steps": 8,
+        "mesh_fineness": 4.0,
+        "steps_per_period": 48,
+        "angle_points": 2048,
+        "rated_torque_Nm": 400.0,
+        "slot_fill": 0.84,
+        "slot_area_mm2": 143.0,
+        "turns_per_slot": 9
+      },
+      "derived": {
+        "current_density_rms_A_per_mm2": 3.7462537462537466
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "power_balance",
+          "description": "max over current angles of |mean(sum i dphi/dt) - mean torque x omega_m| / (mean torque x omega_m): energy conservation, an independent route to FEMM's stress-tensor torque",
+          "kind": "numerical",
+          "value": 0.0015033951649375723,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "current_amplitude",
+          "description": "max |imposed phase current fundamental - sqrt(2) x requested rms| / peak (Pyleecan's dq currents are rms)",
+          "kind": "numerical",
+          "value": 2.009718347115232e-16,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "phase_symmetry_load",
+          "description": "max over angles of the spread of the three phases' fundamental flux linkage / mean, under load",
+          "kind": "numerical",
+          "value": 5.255230695913307e-05,
+          "tolerance": 0.002,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "mtpa_bracketed",
+          "description": "maximum torque inside the angle sweep (0 = yes)",
+          "kind": "validity",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "time_resolution",
+          "description": "48 / steps per electrical period (below 1: at least 48)",
+          "kind": "validity",
+          "value": 1.0,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-M3",
+          "text": "Each operating point of the torque curve shall stay within the 25 A/mm^2 rms copper current-density limit (marks which points of the curve the motor can sustain for a short time).",
+          "metric": "current_density_rms_A_per_mm2",
+          "operator": "<=",
+          "limit": 25.0,
+          "units": "A/mm^2",
+          "value": 3.7462537462537466,
+          "margin": 21.253746253746254,
+          "verdict": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p02_current_rms_A-75",
+      "parameters": {
+        "machine": "Toyota_Prius_ORNL_Br1p0360.json",
+        "speed_rpm": 1000.0,
+        "current_rms_A": 75.0,
+        "angle_min_deg": 0.0,
+        "angle_max_deg": 70.0,
+        "angle_steps": 8,
+        "mesh_fineness": 4.0,
+        "steps_per_period": 48,
+        "angle_points": 2048,
+        "rated_torque_Nm": 400.0,
+        "slot_fill": 0.84,
+        "slot_area_mm2": 143.0,
+        "turns_per_slot": 9
+      },
+      "derived": {
+        "current_density_rms_A_per_mm2": 5.61938061938062
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "power_balance",
+          "description": "max over current angles of |mean(sum i dphi/dt) - mean torque x omega_m| / (mean torque x omega_m): energy conservation, an independent route to FEMM's stress-tensor torque",
+          "kind": "numerical",
+          "value": 0.0011143509443609714,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "current_amplitude",
+          "description": "max |imposed phase current fundamental - sqrt(2) x requested rms| / peak (Pyleecan's dq currents are rms)",
+          "kind": "numerical",
+          "value": 4.019436694230464e-16,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "phase_symmetry_load",
+          "description": "max over angles of the spread of the three phases' fundamental flux linkage / mean, under load",
+          "kind": "numerical",
+          "value": 0.0001017603232124677,
+          "tolerance": 0.002,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "mtpa_bracketed",
+          "description": "maximum torque inside the angle sweep (0 = yes)",
+          "kind": "validity",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "time_resolution",
+          "description": "48 / steps per electrical period (below 1: at least 48)",
+          "kind": "validity",
+          "value": 1.0,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-M3",
+          "text": "Each operating point of the torque curve shall stay within the 25 A/mm^2 rms copper current-density limit (marks which points of the curve the motor can sustain for a short time).",
+          "metric": "current_density_rms_A_per_mm2",
+          "operator": "<=",
+          "limit": 25.0,
+          "units": "A/mm^2",
+          "value": 5.61938061938062,
+          "margin": 19.38061938061938,
+          "verdict": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p03_current_rms_A-100",
+      "parameters": {
+        "machine": "Toyota_Prius_ORNL_Br1p0360.json",
+        "speed_rpm": 1000.0,
+        "current_rms_A": 100.0,
+        "angle_min_deg": 0.0,
+        "angle_max_deg": 70.0,
+        "angle_steps": 8,
+        "mesh_fineness": 4.0,
+        "steps_per_period": 48,
+        "angle_points": 2048,
+        "rated_torque_Nm": 400.0,
+        "slot_fill": 0.84,
+        "slot_area_mm2": 143.0,
+        "turns_per_slot": 9
+      },
+      "derived": {
+        "current_density_rms_A_per_mm2": 7.492507492507493
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "power_balance",
+          "description": "max over current angles of |mean(sum i dphi/dt) - mean torque x omega_m| / (mean torque x omega_m): energy conservation, an independent route to FEMM's stress-tensor torque",
+          "kind": "numerical",
+          "value": 0.0005601648077265143,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "current_amplitude",
+          "description": "max |imposed phase current fundamental - sqrt(2) x requested rms| / peak (Pyleecan's dq currents are rms)",
+          "kind": "numerical",
+          "value": 2.009718347115232e-16,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "phase_symmetry_load",
+          "description": "max over angles of the spread of the three phases' fundamental flux linkage / mean, under load",
+          "kind": "numerical",
+          "value": 0.00016202482647768298,
+          "tolerance": 0.002,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "mtpa_bracketed",
+          "description": "maximum torque inside the angle sweep (0 = yes)",
+          "kind": "validity",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "time_resolution",
+          "description": "48 / steps per electrical period (below 1: at least 48)",
+          "kind": "validity",
+          "value": 1.0,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-M3",
+          "text": "Each operating point of the torque curve shall stay within the 25 A/mm^2 rms copper current-density limit (marks which points of the curve the motor can sustain for a short time).",
+          "metric": "current_density_rms_A_per_mm2",
+          "operator": "<=",
+          "limit": 25.0,
+          "units": "A/mm^2",
+          "value": 7.492507492507493,
+          "margin": 17.507492507492508,
+          "verdict": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p04_current_rms_A-125",
+      "parameters": {
+        "machine": "Toyota_Prius_ORNL_Br1p0360.json",
+        "speed_rpm": 1000.0,
+        "current_rms_A": 125.0,
+        "angle_min_deg": 0.0,
+        "angle_max_deg": 70.0,
+        "angle_steps": 8,
+        "mesh_fineness": 4.0,
+        "steps_per_period": 48,
+        "angle_points": 2048,
+        "rated_torque_Nm": 400.0,
+        "slot_fill": 0.84,
+        "slot_area_mm2": 143.0,
+        "turns_per_slot": 9
+      },
+      "derived": {
+        "current_density_rms_A_per_mm2": 9.365634365634367
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "power_balance",
+          "description": "max over current angles of |mean(sum i dphi/dt) - mean torque x omega_m| / (mean torque x omega_m): energy conservation, an independent route to FEMM's stress-tensor torque",
+          "kind": "numerical",
+          "value": 0.00045550398042569284,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "current_amplitude",
+          "description": "max |imposed phase current fundamental - sqrt(2) x requested rms| / peak (Pyleecan's dq currents are rms)",
+          "kind": "numerical",
+          "value": 1.6077746776921856e-16,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "phase_symmetry_load",
+          "description": "max over angles of the spread of the three phases' fundamental flux linkage / mean, under load",
+          "kind": "numerical",
+          "value": 0.00020266953526221137,
+          "tolerance": 0.002,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "mtpa_bracketed",
+          "description": "maximum torque inside the angle sweep (0 = yes)",
+          "kind": "validity",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "time_resolution",
+          "description": "48 / steps per electrical period (below 1: at least 48)",
+          "kind": "validity",
+          "value": 1.0,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-M3",
+          "text": "Each operating point of the torque curve shall stay within the 25 A/mm^2 rms copper current-density limit (marks which points of the curve the motor can sustain for a short time).",
+          "metric": "current_density_rms_A_per_mm2",
+          "operator": "<=",
+          "limit": 25.0,
+          "units": "A/mm^2",
+          "value": 9.365634365634367,
+          "margin": 15.634365634365633,
+          "verdict": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p05_current_rms_A-150",
+      "parameters": {
+        "machine": "Toyota_Prius_ORNL_Br1p0360.json",
+        "speed_rpm": 1000.0,
+        "current_rms_A": 150.0,
+        "angle_min_deg": 0.0,
+        "angle_max_deg": 70.0,
+        "angle_steps": 8,
+        "mesh_fineness": 4.0,
+        "steps_per_period": 48,
+        "angle_points": 2048,
+        "rated_torque_Nm": 400.0,
+        "slot_fill": 0.84,
+        "slot_area_mm2": 143.0,
+        "turns_per_slot": 9
+      },
+      "derived": {
+        "current_density_rms_A_per_mm2": 11.23876123876124
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "power_balance",
+          "description": "max over current angles of |mean(sum i dphi/dt) - mean torque x omega_m| / (mean torque x omega_m): energy conservation, an independent route to FEMM's stress-tensor torque",
+          "kind": "numerical",
+          "value": 0.0005785062109619055,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "current_amplitude",
+          "description": "max |imposed phase current fundamental - sqrt(2) x requested rms| / peak (Pyleecan's dq currents are rms)",
+          "kind": "numerical",
+          "value": 4.019436694230464e-16,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "phase_symmetry_load",
+          "description": "max over angles of the spread of the three phases' fundamental flux linkage / mean, under load",
+          "kind": "numerical",
+          "value": 0.00019432102919421894,
+          "tolerance": 0.002,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "mtpa_bracketed",
+          "description": "maximum torque inside the angle sweep (0 = yes)",
+          "kind": "validity",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "time_resolution",
+          "description": "48 / steps per electrical period (below 1: at least 48)",
+          "kind": "validity",
+          "value": 1.0,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-M3",
+          "text": "Each operating point of the torque curve shall stay within the 25 A/mm^2 rms copper current-density limit (marks which points of the curve the motor can sustain for a short time).",
+          "metric": "current_density_rms_A_per_mm2",
+          "operator": "<=",
+          "limit": 25.0,
+          "units": "A/mm^2",
+          "value": 11.23876123876124,
+          "margin": 13.76123876123876,
+          "verdict": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p06_current_rms_A-200",
+      "parameters": {
+        "machine": "Toyota_Prius_ORNL_Br1p0360.json",
+        "speed_rpm": 1000.0,
+        "current_rms_A": 200.0,
+        "angle_min_deg": 0.0,
+        "angle_max_deg": 70.0,
+        "angle_steps": 8,
+        "mesh_fineness": 4.0,
+        "steps_per_period": 48,
+        "angle_points": 2048,
+        "rated_torque_Nm": 400.0,
+        "slot_fill": 0.84,
+        "slot_area_mm2": 143.0,
+        "turns_per_slot": 9
+      },
+      "derived": {
+        "current_density_rms_A_per_mm2": 14.985014985014987
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "power_balance",
+          "description": "max over current angles of |mean(sum i dphi/dt) - mean torque x omega_m| / (mean torque x omega_m): energy conservation, an independent route to FEMM's stress-tensor torque",
+          "kind": "numerical",
+          "value": 0.0007164119952977663,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "current_amplitude",
+          "description": "max |imposed phase current fundamental - sqrt(2) x requested rms| / peak (Pyleecan's dq currents are rms)",
+          "kind": "numerical",
+          "value": 2.009718347115232e-16,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "phase_symmetry_load",
+          "description": "max over angles of the spread of the three phases' fundamental flux linkage / mean, under load",
+          "kind": "numerical",
+          "value": 0.00015391641588326376,
+          "tolerance": 0.002,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "mtpa_bracketed",
+          "description": "maximum torque inside the angle sweep (0 = yes)",
+          "kind": "validity",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "time_resolution",
+          "description": "48 / steps per electrical period (below 1: at least 48)",
+          "kind": "validity",
+          "value": 1.0,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-M3",
+          "text": "Each operating point of the torque curve shall stay within the 25 A/mm^2 rms copper current-density limit (marks which points of the curve the motor can sustain for a short time).",
+          "metric": "current_density_rms_A_per_mm2",
+          "operator": "<=",
+          "limit": 25.0,
+          "units": "A/mm^2",
+          "value": 14.985014985014987,
+          "margin": 10.014985014985013,
+          "verdict": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p07_current_rms_A-250",
+      "parameters": {
+        "machine": "Toyota_Prius_ORNL_Br1p0360.json",
+        "speed_rpm": 1000.0,
+        "current_rms_A": 250.0,
+        "angle_min_deg": 0.0,
+        "angle_max_deg": 70.0,
+        "angle_steps": 8,
+        "mesh_fineness": 4.0,
+        "steps_per_period": 48,
+        "angle_points": 2048,
+        "rated_torque_Nm": 400.0,
+        "slot_fill": 0.84,
+        "slot_area_mm2": 143.0,
+        "turns_per_slot": 9
+      },
+      "derived": {
+        "current_density_rms_A_per_mm2": 18.731268731268734
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "power_balance",
+          "description": "max over current angles of |mean(sum i dphi/dt) - mean torque x omega_m| / (mean torque x omega_m): energy conservation, an independent route to FEMM's stress-tensor torque",
+          "kind": "numerical",
+          "value": 0.000999229579036353,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "current_amplitude",
+          "description": "max |imposed phase current fundamental - sqrt(2) x requested rms| / peak (Pyleecan's dq currents are rms)",
+          "kind": "numerical",
+          "value": 1.6077746776921856e-16,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "phase_symmetry_load",
+          "description": "max over angles of the spread of the three phases' fundamental flux linkage / mean, under load",
+          "kind": "numerical",
+          "value": 0.00012081739630974994,
+          "tolerance": 0.002,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "mtpa_bracketed",
+          "description": "maximum torque inside the angle sweep (0 = yes)",
+          "kind": "validity",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "time_resolution",
+          "description": "48 / steps per electrical period (below 1: at least 48)",
+          "kind": "validity",
+          "value": 1.0,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-M3",
+          "text": "Each operating point of the torque curve shall stay within the 25 A/mm^2 rms copper current-density limit (marks which points of the curve the motor can sustain for a short time).",
+          "metric": "current_density_rms_A_per_mm2",
+          "operator": "<=",
+          "limit": 25.0,
+          "units": "A/mm^2",
+          "value": 18.731268731268734,
+          "margin": 6.2687312687312655,
+          "verdict": "PASS"
+        }
+      ]
+    }
+  ],
+  "run_id": "20261122-195712_motor_prius_cal_torque_br",
+  "generated_utc": "2026-11-23T03:10:41+00:00",
+  "verification_status": "PASS"
+}
