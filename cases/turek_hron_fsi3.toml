@@ -28,6 +28,34 @@
 #   P7 About 6-10 h (16000 windows; sharing the CPU with FSI2).
 #
 # Requirements and tolerances were fixed BEFORE the first run.
+#
+# Results (run 20261122-185044_turek_hron_fsi3, 18:50-03:14, 8 h 24 min, beside FSI2 until 02:31). Verification FAIL
+# on 'force_transfer' only (0.88 against 1e-2), the same DEFECTIVE check as FSI2 (cases/turek_hron_fsi2.toml): the
+# solid's .dat held one block, at t = 8 s (snapshot taken before cleanup; it stayed 0 bytes for the whole run), so no
+# whole-period mean existed and the check used the end-of-run balance, which includes the flag's inertia. The FAIL
+# stands; every requirement is 'unverified' in the report. Every other check passes: 0 of 16000 windows hit the limit
+# (mean 6.5 iterations, max 24); last two periods agree to 1.6e-5; inflow exact (4.7e-10); mesh OK.
+#
+#   quantity   ours                              benchmark (level 4, dt 0.00025)    deviation           limit
+#   uy(A)      1.45e-3 +- 3.391e-2 m 5.464 Hz   1.47e-3 +- 3.499e-2 m 5.46 Hz       amp 3.09 %, f 0.07 %  5 %, 3 %
+#   ux(A)      -2.70e-3 +- 2.55e-3 m 10.92 Hz   -2.88e-3 +- 2.72e-3 m 10.93 Hz      mean 6.2 %          15 %
+#   drag       469.8 +- 25.3 N/m 10.92 Hz       460.5 +- 27.74 N/m 10.93 Hz         mean 2.03 %, amp 8.9 %  5 %, 25 %
+#   lift       9.9 +- 153.4 N/m 5.461 Hz        2.50 +- 153.91 N/m 5.46 Hz          amp 0.31 %          10 %
+# REQ-FSI3-1 to -6 PASS (unverified), margins 1.9 / 2.9 / 3.0 / 16.1 / 9.7 / 8.8 points. Single mesh at 2.5 mm: the
+# displacement amplitudes sit 3-6 % low and the drag mean 2 % high, all inside the benchmark's own spread between its
+# levels (uy amplitude 3.43-3.57e-2, drag mean 445-461); a mesh / time-step study would say how much is ours.
+#
+# Predictions against the run:
+#   P1 HIT: periodic by about 4.7 s (predicted about 5), last two periods 1.6e-5; every window converged; the mesh
+#      survived. PARTLY on the iterations: 6.5 per window (in 6-12) but FEWER than FSI2's 7.2, not more.
+#   P2 HIT: amplitude 3.39e-2 (in 3.35-3.60), frequency 5.464 Hz (in 5.3-5.55).
+#   P3 HIT, the drag mean at the top edge: 469.8 (445-470), amplitude 25.3 (20-32) at 10.92 Hz; lift amplitude 153.4
+#      (140-165).
+#   P4 HIT: -2.70e-3 (-2.6 to -3.1e-3).
+#   P5 PARTLY: every requirement passes, unverified; the drag amplitude was the largest relative miss (8.9 %), as
+#      predicted, but with a wide margin.
+#   P6 MISSED: the transfer could not be evaluated (as FSI2); inflow exact.
+#   P7 HIT: 8 h 24 min (6-10 h).
 
 [case]
 name = "turek_hron_fsi3"
