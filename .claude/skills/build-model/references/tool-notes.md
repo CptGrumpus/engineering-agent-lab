@@ -506,6 +506,27 @@ Traps found while building the studies in this repo, by tool.
   mean torque is 33-70 N m with 18-27 N m of ripple, and 3 p (phi_d iq - phi_q id) from the mean fluxes missed FEMM's
   torque by up to 1 % (0.3 N m). Interpolate FEMM's torque for the map; the dq fluxes are for the voltage limit.
 
+## ElmerFEM 2D magnetostatics (the independent motor model, study 7)
+
+Install: the official Windows zip (`ElmerFEM-nogui-nompi-Windows-AMD64-rel26.1.zip`, CSC mirror
+nic.funet.fi/pub/sci/physics/elmer/bin/windows/rel26.1/) unpacked to `~/tools/elmer-26.1/`; no admin rights. Set
+`ELMER_HOME` to the unpacked folder and put its `bin` and `lib` on PATH (`models/motor/elmer_em.elmer_env`). The
+26.1 package's solver banner says "9.0" (compiled 2026-01-20): record both. Mesh with the `gmsh` Python wheel
+(4.15, optional dependency `em`), write MSH 2.2, convert with `ElmerGrid 14 2 machine.msh -out mesh`.
+- **Magnetisation convention:** MagnetoDynamics2D uses B = mu (H + M) ('Magnetization 1/2'), so M = Hc = Br /
+  (mu0 mu_r), the same number FEMM takes. Verified on a closed form (uniformly magnetised cylinder in air: B inside =
+  Br / (1 + mu_r), -0.07 %); the other convention would read -11 %, the size of the effect study 7 was chasing.
+- **'H-B Curve'** is H as a function of |B| (first column B). A plain `Real` table is piecewise linear and
+  extrapolates its last segment; densify a sparse datasheet table with a monotone interpolation (PCHIP) so Newton
+  sees a smooth slope.
+- **VTU output is in metres** when `Coordinate Scaling = 0.001` is set (the mesh was in mm), and the `<Points>`
+  array has no Name attribute. A post-processor that assumed mm read a field 1000x off and fitted the wrong nodes.
+- **OpenCASCADE arcs:** dedupe points on rounded keys but create them at exact coordinates; rounding the
+  coordinates to 1e-6 mm made an arc's start and end radii differ by ~2e-6 mm and `addCircleArc` failed. Split arcs
+  near pi (OCC draws the shorter arc). `getParametrizationBounds` returns one-element arrays: unpack them.
+- **Mesh size:** with second-order triangles, gap 0.20 mm / holes 0.40 mm / far 3 mm on the full Prius machine is
+  about 690,000 nodes (the mesher takes about 25 s); size the coarsest level of a mesh study from that.
+
 ## Reading dimensions from published PDFs (PyMuPDF, study 7)
 
 - Engineering figures in reports are often vector drawings: `page.get_text("words")` gives the dimension labels
