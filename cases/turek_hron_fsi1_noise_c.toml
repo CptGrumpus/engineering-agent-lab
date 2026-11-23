@@ -15,6 +15,26 @@
 #      movement in r1 is real and the scatter explanation is wrong.
 #   P3 About 2-3 h each, concurrently (r1's 1.77 mm level took about 1 h 45 min alone).
 #   This one: fluid cells 1.80 mm.
+#
+# Results (run 20261123-031538_turek_hron_fsi1_noise_c, 03:15-04:54, 1 h 39 min): VERIFICATION PASS, 6/6 point checks; uy(A) 0.83504 mm (1.73 % high), ux(A) 2.2552e-5 m, drag 14.3041, lift 0.75855 N/m; force transfer 4.4e-5 (end balance, no watch-integrals).
+#   Together (b, c, d and r1's middle mesh, 1.75 / 1.80 / 1.83 / 1.77 mm; a excluded, below): peak-to-peak range
+#   over the mean: uy(A) 1.94 % (0.81900 / 0.83504 / 0.82489 / 0.82119 mm), ux(A) 0.20 %, drag 0.075 %, lift 1.12 %
+#   (sample standard deviations 0.86 / 0.09 / 0.03 / 0.49 %). Against r1's three-level spreads (uy 1.01 %, ux 0.42 %,
+#   drag 0.047 %, lift 0.49 %): uy, drag and lift move between r1's meshes by less than they scatter at one size;
+#   ux moves by more (a real trend). Declared in turek_hron_fsi1_mesh_r2.
+#   P1 PARTLY: every point check passed on all four, but on a the answer was wrong (below): the checks missed it.
+#   P2 HELD for b-d (uy 1.9 %, at the 'about 1 %' end that makes r1's differences noise; drag 0.075 %, lift 1.1 %
+#      against 0.2-0.6 % predicted); MISSED with a.
+#   P3 MISSED (faster): 1 h 32 min to 1 h 49 min each, two at a time beside two step runs.
+#   Mesh a: uy(A) 0.59284 mm, 28 % below the other three (ux +2.6 %, drag +0.04 %, lift -1.5 %), with VERIFICATION
+#   PASS. Cause, found afterwards by regenerating its mesh from the kept mesh.geo (same 27717 cells): one fluid cell
+#   wraps the flag's upper tip corner (0.600, 0.210) m. Two cells meet there (165 and 105 deg) where every other
+#   Turek-Hron mesh (24 checked: CFD1, CFD2, FSI1, r1, FSI2, FSI3, b-d) has three of about 90 deg, and no
+#   flag-adjacent cell over 128 deg. checkMesh calls it OK (max skewness 0.994, against 0.64-0.79 elsewhere). The
+#   flag's own lift is only 5 % low (3.96e-3 against 4.14-4.19e-3 N): the error is a local load at the tip, where the
+#   moment arm is longest (a tip load of about 1.5e-4 N gives the 0.23 mm). New point check flag_cells (largest
+#   interior angle of the fluid cells touching the flag, limit 140 deg; studies/turek_hron_fsi.py, 2026-11-23) fails
+#   such a mesh; a is excluded from the noise estimate for that reason, and kept on record.
 
 [case]
 name = "turek_hron_fsi1_noise_c"

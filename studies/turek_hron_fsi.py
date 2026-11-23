@@ -116,6 +116,52 @@ def transfer_per_window(wi_fluid: dict, wi_solid: dict, Ff: np.ndarray, t0: floa
             "transfer_windows": int(sel.sum()), "transfer_from_s": float(t0), "transfer_to_s": float(t2)}
 
 
+def read_msh22_base(path: Path) -> tuple[dict, list]:
+    """Gmsh 2.2 ASCII mesh of the extruded 2D domain: node xy, and the z = 0 face of each hexahedron (or the
+    quads / triangles themselves in a 2D mesh)."""
+    lines = path.read_text(encoding="utf-8").splitlines()
+    i = lines.index("$Nodes")
+    xyz = {}
+    for ln in lines[i + 2:i + 2 + int(lines[i + 1])]:
+        a = ln.split()
+        xyz[int(a[0])] = (float(a[1]), float(a[2]), float(a[3]))
+    i = lines.index("$Elements")
+    cells3, cells2 = [], []
+    for ln in lines[i + 2:i + 2 + int(lines[i + 1])]:
+        a = [int(v) for v in ln.split()]
+        nodes = a[3 + a[2]:]
+        if a[1] in (5, 6):                     # hexahedron / prism: base = the nodes at z = 0, in element order
+            cells3.append([k for k in nodes if abs(xyz[k][2]) < 1e-12])
+        elif a[1] in (2, 3):
+            cells2.append(nodes)
+    return {k: v[:2] for k, v in xyz.items()}, (cells3 or cells2)
+
+
+def flag_cell_quality(xy: dict, cells: list, x_root: float, x_end: float, y_lo: float, y_hi: float) -> dict:
+    """Largest interior angle of the fluid cells that touch the flag, and where. A quad wrapped around a tip
+    corner (one cell spanning the 270 deg fluid corner, its angle there near 180 deg) puts a force error at the
+    flag tip, where the moment arm is largest: turek_hron_fsi1_noise_a (2026-11-23), angle 165 deg, uy(A) 28 %
+    low while every other check passed. The 22 other Turek-Hron meshes reach 128 deg at most."""
+    def on_flag(p):
+        x, y = p
+        return ((x_root - 1e-6 <= x <= x_end + 1e-9 and (abs(y - y_lo) < 1e-9 or abs(y - y_hi) < 1e-9))
+                or (abs(x - x_end) < 1e-9 and y_lo - 1e-9 <= y <= y_hi + 1e-9))
+    worst, at = 0.0, [float("nan"), float("nan")]
+    for c in cells:
+        if len(c) < 3 or not any(on_flag(xy[k]) for k in c):
+            continue
+        pts = np.array([xy[k] for k in c])
+        cen = pts.mean(axis=0)
+        order = np.argsort(np.arctan2(pts[:, 1] - cen[1], pts[:, 0] - cen[0]))   # robust to node ordering
+        pts = pts[order]
+        for j in range(len(pts)):
+            u, v = pts[j - 1] - pts[j], pts[(j + 1) % len(pts)] - pts[j]
+            ang = float(np.degrees(np.arccos(np.clip(u @ v / np.linalg.norm(u) / np.linalg.norm(v), -1, 1))))
+            if ang > worst:
+                worst, at = ang, [float(cen[0]), float(cen[1])]
+    return {"flag_cell_max_angle_deg": worst, "flag_cell_max_angle_at_m": at}
+
+
 def _window_means(numerics, Ff, rf_blocks) -> dict:
     """Means of the flag's fluid force and the clamp reaction over the last numerics.metric_average_s (opt-in).
     Caution: under the preCICE adapter CalculiX prints the reaction only at the last increment, so its 'mean' is the
@@ -229,6 +275,9 @@ class PreciceFSI(Backend):
         (fl / "log.gmsh").write_text(g.stdout + g.stderr, encoding="utf-8")
         if g.returncode != 0 or not (fl / "mesh.msh").exists():
             return failed("Gmsh failed") | {"files": files(), "cleanup": work}
+        W = self.writer
+        quality = flag_cell_quality(*read_msh22_base(fl / "mesh.msh"), W.XC + (W.R ** 2 - (W.FLAG_H / 2) ** 2) ** 0.5,
+                                    W.XC + W.R + W.FLAG_L, W.YC - W.FLAG_H / 2, W.YC + W.FLAG_H / 2)
         r = subprocess.run(of.wsl_command("bash", of.to_wsl_path(self.runner), of.to_wsl_path(case), self.bashrc),
                            capture_output=True, text=True, timeout=float(numerics.get("solver_timeout_s", 21600)))
         (fl / "mesh.msh").unlink(missing_ok=True)
@@ -254,7 +303,7 @@ class PreciceFSI(Backend):
         series = {"t_s": wp[:, 0], "ux_A_m": wp[:, 3], "uy_A_m": wp[:, 4],
                   "drag_N_per_m": np.interp(wp[:, 0], F[:, 0], (F[:, 1] + F[:, 3]) / d),
                   "lift_N_per_m": np.interp(wp[:, 0], F[:, 0], (F[:, 2] + F[:, 4]) / d)}
-        outputs = info | {"cells": int(chk.split("cells:")[1].split()[0]), "mesh_ok": "Mesh OK." in chk,
+        outputs = info | quality | {"cells": int(chk.split("cells:")[1].split()[0]), "mesh_ok": "Mesh OK." in chk,
                           "windows": int(len(it)), "windows_not_converged": int(np.sum(it[:, 3] < 0.5)),
                           "coupling_iterations_mean": float(np.mean(it[:, 2])),
                           "coupling_iterations_max": int(np.max(it[:, 2])),
@@ -375,6 +424,10 @@ class TurekHronFSIStudy(Study):
                     "under the preCICE adapter, and the end-of-run balance of an oscillating flag includes its inertia")
         checks = [
             check("mesh", "checkMesh reports Mesh OK (1 = failed)", 0.0 if out["mesh_ok"] else 1.0, 0.5),
+            *([check("flag_cells", "largest interior angle (deg) of the fluid cells touching the flag, at "
+                     f"({out['flag_cell_max_angle_at_m'][0]:.4f}, {out['flag_cell_max_angle_at_m'][1]:.4f}) m (a "
+                     "cell wrapped around a tip corner reads near 180)", out["flag_cell_max_angle_deg"],
+                     tol.get("flag_cell_max_angle_deg", 140.0))] if "flag_cell_max_angle_deg" in out else []),
             check("coupling_converged", "coupling windows that hit the iteration limit without converging",
                   float(out["windows_not_converged"]), 0.5),
             check("periodic" if n_per else "steady", steady_text, steady,
@@ -403,8 +456,14 @@ class TurekHronFSIStudy(Study):
         fine = done[:3]
         hs = tuple(float(pt["parameters"]["fluid_cell_size_m"]) for pt in fine)
         checks, detail = [], {"meshes_used": [pt["label"] for pt in fine]}
+        # verification.mesh_noise_rel: the mesh-to-mesh scatter at one nominal size, measured independently
+        # (regenerated, unstructured meshes; turek_hron_fsi1_noise_a-d), as one number or a table by metric. Three
+        # levels spreading less than it are converged within the noise (uncertainty 1.25 x half the spread).
+        noise = tol.get("mesh_noise_rel", 1e-5)
         for m in METRICS:
-            u = discretization_uncertainty(hs, tuple(pt["metrics"][m] for pt in fine), design_order=2)
+            floor = float(noise.get(m, 1e-5) if isinstance(noise, dict) else noise)
+            u = discretization_uncertainty(hs, tuple(pt["metrics"][m] for pt in fine), design_order=2,
+                                           noise_floor=floor)
             detail[m] = u
             checks.append(check(f"discretization_{m}", f"relative discretization uncertainty of {m}, {describe(u)}",
                                 u["uncertainty"], tol["gci_max"]) | {"metric": self._dev_name(m)})

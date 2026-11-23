@@ -147,3 +147,42 @@ def test_precice_config_has_watch_integrals(tmp_path):
     xml = (tmp_path / "case" / "precice-config.xml").read_text(encoding="utf-8")
     assert '<watch-integral mesh="Fluid-Mesh" name="Wet" scale-with-connectivity="false" />' in xml
     assert '<watch-integral mesh="Solid-Mesh" name="Wet" scale-with-connectivity="false" />' in xml
+
+
+def test_flag_cell_quality_flags_a_cell_wrapped_around_the_tip_corner():
+    from studies.turek_hron_fsi import flag_cell_quality
+    # flag top y = 0.21, tip x = 0.6. Good corner: three square cells share the corner node (0.6, 0.21).
+    h = 0.002
+    xy = {1: (0.6 - h, 0.21), 2: (0.6, 0.21), 3: (0.6, 0.21 + h), 4: (0.6 - h, 0.21 + h), 5: (0.6 + h, 0.21 + h),
+          6: (0.6 + h, 0.21), 7: (0.6 + h, 0.21 - h), 8: (0.6, 0.21 - h)}
+    good = [[1, 2, 3, 4], [2, 6, 5, 3], [8, 7, 6, 2]]
+    q = flag_cell_quality(xy, good, 0.25, 0.6, 0.19, 0.21)
+    assert q["flag_cell_max_angle_deg"] == pytest.approx(90.0)
+    # noise_a's defect: one quad spans the corner, nearly flat (165 deg) at the corner node.
+    xy |= {9: (0.6 + 0.0014, 0.21 + 0.00037), 10: (0.6 - 0.00034, 0.21 + 0.0013)}
+    bad = [[1, 2, 9, 10]]
+    q = flag_cell_quality(xy, bad, 0.25, 0.6, 0.19, 0.21)
+    assert q["flag_cell_max_angle_deg"] > 150 and q["flag_cell_max_angle_at_m"][0] == pytest.approx(0.6, abs=2e-3)
+    # cells away from the flag are ignored
+    far = {11: (1.0, 0.3), 12: (1.01, 0.3), 13: (1.01, 0.301), 14: (1.0, 0.35)}
+    assert flag_cell_quality(far, [[11, 12, 13, 14]], 0.25, 0.6, 0.19, 0.21)["flag_cell_max_angle_deg"] == 0.0
+
+
+def test_mesh_noise_table_classes_a_spread_under_the_noise_as_converged():
+    import copy
+
+    import studies.turek_hron_fsi as T
+    pts = []
+    for i, (h, uy) in enumerate(((0.0025, 0.81749e-3), (0.0017677670, 0.82119e-3), (0.00125, 0.81300e-3))):
+        m = {"ux_A_m": 2.26e-5 * (1 + 0.001 * i), "uy_A_m": uy, "drag_N_per_m": 14.29 + 0.001 * i,
+             "lift_N_per_m": 0.762 + 0.001 * i}
+        pts.append({"status": "completed", "parameters": {"fluid_cell_size_m": h}, "metrics": m, "label": f"p{i}"})
+    case = {"sweep": {"parameter": "fluid_cell_size_m"}, "verification": {"gci_max": 0.01}}
+    _, d0 = T.STUDY.verify_run_level(case, {"points": pts}, None)
+    assert d0["uy_A_m"]["uncertainty"] == float("inf")                 # r1: 'divergent (oscillating, growing)'
+    case2 = copy.deepcopy(case)
+    case2["verification"]["mesh_noise_rel"] = {"uy_A_m": 0.0194}
+    _, d1 = T.STUDY.verify_run_level(case2, {"points": pts}, None)
+    assert d1["uy_A_m"]["regime"] == "converged"
+    assert d1["uy_A_m"]["uncertainty"] == pytest.approx(1.25 * 0.5 * (0.82119 - 0.81300) / 0.81300, rel=1e-6)
+    assert d1["drag_N_per_m"] == d0["drag_N_per_m"]                     # metrics not in the table: unchanged
