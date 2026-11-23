@@ -600,8 +600,9 @@ pages = [home_page(facts)] + [study_page(c[0]) for c in GALLERY] + [
               "grading", {"{{GRADER}}": grader_body, "{{TASK_COUNT_WORD}}": TASK_WORDS[len(gdata)]},
               scripts=f"<script>\n{grader_js}\n</script>"),
     text_page("in-progress.html", "progress.html", "In progress", "Studies in progress",
-              "A flexible flag behind a cylinder (fluid-structure interaction), flow over a backward-facing step against "
-              "measured data, and a bracket arm under random vibration.", "in-progress", {}),
+              "The traction motor's revision after its blind test, a flexible flag behind a cylinder (fluid-structure "
+              "interaction) and an uncertainty study on a random-vibration pass; flow over a step and the random-vibration "
+              "study just finished.", "in-progress", {}),
     reqs_page(),
 ]
 
