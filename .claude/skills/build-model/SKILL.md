@@ -95,6 +95,14 @@ per problem type:
    gets a run or a hand estimate of what EXACTLY changes (study 7's dismissal estimate thinned the pocket with the
    magnet, -0.4 %; the real change leaves air in series, -23 to -28 %). A difference the template cannot represent
    is an assumption in the case file with its estimated effect, not a silent default.
+   How to make the audit complete (study 7's audit, `validation/motor_ornl/DRAWING_AUDIT.md`): list every label on
+   the drawing and mark the ones the model does not use (study 7: 11 of 25, most on the stator's mounting ears, but
+   also two bridge values and the magnet stops); render the whole part, not only the sector you measured (one
+   rotor view settled "is there a centre rib?"); check what the solver leaves out of the template, not only what
+   the template draws (Pyleecan leaves the shaft unmeshed, so a steel hub ring that the designer's own model
+   counted as rotor iron was missing); and for each such gap, read the saved field (flux density in the region)
+   before estimating it: unsaturated iron in parallel changes little. Mark which inherited values are used at all
+   (Pyleecan's end-winding length is not; the efficiency study computes its own).
 4. **Run the tool by hand once**, outside the harness, on a coarse setup: does it
    mesh, does the mesh check pass, does it converge, where are the outputs?
    Tool-specific traps are in [references/tool-notes.md](references/tool-notes.md).
