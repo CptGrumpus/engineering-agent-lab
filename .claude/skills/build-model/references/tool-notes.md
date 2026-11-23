@@ -325,8 +325,10 @@ Traps found while building the studies in this repo, by tool.
   19 at both ends), and the converged f does not change (4e-8). **But it slows SIMPLE's convergence by orders of
   magnitude on wall-resolved grids** (study 19, r1): the same n160 mesh converged to 3e-11 in 15000 iterations with
   2 mm, and only to 9e-5 after 80000 with 0.10 mm; n320 and a probe at n640 never converged. Use the default D/50
-  wherever checkMesh allows it (at Re 1e5 up to n320, ratio 759); use the rule only where it does not (Re 2e6
-  wall-resolved, n640), and budget far more iterations there. Wall-function meshes converged fine with it.
+  wherever checkMesh allows it (at Re 1e5 up to n320, ratio 759). Where it does not, shorten the length only as far as
+  checkMesh needs, not to the geometric mean: n640 at Re 1e5 with 1 mm (half the default, ratio 760) converged, slowly
+  (gradient steady to 1.6e-10 within the 300000-iteration cap; residuals never reach 1e-9), and n160 / n320 repeated
+  their 2 mm values exactly (r3). Wall-function meshes converged fine with the rule.
 - **The pressure residual never falls in a fully periodic domain** (pressure is a constant there): set its
   residual control to 1 and judge convergence on the meanVelocityForce gradient's history and on U, k, omega.
 - **Until converged, the two routes to f disagree:** the wall shear and the meanVelocityForce gradient differ by the
