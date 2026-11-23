@@ -2,13 +2,15 @@
 
 [Portfolio index](../PORTFOLIO.md) · Fluids and structures (coupled)
 
-> **Draft, in progress (updated 2026-11-22).** The solid and fluid stages are verified. The coupled stage
-> runs (preCICE): the steady case (FSI1) reproduces the benchmark within 1 %; the two periodic cases (FSI2, FSI3)
-> are running. Numbers marked *pending* are filled in as their runs finish.
+> **Draft, in progress (updated 2026-11-23).** The solid and fluid stages are verified. The coupled stage
+> (preCICE): the steady case (FSI1) reproduces the benchmark within 1 %; the two periodic cases (FSI2, FSI3)
+> reproduce it within 2 % and 9 % on one mesh, but their verification failed on a check that turned out to be
+> unable to measure what it claimed (below), so they are not verified yet. Next: measure FSI1's mesh-to-mesh scatter
+> (running), then a periodic rerun with a force-transfer check that works for a swinging flag.
 
 | | |
 |---|---|
-| **Answer so far** | Both single-physics halves reproduce the published Turek-Hron benchmark before any coupling. Solid, static (CSM1, CSM2): the tip displacement extrapolates to within 0.015 % of the published values. Fluid (CFD1): drag within 0.07 %, lift within 0.6 % on every mesh. Solid, dynamic (CSM3): frequency 1.0946 Hz, 0.09 % from the published band (verified). Fluid at Re 100 (CFD2): drag within 0.014 % when extrapolated, lift within 0.7 % on the finer meshes. Coupled, steady (FSI1): drag and lift verified (0.03 % and 0.18 % from the published values on the finest mesh, mesh uncertainty 0.03 % and 0.3 %); the tip displacement is within 1 % on every mesh, but scatters by about ±0.5 % between meshes, so its mesh uncertainty can't be estimated. FSI2 and FSI3: *pending*. |
+| **Answer so far** | Both single-physics halves reproduce the published Turek-Hron benchmark before any coupling. Solid, static (CSM1, CSM2): the tip displacement extrapolates to within 0.015 % of the published values. Fluid (CFD1): drag within 0.07 %, lift within 0.6 % on every mesh. Solid, dynamic (CSM3): frequency 1.0946 Hz, 0.09 % from the published band (verified). Fluid at Re 100 (CFD2): drag within 0.014 % when extrapolated, lift within 0.7 % on the finer meshes. Coupled, steady (FSI1): drag and lift verified (0.03 % and 0.18 % from the published values on the finest mesh, mesh uncertainty 0.03 % and 0.3 %); the tip displacement is within 1 % on every mesh, but scatters by about ±0.5 % between meshes, so its mesh uncertainty can't be estimated. Coupled, periodic, one mesh (FSI2, FSI3): the oscillation starts on its own and every published quantity is reproduced, FSI2 within 2.1 % and FSI3 within 9 % (amplitudes 3-6 % low, drag 2 % high, inside the benchmark's own level-to-level spread); not verified, because one check was defective. |
 | **Discipline** | Structures (large deflection, dynamics), fluids, fluid-structure interaction |
 | **Tools** | CalculiX (solid), OpenFOAM 14 with Gmsh (fluid), Python; preCICE 3.4.1 with OpenFOAM v2512 for the coupled stage |
 | **Methods** | Geometrically nonlinear static and dynamic FE, a large-deflection elastica as an independent reference, steady laminar CFD, mesh and time-step refinement with GCI, published benchmark values as the acceptance requirement |
@@ -53,7 +55,24 @@ published results first, and only then are they coupled.
   published 0.8209, within 1 % each time but up and then down. The "drift away" was scatter: the new middle mesh sits
   on the benchmark. Three regenerated meshes cannot separate a ±0.5 % scatter from a trend, so that verdict stays
   unverified (it passes its 3 % limit on every mesh).
-- **Coupled, periodic (FSI2, FSI3)**: *pending*.
+- **Coupled, periodic (FSI2, FSI3), one fluid mesh (2.5 mm).** Nothing is done to start the oscillation: the
+  flow and the flag start symmetric and at rest, and the swing grows on its own from about 5 s (FSI2) and 3 s (FSI3),
+  settling to a repeatable cycle (the last two periods agree to 1e-4 or better). Every coupling window converged
+  (15000 and 16000 windows, 6.5-7 iterations each).
+
+  | | FSI2 (Re 100, flag 10x denser than the fluid) | FSI3 (Re 200, equal density) |
+  |---|---|---|
+  | tip vertical amplitude | 82.1 mm against 81.6 (+0.7 %) | 33.9 mm against 35.0 (-3.1 %) |
+  | frequency | 1.931 Hz against 1.93 | 5.464 Hz against 5.46 |
+  | drag mean / amplitude | 217.4 / 78.0 N/m against 215.1 / 77.7 | 469.8 / 25.3 against 460.5 / 27.7 |
+  | lift amplitude | 242.7 N/m against 237.8 (+2.1 %) | 153.4 against 153.9 (-0.3 %) |
+  | tip horizontal mean | -15.0 mm against -14.85 (1.1 %) | -2.70 mm against -2.88 (6.2 %) |
+  | wall time (one core each, side by side) | 7 h 42 min | 8 h 24 min |
+
+  Every requirement passes (limits from the benchmark's own spread, set before the runs), and every prediction of
+  the values landed in its range. The verdicts are marked unverified anyway: see the force-transfer check below.
+  FSI3's misses are inside the spread between the benchmark's own mesh levels; whether they are ours needs a mesh and
+  time-step study, which comes with the rerun.
 
 ## How it works
 
@@ -109,14 +128,23 @@ published results first, and only then are they coupled.
 - **A suspect ruled out cheaply.** The tip displacement moved away from the benchmark as the fluid mesh refined. The
   obvious suspect, the solid mesh held at 2.5 mm, was tested on one point first: halving it moved the tip 0.035 % and
   took four times as long. The six-hour revision went to the fluid side instead.
+- **A check that could not measure what it claimed.** The force-transfer check (fluid force on the flag + the
+  clamp reaction in the solid = 0) failed both periodic runs, at 1.5 and 0.9 against 0.01. The prediction had said
+  why it needs care: a swinging flag's own inertia is in that balance at any instant, and cancels only over whole
+  periods. The code was asked for whole-period means, but under the coupling adapter CalculiX writes the reaction
+  only at the very last step (the file stayed empty for 8 hours, then held one entry), so there was nothing to
+  average, and the code quietly fell back to the end-of-run values. FSI1 passed the same check only because a
+  steady flag has no inertia. The failures stand on record; the check now reports "not evaluable" instead of
+  falling back, and the rerun will compare the force the solid receives each window with the fluid's force at the
+  same instant, which involves no inertia at all.
 - **Smaller finds.** CalculiX uses one print frequency for every request in a step, so one request
   silently thinned another's output. The `.dat` file's seven digits limit how well equilibrium can close.
 
 ## Limits
 
 - 2D, as the benchmark defines it.
-- The fluid stages are steady; the coupled FSI2 and FSI3 cases are periodic and will need a transient
-  fluid solver.
+- FSI2 and FSI3 are on one fluid mesh and one time step so far, and not verified (the force-transfer check above).
+- Laminar, as the benchmark defines it; the transient fluid solver is first order in its mesh motion.
 - The published reference values are themselves numerical, and their rows are not all labelled with the
   time step they used.
 
@@ -126,6 +154,7 @@ published results first, and only then are they coupled.
   [CSM2 mesh study](../runs/20261121-131133_flag_csm2_mesh/report.md) (both verification PASS)
 - solid, dynamic: [CSM3, final](../runs/20261121-184353_flag_csm3_dt_r3/report.md) (frequency and ux verified), with the [first run](../runs/20261121-132448_flag_csm3_dt/report.md) (energy drift), [r1](../runs/20261121-142836_flag_csm3_dt_r1/report.md) and [r2](../runs/20261121-164522_flag_csm3_dt_r2/report.md) (the divergence and the wrong diagnosis) kept as evidence
 - coupled, steady: [FSI1 first mesh study](../runs/20261121-203031_turek_hron_fsi1_mesh/report.md) (drag converged; lift noise and the tip drift withheld it); [revision 1](../runs/20261122-125809_turek_hron_fsi1_mesh_r1/report.md) (drag and lift verified; tip within 1 %, its mesh uncertainty not estimable), with its predictions and Results in `cases/turek_hron_fsi1_mesh_r1.toml`
+- coupled, periodic: [FSI2](../runs/20261122-184933_turek_hron_fsi2/report.md), [FSI3](../runs/20261122-185044_turek_hron_fsi3/report.md) (verification FAIL on the defective check; predictions and Results in `cases/turek_hron_fsi2.toml`, `cases/turek_hron_fsi3.toml`)
 - fluid: [CFD1 first mesh study](../runs/20261121-140245_turek_hron_cfd1_mesh/report.md) (lift verified), [CFD1 refined](../runs/20261121-140657_turek_hron_cfd1_mesh_r1/report.md) (drag verified), [CFD2](../runs/20261121-151947_turek_hron_cfd2_mesh/report.md) (drag verified, lift withheld on mesh noise)
 - case files: `cases/flag_csm1_mesh.toml`, `cases/flag_csm2_mesh.toml`, `cases/flag_csm3_dt.toml`,
   `cases/flag_csm3_dt_r1.toml`, `cases/turek_hron_cfd1_mesh.toml`, `cases/turek_hron_cfd1_mesh_r1.toml`,
