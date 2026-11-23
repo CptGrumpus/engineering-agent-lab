@@ -17,6 +17,22 @@
 #   P4 Every point check passes: references within 0.5 %, the Campbell crossing within 0.5 % of ROSS's search.
 #   P5 Under 5 min for six points.
 # Recommendation the study is expected to support: 65 mm (60 mm leaves no margin for a soft pedestal).
+#
+# Results (run 20261123-162721_rotor_fan_design, 16:27-16:30): VERIFICATION PASS, 30/30 checks.
+#   shaft / bearings   first forward critical   REQ-G1 margin        REQ-G2 response
+#   50 mm 1e7 / 1e8    2710 / 2911 rpm          -9.7 / -3.0 % FAIL    335 / 345 um FAIL
+#   60 mm 1e7 / 1e8    3429 / 3957 rpm          14.3 % FAIL / 31.9 %  8.7 / 3.8 um PASS
+#   65 mm 1e7 / 1e8    3714 / 4494 rpm          23.8 / 49.8 % PASS    5.0 / 2.3 um PASS
+#   P1 HELD at 1e8 N/m on every diameter and at 1e7 for 50 mm; MISSED at 1e7 for 60 and 65 mm (3429 against 3460-3560,
+#      3714 against 3790-3880): with soft bearings the whole shaft moves, so more of its mass takes part than the
+#      Rayleigh factor (17/35, a simply supported mode shape) assumes.
+#   P2 HELD for 50 and 65 mm; for 60 mm on soft bearings the margin landed at 14.3 %, just under the limit and outside
+#      the predicted 15-19 % band (P1's miss carried through).
+#   P3 HELD.   P4 HELD except by a hair: the bare-shaft reference differs 0.504 % at 65 mm (predicted within 0.5 %;
+#      the 1 % check passes).   P5 HELD (3.5 min).
+#   Answer: the 50 mm shaft runs through its first critical speed inside the operating range; 60 mm clears it only on
+#   stiff bearings; 65 mm keeps at least 23.8 % margin over the whole bearing band and the response under 5 um.
+#   Recommendation: 65 mm (element convergence: rotor_fan_mesh).
 
 [case]
 name = "rotor_fan_design"

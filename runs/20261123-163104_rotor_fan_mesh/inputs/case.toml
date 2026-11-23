@@ -1,0 +1,71 @@
+# Study G, element convergence for rotor_fan_design: the recommended 65 mm shaft on the soft bearing (1e7 N/m, the
+# governing end of the band), 10 / 20 / 40 Timoshenko elements. The run-level check applies the GCI to the first
+# forward critical speed and the unbalance response.
+#
+# Predictions (written and committed BEFORE the run, 16:26):
+#   P1 First forward critical speed changes by under 0.05 % from 20 to 40 elements (Timoshenko elements converge fast
+#      for a smooth shaft); GCI under 0.1 % on it and on the unbalance response: verified.
+#   P2 Every point check passes; under 3 min.
+
+[case]
+name = "rotor_fan_mesh"
+model = "ross_rotor"
+description = "Element convergence of the fan rotor (65 mm shaft, bearings 1e7 N/m): 10 / 20 / 40 Timoshenko elements; first forward critical speed and unbalance response."
+assumptions = [
+  "Solid steel shaft (E 205 GPa, density 7850 kg/m^3, Poisson 0.29), Timoshenko elements with rotary inertia and gyroscopic terms; the impeller a rigid steel disc 400 x 25 mm bored to the shaft, at mid-span. [synthetic geometry]",
+  "Two equal linear isotropic bearings at the shaft ends, stiffness 1e7-1e8 N/m (rolling bearings on pedestals: the band covers the unknown pedestal), damping 500 N s/m each. [synthetic]",
+  "No aerodynamic cross-coupling, no foundation mass, no seal forces; the impeller's overhang and blades are lumped in the disc.",
+  "API 684-style unbalance U = 6350 W / N_max g mm with W the rotor mass (kg), N_max 3000 rpm, at the disc.",
+]
+limitations = [
+  "Separation margin simplified to a fixed 15 %; API 684 sets it from each mode's amplification factor.",
+  "Linear bearings: a rolling bearing's stiffness rises with load and speed; the band is meant to cover that.",
+]
+
+[parameters]
+density_kg_per_m3 = 7850.0
+youngs_modulus_Pa = 205.0e9
+poisson_ratio = 0.29
+n_elements = 20
+bearing_span_m = 1.0
+shaft_diameter_m = 0.065
+disc_width_m = 0.025
+disc_diameter_m = 0.40
+bearing_stiffness_N_per_m = 1.0e7
+bearing_damping_Ns_per_m = 500.0
+speed_min_rpm = 1000.0
+speed_max_rpm = 3000.0
+campbell_max_rpm = 9000.0
+campbell_points = 91
+modes = 6
+response_points = 41
+
+[sweep]
+parameter = "n_elements"
+values = [10, 20, 40]
+
+[numerics]
+solver_timeout_s = 1800
+
+[verification]
+closed_form_rel_tol = 0.01        # Timoshenko against the Euler-Bernoulli / Jeffcott closed forms: shear, disc width
+crossing_rel_tol = 0.01           # Campbell 1x crossing against ROSS's Newton search (its own rtol is 0.005)
+campbell_step_max_rel = 0.05      # speed step / first critical speed
+gci_max = 0.01
+noise_rel = 1e-6
+
+[[requirements]]
+id = "REQ-G1"
+text = "Every forward critical speed shall lie at least 15 % outside the 1000-3000 rpm operating range (none in 850-3450 rpm; API 684-style separation margin, simplified to a fixed 15 %)."
+metric = "separation_margin_pct"
+operator = ">="
+limit = 15.0
+units = "%"
+
+[[requirements]]
+id = "REQ-G2"
+text = "The impeller's unbalance response (0-peak) shall stay at or below 50 um over the operating range with API 684's unbalance, U = 6350 W / N_max g mm."
+metric = "unbalance_amp_max_um"
+operator = "<="
+limit = 50.0
+units = "um"

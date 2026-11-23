@@ -1,0 +1,108 @@
+# Study G, rotor critical speeds (BACKLOG "Open for the user" (e), framing approved by the user 2026-11-23 ~16:05):
+# does a fan rotor (steel shaft, bearing span 1.0 m, central 400 x 25 mm steel impeller) running 1000-3000 rpm on a
+# variable-speed drive keep every forward critical speed at least 15 % outside its range for any bearing stiffness in
+# 1e7-1e8 N/m, and which shaft diameter does? Three diameters (50 / 60 / 65 mm) at both ends of the bearing band.
+#
+# Hand estimate (BACKLOG, before any run; Jeffcott with 17/35 of the shaft mass at mid-span, shaft and bearings in
+# series): n1 = 2728 / 2926 rpm (50 mm, 1e7 / rigid), 3502 / 3952 (60 mm, 1e7 / 1e8), 3837 / 4495 (65 mm).
+# Declared hand run (scratch, 2026-11-23 between 16:17 and 16:25, it informs P1): 50 mm at 1e8 N/m: forward critical 2911 rpm (backward
+# 2909), unbalance response 345 um, Jeffcott / series / bare-shaft references within 0.3 %, 19 s.
+#
+# Predictions (written and committed BEFORE the harness run, 16:26):
+#   P1 First forward critical speed (rpm): 50 mm 2700-2760 / 2890-2930; 60 mm 3460-3560 / 3900-4000; 65 mm 3790-3880
+#      / 4430-4520 (at 1e7 / 1e8 N/m).
+#   P2 REQ-G1: 50 mm FAILS at both bearing stiffnesses (critical inside the range); 65 mm PASSES at both (margin about
+#      27 % / 49 %); 60 mm is marginal at 1e7 N/m (margin 15-19 %, may land either side) and passes at 1e8.
+#   P3 REQ-G2: 50 mm FAILS (resonance inside the range: 150-600 um, light bearing damping); 60 and 65 mm PASS (2-15 um).
+#   P4 Every point check passes: references within 0.5 %, the Campbell crossing within 0.5 % of ROSS's search.
+#   P5 Under 5 min for six points.
+# Recommendation the study is expected to support: 65 mm (60 mm leaves no margin for a soft pedestal).
+
+[case]
+name = "rotor_fan_design"
+model = "ross_rotor"
+description = "Fan rotor critical speeds and unbalance response: steel shaft 50 / 60 / 65 mm, bearing span 1.0 m, 400 x 25 mm steel impeller at mid-span, bearings 1e7 and 1e8 N/m, operating range 1000-3000 rpm; ROSS 3.1 Timoshenko rotor, Campbell diagram to 9000 rpm, critical speeds as the 1x crossings, unbalance response with API 684's unbalance."
+assumptions = [
+  "Solid steel shaft (E 205 GPa, density 7850 kg/m^3, Poisson 0.29), Timoshenko elements with rotary inertia and gyroscopic terms; the impeller a rigid steel disc 400 x 25 mm bored to the shaft, at mid-span. [synthetic geometry]",
+  "Two equal linear isotropic bearings at the shaft ends, stiffness 1e7-1e8 N/m (rolling bearings on pedestals: the band covers the unknown pedestal), damping 500 N s/m each. [synthetic]",
+  "No aerodynamic cross-coupling, no foundation mass, no seal forces; the impeller's overhang and blades are lumped in the disc.",
+  "API 684-style unbalance U = 6350 W / N_max g mm with W the rotor mass (kg), N_max 3000 rpm, at the disc.",
+]
+limitations = [
+  "Separation margin simplified to a fixed 15 %; API 684 sets it from each mode's amplification factor.",
+  "Linear bearings: a rolling bearing's stiffness rises with load and speed; the band is meant to cover that.",
+]
+
+[parameters]
+density_kg_per_m3 = 7850.0
+youngs_modulus_Pa = 205.0e9
+poisson_ratio = 0.29
+n_elements = 20
+bearing_span_m = 1.0
+shaft_diameter_m = 0.05
+disc_width_m = 0.025
+disc_diameter_m = 0.40
+bearing_stiffness_N_per_m = 1.0e8
+bearing_damping_Ns_per_m = 500.0
+speed_min_rpm = 1000.0
+speed_max_rpm = 3000.0
+campbell_max_rpm = 9000.0
+campbell_points = 91
+modes = 6
+response_points = 41
+
+[[sweep.scenarios]]
+name = "d50_kb1e7"
+shaft_diameter_m = 0.05
+bearing_stiffness_N_per_m = 1.0e7
+
+[[sweep.scenarios]]
+name = "d50_kb1e8"
+shaft_diameter_m = 0.05
+bearing_stiffness_N_per_m = 1.0e8
+
+[[sweep.scenarios]]
+name = "d60_kb1e7"
+shaft_diameter_m = 0.06
+bearing_stiffness_N_per_m = 1.0e7
+
+[[sweep.scenarios]]
+name = "d60_kb1e8"
+shaft_diameter_m = 0.06
+bearing_stiffness_N_per_m = 1.0e8
+
+[[sweep.scenarios]]
+name = "d65_kb1e7"
+shaft_diameter_m = 0.065
+bearing_stiffness_N_per_m = 1.0e7
+
+[[sweep.scenarios]]
+name = "d65_kb1e8"
+shaft_diameter_m = 0.065
+bearing_stiffness_N_per_m = 1.0e8
+
+[numerics]
+solver_timeout_s = 1800
+
+[verification]
+closed_form_rel_tol = 0.01        # Timoshenko against the Euler-Bernoulli / Jeffcott closed forms: shear, disc width
+crossing_rel_tol = 0.01           # Campbell 1x crossing against ROSS's Newton search (its own rtol is 0.005)
+campbell_step_max_rel = 0.05      # speed step / first critical speed
+gci_max = 0.01
+noise_rel = 1e-6
+
+[[requirements]]
+id = "REQ-G1"
+text = "Every forward critical speed shall lie at least 15 % outside the 1000-3000 rpm operating range (none in 850-3450 rpm; API 684-style separation margin, simplified to a fixed 15 %)."
+metric = "separation_margin_pct"
+operator = ">="
+limit = 15.0
+units = "%"
+
+[[requirements]]
+id = "REQ-G2"
+text = "The impeller's unbalance response (0-peak) shall stay at or below 50 um over the operating range with API 684's unbalance, U = 6350 W / N_max g mm."
+metric = "unbalance_amp_max_um"
+operator = "<="
+limit = 50.0
+units = "um"

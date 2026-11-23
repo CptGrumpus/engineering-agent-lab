@@ -1,0 +1,583 @@
+{
+  "points": [
+    {
+      "label": "p00_d50_kb1e7",
+      "parameters": {
+        "density_kg_per_m3": 7850.0,
+        "youngs_modulus_Pa": 205000000000.0,
+        "poisson_ratio": 0.29,
+        "n_elements": 20,
+        "bearing_span_m": 1.0,
+        "shaft_diameter_m": 0.05,
+        "disc_width_m": 0.025,
+        "disc_diameter_m": 0.4,
+        "bearing_stiffness_N_per_m": 10000000.0,
+        "bearing_damping_Ns_per_m": 500.0,
+        "speed_min_rpm": 1000.0,
+        "speed_max_rpm": 3000.0,
+        "campbell_max_rpm": 9000.0,
+        "campbell_points": 91,
+        "modes": 6,
+        "response_points": 41,
+        "scenario": "d50_kb1e7"
+      },
+      "derived": {},
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "jeffcott",
+          "description": "Jeffcott rotor (massless shaft, rigid supports, central disc): |ROSS - sqrt(48 EI / m L^3)| / closed form (model form: shear deformation, the disc's width)",
+          "kind": "numerical",
+          "value": 0.0027201859999545354,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "series_bearings",
+          "description": "Jeffcott rotor on the case's bearings: |ROSS - closed form with the shaft and two bearings as springs in series| / closed form",
+          "kind": "numerical",
+          "value": 0.0023646388517155528,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "bare_shaft",
+          "description": "bare shaft on rigid supports, first bending: |ROSS (Timoshenko) - Euler-Bernoulli pinned-pinned| / Euler-Bernoulli",
+          "kind": "numerical",
+          "value": 0.0029955585955795845,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "critical_crosscheck",
+          "description": "|first forward 1x crossing of the Campbell diagram - ROSS's own critical speed search| / ROSS's",
+          "kind": "numerical",
+          "value": 5.642378908625194e-07,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "campbell_resolution",
+          "description": "Campbell speed step / first forward critical speed (below the tolerance: the crossing is resolved)",
+          "kind": "validity",
+          "value": 0.03690029311344925,
+          "tolerance": 0.05,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-G1",
+          "text": "Every forward critical speed shall lie at least 15 % outside the 1000-3000 rpm operating range (none in 850-3450 rpm; API 684-style separation margin, simplified to a fixed 15 %).",
+          "metric": "separation_margin_pct",
+          "operator": ">=",
+          "limit": 15.0,
+          "units": "%",
+          "value": -9.66648088444546,
+          "margin": -24.666480884445463,
+          "verdict": "FAIL"
+        },
+        {
+          "id": "REQ-G2",
+          "text": "The impeller's unbalance response (0-peak) shall stay at or below 50 um over the operating range with API 684's unbalance, U = 6350 W / N_max g mm.",
+          "metric": "unbalance_amp_max_um",
+          "operator": "<=",
+          "limit": 50.0,
+          "units": "um",
+          "value": 334.8933124750528,
+          "margin": -284.8933124750528,
+          "verdict": "FAIL"
+        }
+      ]
+    },
+    {
+      "label": "p01_d50_kb1e8",
+      "parameters": {
+        "density_kg_per_m3": 7850.0,
+        "youngs_modulus_Pa": 205000000000.0,
+        "poisson_ratio": 0.29,
+        "n_elements": 20,
+        "bearing_span_m": 1.0,
+        "shaft_diameter_m": 0.05,
+        "disc_width_m": 0.025,
+        "disc_diameter_m": 0.4,
+        "bearing_stiffness_N_per_m": 100000000.0,
+        "bearing_damping_Ns_per_m": 500.0,
+        "speed_min_rpm": 1000.0,
+        "speed_max_rpm": 3000.0,
+        "campbell_max_rpm": 9000.0,
+        "campbell_points": 91,
+        "modes": 6,
+        "response_points": 41,
+        "scenario": "d50_kb1e8"
+      },
+      "derived": {},
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "jeffcott",
+          "description": "Jeffcott rotor (massless shaft, rigid supports, central disc): |ROSS - sqrt(48 EI / m L^3)| / closed form (model form: shear deformation, the disc's width)",
+          "kind": "numerical",
+          "value": 0.0027201859948564593,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "series_bearings",
+          "description": "Jeffcott rotor on the case's bearings: |ROSS - closed form with the shaft and two bearings as springs in series| / closed form",
+          "kind": "numerical",
+          "value": 0.0026798257453490796,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "bare_shaft",
+          "description": "bare shaft on rigid supports, first bending: |ROSS (Timoshenko) - Euler-Bernoulli pinned-pinned| / Euler-Bernoulli",
+          "kind": "numerical",
+          "value": 0.0029955585955795845,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "critical_crosscheck",
+          "description": "|first forward 1x crossing of the Campbell diagram - ROSS's own critical speed search| / ROSS's",
+          "kind": "numerical",
+          "value": 7.781489438856117e-11,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "campbell_resolution",
+          "description": "Campbell speed step / first forward critical speed (below the tolerance: the crossing is resolved)",
+          "kind": "validity",
+          "value": 0.0343518283183274,
+          "tolerance": 0.05,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-G1",
+          "text": "Every forward critical speed shall lie at least 15 % outside the 1000-3000 rpm operating range (none in 850-3450 rpm; API 684-style separation margin, simplified to a fixed 15 %).",
+          "metric": "separation_margin_pct",
+          "operator": ">=",
+          "limit": 15.0,
+          "units": "%",
+          "value": -2.9648930926063106,
+          "margin": -17.96489309260631,
+          "verdict": "FAIL"
+        },
+        {
+          "id": "REQ-G2",
+          "text": "The impeller's unbalance response (0-peak) shall stay at or below 50 um over the operating range with API 684's unbalance, U = 6350 W / N_max g mm.",
+          "metric": "unbalance_amp_max_um",
+          "operator": "<=",
+          "limit": 50.0,
+          "units": "um",
+          "value": 345.24669876262766,
+          "margin": -295.24669876262766,
+          "verdict": "FAIL"
+        }
+      ]
+    },
+    {
+      "label": "p02_d60_kb1e7",
+      "parameters": {
+        "density_kg_per_m3": 7850.0,
+        "youngs_modulus_Pa": 205000000000.0,
+        "poisson_ratio": 0.29,
+        "n_elements": 20,
+        "bearing_span_m": 1.0,
+        "shaft_diameter_m": 0.06,
+        "disc_width_m": 0.025,
+        "disc_diameter_m": 0.4,
+        "bearing_stiffness_N_per_m": 10000000.0,
+        "bearing_damping_Ns_per_m": 500.0,
+        "speed_min_rpm": 1000.0,
+        "speed_max_rpm": 3000.0,
+        "campbell_max_rpm": 9000.0,
+        "campbell_points": 91,
+        "modes": 6,
+        "response_points": 41,
+        "scenario": "d60_kb1e7"
+      },
+      "derived": {},
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "jeffcott",
+          "description": "Jeffcott rotor (massless shaft, rigid supports, central disc): |ROSS - sqrt(48 EI / m L^3)| / closed form (model form: shear deformation, the disc's width)",
+          "kind": "numerical",
+          "value": 0.0039101030230655025,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "series_bearings",
+          "description": "Jeffcott rotor on the case's bearings: |ROSS - closed form with the shaft and two bearings as springs in series| / closed form",
+          "kind": "numerical",
+          "value": 0.0029820453640155135,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "bare_shaft",
+          "description": "bare shaft on rigid supports, first bending: |ROSS (Timoshenko) - Euler-Bernoulli pinned-pinned| / Euler-Bernoulli",
+          "kind": "numerical",
+          "value": 0.004303231803129877,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "critical_crosscheck",
+          "description": "|first forward 1x crossing of the Campbell diagram - ROSS's own critical speed search| / ROSS's",
+          "kind": "numerical",
+          "value": 3.2068195123213033e-06,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "campbell_resolution",
+          "description": "Campbell speed step / first forward critical speed (below the tolerance: the crossing is resolved)",
+          "kind": "validity",
+          "value": 0.029161921878168556,
+          "tolerance": 0.05,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-G1",
+          "text": "Every forward critical speed shall lie at least 15 % outside the 1000-3000 rpm operating range (none in 850-3450 rpm; API 684-style separation margin, simplified to a fixed 15 %).",
+          "metric": "separation_margin_pct",
+          "operator": ">=",
+          "limit": 15.0,
+          "units": "%",
+          "value": 14.30430913501491,
+          "margin": -0.6956908649850906,
+          "verdict": "FAIL"
+        },
+        {
+          "id": "REQ-G2",
+          "text": "The impeller's unbalance response (0-peak) shall stay at or below 50 um over the operating range with API 684's unbalance, U = 6350 W / N_max g mm.",
+          "metric": "unbalance_amp_max_um",
+          "operator": "<=",
+          "limit": 50.0,
+          "units": "um",
+          "value": 8.670110596352941,
+          "margin": 41.32988940364706,
+          "verdict": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p03_d60_kb1e8",
+      "parameters": {
+        "density_kg_per_m3": 7850.0,
+        "youngs_modulus_Pa": 205000000000.0,
+        "poisson_ratio": 0.29,
+        "n_elements": 20,
+        "bearing_span_m": 1.0,
+        "shaft_diameter_m": 0.06,
+        "disc_width_m": 0.025,
+        "disc_diameter_m": 0.4,
+        "bearing_stiffness_N_per_m": 100000000.0,
+        "bearing_damping_Ns_per_m": 500.0,
+        "speed_min_rpm": 1000.0,
+        "speed_max_rpm": 3000.0,
+        "campbell_max_rpm": 9000.0,
+        "campbell_points": 91,
+        "modes": 6,
+        "response_points": 41,
+        "scenario": "d60_kb1e8"
+      },
+      "derived": {},
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "jeffcott",
+          "description": "Jeffcott rotor (massless shaft, rigid supports, central disc): |ROSS - sqrt(48 EI / m L^3)| / closed form (model form: shear deformation, the disc's width)",
+          "kind": "numerical",
+          "value": 0.0039101030230655025,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "series_bearings",
+          "description": "Jeffcott rotor on the case's bearings: |ROSS - closed form with the shaft and two bearings as springs in series| / closed form",
+          "kind": "numerical",
+          "value": 0.0037919564858532127,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "bare_shaft",
+          "description": "bare shaft on rigid supports, first bending: |ROSS (Timoshenko) - Euler-Bernoulli pinned-pinned| / Euler-Bernoulli",
+          "kind": "numerical",
+          "value": 0.004303231803129877,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "critical_crosscheck",
+          "description": "|first forward 1x crossing of the Campbell diagram - ROSS's own critical speed search| / ROSS's",
+          "kind": "numerical",
+          "value": 6.582236470997688e-10,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "campbell_resolution",
+          "description": "Campbell speed step / first forward critical speed (below the tolerance: the crossing is resolved)",
+          "kind": "validity",
+          "value": 0.025273634617512905,
+          "tolerance": 0.05,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-G1",
+          "text": "Every forward critical speed shall lie at least 15 % outside the 1000-3000 rpm operating range (none in 850-3450 rpm; API 684-style separation margin, simplified to a fixed 15 %).",
+          "metric": "separation_margin_pct",
+          "operator": ">=",
+          "limit": 15.0,
+          "units": "%",
+          "value": 31.88974928930723,
+          "margin": 16.88974928930723,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-G2",
+          "text": "The impeller's unbalance response (0-peak) shall stay at or below 50 um over the operating range with API 684's unbalance, U = 6350 W / N_max g mm.",
+          "metric": "unbalance_amp_max_um",
+          "operator": "<=",
+          "limit": 50.0,
+          "units": "um",
+          "value": 3.7732490217506363,
+          "margin": 46.22675097824936,
+          "verdict": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p04_d65_kb1e7",
+      "parameters": {
+        "density_kg_per_m3": 7850.0,
+        "youngs_modulus_Pa": 205000000000.0,
+        "poisson_ratio": 0.29,
+        "n_elements": 20,
+        "bearing_span_m": 1.0,
+        "shaft_diameter_m": 0.065,
+        "disc_width_m": 0.025,
+        "disc_diameter_m": 0.4,
+        "bearing_stiffness_N_per_m": 10000000.0,
+        "bearing_damping_Ns_per_m": 500.0,
+        "speed_min_rpm": 1000.0,
+        "speed_max_rpm": 3000.0,
+        "campbell_max_rpm": 9000.0,
+        "campbell_points": 91,
+        "modes": 6,
+        "response_points": 41,
+        "scenario": "d65_kb1e7"
+      },
+      "derived": {},
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "jeffcott",
+          "description": "Jeffcott rotor (massless shaft, rigid supports, central disc): |ROSS - sqrt(48 EI / m L^3)| / closed form (model form: shear deformation, the disc's width)",
+          "kind": "numerical",
+          "value": 0.004584310445296696,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "series_bearings",
+          "description": "Jeffcott rotor on the case's bearings: |ROSS - closed form with the shaft and two bearings as springs in series| / closed form",
+          "kind": "numerical",
+          "value": 0.0032098158471575646,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "bare_shaft",
+          "description": "bare shaft on rigid supports, first bending: |ROSS (Timoshenko) - Euler-Bernoulli pinned-pinned| / Euler-Bernoulli",
+          "kind": "numerical",
+          "value": 0.005043386996812095,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "critical_crosscheck",
+          "description": "|first forward 1x crossing of the Campbell diagram - ROSS's own critical speed search| / ROSS's",
+          "kind": "numerical",
+          "value": 6.154339825229248e-06,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "campbell_resolution",
+          "description": "Campbell speed step / first forward critical speed (below the tolerance: the crossing is resolved)",
+          "kind": "validity",
+          "value": 0.026922089308275512,
+          "tolerance": 0.05,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-G1",
+          "text": "Every forward critical speed shall lie at least 15 % outside the 1000-3000 rpm operating range (none in 850-3450 rpm; API 684-style separation margin, simplified to a fixed 15 %).",
+          "metric": "separation_margin_pct",
+          "operator": ">=",
+          "limit": 15.0,
+          "units": "%",
+          "value": 23.814065660524662,
+          "margin": 8.814065660524662,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-G2",
+          "text": "The impeller's unbalance response (0-peak) shall stay at or below 50 um over the operating range with API 684's unbalance, U = 6350 W / N_max g mm.",
+          "metric": "unbalance_amp_max_um",
+          "operator": "<=",
+          "limit": 50.0,
+          "units": "um",
+          "value": 5.004278370425375,
+          "margin": 44.995721629574625,
+          "verdict": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p05_d65_kb1e8",
+      "parameters": {
+        "density_kg_per_m3": 7850.0,
+        "youngs_modulus_Pa": 205000000000.0,
+        "poisson_ratio": 0.29,
+        "n_elements": 20,
+        "bearing_span_m": 1.0,
+        "shaft_diameter_m": 0.065,
+        "disc_width_m": 0.025,
+        "disc_diameter_m": 0.4,
+        "bearing_stiffness_N_per_m": 100000000.0,
+        "bearing_damping_Ns_per_m": 500.0,
+        "speed_min_rpm": 1000.0,
+        "speed_max_rpm": 3000.0,
+        "campbell_max_rpm": 9000.0,
+        "campbell_points": 91,
+        "modes": 6,
+        "response_points": 41,
+        "scenario": "d65_kb1e8"
+      },
+      "derived": {},
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "jeffcott",
+          "description": "Jeffcott rotor (massless shaft, rigid supports, central disc): |ROSS - sqrt(48 EI / m L^3)| / closed form (model form: shear deformation, the disc's width)",
+          "kind": "numerical",
+          "value": 0.0045843104380861545,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "series_bearings",
+          "description": "Jeffcott rotor on the case's bearings: |ROSS - closed form with the shaft and two bearings as springs in series| / closed form",
+          "kind": "numerical",
+          "value": 0.004395887733983274,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "bare_shaft",
+          "description": "bare shaft on rigid supports, first bending: |ROSS (Timoshenko) - Euler-Bernoulli pinned-pinned| / Euler-Bernoulli",
+          "kind": "numerical",
+          "value": 0.005043386996812095,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "critical_crosscheck",
+          "description": "|first forward 1x crossing of the Campbell diagram - ROSS's own critical speed search| / ROSS's",
+          "kind": "numerical",
+          "value": 1.7134878464630787e-09,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "campbell_resolution",
+          "description": "Campbell speed step / first forward critical speed (below the tolerance: the crossing is resolved)",
+          "kind": "validity",
+          "value": 0.022249553024471833,
+          "tolerance": 0.05,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-G1",
+          "text": "Every forward critical speed shall lie at least 15 % outside the 1000-3000 rpm operating range (none in 850-3450 rpm; API 684-style separation margin, simplified to a fixed 15 %).",
+          "metric": "separation_margin_pct",
+          "operator": ">=",
+          "limit": 15.0,
+          "units": "%",
+          "value": 49.8157436990787,
+          "margin": 34.8157436990787,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-G2",
+          "text": "The impeller's unbalance response (0-peak) shall stay at or below 50 um over the operating range with API 684's unbalance, U = 6350 W / N_max g mm.",
+          "metric": "unbalance_amp_max_um",
+          "operator": "<=",
+          "limit": 50.0,
+          "units": "um",
+          "value": 2.299573851226177,
+          "margin": 47.70042614877382,
+          "verdict": "PASS"
+        }
+      ]
+    }
+  ],
+  "run_id": "20261123-162721_rotor_fan_design",
+  "generated_utc": "2026-11-23T21:30:44+00:00",
+  "verification_status": "PASS"
+}
