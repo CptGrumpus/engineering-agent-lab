@@ -195,7 +195,7 @@ class CadQueryCalculiXRandom(Backend):
 
     def solve(self, params, numerics, tolerance_scale=1.0):
         work = Path(tempfile.mkdtemp(prefix="bracket_random_"))
-        keep = ("arm.step", "mesh.geo", "job.inp", "job.sta", "gmsh.log", "ccx.log")
+        keep = ("arm.step", "mesh.geo", "job.inp", "job.sta", "gmsh.log", "ccx.log", "modal_basis.npz")
 
         def files():
             return {n: work / n for n in keep if (work / n).exists()}
@@ -284,6 +284,9 @@ def random_response(params: dict, numerics: dict, dat: Path, frd_path: Path, inf
         return hs.reshape(len(pts[0]), nmode, 6).transpose(0, 2, 1)   # (n_points, 6, n_modes)
     hs_modes = np.concatenate([hotspot(top_idx, top_xy, pts_top), hotspot(side_idx, side_xz, pts_side)])
     hs_where = [f"top y={y:+.2f}" for y in ys / 0.999] + [f"side z={z:+.2f}" for z in zs / 0.999]
+    # the modal basis: everything the response needs, for reuse without CalculiX (study H)
+    np.savez(Path(dat).parent / "modal_basis.npz", frequency_Hz=fn, participation=Gam, phi_tip=phi_tip,
+             hotspot_modal_stress=hs_modes, hotspot_points=np.array(hs_where))
 
     Iy, Iz = b * h ** 3 / 12, h * b ** 3 / 12
     out = {"frequency_Hz": fn.tolist(), "participation": Gam.tolist(),
