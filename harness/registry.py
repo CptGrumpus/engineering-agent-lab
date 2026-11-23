@@ -13,7 +13,8 @@ def _studies() -> list[Study]:
                          cold_plate, tapered_bracket, strut_buckling,
                          strap_plastic, bolted_joint, clevis_bracket, flag_csm, turek_hron_cfd, turek_hron_fsi, motor_em,
                          motor_torque, motor_lut, motor_efficiency, rotor_stress, pressure_vessel, pipe_flow,
-                         motor_thermal, vessel_head, step_flow, bracket_random, bracket_random_uq)
+                         motor_thermal, vessel_head, step_flow, bracket_random, bracket_random_uq,
+                         rotor_critical)
 
     return [msd.STUDY, quarter_car.STUDY, cantilever.STUDY, mounting_plate.STUDY,
             channel_flow.STUDY, duct_flow.STUDY, fin.STUDY, strap_hole.STUDY, bracket_modal.STUDY,
@@ -22,7 +23,8 @@ def _studies() -> list[Study]:
             strap_plastic.STUDY, bolted_joint.STUDY,
             clevis_bracket.STUDY, flag_csm.STUDY, flag_csm.STUDY_CSM3, turek_hron_cfd.STUDY, turek_hron_fsi.STUDY, motor_em.STUDY,
             motor_torque.STUDY, motor_lut.STUDY, motor_efficiency.STUDY, rotor_stress.STUDY, pressure_vessel.STUDY, pipe_flow.STUDY,
-            motor_thermal.STUDY, vessel_head.STUDY, step_flow.STUDY, bracket_random.STUDY, bracket_random_uq.STUDY]
+            motor_thermal.STUDY, vessel_head.STUDY, step_flow.STUDY, bracket_random.STUDY, bracket_random_uq.STUDY,
+            rotor_critical.STUDY]
 
 
 def models() -> dict[str, tuple[Study, type[Backend]]]:
