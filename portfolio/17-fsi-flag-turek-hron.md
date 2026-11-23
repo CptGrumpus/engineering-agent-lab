@@ -54,7 +54,13 @@ published results first, and only then are they coupled.
   14.298 N/m and lift 0.762 N/m verified; the tip displacement reads 0.8175 / 0.8212 / 0.8130 mm against the
   published 0.8209, within 1 % each time but up and then down. The "drift away" was scatter: the new middle mesh sits
   on the benchmark. Three regenerated meshes cannot separate a ±0.5 % scatter from a trend, so that verdict stays
-  unverified (it passes its 3 % limit on every mesh).
+  unverified (it passes its 3 % limit on every mesh). **Second revision (2026-11-23):** four meshes of one nominal
+  size measured that scatter (tip vertical 1.94 %, drag 0.075 %, lift 1.12 % peak to peak, horizontal 0.20 %),
+  and a new check caught a fifth mesh that wrapped one cell around the flag's corner and read 28 % low with every
+  other check passing. Declaring the measured scatter, the rerun (identical to five digits) verifies the tip's
+  vertical displacement (0.96 % from the benchmark, uncertainty 0.63 %), drag and lift. Only the horizontal tip
+  displacement, a second-order quantity 3 % of the vertical, stays unverified: within 0.7 % of the benchmark on every
+  mesh, but its changes grow as the mesh refines, as predicted before the run.
 - **Coupled, periodic (FSI2, FSI3), one fluid mesh (2.5 mm).** Nothing is done to start the oscillation: the
   flow and the flag start symmetric and at rest, and the swing grows on its own from about 5 s (FSI2) and 3 s (FSI3),
   settling to a repeatable cycle (the last two periods agree to 1e-4 or better). Every coupling window converged
@@ -72,7 +78,9 @@ published results first, and only then are they coupled.
   Every requirement passes (limits from the benchmark's own spread, set before the runs), and every prediction of
   the values landed in its range. The verdicts are marked unverified anyway: see the force-transfer check below.
   FSI3's misses are inside the spread between the benchmark's own mesh levels; whether they are ours needs a mesh and
-  time-step study, which comes with the rerun.
+  time-step study, which comes with the rerun. **Running (2026-11-23):** both mesh studies, three fluid meshes each
+  (3.54 / 2.5 / 1.77 mm) side by side, with the window-by-window force-transfer check that replaces the defective
+  one; predictions are in the case files.
 
 ## How it works
 

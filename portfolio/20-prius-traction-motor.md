@@ -2,15 +2,17 @@
 
 [Portfolio index](../PORTFOLIO.md) · Electric machines
 
-> **Draft (updated 2026-11-23).** Every prediction below was written before any of Oak Ridge National Laboratory's (ORNL's)
-> measurements of this motor was opened. The blind comparison has now been run, once, against limits agreed in
-> advance: **all three missed** (see "The blind comparison"). A post-test calibration on routine data followed: it
-> narrows the efficiency gap only a little and flips the rated-power verdict (see "The post-test revision"). The full reports, the extracted data and the protocol
-> log are in `reports/motor/` and `validation/motor_ornl/`.
+> **Draft (updated 2026-11-23 17:33).** The study began as a blind test: every prediction was written before any of Oak
+> Ridge National Laboratory's (ORNL's) measurements was opened, and the blind comparison **missed all three limits**.
+> Since then it has run as a regular client project: everything a client would hand over is collected and used, and
+> nothing is fitted (see "Run as a client project"). The current state is at the top of the table below; the earlier
+> sections stay as the record. Reports and data: `reports/motor/`, `validation/motor_ornl/` (`STATUS.md` is the short
+> version).
 
 | | |
 |---|---|
-| **Answer so far** | **Blind comparison against ORNL's measurements: fail on all three agreed limits.** Back-EMF +23.5 % (limit 5 %), torque +7 to +24 % (limit 10 %), motor efficiency about 5 points high (limit 2). One fault explains most of it: the model's magnet flux linkage is about 24 % too high. **Calibrated afterwards on routine data** (magnet remanence 1.036 T, chosen on the static inductances): the efficiency gap narrows only from 5.2 to 4.5 points, and to 4.05 with each test point's measured winding temperature (most of the rest is torque per ampere: ORNL's motor drew 6-30 % more current for the same torque), and the rated-power verdict flips to a fail (48 kW at 6000 rpm). The predictions as written:  back-EMF 110.9 V rms line-to-line per 1000 rpm at 20 °C; torque 119-606 N m from 50 to 350 A rms (400 N m at about 168 A); an efficiency map with a 97.4 % peak (motor only). Design checks: the rated 400 N m fits inside the copper limit (REQ-M2 pass), and the rated 50 kW holds to 6000 rpm (58.6 kW, verified; but not after calibration, above). Two fails a design review would want to know about: the open-circuit voltage at top speed is about 1040 V against a 500 V bus (REQ-M1), and the rotor bridges exceed the stand-in steel's yield at overspeed (424 against 335 MPa, REQ-M4). Thermal network (synthetic 65 °C water jacket): about 230 N m continuous to 2000 rpm and 42-48 kW from 2500 to 6000 rpm, limited by the magnets (150 °C) at every speed, not the winding; the efficiency map's hot corner understates the magnets by 13-25 K. Recomputed on the calibrated machine: 214 N m to 1250 rpm (28.1 kW, still above the 25 kW requirement) and 40-45 kW above 2500 rpm; the requirement fails at the loosest stator-to-housing fit in the scenario set. |
+| **Where it stands** | **Built from the client's own data (drawing, bill of materials, measured magnet properties, routine tests), the model's magnet-driven flux is about 18 % high, consistently:** back-EMF +17.7 % and locked-rotor torque +17 to +19 % at almost every current, compared like for like. ORNL's measurements agree with each other. Every input a client supplies is now measured and matches the model, so the cause is in the model's form or in how the motor was built; candidates are being tested one at a time, without calibrating (steel: running; end effects: about 4 % from a published 3D study; magnetisation level: a question for the client). REQ-M1 fails on every model and on ORNL's own numbers. |
+| **History** | **Blind comparison against ORNL's measurements: fail on all three agreed limits.** Back-EMF +23.5 % (limit 5 %), torque +7 to +24 % (limit 10 %), motor efficiency about 5 points high (limit 2). One fault explains most of it: the model's magnet flux linkage is about 24 % too high. **Calibrated afterwards on routine data** (magnet remanence 1.036 T, chosen on the static inductances): the efficiency gap narrows only from 5.2 to 4.5 points, and to 4.05 with each test point's measured winding temperature (most of the rest is torque per ampere: ORNL's motor drew 6-30 % more current for the same torque), and the rated-power verdict flips to a fail (48 kW at 6000 rpm). The predictions as written:  back-EMF 110.9 V rms line-to-line per 1000 rpm at 20 °C; torque 119-606 N m from 50 to 350 A rms (400 N m at about 168 A); an efficiency map with a 97.4 % peak (motor only). Design checks: the rated 400 N m fits inside the copper limit (REQ-M2 pass), and the rated 50 kW holds to 6000 rpm (58.6 kW, verified; but not after calibration, above). Two fails a design review would want to know about: the open-circuit voltage at top speed is about 1040 V against a 500 V bus (REQ-M1), and the rotor bridges exceed the stand-in steel's yield at overspeed (424 against 335 MPa, REQ-M4). Thermal network (synthetic 65 °C water jacket): about 230 N m continuous to 2000 rpm and 42-48 kW from 2500 to 6000 rpm, limited by the magnets (150 °C) at every speed, not the winding; the efficiency map's hot corner understates the magnets by 13-25 K. Recomputed on the calibrated machine: 214 N m to 1250 rpm (28.1 kW, still above the 25 kW requirement) and 40-45 kW above 2500 rpm; the requirement fails at the loosest stator-to-housing fit in the scenario set. |
 | **Discipline** | Electric machines: electromagnetics, losses, thermal, rotor stress |
 | **Tools** | Pyleecan (geometry, drives FEMM), FEMM 4.2 (2D magnetostatics), CalculiX (rotor stress, slot heat conduction), Gmsh, Python |
 | **Methods** | Machine rebuilt from published drawings (PDF vector data); open-circuit and loaded magnetostatics; maximum torque per amp; dq look-up tables with iron-loss coefficients; loss-minimising current search under voltage and current limits; a lumped thermal network coupled to the losses; mesh studies; a blind-validation protocol |
@@ -119,13 +121,13 @@ each step):
   motor drew 6-30 % more current than ours. That extra current's copper loss is 43 % of what is missing, three
   quarters at low speed and high torque. So the model makes its torque with too little current, which fits the low
   measured saliency.
-- **The magnet as drawn (revision 4, in progress).** Every model so far filled the 6.80 mm rotor pocket with magnet,
+- **The magnet as drawn (revision 4; overturned the same afternoon, see the next section).** Every model so far filled the 6.80 mm rotor pocket with magnet,
   because the Pyleecan template does. ORNL's design report gives the magnet as 5.31 mm, and its teardown report shows
   why: the magnets are moulded into a polymer shell sized to the slot. Modelled that way, with the magnet material
   as ORNL measured it and nothing calibrated, the back-EMF comes out 7.8 % below the measurement with the magnet
   centred in its shell (4.6 % and 11.3 % low at the extremes of the fit), against 23.5 % high blind. The blind miss
-  was mostly geometry, which the earlier "weaker magnets" calibration had absorbed. Still to run on the drawn-magnet
-  machine, each with predictions first: inductances, torque per ampere, efficiency and the design verdicts.
+  was mostly geometry, which the earlier "weaker magnets" calibration had absorbed. **Wrong:** the 5.31 mm came from
+  ORNL's design-study model, not the hardware; the measured magnet is 6.5 mm (next section).
 - **While doing this, a transcription error.** The efficiency table's winding temperature, phase voltage and phase
   current had been transcribed wrongly (empty, or shifted by one column in 345 of 428 rows). None of them had been
   used in a score, and the scored columns were checked row by row against the table's own identities; they were right.
@@ -137,12 +139,56 @@ each step):
   field-weakening current); it fell 5-10 %. Below 90 A the loss-minimising search picks the same currents, so there is
   no field-weakening current to free.
 
+## Run as a client project (2026-11-23)
+
+The blind pass measured how far a model built from drawings alone can be trusted, and it exposed process faults that
+open data would have hidden (a template that silently filled the magnet pocket, a calibration that hid the error).
+Its cost was that it held back data a client gives on day one, so later revisions guessed values that should have been
+looked up. From the afternoon of 2026-11-23 the study runs as a normal job: everything a client would provide is
+collected first ([client data pack](../validation/motor_ornl/CLIENT_DATA.md)) and used as input; the tests the job
+must predict (torque, efficiency) stay targets; predictions still come before each run.
+
+**What the client's data settled.** ORNL's later benchmark report (ORNL/TM-2010/253, Table 2.7) is a bill of materials
+for this motor:
+
+- **The magnet is 83.1 × 18.9 × 6.5 mm, 77 g.** That is bare NdFeB's density, so 6.5 mm is the magnet itself.
+  Revision 4's 5.31 mm came from ORNL's design-study model; at that size the magnet would need 9.1 g/cm³. Revision 4's
+  explanation was withdrawn, and a lesson went into the skills: cross-check a dimension that drives a revision
+  against mass and volume.
+- **The magnet material: 1.255 T at 20 °C, -0.10 %/°C** (measured on a 2004 Prius magnet). Our original 1.243 T was
+  right; ORNL's 1.12 T is that magnet at about 125 °C.
+- **Winding, stack, stator geometry and copper** all match (the stator core and copper masses confirm them).
+- **Phase resistance, measured: 69 mΩ at 21 °C**, 14 % above our computed value; the measured one is used from now on.
+- **The back-EMF test:** line to line, oil at 25 °C, a power meter, repeated to rule out heating.
+
+**Revision 5, the client-data model** (nothing fitted; predictions committed before each run, all held):
+
+| Quantity | Model | ORNL | Difference |
+|---|---|---|---|
+| Back-EMF, V rms line to line per 1000 rpm | 105.2 (gap 0.775 mm) / 106.1 (0.730 mm) | 89.4 | +17.7 / +18.7 % |
+| Static inductance Ld / Lq | 1.72 / 5.50 mH | 1.92 / 5.0 mH | -10.6 / +10 % |
+| Locked-rotor torque at 50 / 250 A, like for like | 87.0 / 411.8 N m | 74 / 337 N m | +17.5 / +22.2 % (12-22 %, mostly 17-19 %, over the seven currents) |
+
+**Comparing torque like for like.** ORNL reports the largest torque over shaft angle, ripple included; the model's
+default output is the mean. The mean read only +4 % at 50 A. The model's saved phase currents fix ORNL's locked-rotor
+path exactly, and along it the model's maximum is +17.5 %. That also showed ORNL's data are self-consistent: ORNL's
+back-EMF and inductances give a mean torque of 65.3 N m at 50 A, the model's ripple lifts the maximum 13.4 % above the
+mean, and 65.3 × 1.134 = 74.0 N m, exactly what ORNL measured. (An earlier note that ORNL's two tests disagreed had
+compared a maximum with a mean; it is withdrawn.)
+
+**Where that leaves it.** The model carries about 18 % too much magnet-driven flux, in two independent tests, with
+every client input measured and in the model. Candidates, cheapest first: other published models of this motor (none
+found that states inputs and numbers; a Chalmers thesis puts 3D end effects at about -4 %); the lamination steel in the
+bridges (running); end effects; and the magnets' magnetisation level in the assembled rotor, which a client's
+production engineer could answer or a half-day fluxmeter test on one magnet would settle. The inductance mismatch is a
+separate effect, still open.
+
 ## How it works
 
 - **The machine.** Pyleecan ships a model of this motor, but rebuilt from ORNL's dimensioned drawing (read from the
   PDF's vector outline, not by eye) its slot is 145 mm², not 218, and its air gap 0.775 mm, not 0.750. The magnet
-  pockets, bridges and magnet material come from ORNL's design reports (the magnet's measured B-H line was opened
-  by decision, as a material input like a datasheet). The lamination grade isn't published: M330-35A stands in, and
+  pockets and bridges come from the drawing and ORNL's design report; since revision 5 the magnet (size and
+  temperature-dependent remanence) comes from ORNL's bill-of-materials report (TM-2010/253). The lamination grade isn't published: M330-35A stands in, and
   two other grades bracket it.
 - **Electromagnetics.** FEMM solves 2D magnetostatics over one electrical period. Open circuit gives the back-EMF;
   loaded runs sweep the current angle for the maximum torque per amp.
@@ -192,6 +238,13 @@ each step):
 - **The magnets, not the copper, set the continuous rating.** With no heat path through the shaft and only
   conduction across the 0.77 mm air gap, the rotor floats at the temperature of the tooth tips, the hottest iron. A
   better air gap made it slightly worse: it ties the rotor closer to those tips.
+- **A dimension taken from a design study.** Revision 4 rested on a 5.31 mm magnet from ORNL's parametric design
+  report and seemed to explain most of the blind miss. The bill of materials gives 6.5 mm and 77 g, and 77 g at
+  5.31 mm would need an impossible density. One mass check would have caught it.
+- **A comparison with the wrong statistic.** ORNL's locked-rotor torque is a maximum over shaft angle, ripple
+  included; comparing it with the model's mean made the model look 4 % high at 50 A (it is 17.5 %) and produced a
+  false "ORNL's tests disagree" diagnosis, withdrawn the same hour. The comparison now emulates ORNL's procedure from
+  the model's saved data (`scripts/motor_locked_rotor.py`).
 - **A leak in a blind protocol, recorded rather than hidden.** A line filter on one ORNL report let through some of
   ORNL's own *model* results (not measurements). They are logged with their time and declared in every case that
   followed; extraction is whitelist-only since.
@@ -207,6 +260,8 @@ each step):
   first cell), and with hot magnets one cell there (4500 rpm, 10 N m) fails the interpolation check, so the hot
   REQ-M5 result (53.7 kW) is a pass but unverified. Both are left as stated limits rather than revised: light load at
   high speed does not bear on any requirement, and a calibrated model would rebuild the tables anyway.
+- Client-data model (revision 5): about 18 % high on magnet-driven flux, cause not yet found; flux-dependent design
+  numbers (REQ-M1, REQ-M5, the thermal rating) are not final until it is.
 - Validated against ORNL's measurements once: it failed (above). The calibrated model (magnets 1.036 T) fixes the
   back-EMF by construction and moves torque and efficiency closer, but it is calibrated, not validated; the blind
   model's flux-dependent numbers on this page (REQ-M1, REQ-M5, the thermal rating) are about 24 % optimistic in flux,
@@ -218,6 +273,9 @@ each step):
 - Reports: `reports/motor/` (overview, design inputs, open circuit, torque, efficiency), built from the runs by
   `reports/motor/build_report.py`; thermal: `runs/20261122-174925_motor_prius_thermal_r1/report.md` (blind), `runs/20261123-071007_motor_prius_thermal_br/report.md` (calibrated)
 - Cases (predictions before each run, results after): `cases/motor_prius_*.toml`
+- Client project: `validation/motor_ornl/STATUS.md` (short version), `CLIENT_DATA.md`, `DRAWING_AUDIT.md`,
+  `CALIBRATION_PLAN.md` (every revision and diagnostic, predictions first); cases `cases/motor_prius_rev5_*.toml`;
+  `scripts/motor_locked_rotor.py`
 - Blind comparison: `validation/motor_ornl/RESULTS.md`, the data extracted from ORNL/TM-2006/423, and
   `scripts/motor_blind_comparison.py`; protocol log `reports/motor/blind_comparison_log.md`
 - Code: `models/motor/`, `studies/motor_em.py`, `studies/motor_torque.py`, `studies/motor_lut.py`,
