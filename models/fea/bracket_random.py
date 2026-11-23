@@ -69,7 +69,10 @@ def write_deck(params: dict, mesh_inp: Path, deck: Path, f_lo: float, f_hi: floa
     rho, n, zeta = float(params["density_t_per_mm3"]), int(params["n_modes"]), float(params["damping_ratio"])
     harmonic = "".join(
         f"*STEP\n*STEADY STATE DYNAMICS\n{f_lo!r}, {f_hi!r}, {int(n_points)}, 1.\n*MODAL DAMPING\n1, {n}, {zeta!r}\n"
-        f"*BASE MOTION, DOF={dof}, AMPLITUDE=UNIT, TYPE=ACCELERATION\n*NODE PRINT, NSET=TIP\nU\n*END STEP\n"
+        f"*BASE MOTION, DOF={dof}, AMPLITUDE=UNIT, TYPE=ACCELERATION\n*NODE PRINT, NSET=TIP\nU\n"
+        # file requests carry over from the *FREQUENCY step: without these, every frequency point writes U and S
+        # for the whole mesh (16.5 GB of .frd on the 1.22 mm mesh, and the reader exhausted 64 GB of RAM)
+        f"*NODE FILE, NSET=TIP\nU\n*EL FILE, NSET=TIP\nS\n*END STEP\n"
         for dof in (1, 2, 3))
     deck.write_text(
         f"*INCLUDE, INPUT={Path(mesh_inp).name}\n*NSET, NSET=ROOT\n"

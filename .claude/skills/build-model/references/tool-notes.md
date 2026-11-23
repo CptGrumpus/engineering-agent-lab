@@ -135,6 +135,12 @@ Traps found while building the studies in this repo, by tool.
   the design order is fine for the GCI; only a rate far above it is suspect.
 - Modes are mass-normalised; the .dat also prints PARTICIPATION FACTORS (x, y, z, rx, ry, rz), Gamma_i = phi_i^T M r,
   with effective mass = Gamma_i^2 (study C prototype, 2026-11-23).
+- **`*NODE FILE` / `*EL FILE` requests carry over into later steps.** A `*STEADY STATE DYNAMICS` step after a
+  `*FREQUENCY` step that wrote U and S writes them again for the whole mesh at every frequency point, real and
+  imaginary: 16.5 GB of .frd on study C's 1.22 mm mesh, and reading it took 38 of 64 GB of RAM before the run was
+  stopped (2026-11-23). Restate the requests in each later step, limited to what it needs (`*NODE FILE, NSET=TIP` /
+  `*EL FILE, NSET=TIP`; 10x smaller on a coarse test, .dat printout unchanged). Check the .frd size on the coarsest
+  mesh before a mesh study: it scales with the node count.
 - **Harmonic base excitation** (`*FREQUENCY, STORAGE=YES`, then `*STEADY STATE DYNAMICS` f1, f2, n, bias with
   `*MODAL DAMPING` and `*BASE MOTION, DOF=3, AMPLITUDE=.., TYPE=ACCELERATION`): the output is the ABSOLUTE
   displacement (relative + the base's -a / w^2), one real and one imaginary block per frequency, with points added at
