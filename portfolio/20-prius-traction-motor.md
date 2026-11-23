@@ -145,6 +145,10 @@ agreed validation set).
   or stated.
 - Thermal: steady state only (no short-time ratings); cooling, insulation class and magnet grade synthetic; the
   rotor's paths (air gap, end space, shaft) are the least checked and set the answer; no thermal test data is used.
+- Efficiency map: the 10 N m row above 4000 rpm is unresolved (the loss-optimal current sits inside the table's
+  first cell), and with hot magnets one cell there (4500 rpm, 10 N m) fails the interpolation check, so the hot
+  REQ-M5 result (53.7 kW) is a pass but unverified. Both are left as stated limits rather than revised: light load at
+  high speed does not bear on any requirement, and a calibrated model would rebuild the tables anyway.
 - Validated against ORNL's measurements once: it failed (above). Until the flux error is found and a revised model
   is compared again, treat every flux-dependent number on this page as about 24 % optimistic.
 
