@@ -49,7 +49,7 @@ this motor's back-EMF.
    **A tension to resolve first:** the blind model's locked-rotor torque was only +6.9 % high at 50 A (rising to
    +23.7 % at 250 A; RESULTS.md, current read as peak), while its back-EMF was +24 %. At low current torque follows
    the magnet flux, so if the magnet flux alone were 24 % high the 50 A torque should be about 20 % high. The two
-   tests disagree on how much magnet flux the motor has. (Corrected 15:07: an earlier line here said the torque
+   tests disagree on how much magnet flux the motor has. (Corrected 15:06: an earlier line here said the torque
    excess was largest at low current; it is the smallest.)
 2. **Find the model-form cause** of what remains, one effect at a time, each with a hand estimate first:
    (a) how fully the magnets are magnetised in the assembled rotor (a question for the client's production engineer;
