@@ -14,10 +14,14 @@
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="Pressure vessel nozzle, design code check: result render">
 <meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://cptgrumpus.github.io/engineering-agent-lab/pressure-vessel-nozzle.html">
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#141b24" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3CclipPath id='c'%3E%3Crect width='24' height='24' rx='5'/%3E%3C/clipPath%3E%3Cg clip-path='url(%23c)'%3E%3Crect width='4' height='24' fill='%2330123b'/%3E%3Crect x='4' width='4' height='24' fill='%234686fb'/%3E%3Crect x='8' width='4' height='24' fill='%231ae4b6'/%3E%3Crect x='12' width='4' height='24' fill='%23a2fc3c'/%3E%3Crect x='16' width='4' height='24' fill='%23fb8022'/%3E%3Crect x='20' width='4' height='24' fill='%237a0403'/%3E%3C/g%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
-<link rel="stylesheet" href="assets/site.css?v=e178accde1">
+<link rel="stylesheet" href="assets/site.css?v=4937421060">
 </head>
 <body>
 <nav class="topbar" aria-label="Site">
@@ -105,6 +109,7 @@
       <dt>Limits</dt><dd>General membrane away from the nozzle, Pm ≤ S. Local membrane at the junction, PL ≤ 1.5 S = 207 MPa. Membrane plus bending at the junction, P + Q ≤ 3 S = 414 MPa.</dd>
       <dt>Analysis</dt><dd>Linear static in CalculiX 2.22, then stress linearisation along lines through the wall.</dd>
     </dl>
+    <figure class="drawing"><div class="plate"><img src="v2/dwg_pv_nozzle.webp" alt="Section through the shell and nozzle walls at the junction, with the weld fillet and the two assessed lines through the wall" loading="lazy"></div><figcaption>A section through both axes at the junction, with the two lines through the wall that are assessed in this plane.</figcaption></figure>
     <details class="record"><summary>The case file: recorded assumptions, limits and inputs</summary><div class="record-body"><p>This is the study's own record, written before the run and saved with it, in the shorthand of the case file.</p><p class="case"><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/cases/pv_nozzle_mesh.toml">cases/pv_nozzle_mesh.toml ↗</a></p><p>Cylindrical shell (Ri 500 mm, t 16 mm) with a set-in radial nozzle (ri 100 mm, tn 12 mm, 10 mm outer weld fillet) at 3.5 MPa internal pressure; quarter model, CadQuery + Gmsh C3D10 + CalculiX static; stresses linearised along classification lines; local element size 6 / 4 / 2.67 mm at the junction.</p><h3>Assumptions, and how each is checked</h3><ul><li>Linear elastic steel, E 200 GPa, nu 0.3; small displacement (checked).</li><li>Closed vessel: the end thrusts of the shell and the nozzle are applied as uniform axial tractions on their cut ends (the far field is then the Lame closed-end cylinder exactly).</li><li>Symmetry about the planes through the nozzle axis; no external nozzle loads (piping loads would add to the junction stresses).</li><li>Outer weld modelled as a 10 mm fillet; the inner corner of the bore is sharp (affects peak stress, not the linearised values on the toe lines).</li><li>Classification: membrane at the junction lines is local primary (PL), membrane plus bending there is primary plus secondary (P + Q); far from the nozzle the membrane is general primary (Pm). S_PS taken as 3 S.</li><li>Allowable S = 138 MPa: synthetic, of the order of carbon-steel plate values; not from ASME Section II.</li></ul><h3>Limits</h3><ul><li>Elastic analysis only: no limit-load or elastic-plastic route, no fatigue (peak stress reported, not assessed), no external loads, no corrosion allowance.</li><li>The SCLs sit at the weld-fillet toes; other placements (through the crotch corner) give other values and are a judgement call.</li><li>The pressure-area cross-check is a simplified form of the rule, not the standard&#x27;s full procedure.</li></ul><h3>Inputs</h3><div class="table-wrap"><table><thead><tr><th>Input</th><th>Value</th></tr></thead><tbody><tr><td>shell_inner_radius_mm</td><td>500</td></tr><tr><td>shell_thickness_mm</td><td>16</td></tr><tr><td>shell_half_length_mm</td><td>1000</td></tr><tr><td>nozzle_inner_radius_mm</td><td>100</td></tr><tr><td>nozzle_thickness_mm</td><td>12</td></tr><tr><td>nozzle_length_mm</td><td>350</td></tr><tr><td>weld_fillet_radius_mm</td><td>10</td></tr><tr><td>pressure_MPa</td><td>3.5</td></tr><tr><td>youngs_modulus_MPa</td><td>200000</td></tr><tr><td>poisson_ratio</td><td>0.3</td></tr><tr><td>element_size_local_mm</td><td>4</td></tr><tr><td>element_size_far_mm</td><td>14</td></tr><tr><td>refine_radius_mm</td><td>140</td></tr><tr><td>mesh_growth</td><td>0.08</td></tr><tr><td>allowable_stress_MPa</td><td>138</td></tr></tbody></table></div></div></details>
     <h2 id="how-it-works">How it works</h2>
     <p>CadQuery builds the quarter vessel, Gmsh meshes it with small elements at the junction, and CalculiX solves it. The stresses are then read along straight lines through the wall, called stress classification lines. There are four at the junction, at the toes of the weld fillet on the shell side and the nozzle side, in each of the two symmetry planes, plus one far from the nozzle.</p>
@@ -172,7 +177,7 @@
   </div>
 </footer>
 <script>window.VP = [{"id": "pv_nozzle", "study": "pv_nozzle", "tab": "Vessel", "legend": "S, Mises", "unit": "MPa", "model": "Shell with a radial nozzle · steel, 1000 mm bore × 16 mm, 200 mm nozzle × 12 mm, 3.5 MPa inside", "lines": ["Solver: CalculiX 2.22 · C3D10 · the mesh study's finest mesh, a quarter model mirrored into the whole vessel", "Range stops at 240 MPa · the sharp inner corner peaks higher, and the code's limits exclude it", "Linearised through the wall beside the weld: PL 205.1 MPa against 207 · passes with a 0.9 % margin"], "img": "v2/vp_pv_nozzle.webp", "bands": ["#3b2f80", "#466be3", "#3ba0fd", "#1ad2d2", "#32f298", "#80ff53", "#bef434", "#eecf3a", "#fe9e2f", "#f26014", "#d02f05", "#9b0f01"], "vmin": 0.0, "vmax": 240.0, "check": "Render check: encloses 104 487 545.2 mm³ of 104 487 531.2 design · 100.0 % of pixels on the legend", "card": "pv_nozzle"}];</script>
-<script src="assets/viewer.js?v=e178accde1"></script>
-<script src="assets/site.js?v=e178accde1"></script>
+<script src="assets/viewer.js?v=4937421060"></script>
+<script src="assets/site.js?v=4937421060"></script>
 </body>
 </html>

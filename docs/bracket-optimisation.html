@@ -14,10 +14,14 @@
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="Bracket optimisation loop, driven by the agent: result render">
 <meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://cptgrumpus.github.io/engineering-agent-lab/bracket-optimisation.html">
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#141b24" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3CclipPath id='c'%3E%3Crect width='24' height='24' rx='5'/%3E%3C/clipPath%3E%3Cg clip-path='url(%23c)'%3E%3Crect width='4' height='24' fill='%2330123b'/%3E%3Crect x='4' width='4' height='24' fill='%234686fb'/%3E%3Crect x='8' width='4' height='24' fill='%231ae4b6'/%3E%3Crect x='12' width='4' height='24' fill='%23a2fc3c'/%3E%3Crect x='16' width='4' height='24' fill='%23fb8022'/%3E%3Crect x='20' width='4' height='24' fill='%237a0403'/%3E%3C/g%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
-<link rel="stylesheet" href="assets/site.css?v=e178accde1">
+<link rel="stylesheet" href="assets/site.css?v=4937421060">
 </head>
 <body>
 <nav class="topbar" aria-label="Site">
@@ -106,6 +110,7 @@
       <dt>Mesh</dt><dd>Quadratic tetrahedra, 4 mm overall and 1 mm on the fillets. The chosen design is solved again with fillet elements of 1.0, 0.85 and 0.75 mm.</dd>
       <dt>Analysis</dt><dd>Linear static in CalculiX 2.22, driven by the COBYLA optimiser from SciPy.</dd>
     </dl>
+    <figure class="drawing"><div class="plate"><img src="v2/dwg_bracket_opt.webp" alt="Front, side and three-quarter views of the clevis bracket with its main dimensions" loading="lazy"></div><figcaption>The chosen design, drawn from its CAD model: hidden-line views with the dimensions the optimiser set.</figcaption></figure>
     <details class="record"><summary>The case file: recorded assumptions, limits and inputs</summary><div class="record-body"><p>This is the study's own record, written before the run and saved with it, in the shorthand of the case file.</p><p class="case"><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/cases/clevis_opt_r2.toml">cases/clevis_opt_r2.toml ↗</a></p><p>Lightest 6061-T6 machined clevis bracket (base 100 x 100 x 10 mm, lug 40 mm wide with a 16 mm pin at 70 mm, two gussets, 3 mm fillets) under a (1.5, 1.0, 4.5) kN pin load, with peak von Mises at most 100 MPa and pin deflection at most 0.10 mm; COBYLA over lug thickness, gusset thickness and gusset height, each candidate built in CadQuery, meshed in Gmsh, solved and checked in CalculiX.</p><h3>Assumptions, and how each is checked</h3><ul><li>Base bottom face fixed (bolted and dowelled to a rigid machine frame); the bottom half of the base is not assessed (the edge of a fixed face is singular, and the real joint is not modelled).</li><li>Pin load through a rigid pin tied to the hole surface; a ring of one pin diameter around the hole is not assessed (pin bearing and lug net section are sized by the standard lug method).</li><li>Linear elastic 6061-T6 (E 68.9 GPa, nu 0.33); checked: peak stress below yield.</li><li>Small deflection; checked: pin deflection / pin height below 1 %.</li><li>Stress allowable 100 MPa (fatigue-rated) and pin deflection limit 0.10 mm: synthetic.</li></ul><h3>Limits</h3><ul><li>Static load only; the fatigue rating is folded into the allowable.</li><li>No closed-form reference for the whole part: the evidence is exact equilibrium, geometry fidelity, a model-form check of the lug section and mesh convergence at the optimum.</li><li>Fixed outline and fillet radius; only three dimensions vary.</li><li>No physical test data.</li></ul><h3>Inputs</h3><div class="table-wrap"><table><thead><tr><th>Input</th><th>Value</th></tr></thead><tbody><tr><td>base_length_mm</td><td>100</td></tr><tr><td>base_width_mm</td><td>100</td></tr><tr><td>base_thickness_mm</td><td>10</td></tr><tr><td>lug_radius_mm</td><td>20</td></tr><tr><td>pin_height_mm</td><td>70</td></tr><tr><td>pin_diameter_mm</td><td>16</td></tr><tr><td>lug_thickness_mm</td><td>12</td></tr><tr><td>gusset_thickness_mm</td><td>8</td></tr><tr><td>gusset_height_mm</td><td>40</td></tr><tr><td>gusset_aspect</td><td>0.7</td></tr><tr><td>fillet_radius_mm</td><td>3</td></tr><tr><td>youngs_modulus_MPa</td><td>68900</td></tr><tr><td>poisson_ratio</td><td>0.33</td></tr><tr><td>density_t_per_mm3</td><td>2.7e-09</td></tr><tr><td>yield_strength_MPa</td><td>276</td></tr><tr><td>load_x_N</td><td>1500</td></tr><tr><td>load_y_N</td><td>1000</td></tr><tr><td>load_z_N</td><td>4500</td></tr><tr><td>element_size_mm</td><td>4</td></tr><tr><td>fillet_element_size_mm</td><td>1</td></tr></tbody></table></div></div></details>
     <h2 id="how-it-works">How it works</h2>
     <div class="opt-run">
@@ -192,8 +197,8 @@
   </div>
 </footer>
 <script>window.VP = [{"id": "bracket_opt", "study": "bracket_opt", "tab": "Optimised", "legend": "S, Mises", "unit": "MPa", "model": "Optimised clevis bracket · 6061-T6, 100 × 100 mm base, (1.5, 1.0, 4.5) kN on the pin", "lines": ["Solver: CalculiX 2.22 · C3D10 · design D on the finest of its three meshes", "Deformation scale factor: +1.000e+02", "Peak 98.3 MPa against 100, at the lug fillet · 372 g, 4 % lighter than the start"], "mesh": "v2/m3d_bracket_opt.bin", "mesh_kb": 272, "elev": 24, "azim": -128, "img": "v2/vp_bracket_opt.webp", "bands": ["#3c3286", "#4771e9", "#33adf7", "#18dec0", "#4ef97d", "#a4fc3c", "#dde037", "#fcb136", "#f76f1a", "#d63506", "#9e1001"], "vmin": 0.0, "vmax": 110.0, "check": "Render check: encloses 137 773.5 mm³ of 137 774.5 design · 100.0 % of pixels on the legend", "card": "bracket_opt"}];</script>
-<script src="assets/viewer.js?v=e178accde1"></script>
-<script src="assets/viewer3d.js?v=e178accde1"></script>
-<script src="assets/site.js?v=e178accde1"></script>
+<script src="assets/viewer.js?v=4937421060"></script>
+<script src="assets/viewer3d.js?v=4937421060"></script>
+<script src="assets/site.js?v=4937421060"></script>
 </body>
 </html>

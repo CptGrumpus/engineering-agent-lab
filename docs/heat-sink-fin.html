@@ -14,10 +14,14 @@
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="Heat-sink fin temperature: result render">
 <meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://cptgrumpus.github.io/engineering-agent-lab/heat-sink-fin.html">
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#141b24" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3CclipPath id='c'%3E%3Crect width='24' height='24' rx='5'/%3E%3C/clipPath%3E%3Cg clip-path='url(%23c)'%3E%3Crect width='4' height='24' fill='%2330123b'/%3E%3Crect x='4' width='4' height='24' fill='%234686fb'/%3E%3Crect x='8' width='4' height='24' fill='%231ae4b6'/%3E%3Crect x='12' width='4' height='24' fill='%23a2fc3c'/%3E%3Crect x='16' width='4' height='24' fill='%23fb8022'/%3E%3Crect x='20' width='4' height='24' fill='%237a0403'/%3E%3C/g%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
-<link rel="stylesheet" href="assets/site.css?v=e178accde1">
+<link rel="stylesheet" href="assets/site.css?v=4937421060">
 </head>
 <body>
 <nav class="topbar" aria-label="Site">
@@ -103,6 +107,7 @@
       <dt>Analysis</dt><dd>Steady heat conduction in CalculiX 2.22.</dd>
       <dt>What's measured</dt><dd>The lowest temperature on the tip face, which is checked to be the lowest in the whole fin.</dd>
     </dl>
+    <figure class="drawing"><div class="plate"><img src="v2/dwg_thermal.webp" alt="Front and side view of the fin standing on its base" loading="lazy"></div><figcaption>The fin on its base, in front and side view.</figcaption></figure>
     <details class="record"><summary>The case file: recorded assumptions, limits and inputs</summary><div class="record-body"><p>This is the study's own record, written before the run and saved with it, in the shorthand of the case file.</p><p class="case"><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/cases/fin_tolerance.toml">cases/fin_tolerance.toml ↗</a></p><p>Straight rectangular 6061 aluminium fin (nominal 40 x 20 x 2 mm, base 80 C, air 25 C, h 25 W/m^2K) evaluated at the corners of the heat-transfer coefficient range (12.5-50 W/m^2K), conductivity range (150-180 W/mK) and dimensional tolerances, with 3D CalculiX conduction on 0.25 mm hex elements. Finds whether the minimum tip temperature stays at or above 60 C across the ranges.</p><h3>Assumptions, and how each is checked</h3><ul><li>As fin_mesh, except the inputs varied below.</li><li>h is an effective coefficient (convection plus linearised radiation), uniform over all exposed faces; range 12.5-50 W/m^2K is synthetic (factor 2 on the user&#x27;s &#x27;about 25&#x27;).</li><li>Conductivity range 150-180 W/mK covers the 6061 tempers (T6 167, T4 154, O 180); constant within each scenario.</li><li>Dimensional tolerances t +- 0.1 mm, w +- 0.2 mm, L +- 0.2 mm are synthetic.</li><li>Base 80 C and air 25 C are fixed user values.</li><li>1D fin theory is a valid independent reference; checked: Biot number below 0.1.</li><li>Requirement metric is the minimum tip-face temperature; checked: it is the global minimum of the fin.</li></ul><h3>Limits</h3><ul><li>Synthetic input ranges; not from a drawing, a material certificate, or a measured h.</li><li>Corners only: no statistical (e.g. Monte Carlo) combination of the ranges.</li><li>Numerical uncertainty is taken from fin_mesh (same element size).</li><li>Single isolated fin with uniform h: neighbouring fins, air preheating, and the variation of h along the fin are not modelled.</li><li>No physical test data.</li></ul><h3>Inputs</h3><div class="table-wrap"><table><thead><tr><th>Input</th><th>Value</th></tr></thead><tbody><tr><td>thickness_mm</td><td>2</td></tr><tr><td>width_mm</td><td>20</td></tr><tr><td>length_mm</td><td>40</td></tr><tr><td>conductivity_W_per_mK</td><td>167</td></tr><tr><td>htc_W_per_m2K</td><td>25</td></tr><tr><td>base_temperature_C</td><td>80</td></tr><tr><td>air_temperature_C</td><td>25</td></tr><tr><td>element_size_mm</td><td>0.25</td></tr></tbody></table></div></div></details>
     <h2 id="how-it-works">How it works</h2>
     <p>The model solves for the temperature everywhere in the fin, with heat entering at the base and leaving through all five exposed faces. After the nominal case, four more cases put the inputs at the corners of their ranges: the coldest combination, the warmest, and the two main effects on their own (a cold build, and a high air-side coefficient). A separate sweep raises the air-side coefficient until the tip reaches 60 °C, which is what gives the "about 95" figure.</p>
@@ -177,8 +182,8 @@
   </div>
 </footer>
 <script>window.VP = [{"id": "fin", "study": "thermal", "tab": "Thermal", "legend": "NT11", "unit": "°C", "model": "Heat-sink fin · 6061-T6, 40 × 20 × 2 mm, h = 25 W/m²K", "lines": ["Solver: CalculiX 2.22 · steady heat transfer", "Tip 73.2 °C against a 60 °C minimum", "Energy balance: base heat in equals convection out"], "mesh": "v2/m3d_fin.bin", "mesh_kb": 633, "elev": 22, "azim": -125, "img": "v2/vp_fin.webp", "bands": ["#3a2d79", "#455ed3", "#458cfd", "#28bceb", "#18e0bd", "#3ff68a", "#84ff51", "#bcf534", "#e5d938", "#fcb336", "#fb7e21", "#e84b0c", "#c82803", "#980e01"], "vmin": 73.0, "vmax": 80.0, "check": "Render check: encloses 1 600.0 mm³ of 1 600.0 design · 100.0 % of pixels on the legend", "card": "thermal"}];</script>
-<script src="assets/viewer.js?v=e178accde1"></script>
-<script src="assets/viewer3d.js?v=e178accde1"></script>
-<script src="assets/site.js?v=e178accde1"></script>
+<script src="assets/viewer.js?v=4937421060"></script>
+<script src="assets/viewer3d.js?v=4937421060"></script>
+<script src="assets/site.js?v=4937421060"></script>
 </body>
 </html>

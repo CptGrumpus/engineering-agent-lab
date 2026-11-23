@@ -1,0 +1,712 @@
+"""2D drawings of the parts and models on the portfolio site: dimensioned views, sections and schematics.
+
+    .venv\\Scripts\\python.exe scripts\\make_drawings.py [key ...]
+
+Every dimension, load and material value is read from the study's case file (cases/*.toml) or its recorded
+result, so a drawing can't drift from the model it describes. The clevis bracket's views are hidden-line
+projections of its CadQuery solid; the motor's cross-section is Pyleecan's own geometry, exported once by
+scripts/export_motor_geometry.py (run in the Pyleecan environment). Writes site/v2/dwg_<key>.webp;
+site/build_v2.py puts each drawing in its study's model section.
+"""
+
+from __future__ import annotations
+
+import json
+import re
+import sys
+import tomllib
+from pathlib import Path
+
+import matplotlib
+
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt  # noqa: E402
+import numpy as np  # noqa: E402
+from matplotlib.patches import Arc, Circle, Polygon  # noqa: E402
+
+REPO = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(REPO))
+OUT = REPO / "site" / "v2"
+INK, DIMC, FILL, CUT, ACC, HOT, PLATE = "#121821", "#5b6672", "#e6ebf2", "#aab6c6", "#1f4e9c", "#a5521c", "#fbfbfa"
+plt.rcParams["font.family"] = ["Segoe UI", "DejaVu Sans"]
+U = 1.0            # data units per millimetre of paper, set by new()
+
+
+def case(name: str) -> dict:
+    return tomllib.loads((REPO / "cases" / f"{name}.toml").read_text(encoding="utf-8"))["parameters"]
+
+
+def new(width_in: float, xlim, ylim):
+    """A sheet whose height follows the content, so the drawing is to scale in both directions."""
+    global U
+    aw, ah = 0.96, 0.86
+    h = width_in * aw * (ylim[1] - ylim[0]) / (xlim[1] - xlim[0]) / ah
+    fig = plt.figure(figsize=(width_in, h), dpi=200)
+    fig.patch.set_facecolor(PLATE)
+    ax = fig.add_axes([0.02, 0.11, aw, ah])
+    ax.set_xlim(*xlim)
+    ax.set_ylim(*ylim)
+    ax.set_aspect("equal")
+    ax.axis("off")
+    U = (xlim[1] - xlim[0]) / (width_in * 25.4 * aw)
+    return fig, ax
+
+
+def finish(fig, key: str, title: str, units: str = "dimensions in mm"):
+    fig.text(0.02, 0.035, title, fontsize=8, color=INK, fontweight="bold")
+    fig.text(0.98, 0.035, f"Drawn from the case file's inputs · {units}", fontsize=7, color=DIMC, ha="right")
+    fig.add_artist(plt.Line2D([0.02, 0.98], [0.085, 0.085], color=CUT, lw=0.6))
+    png = OUT / f"dwg_{key}.png"
+    fig.savefig(png, dpi=200, facecolor=PLATE)
+    plt.close(fig)
+    from PIL import Image
+    Image.open(png).convert("RGB").save(OUT / f"dwg_{key}.webp", "WEBP", quality=92, method=6)
+    png.unlink()
+    print("dwg", key)
+
+
+def poly(ax, pts, fc=FILL, ec=INK, lw=1.2, hatch=None, z=2, ls="-"):
+    if hatch:
+        ax.add_patch(Polygon(pts, closed=True, fc=fc, ec=CUT, lw=0, hatch=hatch, zorder=z))
+        ax.add_patch(Polygon(pts, closed=True, fc="none", ec=ec, lw=lw, zorder=z + 0.1, ls=ls))
+    else:
+        ax.add_patch(Polygon(pts, closed=True, fc=fc, ec=ec, lw=lw, zorder=z, ls=ls))
+
+
+def rect(ax, x0, y0, x1, y1, **kw):
+    poly(ax, [(x0, y0), (x1, y0), (x1, y1), (x0, y1)], **kw)
+
+
+def text(ax, x, y, s, fs=7.5, color=DIMC, ha="center", va="center", rot=0, bold=False, box=True):
+    ax.text(x, y, s, fontsize=fs, color=color, ha=ha, va=va, rotation=rot, rotation_mode="anchor",
+            fontweight="bold" if bold else "normal", zorder=6,
+            bbox=dict(fc=PLATE, ec="none", pad=1.0) if box else None)
+
+
+def dim(ax, p1, p2, off, label=None, fs=7.5, outside=False, tshift=0.0):
+    """A dimension between p1 and p2, drawn `off` (data units, signed) to the left of the direction p1 -> p2."""
+    p1, p2 = np.array(p1, float), np.array(p2, float)
+    d = p2 - p1
+    L = float(np.hypot(*d))
+    u, n = d / L, np.array([-d[1], d[0]]) / L
+    a, b = p1 + n * off, p2 + n * off
+    s = np.sign(off) or 1.0
+    for p, q in ((p1, a), (p2, b)):
+        ax.plot(*zip(p + n * s * 0.8 * U, q + n * s * 1.2 * U), color=DIMC, lw=0.55, zorder=4)
+    kw = dict(arrowstyle="-|>", color=DIMC, lw=0.6, mutation_scale=6, shrinkA=0, shrinkB=0)
+    ang = np.degrees(np.arctan2(u[1], u[0]))
+    if ang > 90 or ang <= -90:
+        ang += 180
+    lab = f"{L:g}" if label is None else label
+    if outside:                                     # a small gap: arrows from outside, the label beside it
+        ax.annotate("", a, a - u * 5 * U, arrowprops=kw, zorder=4)
+        ax.annotate("", b, b + u * 5 * U, arrowprops=kw, zorder=4)
+        ax.plot(*zip(a, b), color=DIMC, lw=0.55, zorder=4)
+        m = b + u * (6 * U + tshift)
+        text(ax, m[0], m[1], lab, fs=fs, ha="left" if abs(u[0]) > 0.5 else "center",
+             va="center" if abs(u[0]) > 0.5 else "bottom", rot=0)
+    else:
+        ax.annotate("", a, b, arrowprops=dict(kw, arrowstyle="<|-|>"), zorder=4)
+        m = (a + b) / 2 + u * tshift
+        text(ax, m[0], m[1], lab, fs=fs, rot=ang)
+
+
+def force(ax, tail, head, label="", ha="left", va="center", color=ACC, dx=0.0, dy=0.0, fs=8, lw=1.5):
+    ax.annotate("", head, tail, arrowprops=dict(arrowstyle="-|>", color=color, lw=lw, mutation_scale=11,
+                                                 shrinkA=0, shrinkB=0), zorder=5)
+    if label:
+        text(ax, tail[0] + dx, tail[1] + dy, label, fs=fs, color=color, ha=ha, va=va, bold=True)
+
+
+def note(ax, xy, xytext, s, ha="left", va="center", color=DIMC, fs=7.5):
+    ax.annotate(s, xy, xytext, fontsize=fs, color=color, ha=ha, va=va, zorder=6,
+                arrowprops=dict(arrowstyle="-", color=color, lw=0.55, shrinkA=2, shrinkB=0),
+                bbox=dict(fc=PLATE, ec="none", pad=1.0))
+    ax.add_patch(Circle(xy, 0.5 * U, fc=color, ec="none", zorder=6))
+
+
+def wall(ax, p1, p2, side=1.0, ticks=None):
+    """A fixed support along p1 -> p2: a heavy line with ground hatching on its left (side = 1) or right."""
+    p1, p2 = np.array(p1, float), np.array(p2, float)
+    d = p2 - p1
+    L = float(np.hypot(*d))
+    u, n = d / L, np.array([-d[1], d[0]]) / L * side
+    ax.plot(*zip(p1, p2), color=INK, lw=2.2, zorder=5, solid_capstyle="butt")
+    k = ticks or max(4, int(L / (2.2 * U)))
+    for t in np.linspace(0, L, k + 1):
+        a = p1 + u * t
+        ax.plot(*zip(a, a + (n + u * 0.7) * 2.6 * U), color=INK, lw=0.6, zorder=4)
+
+
+def centre(ax, p1, p2):
+    ax.plot(*zip(p1, p2), color=DIMC, lw=0.6, ls=(0, (9, 3, 2, 3)), zorder=3)
+
+
+def spring(ax, p1, p2, n=6, w=None, color=INK):
+    p1, p2 = np.array(p1, float), np.array(p2, float)
+    d = p2 - p1
+    L = float(np.hypot(*d))
+    u, nn = d / L, np.array([-d[1], d[0]]) / L
+    w = w or 0.09 * L
+    pts = [p1, p1 + u * 0.15 * L]
+    for k in range(2 * n):
+        pts.append(p1 + u * (0.15 + 0.7 * (k + 0.5) / (2 * n)) * L + nn * w * (1 if k % 2 == 0 else -1))
+    pts += [p1 + u * 0.85 * L, p2]
+    ax.plot(*zip(*pts), color=color, lw=1.2, zorder=4, solid_joinstyle="miter")
+
+
+def damper(ax, p1, p2, w=None, color=INK):
+    p1, p2 = np.array(p1, float), np.array(p2, float)
+    d = p2 - p1
+    L = float(np.hypot(*d))
+    u, nn = d / L, np.array([-d[1], d[0]]) / L
+    w = w or 0.07 * L
+    a, b, c = p1 + u * 0.4 * L, p1 + u * 0.62 * L, p1 + u * 0.52 * L
+    ax.plot(*zip(p1, a), color=color, lw=1.2, zorder=4)
+    ax.plot(*zip(a - nn * w, a + nn * w), color=color, lw=1.2, zorder=4)             # cylinder end
+    for s in (-1, 1):
+        ax.plot(*zip(a + nn * w * s, b + nn * w * s), color=color, lw=1.2, zorder=4)  # cylinder walls
+    ax.plot(*zip(c - nn * w * 0.7, c + nn * w * 0.7), color=color, lw=1.6, zorder=4)  # piston
+    ax.plot(*zip(c, p2), color=color, lw=1.2, zorder=4)
+
+
+# ---------------------------------------------------------------------------------------- structures
+
+def fea():
+    p = case("cantilever_tet10")
+    L, h, b = p["length_mm"], p["height_mm"], p["width_mm"]
+    fig, ax = new(9, (-40, 300), (-48, 62))
+    rect(ax, 0, 0, L, h)
+    wall(ax, (0, -14), (0, h + 14), side=1)
+    force(ax, (L, h + 30), (L, h + 1), f"{p['tip_load_N'] / 1000:g} kN", ha="left", dx=5)
+    dim(ax, (0, 0), (L, 0), -18)
+    dim(ax, (L, 0), (L, h), -14)
+    text(ax, L / 2, h / 2, f"steel · E {p['youngs_modulus_MPa'] / 1000:g} GPa", fs=7.5, color=INK, box=False)
+    text(ax, -9, -30, "root face fixed", ha="center", fs=7)
+    rect(ax, 255, 0, 255 + b, h, hatch="////")
+    dim(ax, (255, 0), (255 + b, 0), -18)
+    text(ax, 255 + b / 2, h + 9, "section", fs=7)
+    finish(fig, "fea", "Study 1 · cantilever bracket · side view and section")
+
+
+def cantilever_opt():
+    p = case("bracket_opt")
+    rec = json.loads((REPO / "runs/20261120-225744_bracket_opt_confirm/points/p02_element_size_mm-2/point.json").read_text())
+    hr, ht = rec["parameters"]["root_height_mm"], rec["parameters"]["tip_height_mm"]
+    L, b = p["length_mm"], p["width_mm"]
+    fig, ax = new(9, (-40, 300), (-52, 62))
+    rect(ax, 0, -12.5, L, 12.5, fc="none", ec=DIMC, lw=0.7, ls=(0, (5, 3)))
+    poly(ax, [(0, -hr / 2), (L, -ht / 2), (L, ht / 2), (0, hr / 2)])
+    wall(ax, (0, -30), (0, 30), side=1)
+    force(ax, (L, 40), (L, ht / 2 + 1), "1 kN", ha="left", dx=5)
+    dim(ax, (0, -hr / 2), (L, -hr / 2), -22, f"{L:g}")
+    dim(ax, (0, hr / 2), (0, -hr / 2), -14, f"{hr:.1f}")
+    dim(ax, (L, -ht / 2), (L, ht / 2), -14, f"{ht:.1f}")
+    note(ax, (130, 12.5), (95, 36), "the lightest straight bar that passes: 20 × 25, 785 g", ha="center", va="bottom")
+    text(ax, L * 0.42, 0, f"optimised taper · {rec['metrics']['mass_g']:.0f} g", color=INK, box=False)
+    rect(ax, 255, -hr / 2, 255 + b, hr / 2, hatch="////")
+    dim(ax, (255, -hr / 2), (255 + b, -hr / 2), -22, f"{b:g}")
+    text(ax, 255 + b / 2, hr / 2 + 9, "root section", fs=7)
+    finish(fig, "cantilever_opt", "Study 1b · the optimised cantilever · side view against the straight bar")
+
+
+def strap():
+    p = case("strap_hole_size")
+    L, w, t, d = p["length_mm"], p["width_mm"], p["thickness_mm"], 16.0
+    fig, ax = new(9, (-125, 125), (-58, 44))
+    rect(ax, -L / 2, -w / 2, L / 2, w / 2)
+    rect(ax, 0, 0, L / 2, w / 2, fc="#d3dceb", ec="none", z=2.2)
+    ax.add_patch(Circle((0, 0), d / 2, fc=PLATE, ec=INK, lw=1.2, zorder=3))
+    centre(ax, (-L / 2 - 8, 0), (L / 2 + 8, 0))
+    centre(ax, (0, -w / 2 - 6), (0, w / 2 + 6))
+    for s in (-1, 1):
+        force(ax, (s * (L / 2 + 2), 0), (s * (L / 2 + 30), 0), "5 kN", ha="center", dx=s * 16, dy=7)
+    dim(ax, (-L / 2, w / 2), (L / 2, w / 2), 12)
+    dim(ax, (-L / 2, -w / 2), (-L / 2, w / 2), 10)
+    note(ax, (d / 2 * 0.71, -d / 2 * 0.71), (34, -30), f"cable hole Ø{d:g} (6 to 18 tried)", va="top")
+    text(ax, 52, 11, "quarter modelled", fs=7, color=INK, box=False)
+    rect(ax, -L / 2, -50, L / 2, -50 + t, hatch="////")
+    dim(ax, (L / 2, -50), (L / 2, -50 + t), -8, f"{t:g}", outside=True)
+    text(ax, -L / 2 - 4, -48, "edge", ha="right", fs=7)
+    finish(fig, "strap", "Study 2 · strap with a cable hole · plan and edge view")
+
+
+def modal():
+    p = case("bracket_modal_thickness")
+    L, w, t = p["length_mm"], p["width_mm"], p["thickness_mm"]
+    fig, ax = new(9, (-36, 196), (-52, 46))
+    rect(ax, 0, 0, L, w)
+    wall(ax, (0, -8), (0, w + 8), side=1)
+    dim(ax, (0, w), (L, w), 10)
+    dim(ax, (L, 0), (L, w), -12)
+    text(ax, L / 2, w / 2, "steel arm · plan view", color=INK, box=False)
+    rect(ax, 0, -40, L, -40 + t, hatch="////")
+    wall(ax, (0, -48), (0, -24), side=1)
+    dim(ax, (L, -40), (L, -40 + t), -12, f"{t:g}", outside=True)
+    text(ax, L / 2, -47.5, "side view · 5 to 9 thick tried, 7 chosen", fs=7)
+    ax.plot([0, L * 0.5, L], [-36.5, -32, -24], color=ACC, lw=1.1, ls=(0, (4, 2)), zorder=5)
+    text(ax, L * 0.74, -22.5, "first mode, flapwise · 261.7 Hz", fs=7, color=ACC)
+    finish(fig, "modal", "Study 4 · bracket arm · plan and side view, with the first mode")
+
+
+def strut():
+    p = case("strut_length")
+    L, w, t = p["length_mm"], p["width_mm"], p["thickness_mm"]
+    fig, ax = new(9, (-90, 690), (-110, 80))
+    rect(ax, 0, -t / 2, L, t / 2)
+    xs = np.linspace(0, L, 60)
+    ax.plot(xs, 40 * L * p["imperfection_over_length"] * np.sin(np.pi * xs / L), color=ACC, lw=1.1, ls=(0, (4, 2)), zorder=5)
+    centre(ax, (-20, 0), (L + 20, 0))
+    for x, roller in ((0, False), (L, True)):
+        poly(ax, [(x, -t / 2), (x - 11, -t / 2 - 18), (x + 11, -t / 2 - 18)], fc=PLATE)
+        if roller:
+            for dx in (-6, 6):
+                ax.add_patch(Circle((x + dx, -t / 2 - 22.5), 4, fc=PLATE, ec=INK, lw=1, zorder=3))
+        wall(ax, (x + 16, -t / 2 - (27 if roller else 18)), (x - 16, -t / 2 - (27 if roller else 18)), side=1, ticks=5)
+    force(ax, (-62, 0), (-3, 0), "P", ha="center", dy=11, dx=28)
+    force(ax, (L + 62, 0), (L + 3, 0), "P", ha="center", dy=11, dx=-28)
+    dim(ax, (0, -t / 2 - 50), (L, -t / 2 - 50), -14, f"{L:g}  (400 to 700 tried)")
+    dim(ax, (L * 0.3, -t / 2), (L * 0.3, t / 2), 10, f"{t:g}", outside=True)
+    note(ax, (L / 2, 20), (L / 2, 52), "initial bow L/1000 = 0.5 mm, a half sine (drawn 40 times larger)", ha="center", va="bottom", color=ACC)
+    rect(ax, 615, 28, 615 + w, 28 + t, hatch="////")
+    dim(ax, (615, 28 + t), (615 + w, 28 + t), 9, f"{w:g}")
+    text(ax, 615 + w / 2, 18, "section", fs=7)
+    finish(fig, "strut", "Study 13 · pinned strut with an initial bow · side view and section")
+
+
+def contact():
+    p = case("contact_roller_mesh")
+    R, bw, bd = p["roller_radius_mm"], p["block_half_width_mm"], p["block_depth_mm"]
+    fig, ax = new(9, (-150, 190), (-78, 132))
+    rect(ax, -bw, -bd, bw, 0)
+    ax.add_patch(Circle((0, R), R, fc=FILL, ec=INK, lw=1.2, zorder=2))
+    th = np.linspace(-np.pi / 2, 0, 40)
+    poly(ax, [(0, R)] + [(R * np.cos(a), R + R * np.sin(a)) for a in th] + [(R, R), (0, R)], fc="#d3dceb", ec="none", z=2.2)
+    rect(ax, 0, -bd, bw, 0, fc="#d3dceb", ec="none", z=2.2)
+    centre(ax, (0, -bd - 10), (0, 2 * R + 14))
+    wall(ax, (bw + 6, -bd), (-bw - 6, -bd), side=1)
+    force(ax, (0, 2 * R + 26), (0, 2 * R + 1), "500 N per mm of width", ha="left", dx=6)
+    dim(ax, (-R, R), (R, R), 0, f"Ø{2 * R:g}", tshift=-22)
+    dim(ax, (-bw, -bd), (bw, -bd), -19, f"{2 * bw:g}")
+    dim(ax, (-bw, -bd), (-bw, 0), 12, f"{bd:g}")
+    text(ax, 30, 62, "half modelled", fs=7, color=INK, box=False)
+    ax.add_patch(Circle((0, 0), 7, fc="none", ec=HOT, lw=1, zorder=6))
+    cx, cy, r = 138, 38, 44
+    ax.add_patch(Circle((cx, cy), r, fc=PLATE, ec=HOT, lw=1, zorder=6))
+    ax.plot([5, cx - r * 0.9], [5, cy + r * 0.43], color=HOT, lw=0.6, zorder=5)
+    ax.plot([5, cx - r * 0.9], [-5, cy - r * 0.43], color=HOT, lw=0.6, zorder=5)
+    k = 26.0                                                # the zoom: 26 times
+    xs = np.linspace(-1.55, 1.55, 60)
+    ax.fill_between(cx + xs * k, cy - 12, cy - np.sqrt(np.maximum(0, r ** 2 - (xs * k) ** 2)), color=FILL, zorder=6.1, lw=0)
+    ax.plot(cx + xs * k, cy - 12 + 0 * xs, color=INK, lw=1, zorder=6.3)
+    ax.plot(cx + xs * k, cy - 12 + (xs ** 2) / (2 * R) * k * 14, color=INK, lw=1, zorder=6.3)
+    a = 0.526
+    ax.plot([cx - a * k, cx + a * k], [cy - 12, cy - 12], color=HOT, lw=2.4, zorder=6.4, solid_capstyle="butt")
+    ax.text(cx, cy + 20, "contact strip\n1.05 mm wide", fontsize=7, color=HOT, ha="center", va="center", zorder=7)
+    ax.add_patch(Circle((cx, cy - 12 - 0.41 * k), 1.6, fc=HOT, ec="none", zorder=7))
+    ax.text(cx + 5, cy - 12 - 0.41 * k, "highest shear,\n0.41 mm down", fontsize=6.5, color=HOT, ha="left", va="center", zorder=7)
+    finish(fig, "contact", "Study 10 · roller on a plate · the model and the contact, enlarged")
+
+
+def bolted_joint():
+    p = case("bolted_joint_mesh_r1")
+    Ro, rh, rw, t = p["plate_outer_diameter_mm"] / 2, p["hole_diameter_mm"] / 2, p["washer_diameter_mm"] / 2, p["top_thickness_mm"]
+    fig, ax = new(9, (-44, 46), (-23, 25))
+    for s in (-1, 1):
+        rect(ax, s * rh, 0, s * Ro, t, hatch="////")
+        rect(ax, s * rh, -t, s * Ro, 0, hatch="\\\\\\\\")
+    bolt = dict(fc="none", ec=DIMC, lw=0.7, ls=(0, (4, 2.5)), z=3)
+    rect(ax, -4, -t - 6.5, 4, t + 5.3, **bolt)
+    rect(ax, -rw, t, rw, t + 5.3, **bolt)
+    rect(ax, -rw, -t - 6.5, rw, -t, **bolt)
+    centre(ax, (0, -t - 10), (0, t + 9))
+    for s in (-1, 1):
+        for x in (rh + 0.5, rw - 0.5):
+            force(ax, (s * x, t + 4.2), (s * x, t + 0.15), lw=1.1)
+            force(ax, (s * x, -t - 4.2), (s * x, -t - 0.15), lw=1.1)
+    note(ax, (rw - 0.5, t + 4.2), (11, t + 9.5), f"{p['preload_N'] / 1000:g} kN clamp force on the washer faces (Ø{2 * rw:g})", color=ACC, va="center")
+    note(ax, (4, -t - 5), (9, -t - 10.5), "bolt: M8, drawn for reference; represented by its clamp force", va="center")
+    force(ax, (-Ro - 13, t / 2), (-Ro - 0.3, t / 2), "side load", ha="center", dy=2.4, dx=6)
+    force(ax, (Ro + 13, -t / 2), (Ro + 0.3, -t / 2), "reaction", ha="center", dy=2.4, dx=-6)
+    ax.plot([rh, Ro], [0, 0], color=HOT, lw=2, zorder=5, solid_capstyle="butt")
+    ax.plot([-Ro, -rh], [0, 0], color=HOT, lw=2, zorder=5, solid_capstyle="butt")
+    note(ax, (-15, 0), (-43, -11), f"friction interface, μ = {p['friction_coefficient']:g}", color=HOT, va="center")
+    dim(ax, (-Ro, -t), (Ro, -t), -13.5, f"Ø{2 * Ro:g}")
+    dim(ax, (-Ro, 0), (-Ro, -t), -3.5, f"{t:g}")
+    dim(ax, (Ro, 0), (Ro, t), -3.5, f"{t:g}")
+    dim(ax, (-rh, t), (rh, t), 13, f"Ø{2 * rh:g} hole")
+    finish(fig, "bolted_joint", "Study 16 · bolted joint · section through the bolt axis")
+
+
+def pv_nozzle():
+    p = case("pv_nozzle_mesh")
+    Ri, t, rni, tn = p["shell_inner_radius_mm"], p["shell_thickness_mm"], p["nozzle_inner_radius_mm"], p["nozzle_thickness_mm"]
+    Ro, rno, rf, Xe = Ri + t, rni + tn, p["weld_fillet_radius_mm"], Ri + t + p["nozzle_length_mm"]
+    zc = 330.0
+    fig, ax = new(9, (-470, 470), (395, 935))
+    arc = [(rno + rf + rf * np.cos(a), Ro + rf + rf * np.sin(a)) for a in np.radians(np.linspace(270, 180, 14))]
+    half = [(rni, Ri), (zc, Ri), (zc, Ro)] + arc + [(rno, Xe), (rni, Xe)]
+    for s in (-1, 1):
+        poly(ax, [(s * x, y) for x, y in half], hatch="////")
+        ax.plot([s * zc, s * zc], [Ri - 9, Ro + 9], color=PLATE, lw=5, zorder=4)            # the shell runs on
+        ax.plot([s * zc - 6, s * zc + 6, s * zc - 6, s * zc + 6], np.linspace(Ri - 8, Ro + 8, 4), color=DIMC, lw=0.7, zorder=5)
+    centre(ax, (0, Ri - 60), (0, Xe + 25))
+    text(ax, 0, Xe + 32, "nozzle axis", fs=7)
+    for z in (-250, -170, 170, 250):                        # pressure on the wetted faces
+        force(ax, (z, Ri - 34), (z, Ri - 2), lw=1.0)
+    for y in (620, 720, 820):
+        for s in (-1, 1):
+            force(ax, (s * (rni - 36), y), (s * (rni - 2), y), lw=1.0)
+    text(ax, 0, Ri - 44, f"{p['pressure_MPa']:g} MPa inside", color=ACC, bold=True, fs=8)
+    zs = rno + rf                                            # classification lines at the fillet toes
+    ax.plot([zs, zs], [Ri, Ro], color=HOT, lw=2.2, zorder=6, solid_capstyle="butt")
+    ax.plot([rni, rno], [Ro + rf, Ro + rf], color=HOT, lw=2.2, zorder=6, solid_capstyle="butt")
+    note(ax, (zs, Ri + t / 2), (205, 590), "line through the shell wall: the one that governs,\nPL 205.1 MPa against 207", color=HOT, va="center")
+    note(ax, (rni + tn / 2, Ro + rf), (205, 760), "line through the nozzle wall:\nPL 181.7 MPa", color=HOT, va="center")
+    note(ax, (rno + 3, Ro + 3), (205, 675), f"weld fillet R{rf:g}, both sides", ha="left")
+    note(ax, (-rni, Ri), (-150, 440), "inner corner left sharp", ha="right")
+    dim(ax, (-rni, Xe), (rni, Xe), 14, f"Ø{2 * rni:g} bore")
+    dim(ax, (-rno, 700), (-rni, 700), 0, f"{tn:g}", outside=True)
+    dim(ax, (-290, Ri), (-290, Ro), 0, f"{t:g}", outside=True)
+    dim(ax, (-rno, Ro), (-rno, Xe), 62, f"{p['nozzle_length_mm']:g}")
+    text(ax, 320, Ri - 44, f"shell bore Ø{2 * Ri:g}", fs=7)
+    # key: the whole vessel, with this detail marked
+    k, x0, y0 = 0.11, -330, 795
+    L = p["shell_half_length_mm"]
+    rect(ax, x0 - L * k, y0 - Ro * k, x0 + L * k, y0 + Ro * k, fc=FILL, lw=0.8, z=6)
+    rect(ax, x0 - rno * k, y0 + Ro * k, x0 + rno * k, y0 + Xe * k, fc=FILL, lw=0.8, z=6)
+    rect(ax, x0 - 470 * k, y0 + 395 * k, x0 + 470 * k, y0 + 935 * k, fc="none", ec=HOT, lw=0.9, z=7)
+    text(ax, x0, y0 - Ro * k - 13, f"the vessel as modelled, {2 * L:g} long;\nthis detail is boxed", fs=6.5)
+    finish(fig, "pv_nozzle", "Study 18 · nozzle junction · section through both axes")
+
+
+def hlr(shape, direction):
+    """Visible and hidden edges of a CadQuery shape seen along `direction`, as lists of 2D polylines."""
+    from cadquery.occ_impl.exporters.svg import getSVG
+    svg = getSVG(shape, opts={"projectionDir": direction, "showHidden": True, "showAxes": False, "width": 800, "height": 600})
+    groups = re.findall(r'<g\s+stroke="rgb\((\d+),[^>]*>(.*?)</g>', svg, re.S)
+    out = {"hidden": [], "visible": []}
+    for shade, body in groups:
+        key = "visible" if shade == "0" else "hidden"
+        for d in re.findall(r'<path d="([^"]+)"', body):
+            nums = [float(v) for v in re.findall(r"-?\d+\.?\d*(?:e-?\d+)?", d)]
+            out[key].append(np.array(nums).reshape(-1, 2))
+    return out
+
+
+def upright(v):
+    """Turn a projection by a multiple of 90 degrees so the part's base (its widest feature) is at the bottom:
+    the projector's own up direction is arbitrary."""
+    best, score = None, -1e9
+    for k in range(4):
+        c, s = round(np.cos(k * np.pi / 2)), round(np.sin(k * np.pi / 2))
+        rot = lambda a: np.column_stack([c * a[:, 0] - s * a[:, 1], s * a[:, 0] + c * a[:, 1]])  # noqa: E731
+        pts = rot(np.vstack(v["visible"]))
+        y0, y1 = pts[:, 1].min(), pts[:, 1].max()
+        low, high = pts[pts[:, 1] < y0 + 0.15 * (y1 - y0)], pts[pts[:, 1] > y1 - 0.15 * (y1 - y0)]
+        sc = np.ptp(low[:, 0]) - np.ptp(high[:, 0])
+        if sc > score:
+            best, score = {key: [rot(a) for a in v[key]] for key in v}, sc
+    return best
+
+
+def bracket_opt():
+    sys.path.insert(0, str(REPO / "models" / "fea"))
+    import clevis_bracket as cb
+    p = case("clevis_confirm_r2b")
+    shape = cb.build_solid(p).val()
+    views = [("front", (0, -1, 0)), ("side", (1, 0, 0)), ("three-quarter", (1.0, -1.4, 0.9))]
+    drawn, x = [], 0.0
+    for name, direction in views:
+        v = hlr(shape, direction)
+        v = upright(v)
+        pts = np.vstack(v["visible"])
+        lo, hi = pts.min(0), pts.max(0)
+        drawn.append((name, v, np.array([x - lo[0], -lo[1]]), hi - lo, x))
+        x += hi[0] - lo[0] + 46
+    width = x - 46
+    fig, ax = new(9.5, (-30, width + 14), (-36, 128))
+    for name, v, off, size, left in drawn:
+        if name != "three-quarter":
+            for ln in v["hidden"]:
+                ax.plot(ln[:, 0] + off[0], ln[:, 1] + off[1], color=CUT, lw=0.6, ls=(0, (3, 2)), zorder=2)
+        for ln in v["visible"]:
+            ax.plot(ln[:, 0] + off[0], ln[:, 1] + off[1], color=INK, lw=1.0, zorder=3, solid_capstyle="round")
+        text(ax, left + size[0] / 2, -28, name + " view", fs=7)
+    (_, _, _, s1, x1), (_, _, _, s2, x2) = drawn[0], drawn[1]
+    Lb, tb, H, R, dp = p["base_length_mm"], p["base_thickness_mm"], p["pin_height_mm"], p["lug_radius_mm"], p["pin_diameter_mm"]
+    cx = x1 + s1[0] / 2
+    dim(ax, (x1, 0), (x1 + Lb, 0), -11, f"{Lb:g}")
+    dim(ax, (x1, 0), (x1, H), 12, f"{H:g} to the pin")
+    dim(ax, (cx - R, H + R), (cx + R, H + R), 8, f"{2 * R:g}")
+    note(ax, (cx + dp / 2 * 0.7, H + dp / 2 * 0.7), (cx + 30, H + 3), f"pin Ø{dp:g}")
+    c2 = x2 + s2[0] / 2
+    tl, tg, hg = p["lug_thickness_mm"], p["gusset_thickness_mm"], p["gusset_height_mm"]
+    dim(ax, (c2 - tl / 2, H + R), (c2 + tl / 2, H + R), 8, f"lug {tl:.1f}", outside=True)
+    dim(ax, (x2 + s2[0], tb), (x2 + s2[0], tb + hg), -9, f"gusset {hg:.1f} high")
+    dim(ax, (x2, 0), (x2, tb), 9, f"{tb:g}", outside=True)
+    note(ax, (c2 + tl / 2 + 1.2, tb + 1.2), (c2 + 24, 66), f"fillets R{p['fillet_radius_mm']:g}:\nthe stress peaks here", color=HOT)
+    force(ax, (cx - 30, H + 40), (cx - 2, H + 3), "4.8 kN on the pin,\ninclined", ha="right", dx=-3, dy=2)
+    finish(fig, "bracket_opt", "Study 12 · the optimised clevis bracket (design D) · views from the CAD model")
+
+
+def cad():
+    p = case("mounting_plate")
+    L, w, t, r, d = p["length_mm"], p["width_mm"], p["thickness_mm"], p["corner_radius_mm"], p["hole_diameter_mm"]
+    px, py = p["hole_pitch_x_mm"], p["hole_pitch_y_mm"]
+    fig, ax = new(9, (-100, 112), (-74, 62))
+    pts = []
+    for cx, cy, a0 in ((L / 2 - r, w / 2 - r, 0), (-L / 2 + r, w / 2 - r, 90), (-L / 2 + r, -w / 2 + r, 180), (L / 2 - r, -w / 2 + r, 270)):
+        pts += [(cx + r * np.cos(a), cy + r * np.sin(a)) for a in np.radians(np.linspace(a0, a0 + 90, 10))]
+    poly(ax, pts)
+    for i in (-1, 0, 1):
+        for j in (-0.5, 0.5):
+            ax.add_patch(Circle((i * px, j * py), d / 2, fc=PLATE, ec=INK, lw=1.1, zorder=3))
+            ax.plot([i * px - 7, i * px + 7], [j * py, j * py], color=DIMC, lw=0.5, zorder=4)
+            ax.plot([i * px, i * px], [j * py - 7, j * py + 7], color=DIMC, lw=0.5, zorder=4)
+    dim(ax, (-L / 2, w / 2), (L / 2, w / 2), 12)
+    dim(ax, (L / 2, -w / 2), (L / 2, w / 2), -12)
+    dim(ax, (-px, py / 2), (0, py / 2), 9, f"{px:g}")
+    dim(ax, (-px, -py / 2), (-px, py / 2), 12, f"{py:g}")
+    edge = w / 2 - py / 2
+    dim(ax, (px, -w / 2), (px, -py / 2), -9, f"{edge:g}")
+    text(ax, px + 8, -w / 2 - 7, f"edge distance {edge:g} = {edge / d:.2f} × the hole size", fs=7)
+    note(ax, (px + d / 2 * 0.7, py / 2 + d / 2 * 0.7), (70, 52), f"6 holes Ø{d:g} (M8 clearance)", ha="center", va="bottom")
+    note(ax, (-L / 2 + r * 0.3, -w / 2 + r * 0.3), (-84, -52), f"R{r:g}", ha="right")
+    rect(ax, -L / 2, -66, L / 2, -66 + t, hatch="////")
+    dim(ax, (L / 2, -66), (L / 2, -66 + t), -9, f"{t:g}", outside=True)
+    finish(fig, "cad", "Study 8 · parametric mounting plate · plan and edge view (the 9 mm hole size)")
+
+
+# ---------------------------------------------------------------------------------------- thermal, fluids
+
+def cfd():
+    p = case("channel_header_tolerance")
+    g, L, hs, ls, lc = p["gap_mm"], p["length_mm"], p["supply_height_mm"], p["supply_length_mm"], p["contraction_length_mm"]
+    k = 2.5                                                   # heights drawn 2.5 times larger
+    fig, ax = new(9, (-10.5, 23.5), (-8.2, 8.4))
+    xs = np.linspace(-lc, 0, 30)
+    hh = (g + (hs - g) * 0.5 * (1 - np.cos(np.pi * (-xs) / lc))) / 2 * k
+    top = [(-ls - lc, hs / 2 * k)] + list(zip(xs, hh)) + [(L, g / 2 * k)]
+    ax.fill([q[0] for q in top] + [L, -ls - lc], [q[1] for q in top] + [-g / 2 * k, -hs / 2 * k], color="#dbe7f6", zorder=1, lw=0)
+    ax.fill([q[0] for q in top[::-1]] + [-ls - lc], [-q[1] for q in top[::-1]] + [-hs / 2 * k], color="#dbe7f6", zorder=1, lw=0)
+    for s in (1, -1):
+        xy = [(q[0], s * q[1]) for q in top]
+        poly(ax, xy + [(L, s * (hs / 2 * k + 1.4)), (-ls - lc, s * (hs / 2 * k + 1.4))], hatch="////", lw=1.1)
+    rect(ax, p["window_start_mm"], -g / 2 * k, p["window_end_mm"], g / 2 * k, fc="#bcd0ee", ec="none", z=1.5)
+    text(ax, (p["window_start_mm"] + p["window_end_mm"]) / 2, 0, "measured here", fs=6.5, color=INK, box=False)
+    force(ax, (-9.8, 0), (-6.6, 0), "water in", ha="left", dy=1.3, dx=-0.3)
+    force(ax, (L + 0.3, 0), (L + 3, 0), "out", ha="center", dy=1.3, dx=1.3)
+    dim(ax, (0, -hs / 2 * k - 1.4), (L, -hs / 2 * k - 1.4), -1.6, f"channel {L:g}")
+    dim(ax, (-lc, -hs / 2 * k - 1.4), (0, -hs / 2 * k - 1.4), -1.6, f"{lc:g}")
+    dim(ax, (-ls - lc, -hs / 2 * k - 1.4), (-lc, -hs / 2 * k - 1.4), -1.6, f"{ls:g}")
+    dim(ax, (L * 0.22, -g / 2 * k), (L * 0.22, g / 2 * k), 0, f"gap {g:g} (0.95 to 1.05)", outside=True)
+    dim(ax, (-ls - lc + 0.9, -hs / 2 * k), (-ls - lc + 0.9, hs / 2 * k), 0, f"{hs:g}")
+    text(ax, -4.6, hs / 2 * k + 2.7, "supply header and\nsmooth contraction", fs=7)
+    finish(fig, "cfd", "Study 5 · coolant channel · the 2D flow domain", "dimensions in mm, heights drawn 2.5 times larger")
+
+
+def thermal():
+    p = case("fin_tolerance")
+    L, w, t = p["length_mm"], p["width_mm"], p["thickness_mm"]
+    fig, ax = new(9, (-58, 82), (-17, 55))
+    for x0, ww, lab in ((-28, w, "front"), (34, t, "side")):
+        rect(ax, x0 - 7, -8, x0 + ww + 7, 0, hatch="////")
+        rect(ax, x0, 0, x0 + ww, L)
+        text(ax, x0 + ww / 2, -12.5, lab, fs=7)
+    dim(ax, (-28, L), (-28 + w, L), 5, f"{w:g}")
+    dim(ax, (-28, 0), (-28, L), 6, f"{L:g}")
+    dim(ax, (34, L), (34 + t, L), 5, f"{t:g}", outside=True)
+    text(ax, -18, -4, f"base held at {p['base_temperature_C']:g} °C", fs=7, color=INK, box=True)
+    for y in (8, 20, 32):
+        for x0, x1 in ((34 + t + 1.2, 34 + t + 9), (33, 25.2)):
+            ax.annotate("", (x1, y + 2.5), (x0, y), arrowprops=dict(arrowstyle="-|>", color=ACC, lw=1, mutation_scale=8,
+                                                                    connectionstyle="arc3,rad=0.35"), zorder=5)
+    text(ax, 58, 21, f"heat lost to air at {p['air_temperature_C']:g} °C\nfrom every exposed face,\n{p['htc_W_per_m2K']:g} W/m²K", fs=7, color=ACC, ha="left")
+    note(ax, (-28 + w / 2, L - 0.6), (-40, L + 9), "tip: 73.2 °C against a 60 °C minimum", ha="center", va="bottom", color=HOT)
+    text(ax, -18, L / 2, f"6061 aluminium\n{p['conductivity_W_per_mK']:g} W/mK", fs=7, color=INK, box=False)
+    finish(fig, "thermal", "Study 6 · heat-sink fin · front and side view")
+
+
+def _channel(ax, x0, x1, g, k, fc="#dbe7f6"):
+    ax.fill([x0, x1, x1, x0], [-g / 2 * k, -g / 2 * k, g / 2 * k, g / 2 * k], color=fc, zorder=1, lw=0)
+
+
+def heat():
+    p = case("heated_channel_mesh_r2")
+    g, Lh, Le, Lx = p["gap_mm"], p["heated_length_mm"], p["entry_length_mm"], p["exit_length_mm"]
+    k = 5.0
+    fig, ax = new(9, (-17, 73), (-17, 19))
+    _channel(ax, -Le, Lh + Lx, g, k)
+    for s in (1, -1):
+        y0 = s * g / 2 * k
+        rect(ax, -Le, min(y0, y0 + s * 2.2), Lh + Lx, max(y0, y0 + s * 2.2), hatch="////", lw=1.0)
+        ax.plot([0, Lh], [y0, y0], color=HOT, lw=2.4, zorder=5, solid_capstyle="butt")
+        for x in np.linspace(4, Lh - 4, 8):
+            force(ax, (x, s * (g / 2 * k + 7)), (x, s * (g / 2 * k + 2.4)), color=HOT, lw=1.0)
+    text(ax, Lh / 2, g / 2 * k + 9.5, f"{p['wall_heat_flux_W_per_m2'] / 1000:g} kW/m² into both walls", color=HOT, bold=True, fs=8)
+    force(ax, (-15.5, 0), (-6, 0), f"water, {p['inlet_temperature_C']:g} °C,\n{p['mean_velocity_m_per_s']:g} m/s", ha="left", dy=5.2, dx=-1)
+    force(ax, (Lh + Lx + 1, 0), (Lh + Lx + 9, 0))
+    dim(ax, (0, -g / 2 * k - 2.2), (Lh, -g / 2 * k - 2.2), -9.2, f"heated {Lh:g}")
+    dim(ax, (-Le, -g / 2 * k - 2.2), (0, -g / 2 * k - 2.2), -9.2, f"{Le:g}")
+    dim(ax, (Lh, -g / 2 * k - 2.2), (Lh + Lx, -g / 2 * k - 2.2), -9.2, f"{Lx:g}")
+    dim(ax, (Lh * 0.5, -g / 2 * k), (Lh * 0.5, g / 2 * k), 0, f"gap {g:g}")
+    note(ax, (Lh, g / 2 * k), (Lh + 3, g / 2 * k + 12.5), "hottest point on the wall:\n44.03 °C against 45", color=INK, ha="left")
+    finish(fig, "heat", "Study 11 · heated coolant channel · the 2D model", "dimensions in mm, heights drawn 5 times larger")
+
+
+def cold_plate():
+    p = case("cold_plate_mesh_r1")
+    g, Lf, Le, Lx, Lu, tp = (p[k] for k in ("gap_mm", "footprint_length_mm", "entry_length_mm", "exit_length_mm",
+                                             "unplated_length_mm", "plate_thickness_mm"))
+    k = 3.0
+    fig, ax = new(9, (-24, 82), (-23, 25))
+    _channel(ax, -Le - Lu, Lf + Lx + Lu, g, k)
+    for s in (1, -1):
+        y0, y1 = s * g / 2 * k, s * (g / 2 + tp) * k
+        rect(ax, -Le, min(y0, y1), Lf + Lx, max(y0, y1), hatch="////", lw=1.1)
+        ax.plot([0, Lf], [y1, y1], color=HOT, lw=2.4, zorder=5, solid_capstyle="butt")
+        for x in np.linspace(4, Lf - 4, 8):
+            force(ax, (x, y1 + s * 5.5), (x, y1 + s * 0.4), color=HOT, lw=1.0)
+        for x, d in ((-Le, 1), (Lf + Lx, -1)):
+            wall(ax, (x, min(y0, y1)), (x, max(y0, y1)), side=d, ticks=4)
+    text(ax, Lf / 2, (g / 2 + tp) * k + 8.2, f"{p['component_heat_flux_W_per_m2'] / 1000:g} kW/m² from the components, over the footprint", color=HOT, bold=True, fs=8)
+    force(ax, (-22, 0), (-11.5, 0), "water,\n25 °C", ha="left", dy=4.4, dx=-1)
+    force(ax, (Lf + Lx + Lu + 1, 0), (Lf + Lx + Lu + 9, 0))
+    yb = -(g / 2 + tp) * k
+    dim(ax, (0, yb), (Lf, yb), -10.5, f"footprint {Lf:g}")
+    dim(ax, (-Le, yb), (0, yb), -10.5, f"{Le:g}")
+    dim(ax, (Lf, yb), (Lf + Lx, yb), -10.5, f"{Lx:g}")
+    dim(ax, (Lf * 0.72, g / 2 * k), (Lf * 0.72, (g / 2 + tp) * k), 0, f"plate {tp:g}", outside=True)
+    dim(ax, (Lf * 0.3, -g / 2 * k), (Lf * 0.3, g / 2 * k), 0, f"gap {g:g}")
+    note(ax, (Lf + Lx, (g / 2 + tp / 2) * k), (Lf + Lx + 4, 17), "plate ends held rigidly,\nassembled at 20 °C", ha="left")
+    text(ax, Lf * 0.2, (g / 2 + tp / 2) * k, "6061-T6 plate", fs=7, color=INK, box=True)
+    finish(fig, "cold_plate", "Study 15 · cold plate on its coolant channel · the 2D model", "dimensions in mm, heights drawn 3 times larger")
+
+
+def pipe():
+    p = case("pipe_rans_mesh_r2")
+    R = p["diameter_m"] * 500
+    fig, ax = new(9, (-70, 200), (-66, 66))
+    ax.add_patch(Circle((0, 0), R, fc="#dbe7f6", ec=INK, lw=1.3, zorder=2))
+    a = np.radians(2.5)
+    poly(ax, [(0, 0), (R * np.cos(a), R * np.sin(a)), (R * np.cos(a), -R * np.sin(a))], fc=ACC, ec=ACC, lw=0.6, z=3)
+    centre(ax, (-R - 8, 0), (R + 8, 0))
+    centre(ax, (0, -R - 8), (0, R + 8))
+    dim(ax, (-R, -R), (R, -R), -9, f"Ø{2 * R:g} bore")
+    note(ax, (R * 0.75, 0), (30, 40), "the 5° wedge that is modelled", color=ACC, va="bottom", ha="center")
+    # the wedge, enlarged and widened: radial cells graded towards the wall
+    x0, x1, hh = 84, 190, 26
+    poly(ax, [(x0, 0), (x1, hh), (x1, -hh)], fc="#dbe7f6", lw=1.1)
+    rs = 1 - np.geomspace(1, 0.004, 15)
+    rs = rs / rs[-1]
+    for r in rs[1:-1]:
+        x = x0 + (x1 - x0) * r
+        ax.plot([x, x], [-hh * r, hh * r], color=INK, lw=0.45, zorder=3)
+    ax.plot([x1, x1], [-hh, hh], color=INK, lw=2.2, zorder=5, solid_capstyle="butt")
+    text(ax, x1 + 3, 0, "wall", ha="left", fs=7, color=INK)
+    text(ax, x0 - 3, 0, "axis", ha="right", fs=7)
+    text(ax, (x0 + x1) / 2, -hh - 12, "cells graded towards the wall: 80, 160 and 320 across the radius,\nthe first one inside the thin viscous layer", fs=7)
+    text(ax, (x0 + x1) / 2, hh + 9, "front and back faces joined, so the flow repeats", fs=7, color=ACC)
+    finish(fig, "pipe", "Study 19 · turbulent pipe flow · the periodic wedge and its mesh", "dimensions in mm, the wedge drawn wider than 5°")
+
+
+# ---------------------------------------------------------------------------------------- dynamics
+
+def suspension():
+    p = case("qc_speed_bump")
+    fig, ax = new(9, (-70, 170), (-22, 108))
+    xs = np.linspace(-70, 170, 400)
+    bump = np.where((xs > 30) & (xs < 110), 7 * (1 - np.cos(2 * np.pi * (xs - 30) / 80)) / 2, 0)
+    ax.fill_between(xs, -22, bump - 10, color=FILL, zorder=1, lw=0)
+    ax.plot(xs, bump - 10, color=INK, lw=1.2, zorder=2)
+    rect(ax, -22, 70, 22, 96)
+    text(ax, 0, 83, f"body\n{p['sprung_mass_kg']:g} kg", color=INK, box=False, fs=8)
+    rect(ax, -15, 24, 15, 40)
+    text(ax, 0, 32, f"wheel {p['unsprung_mass_kg']:g} kg", color=INK, box=False, fs=7)
+    spring(ax, (-9, 40), (-9, 70), n=5, w=4)
+    damper(ax, (9, 40), (9, 70), w=3.2)
+    spring(ax, (0, -10), (0, 24), n=4, w=4)
+    text(ax, -17, 55, f"spring\n{p['suspension_stiffness_N_per_m'] / 1000:g} kN/m", ha="right", fs=7)
+    text(ax, 17, 55, "damper\n600 to 3500 N·s/m,\nthe thing being chosen", ha="left", fs=7, color=ACC)
+    text(ax, 8, 6, f"tire {p['tire_stiffness_N_per_m'] / 1000:g} kN/m\n(can lift off the road)", ha="left", fs=7)
+    force(ax, (-55, 12), (-28, 12), "18 or 36 km/h", ha="left", dy=7, dx=-4)
+    dim(ax, (30, -10), (110, -10), -6, f"bump {p['bump_length_m']:g} m long")
+    dim(ax, (118, -10), (118, -3), 0, f"{p['bump_height_m'] * 1000:g} mm high", outside=True)
+    text(ax, 96, 98, "what is measured", ha="left", fs=7, color=DIMC)
+    for y, lab in ((88, "body acceleration ≤ 4.0 m/s²"), (78, "suspension travel ≤ 40 mm"), (68, "tire load within ±70 % of static")):
+        ax.plot([88, 94], [y, y], color=HOT, lw=1.6, zorder=5)
+        text(ax, 97, y, lab, ha="left", fs=7.5, color=HOT)
+    finish(fig, "suspension", "Study 7 · quarter-car model · one corner of the car crossing a speed bump", "a schematic, not to scale")
+
+
+def baseline():
+    p = case("msd_step")
+    fig, ax = new(9, (-60, 180), (-30, 56))
+    wall(ax, (0, -18), (0, 44), side=1)
+    spring(ax, (0, 26), (62, 26), n=6, w=5)
+    damper(ax, (0, 2), (62, 2), w=4)
+    rect(ax, 62, -10, 102, 38)
+    text(ax, 82, 14, f"mass\n{p['mass_kg']:g} kg", color=INK, box=False, fs=8)
+    for x in (70, 94):
+        ax.add_patch(Circle((x, -14), 4, fc=PLATE, ec=INK, lw=1, zorder=3))
+    ax.plot([40, 140], [-18, -18], color=INK, lw=1.2, zorder=2)
+    force(ax, (104, 14), (136, 14), f"{p['step_force_N']:g} N, applied suddenly", ha="left", dx=34)
+    text(ax, 31, 38, f"spring {p['stiffness_N_per_m']:g} N/m", fs=7)
+    text(ax, 31, -9, "damper: six damping ratios, 0.1 to 2.0", fs=7, color=ACC)
+    ax.annotate("", (118, 46), (82, 46), arrowprops=dict(arrowstyle="-|>", color=DIMC, lw=0.7, mutation_scale=7))
+    text(ax, 124, 46, "x, comes to rest at 10 mm", fs=7, ha="left")
+    finish(fig, "baseline", "Study 9 · mass-spring-damper · the system", "a schematic, not to scale")
+
+
+def motor():
+    src = REPO / "build" / "drawings" / "motor_geometry.json"
+    if not src.exists():
+        print("skip motor: run scripts/export_motor_geometry.py in the Pyleecan environment first")
+        return
+    d = json.loads(src.read_text())
+    Re = d["Rext"] * 1000
+    fig, ax = new(9.5, (-Re - 12, Re * 3.25), (-Re - 12, Re + 12))
+    col = {"Stator-0_Lamination": FILL, "Rotor-0_Lamination": "#d3dceb", "Winding": "#d98a4e", "HoleMag": ACC, "HoleVoid": PLATE,
+           "Shaft": "#c4cbd6"}
+
+    def draw(ox, oy, k, clip=None):
+        for s in d["surfaces"]:
+            pts = np.array(s["pts"]) * 1000 * k + [ox, oy]
+            kind = next((v for key, v in col.items() if key in s["label"]), FILL)
+            z = 2 if "Lamination" in s["label"] or "Shaft" in s["label"] else 3
+            patch = Polygon(pts, closed=True, fc=kind, ec=INK, lw=0.45 if k == 1 else 0.8, zorder=z)
+            ax.add_patch(patch)
+            if clip is not None:
+                patch.set_clip_path(clip)
+    draw(0, 0, 1)
+    ax.add_patch(Circle((0, 0), d["Rint"] * 1000, fc=PLATE, ec=INK, lw=0.6, zorder=4))
+    dim(ax, (-Re, -Re), (Re, -Re), -5, f"Ø{2 * Re:.1f}")
+    # one pole, enlarged
+    f0, f1 = Re * 1.3, Re * 3.2
+    ax.add_patch(Polygon([(f0, -Re - 4), (f1, -Re - 4), (f1, Re + 6), (f0, Re + 6)], closed=True, fc=PLATE, ec=CUT, lw=0.8, zorder=1.5))
+    k, r0 = 2.25, 50.0
+    cx, cy = (f0 + f1) / 2, -8 - k * (r0 * np.cos(np.radians(22.5)) + Re + 1) / 2
+    P = lambda r, a: (cx + k * r * np.cos(np.radians(a)), cy + k * r * np.sin(np.radians(a)))  # noqa: E731
+    th = np.linspace(67.5, 112.5, 30)
+    wedge = Polygon([P(r0, a) for a in th] + [P(Re + 1, a) for a in th[::-1]], closed=True, transform=ax.transData)
+    draw(cx, cy, k, clip=wedge)
+    ax.add_patch(Polygon([(r0 * np.cos(np.radians(a)), r0 * np.sin(np.radians(a))) for a in th] +
+                         [((Re + 1) * np.cos(np.radians(a)), (Re + 1) * np.sin(np.radians(a))) for a in th[::-1]],
+                         closed=True, fc="none", ec=HOT, lw=0.9, zorder=6))
+    top = P(Re + 1, 90)[1]
+    note(ax, P(69, 101), (f0 + 5, P(60, 90)[1]), "magnets in a V,\nburied in the rotor", color=ACC, ha="left")
+    note(ax, P(100, 86.25), (f1 - 5, top - 14), "48 slots,\ncopper winding", color="#a8581f", ha="right", va="top")
+    note(ax, P(79.0, 72), (f1 - 5, P(64, 90)[1]), "thin steel bridges\nhold the magnets", color=HOT, ha="right")
+    note(ax, P(80.6, 104), (f0 + 5, P(92, 90)[1]), "air gap\n0.775 mm", ha="left")
+    text(ax, cx, top + 5, "one of eight poles, enlarged", fs=7, va="bottom")
+    text(ax, 0, 0, "shaft", fs=7, color=DIMC, box=False)
+    finish(fig, "motor", "Study 20 · 2004 Prius traction motor · cross-section, as rebuilt from the published drawings")
+
+
+ALL = {f.__name__: f for f in (fea, cantilever_opt, strap, modal, strut, contact, bolted_joint, pv_nozzle, bracket_opt, cad,
+                               cfd, thermal, heat, cold_plate, pipe, suspension, baseline, motor)}
+
+if __name__ == "__main__":
+    for name in sys.argv[1:] or ALL:
+        ALL[name]()

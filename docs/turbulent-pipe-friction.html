@@ -14,10 +14,14 @@
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="Turbulent pipe friction, against measured data: result render">
 <meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://cptgrumpus.github.io/engineering-agent-lab/turbulent-pipe-friction.html">
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#141b24" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3CclipPath id='c'%3E%3Crect width='24' height='24' rx='5'/%3E%3C/clipPath%3E%3Cg clip-path='url(%23c)'%3E%3Crect width='4' height='24' fill='%2330123b'/%3E%3Crect x='4' width='4' height='24' fill='%234686fb'/%3E%3Crect x='8' width='4' height='24' fill='%231ae4b6'/%3E%3Crect x='12' width='4' height='24' fill='%23a2fc3c'/%3E%3Crect x='16' width='4' height='24' fill='%23fb8022'/%3E%3Crect x='20' width='4' height='24' fill='%237a0403'/%3E%3C/g%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
-<link rel="stylesheet" href="assets/site.css?v=e178accde1">
+<link rel="stylesheet" href="assets/site.css?v=4937421060">
 </head>
 <body>
 <nav class="topbar" aria-label="Site">
@@ -103,6 +107,7 @@
       <dt>Analysis</dt><dd>Steady Reynolds-averaged (RANS) flow.</dd>
       <dt>What's measured</dt><dd>The Darcy friction factor, the number a pressure-drop calculation uses.</dd>
     </dl>
+    <figure class="drawing"><div class="plate"><img src="v2/dwg_pipe.webp" alt="The pipe&#x27;s cross-section with a thin wedge marked, and the wedge enlarged with its mesh" loading="lazy"></div><figcaption>Left: the pipe and the thin wedge that's modelled. Right: the wedge, with its cells graded towards the wall.</figcaption></figure>
     <details class="record"><summary>The case file: recorded assumptions, limits and inputs</summary><div class="record-body"><p>This is the study's own record, written before the run and saved with it, in the shorthand of the case file.</p><p class="case"><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/cases/pipe_rans_mesh_r2.toml">cases/pipe_rans_mesh_r2.toml ↗</a></p><p>Fully developed turbulent pipe flow, Re 1e5 (D 0.1 m, nu 1e-6 m^2/s), axisymmetric periodic wedge, RANS k-omega SST, low-Reynolds wall treatment; mesh study on the radial cells (80 / 160 / 320, wall cell halved with them); friction factor against Prandtl&#x27;s smooth-pipe law.</p><h3>Assumptions, and how each is checked</h3><ul><li>Fully developed, steady, incompressible, axisymmetric mean flow in a hydraulically smooth pipe.</li><li>RANS with the k-omega SST model (openfoam.org v14 coefficients); its form error is what this study measures.</li><li>Hydraulic diameter of the wedge 2 R cos(2.5 deg) (its wall is a flat face): 0.1 % below D, used consistently.</li></ul><h3>Limits</h3><ul><li>Smooth walls only; roughness (the Colebrook range) not modelled.</li><li>The reference is a correlation of measurements (about +-2 % scatter in Nikuradse&#x27;s smooth-pipe data), not the measurements themselves.</li></ul><h3>Inputs</h3><div class="table-wrap"><table><thead><tr><th>Input</th><th>Value</th></tr></thead><tbody><tr><td>diameter_m</td><td>0.1</td></tr><tr><td>reynolds_number</td><td>100000</td></tr><tr><td>kinematic_viscosity_m2_per_s</td><td>1e-06</td></tr><tr><td>n_radial</td><td>80</td></tr><tr><td>first_cell_yplus</td><td>0.5</td></tr><tr><td>wall_treatment</td><td>low_re</td></tr><tr><td>turbulence_model</td><td>kOmegaSST</td></tr></tbody></table></div></div></details>
     <h2 id="how-it-works">How it works</h2>
     <p>Because the wedge's ends are joined, the flow that comes out is the flow that goes in, and the solution settles into the fully developed state a long pipe would reach. A momentum source holds the mean velocity at the requested value and reports the pressure gradient it had to apply. The friction factor follows directly from that gradient.</p>
@@ -170,7 +175,7 @@
   </div>
 </footer>
 <script>window.VP = [{"id": "pipe", "study": "pipe", "kind": "figure", "img": "v2/pipe_friction.webp", "model": "Smooth pipe, fully developed turbulent flow · 100 mm bore, Re 2 × 10⁴ to 2 × 10⁶", "lines": ["Solver: OpenFOAM 14 · k-omega SST on a periodic 5° wedge", "Friction factor against Prandtl's law: the mesh study, the Reynolds sweep and the wall-function placement", "+2.4 % when converged against a 5 % limit · one mesh alone gave the wrong sign"], "check": "", "card": "pipe"}];</script>
-<script src="assets/viewer.js?v=e178accde1"></script>
-<script src="assets/site.js?v=e178accde1"></script>
+<script src="assets/viewer.js?v=4937421060"></script>
+<script src="assets/site.js?v=4937421060"></script>
 </body>
 </html>

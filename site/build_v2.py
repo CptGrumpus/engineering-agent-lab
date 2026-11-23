@@ -250,6 +250,27 @@ CASES = {"fea": ["cantilever_tet10"], "cantilever_opt": ["bracket_opt"], "strap"
          "thermal": ["fin_tolerance"], "heat": ["heated_channel_mesh_r2"], "cold_plate": ["cold_plate_mesh_r1"],
          "pipe": ["pipe_rans_mesh_r2"], "suspension": ["qc_speed_bump", "qc_bump_liftoff"], "cad": ["mounting_plate"],
          "baseline": ["msd_step"], "motor": ["motor_prius_ornl_oc_mesh_r3", "motor_prius_efficiency_r1"]}
+# drawings from scripts/make_drawings.py (site/v2/dwg_<key>.webp), shown in each study's model section
+DRAWINGS = {
+    "fea": ("Side view of the bar with its fixed root and tip load, and its square section", "The bar as modelled: fixed at the root, 1 kN at the tip."),
+    "cantilever_opt": ("Side view of the tapered bar over the dashed outline of a straight bar", "The optimised taper against the lightest straight bar that passes, shown dashed."),
+    "strap": ("Plan and edge view of the strap with its central hole and the pull at each end", "The strap in plan and edge view. The darker quarter is the part that's modelled."),
+    "modal": ("Plan and side view of the clamped arm with its first mode shape", "The arm in plan and side view, with the shape of its first mode sketched in blue."),
+    "strut": ("Side view of the strut on its pinned ends with the bow drawn enlarged", "The strut, its pinned ends and its initial bow, which is drawn 40 times larger than it is."),
+    "contact": ("The roller on its plate, with the contact strip enlarged in a circle", "The roller on its plate. The contact is too small to see at this scale, so it's enlarged on the right."),
+    "bolted_joint": ("Section through the two plates and the bolt hole, with the clamp force on the washer faces and the side load", "A section through the bolt axis. The bolt is drawn dashed for reference; in the model it's represented by its clamp force on the washer faces."),
+    "pv_nozzle": ("Section through the shell and nozzle walls at the junction, with the weld fillet and the two assessed lines through the wall", "A section through both axes at the junction, with the two lines through the wall that are assessed in this plane."),
+    "bracket_opt": ("Front, side and three-quarter views of the clevis bracket with its main dimensions", "The chosen design, drawn from its CAD model: hidden-line views with the dimensions the optimiser set."),
+    "cad": ("Plan and edge view of the plate with six holes and its dimensions", "The plate with the 9 mm holes, the only size that meets both rules."),
+    "cfd": ("The flow domain: a supply header narrowing smoothly into a long thin channel", "The flow domain: the supply header, the smooth contraction and the 1 mm channel. Heights are drawn larger so the channel can be seen."),
+    "thermal": ("Front and side view of the fin standing on its base", "The fin on its base, in front and side view."),
+    "heat": ("The channel between two walls, heated over 50 mm", "The heated channel. Heights are drawn five times larger."),
+    "cold_plate": ("Two plates on a thin water channel, heated over a footprint and held at both ends", "The plates on their channel, heated over the footprint and held at both ends. Heights are drawn three times larger."),
+    "pipe": ("The pipe's cross-section with a thin wedge marked, and the wedge enlarged with its mesh", "Left: the pipe and the thin wedge that's modelled. Right: the wedge, with its cells graded towards the wall."),
+    "suspension": ("Schematic of the body on a spring and damper, on a wheel, on a tire, crossing a bump", "The quarter-car model: one corner of the car as two masses, a spring, a damper and a tire."),
+    "baseline": ("Schematic of a mass on a spring and a damper with a force applied", "The system: one mass on a spring and a damper, pushed by a sudden force."),
+    "motor": ("Cross-section of the motor, with one pole enlarged to show the magnets, slots and air gap", "The motor's cross-section, drawn from the machine definition the study uses: eight poles of magnets in the rotor and 48 slots of copper in the stator."),
+}
 HIGHLIGHTS = [("bracket_opt", "Optimised bracket"), ("pv_nozzle", "Pressure vessel"), ("bolted_joint", "Bolted joint slip"),
               ("strut", "Strut buckling"), ("cold_plate", "Cold plate")]
 
@@ -357,6 +378,10 @@ def study_body(key: str, level: int, prefix: str = "") -> tuple[str, list]:
     id for the page's contents list; the case record goes where the body asks for it ({{CASE}}) or at the end."""
     body = fragment(key)["body"]
     rec = case_record(key)
+    if key in DRAWINGS and (HERE / "v2" / f"dwg_{key}.webp").exists():
+        alt, cap = DRAWINGS[key]
+        rec = (f'<figure class="drawing"><div class="plate"><img src="v2/dwg_{key}.webp" alt="{esc(alt)}" loading="lazy"></div>'
+               f'<figcaption>{cap}</figcaption></figure>\n    ' + rec)
     body = body.replace("{{CASE}}", rec) if "{{CASE}}" in body else body + ("\n    " + rec if rec else "")
     ev = evidence_block(key)
     if ev:
@@ -620,7 +645,7 @@ for f, doc in built.items():
     dupes = sorted({i for i in page_ids[f] if page_ids[f].count(i) > 1})
     assert not dupes, f"{f}: duplicate ids {dupes}"
     for href in set(re.findall(r'href="([^"]+)"', doc)):
-        if href.startswith(("http", "mailto:", "assets/", "v2/", "img/")):
+        if href.startswith(("http", "mailto:", "data:", "assets/", "v2/", "img/")):
             continue
         target, _, anchor = href.partition("#")
         target = target or f
@@ -638,10 +663,25 @@ for line_no, line in enumerate(css.splitlines(), 1):
     assert depth >= 0, f"stray closing brace in site.css, line {line_no}"
 assert depth == 0, "unclosed brace in site.css"
 for old in DOCS.glob("*.html"):
-    if old.name not in built:
+    if old.name not in built and old.name != "404.html":
         old.unlink()
 for f, doc in built.items():
     (DOCS / f).write_text(doc, encoding="utf-8")
+nf = (layout.replace("{{TITLE}}", f"Page not found · {AUTHOR}").replace("{{DESC}}", "That page isn't here.")
+            .replace("{{OG_TITLE}}", "Page not found").replace("{{URL}}", SITE_URL).replace("{{OG_IMAGE}}", SITE_URL + "v2/og_card.png")
+            .replace("{{OG_ALT}}", "Simulation portfolio")
+            .replace("{{NAV}}", "\n".join(f'        <a href="{u}">{t}</a>' for u, t, _ in NAV))
+            .replace("{{MAIN}}", '  <div class="wrap band" style="padding-top:0"><div class="page-head"><p class="eyebrow">Not found</p>'
+                     "<h1>That page isn't here</h1><p>The address may be out of date. Every study is listed on the home page.</p>"
+                     '<p><a class="cta" href="index.html#work">See the studies</a></p></div></div>')
+            .replace("{{SCRIPTS}}", "").replace("{{ASSET_V}}", asset_v))
+# the 404 page is served at any address, so its relative links need the site's base
+(DOCS / "404.html").write_text(nf.replace("<head>", '<head>\n<base href="/engineering-agent-lab/">', 1), encoding="utf-8")
+(DOCS / "sitemap.xml").write_text(
+    '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+    + "".join(f"  <url><loc>{SITE_URL}{'' if f == 'index.html' else f}</loc></url>\n" for f in sorted(built))
+    + "</urlset>\n", encoding="utf-8")
+(DOCS / "robots.txt").write_text(f"User-agent: *\nAllow: /\nSitemap: {SITE_URL}sitemap.xml\n", encoding="utf-8")
 (DOCS / "pages.json").write_text(json.dumps(
     {"viewer": [p["file"] for p in pages if p.get("has3d") and not p.get("home")], "all": sorted(built)}, indent=1), encoding="utf-8")
 print(f"written {len(built)} pages to docs/ ({sum(len(d) for d in built.values()) // 1024} KB of HTML);", facts,
