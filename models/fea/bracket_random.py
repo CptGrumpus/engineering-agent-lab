@@ -50,6 +50,21 @@ def read_mesh_nodes(mesh_inp: Path) -> tuple[np.ndarray, np.ndarray]:
     return rows[:, 0].astype(int), rows[:, 1:4]
 
 
+def scale_thickness(mesh_inp: Path, factor: float) -> None:
+    """Scale every node's z (through the thickness, centred on z = 0) by factor: a thickness change on the same
+    mesh topology, with no remeshing noise (study H)."""
+    text = Path(mesh_inp).read_text(encoding="utf-8")
+    head, rest = text.split("*NODE", 1)
+    first, block_and_tail = rest.split("\n", 1)
+    block, tail = block_and_tail.split("*", 1)
+    rows = []
+    for ln in block.strip().splitlines():
+        v = ln.split(",")
+        # CalculiX reads at most 20 characters per field: repr's 17 digits plus an exponent overflow it
+        rows.append(f"{v[0].strip()}, {v[1].strip()}, {v[2].strip()}, {float(v[3]) * factor:.12g}")
+    Path(mesh_inp).write_text(head + "*NODE" + first + "\n" + "\n".join(rows) + "\n*" + tail, encoding="utf-8")
+
+
 def tip_node(ids: np.ndarray, xyz: np.ndarray, length: float) -> int:
     """The node on the free end nearest its centre (y = z = 0)."""
     end = np.isclose(xyz[:, 0], length, atol=TOL)

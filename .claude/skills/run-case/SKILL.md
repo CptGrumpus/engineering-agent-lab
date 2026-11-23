@@ -23,6 +23,7 @@ is the `verify-against-reference` skill.
 | `cadquery_ccx_strap` | strap with a hole (CAD to FEA) | CadQuery -> STEP -> Gmsh -> CalculiX, plane stress | `models/fea/strap_hole.py` |
 | `cadquery_ccx_modal` | bracket modal analysis | CadQuery -> STEP -> Gmsh (C3D10) -> CalculiX *FREQUENCY | `models/fea/bracket_modal.py` |
 | `cadquery_ccx_random` | bracket random vibration (study C): base PSD, 3 sigma stress, fatigue | CadQuery -> Gmsh (C3D10) -> CalculiX *FREQUENCY (modal stresses, participation factors) + *STEADY STATE DYNAMICS check; modal superposition in Python | `models/fea/bracket_random.py`, `studies/bracket_random.py` |
+| `cadquery_ccx_random_uq` | probabilistic uncertainty on study C (study H): failure probability, Sobol indices | study C's model at several thicknesses (one mesh, z scaled), a surrogate in (log damping, thickness), Monte Carlo / Sobol, FORM and importance sampling (`harness/uncertainty.py`) | `models/fea/bracket_random.py`, `studies/bracket_random_uq.py` |
 | `gmsh_ccx_contact` | roller-on-plate contact | scripted Gmsh .geo (C3D8 slab, plane strain) -> CalculiX surface-to-surface contact | `models/fea/hertz_contact.py` |
 | `strap_fatigue` | strap fatigue life (chained) | strap CAD-to-FEA pipeline, then Peterson K_f, SWT, Basquin fit to cited 6061-T6 data | `models/fea/strap_hole.py`, `models/fatigue/sn_6061.py` |
 | `openfoam_channel` | laminar channel flow | OpenFOAM 14 in WSL (blockMesh, checkMesh, foamRun) | `models/cfd/channel_openfoam.py`, `models/cfd/run_channel.sh` |

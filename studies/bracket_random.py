@@ -201,13 +201,19 @@ class CadQueryCalculiXRandom(Backend):
             return {n: work / n for n in keep if (work / n).exists()}
 
         try:
-            volume = self.writer.build_step(params, work / "arm.step")
-            self.writer.write_geo(params, work / "mesh.geo")
+            # optional (study H): mesh at mesh_thickness_mm, then scale z to thickness_mm (same topology)
+            hm = params.get("mesh_thickness_mm")
+            factor = _p(params, "thickness_mm") / float(hm) if hm else 1.0
+            gparams = dict(params) | ({"thickness_mm": float(hm)} if hm else {})
+            volume = self.writer.build_step(gparams, work / "arm.step") * factor
+            self.writer.write_geo(gparams, work / "mesh.geo")
             g = subprocess.run([str(self.gmsh), "mesh.geo", "-3", "-format", "inp", "-o", "mesh.inp"],
                                cwd=work, capture_output=True, text=True, timeout=1800)
             (work / "gmsh.log").write_text(g.stdout + g.stderr, encoding="utf-8")
             if g.returncode != 0 or not (work / "mesh.inp").exists():
                 return failed(f"gmsh failed (exit {g.returncode})") | {"files": files(), "cleanup": work}
+            if factor != 1.0:
+                self.writer.scale_thickness(work / "mesh.inp", factor)
             info = self.writer.write_deck(params, work / "mesh.inp", work / "job.inp", _p(params, "f_low_Hz"),
                                           _p(params, "f_high_Hz"), int(numerics.get("harmonic_points", 40)))
             c = subprocess.run([str(self.ccx), "-i", "job"], cwd=work, capture_output=True, text=True,

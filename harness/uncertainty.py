@@ -48,33 +48,46 @@ def sample(dists: Sequence, n: int, seed: int = 0, method: str = "sobol") -> np.
 
 
 def sobol_indices(model: Model, dists: Sequence, n: int, seed: int = 0, n_boot: int = 200,
-                  method: str = "sobol") -> dict:
-    """First-order S1 and total ST indices of model(x) with their 95 % bootstrap intervals; n (d + 2) calls."""
+                  method: str = "sobol", return_samples: bool = False) -> dict:
+    """First-order S1 and total ST indices of model(x) with their 95 % bootstrap intervals; n (d + 2) calls.
+
+    model may return (n,) or (n, k) (k outputs at once): then S1, ST are (k, d) and the intervals (k, d, 2).
+    return_samples adds A, B (2n independent input samples) and their outputs fA, fB, usable as plain Monte Carlo."""
     d = len(dists)
     uu = np.clip(_unit(n, 2 * d, seed, method), 1e-12, 1 - 1e-12)
     A = np.column_stack([dd.ppf(uu[:, i]) for i, dd in enumerate(dists)])
     B = np.column_stack([dd.ppf(uu[:, d + i]) for i, dd in enumerate(dists)])
-    fA, fB = model(A), model(B)
-    fAB = np.empty((d, n))
+    fA, fB = np.asarray(model(A), float), np.asarray(model(B), float)
+    single = fA.ndim == 1
+    fA2, fB2 = fA.reshape(n, -1), fB.reshape(n, -1)
+    fAB = np.empty((d, n, fA2.shape[1]))
     for i in range(d):
         ABi = A.copy()
         ABi[:, i] = B[:, i]
-        fAB[i] = model(ABi)
+        fAB[i] = np.asarray(model(ABi), float).reshape(n, -1)
 
     def est(idx):
-        a, b, ab = fA[idx], fB[idx], fAB[:, idx]
-        var = np.var(np.concatenate([a, b]))
-        s1 = np.mean(b * (ab - a), axis=1) / var
+        a, b, ab = fA2[idx], fB2[idx], fAB[:, idx]                      # (m, k), (m, k), (d, m, k)
+        var = np.var(np.concatenate([a, b]), axis=0)                    # (k,)
+        s1 = np.mean(b * (ab - a), axis=1) / var                        # (d, k)
         st = 0.5 * np.mean((a - ab) ** 2, axis=1) / var
-        return s1, st
+        return s1.T, st.T                                               # (k, d)
 
     s1, st = est(np.arange(n))
     rng = np.random.default_rng(seed + 1)
     boot = [est(rng.integers(0, n, n)) for _ in range(n_boot)]
     b1, bt = np.array([b[0] for b in boot]), np.array([b[1] for b in boot])
-    return {"S1": s1, "ST": st, "S1_ci": np.percentile(b1, [2.5, 97.5], axis=0).T,
-            "ST_ci": np.percentile(bt, [2.5, 97.5], axis=0).T, "n_calls": n * (d + 2),
-            "mean": float(np.mean(np.concatenate([fA, fB]))), "var": float(np.var(np.concatenate([fA, fB])))}
+    ci1, cit = np.moveaxis(np.percentile(b1, [2.5, 97.5], axis=0), 0, -1), \
+        np.moveaxis(np.percentile(bt, [2.5, 97.5], axis=0), 0, -1)      # (k, d, 2)
+    both = np.concatenate([fA2, fB2])
+    out = {"S1": s1, "ST": st, "S1_ci": ci1, "ST_ci": cit, "n_calls": n * (d + 2),
+           "mean": both.mean(axis=0), "var": both.var(axis=0)}
+    if single:
+        out = {k: (v[0] if isinstance(v, np.ndarray) and k != "n_calls" else v) for k, v in out.items()}
+        out["mean"], out["var"] = float(out["mean"]), float(out["var"])
+    if return_samples:
+        out |= {"A": A, "B": B, "fA": fA, "fB": fB}
+    return out
 
 
 def failure_probability(g: np.ndarray) -> dict:
@@ -95,24 +108,35 @@ def form(g: Callable[[np.ndarray], float], dists: Sequence, u0: np.ndarray | Non
     d = len(dists)
     u = np.zeros(d) if u0 is None else np.asarray(u0, float)
     gx = lambda uu: float(g(_to_x(uu[None, :], dists)[0]))          # noqa: E731
-    calls = 0
+    calls, method, it = 0, "HL-RF", 0
+    u_start = u.copy()
     for it in range(max_iter):
         g0 = gx(u)
         grad = np.array([(gx(u + h * e) - gx(u - h * e)) / (2 * h) for e in np.eye(d)])
         calls += 1 + 2 * d
         nrm = float(grad @ grad)
-        if nrm == 0:
-            raise RuntimeError("zero gradient in FORM")
+        if nrm == 0 or not np.isfinite(nrm):
+            break
         u_new = (grad @ u - g0) / nrm * grad
         if np.linalg.norm(u_new - u) < tol * max(1.0, np.linalg.norm(u_new)):
             u = u_new
             break
         u = u_new
     else:
-        raise RuntimeError("FORM did not converge")
+        nrm = 0.0
+    if nrm == 0 or not np.isfinite(nrm):
+        # HL-RF oscillates on kinked limit states (a max over locations); solve min |u| subject to g(u) = 0 directly
+        from scipy.optimize import minimize
+
+        r = minimize(lambda v: 0.5 * float(v @ v), u_start, jac=lambda v: v, method="SLSQP",
+                     constraints=[{"type": "eq", "fun": gx}], options={"maxiter": 500, "ftol": 1e-12})
+        calls += int(r.nfev) + int(getattr(r, "njev", 0)) * (d + 1)
+        if not r.success or abs(gx(r.x)) > 1e-6 * max(1.0, abs(gx(np.zeros(d)))):
+            raise RuntimeError(f"FORM did not converge (HL-RF, then SLSQP: {r.message})")
+        u, method, it = r.x, "SLSQP", int(r.nit)
     beta = float(np.linalg.norm(u)) * (1 if gx(np.zeros(d)) > 0 else -1)
     return {"beta": beta, "pf": float(stats.norm.cdf(-beta)), "u_star": u, "x_star": _to_x(u[None, :], dists)[0],
-            "alpha": -u / max(np.linalg.norm(u), 1e-300), "iterations": it + 1, "calls": calls}
+            "alpha": -u / max(np.linalg.norm(u), 1e-300), "iterations": it + 1, "calls": calls, "method": method}
 
 
 def importance_sampling(g: Model, dists: Sequence, u_star: np.ndarray, n: int, seed: int = 0) -> dict:

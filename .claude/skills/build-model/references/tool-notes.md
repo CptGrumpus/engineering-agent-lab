@@ -135,6 +135,9 @@ Traps found while building the studies in this repo, by tool.
   the design order is fine for the GCI; only a rate far above it is suspect.
 - Modes are mass-normalised; the .dat also prints PARTICIPATION FACTORS (x, y, z, rx, ry, rz), Gamma_i = phi_i^T M r,
   with effective mass = Gamma_i^2 (study C prototype, 2026-11-23).
+- **Input fields are at most 20 characters.** A node line rewritten with Python's `repr` (e.g. `1.2371056560109001e-15`,
+  22 characters) stops ccx with a bare "*ERROR reading *NODE. Card image:" and exit 201. Write coordinates with
+  `:.12g` (study H's thickness scaling, 2026-11-23).
 - **`*NODE FILE` / `*EL FILE` requests carry over into later steps.** A `*STEADY STATE DYNAMICS` step after a
   `*FREQUENCY` step that wrote U and S writes them again for the whole mesh at every frequency point, real and
   imaginary: 16.5 GB of .frd on study C's 1.22 mm mesh, and reading it took 38 of 64 GB of RAM before the run was

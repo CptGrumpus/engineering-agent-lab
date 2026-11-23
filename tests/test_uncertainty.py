@@ -86,3 +86,21 @@ def test_samples_follow_their_marginals():
     x = U.sample([stats.norm(5, 2), stats.lognorm(0.2, scale=3.0)], 2 ** 12, seed=0)
     assert x[:, 0].mean() == pytest.approx(5, abs=0.01) and x[:, 0].std() == pytest.approx(2, rel=0.01)
     assert np.median(x[:, 1]) == pytest.approx(3.0, rel=0.01)
+
+
+def test_sobol_indices_of_several_outputs_at_once_match_one_at_a_time():
+    dists = [stats.uniform(-math.pi, 2 * math.pi)] * 3
+    both = U.sobol_indices(lambda x: np.column_stack([ishigami(x), x.sum(axis=1)]), dists, 2 ** 10, seed=7,
+                           n_boot=10, return_samples=True)
+    one = U.sobol_indices(ishigami, dists, 2 ** 10, seed=7, n_boot=10)
+    assert both["S1"].shape == (2, 3) and both["ST_ci"].shape == (2, 3, 2)
+    assert both["S1"][0] == pytest.approx(one["S1"], rel=1e-12) and both["ST"][0] == pytest.approx(one["ST"], rel=1e-12)
+    assert both["ST"][1] == pytest.approx(np.full(3, 1 / 3), abs=0.03)
+    assert both["A"].shape == (2 ** 10, 3) and both["fA"].shape == (2 ** 10, 2)
+
+
+def test_form_falls_back_to_slsqp_on_a_kinked_limit_state():
+    # g = 4 - max(x1, x2) with standard normals: two equal design points at distance 4; HL-RF jumps between them
+    d = [stats.norm(0, 1), stats.norm(0, 1)]
+    r = U.form(lambda x: 4.0 - max(x[0], x[1]), d, u0=np.array([0.3, 0.29]), max_iter=50)
+    assert r["beta"] == pytest.approx(4.0, rel=1e-4)
