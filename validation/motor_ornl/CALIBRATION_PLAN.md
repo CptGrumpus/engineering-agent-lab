@@ -258,3 +258,19 @@ reading, but it is a hypothesis, not a finding, until a lamination drawing and a
 retention method: adhesive, resin, a spring) settle whether 1.5 mm of non-magnetic material really sits in series
 with each magnet. On a real job that is one question to the client. Carried as a model-form bracket alongside the
 placement: pocket filled (the blind geometry, 110.9 V) against magnet plus air (79-85 V).
+
+### Source found: the magnets are polymer-moulded (2026-11-23 12:28; supersedes the 12:24 note's open question)
+User, 2026-11-23 ~12:27: if a client would know it, look for it in the literature and use it. ORNL's teardown report
+(TM-2004/137, Hsu, Ayers and Coomer, July 2004, Pub57348.pdf, sha256 32469ab0...; the report whose Fig. 14 gave the
+magnet B-H line), p. 9-10: "the magnets are molded with a polymer that enables the final sizing of the PMs to be
+inexpensively honed to the correct dimensions and shapes for the final assembly ... The PMs with the polymer coating
+are inserted into the slots of the rotor core" (Figs. 10-12; the photo shows the 2004 magnets in a white polymer frame,
+face width about 19-20 mm on the ruler, matching 19.24 mm). A magnet drawing or supplier spec would state this, so a
+client would have it. So the non-magnetic layer is real: a 5.31 mm magnet in a polymer shell sized to the 6.80 mm
+pocket. ORNL's parametric model (TM-2004/120 Figs. 5.2, 5.10), which fills the pocket, simplified it away.
+*Placement:* a moulded shell is most naturally symmetric, about 0.75 mm of polymer on each face: the CENTRED placement
+is the primary model (back-EMF 82.37 V per 1000 rpm, -7.8 % on ORNL, uncalibrated). Outer and inner stay as the bounds
+of an asymmetric shell (85.31 / 79.26 V). Chosen on the design information, not on the back-EMF match (the outer
+placement matches better; choosing it for that would be calibration).
+*Logged:* reading p. 11's text also printed the axis labels of Fig. 13 (the measured air-gap flux, teardown-only);
+no data values, and nothing of it is used.
