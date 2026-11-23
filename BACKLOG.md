@@ -58,41 +58,65 @@ each part on its own: CSM1 to CSM3 (solid only, CalculiX, nothing new needed), C
 only, OpenFOAM 14, nothing new needed), then FSI1 to FSI3 coupled through preCICE. Each part is
 verified before the coupled run, as in study 2.
 
-## Session handoff (2026-11-22, 19:45; first written 2026-11-21, 23:10)
+## Session handoff (2026-11-22, 19:25; first written 2026-11-21, 23:10)
 
-**Done this evening (17:15-19:10 session; user, ~18:10: "do as much of this list as you can before I go to bed"; user
-said yes to the blind comparison and to the skill eval):** study 7 thermal network (r1 final); FSI1 r1 scored (29e6655,
-page 9c41e8d); skill eval single-mesh-agreement-trap 8/8 (9031316, `evals/.../results.md`); efficiency figure fixed
-(d69953b); motor reports gained a thermal page; **study 7 blind comparison run: all three limits FAIL** (0f58d8c,
-ebb75f7; `validation/motor_ornl/RESULTS.md`, log `reports/motor/blind_comparison_log.md`): back-EMF +23.5 %, torque +7 to
-+24 %, efficiency +5.2 points; the model's magnet flux is about 24 % high. Artifact version 6.
-**For the dashboard session:** study 7 is no longer "blind, sealed": the comparison ran and failed (see above); thermal
-added; study 6 FSI1 reproduces the benchmark within 1 % (drag and lift verified). Pages under `site/` that show study 7
-or study 6 status are stale.
-**Open for the user:** (a) study 7 diagnostic: may I open ORNL/TM-2004/137 Fig. 13 (measured air-gap flux density) to
-split the 24 % between magnets and winding? Then a documented revision with predictions first, the blind verdicts kept.
-(b) the skill eval's no-skills baseline (not run). (c) study C framing, drafted 19:00 for your approval (frame-requirements: the decision is yours; nothing run):
-  *Decision:* does the study-4 steel bracket arm (150 x 25 x 7 mm cantilever, first mode about 262 Hz, portfolio 04)
-  survive a random-vibration qualification at its clamp: 1 h per axis of a base PSD, flat 0.04 g^2/Hz from 20 to 2000 Hz
-  (about 8.9 g rms; synthetic, a typical engine-mounted component level), with 2 % modal damping (synthetic)?
-  *Requirements (proposed):* REQ-RV1 3-sigma von Mises at the clamp (smooth-region extrapolated, not the corner
-  singularity) below yield / 1.5; REQ-RV2 fatigue damage (Steinberg three-band with Miner's rule; Dirlik as a second
-  estimate) below 0.5 for the test duration (safety factor 2 on life); REQ-RV3 tip relative displacement 3-sigma under
-  a stated clearance. *Model:* CalculiX *FREQUENCY, then *MODAL DYNAMIC or *STEADY STATE DYNAMICS base excitation for
-  the transfer functions; response PSD and moments in Python. *Checks:* Miles' equation for the first mode (exact for
-  one mode in a flat PSD), modal effective mass above 90 % of the mass in the excited direction, the response rms by
-  two integrations (frequency bins and modal sums), mesh study on the 3-sigma stress. *Questions for you:* the PSD
-  level (or a standard profile such as ISO 16750-3), the damping, the steel grade (for yield and the S-N curve), and
-  whether the clearance requirement applies.
+Read this first. Files under site/, docs/, DASHBOARD.md and `scripts/make_study_renders.py` belong to the dashboard
+session (it commits in this clone: add and commit only your own paths, in one command; never leave files staged).
+Rules that bind: **CLAUDE.md "Use only information a real project would have"** (new, user 2026-11-22 ~19:15: workflows
+use only specs, datasheets, drawings, standards and routine client tests; no teardown / answer-key data; when unsure,
+treat as available and say so); predictions go into a case header and get committed BEFORE the evidence run; Results
+blocks after; `scripts/scrub_paths.py <run dir>`, `git add -f` without `*.inp`, `*.dat`, `__pycache__`, logs > 600 kB,
+then `tests/test_privacy.py`; never two FEMM cases at once (OpenFOAM/CalculiX may run beside FEMM).
 
-Read this first in a new session. Files under site/, docs/, DASHBOARD.md and `scripts/make_study_renders.py` belong
-to the dashboard session (it commits in this clone: add and commit only your own paths, in one command; never leave
-files staged). Study 7's HTML reports live in `reports/motor/`. Rules that still bind: the ORNL measured data stays
-SEALED until study 7 is complete (ask before opening any; whitelist extraction only; material searches only, never
-search for Prius performance); never run two FEMM cases at once (OpenFOAM/CalculiX may run beside FEMM: 24 cores);
-predictions go into a case header and get committed BEFORE its evidence run; Results blocks after; `scripts/scrub_paths.py
-<run dir>`, commit with `git add -f` leaving out `*.inp`, `*.dat`, `__pycache__` and logs over about 600 KB, then
-`tests/test_privacy.py`.
+### Running at 19:25 (logs in this session's scratchpad: `$TEMP/claude/cb67dd1e648f8970/4abd5a92-1872-493d-b389-7a0cff188b91/scratchpad/`)
+
+| Job | Run dir (log) | Done about | When it finishes |
+|---|---|---|---|
+| Study 7 calibration, open circuit at remanence 1.00 / 1.03 / 1.06 T (FEMM) | `runs/20261122-192029_motor_prius_cal_oc_br` (`cal_oc.log`) | ~19:40 | (1) Interpolate the remanence where the back-EMF, line-to-line full-waveform rms per 1000 rpm, equals ORNL's 89.78 (the case's metric is the fundamental, 110.88 at 1.243 T; full / fundamental = 1.0034 in r3, so the target fundamental is 89.47 V); Results block in `cases/motor_prius_cal_oc_br.toml` (prediction: 87 / 90 / 92.5 V); commit with evidence. (2) Build `models/motor/build_prius_ornl.py --br <value>` (Pyleecan env, `PYTHONUTF8=1 ~/.venvs/pyleecan/Scripts/python.exe`), add the file to `MACHINES` in `studies/motor_em.py`, set it in `cases/motor_prius_cal_torque_br.toml` (replacing `PENDING_calibrated_remanence.json`), commit saying the predictions are unchanged. (3) Run that case (FEMM, about 2 h). |
+| Study 6 FSI2 (2.5 mm, dt 0.001, 15 s, periodic) | started 18:48; `runs/<ts>_turek_hron_fsi2` (`fsi2.log`) | ~22:40 (65 windows/min; 15000) | Score P1-P7 in `cases/turek_hron_fsi2.toml`, Results block, commit evidence (curate as FSI1 r1: no postProcessing, .sta, .dat, logs > 600 kB), update `portfolio/17-...` (draft) and the PORTFOLIO row. At 19:23: 2283 windows, none unconverged, uy(A) growing (1.5 mm at 2.3 s). |
+| Study 6 FSI3 (2.5 mm, dt 0.0005, 8 s, periodic) | started 18:50; `runs/<ts>_turek_hron_fsi3` (`fsi3.log`) | ~22:55 (65 windows/min; 16000) | Same with `cases/turek_hron_fsi3.toml`. At 19:23: 2156 windows, none unconverged. |
+
+Alive check: `ps -ef | grep "[h]arness pipeline"`; WSL: `wsl.exe -e bash -lc "ps -eo etime,cmd | grep -E 'Foam|ccx' | grep -v grep"`.
+FSI progress: the two newest `$TEMP/fsi_*/case/fluid/precice-Fluid-iterations.log` (one line per window).
+
+### Study 7: post-test revision in progress (plan `validation/motor_ornl/CALIBRATION_PLAN.md`, committed 31449ff before computing)
+
+- Blind result (stays the record): back-EMF +23.5 %, torque +7 to +24 %, efficiency +5.2 points: FAIL 3/3
+  (`validation/motor_ornl/RESULTS.md`; log `reports/motor/blind_comparison_log.md`).
+- User's decisions (~19:10-19:20): calibrate on back-EMF (the routine test), predict the rest; **do NOT open ORNL
+  TM-2004/137 Fig. 13** (teardown-only data, against the new rule). Torque chooses between the hypotheses (so it becomes
+  calibration data); efficiency is the out-of-sample test.
+- Hypothesis B (series turns x 0.807) scored: torque rms error 10.7 % (peak reading; -17 % at 50 A to +4 % at 250 A),
+  31 % (rms reading); efficiency unchanged, 5.3 points high (turns don't change copper loss at a given torque).
+  `scripts/motor_calibration.py` (writes `validation/motor_ornl/calibration.json`).
+- Hypothesis A (remanence): running (above). After the torque run: `scripts/motor_calibration.py --torque-run <run id>`;
+  select by the smaller rms torque error; score efficiency for the selected hypothesis (the script does B's; add A's from
+  a dq table at the calibrated remanence only if A wins: that needs the LUT runs, several hours of FEMM); write the
+  outcome into CALIBRATION_PLAN.md (Results), portfolio page 20, the reports (`reports/motor/build_report.py`, republish
+  artifact https://claude.ai/artifact/C6dNdzjs1FdP8vVb6MLaRy).
+
+### Open for the user
+(a) Study C framing, drafted for approval (nothing run): *Decision:* does the study-4 steel bracket arm (150 x 25 x 7
+mm cantilever, first mode about 262 Hz, portfolio 04) survive a random-vibration qualification: 1 h per axis of a base
+PSD, flat 0.04 g^2/Hz from 20 to 2000 Hz (about 8.9 g rms; synthetic), 2 % modal damping (synthetic)? *Requirements
+(proposed):* REQ-RV1 3-sigma von Mises at the clamp (smooth-region extrapolated, not the corner singularity) below
+yield / 1.5; REQ-RV2 fatigue damage (Steinberg three-band with Miner; Dirlik as a second estimate) below 0.5 for the
+test; REQ-RV3 tip relative displacement 3-sigma under a stated clearance. *Model:* CalculiX *FREQUENCY, then base
+excitation (*MODAL DYNAMIC or *STEADY STATE DYNAMICS); response PSD and moments in Python. *Checks:* Miles' equation for
+the first mode, modal effective mass above 90 %, response rms by two integrations, mesh study on the 3-sigma stress.
+*Questions:* PSD level (or a standard profile such as ISO 16750-3), damping, steel grade (yield, S-N curve), clearance.
+(b) Proposed eval case for frame-requirements: "brackets the inputs that don't matter, leaves out the one that does"
+(study 7's remanence); ask before adding. (c) The skill eval's no-skills baseline (not run).
+
+### Done this evening (17:15-19:25)
+Thermal network (r1 final, cb6920c reports); FSI1 r1 scored (29e6655, page 9c41e8d); skill eval single-mesh-agreement-trap
+8/8 (9031316); efficiency figure fixed (d69953b); blind comparison (0f58d8c, ebb75f7, artifact v6); frame-requirements
+lessons from the miss (a180027); the realistic-information rule (95daee6); FSI2/FSI3 periodic statistics and cases
+(f56581d, ea28835); calibration plan, hypothesis B, hypothesis A cases (31449ff .. 7664a06). Uncommitted: none of this
+session's (docs/ and DASHBOARD.md changes belong to the dashboard session).
+**For the dashboard session:** study 7 is no longer "blind, sealed": the comparison ran and failed 3/3 (flux 24 % high),
+a calibrated revision is in progress; thermal page added; study 6 FSI1 within 1 % (drag and lift verified), FSI2/FSI3
+running. Pages under `site/` / `docs/` showing study 7 or 6 status are stale.
 
 ### Work order (user, 2026-11-22 ~17:05: "keep working through all of this")
 
@@ -116,21 +140,6 @@ predictions go into a case header and get committed BEFORE its evidence run; Res
    (`.claude/skills/verify-against-reference/evals/single-mesh-agreement-trap`) with the skill-eval-runner agent (ask:
    it costs a session); study 18 extras (classification-line placement, head-to-shell junction).
 6. **Blocked:** study 19 part 2 (step data host certificate; the user may supply the files).
-
-### Running at 17:10 (background shells: they should keep running after a /clear; confirm with the commands below)
-
-Check with `ps -ef | grep "[h]arness pipeline"` (WSL jobs: `wsl.exe -e bash -lc "ps -eo etime,cmd | grep -E 'Foam|ccx' | grep -v grep"`).
-A run is finished when its `runs/<timestamp>_<case>/report.md` exists. Logs are in the 13:50-17:10 session's scratchpad,
-`$TEMP/claude/cb67dd1e648f8970/2466259e-97df-49dc-993b-d474fed5635d/scratchpad/` ($TEMP = the user's AppData/Local/Temp).
-
-Logs of the 17:15 session (thermal runs): `$TEMP/claude/cb67dd1e648f8970/4abd5a92-1872-493d-b389-7a0cff188b91/scratchpad/`.
-
-| Job | Run dir (log) | Done about | When it finishes |
-|---|---|---|---|
-| Study 6 FSI2 (2.5 mm, dt 0.001, 15 s, periodic) | started 18:48 (system clock); run dir `runs/<ts>_turek_hron_fsi2` (log `fsi2.log` in the 17:15 session's scratchpad) | about 1.2 s per window at 18:51: about 23:30-00:30 | Score P1-P7 in `cases/turek_hron_fsi2.toml`, Results block, commit evidence (curate as FSI1 r1: no postProcessing, .sta, .dat, logs > 600 kB), update `portfolio/17-...` (draft) and PORTFOLIO row. If the mesh motion failed: the log and `points/*/solver/fluid/log.*` show where; that is P1's named risk. |
-| Study 6 FSI3 (2.5 mm, dt 0.0005, 8 s, periodic) | started 18:50; `runs/<ts>_turek_hron_fsi3` (log `fsi3.log`, same scratchpad) | morning (predicted 6-10 h) | Same as FSI2 with `cases/turek_hron_fsi3.toml`. |
-
-Alive check: `ps -ef | grep "[h]arness pipeline"`; WSL: `wsl.exe -e bash -lc "ps -eo etime,cmd | grep -E 'Foam|ccx' | grep -v grep"` (two pimpleFoam + two ccx_preCICE while both run). Progress: the newest `$TEMP/fsi_*/case/fluid/precice-Fluid-iterations.log` (one line per window; 15000 for FSI2, 16000 for FSI3).
 
 ### Study 7 (motor): state and next steps
 
