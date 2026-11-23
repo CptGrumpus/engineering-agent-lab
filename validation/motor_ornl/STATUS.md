@@ -1,6 +1,6 @@
 # Study 7 (2004 Prius motor against ORNL's tests): where it stands
 
-Updated 2026-11-23 15:05 (time from `date`). Since about 13:50 the study runs as a **regular client project**
+Updated 2026-11-23 17:13 (time from `date`). Since about 13:50 the study runs as a **regular client project**
 (user's decision): every piece of information a client would hand over is collected in `CLIENT_DATA.md` and used as
 input; what the job must predict (torque, efficiency) stays a validation target. The record of earlier steps:
 `RESULTS.md` (the blind pass), `CALIBRATION_PLAN.md` (revisions 1-4, predictions before each run), `DRAWING_AUDIT.md`.
@@ -46,18 +46,16 @@ this motor's back-EMF.
 ## Next steps (no calibration)
 
 1. Done 15:04: **revision 5, the client-data model**, +17.7 % (gap 0.775 mm) / +18.7 % (0.730 mm), as predicted.
-   **A tension to resolve first:** the blind model's locked-rotor torque was only +6.9 % high at 50 A (rising to
-   +23.7 % at 250 A; RESULTS.md, current read as peak), while its back-EMF was +24 %. At low current torque follows
-   the magnet flux, so if the magnet flux alone were 24 % high the 50 A torque should be about 20 % high. The two
-   tests disagree on how much magnet flux the motor has. (Corrected 15:06: an earlier line here said the torque
-   excess was largest at low current; it is the smallest.)
+   **Torque, like for like (revision 5, 17:13):** reproducing ORNL's locked-rotor procedure (largest torque over shaft
+   angle, ripple included; scripts/motor_locked_rotor.py), the model is +17.5 % at 50 A and 17-19 % high at almost
+   every current, matching its +17.7 % on back-EMF. ORNL's back-EMF, inductances and torque are consistent with each
+   other once ripple is counted. (An earlier note here said the two tests disagreed; that compared ORNL's maximum with
+   the model's mean, and is withdrawn.) So the model's magnet-driven flux is about 18 % high in two independent tests.
 2. **Find the model-form cause** of what remains, one effect at a time, each with a hand estimate first:
    (a) how fully the magnets are magnetised in the assembled rotor (a question for the client's production engineer;
    the literature on in-rotor magnetising of high-coercivity NdFeB gives the typical range); (b) 3D end effects;
    (c) a check of the 2D model against an independent hand magnetic circuit for the same geometry.
 3. Done 15:10: **static inductances** on revision 5: Ld 1.72 mH (-10.6 % on ORNL's 1.92), Lq 5.50 mH (+10 % on 5.0),
    saliency 3.2 against 2.6, as predicted: the client data does not fix them.
-4. **Torque per ampere at low current on the revision-5 machine against ORNL's locked-rotor test**, moved up: it
-   tells whether the model's magnet flux is high (torque high too) or the back-EMF comparison carries something
-   else (torque close). Then efficiency (with the measured resistance) and the design verdicts; then refresh
+4. Done 17:09 (torque, revision 5) and 17:13 (locked-rotor emulation): torque 17-19 % high like for like. Then efficiency (with the measured resistance) and the design verdicts; then refresh
    `reports/motor/`.

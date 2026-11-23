@@ -391,3 +391,19 @@ is periodic). The phase-a axis's offset to the slots is not known exactly, so th
 - P1 At 50 A peak: locked-rotor maximum 80-84 N m (mean 76.9 plus most of half the 15.6 N m ripple): +8 to +14 % on
   ORNL's 74, so the comparison at low current moves from +4 % to about +10 %.
 - P2 At 250 A: 425-445 N m (ripple 68 N m pp): +26 to +32 %.
+
+### Result of the locked-rotor emulation (17:13; scripts/motor_locked_rotor.py on run 20261123-151023)
+The saved phase currents fix the offset: for every gamma, the rotor position at which the current vector lies along +a
+falls on one line (spread 0.00 deg), so the locked-rotor path is known, not a band. Model maximum over shaft angle
+against ORNL: 87.0 / 137.9 / 182.8 / 223.4 / 261.8 / 336.7 / 411.8 N m at 50-250 A peak, +17.5 / +16.8 / +18.7 /
++12.2 / +18.4 / +17.7 / +22.2 % (the mean torque read +3.6 to +21.4 %).
+- P1 MISSED: 87.0 N m at 50 A, above the 80-84 band (the ripple peak lands close to MTPA on the real path).
+- P2 MISSED: 411.8 N m at 250 A, below 425-445 (at high current the path's best point is near MTPA's mean).
+**Reading:** compared like for like, the model is 17-19 % high on torque at almost every current, the same as its
++17.7 % on back-EMF. ORNL's data are self-consistent: ORNL's back-EMF flux with ORNL's inductances gives a MEAN torque
+of 65.3 N m at 50 A (the hand diagnostic above); the model's ripple lifts the maximum 13.4 % above its mean (87.0 /
+76.7), and 65.3 x 1.134 = 74.0 N m, ORNL's measured value. **The diagnostic headed "ORNL's back-EMF and ORNL's low-
+current torque disagree" is withdrawn:** it compared a measured maximum over shaft angle with a mean-torque formula.
+Conclusion now: the model's magnet-driven flux is about 18 % high, consistently in two independent tests; every input
+a client supplies is measured and in the model, so the cause is model form or manufacturing (magnetisation level, end
+effects, the bridges' steel), to be tested one at a time.

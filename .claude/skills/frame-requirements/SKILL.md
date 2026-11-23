@@ -134,6 +134,11 @@ prediction is written into a case file.
   would have shown before the data that a 5 % limit was a gamble.
 - When sources conflict, carry both until the data decides; don't pick one and explain the other away ("probably a
   hot value" was never checked).
+- Compare the statistic the test reports, not the one the model prints by default. ORNL's locked-rotor torque is
+  the largest over shaft angle, ripple included; the model's MTPA torque is a mean. At 50 A the model's mean read +4 %
+  and its emulated maximum +17.5 %; comparing the mean with the maximum also produced a false "ORNL's tests disagree"
+  diagnosis (study 7, 2026-11-23, withdrawn). Emulate the test's procedure from the model's saved data
+  (scripts/motor_locked_rotor.py) before reading any difference.
 - Check that a hand estimate's simplifications hold across the whole band, not only at its nominal point. Study G's
   Rayleigh estimate (17/35 of the shaft mass at mid-span, the factor for a simply supported mode shape) matched ROSS
   within 0.2 % on stiff bearings but ran 2 % high on soft ones: with soft bearings the shaft also translates, so more
