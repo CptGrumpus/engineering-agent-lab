@@ -13,6 +13,21 @@
 #   P3 (inductances, a later case) Ld within 5 % of the blind model's: the saliency is not fixed by this.
 #   P4 Every point check passes (15/15 per point as before). About 25 min (three fineness-8 solves).
 # ORNL's back-EMF (the routine test) is already open (2026-11-22); this case is scored against it in the plan.
+#
+# Results (run 20261123-110021_motor_prius_rev4_oc, 11:00-11:54): VERIFICATION PASS, 15/15 point checks. A first run
+# (20261123-105948) failed on all three points in under a minute: the new machine files were not registered in
+# studies/motor_em.py's MACHINES (fixed 29ed9fd; tool-notes).
+#   Back-EMF fundamental, V rms line-to-line per 1000 rpm: outer 85.31, centre 82.37, inner 79.26 (blind model 110.9).
+#   ORNL's routine test: 89.78 full waveform, about 89.38 as a fundamental (our full / fundamental ratio 1.0044):
+#   outer -4.6 %, centre -7.8 %, inner -11.3 %. The blind model was +23.5 %.
+#   P1 HELD: 75-95 V on every placement; the outer placement is inside 5 % of ORNL, with the material as measured
+#      and nothing calibrated. The drawn magnet geometry explains most of the blind miss.
+#   P2 MISSED: the placement moves the back-EMF 7.6 % (outer to inner), not under 3 %: the air strip on the gap side
+#      (inner placement leaves it between magnet and bridges) changes the leakage through the bridges, not only the
+#      series reluctance.
+#   P4 4 h: 15/15 HELD; time MISSED, 54 min, not about 25 (18 min per solve: the HoleUD mesh is finer around the
+#      strips).
+#   Peak at 6000 rpm: 822.5 / 796.3 / 764.5 V (REQ-M1 FAIL on every placement; ORNL measured 850).
 
 [case]
 name = "motor_prius_rev4_oc"

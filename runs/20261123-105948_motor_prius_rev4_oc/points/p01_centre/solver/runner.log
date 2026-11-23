@@ -1,0 +1,14 @@
+Traceback (most recent call last):
+  File "<repo>\runs\20261123-105948_motor_prius_rev4_oc\inputs\pyleecan_em.py", line 177, in <module>
+    main(sys.argv[1], sys.argv[2])
+    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<repo>\runs\20261123-105948_motor_prius_rev4_oc\inputs\pyleecan_em.py", line 148, in main
+    m = load(str(mp) if mp.is_absolute() else join(DATA_DIR, "Machine", p["machine"]))
+  File "~\.venvs\pyleecan\Lib\site-packages\pyleecan\Functions\load.py", line 28, in load
+    file_path, init_dict = load_init_dict(file_path)
+                           ~~~~~~~~~~~~~~^^^^^^^^^^^
+  File "~\.venvs\pyleecan\Lib\site-packages\pyleecan\Functions\load.py", line 52, in load_init_dict
+    return load_json(file_path)
+  File "~\.venvs\pyleecan\Lib\site-packages\pyleecan\Functions\Load\load_json.py", line 44, in load_json
+    raise LoadMissingFileError(str(file_path) + " doesn't exist")
+pyleecan.Functions.Load.load_json.LoadMissingFileError: ~/.venvs/pyleecan/Lib/site-packages/pyleecan/Data\Machine\Toyota_Prius_ORNL_mag531centre.json doesn't exist

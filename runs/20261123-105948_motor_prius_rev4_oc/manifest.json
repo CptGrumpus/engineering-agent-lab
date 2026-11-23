@@ -1,0 +1,124 @@
+{
+  "run_id": "20261123-105948_motor_prius_rev4_oc",
+  "case_name": "motor_prius_rev4_oc",
+  "model": "pyleecan_femm",
+  "case_source": "cases/motor_prius_rev4_oc.toml",
+  "case_sha256": "8dc105405e0cae7e72d8219a8de753ccc456f4c902ace9d8a958c6b187817ac0",
+  "model_sources_sha256": {
+    "models/motor/pyleecan_em.py": "d03936dc6ccf86ae18a7985c7767c743c261c707ac4c9c63b55be7341a6bb1bc",
+    "models/motor/Toyota_Prius_ORNL.json": "08a29449d44338aadb57112a8f30dfbd61eb95182aa6128de8adc096b63b3f65",
+    "models/motor/Toyota_Prius_ORNL_M250-35A.json": "10f78e40d3f2935189354945e23e11f68947856bc71662451f852476bdb513d7",
+    "models/motor/Toyota_Prius_ORNL_190Y390.json": "f4010d964fb437a17d9113cfc1a3e6b20b4aa6267453435897aeaccb7574487c",
+    "models/motor/Toyota_Prius_ORNL_M330-35A-Js205.json": "34be9cb1b344605cb061c3d95f86bd6f89514846e4ee2d8617ae76a194d98671",
+    "models/motor/Toyota_Prius_ORNL_Br1p0000.json": "8b964de8e9df0a1bd106bad562f9cecf7d402acc413d890422ba57ff02c1d542",
+    "models/motor/Toyota_Prius_ORNL_Br1p0300.json": "6a324a6ec3623799e2533b394e65886190baf14eabeae5529660ebbdbe9006c7",
+    "models/motor/Toyota_Prius_ORNL_Br1p0600.json": "ef6e218b7e67db6c05c5de631699b5739dbb04b55f7d27c0c1219554586e54cd",
+    "models/motor/Toyota_Prius_ORNL_Br1p0360.json": "f8787ab7e60a0fd39b79eaec31c91adc5b0f2500fde5d72016e69870ee792957"
+  },
+  "rerun_of": null,
+  "started_utc": "2026-11-23T15:59:48+00:00",
+  "environment": {
+    "python": "3.14.10",
+    "python_executable": "<repo>\\.venv\\Scripts\\python.exe",
+    "platform": "Windows-11-10.0.26100-SP0",
+    "machine": "AMD64",
+    "packages": {
+      "numpy": "2.5.5",
+      "scipy": "1.18.1",
+      "matplotlib": "3.11.2",
+      "cadquery": "2.8.0"
+    },
+    "git": {
+      "commit": "bbb3a68195950d2460cac11272c0ff959159551a",
+      "dirty": false
+    },
+    "tools": {
+      "pyleecan": "1.5.2",
+      "SciDataTool": "2.5.0",
+      "numpy_pyleecan_env": "2.5.5"
+    }
+  },
+  "numerics": {
+    "solver_timeout_s": 3600
+  },
+  "points": [
+    {
+      "label": "p00_outer",
+      "parameters": {
+        "machine": "Toyota_Prius_ORNL_mag531outer.json",
+        "speed_rpm": 1000.0,
+        "id_A": 0.0,
+        "iq_A": 0.0,
+        "mesh_fineness": 8.0,
+        "steps_per_period": 48,
+        "angle_points": 2048,
+        "max_speed_rpm": 6000.0,
+        "bus_voltage_V": 500.0,
+        "rated_torque_Nm": 400.0,
+        "scenario": "outer"
+      },
+      "status": "failed",
+      "derived": {
+        "speed_ratio_to_max": 6.0
+      },
+      "solver": {
+        "success": false,
+        "message": "Pyleecan/FEMM runner failed (exit 1): ecan\\Functions\\Load\\load_json.py\", line 44, in load_json\n    raise LoadMissingFileError(str(file_path) + \" doesn't exist\")\npyleecan.Functions.Load.load_json.LoadMissingFileError: ~/.venvs/pyleecan/Lib/site-packages/pyleecan/Data\\Machine\\Toyota_Prius_ORNL_mag531outer.json doesn't exist",
+        "nfev": null
+      }
+    },
+    {
+      "label": "p01_centre",
+      "parameters": {
+        "machine": "Toyota_Prius_ORNL_mag531centre.json",
+        "speed_rpm": 1000.0,
+        "id_A": 0.0,
+        "iq_A": 0.0,
+        "mesh_fineness": 8.0,
+        "steps_per_period": 48,
+        "angle_points": 2048,
+        "max_speed_rpm": 6000.0,
+        "bus_voltage_V": 500.0,
+        "rated_torque_Nm": 400.0,
+        "scenario": "centre"
+      },
+      "status": "failed",
+      "derived": {
+        "speed_ratio_to_max": 6.0
+      },
+      "solver": {
+        "success": false,
+        "message": "Pyleecan/FEMM runner failed (exit 1): can\\Functions\\Load\\load_json.py\", line 44, in load_json\n    raise LoadMissingFileError(str(file_path) + \" doesn't exist\")\npyleecan.Functions.Load.load_json.LoadMissingFileError: ~/.venvs/pyleecan/Lib/site-packages/pyleecan/Data\\Machine\\Toyota_Prius_ORNL_mag531centre.json doesn't exist",
+        "nfev": null
+      }
+    },
+    {
+      "label": "p02_inner",
+      "parameters": {
+        "machine": "Toyota_Prius_ORNL_mag531inner.json",
+        "speed_rpm": 1000.0,
+        "id_A": 0.0,
+        "iq_A": 0.0,
+        "mesh_fineness": 8.0,
+        "steps_per_period": 48,
+        "angle_points": 2048,
+        "max_speed_rpm": 6000.0,
+        "bus_voltage_V": 500.0,
+        "rated_torque_Nm": 400.0,
+        "scenario": "inner"
+      },
+      "status": "failed",
+      "derived": {
+        "speed_ratio_to_max": 6.0
+      },
+      "solver": {
+        "success": false,
+        "message": "Pyleecan/FEMM runner failed (exit 1): ecan\\Functions\\Load\\load_json.py\", line 44, in load_json\n    raise LoadMissingFileError(str(file_path) + \" doesn't exist\")\npyleecan.Functions.Load.load_json.LoadMissingFileError: ~/.venvs/pyleecan/Lib/site-packages/pyleecan/Data\\Machine\\Toyota_Prius_ORNL_mag531inner.json doesn't exist",
+        "nfev": null
+      }
+    }
+  ],
+  "study": "motor_em",
+  "status": "failed",
+  "finished_utc": "2026-11-23T15:59:55+00:00"
+}
