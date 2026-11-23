@@ -14,6 +14,19 @@
 #      REQ-PV2C fails at 12 and 16 mm and passes from about 20 mm.
 #   P4 REQ-PV3C passes at every thickness.
 #   P5 About 8 min.
+#
+# Results (run 20261122-200149_pv_nozzle_crotch_thickness): verification PASS (40/40 point checks).
+#   P1 HELD.  P2 HELD: toe lines 205.1 / 182.6 MPa at 12 / 16 mm, as pv_nozzle_thickness; 165.3 / 151.2 at 20 / 24.
+#   P3 HELD, closely: PL on CROTCH_LONG 256.6 / 229.1 / 207.3 / 189.5 MPa at 12 / 16 / 20 / 24 mm (predicted 257 /
+#      225 / 205 / 190). REQ-PV2C FAILS at 12, 16 and 20 mm (20 mm by 0.3 MPa) and PASSES at 24; linear
+#      interpolation puts PL = 207 MPa at about 20.1 mm. The crotch line falls 26 % from 12 to 24 mm, the toe line 26 %
+#      too: not faster, as predicted, but from a value 25 % higher. CROTCH_TRANS stays at 57-65 MPa.
+#   P4 HELD: crotch P + Q 352.0 / 323.6 / 298.8 / 276.6 MPa, REQ-PV3C PASS throughout (margin 15 % at 12 mm).
+#   P5 HELD: about 9 min.
+# Design answer: with the classification line through the crotch, the nozzle wall needs about 20 mm (21 with a
+# margin), against about 11.7 mm with the lines at the fillet toes and about 16 mm by the simplified pressure-area
+# rule. Which placement applies is the analyst's judgement, to be agreed with the reviewer before the thickness is
+# chosen. Pending human review.
 
 [case]
 name = "pv_nozzle_crotch_thickness"
