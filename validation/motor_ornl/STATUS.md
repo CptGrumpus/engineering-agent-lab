@@ -1,6 +1,6 @@
 # Study 7 (2004 Prius motor against ORNL's tests): where it stands
 
-Updated 2026-11-23 15:06 (time from `date`). Since about 13:50 the study runs as a **regular client project**
+Updated 2026-11-23 15:05 (time from `date`). Since about 13:50 the study runs as a **regular client project**
 (user's decision): every piece of information a client would hand over is collected in `CLIENT_DATA.md` and used as
 input; what the job must predict (torque, efficiency) stays a validation target. The record of earlier steps:
 `RESULTS.md` (the blind pass), `CALIBRATION_PLAN.md` (revisions 1-4, predictions before each run), `DRAWING_AUDIT.md`.
@@ -46,12 +46,17 @@ this motor's back-EMF.
 ## Next steps (no calibration)
 
 1. Done 15:04: **revision 5, the client-data model**, +17.7 % (gap 0.775 mm) / +18.7 % (0.730 mm), as predicted.
-   The blind comparison's torque was also high, most at low current, where torque follows the magnet flux: the
-   excess is on the magnet side (the field the magnets drive), not in the voltmeter or the winding.
+   **A tension to resolve first:** the blind model's locked-rotor torque was only +6.9 % high at 50 A (rising to
+   +23.7 % at 250 A; RESULTS.md, current read as peak), while its back-EMF was +24 %. At low current torque follows
+   the magnet flux, so if the magnet flux alone were 24 % high the 50 A torque should be about 20 % high. The two
+   tests disagree on how much magnet flux the motor has. (Corrected 15:07: an earlier line here said the torque
+   excess was largest at low current; it is the smallest.)
 2. **Find the model-form cause** of what remains, one effect at a time, each with a hand estimate first:
    (a) how fully the magnets are magnetised in the assembled rotor (a question for the client's production engineer;
    the literature on in-rotor magnetising of high-coercivity NdFeB gives the typical range); (b) 3D end effects;
    (c) a check of the 2D model against an independent hand magnetic circuit for the same geometry.
 3. **Static inductances** against Ld 1.92 / Lq 5.0 mH on the revision-5 machine.
-4. Torque per ampere, efficiency (with the measured resistance) and the design verdicts; then refresh
+4. **Torque per ampere at low current on the revision-5 machine against ORNL's locked-rotor test**, moved up: it
+   tells whether the model's magnet flux is high (torque high too) or the back-EMF comparison carries something
+   else (torque close). Then efficiency (with the measured resistance) and the design verdicts; then refresh
    `reports/motor/`.
