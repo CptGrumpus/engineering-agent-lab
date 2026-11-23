@@ -369,3 +369,8 @@ the model's back-EMF excess. This does NOT show that the back-EMF test is wrong 
 agree with it; the static inductances' current and convention are not stated), but it means the +18 % cannot be
 called model error with confidence. The FEMM torque of revision 5 at 50 and 75 A is the next check (case
 motor_prius_rev5_torque.toml, predictions before the run).
+
+### Result of revision 5's static inductances (run 20261123-150432, ended 15:10)
+VERIFICATION PASS. Ld 1.72 mH (ORNL 1.92: -10.6 %), Lq 5.50 mH (ORNL 5.0: +10 %), Lq / Ld 3.20 (ORNL 2.6). P1-P3 held:
+the client data leaves the inductances where the blind model had them (1.70 / 5.38). FEMM's torque at ORNL's
+locked-rotor currents (case motor_prius_rev5_torque, running) is the next comparison.
