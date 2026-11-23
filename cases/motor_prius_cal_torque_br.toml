@@ -6,6 +6,8 @@
 #
 # The calibrated remanence is filled in by a separate commit once motor_prius_cal_oc_br has run; until then the
 # machine name below cannot run. Predictions do not depend on its exact value (about 1.03 T expected).
+# Filled in (2026-11-22 ~20:05, after motor_prius_cal_oc_br): 1.036 T, Toyota_Prius_ORNL_Br1p0360.json. The
+# predictions below are unchanged.
 #
 # Predictions (before the run; hypothesis B was scored before this case was written: 10.7 % rms torque error with the
 # peak reading, -17 % at 50 A to +4 % at 250 A):
@@ -18,21 +20,21 @@
 [case]
 name = "motor_prius_cal_torque_br"
 model = "pyleecan_femm_load"
-description = "2004 Toyota Prius traction motor (our machine from ORNL Fig. 21, laminations M330-35A), MTPA torque at 50-350 A rms, 1000 rpm; Pyleecan + FEMM 4.2 magnetostatics, current angle 0-70 deg from the q axis, mesh fineness 4."
+description = "2004 Toyota Prius traction motor (our machine from ORNL Fig. 21, laminations M330-35A), magnet remanence 1.036 T (calibrated on ORNL's back-EMF), MTPA torque at 25-250 A rms, 1000 rpm; Pyleecan + FEMM 4.2 magnetostatics, current angle 0-70 deg from the q axis, mesh fineness 4."
 assumptions = [
   "2D magnetostatics (FEMM), no end effects; torque is the mean of FEMM's stress-tensor torque over one electrical period.",
-  "Magnets, magnet pockets and materials as in models/motor/Toyota_Prius_ORNL.json; laminations M330-35A, a stand-in grade (Tata Steel typical B-H data to 1.8 T, extrapolated above).",
+  "Magnets, magnet pockets and materials as in models/motor/Toyota_Prius_ORNL.json except the remanence, 1.036 T at 20 C (calibrated on ORNL's routine back-EMF test, case motor_prius_cal_oc_br; hypothesis A of validation/motor_ornl/CALIBRATION_PLAN.md); laminations M330-35A, a stand-in grade (Tata Steel typical B-H data to 1.8 T, extrapolated above).",
   "Magnet temperature 20 C.",
   "Current-density limit 25 A/mm^2 rms on 0.84 x 143.0 mm^2 of copper per slot (stated assumption).",
 ]
 limitations = [
-  "No test data in this case: the ORNL comparison is a separate, blind step at the end of the study.",
+  "Post-test calibration, not a blind prediction: the remanence is fitted to ORNL's back-EMF, and this curve is scored against ORNL's locked-rotor torque to choose between hypotheses (scripts/motor_calibration.py).",
   "Sinusoidal currents; no inverter harmonics, no voltage limit (1000 rpm is below base speed).",
   "The real lamination grade is unknown; the bracketing grades are separate cases.",
 ]
 
 [parameters]
-machine = "PENDING_calibrated_remanence.json"
+machine = "Toyota_Prius_ORNL_Br1p0360.json"
 speed_rpm = 1000.0
 current_rms_A = 100.0
 angle_min_deg = 0.0

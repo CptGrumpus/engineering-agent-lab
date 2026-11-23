@@ -30,7 +30,9 @@ MACHINES = ("models/motor/Toyota_Prius_ORNL.json", "models/motor/Toyota_Prius_OR
             "models/motor/Toyota_Prius_ORNL_190Y390.json", "models/motor/Toyota_Prius_ORNL_M330-35A-Js205.json",
             # post-test calibration, hypothesis A (validation/motor_ornl/CALIBRATION_PLAN.md): remanence variants
             "models/motor/Toyota_Prius_ORNL_Br1p0000.json", "models/motor/Toyota_Prius_ORNL_Br1p0300.json",
-            "models/motor/Toyota_Prius_ORNL_Br1p0600.json")
+            "models/motor/Toyota_Prius_ORNL_Br1p0600.json",
+            # the calibrated remanence (motor_prius_cal_oc_br: ORNL back-EMF matched at 1.036 T)
+            "models/motor/Toyota_Prius_ORNL_Br1p0360.json")
 PARAMS = ("machine", "speed_rpm", "id_A", "iq_A", "mesh_fineness", "steps_per_period", "angle_points",
           "max_speed_rpm", "bus_voltage_V", "rated_torque_Nm")
 NUMERIC = PARAMS[1:]
