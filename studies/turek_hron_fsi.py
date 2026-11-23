@@ -265,8 +265,18 @@ class PreciceFSI(Backend):
         fl, so = case / "fluid", case / "solid"
 
         def files():
+            # a long run's fluid log passes the size limit below and the work dir is deleted after the run, so a
+            # crash would leave no message (FSI2 mesh c, 2026-11-23: floating point exception at 8.8 s, 53 MB log
+            # lost): keep the last 400 lines of every oversized log as <name>.tail
+            for big in list(fl.glob("log.*")) + list(so.glob("log.*")):
+                if big.suffix != ".tail" and big.is_file() and big.stat().st_size >= 20e6:
+                    with big.open("rb") as fh:
+                        fh.seek(max(0, big.stat().st_size - 200_000))
+                        tail = fh.read().decode("utf-8", "replace").splitlines()[-400:]
+                    big.with_name(big.name + ".tail").write_text("\n".join(tail) + "\n", encoding="utf-8")
             keep = (sorted(fl.glob("system/*")) + sorted(fl.glob("constant/*")) + sorted(fl.glob("0/*"))
-                    + sorted(fl.glob("log.*")) + sorted(fl.glob("*.log")) + [fl / "mesh.geo"]
+                    + sorted(fl.glob("log.*")) + sorted(fl.glob("*.log")) + sorted(so.glob("log.*"))
+                    + [fl / "mesh.geo"]
                     + sorted(fl.glob("postProcessing/*/0/*.dat"))
                     + [so / "flag.inp", so / "config.yml", so / "flag.sta"] + sorted(so.glob("*.log"))
                     + [case / "precice-config.xml", case / "versions.txt"])
