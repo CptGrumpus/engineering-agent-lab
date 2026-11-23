@@ -424,3 +424,23 @@ the 18 % belongs to 2D models of this motor), or do they match the test (then ou
 **Result of step 1:** inconclusive on the main question; it bounds step 3 (end effects about 4 %, so they can explain
 part of the 18 %, not most of it). An independent check of our 2D field now needs our own second model (a different
 solver on the same geometry), not the literature.
+
+### The 18 % flux excess, step 3: end effects, hand estimate (2026-11-23 17:57; no runs; scripts/motor_end_effects.py)
+Agreed plan: a hand estimate first; a 3D model only if it says 5 % or more; include the rotor end clamping plates.
+- **End clamping piece:** its material is not stated in any client document (TM-2004/137 text: "top-clamping piece",
+  eight oil-slinging grooves at the periphery; BOM: rotor mass with the shaft only). TM-2004/137 Fig. 9 shows it as a
+  full-face copper-coloured disc beside the grey laminations, i.e. non-magnetic. Taken as non-magnetic, from the
+  photo; **client question:** confirm the material (a steel plate pressed on the stack would short magnet flux across
+  the pocket ends: a separate, much larger effect, not estimated here).
+- **Lengths:** the same photo marks the rotor stack 3.290 in = 83.57 mm (BOM 83.6), magnet 83.1 mm (BOM); the model
+  extrudes both over 83.82 mm.
+- **Hand estimate** (revision 5's series magnet circuit, magnet share 0.808 of the reluctance; geometry from the
+  client pack; uncertain path widths as a band): gap fringing at the ends +0.18 to +0.24 %; leakage across the pocket
+  ends through air at both end faces -0.95 to -1.72 %; magnet and stack lengths -0.60 to -0.86 %. **Total -1.3 to
+  -2.4 %.** Step 1's 3D-against-2D result on this motor (Chalmers thesis, ANSYS's Prius model, no skew) is -3.7 %,
+  larger than the hand estimate, as end leakage hand estimates usually are; it is taken as the upper magnitude.
+- **Result:** end effects are 1.3-3.7 %, below the 5 % threshold: **no 3D model.** With them the model would read
+  101.3-103.8 V per 1000 rpm, +13 to +16 % on ORNL: they explain at most a fifth of the excess. Not applied to the
+  model (no correction factors); reported as a bound. Remaining candidates: the bridges' steel (step 2, running), an
+  independent 2D model (ElmerFEM) of the same geometry, and the magnetisation level (reported as a hypothesis with
+  the client test that settles it).

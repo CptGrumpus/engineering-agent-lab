@@ -210,6 +210,12 @@ prediction is written into a case file.
   Table 2.7) gives 6.5 mm, 10.2 cm3 and 77 g, and 77 g at 5.31 mm would need 9.1 g/cm3, impossible for NdFeB. One
   search for "2004 Prius magnet mass" would have prevented a revision built on a wrong input (user, 2026-11-23:
   "stop guessing values ... stop being afraid to view things that we would usually have").
+- When a report's text leaves out a fact (a material, a part, a length), look at its photographs and drawings
+  before calling it unknown. A part photographed next to a known material in the same light is evidence; record it
+  as "from the photo", carry the other case as a band, and still put it to the client. Study 7's rotor end clamping
+  piece: no material in any text; TM-2004/137 Fig. 9 shows a copper-coloured disc beside grey laminations (non-
+  magnetic, so end leakage of 1-2 %, not the large short a steel plate would give), and the same photo gives the
+  rotor stack, 3.290 in, against the model's 83.82 mm.
 
 ### 7. Missing information
 

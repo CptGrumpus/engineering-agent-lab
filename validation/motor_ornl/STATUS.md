@@ -53,7 +53,10 @@ this motor's back-EMF.
    the model's mean, and is withdrawn.) So the model's magnet-driven flux is about 18 % high in two independent tests.
 2. **Find the model-form cause** of what remains, one effect at a time, each with a hand estimate first:
    (a) how fully the magnets are magnetised in the assembled rotor (a question for the client's production engineer;
-   the literature on in-rotor magnetising of high-coercivity NdFeB gives the typical range); (b) 3D end effects;
+   the literature on in-rotor magnetising of high-coercivity NdFeB gives the typical range); (b) 3D end effects
+   (done 17:57, hand estimate, scripts/motor_end_effects.py: -1.3 to -2.4 %, -3.7 % from the Chalmers 3D model;
+   below the 5 % threshold, no 3D model; the model would read +13 to +16 %. End clamping piece non-magnetic from
+   TM-2004/137 Fig. 9's photo: a client question);
    (c) a check of the 2D model against an independent hand magnetic circuit for the same geometry.
 3. Done 15:10: **static inductances** on revision 5: Ld 1.72 mH (-10.6 % on ORNL's 1.92), Lq 5.50 mH (+10 % on 5.0),
    saliency 3.2 against 2.6, as predicted: the client data does not fix them.
