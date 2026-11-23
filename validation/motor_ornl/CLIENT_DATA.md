@@ -66,7 +66,7 @@ Locked-rotor torque (TM-2004/185, TM-2006/423 Fig. 3.10), the efficiency map (TM
 air-gap flux map (TM-2004/137 Fig. 13, teardown-only), the 900 rpm load tests (thermal report; a check on the thermal
 model).
 
-## Searched, nothing usable (2026-11-23 14:25)
+## Searched, nothing usable (2026-11-23 14:20)
 
 - Magnet grade or supplier datasheet for the 2004 Prius: not found in the literature searched; the measured curve
   (TM-2010/253 Fig. 2.72) replaces it.
