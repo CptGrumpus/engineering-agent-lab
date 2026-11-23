@@ -10,6 +10,15 @@
 #   P3 Critical crack 37.00-37.03 mm (r0's), converged; K at 2 mm 13.34-13.37 MPa sqrt m. If K at 2 mm still varies
 #      non-monotonically inside 0.1 %, its GCI stays not evaluable at the 1e-4 floor (stated, not loosened).
 #   P4 Every point check passes; 4-8 min.
+#
+# Results (run 20261123-164649_edge_crack_mesh_r2, 16:46-16:50): 18/18 point checks PASS (Tada max 0.66 %); run level
+# critical crack PASS (37.01 / 37.02 / 37.01 mm, GCI 2e-4), K at 2 mm and life FAIL (not evaluable).
+#   K at 2 mm 13.35 / 13.35 / 13.36 MPa sqrt m; life 92,110 / 92,100 / 91,960 cycles (spread 0.16 %, not monotone).
+#   P1 HELD (Tada 0.59-0.66 %).  P2 MISSED: spread 0.16 % (predicted under 0.1 %), not monotone, so not evaluable.
+#   P3 HELD, including the stated fallback for K at 2 mm.  P4 HELD for the time (4 min); point checks HELD.
+#   Diagnosis: the 1e-4 noise floor declared in r0 was never measured (the hand runs did not repeat a mesh size). The
+#   life is converged to within a scatter of about 0.1-0.2 % that the floor does not admit. Next: measure the noise
+#   (edge_crack_noise: one tip size, perturbed far-field meshes), then r3 declaring it per metric.
 
 [case]
 name = "edge_crack_mesh_r2"

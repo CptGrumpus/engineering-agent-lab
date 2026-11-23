@@ -1,0 +1,81 @@
+# Study F, revision r2 of edge_crack_mesh (read r0 for the framing and hand estimate, r1 for the step). One change from
+# r0: the energy-release step is a fixed 0.2 mm instead of 2 % of a (r0: 0.04 mm at 2 mm, about one tip element: mesh
+# noise; r1: 10 % of a, 4.5 mm at 45 mm: truncation error). 0.2 mm is 2-8 tip elements and at most 10 % of a (at
+# 2 mm), 0.44 % at 45 mm. Step check: 0.1 mm at 10 mm. Tolerances and the 1e-4 noise floor unchanged.
+#
+# Predictions (written and committed BEFORE the run, 16:46):
+#   P1 K / Tada - 1 at 2-7 mm as r1 (+0.4 to +0.7 %, mesh scatter under 0.05 %) and at 15-45 mm as r0 (within 0.05 %
+#      of r0's values): the Tada check passes (max about 0.65 %).
+#   P2 Life 91,700-92,200 cycles, spread under 0.1 % across the tips, GCI under 1 %: verified; REQ-F2 verified PASS.
+#   P3 Critical crack 37.00-37.03 mm (r0's), converged; K at 2 mm 13.34-13.37 MPa sqrt m. If K at 2 mm still varies
+#      non-monotonically inside 0.1 %, its GCI stays not evaluable at the 1e-4 floor (stated, not loosened).
+#   P4 Every point check passes; 4-8 min.
+
+[case]
+name = "edge_crack_mesh_r2"
+model = "gmsh_ccx_edge_crack"
+description = "Edge-cracked S355 plate (100 mm wide, 10 mm thick) in cyclic tension, 150 MPa maximum, R = 0.1: K(a) by FE at 11 crack lengths 2-45 mm (energy release rate and crack opening, CalculiX plane strain on a Gmsh half model refined at the tip), critical crack against Kmat 100 MPa sqrt m and net-section yield, BS 7910 crack growth life from 2 mm; tip element sizes 0.1 / 0.05 / 0.025 mm."
+assumptions = [
+  "Linear elastic fracture mechanics, plane strain (K from G with E / (1 - nu^2)); the plastic zone at Kmax 13-100 MPa sqrt m in S355 (r_p = (K / sigma_y)^2 / 6 pi up to 4 mm at the critical crack) is small against the ligament until the last few millimetres. [model form]",
+  "Uniform remote tension with the plate's ends free to rotate (Tada's case); the half model's height (200 mm, 2 W) makes the end conditions irrelevant at the crack.",
+  "Crack growth by the BS 7910 / IIW simplified law for steels in air (R < 0.5): da/dN = 5.21e-13 dK^3 mm/cycle, dK in N/mm^1.5, threshold 63 N/mm^1.5. [published design law]",
+  "Fracture toughness Kmat 100 MPa sqrt m [synthetic: a client would give CTOD or Charpy results]; net-section yield at 355 MPa (S355) [standard].",
+  "Constant-amplitude loading, 150 MPa maximum at R = 0.1 [synthetic]; detectable crack 2 mm (magnetic particle inspection) [synthetic].",
+]
+limitations = [
+  "Through-thickness straight crack front; a real surface crack starts semi-elliptical (BS 7910 Annex M would give its K).",
+  "No crack closure, no load sequence effects, no environment (air).",
+  "Net-section yield by the simple uniform-stress formula; the eccentric ligament also bends.",
+]
+
+[parameters]
+width_mm = 100.0
+half_height_mm = 200.0
+thickness_mm = 10.0
+sigma_max_MPa = 150.0
+stress_ratio = 0.1
+youngs_modulus_MPa = 210000.0
+poisson_ratio = 0.3
+yield_strength_MPa = 355.0
+k_mat_MPa_sqrt_m = 100.0
+paris_C = 5.21e-13
+paris_m = 3.0
+dK_threshold = 63.0
+initial_crack_mm = 2.0
+tip_element_size_mm = 0.05
+far_element_size_mm = 5.0
+
+[sweep]
+parameter = "tip_element_size_mm"
+values = [0.1, 0.05, 0.025]
+
+[numerics]
+crack_lengths_mm = [2.0, 4.0, 7.0, 10.0, 15.0, 20.0, 25.0, 30.0, 35.0, 40.0, 45.0]
+energy_step_mm = 0.2
+energy_step_check_mm = 10.0
+solver_timeout_s = 3600
+
+[verification]
+tada_rel_tol = 0.01           # Tada's own accuracy is 0.5 % for a/W <= 0.6
+routes_rel_tol = 0.03         # crack opening against energy release
+equilibrium_rel_tol = 1e-6
+energy_step_rel_tol = 1e-3    # K with the energy step halved
+integral_rel_tol = 1e-4
+gci_max = 0.01
+mesh_noise_rel = 1e-4         # regenerated meshes: K scatters about 1e-4 between meshes of one size (hand runs)
+
+[[requirements]]
+id = "REQ-F1"
+text = "At the detectable crack (2 mm) the maximum stress intensity shall not exceed half the fracture toughness (Kmat / 2 = 50 MPa sqrt m)."
+metric = "K_a0_MPa_sqrt_m"
+operator = "<="
+limit = 50.0
+units = "MPa sqrt m"
+
+[[requirements]]
+id = "REQ-F2"
+text = "The crack growth life from the detectable crack to the critical crack shall be at least twice the planned inspection interval of 40,000 cycles."
+metric = "growth_life_cycles"
+operator = ">="
+limit = 80000.0
+units = "cycles"

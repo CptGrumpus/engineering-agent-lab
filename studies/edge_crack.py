@@ -213,8 +213,9 @@ class EdgeCrackStudy(Study):
         hs = tuple(float(pt["parameters"]["tip_element_size_mm"]) for pt in fine)
         checks, detail = [], {"levels_used": [pt["label"] for pt in fine]}
         for metric in ("K_a0_MPa_sqrt_m", "crit_crack_mm", "growth_life_cycles"):
+            nf = tol.get("mesh_noise_rel", 1e-5)          # one value, or a table per metric (measured noise)
             u = discretization_uncertainty(hs, tuple(pt["metrics"][metric] for pt in fine), design_order=2,
-                                           noise_floor=tol.get("mesh_noise_rel", 1e-5))
+                                           noise_floor=float(nf[metric] if isinstance(nf, dict) else nf))
             detail[metric] = u
             checks.append(check(f"discretization_{metric}", f"relative discretization uncertainty of {metric}, "
                                 f"{describe(u)}", u["uncertainty"], tol["gci_max"]) | {"metric": metric})
