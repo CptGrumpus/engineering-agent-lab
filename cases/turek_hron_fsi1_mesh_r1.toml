@@ -56,6 +56,11 @@
 # Engineering reading: FSI1 reproduces the benchmark within 1 % on every quantity and mesh; drag and lift verified; the
 # tip displacement is within 1 % but its mesh uncertainty cannot be estimated from three regenerated meshes. Good
 # enough to move to FSI2 and FSI3 (periodic), where the benchmark's own spread is a few percent.
+# Correction (2026-11-23, found in FSI2): the force-transfer check's description says the clamp reaction is
+# 'averaged over the last 2 s', but under the preCICE adapter CalculiX prints the reaction only at the last
+# increment, so the 'mean' was that one value (it equals the end value to every printed digit). At a steady state
+# (drift 1e-4) the end-of-run balance is the right test, so the 4.3-4.5e-5 above still verifies the transfer; only
+# the description was wrong. See cases/turek_hron_fsi2.toml for the periodic case, where it matters.
 
 [case]
 name = "turek_hron_fsi1_mesh_r1"

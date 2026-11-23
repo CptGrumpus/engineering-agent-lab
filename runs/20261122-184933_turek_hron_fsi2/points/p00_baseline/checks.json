@@ -1,0 +1,60 @@
+{
+  "label": "p00_baseline",
+  "status": "FAIL",
+  "checks": [
+    {
+      "id": "mesh",
+      "description": "checkMesh reports Mesh OK (1 = failed)",
+      "kind": "numerical",
+      "value": 0.0,
+      "tolerance": 0.5,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "coupling_converged",
+      "description": "coupling windows that hit the iteration limit without converging",
+      "kind": "numerical",
+      "value": 0.0,
+      "tolerance": 0.5,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "periodic",
+      "description": "periodic state: max of |uy(A) amplitude, last period - the one before| / amplitude and the same for the drag mean",
+      "kind": "numerical",
+      "value": 0.00015295198187785687,
+      "tolerance": 0.02,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "force_transfer",
+      "description": "|fluid force on the flag + clamp reaction in the solid| / |fluid force on the flag| at the end (the coupling conserves force)",
+      "kind": "numerical",
+      "value": 1.5237806407670789,
+      "tolerance": 0.01,
+      "comparison": "<=",
+      "status": "FAIL"
+    },
+    {
+      "id": "inflow_profile",
+      "description": "max over inlet faces |U - benchmark parabola| / (1.5 U_mean), after the ramp",
+      "kind": "numerical",
+      "value": 4.730023780060341e-10,
+      "tolerance": 1e-06,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "laminar",
+      "description": "Reynolds number (D) / 200",
+      "kind": "validity",
+      "value": 0.5,
+      "tolerance": 1.0,
+      "comparison": "<=",
+      "status": "PASS"
+    }
+  ]
+}

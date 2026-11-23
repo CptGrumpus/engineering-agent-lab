@@ -524,6 +524,19 @@ Traps found while building the studies in this repo, by tool.
   1e-4 cut the jitter 72 x for 19 % more coupling iterations and left the means unchanged to 5 digits.
 - **Refining the solid is expensive and, for FSI1, nearly irrelevant:** 1.25 mm instead of 2.5 mm moved uy(A) by
   0.035 % and took 3 h 45 min instead of 51 min (ccx dominates once the solid has about 9500 nodes).
+- **Under the adapter, CalculiX writes its `.dat` (`*NODE PRINT`) only at the last increment**, whatever FREQUENCY
+  says: FSI3's flag.dat stayed 0 bytes for 7.7 h and 15000 increments, and FSI1's "2 s mean" of the clamp reaction
+  equalled the end value to every digit. Fine for a steady case; a periodic case cannot average the reaction over
+  whole periods from it, and the end-of-run balance of an oscillating body includes its inertia (FSI2's check read
+  1.52 against 1e-2 and meant nothing). For a periodic force-transfer check compare what the solid RECEIVES each
+  window (a preCICE export of the Force data on the solid mesh, summed) with the fluid's force at the same instant.
+  Take per-window histories from the watchpoint log (written every window), not from the `.dat`.
+- **Test that a fallback path cannot replace the quantity a check is defined on.** The periodic force-transfer
+  check fell back, silently, to end values when its whole-period means were empty; report "not evaluable"
+  (a NaN value fails visibly) instead.
+- Turek-Hron FSI2 (density ratio 10, Re 100) at fluid 2.5 mm, dt 0.001: the oscillation grows from rest with no
+  imposed perturbation (from about 5 s) and is periodic by 9 s; 7.2 coupling iterations per window at 1e-5 (twice
+  FSI1's), 15000 windows in 7 h 42 min while sharing the CPU; every quantity within 2.1 % of the benchmark.
 
 ## Optimisation loops (harness/optimize.py)
 

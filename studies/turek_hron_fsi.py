@@ -89,7 +89,9 @@ def read_watchpoint(path: Path) -> np.ndarray:
 
 
 def _window_means(numerics, Ff, rf_blocks) -> dict:
-    """Means of the flag's fluid force and the clamp reaction over the last numerics.metric_average_s (opt-in)."""
+    """Means of the flag's fluid force and the clamp reaction over the last numerics.metric_average_s (opt-in).
+    Caution: under the preCICE adapter CalculiX prints the reaction only at the last increment, so its 'mean' is the
+    end value; valid for a steady state (no inertia), which is the only case this is used for."""
     w = numerics.get("metric_average_s")
     if not w or not rf_blocks:
         return {}
@@ -318,6 +320,13 @@ class TurekHronFSIStudy(Study):
         rf = np.array(out["clamp_reaction_mean_N" if means else "clamp_reaction_N"])
         transfer = float(np.linalg.norm(ff + rf) / np.linalg.norm(ff))
         when = f"averaged over the last {out['metric_average_s']:g} s" if means else "at the end"
+        if n_per and not means:
+            # An accelerating flag's end-of-run balance includes its inertia, so it says nothing about the transfer.
+            # Under the preCICE adapter CalculiX prints the clamp reaction only at the last increment (found
+            # 2026-11-23, FSI2), so whole-period means cannot be formed: reported as not evaluable, never as a value.
+            transfer = float("nan")
+            when = ("over whole periods: NOT EVALUABLE, the solid's reaction is printed only at the last increment "
+                    "under the preCICE adapter, and the end-of-run balance of an oscillating flag includes its inertia")
         checks = [
             check("mesh", "checkMesh reports Mesh OK (1 = failed)", 0.0 if out["mesh_ok"] else 1.0, 0.5),
             check("coupling_converged", "coupling windows that hit the iteration limit without converging",
@@ -331,7 +340,8 @@ class TurekHronFSIStudy(Study):
             check("laminar", "Reynolds number (D) / 200", d["reynolds_D"] / 200, 1.0, kind="validity"),
         ]
         fsi_figure(pdir / "response.png", series, p, title=f"{point['label']}  ({out['cells']} fluid cells, "
-                   f"{out['windows']} windows, {out['coupling_iterations_mean']:.1f} coupling iterations each)")
+                   f"{out['windows']} windows, {out['coupling_iterations_mean']:.1f} coupling iterations each)",
+                   periodic=bool(n_per))
         return checks
 
     def verify_run_level(self, case, manifest, points):
@@ -353,7 +363,7 @@ class TurekHronFSIStudy(Study):
         return checks, detail
 
 
-def fsi_figure(path, series, p, *, title):
+def fsi_figure(path, series, p, *, title, periodic=False):
     from harness.plotting import SERIES_1, SERIES_2, SURFACE, TEXT, _style, plt
 
     t = np.asarray(series["t_s"])
@@ -364,7 +374,13 @@ def fsi_figure(path, series, p, *, title):
             "lift (N/m)", 1.0))
     for ax, key, bkey, lab, s in rows:
         ax.plot(t, np.asarray(series[key]) * s, color=SERIES_1, lw=1.2, label="OpenFOAM + CalculiX (preCICE)")
-        ax.axhline(_p(p, bkey) * s, color=SERIES_2, lw=2, ls="--", label="Turek-Hron FSI1")
+        q = {"uy_A_m": "uy_A", "drag_N_per_m": "drag", "lift_N_per_m": "lift"}[key]
+        if f"benchmark_{q}_amp" in p and periodic:
+            m, a = _p(p, f"benchmark_{q}_mean"), _p(p, f"benchmark_{q}_amp")
+            ax.axhline((m + a) * s, color=SERIES_2, lw=1.5, ls="--", label="Turek-Hron: mean +- amplitude")
+            ax.axhline((m - a) * s, color=SERIES_2, lw=1.5, ls="--")
+        else:
+            ax.axhline(_p(p, bkey) * s, color=SERIES_2, lw=2, ls="--", label="Turek-Hron (steady)")
         ax.set_ylabel(lab)
         _style(ax)
     axes[0].legend(frameon=False, fontsize=8)
