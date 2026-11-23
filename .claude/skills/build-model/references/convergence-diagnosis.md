@@ -36,3 +36,14 @@ anything. Each row below happened in this repo.
 | Coarse elements too stiff, error 4-33 % | Locking / low-order elements (linear tets in bending) | Use quadratic elements; keep the linear-element run as evidence | cantilever TET4 |
 | Output not on the requested grid | Tool silently ignored the requested settings | Fix how settings are passed; never relax the grid check | OpenModelica `-override` |
 | Every numerical check passes but a validity check fails | The model is the wrong tool for this point | Revise the scenario or the model; withhold verdicts | quarter car at 36 km/h (wheel lift) |
+
+## Study F (edge crack): a declared noise floor must be measured, and a finite-difference step must clear the mesh
+
+- r0 declared `mesh_noise_rel = 1e-4` "from the hand runs", but the hand runs never repeated a mesh size. The life then
+  scattered 0.16 % across tip sizes and the GCI was not evaluable. Measured afterwards (five perturbed far-field meshes
+  at one tip size): life 1.1e-3, K 9.5e-4 peak to peak. Measure the floor (a noise case) before the evidence run, or
+  declare none; never write a guessed number next to a measured-sounding source.
+- An energy-release rate by central difference, G = dU/da, needs a step that is (a) several elements long, or the
+  difference picks up the regenerated mesh's noise (2 % of a = 0.04 mm at a 2 mm crack, about one tip element:
+  0.2 % K scatter), and (b) small against the scale on which K changes, or truncation enters (10 % of a = 4.5 mm at
+  45 mm: +1.2 % on K). A fixed absolute step of a few tip elements (0.2 mm here) satisfies both; check it by halving.
