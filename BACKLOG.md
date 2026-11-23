@@ -95,6 +95,33 @@ FSI progress: the two newest `$TEMP/fsi_*/case/fluid/precice-Fluid-iterations.lo
   outcome into CALIBRATION_PLAN.md (Results), portfolio page 20, the reports (`reports/motor/build_report.py`, republish
   artifact https://claude.ai/artifact/C6dNdzjs1FdP8vVb6MLaRy).
 
+### NEXT WORK ORDER (user, 2026-11-22 ~19:35): clean up every study already run, then study C
+
+"First focus on all the studies we already ran, and clean them up as needed. Anything we need to improve in that
+modelling that would translate to a skill? No loose ends: people are looking at these. Once that is complete we can
+move to study C." Study C defaults APPROVED: flat 0.04 g^2/Hz 20-2000 Hz (8.9 g rms), 1 h per axis, 2 % modal damping,
+S355-type steel (yield 355 MPa, a published S-N curve), all marked synthetic (framing under "Open for the user" (a)).
+
+Already done (19:35): stale status lines fixed (8b78f7e); every relative link in portfolio/, PORTFOLIO.md, README.md
+resolves. Loose ends found by a keyword scan (draft / pending / unverified / withheld / not yet), to close or to state
+plainly as final:
+1. **Study 18:** classification-line placement sensitivity "not yet quantified" (portfolio/18 line ~54) and the
+   head-to-shell junction against shell discontinuity theory: run both (CalculiX), predictions first.
+2. **Study 19:** REQ-T1 unverified by 0.05 point of GCI (1.05 % vs 1 %): an n640 level with a 1 mm axial length would
+   settle it (stall risk: probe convergence first, BACKLOG study 19 notes); part 2 still blocked (retry the NASA host).
+3. **Study 6 FSI1:** tip displacement's mesh uncertainty not estimable (+-0.5 % regenerated-mesh scatter): measure the
+   scatter at one nominal size (small perturbations of the 1.77 mm mesh) and declare `verification.mesh_noise_rel`, then
+   re-verify r1 (CFD1/CFD2 carry the same issue: "the fix (nested meshes ...)" on page 17).
+4. **Study 7:** hot REQ-M5 unverified (one map cell); the 10 N m row above 4000 rpm unresolved; the calibrated revision
+   (running). Decide which stay as stated limits.
+5. **Study 5 (coolant channel)** one case unverified (settling); **quarter car** wheel lift (a validity flag, correct as
+   is). Check each page states these plainly.
+6. **Skills audit:** for every study page's "What the checks caught", confirm the lesson is in a skill (tool-notes,
+   convergence-diagnosis, check-catalog, frame-requirements) or is enforced by code; add what is missing; prune what is
+   duplicated (CLAUDE.md "Keep the skills current").
+7. **Every page:** numbers match the latest run reports; no "running" / "pending" left except FSI2/FSI3 until they land.
+Then study C.
+
 ### Open for the user
 (a) Study C framing, drafted for approval (nothing run): *Decision:* does the study-4 steel bracket arm (150 x 25 x 7
 mm cantilever, first mode about 262 Hz, portfolio 04) survive a random-vibration qualification: 1 h per axis of a base
