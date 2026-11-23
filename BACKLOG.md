@@ -233,6 +233,22 @@ the first mode, modal effective mass above 90 %, response rms by two integration
 *Questions:* PSD level (or a standard profile such as ISO 16750-3), damping, steel grade (yield, S-N curve), clearance.
 (b) Proposed eval case for frame-requirements: "brackets the inputs that don't matter, leaves out the one that does"
 (study 7's remanence); ask before adding. (c) The skill eval's no-skills baseline (not run).
+(d) **Study H framing (user chose study H on study C, 2026-11-23 ~09:15; inputs drafted for approval, nothing run).**
+*Decision:* study C passes on nominal inputs, its damage by a factor of about 200. Is that PASS robust to what a
+project would not know exactly, and which input would be worth measuring first? *Uncertain inputs (all synthetic,
+independent):* modal damping lognormal, median 2 %, 90 % between 1 % and 4 %; test level within a control tolerance,
+uniform +-1.5 dB on the PSD; fatigue strength a factor on the EN 1993-1-9 detail category, lognormal, median 1.0 (the
+design curve itself: conservative), CoV 10 %; plate thickness normal 7.0 mm, sd 0.1 mm (a +-0.3 mm drawing tolerance
+read as 3 sd). *Outputs:* the probability of failing each of REQ-RV1-3 (Monte Carlo, Wilson interval; FORM with
+importance sampling when no sample fails), Sobol first-order and total indices on log damage, 3 sigma stress and tip
+displacement, and the damping at which each requirement would fail alone. *Requirement (proposed, synthetic):*
+REQ-H1 probability of failing any of REQ-RV1-3 below 1e-3. *Method:* CalculiX modes at five thicknesses (the
+study C mesh chosen from its mesh study); the spectral moments at each hot-spot point on a grid of damping and
+thickness, interpolated (the surrogate); the test level scales the moments exactly; the S-N factor enters the damage
+integral. *Checks:* `harness/uncertainty.py` against closed forms (committed f797064, 8 tests); the nominal sample
+reproduces study C's evidence value on the same mesh; surrogate error at off-grid points under 1 %; FORM against
+importance sampling; Sobol intervals under +-0.03. *Expected (declare):* a robust PASS; damping and the S-N factor
+dominate the damage, because the stress sits near the S-N cut-off.
 
 ### Done this evening (17:15-19:25)
 Thermal network (r1 final, cb6920c reports); FSI1 r1 scored (29e6655, page 9c41e8d); skill eval single-mesh-agreement-trap
