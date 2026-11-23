@@ -111,14 +111,14 @@ them (run 20261123-032756_motor_prius_efficiency_br), scored once against ORNL's
 - What remains: the efficiency gap is mostly losses the model leaves out (mechanical, magnet eddy-current, AC copper),
   which no routine client data here would size; and the d-axis saliency (2.6 measured against 3.2).
 
-## Revision 2 (2026-11-23 ~10:55): the no-load (spin) loss test as calibration data, then efficiency again
+## Revision 2 (2026-11-23 ~10:30; time corrected from '~10:55'): the no-load (spin) loss test as calibration data, then efficiency again
 *Why:* revision 1's efficiency gap (median 4.5 points, hypothesis A) is mostly losses the model leaves out: friction,
 windage and oil drag, magnet eddy currents, iron loss above the datasheet value. A no-load spin-loss test sizes them
 together and is routine for a motor supplier, so a contractor would have it (user's standing rule, 2026-11-23: "as long
 as we expect this information to be available from a contractor for the work, then we can assume we can use it").
 *Data:* ORNL/TM-2006/423 sec. 3.2.3, Table 3.7 "Summary of hybrid drive system losses", column "Motor-Rotor Losses, W"
 against motor-shaft speed (12 rows, oil near room temperature): configuration A (real rotor) minus configuration B (a
-dummy shaft on bearings), windings not energised. Located by a masked text search (every digit replaced) at 10:45; the
+dummy shaft on bearings), windings not energised. Located by a masked text search (every digit replaced) at about 10:28 (corrected from '10:45'); the
 method text was read masked; no number in the table has been read. Declared: the masked layout shows the column's
 digit counts, two before the decimal point in the first row and three from the fourth row (10-99 W, then 100-999 W).
 *Caveats (stated before opening):* the spin test ran in the transaxle with oil at room temperature; the efficiency
@@ -139,3 +139,27 @@ hypothesis A's hot and cold maps at the same 393 Table B-1 points, same 2-point 
 - P2 Revision 2, reading (a): median gap (hot minus ORNL) falls from 4.50 to 3.0-4.0 points; reading (b) within 0.5
   point of (a). The 2-point limit still FAILS. Light-load, high-speed points improve most.
 - P3 The residual R grows faster than linearly with speed (b > 0).
+
+### Result (Table 3.7 opened 2026-11-23 10:32, once; `scripts/motor_noload.py` -> `noload_revision2.json`)
+Only the speed and motor-rotor columns were transcribed (`tm2006_423_table_3_7.csv`).
+
+| Motor speed, rpm | 494 | 1000 | 1506 | 1991 | 2501 | 3007 | 3501 | 3999 | 4505 | 4999 | 5492 | 6006 |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| Measured motor-rotor loss, W | 19.8 | 31.6 | 60.2 | 109.0 | 135.9 | 161.7 | 205.3 | 242.1 | 297.4 | 323.9 | 404.9 | 472.8 |
+| Model open-circuit iron loss, W | 14.7 | 35.5 | 61.6 | 91.3 | 127.4 | 168.1 | 212.4 | 261.6 | 316.3 | 374.2 | 436.3 | 505.8 |
+| Measured / model | 1.35 | 0.89 | 0.98 | 1.19 | 1.07 | 0.96 | 0.97 | 0.93 | 0.94 | 0.87 | 0.93 | 0.93 |
+
+- **P1 MISSED.** The measured no-load loss matches the model's open-circuit iron loss (0.87-1.35, and 3-13 % BELOW it
+  from 3000 rpm), although it also contains the rotor's oil drag. The model does not underestimate the no-load loss.
+- **P2 MISSED.** Median efficiency gap (hot minus ORNL, 393 points): revision 1 4.496 (reproduced exactly), revision 2
+  4.479 (additive) and 4.461 (multiplicative), not 3.0-4.0. Within 2 points of the cold-hot band: 6 -> 7 points. The
+  2-point limit still FAILS.
+- **P3 MISSED.** The residual is small and falls with speed (R = 0.0049 n - 2.06e-6 n^2 W, b < 0).
+- **What it shows.** The 4.5-point gap is load-dependent. Diagnostic on the already-open Table B-1 (ORNL's loss
+  minus ours, hot map, medians per bin): about 0.2-0.3 kW at 500-1500 rpm below 100 N m, 1.9 kW at 200-400 N m;
+  1.9-2.8 kW at 4500-6000 rpm below 100 N m. A least-squares split over all points: missing = 0.50 x our copper loss
+  + 3.8 x our iron loss at load - 263 W. Candidates: copper loss about 1.5x ours (winding hotter than the assumed 100 C:
+  Table B-1 records the stator temperature; end-winding length; the DC resistance is not reported); load-dependent
+  iron and magnet losses the 2D sinusoidal-current model leaves out (PWM ripple from the inverter, field-weakening
+  harmonics, magnet eddy currents under armature reaction). AC strand effects are small (0.91 mm strands, skin depth
+  about 3.3 mm at 400 Hz).
