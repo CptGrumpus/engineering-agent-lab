@@ -1,0 +1,103 @@
+# Study 7, POST-TEST CALIBRATION, hypothesis A (validation/motor_ornl/CALIBRATION_PLAN.md): the efficiency map of
+# motor_prius_efficiency_r1 (read it for the model, the merged tables and the checks) rebuilt from the four dq tables at
+# the calibrated remanence 1.036 T (motor_prius_lut_{cold,cold_lowiq,hot,hot_lowiq}_br, runs 20261122-222259,
+# 20261123-000206, 20261123-005801, 20261123-023248). Only the tables and the reference values change:
+#   back-EMF 89.37 V per 1000 rpm (motor_prius_cal_oc_br, run 20261122-192029, linear in remanence between 1.03 and
+#   1.06 T: 88.755 + 0.2 x 3.100); MTPA 233.36 / 419.41 N m at 100 / 200 A (motor_prius_cal_torque_br, run
+#   20261122-195712, fineness 4; the tables are fineness 2, within 0.4 %).
+# This is the out-of-sample test: ORNL's motor efficiency (TM-2006/423 Table B-1) was not used to choose A (chosen on
+# the static inductances). Scored against it by scripts/motor_calibration.py, once, after this run.
+#
+# Predictions, written BEFORE the run:
+#   P1 Every check passes in the cold scenario (back-EMF within 0.1 %, MTPA within 1 %, merge, node and half-table map
+#      checks); the hot scenario may fail its half-table map check again on the 10 N m row above 4000 rpm (same grid
+#      and the same field-weakening branch switching as r1).
+#   P2 Against r1: lower efficiency at high torque (more current per N m: about 1-2 points at 300-400 N m below base
+#      speed), higher at light load and high speed (19 % less flux, so roughly a third less iron loss): +1 to +3
+#      points at 10-30 N m above 3000 rpm. Peak efficiency moves to a lower torque and stays within 0.5 point of 97.4 %.
+#   P3 Against ORNL (scored separately): ORNL's points mostly lie at light and part load, where A RAISES our
+#      efficiency, so the median hot-minus-ORNL gap GROWS from the blind map's 5.2 points to about 5.5-7 (the plan's
+#      "stays 3-5 points" was written loosely: the blind gap was already 5.2). Either way the gap is the omitted
+#      losses, not the flux; A does not close it.
+#   P4 REQ-M5 PASS in both scenarios: 400 N m needs about 190 A cold (calibrated torque 419 N m at 200 A), under the
+#      212 A limit; less back-EMF eases field weakening at 6000 rpm. Minimum power over the range 52-62 kW.
+#   P5 Seconds per scenario.
+
+[case]
+name = "motor_prius_efficiency_br"
+model = "lut_efficiency"
+description = "2004 Toyota Prius traction motor, POST-TEST CALIBRATED (hypothesis A: magnet remanence 1.036 T), motor-only efficiency map from the verified dq look-up tables (25 A tables merged with low-q-current tables at 6.25 A): 500-6000 rpm, 10-400 N m, least copper + iron loss under the 500 V bus voltage limit and the current limit; cold (all 20 C) and hot (windings 100 C, magnets 80 C) scenarios."
+assumptions = [
+  "Motor-only efficiency: copper (DC resistance, end connections included) and iron loss; no mechanical, magnet eddy-current, AC copper or inverter loss (user's framing, 2026-11-22).",
+  "Voltage limit Vdc / sqrt 6 phase rms (linear modulation of a 500 V bus); the resistive drop is included, inductive coupling to the inverter is not.",
+  "Current limit 212 A rms for the design (25 A/mm^2 on 76.4 mm^2 of bare copper per slot, a stated assumption) and 300 A for the map's edge.",
+  "Iron loss from the table's coefficients, P = A f + B f^2 + C f^1.5 with f the electrical frequency, at each grid point.",
+  "Copper 1.72e-8 ohm m at 20 C, alpha 0.00393 /K; one parallel path; end connection 120.6 mm per side (geometry estimate, see header).",
+]
+limitations = [
+  "Calibrated after the test (remanence from ORNL's back-EMF, hypothesis chosen on its static inductances); ORNL's efficiency is not used here and is scored separately.",
+  "The tables are 2D magnetostatic at 1000 rpm; the iron loss is scaled to speed by the fitted coefficients, not recomputed per speed.",
+  "Steady thermal corners only (cold and hot); no thermal model links temperature to the operating point yet.",
+]
+
+[parameters]
+lut_run = "20261122-222259_motor_prius_lut_cold_br,20261123-000206_motor_prius_lut_cold_lowiq_br"
+magnet_temperature_C = 20.0
+winding_temperature_C = 20.0
+series_turns_per_phase = 72
+turn_copper_area_mm2 = 8.492
+stack_length_m = 0.08382
+end_connection_length_m = 0.1206
+copper_resistivity_20C_ohm_m = 1.72e-8
+copper_alpha_per_K = 0.00393
+bus_voltage_V = 500.0
+current_limit_design_A = 212.0
+current_limit_map_A = 300.0
+speed_min_rpm = 500.0
+speed_max_rpm = 6000.0
+speed_step_rpm = 250.0
+torque_min_Nm = 10.0
+torque_max_Nm = 400.0
+torque_step_Nm = 10.0
+rated_power_kW = 50.0
+rated_torque_Nm = 400.0
+ref_back_emf_V = 89.37
+ref_mtpa_100A_Nm = 233.36
+ref_mtpa_200A_Nm = 419.41
+
+[[sweep.scenarios]]
+name = "cold"
+lut_run = "20261122-222259_motor_prius_lut_cold_br,20261123-000206_motor_prius_lut_cold_lowiq_br"
+magnet_temperature_C = 20.0
+winding_temperature_C = 20.0
+ref_back_emf_V = 89.37
+ref_mtpa_100A_Nm = 233.36
+ref_mtpa_200A_Nm = 419.41
+
+[[sweep.scenarios]]
+name = "hot"
+lut_run = "20261123-005801_motor_prius_lut_hot_br,20261123-023248_motor_prius_lut_hot_lowiq_br"
+magnet_temperature_C = 80.0
+winding_temperature_C = 100.0
+ref_back_emf_V = 0.0
+ref_mtpa_100A_Nm = 0.0
+ref_mtpa_200A_Nm = 0.0
+
+[numerics]
+fine_step_A = 1.0
+halfgrid_map_check = true
+
+[verification]
+back_emf_rel_tol = 0.001
+mtpa_rel_tol = 0.01
+interp_halfgrid_rel_tol = 0.05
+merge_rel_tol = 1e-4
+interp_map_max_pts = 2.0
+
+[[requirements]]
+id = "REQ-M5"
+text = "The motor shall deliver its rated 50 kW from the rated base speed (50 kW at 400 N m: 1194 rpm) to 6000 rpm within the 500 V bus voltage limit and the 212 A rms design current limit."
+metric = "min_power_rated_speed_range_kW"
+operator = ">="
+limit = 50.0
+units = "kW"

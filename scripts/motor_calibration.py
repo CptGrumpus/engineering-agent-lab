@@ -1,8 +1,10 @@
 """Study 7 post-test revision (validation/motor_ornl/CALIBRATION_PLAN.md): calibrate on back-EMF, choose between the
 two hypotheses with the locked-rotor torque, test the chosen one on efficiency (out of sample).
 
-usage: .venv/Scripts/python.exe scripts/motor_calibration.py [--torque-run RUN_ID]
+usage: .venv/Scripts/python.exe scripts/motor_calibration.py [--torque-run RUN_ID] [--a-eff-case CASE]
   --torque-run: the hypothesis-A torque-current run (FEMM at the calibrated remanence); without it, only B is scored.
+  --a-eff-case: the efficiency case built from hypothesis A's dq tables (cases/motor_prius_efficiency_br.toml);
+                scores A's efficiency against ORNL's Table B-1 (out of sample).
 Writes validation/motor_ornl/calibration.json; prints a summary.
 
 Hypothesis B (series turns x k, same copper area per slot) is exact from the committed cold table: currents / k,
@@ -82,6 +84,7 @@ def efficiency(case, fine_by_scen, r_scale, grids) -> dict:
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--torque-run")
+    ap.add_argument("--a-eff-case")
     a = ap.parse_args()
     case = tomllib.loads(EFF_CASE.read_text(encoding="utf-8"))
     tab = tables(case)
@@ -104,6 +107,13 @@ def main():
         T = np.array([0.0] + [y for _, y in pts])
         out["A_remanence"] = {"torque_run": a.torque_run, "curve_points": pts,
                               "torque": torque_rows(lambda i: float(np.interp(i, I, T)))}
+    if a.a_eff_case:
+        ca = tomllib.loads((REPO / a.a_eff_case).read_text(encoding="utf-8"))
+        ta = tables(ca)
+        out.setdefault("A_remanence", {"torque": torque_rows(lambda i: mtpa(ta["cold"]["grid"], i))})
+        out["A_remanence"]["efficiency_case"] = a.a_eff_case
+        out["A_remanence"]["efficiency"] = efficiency(ca, {n: t["fine"] for n, t in ta.items()}, 1.0,
+                                                      {n: t["grid"] for n, t in ta.items()})
     for h in ("blind", "B_turns", "A_remanence"):
         if h in out:
             out[h]["rms_err_if_peak"] = rms_err(out[h]["torque"], "err_if_peak")

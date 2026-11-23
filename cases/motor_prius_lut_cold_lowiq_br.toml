@@ -7,6 +7,16 @@
 #   P2 Flux linkage at id = iq = 0: x 0.807 of the original's (the back-EMF calibration ratio, 89.47 / 110.88).
 #   P3 Torque at small iq falls by about the same ratio (magnet torque dominates there).
 #   P4 About the time of motor_prius_lut_cold_lowiq (about 50 min).
+#
+# Results (run 20261123-000206_motor_prius_lut_cold_lowiq_br, 00:02-00:57, 55 min): verification FAIL, the dq
+# torque check in six columns (id -300 to -175 A: 0.55-0.71 % against 0.5 %).
+#   P1 MISSED, and wrongly framed: the original table FAILED this same check in three columns (its Results), for
+#      the reason given there (at iq 6.25-12.5 A the mean torque is small and the ripple large, so the product of
+#      the mean dq fluxes misses the mean torque by a fraction of a N m). With the magnets 19 % weaker the mean
+#      torque at low iq is smaller still, so the same absolute miss is a larger fraction, in more columns. Every
+#      other check passes everywhere. As before, the efficiency map interpolates FEMM's torque, not the dq product.
+#   P2 HELD: d-axis flux at id = 0, iq 6.25 A x 0.807 of the original's.  P3 HELD: torque there x 0.806 (11.5 to
+#      9.3 N m); across the table x 0.81-0.96.  P4 HELD: 55 min.
 
 [case]
 name = "motor_prius_lut_cold_lowiq_br"
