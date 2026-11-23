@@ -7,6 +7,17 @@
 # Predictions (written and committed BEFORE the run, 16:50):
 #   P1 Peak-to-peak / mean: life 0.05-0.3 %, K at 2 mm 0.02-0.15 %, critical crack under 0.02 %.
 #   P2 Every point check passes; about 6 min.
+#
+# Results (run 20261123-165115_edge_crack_noise, 16:51-16:57): VERIFICATION PASS (every point check).
+#   Peak-to-peak / mean over the five meshes at tip 0.05 mm: life 1.08e-3 (92,004-92,103 cycles), K at 2 mm 9.5e-4,
+#   critical crack 2.5e-4. P1 HELD for the life and K; MISSED for the critical crack (2.5e-4, predicted under 2e-4).
+#   P2 HELD (6 min).
+#   Applied to r2's three tip sizes (harness.convergence, 16:57): even with these floors the life (spread 1.6e-3) and K at
+#   2 mm stay "divergent": the 0.025 mm tip's life (91,960) sits 0.05 % below every draw at 0.05 mm, a small trend or
+#   larger noise at the finest tip; telling them apart needs a noise set at 0.025 mm and a finer level. Not pursued:
+#   the life is known to about +-0.2 % (92,000 cycles) against a 15 % margin to REQ-F2, so no revision changes the
+#   answer. The life's verdict stays formally unverified; K and the critical crack carry the verification (Tada
+#   within 0.66 %, critical crack GCI 2e-4).
 
 [case]
 name = "edge_crack_noise"

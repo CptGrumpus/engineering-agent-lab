@@ -1,0 +1,60 @@
+{
+  "label": "p00_far_element_size_mm-4.8",
+  "status": "PASS",
+  "checks": [
+    {
+      "id": "tada",
+      "description": "max |K (energy route) / Tada - 1| for a/W <= 0.6 (Tada's own accuracy 0.5 %)",
+      "kind": "numerical",
+      "value": 0.006160549614067756,
+      "tolerance": 0.01,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "k_routes",
+      "description": "max |K (crack opening) / K (energy) - 1| over the crack lengths",
+      "kind": "numerical",
+      "value": 0.020396743551255425,
+      "tolerance": 0.03,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "equilibrium",
+      "description": "max |ligament reaction + applied load| / applied load",
+      "kind": "numerical",
+      "value": 0.0,
+      "tolerance": 1e-06,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "energy_step",
+      "description": "|K (energy, step eps) / K (step eps / 2) - 1| at a = 10 mm (the central difference's step and the mesh noise in U together)",
+      "kind": "numerical",
+      "value": 4.124873679245411e-05,
+      "tolerance": 0.001,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "life_integral",
+      "description": "|life by adaptive quadrature - by Simpson on 4000 steps| / quadrature",
+      "kind": "numerical",
+      "value": 3.7864820763457325e-10,
+      "tolerance": 0.0001,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "crack_range",
+      "description": "critical crack / largest sampled crack (below 1: K(a) is sampled past the critical crack)",
+      "kind": "validity",
+      "value": 0.8226675046915364,
+      "tolerance": 1.0,
+      "comparison": "<=",
+      "status": "PASS"
+    }
+  ]
+}

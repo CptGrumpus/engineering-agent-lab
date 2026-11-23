@@ -1,0 +1,522 @@
+{
+  "points": [
+    {
+      "label": "p00_far_element_size_mm-4.8",
+      "parameters": {
+        "width_mm": 100.0,
+        "half_height_mm": 200.0,
+        "thickness_mm": 10.0,
+        "sigma_max_MPa": 150.0,
+        "stress_ratio": 0.1,
+        "youngs_modulus_MPa": 210000.0,
+        "poisson_ratio": 0.3,
+        "yield_strength_MPa": 355.0,
+        "k_mat_MPa_sqrt_m": 100.0,
+        "paris_C": 5.21e-13,
+        "paris_m": 3.0,
+        "dK_threshold": 63.0,
+        "initial_crack_mm": 2.0,
+        "tip_element_size_mm": 0.05,
+        "far_element_size_mm": 4.8
+      },
+      "derived": {},
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "tada",
+          "description": "max |K (energy route) / Tada - 1| for a/W <= 0.6 (Tada's own accuracy 0.5 %)",
+          "kind": "numerical",
+          "value": 0.006160549614067756,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "k_routes",
+          "description": "max |K (crack opening) / K (energy) - 1| over the crack lengths",
+          "kind": "numerical",
+          "value": 0.020396743551255425,
+          "tolerance": 0.03,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "equilibrium",
+          "description": "max |ligament reaction + applied load| / applied load",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "energy_step",
+          "description": "|K (energy, step eps) / K (step eps / 2) - 1| at a = 10 mm (the central difference's step and the mesh noise in U together)",
+          "kind": "numerical",
+          "value": 4.124873679245411e-05,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "life_integral",
+          "description": "|life by adaptive quadrature - by Simpson on 4000 steps| / quadrature",
+          "kind": "numerical",
+          "value": 3.7864820763457325e-10,
+          "tolerance": 0.0001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "crack_range",
+          "description": "critical crack / largest sampled crack (below 1: K(a) is sampled past the critical crack)",
+          "kind": "validity",
+          "value": 0.8226675046915364,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-F1",
+          "text": "At the detectable crack (2 mm) the maximum stress intensity shall not exceed half the fracture toughness (Kmat / 2 = 50 MPa sqrt m).",
+          "metric": "K_a0_MPa_sqrt_m",
+          "operator": "<=",
+          "limit": 50.0,
+          "units": "MPa sqrt m",
+          "value": 13.354836141726503,
+          "margin": 36.6451638582735,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-F2",
+          "text": "The crack growth life from the detectable crack to the critical crack shall be at least twice the planned inspection interval of 40,000 cycles.",
+          "metric": "growth_life_cycles",
+          "operator": ">=",
+          "limit": 80000.0,
+          "units": "cycles",
+          "value": 92060.12119657997,
+          "margin": 12060.121196579974,
+          "verdict": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p01_far_element_size_mm-4.9",
+      "parameters": {
+        "width_mm": 100.0,
+        "half_height_mm": 200.0,
+        "thickness_mm": 10.0,
+        "sigma_max_MPa": 150.0,
+        "stress_ratio": 0.1,
+        "youngs_modulus_MPa": 210000.0,
+        "poisson_ratio": 0.3,
+        "yield_strength_MPa": 355.0,
+        "k_mat_MPa_sqrt_m": 100.0,
+        "paris_C": 5.21e-13,
+        "paris_m": 3.0,
+        "dK_threshold": 63.0,
+        "initial_crack_mm": 2.0,
+        "tip_element_size_mm": 0.05,
+        "far_element_size_mm": 4.9
+      },
+      "derived": {},
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "tada",
+          "description": "max |K (energy route) / Tada - 1| for a/W <= 0.6 (Tada's own accuracy 0.5 %)",
+          "kind": "numerical",
+          "value": 0.006223266749408429,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "k_routes",
+          "description": "max |K (crack opening) / K (energy) - 1| over the crack lengths",
+          "kind": "numerical",
+          "value": 0.02154340628541518,
+          "tolerance": 0.03,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "equilibrium",
+          "description": "max |ligament reaction + applied load| / applied load",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "energy_step",
+          "description": "|K (energy, step eps) / K (step eps / 2) - 1| at a = 10 mm (the central difference's step and the mesh noise in U together)",
+          "kind": "numerical",
+          "value": 0.00011680998839980195,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "life_integral",
+          "description": "|life by adaptive quadrature - by Simpson on 4000 steps| / quadrature",
+          "kind": "numerical",
+          "value": 3.7348077538879e-10,
+          "tolerance": 0.0001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "crack_range",
+          "description": "critical crack / largest sampled crack (below 1: K(a) is sampled past the critical crack)",
+          "kind": "validity",
+          "value": 0.8224815887161467,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-F1",
+          "text": "At the detectable crack (2 mm) the maximum stress intensity shall not exceed half the fracture toughness (Kmat / 2 = 50 MPa sqrt m).",
+          "metric": "K_a0_MPa_sqrt_m",
+          "operator": "<=",
+          "limit": 50.0,
+          "units": "MPa sqrt m",
+          "value": 13.362034129006398,
+          "margin": 36.637965870993604,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-F2",
+          "text": "The crack growth life from the detectable crack to the critical crack shall be at least twice the planned inspection interval of 40,000 cycles.",
+          "metric": "growth_life_cycles",
+          "operator": ">=",
+          "limit": 80000.0,
+          "units": "cycles",
+          "value": 92003.6189603731,
+          "margin": 12003.618960373104,
+          "verdict": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p02_far_element_size_mm-5",
+      "parameters": {
+        "width_mm": 100.0,
+        "half_height_mm": 200.0,
+        "thickness_mm": 10.0,
+        "sigma_max_MPa": 150.0,
+        "stress_ratio": 0.1,
+        "youngs_modulus_MPa": 210000.0,
+        "poisson_ratio": 0.3,
+        "yield_strength_MPa": 355.0,
+        "k_mat_MPa_sqrt_m": 100.0,
+        "paris_C": 5.21e-13,
+        "paris_m": 3.0,
+        "dK_threshold": 63.0,
+        "initial_crack_mm": 2.0,
+        "tip_element_size_mm": 0.05,
+        "far_element_size_mm": 5.0
+      },
+      "derived": {},
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "tada",
+          "description": "max |K (energy route) / Tada - 1| for a/W <= 0.6 (Tada's own accuracy 0.5 %)",
+          "kind": "numerical",
+          "value": 0.005888991573690605,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "k_routes",
+          "description": "max |K (crack opening) / K (energy) - 1| over the crack lengths",
+          "kind": "numerical",
+          "value": 0.021855132606079852,
+          "tolerance": 0.03,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "equilibrium",
+          "description": "max |ligament reaction + applied load| / applied load",
+          "kind": "numerical",
+          "value": 1.2126596023639044e-16,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "energy_step",
+          "description": "|K (energy, step eps) / K (step eps / 2) - 1| at a = 10 mm (the central difference's step and the mesh noise in U together)",
+          "kind": "numerical",
+          "value": 0.0006966893665618645,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "life_integral",
+          "description": "|life by adaptive quadrature - by Simpson on 4000 steps| / quadrature",
+          "kind": "numerical",
+          "value": 2.786485375707953e-09,
+          "tolerance": 0.0001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "crack_range",
+          "description": "critical crack / largest sampled crack (below 1: K(a) is sampled past the critical crack)",
+          "kind": "validity",
+          "value": 0.8226879761259105,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-F1",
+          "text": "At the detectable crack (2 mm) the maximum stress intensity shall not exceed half the fracture toughness (Kmat / 2 = 50 MPa sqrt m).",
+          "metric": "K_a0_MPa_sqrt_m",
+          "operator": "<=",
+          "limit": 50.0,
+          "units": "MPa sqrt m",
+          "value": 13.3547204281139,
+          "margin": 36.6452795718861,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-F2",
+          "text": "The crack growth life from the detectable crack to the critical crack shall be at least twice the planned inspection interval of 40,000 cycles.",
+          "metric": "growth_life_cycles",
+          "operator": ">=",
+          "limit": 80000.0,
+          "units": "cycles",
+          "value": 92102.79529213207,
+          "margin": 12102.795292132068,
+          "verdict": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p03_far_element_size_mm-5.1",
+      "parameters": {
+        "width_mm": 100.0,
+        "half_height_mm": 200.0,
+        "thickness_mm": 10.0,
+        "sigma_max_MPa": 150.0,
+        "stress_ratio": 0.1,
+        "youngs_modulus_MPa": 210000.0,
+        "poisson_ratio": 0.3,
+        "yield_strength_MPa": 355.0,
+        "k_mat_MPa_sqrt_m": 100.0,
+        "paris_C": 5.21e-13,
+        "paris_m": 3.0,
+        "dK_threshold": 63.0,
+        "initial_crack_mm": 2.0,
+        "tip_element_size_mm": 0.05,
+        "far_element_size_mm": 5.1
+      },
+      "derived": {},
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "tada",
+          "description": "max |K (energy route) / Tada - 1| for a/W <= 0.6 (Tada's own accuracy 0.5 %)",
+          "kind": "numerical",
+          "value": 0.006168912124711712,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "k_routes",
+          "description": "max |K (crack opening) / K (energy) - 1| over the crack lengths",
+          "kind": "numerical",
+          "value": 0.02215972868096694,
+          "tolerance": 0.03,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "equilibrium",
+          "description": "max |ligament reaction + applied load| / applied load",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "energy_step",
+          "description": "|K (energy, step eps) / K (step eps / 2) - 1| at a = 10 mm (the central difference's step and the mesh noise in U together)",
+          "kind": "numerical",
+          "value": 0.0002922884624385613,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "life_integral",
+          "description": "|life by adaptive quadrature - by Simpson on 4000 steps| / quadrature",
+          "kind": "numerical",
+          "value": 6.13101560248271e-11,
+          "tolerance": 0.0001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "crack_range",
+          "description": "critical crack / largest sampled crack (below 1: K(a) is sampled past the critical crack)",
+          "kind": "validity",
+          "value": 0.822619490177927,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-F1",
+          "text": "At the detectable crack (2 mm) the maximum stress intensity shall not exceed half the fracture toughness (Kmat / 2 = 50 MPa sqrt m).",
+          "metric": "K_a0_MPa_sqrt_m",
+          "operator": "<=",
+          "limit": 50.0,
+          "units": "MPa sqrt m",
+          "value": 13.365246264588292,
+          "margin": 36.63475373541171,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-F2",
+          "text": "The crack growth life from the detectable crack to the critical crack shall be at least twice the planned inspection interval of 40,000 cycles.",
+          "metric": "growth_life_cycles",
+          "operator": ">=",
+          "limit": 80000.0,
+          "units": "cycles",
+          "value": 92035.94194341826,
+          "margin": 12035.941943418264,
+          "verdict": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p04_far_element_size_mm-5.2",
+      "parameters": {
+        "width_mm": 100.0,
+        "half_height_mm": 200.0,
+        "thickness_mm": 10.0,
+        "sigma_max_MPa": 150.0,
+        "stress_ratio": 0.1,
+        "youngs_modulus_MPa": 210000.0,
+        "poisson_ratio": 0.3,
+        "yield_strength_MPa": 355.0,
+        "k_mat_MPa_sqrt_m": 100.0,
+        "paris_C": 5.21e-13,
+        "paris_m": 3.0,
+        "dK_threshold": 63.0,
+        "initial_crack_mm": 2.0,
+        "tip_element_size_mm": 0.05,
+        "far_element_size_mm": 5.2
+      },
+      "derived": {},
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "tada",
+          "description": "max |K (energy route) / Tada - 1| for a/W <= 0.6 (Tada's own accuracy 0.5 %)",
+          "kind": "numerical",
+          "value": 0.00620183883454728,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "k_routes",
+          "description": "max |K (crack opening) / K (energy) - 1| over the crack lengths",
+          "kind": "numerical",
+          "value": 0.021410476723496052,
+          "tolerance": 0.03,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "equilibrium",
+          "description": "max |ligament reaction + applied load| / applied load",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "energy_step",
+          "description": "|K (energy, step eps) / K (step eps / 2) - 1| at a = 10 mm (the central difference's step and the mesh noise in U together)",
+          "kind": "numerical",
+          "value": 0.0003501798841363257,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "life_integral",
+          "description": "|life by adaptive quadrature - by Simpson on 4000 steps| / quadrature",
+          "kind": "numerical",
+          "value": 2.2068312012240482e-11,
+          "tolerance": 0.0001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "crack_range",
+          "description": "critical crack / largest sampled crack (below 1: K(a) is sampled past the critical crack)",
+          "kind": "validity",
+          "value": 0.8226292803498623,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-F1",
+          "text": "At the detectable crack (2 mm) the maximum stress intensity shall not exceed half the fracture toughness (Kmat / 2 = 50 MPa sqrt m).",
+          "metric": "K_a0_MPa_sqrt_m",
+          "operator": "<=",
+          "limit": 50.0,
+          "units": "MPa sqrt m",
+          "value": 13.352560256572476,
+          "margin": 36.647439743427526,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-F2",
+          "text": "The crack growth life from the detectable crack to the critical crack shall be at least twice the planned inspection interval of 40,000 cycles.",
+          "metric": "growth_life_cycles",
+          "operator": ">=",
+          "limit": 80000.0,
+          "units": "cycles",
+          "value": 92009.16401529501,
+          "margin": 12009.164015295013,
+          "verdict": "PASS"
+        }
+      ]
+    }
+  ],
+  "run_id": "20261123-165115_edge_crack_noise",
+  "generated_utc": "2026-11-23T21:57:09+00:00",
+  "verification_status": "PASS"
+}
