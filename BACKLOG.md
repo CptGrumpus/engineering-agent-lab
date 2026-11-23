@@ -98,6 +98,12 @@ FSI progress: the two newest `$TEMP/fsi_*/case/fluid/precice-Fluid-iterations.lo
 - **Item 7:** scan done; only FSI2/FSI3 (page 17) and the calibration (page 20) remain in progress. `reports/motor/`
   does carry the copper correction (the note further down saying otherwise is stale).
 - **Item 2:** n640 probe converges at 1 mm axial length (slowly: f about 0.01835 at 80000 iterations); r3 running.
+- **Study 19 part 2 UNBLOCKED (20:31):** the ERCOFTAC classic database answers again (case 030, Driver & Seegmiller);
+  all seven data files fetched to `C:/Users/mrstego/data/ercoftac_case030/` (outside the repo: redistribution terms
+  not checked; `SOURCE.txt` has the URL and sha256; turbmodels.larc.nasa.gov still has the certificate mismatch).
+  **Prior knowledge to declare in part 2's case headers:** printing the head of `bkst-reattach.dat` showed the
+  measured reattachment length, Xr/H 6.26 +- 0.10 at 0 deg (5.82 at -2, 6.72 at +2); nothing else was opened. Part 2
+  is new work: start it after the clean-up, with the user's go-ahead, as for study C.
 - **Item 3 (FSI1 noise), prepared, not started:** at 1.77 mm each coupled run takes about 1.7 h alone and the harness
   runs points in sequence, so run one case per perturbation (fluid_cell_size_m 0.00172 / 0.00175 / 0.00180 / 0.00183;
   r1's 0.0017678 is the fifth) concurrently once FSI2/FSI3 are done; then r2 of FSI1 declares the measured
