@@ -32,7 +32,10 @@ MACHINES = ("models/motor/Toyota_Prius_ORNL.json", "models/motor/Toyota_Prius_OR
             "models/motor/Toyota_Prius_ORNL_Br1p0000.json", "models/motor/Toyota_Prius_ORNL_Br1p0300.json",
             "models/motor/Toyota_Prius_ORNL_Br1p0600.json",
             # the calibrated remanence (motor_prius_cal_oc_br: ORNL back-EMF matched at 1.036 T)
-            "models/motor/Toyota_Prius_ORNL_Br1p0360.json")
+            "models/motor/Toyota_Prius_ORNL_Br1p0360.json",
+            # revision 4: the design magnet (19.24 x 5.31 mm) in the drawn pocket, three placements
+            "models/motor/Toyota_Prius_ORNL_mag531outer.json", "models/motor/Toyota_Prius_ORNL_mag531centre.json",
+            "models/motor/Toyota_Prius_ORNL_mag531inner.json")
 PARAMS = ("machine", "speed_rpm", "id_A", "iq_A", "mesh_fineness", "steps_per_period", "angle_points",
           "max_speed_rpm", "bus_voltage_V", "rated_torque_Nm")
 NUMERIC = PARAMS[1:]
