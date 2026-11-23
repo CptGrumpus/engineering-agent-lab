@@ -157,6 +157,29 @@ plainly as final:
 Then study C.
 
 ### Open for the user
+(0) **Study 19 part 2 framing, drafted for approval (user said start it, 2026-11-22 ~20:45; nothing built).**
+*Decision:* can the setup part 1 verified (k-omega SST, sublayer resolved, OpenFOAM 14) predict a separated,
+reattaching flow well enough for design use: where the flow reattaches behind a sudden step, how much pressure it
+recovers, and the wall shear downstream (e.g. placing a heat-transfer surface or a sensor in a duct with a step)?
+*Case:* Driver & Seegmiller, ERCOFTAC 030, parallel walls (alpha 0): step H 12.7 mm, inlet duct height 8H (expansion
+1.125), U 44.2 m/s, air (nu about 1.5e-5), Re_H about 37500, M 0.128 (incompressible). *Inflow (boundary condition,
+from the case description, not the answer key):* step-side boundary layer delta 19 mm, Re_theta 5000 (theta about 1.7
+mm) at x/H = -4. *Requirements (proposed; to be agreed BEFORE any measured data beyond the inflow is opened):*
+REQ-S1 reattachment length Xr/H within 10 % of measured; REQ-S2 skin friction on the step-side wall over 10 <= x/H
+<= 30 within 15 % of measured (rms); REQ-S3 pressure recovery, Cp on the step-side wall at x/H = 30 minus its value at
+x/H = -4, within 0.02 absolute. Velocity and Reynolds-stress profiles reported, not required. *Prior knowledge
+(declare):* measured Xr/H 6.26 +- 0.10 seen at download (above); SST's tendency on this case is also widely discussed;
+the prediction band must come from our own mesh and inflow sensitivity, not from these. *Verification (before the
+comparison):* inflow matched (theta and delta at x/H = -4 within 5 % of the stated values, by choosing the inlet's
+upstream distance); mass balance; y+ under 1; mesh study (3 levels, GCI on Xr and Cf at x/H = 20); outlet length
+(Xr unchanged within 0.5 % when the outlet moves from x/H 30 to 50); inlet turbulence intensity sensitivity; 2D
+(span / H = 12, stated). *Build plan (fresh session; part 1's machinery):* `models/cfd/step_openfoam.py` (blockMesh,
+graded blocks: inlet duct and step region, one cell thick, empty sides; low-Re walls; slip or wall on the top per the
+experiment's tunnel wall), `models/cfd/run_step.sh` modelled on `run_pipe.sh`, `studies/step_flow.py` (Xr from the
+Cf zero crossing located by interpolation, Cf and Cp along the wall, theta / delta at x/H = -4, profiles at the data
+stations), tests, cases with predictions first. Run one solver process at a time under `nice -n 19` in WSL (the user's
+machine is in use: avoid contention with FSI2/FSI3 and the user's own programs). Open `bkst-tauw.dat`, `bkst-cp.dat`,
+`bkst-ldv-00.dat` only after the user agrees the limits and the predictions are committed.
 (a) Study C framing, drafted for approval (nothing run): *Decision:* does the study-4 steel bracket arm (150 x 25 x 7
 mm cantilever, first mode about 262 Hz, portfolio 04) survive a random-vibration qualification: 1 h per axis of a base
 PSD, flat 0.04 g^2/Hz from 20 to 2000 Hz (about 8.9 g rms; synthetic), 2 % modal damping (synthetic)? *Requirements
