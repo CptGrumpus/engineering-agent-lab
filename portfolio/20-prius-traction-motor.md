@@ -10,7 +10,7 @@
 
 | | |
 |---|---|
-| **Answer so far** | **Blind comparison against ORNL's measurements: fail on all three agreed limits.** Back-EMF +23.5 % (limit 5 %), torque +7 to +24 % (limit 10 %), motor efficiency about 5 points high (limit 2). One fault explains most of it: the model's magnet flux linkage is about 24 % too high. **Calibrated afterwards on routine data** (magnet remanence 1.036 T, chosen on the static inductances): the efficiency gap narrows only from 5.2 to 4.5 points (the rest is losses the model leaves out), and the rated-power verdict flips to a fail (48 kW at 6000 rpm). The predictions as written:  back-EMF 110.9 V rms line-to-line per 1000 rpm at 20 °C; torque 119-606 N m from 50 to 350 A rms (400 N m at about 168 A); an efficiency map with a 97.4 % peak (motor only). Design checks: the rated 400 N m fits inside the copper limit (REQ-M2 pass), and the rated 50 kW holds to 6000 rpm (58.6 kW, verified; but not after calibration, above). Two fails a design review would want to know about: the open-circuit voltage at top speed is about 1040 V against a 500 V bus (REQ-M1), and the rotor bridges exceed the stand-in steel's yield at overspeed (424 against 335 MPa, REQ-M4). Thermal network (synthetic 65 °C water jacket): about 230 N m continuous to 2000 rpm and 42-48 kW from 2500 to 6000 rpm, limited by the magnets (150 °C) at every speed, not the winding; the efficiency map's hot corner understates the magnets by 13-25 K. Recomputed on the calibrated machine: 214 N m to 1250 rpm (28.1 kW, still above the 25 kW requirement) and 40-45 kW above 2500 rpm; the requirement fails at the loosest stator-to-housing fit in the scenario set. |
+| **Answer so far** | **Blind comparison against ORNL's measurements: fail on all three agreed limits.** Back-EMF +23.5 % (limit 5 %), torque +7 to +24 % (limit 10 %), motor efficiency about 5 points high (limit 2). One fault explains most of it: the model's magnet flux linkage is about 24 % too high. **Calibrated afterwards on routine data** (magnet remanence 1.036 T, chosen on the static inductances): the efficiency gap narrows only from 5.2 to 4.5 points, and to 4.05 with each test point's measured winding temperature (most of the rest is torque per ampere: ORNL's motor drew 6-30 % more current for the same torque), and the rated-power verdict flips to a fail (48 kW at 6000 rpm). The predictions as written:  back-EMF 110.9 V rms line-to-line per 1000 rpm at 20 °C; torque 119-606 N m from 50 to 350 A rms (400 N m at about 168 A); an efficiency map with a 97.4 % peak (motor only). Design checks: the rated 400 N m fits inside the copper limit (REQ-M2 pass), and the rated 50 kW holds to 6000 rpm (58.6 kW, verified; but not after calibration, above). Two fails a design review would want to know about: the open-circuit voltage at top speed is about 1040 V against a 500 V bus (REQ-M1), and the rotor bridges exceed the stand-in steel's yield at overspeed (424 against 335 MPa, REQ-M4). Thermal network (synthetic 65 °C water jacket): about 230 N m continuous to 2000 rpm and 42-48 kW from 2500 to 6000 rpm, limited by the magnets (150 °C) at every speed, not the winding; the efficiency map's hot corner understates the magnets by 13-25 K. Recomputed on the calibrated machine: 214 N m to 1250 rpm (28.1 kW, still above the 25 kW requirement) and 40-45 kW above 2500 rpm; the requirement fails at the loosest stator-to-housing fit in the scenario set. |
 | **Discipline** | Electric machines: electromagnetics, losses, thermal, rotor stress |
 | **Tools** | Pyleecan (geometry, drives FEMM), FEMM 4.2 (2D magnetostatics), CalculiX (rotor stress, slot heat conduction), Gmsh, Python |
 | **Methods** | Machine rebuilt from published drawings (PDF vector data); open-circuit and loaded magnetostatics; maximum torque per amp; dq look-up tables with iron-loss coefficients; loss-minimising current search under voltage and current limits; a lumped thermal network coupled to the losses; mesh studies; a blind-validation protocol |
@@ -33,7 +33,7 @@ drew and measured. Two kinds of answer are kept apart:
 
 | Check | Result | Status |
 |---|---|---|
-| REQ-M1: open-circuit voltage at 6000 rpm ≤ 500 V (inverter fault) | about 1040 V line-to-line peak | **Fail**, verified: the machine needs the inverter to hold its voltage down at speed |
+| REQ-M1: open-circuit voltage at 6000 rpm ≤ 500 V (inverter fault) | Blind model: about 1040 V line-to-line peak. **Calibrated (A): 856.5 V** (mesh uncertainty 0.07 %); ORNL measured 850 V at 5998 rpm | **Fail**, verified on both: the machine needs the inverter to hold its voltage down at speed |
 | REQ-M2: 400 N m within 25 A/mm² of copper current density | 400 N m at about 168 A rms, 19.8 A/mm² | **Pass** |
 | REQ-M3: every operating point within 25 A/mm² | the limit is 212 A rms; 250 A and above exceed it | **Fail** above 212 A (a short-time rating question) |
 | REQ-M4: rotor bridges below yield at 7200 rpm overspeed | 424 MPa against 335 MPa (M330-35A) | **Fail**, verified; elastic at 6000 rpm (295 MPa). A stronger grade (M250-35A, 455 MPa typical) would pass |
@@ -109,6 +109,20 @@ each step):
 - **Its own checks:** the calibrated efficiency run fails verification on three checks, none of which touches the
   comparison: my back-EMF reference came from a different mesh (0.1 % apart), the half-table iron-loss estimate misses
   its 5 % (7 %), and the unresolved 10 N m row trips the map check in the other scenario.
+- **Efficiency, revisited with more routine data (revisions 2 and 3).** A no-load spin-loss test is routine supplier
+  data, and ORNL has one (the unpowered rotor spun in its housing). I predicted it would show the model's no-load loss
+  1.3-2.5 times too low and close much of the gap. It matched the model (0.87-1.35 times our iron loss) and moved the
+  gap by 0.02 points: the no-load loss was never the problem. ORNL also logged the winding temperature at every test
+  point (43-207 °C, where the maps assumed 100 °C); using it closed the median gap from 4.50 to 4.05 points and a
+  quarter of the missing loss at high torque. Still a fail against 2 points.
+- **Where the rest of the gap comes from (a diagnostic, not used in the model).** At the same speed and torque, ORNL's
+  motor drew 6-30 % more current than ours. That extra current's copper loss is 43 % of what is missing, three
+  quarters at low speed and high torque. So the model makes its torque with too little current, which fits the low
+  measured saliency. The next revision models the magnet at its design size (5.31 mm in a 6.80 mm pocket; ours fills
+  the pocket), which is drawing data a client would have.
+- **While doing this, a transcription error.** The efficiency table's winding temperature, phase voltage and phase
+  current had been transcribed wrongly (empty, or shifted by one column in 345 of 428 rows). None of them had been
+  used in a score, and the scored columns were checked row by row against the table's own identities; they were right.
 - **The continuous rating, recomputed.** The thermal network on A's tables gives 28.1 kW at 1250 rpm, against 30.2
   kW: the same heat allows the same current (97 A), and the weaker magnets give 7 % less torque for it. The 25 kW
   requirement still passes at the nominal stator-to-housing fit, but now fails at the loosest fit in the scenario set
