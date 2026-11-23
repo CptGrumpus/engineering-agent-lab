@@ -29,6 +29,20 @@
 #   P5 Damping that fails each requirement alone: stress about 0.054 %, tip 0.24 %, damage about 0.14 %: all far below
 #      anything a bolted steel bracket shows.
 #   P6 About 5-6 h (six FE solves at about 34 min, then sampling).
+#
+# Results (run 20261123-104847_bracket_random_uq, 10:48-15:02): VERIFICATION PASS, 33/33 point checks, both run-level
+# Sobol checks (half-width 0.0119, largest change 8192 to 32768 0.0018).
+#   P1 HELD.
+#   P2 HELD in part: REQ-H1 PASS, pf_any 2.18e-6 (importance sampling; Monte Carlo 0 of 32768, 95 % bound 5.9e-5);
+#      tip governs, beta 4.55 (pf 1.7e-6); stress beta 8.0; damage beta 4.82 MISSED the 4.9-5.2 band (pf 4.8e-7).
+#   P3 HELD: Sobol total of log damage: damping 0.708, test level 0.158, S-N factor 0.161, thickness 0.0008. Damping
+#      is the input to measure first.
+#   P4 HELD: 99th percentiles damage 0.0548, 3 sigma stress 66.4 MPa, tip 0.595 mm.
+#   P5 HELD for stress (0.054 %) and tip (0.239 %); MISSED for damage: 0.175 %, not about 0.14 %. All far below a
+#      bolted steel bracket's damping.
+#   P6 MISSED: 4 h 14 min, faster than 5-6 h.
+#   Reading: study C's PASS is robust: failing any requirement needs damping about ten times lower than the 1 %
+#   lower bound assumed; a tap test for damping is the measurement worth making first.
 
 [case]
 name = "bracket_random_uq"

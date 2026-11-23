@@ -1,0 +1,359 @@
+{
+  "run_id": "20261123-104847_bracket_random_uq",
+  "verified_utc": "2026-11-23T20:02:50+00:00",
+  "tolerances": {
+    "harmonic_rel_tol": 0.0001,
+    "effective_mass_min": 0.9,
+    "basis_rel_tol": 1e-09,
+    "surrogate_rel_tol": 0.005,
+    "surrogate_damage_rel_tol": 0.03,
+    "dirlik_grid_rel_tol": 0.01,
+    "form_is_factor": 3.0,
+    "is_cov_max": 0.1,
+    "sobol_ci_max": 0.03
+  },
+  "points": [
+    {
+      "label": "p00_n_samples-2048",
+      "status": "PASS",
+      "checks": [
+        {
+          "id": "fe_harmonic",
+          "description": "max over the FE solves of study C's harmonic check (modal sum against CalculiX)",
+          "kind": "numerical",
+          "value": 1.0367915312485346e-06,
+          "tolerance": 0.0001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "fe_effective_mass",
+          "description": "1 - least effective-mass fraction over x, y, z and the FE solves",
+          "kind": "numerical",
+          "value": 0.06929859128116933,
+          "tolerance": 0.09999999999999998,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "nominal_reproduces_study_c",
+          "description": "max |response from the saved basis / study C's own numbers - 1| over stress, tip and damage at the nominal point",
+          "kind": "numerical",
+          "value": 2.220446049250313e-16,
+          "tolerance": 1e-09,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "surrogate_nominal",
+          "description": "max |surrogate / direct - 1| over stress and tip at the nominal point (damping between grid nodes)",
+          "kind": "numerical",
+          "value": 2.5071950923938324e-05,
+          "tolerance": 0.005,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "surrogate_offgrid_stress_tip",
+          "description": "max |surrogate / direct - 1| over stress and tip at the check dampings, on the off-grid thickness and the nominal one",
+          "kind": "numerical",
+          "value": 0.00010998879896728653,
+          "tolerance": 0.005,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "surrogate_offgrid_damage",
+          "description": "max |surrogate / direct - 1| of the damage at the same points",
+          "kind": "numerical",
+          "value": 0.00036288931343042563,
+          "tolerance": 0.03,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "dirlik_grid",
+          "description": "|nominal damage with the sampling grid / with study C's 4000 points - 1|",
+          "kind": "numerical",
+          "value": 0.0021795902612385953,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "form_vs_importance_sampling",
+          "description": "max over the requirements of |ln(pf importance sampling / pf FORM)|",
+          "kind": "numerical",
+          "value": 0.5770775559997893,
+          "tolerance": 1.0986122886681098,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "importance_sampling_cov",
+          "description": "max coefficient of variation of the importance-sampling estimates",
+          "kind": "numerical",
+          "value": 0.02571248120740159,
+          "tolerance": 0.1,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "mc_vs_importance_sampling",
+          "description": "importance-sampling estimate outside the Monte Carlo Wilson 95 % interval for any requirement (0 = inside for all)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "design_points_in_range",
+          "description": "design points outside the surrogate's damping and thickness range (count)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p01_n_samples-8192",
+      "status": "PASS",
+      "checks": [
+        {
+          "id": "fe_harmonic",
+          "description": "max over the FE solves of study C's harmonic check (modal sum against CalculiX)",
+          "kind": "numerical",
+          "value": 1.0367915312485346e-06,
+          "tolerance": 0.0001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "fe_effective_mass",
+          "description": "1 - least effective-mass fraction over x, y, z and the FE solves",
+          "kind": "numerical",
+          "value": 0.06929859128116933,
+          "tolerance": 0.09999999999999998,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "nominal_reproduces_study_c",
+          "description": "max |response from the saved basis / study C's own numbers - 1| over stress, tip and damage at the nominal point",
+          "kind": "numerical",
+          "value": 2.220446049250313e-16,
+          "tolerance": 1e-09,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "surrogate_nominal",
+          "description": "max |surrogate / direct - 1| over stress and tip at the nominal point (damping between grid nodes)",
+          "kind": "numerical",
+          "value": 2.5071950923938324e-05,
+          "tolerance": 0.005,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "surrogate_offgrid_stress_tip",
+          "description": "max |surrogate / direct - 1| over stress and tip at the check dampings, on the off-grid thickness and the nominal one",
+          "kind": "numerical",
+          "value": 0.00010998879896728653,
+          "tolerance": 0.005,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "surrogate_offgrid_damage",
+          "description": "max |surrogate / direct - 1| of the damage at the same points",
+          "kind": "numerical",
+          "value": 0.00036288931343042563,
+          "tolerance": 0.03,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "dirlik_grid",
+          "description": "|nominal damage with the sampling grid / with study C's 4000 points - 1|",
+          "kind": "numerical",
+          "value": 0.0021795902612385953,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "form_vs_importance_sampling",
+          "description": "max over the requirements of |ln(pf importance sampling / pf FORM)|",
+          "kind": "numerical",
+          "value": 0.5770775559997893,
+          "tolerance": 1.0986122886681098,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "importance_sampling_cov",
+          "description": "max coefficient of variation of the importance-sampling estimates",
+          "kind": "numerical",
+          "value": 0.02571248120740159,
+          "tolerance": 0.1,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "mc_vs_importance_sampling",
+          "description": "importance-sampling estimate outside the Monte Carlo Wilson 95 % interval for any requirement (0 = inside for all)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "design_points_in_range",
+          "description": "design points outside the surrogate's damping and thickness range (count)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p02_n_samples-32768",
+      "status": "PASS",
+      "checks": [
+        {
+          "id": "fe_harmonic",
+          "description": "max over the FE solves of study C's harmonic check (modal sum against CalculiX)",
+          "kind": "numerical",
+          "value": 1.0367915312485346e-06,
+          "tolerance": 0.0001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "fe_effective_mass",
+          "description": "1 - least effective-mass fraction over x, y, z and the FE solves",
+          "kind": "numerical",
+          "value": 0.06929859128116933,
+          "tolerance": 0.09999999999999998,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "nominal_reproduces_study_c",
+          "description": "max |response from the saved basis / study C's own numbers - 1| over stress, tip and damage at the nominal point",
+          "kind": "numerical",
+          "value": 2.220446049250313e-16,
+          "tolerance": 1e-09,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "surrogate_nominal",
+          "description": "max |surrogate / direct - 1| over stress and tip at the nominal point (damping between grid nodes)",
+          "kind": "numerical",
+          "value": 2.5071950923938324e-05,
+          "tolerance": 0.005,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "surrogate_offgrid_stress_tip",
+          "description": "max |surrogate / direct - 1| over stress and tip at the check dampings, on the off-grid thickness and the nominal one",
+          "kind": "numerical",
+          "value": 0.00010998879896728653,
+          "tolerance": 0.005,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "surrogate_offgrid_damage",
+          "description": "max |surrogate / direct - 1| of the damage at the same points",
+          "kind": "numerical",
+          "value": 0.00036288931343042563,
+          "tolerance": 0.03,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "dirlik_grid",
+          "description": "|nominal damage with the sampling grid / with study C's 4000 points - 1|",
+          "kind": "numerical",
+          "value": 0.0021795902612385953,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "form_vs_importance_sampling",
+          "description": "max over the requirements of |ln(pf importance sampling / pf FORM)|",
+          "kind": "numerical",
+          "value": 0.5770775559997893,
+          "tolerance": 1.0986122886681098,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "importance_sampling_cov",
+          "description": "max coefficient of variation of the importance-sampling estimates",
+          "kind": "numerical",
+          "value": 0.02571248120740159,
+          "tolerance": 0.1,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "mc_vs_importance_sampling",
+          "description": "importance-sampling estimate outside the Monte Carlo Wilson 95 % interval for any requirement (0 = inside for all)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "design_points_in_range",
+          "description": "design points outside the surrogate's damping and thickness range (count)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ]
+    }
+  ],
+  "run_checks": [
+    {
+      "id": "sobol_ci_width",
+      "description": "max half-width of the total-index 95 % intervals at p02_n_samples-32768",
+      "kind": "numerical",
+      "value": 0.011924163129423515,
+      "tolerance": 0.03,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "sobol_stable",
+      "description": "max change of a total index from p01_n_samples-8192 to p02_n_samples-32768",
+      "kind": "numerical",
+      "value": 0.0017982777682509221,
+      "tolerance": 0.03,
+      "comparison": "<=",
+      "status": "PASS"
+    }
+  ],
+  "run_check_detail": {
+    "largest": "p02_n_samples-32768",
+    "previous": "p01_n_samples-8192",
+    "st_ci_halfwidth_max": 0.011924163129423515,
+    "st_change_max": 0.0017982777682509221
+  },
+  "status": "PASS"
+}

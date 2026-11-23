@@ -1,0 +1,110 @@
+# Study H: probabilistic uncertainty on study C (study 4's bracket arm under the random-vibration qualification).
+# Decision: study C passes on nominal inputs (damage 2.4e-3 against 0.5, stress 38.6 against 236.7 MPa, tip 0.345
+# against 1.0 mm). Is that PASS robust to what a project would not know exactly, and which input is worth measuring
+# first? Framing approved by the user 2026-11-23 ~10:00 (BACKLOG, "Open for the user" (d)); all inputs synthetic:
+#   damping        lognormal, median 2 %, 90 % between 1 % and 4 % (sigma_ln = ln 2 / 1.645 = 0.42138)
+#   test level     uniform +- 1.5 dB on the PSD (the rig's control tolerance)
+#   S-N strength   a factor on the EN 1993-1-9 detail category, lognormal, median 1 (the design curve: conservative),
+#                  CoV 10 %
+#   thickness      normal 7.0 mm, sd 0.1 mm (a +- 0.3 mm drawing tolerance read as 3 sd)
+# Mesh: study C's finest, 1.22 mm (its verified results: stress GCI 1.3 %, tip 0.1 %). Thickness by scaling that
+# mesh through the thickness (no remeshing noise: a remeshed scratch prototype gave a 1 % stress scatter across
+# thickness that the damage amplified to 5 %).
+#
+# Scratch prototype (3.125 mm mesh, n 256 and 1024, 2026-11-23 10:26; declared, it informs the predictions and the
+# tolerances): every point check passed (surrogate off-grid 7e-4 on stress / tip and 6e-4 on damage; FORM against
+# importance sampling within a factor of 1.8; importance-sampling CoV 0.056); pf_any 2.4e-6; beta 7.37 (stress), 4.55
+# (tip), 4.72 (damage); damage 99th percentile 0.060; Sobol total of log damage: damping 0.70-0.79, test level
+# 0.16-0.17, S-N 0.16-0.17, thickness 0.001; damping that fails each requirement alone 0.071 % / 0.24 % / 0.18 %.
+# Its Sobol intervals at n 1024 were +-0.068: hence n up to 32768 here. Tolerances set after the prototype.
+#
+# Predictions, written BEFORE the evidence run (the finer mesh lowers the stress 12.6 % and the damage 15 %; the tip
+# does not move):
+#   P1 Every point check passes on every point; both run-level Sobol checks pass (half-width about 0.012 at 32768).
+#   P2 REQ-H1 PASS: pf_any 1e-6 to 1e-5, the tip clearance governing (beta about 4.5); damage beta 4.9-5.2; stress
+#      beta about 7.8.
+#   P3 Sobol total index of log damage: damping 0.65-0.8, test level 0.15-0.2, S-N factor 0.15-0.2, thickness under
+#      0.01. Damping is the input to measure first (a tap test on the mounted arm).
+#   P4 99th percentiles: damage 0.04-0.06, 3 sigma stress 63-67 MPa, tip 0.59 mm.
+#   P5 Damping that fails each requirement alone: stress about 0.054 %, tip 0.24 %, damage about 0.14 %: all far below
+#      anything a bolted steel bracket shows.
+#   P6 About 5-6 h (six FE solves at about 34 min, then sampling).
+
+[case]
+name = "bracket_random_uq"
+model = "cadquery_ccx_random_uq"
+description = "Study H: uncertainty on study C's random-vibration qualification of the bracket arm: damping, test level, S-N strength and plate thickness uncertain (synthetic); failure probability of each requirement (FORM, importance sampling, Monte Carlo) and Sobol indices; sample-size sweep 2048 / 8192 / 32768 on study C's 1.22 mm mesh."
+assumptions = [
+  "Study C's model and assumptions (linear elastic, rigid clamp, hot-spot extrapolation, Dirlik on sigma_xx, Miner over three axes).",
+  "Inputs independent; distributions synthetic (approved framing): damping lognormal (median 2 %, 90 % in 1-4 %), test level uniform +-1.5 dB, S-N factor lognormal (median 1, CoV 10 %), thickness normal (7.0, sd 0.1 mm).",
+  "The same damping on every mode (one random variable); thickness changes the whole arm uniformly.",
+]
+limitations = [
+  "Synthetic input distributions: the answer is conditional on them; correlations (e.g. damping between modes) not modelled.",
+  "Model-form uncertainty (clamp stiffness, the S-N detail itself) is outside this study; study C's mesh error (1.3 % on stress) is not sampled.",
+  "pf_any is an upper bound (the sum over requirements, which are strongly correlated through damping).",
+]
+
+[parameters]
+length_mm = 150.0
+width_mm = 25.0
+thickness_mm = 7.0
+youngs_modulus_MPa = 210000.0
+poisson_ratio = 0.3
+density_t_per_mm3 = 7.85e-9
+element_size_mm = 1.220703125
+n_modes = 30
+damping_ratio = 0.02
+psd_g2_per_Hz = 0.04
+f_low_Hz = 20.0
+f_high_Hz = 2000.0
+duration_per_axis_s = 3600.0
+yield_MPa = 355.0
+detail_category_MPa = 160.0
+clearance_mm = 1.0
+damping_sigma_ln = 0.42138
+test_level_tolerance_dB = 1.5
+sn_factor_cov = 0.10
+thickness_sd_mm = 0.1
+damage_limit = 0.5
+n_samples = 2048
+seed = 1
+
+[sweep]
+parameter = "n_samples"
+values = [2048, 8192, 32768]
+
+[numerics]
+solver = "CalculiX 2.22 *FREQUENCY (30 modes) via study C's model at five thicknesses + one check thickness, one mesh scaled through the thickness; surrogate, Sobol (scrambled Sobol sequence), FORM (HL-RF, SLSQP fallback), importance sampling in numpy / scipy"
+harmonic_points = 40
+n_log = 400
+n_res = 80
+solver_timeout_s = 14400
+thickness_nodes_mm = [6.5, 6.75, 7.0, 7.25, 7.5]
+thickness_check_mm = 6.875
+zeta_grid_min = 2e-4
+zeta_grid_max = 0.15
+zeta_grid_n = 41
+zeta_check = [0.0031, 0.0087, 0.0143, 0.0217, 0.0389]
+dirlik_points = 1000
+is_samples = 20000
+n_boot = 200
+
+[verification]
+harmonic_rel_tol = 1e-4
+effective_mass_min = 0.9
+basis_rel_tol = 1e-9
+surrogate_rel_tol = 0.005
+surrogate_damage_rel_tol = 0.03
+dirlik_grid_rel_tol = 0.01
+form_is_factor = 3.0
+is_cov_max = 0.1
+sobol_ci_max = 0.03
+
+[[requirements]]
+id = "REQ-H1"
+text = "The probability of failing any of study C's requirements (REQ-RV1 stress, REQ-RV2 damage, REQ-RV3 tip clearance) under the stated input uncertainties shall not exceed 1e-3 (synthetic target). pf_any is the sum of the three importance-sampling estimates: an upper bound on the union."
+metric = "pf_any"
+operator = "<="
+limit = 1e-3
+units = "-"
