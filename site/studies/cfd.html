@@ -29,11 +29,11 @@
     <h3>How it works</h3>
     <p>The model includes the supply header and a smooth contraction into the channel, not just the channel. That matters: the flow speeds up as it enters, and the pressure that takes is part of the budget. I count the flow's kinetic energy at the exit as lost, which is the usual cautious assumption. That exit loss is 7.7 Pa of the 33.4.</p>
     <figure>
-      <div class="plate"><img src="img/cfd_field.png" alt="Water velocity through the supply header, contraction, and channel" loading="lazy"></div>
+      <div class="plate"><img src="v2/fig_cfd_field.svg" alt="Water velocity through the supply header, contraction and channel: slow in the header, fastest along the middle of the channel" loading="lazy"></div>
       <figcaption>Water velocity through the supply header, the contraction and the 1 mm channel. The height is stretched so you can see the channel.</figcaption>
     </figure>
     <figure>
-      <div class="plate"><img src="img/cfd_response.png" alt="Velocity profile, pressure, and centreline velocity compared with the exact solution" loading="lazy"></div>
+      <div class="plate"><img src="v2/fig_cfd_response.svg" alt="Velocity profile, pressure and centre-line velocity from the model, each lying on the exact solution" loading="lazy"></div>
       <figcaption>On the left, the velocity across the gap sits on the exact solution. On the right, the pressure drops through the contraction and then follows the exact slope, and the flow settles within the predicted entrance length.</figcaption>
     </figure>
     <h3>How I checked it</h3>
@@ -56,16 +56,14 @@
         </tbody>
       </table>
     </div>
-    <div class="figs-2">
-      <figure>
-        <div class="plate"><img src="img/cfd_tolerance.png" alt="Required pressure and wall shear across the tolerance cases" loading="lazy"></div>
-        <figcaption>Both requirements across the tolerance cases. The grey cross is a case the checks held back because the flow hadn't fully settled.</figcaption>
-      </figure>
-      <figure>
-        <div class="plate"><img src="img/cfd_duct.png" alt="3D side-wall check compared with the exact rectangular-duct solution" loading="lazy"></div>
-        <figcaption>The 3D side-wall check, with velocity across the width and across the gap compared against the exact rectangular-duct solution.</figcaption>
-      </figure>
-    </div>
+    <figure>
+      <div class="plate"><img src="v2/fig_cfd_tolerance.svg" alt="Supply pressure and wall shear for five combinations of gap and coolant temperature: no combination is inside both limits" loading="lazy"></div>
+      <figcaption>Both requirements at the corners of the tolerance range. Each row is one combination of gap and coolant temperature, and the shaded side of each limit is the failing side. The hollow marker is a case the checks held back because the flow hadn't fully settled.</figcaption>
+    </figure>
+    <figure>
+      <div class="plate"><img src="v2/fig_cfd_duct.svg" alt="Velocity across the width and across the gap of the 3D channel model, with the model's points lying on the exact rectangular-duct solution" loading="lazy"></div>
+      <figcaption>The 3D side-wall check. Away from the side walls the flow is the same as between two wide plates; next to each wall it slows, which is where the extra 3.2 % of friction comes from.</figcaption>
+    </figure>
     <div class="caught">
       <h3>What I caught along the way</h3>
       <ul>
