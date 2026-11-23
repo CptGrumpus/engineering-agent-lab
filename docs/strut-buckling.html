@@ -3,11 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Strut buckling, with an imperfect strut · Justin Smith</title>
+<title>Strut Buckling, With an Imperfect Strut · Justin Smith</title>
 <meta name="description" content="The longest acceptable strut is about 587 mm. The bow costs 4 to 7 % of the buckling load, so a buckling check alone would overstate the capacity.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://cptgrumpus.github.io/engineering-agent-lab/strut-buckling.html">
-<meta property="og:title" content="Strut buckling, with an imperfect strut">
+<meta property="og:title" content="Strut Buckling, With an Imperfect Strut">
 <meta property="og:description" content="The longest acceptable strut is about 587 mm. The bow costs 4 to 7 % of the buckling load, so a buckling check alone would overstate the capacity.">
 <meta property="og:image" content="https://cptgrumpus.github.io/engineering-agent-lab/v2/og_strut-buckling.png">
 <meta property="og:image:width" content="1200">
@@ -30,9 +30,9 @@
     <div class="navgroup">
       <div class="topnav">
         <a href="index.html#work" aria-current="page">Studies</a>
-        <a href="how-i-work.html">How I work</a>
+        <a href="how-i-work.html">How I Work</a>
         <a href="grading.html">Grading</a>
-        <a href="in-progress.html">In progress</a>
+        <a href="in-progress.html">In Progress</a>
         <a href="requirements.html">Requirements</a>
       </div>
       <a class="nav-contact" href="#contact">Contact</a>
@@ -40,9 +40,9 @@
         <summary>Menu</summary>
         <div class="menu-panel">
         <a href="index.html#work" aria-current="page">Studies</a>
-        <a href="how-i-work.html">How I work</a>
+        <a href="how-i-work.html">How I Work</a>
         <a href="grading.html">Grading</a>
-        <a href="in-progress.html">In progress</a>
+        <a href="in-progress.html">In Progress</a>
         <a href="requirements.html">Requirements</a>
           <a href="#contact">Contact</a>
         </div>
@@ -56,7 +56,7 @@
     <nav class="crumbs" aria-label="Breadcrumb"><a href="index.html#work">All studies</a><span>/</span><span>Structures and vibration</span></nav>
     <header class="study-hero">
       <p class="eyebrow">Study 13 · CalculiX, linear and nonlinear buckling</p>
-      <h1>Strut buckling, with an imperfect strut</h1>
+      <h1>Strut Buckling, With an Imperfect Strut</h1>
       <span class="v v-pass">Passes</span>
       <p class="study-lede">The longest acceptable strut is about 587 mm. The bow costs 4 to 7 % of the buckling load, so a buckling check alone would overstate the capacity.</p>
     </header>
@@ -86,19 +86,19 @@
     <div class="study-layout">
       <article class="study-main">
 
-    <h2 id="the-question">The question</h2>
+    <h2 id="the-question">The Question</h2>
     <p>A 6061-T6 strut with a solid 25 × 16 mm section, pinned at both ends, carries 8 kN in compression. It has to reach twice that, 16 kN, before any fibre yields, allowing for an initial bow of L/1000, a typical straightness tolerance. How long can it be?</p>
-    <h2 id="the-answer">The answer</h2>
+    <h2 id="the-answer">The Answer</h2>
     <div class="answer">
       <div class="chips"><span class="chip pass">Longest about 587 mm</span><span class="chip pass">Two routes to the buckling load agree to 0.04 %</span><span class="chip pass">Mesh uncertainty 0.003 %</span></div>
       <p><strong>About 587 mm.</strong> Before first yield, the bowed strut reaches 33.4 kN at 400 mm, 21.8 kN at 500 mm, 15.3 kN at 600 mm and 11.4 kN at 700 mm, so 400 and 500 mm pass and 600 and 700 mm fail.</p>
       <p>The bow costs 4 to 7 %. First yield arrives at 93 to 96 % of the elastic buckling load, so a check on the buckling load alone would overstate what the strut can carry.</p>
       <p>Drag the slider in the viewer at the top of the page to load the 500 mm strut step by step and watch the bow grow.</p>
     </div>
-    <h2 id="why-it-matters">Why it matters</h2>
+    <h2 id="why-it-matters">Why It Matters</h2>
     <p>A slender part in compression doesn't fail by crushing. At a certain load it bows sideways and gives way, usually well below the load its material could carry. The textbook buckling load, Euler's, is for a perfectly straight strut. No real strut is straight, and the small bow it starts with grows as the load rises, slowly at first and then very quickly near the buckling load. The bending that goes with that bow yields the material before the textbook load is reached.</p>
     <p>So there are two questions: what's the buckling load, and how much of it can actually be used given a realistic imperfection? A linear buckling analysis answers only the first.</p>
-    <h2 id="the-model">The model</h2>
+    <h2 id="the-model">The Model</h2>
     <dl class="spec">
       <dt>Part</dt><dd>A solid strut, 25 × 16 mm in section, at lengths of 400, 500, 600 and 700 mm.</dd>
       <dt>Material</dt><dd>6061-T6 aluminium: Young's modulus 68.9 GPa, Poisson's ratio 0.33, yield 276 MPa. Elastic up to first yield, where the analysis stops.</dd>
@@ -109,13 +109,13 @@
       <dt>Analysis</dt><dd>Two analyses in CalculiX 2.22: a linear buckling (eigenvalue) analysis of the straight strut, and a geometrically nonlinear analysis of the bowed one, loaded in steps until the first fibre yields.</dd>
     </dl>
     <figure class="drawing"><div class="plate"><img src="v2/dwg_strut.webp" alt="Side view of the strut on its pinned ends with the bow drawn enlarged" loading="lazy"></div><figcaption>The strut, its pinned ends and its initial bow, which is drawn 40 times larger than it is.</figcaption></figure>
-    <details class="record"><summary>The case file: recorded assumptions, limits and inputs</summary><div class="record-body"><p>This is the study's own record, written before the run and saved with it, in the shorthand of the case file.</p><p class="case"><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/cases/strut_length.toml">cases/strut_length.toml ↗</a></p><p>Pinned-pinned 6061-T6 strut, 25 x 16 mm solid section, in compression: CalculiX linear buckling and a geometrically nonlinear analysis with an L/1000 initial bow to first yield, at L = 400 / 500 / 600 / 700 mm; checked against Euler-Engesser, the amplification law, the Southwell plot and Perry-Robertson.</p><h3>Assumptions, and how each is checked</h3><ul><li>Pins on the centroidal axis at both ends (knife-edge line supports across the width at mid-thickness).</li><li>Initial bow e0 = L/1000 in the weak direction, half-sine shaped (the first buckling mode): synthetic tolerance.</li><li>Load axial and concentric at the ends, uniform over the end face (dead load).</li><li>Linear elastic material up to first yield (6061-T6, E = 68.9 GPa, yield 276 MPa); the analysis stops just past first yield.</li><li>Elastic buckling governs; checked: Euler stress at most half the yield stress (Johnson range otherwise).</li><li>Moderate deflection at first yield; checked: below 5 % of the length.</li></ul><h3>Limits</h3><ul><li>No residual stresses, end eccentricity or load misalignment beyond the bow.</li><li>Capacity defined as first yield, not collapse (the plastic reserve beyond first yield is not used).</li><li>References are model form (beam-column theory) except the Southwell plot, which uses the FE response itself.</li><li>No physical test data.</li></ul><h3>Inputs</h3><div class="table-wrap"><table><thead><tr><th>Input</th><th>Value</th></tr></thead><tbody><tr><td>length_mm</td><td>500</td></tr><tr><td>width_mm</td><td>25</td></tr><tr><td>thickness_mm</td><td>16</td></tr><tr><td>youngs_modulus_MPa</td><td>68900</td></tr><tr><td>poisson_ratio</td><td>0.33</td></tr><tr><td>yield_strength_MPa</td><td>276</td></tr><tr><td>element_size_mm</td><td>3</td></tr><tr><td>imperfection_over_length</td><td>0.001</td></tr></tbody></table></div></div></details>
-    <h2 id="how-it-works">How it works</h2>
+    <details class="record"><summary>The case file: recorded assumptions, limits and inputs</summary><div class="record-body"><p>This is the study's own record, written before the run and saved with it, in the shorthand of the case file.</p><p class="case"><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/cases/strut_length.toml">cases/strut_length.toml ↗</a></p><p>Pinned-pinned 6061-T6 strut, 25 x 16 mm solid section, in compression: CalculiX linear buckling and a geometrically nonlinear analysis with an L/1000 initial bow to first yield, at L = 400 / 500 / 600 / 700 mm; checked against Euler-Engesser, the amplification law, the Southwell plot and Perry-Robertson.</p><h3>Assumptions, and How Each Is Checked</h3><ul><li>Pins on the centroidal axis at both ends (knife-edge line supports across the width at mid-thickness).</li><li>Initial bow e0 = L/1000 in the weak direction, half-sine shaped (the first buckling mode): synthetic tolerance.</li><li>Load axial and concentric at the ends, uniform over the end face (dead load).</li><li>Linear elastic material up to first yield (6061-T6, E = 68.9 GPa, yield 276 MPa); the analysis stops just past first yield.</li><li>Elastic buckling governs; checked: Euler stress at most half the yield stress (Johnson range otherwise).</li><li>Moderate deflection at first yield; checked: below 5 % of the length.</li></ul><h3>Limits</h3><ul><li>No residual stresses, end eccentricity or load misalignment beyond the bow.</li><li>Capacity defined as first yield, not collapse (the plastic reserve beyond first yield is not used).</li><li>References are model form (beam-column theory) except the Southwell plot, which uses the FE response itself.</li><li>No physical test data.</li></ul><h3>Inputs</h3><div class="table-wrap"><table><thead><tr><th>Input</th><th>Value</th></tr></thead><tbody><tr><td>length_mm</td><td>500</td></tr><tr><td>width_mm</td><td>25</td></tr><tr><td>thickness_mm</td><td>16</td></tr><tr><td>youngs_modulus_MPa</td><td>68900</td></tr><tr><td>poisson_ratio</td><td>0.33</td></tr><tr><td>yield_strength_MPa</td><td>276</td></tr><tr><td>element_size_mm</td><td>3</td></tr><tr><td>imperfection_over_length</td><td>0.001</td></tr></tbody></table></div></div></details>
+    <h2 id="how-it-works">How It Works</h2>
     <p>The linear analysis gives the buckling load and the shape the strut buckles into. The second model starts with a bow of L/1000 in that same half-sine shape. The nonlinear analysis then loads the bowed strut in small steps, updating the geometry as it deflects, and records the load at which the stress first reaches yield.</p>
     <p>The nonlinear run also gives a second, independent route to the buckling load. A Southwell plot takes the measured load and deflection alone and reads the critical load from the slope of a straight line. It's the method used on real test rigs, where the strut can't be loaded to failure.</p>
     <figure><div class="plate"><img src="v2/fig_strut_response.svg" alt="The 500 mm strut: sideways deflection growing with load towards the buckling load, the Southwell plot, and stress reaching yield at 21.8 kN" loading="lazy"></div><figcaption>The 500 mm strut: load against mid-span deflection, the Southwell plot, and the stress climbing to first yield.</figcaption></figure>
       <figure class="half"><div class="plate"><img src="v2/fig_strut_sweep.svg" alt="Load at first yield against strut length: 400 and 500 mm pass the 16 kN requirement, 600 and 700 mm do not" loading="lazy"></div><figcaption>First-yield load at each length against the 16 kN requirement.</figcaption></figure>
-    <h2 id="how-i-checked-it">How I checked it</h2>
+    <h2 id="how-i-checked-it">How I Checked It</h2>
     <ul class="proof">
       <li><strong>Two routes to the buckling load.</strong> The linear eigenvalue analysis and the Southwell plot of the nonlinear run agree to 0.04 %. Both sit 0.06 to 0.1 % below Euler's formula with the shear correction.</li>
       <li><strong>The shape and the growth of the bow.</strong> The first mode is an exact half sine, and the nonlinear response follows the amplification law e₀ / (1 − P/P<sub>cr</sub>) to 0.2 % up to 80 % of the critical load. The Southwell fit recovers the bow that was put in to 0.3 %.</li>
@@ -123,13 +123,13 @@
       <li><strong>The method is valid for these lengths.</strong> Every length is in the range where elastic buckling governs. A shorter strut would yield before it buckled, and the check would flag the elastic analysis as the wrong tool. Mesh refinement at 600 mm leaves 0.003 % uncertainty.</li>
     </ul>
     <div class="caught">
-      <h2 id="what-i-caught-along-the-way">What I caught along the way</h2>
+      <h2 id="what-i-caught-along-the-way">What I Caught Along the Way</h2>
       <ul>
         <li>The mode-shape check failed at first. CalculiX prints the static solution before the first eigenvector, and my parser was reading it as mode 1. Two wrong explanations came first; the record says which one was the cause.</li>
         <li>The nonlinear solver's default convergence left the global force balance 3 × 10⁻⁶ out. Tighter solver settings brought it to 2 × 10⁻⁷ without touching the tolerance.</li>
       </ul>
     </div>
-    <h2 id="limits-and-what-i-d-do-next">Limits, and what I'd do next</h2>
+    <h2 id="limits-and-what-i-d-do-next">Limits, and What I'd Do Next</h2>
     <ul>
       <li>Capacity is defined as first yield, so the plastic reserve beyond it isn't used. That's the cautious choice.</li>
       <li>No residual stresses, and no load eccentricity or misalignment beyond the bow. Each of those would lower the capacity further.</li>
@@ -140,10 +140,10 @@
     <div class="side-card"><ul class="ev-list"><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/portfolio/13-strut-buckling.md">Full write-up on GitHub</a></li></ul><p class="label">Run reports, with every check and the saved inputs</p><ul class="ev-list ev-runs"><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261120-232856_strut_length/report.md">strut_length</a></li><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261120-233637_strut_mesh/report.md">strut_mesh</a></li></ul></div>
       </article>
       <aside class="study-side" aria-label="Summary of this study">
-        <div class="side-card"><h2>At a glance</h2><dl><div><dt>Study</dt><dd>13</dd></div><div><dt>Discipline</dt><dd>Structures and vibration</dd></div><div><dt>Tools</dt><dd>CalculiX</dd></div><div><dt>Verdict</dt><dd><span class="v v-pass">Passes</span></dd></div></dl></div><div class="side-card"><h2>Requirements</h2><ul class="side-reqs"><li><span class="r-what">Load before first yield, 500 mm strut with an L/1000 bow</span><span class="r-num">≥ 16 kN · 21.8 kN (the longest that passes is about 587 mm)</span><span class="chip pass">Met</span></li></ul></div><div class="side-card side-toc"><h2>On this page</h2><ul class="toc"><li><a href="#the-question">The question</a></li><li><a href="#the-answer">The answer</a></li><li><a href="#why-it-matters">Why it matters</a></li><li><a href="#the-model">The model</a></li><li><a href="#how-it-works">How it works</a></li><li><a href="#how-i-checked-it">How I checked it</a></li><li><a href="#what-i-caught-along-the-way">What I caught along the way</a></li><li><a href="#limits-and-what-i-d-do-next">Limits, and what I&#x27;d do next</a></li><li><a href="#evidence">Evidence</a></li></ul></div>
+        <div class="side-card"><h2>At a Glance</h2><dl><div><dt>Study</dt><dd>13</dd></div><div><dt>Discipline</dt><dd>Structures and vibration</dd></div><div><dt>Tools</dt><dd>CalculiX</dd></div><div><dt>Verdict</dt><dd><span class="v v-pass">Passes</span></dd></div></dl></div><div class="side-card"><h2>Requirements</h2><ul class="side-reqs"><li><span class="r-what">Load before first yield, 500 mm strut with an L/1000 bow</span><span class="r-num">≥ 16 kN · 21.8 kN (the longest that passes is about 587 mm)</span><span class="chip pass">Met</span></li></ul></div><div class="side-card side-toc"><h2>On This Page</h2><ul class="toc"><li><a href="#the-question">The question</a></li><li><a href="#the-answer">The answer</a></li><li><a href="#why-it-matters">Why it matters</a></li><li><a href="#the-model">The model</a></li><li><a href="#how-it-works">How it works</a></li><li><a href="#how-i-checked-it">How I checked it</a></li><li><a href="#what-i-caught-along-the-way">What I caught along the way</a></li><li><a href="#limits-and-what-i-d-do-next">Limits, and what I&#x27;d do next</a></li><li><a href="#evidence">Evidence</a></li></ul></div>
       </aside>
     </div>
-    <nav class="pager" aria-label="More studies"><a class="prev" href="aluminium-strap.html"><small>← Previous study</small><b>Aluminium strap: cable hole, fatigue life and proof test</b></a><a class="next" href="roller-contact.html"><small>Next study →</small><b>Roller-on-plate contact, nonlinear FEA</b></a></nav>
+    <nav class="pager" aria-label="More studies"><a class="prev" href="aluminium-strap.html"><small>← Previous study</small><b>Aluminium Strap: Cable Hole, Fatigue Life and Proof Test</b></a><a class="next" href="roller-contact.html"><small>Next study →</small><b>Roller-on-Plate Contact, Nonlinear FEA</b></a></nav>
   </div>
 
 </main>
@@ -153,7 +153,7 @@
     <section class="contact" id="contact" aria-labelledby="contact-title">
       <div class="band-head">
         <p class="eyebrow">Contact</p>
-        <h2 id="contact-title">Get in touch</h2>
+        <h2 id="contact-title">Get in Touch</h2>
         <p class="contact-name"><b>Justin Smith</b>, mechanical engineer (MS), with a background in automotive.</p>
         <p>If something here is close to what you need, or you have a model that needs building or checking, send me a note and tell me about it. I'm available for remote contract work.</p>
       </div>

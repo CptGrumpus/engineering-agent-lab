@@ -3,11 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Bracket optimisation loop, driven by the agent · Justin Smith</title>
+<title>Bracket Optimisation Loop, Driven by the Agent · Justin Smith</title>
 <meta name="description" content="The agent searched 78 designs over three runs for the lightest machined clevis bracket that stays under 100 MPa. The checks threw out its first two answers. The final one is 372 g, 4 % lighter than the start, at 98.3 MPa, and its own mesh study confirms it.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://cptgrumpus.github.io/engineering-agent-lab/bracket-optimisation.html">
-<meta property="og:title" content="Bracket optimisation loop, driven by the agent">
+<meta property="og:title" content="Bracket Optimisation Loop, Driven by the Agent">
 <meta property="og:description" content="The agent searched 78 designs over three runs for the lightest machined clevis bracket that stays under 100 MPa. The checks threw out its first two answers. The final one is 372 g, 4 % lighter than the start, at 98.3 MPa, and its own mesh study confirms it.">
 <meta property="og:image" content="https://cptgrumpus.github.io/engineering-agent-lab/v2/og_bracket-optimisation.png">
 <meta property="og:image:width" content="1200">
@@ -30,9 +30,9 @@
     <div class="navgroup">
       <div class="topnav">
         <a href="index.html#work" aria-current="page">Studies</a>
-        <a href="how-i-work.html">How I work</a>
+        <a href="how-i-work.html">How I Work</a>
         <a href="grading.html">Grading</a>
-        <a href="in-progress.html">In progress</a>
+        <a href="in-progress.html">In Progress</a>
         <a href="requirements.html">Requirements</a>
       </div>
       <a class="nav-contact" href="#contact">Contact</a>
@@ -40,9 +40,9 @@
         <summary>Menu</summary>
         <div class="menu-panel">
         <a href="index.html#work" aria-current="page">Studies</a>
-        <a href="how-i-work.html">How I work</a>
+        <a href="how-i-work.html">How I Work</a>
         <a href="grading.html">Grading</a>
-        <a href="in-progress.html">In progress</a>
+        <a href="in-progress.html">In Progress</a>
         <a href="requirements.html">Requirements</a>
           <a href="#contact">Contact</a>
         </div>
@@ -56,7 +56,7 @@
     <nav class="crumbs" aria-label="Breadcrumb"><a href="index.html#work">All studies</a><span>/</span><span>Structures and vibration</span></nav>
     <header class="study-hero">
       <p class="eyebrow">Study 12 · CadQuery, Gmsh, CalculiX and SciPy, driven by the agent</p>
-      <h1>Bracket optimisation loop, driven by the agent</h1>
+      <h1>Bracket Optimisation Loop, Driven by the Agent</h1>
       <span class="v v-pass">Passes</span>
       <p class="study-lede">The agent searched 78 designs over three runs for the lightest machined clevis bracket that stays under 100 MPa. The checks threw out its first two answers. The final one is 372 g, 4 % lighter than the start, at 98.3 MPa, and its own mesh study confirms it.</p>
     </header>
@@ -86,9 +86,9 @@
     <div class="study-layout">
       <article class="study-main">
 
-    <h2 id="the-question">The question</h2>
+    <h2 id="the-question">The Question</h2>
     <p>A machined aluminium clevis bracket on a vibrating machine carries an inclined 4.8 kN pin load. The parts around it fix the base, the lug outline and the fillets. An optimiser run by the agent picks the lug thickness, the gusset thickness and the gusset height to make the bracket as light as possible. The peak stress has to stay at or under 100 MPa, a fatigue rating, and the pin can move at most 0.10 mm. Every design it tries is built, meshed, solved and checked like any other study.</p>
-    <h2 id="the-answer">The answer</h2>
+    <h2 id="the-answer">The Answer</h2>
     <dl class="kpis">
       <div><dt>Mass of the chosen design</dt><dd>372 g</dd><p>4 % lighter than the starting design. The 270 g base plate is fixed, so the parts the optimiser could change lost 13 %.</p></div>
       <div><dt>Designs tried</dt><dd>78</dd><p>Over three optimisation runs. The checks threw out the answers of the first two.</p></div>
@@ -96,10 +96,10 @@
       <div><dt>Pin deflection</dt><dd>0.079 mm</dd><p>Against the 0.10 mm limit. Stress governs this design, not stiffness.</p></div>
     </dl>
     <p>Turn the result over in 3D in the viewer at the top of the page. Further down, a slider wipes between the starting design and the chosen one on the same stress scale.</p>
-    <h2 id="why-it-matters">Why it matters</h2>
+    <h2 id="why-it-matters">Why It Matters</h2>
     <p>This is the study that shows what the rest of the site is for. A model that one person runs once and inspects by eye is useful. A model that can be run 78 times by an AI agent, with nobody watching each result, and still be trusted at the end is a different kind of tool, and it's only possible if the checks are strong enough to catch a wrong answer on their own.</p>
     <p>An optimiser is a hard test of that, because it actively hunts for weaknesses. If a coarse mesh makes a thin design look stronger than it is, the optimiser will find that design and choose it. Here it did exactly that, twice, and the checks threw out both answers. The third answer is the one on this page.</p>
-    <h2 id="the-model">The model</h2>
+    <h2 id="the-model">The Model</h2>
     <dl class="spec">
       <dt>Part</dt><dd>A machined clevis bracket: a 100 × 100 × 10 mm base, a 40 mm wide lug standing on it with a 16 mm pin hole 70 mm up, two gussets bracing the lug, and 3 mm fillets.</dd>
       <dt>Material</dt><dd>6061-T6 aluminium, linear elastic: Young's modulus 68.9 GPa, Poisson's ratio 0.33, density 2700 kg/m³, yield 276 MPa.</dd>
@@ -111,12 +111,12 @@
       <dt>Analysis</dt><dd>Linear static in CalculiX 2.22, driven by the COBYLA optimiser from SciPy.</dd>
     </dl>
     <figure class="drawing"><div class="plate"><img src="v2/dwg_bracket_opt.webp" alt="Front, side and three-quarter views of the clevis bracket with its main dimensions" loading="lazy"></div><figcaption>The chosen design, drawn from its CAD model: hidden-line views with the dimensions the optimiser set.</figcaption></figure>
-    <details class="record"><summary>The case file: recorded assumptions, limits and inputs</summary><div class="record-body"><p>This is the study's own record, written before the run and saved with it, in the shorthand of the case file.</p><p class="case"><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/cases/clevis_opt_r2.toml">cases/clevis_opt_r2.toml ↗</a></p><p>Lightest 6061-T6 machined clevis bracket (base 100 x 100 x 10 mm, lug 40 mm wide with a 16 mm pin at 70 mm, two gussets, 3 mm fillets) under a (1.5, 1.0, 4.5) kN pin load, with peak von Mises at most 100 MPa and pin deflection at most 0.10 mm; COBYLA over lug thickness, gusset thickness and gusset height, each candidate built in CadQuery, meshed in Gmsh, solved and checked in CalculiX.</p><h3>Assumptions, and how each is checked</h3><ul><li>Base bottom face fixed (bolted and dowelled to a rigid machine frame); the bottom half of the base is not assessed (the edge of a fixed face is singular, and the real joint is not modelled).</li><li>Pin load through a rigid pin tied to the hole surface; a ring of one pin diameter around the hole is not assessed (pin bearing and lug net section are sized by the standard lug method).</li><li>Linear elastic 6061-T6 (E 68.9 GPa, nu 0.33); checked: peak stress below yield.</li><li>Small deflection; checked: pin deflection / pin height below 1 %.</li><li>Stress allowable 100 MPa (fatigue-rated) and pin deflection limit 0.10 mm: synthetic.</li></ul><h3>Limits</h3><ul><li>Static load only; the fatigue rating is folded into the allowable.</li><li>No closed-form reference for the whole part: the evidence is exact equilibrium, geometry fidelity, a model-form check of the lug section and mesh convergence at the optimum.</li><li>Fixed outline and fillet radius; only three dimensions vary.</li><li>No physical test data.</li></ul><h3>Inputs</h3><div class="table-wrap"><table><thead><tr><th>Input</th><th>Value</th></tr></thead><tbody><tr><td>base_length_mm</td><td>100</td></tr><tr><td>base_width_mm</td><td>100</td></tr><tr><td>base_thickness_mm</td><td>10</td></tr><tr><td>lug_radius_mm</td><td>20</td></tr><tr><td>pin_height_mm</td><td>70</td></tr><tr><td>pin_diameter_mm</td><td>16</td></tr><tr><td>lug_thickness_mm</td><td>12</td></tr><tr><td>gusset_thickness_mm</td><td>8</td></tr><tr><td>gusset_height_mm</td><td>40</td></tr><tr><td>gusset_aspect</td><td>0.7</td></tr><tr><td>fillet_radius_mm</td><td>3</td></tr><tr><td>youngs_modulus_MPa</td><td>68900</td></tr><tr><td>poisson_ratio</td><td>0.33</td></tr><tr><td>density_t_per_mm3</td><td>2.7e-09</td></tr><tr><td>yield_strength_MPa</td><td>276</td></tr><tr><td>load_x_N</td><td>1500</td></tr><tr><td>load_y_N</td><td>1000</td></tr><tr><td>load_z_N</td><td>4500</td></tr><tr><td>element_size_mm</td><td>4</td></tr><tr><td>fillet_element_size_mm</td><td>1</td></tr></tbody></table></div></div></details>
-    <h2 id="how-it-works">How it works</h2>
+    <details class="record"><summary>The case file: recorded assumptions, limits and inputs</summary><div class="record-body"><p>This is the study's own record, written before the run and saved with it, in the shorthand of the case file.</p><p class="case"><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/cases/clevis_opt_r2.toml">cases/clevis_opt_r2.toml ↗</a></p><p>Lightest 6061-T6 machined clevis bracket (base 100 x 100 x 10 mm, lug 40 mm wide with a 16 mm pin at 70 mm, two gussets, 3 mm fillets) under a (1.5, 1.0, 4.5) kN pin load, with peak von Mises at most 100 MPa and pin deflection at most 0.10 mm; COBYLA over lug thickness, gusset thickness and gusset height, each candidate built in CadQuery, meshed in Gmsh, solved and checked in CalculiX.</p><h3>Assumptions, and How Each Is Checked</h3><ul><li>Base bottom face fixed (bolted and dowelled to a rigid machine frame); the bottom half of the base is not assessed (the edge of a fixed face is singular, and the real joint is not modelled).</li><li>Pin load through a rigid pin tied to the hole surface; a ring of one pin diameter around the hole is not assessed (pin bearing and lug net section are sized by the standard lug method).</li><li>Linear elastic 6061-T6 (E 68.9 GPa, nu 0.33); checked: peak stress below yield.</li><li>Small deflection; checked: pin deflection / pin height below 1 %.</li><li>Stress allowable 100 MPa (fatigue-rated) and pin deflection limit 0.10 mm: synthetic.</li></ul><h3>Limits</h3><ul><li>Static load only; the fatigue rating is folded into the allowable.</li><li>No closed-form reference for the whole part: the evidence is exact equilibrium, geometry fidelity, a model-form check of the lug section and mesh convergence at the optimum.</li><li>Fixed outline and fillet radius; only three dimensions vary.</li><li>No physical test data.</li></ul><h3>Inputs</h3><div class="table-wrap"><table><thead><tr><th>Input</th><th>Value</th></tr></thead><tbody><tr><td>base_length_mm</td><td>100</td></tr><tr><td>base_width_mm</td><td>100</td></tr><tr><td>base_thickness_mm</td><td>10</td></tr><tr><td>lug_radius_mm</td><td>20</td></tr><tr><td>pin_height_mm</td><td>70</td></tr><tr><td>pin_diameter_mm</td><td>16</td></tr><tr><td>lug_thickness_mm</td><td>12</td></tr><tr><td>gusset_thickness_mm</td><td>8</td></tr><tr><td>gusset_height_mm</td><td>40</td></tr><tr><td>gusset_aspect</td><td>0.7</td></tr><tr><td>fillet_radius_mm</td><td>3</td></tr><tr><td>youngs_modulus_MPa</td><td>68900</td></tr><tr><td>poisson_ratio</td><td>0.33</td></tr><tr><td>density_t_per_mm3</td><td>2.7e-09</td></tr><tr><td>yield_strength_MPa</td><td>276</td></tr><tr><td>load_x_N</td><td>1500</td></tr><tr><td>load_y_N</td><td>1000</td></tr><tr><td>load_z_N</td><td>4500</td></tr><tr><td>element_size_mm</td><td>4</td></tr><tr><td>fillet_element_size_mm</td><td>1</td></tr></tbody></table></div></div></details>
+    <h2 id="how-it-works">How It Works</h2>
     <div class="opt-run">
       <figure><div class="plate"><img src="img/anim_clevis_opt.webp" alt="Animation of the optimiser's search: each candidate's stress render, its peak stress against its mass, and the thicknesses tried" loading="lazy"></div><figcaption>The final search, one frame per candidate: its CalculiX stress, its peak stress against its mass, and the thicknesses tried. It closes in on about 370 g, but the candidates there land either side of the search limit by mesh noise, so the only one that passed was the starting design. The last frame is design D, chosen from those candidates by a fitted response surface.</figcaption></figure>
       <div class="opt-side">
-        <h3>The loop, step by step</h3>
+        <h3>The Loop, Step by Step</h3>
         <ol class="steps">
           <li><b>Propose</b><span>COBYLA, an optimiser that needs no gradients and handles limits, picks the three dimensions.</span></li>
           <li><b>Build</b><span>CadQuery draws the solid and exports a STEP file. Gmsh meshes it with quadratic tetrahedra, 4 mm overall and 1 mm on the fillets.</span></li>
@@ -142,13 +142,13 @@
       <figure><div class="plate"><img src="img/clevis_noise.png" alt="Peak stress found by CalculiX against the stress a linear fit predicts, for the last fifteen candidates and design D" loading="lazy"></div><figcaption><b>Why the optimiser stalled.</b> Near the answer, designs a tenth of a millimetre apart scatter by 1.5 % in peak stress, because a fillet peak is a maximum over mesh nodes. A straight-line fit through the last 15 candidates averages that out. Design D sits where the fit reads two standard deviations under the search limit, and its own mesh study confirms it.</figcaption></figure>
     </div>
     <figure class="section-fig"><div class="plate"><img src="v2/clevis_section.webp" alt="Design D cut through the lug's mid-plane, von Mises stress on a 0 to 60 MPa scale" loading="lazy"></div><figcaption><b>Where the stress runs: design D cut through the middle of the lug.</b> On this cut the load path shows as a band running from under the pin down to the lug's outer end, where it meets the base at the fillet that governs. The cut itself never passes 57 MPa. The 98 MPa peak sits on the lug's faces, because the sideways part of the pin load bends the lug through its thickness, and that bending is zero on the middle plane. Exact plane cut of the finest mesh; the half part encloses half the CAD volume, and the image passes the render checks.<span class="wipe-legend" aria-label="von Mises stress, MPa"><span class="wl-bar"><i style="background:#3b2f80"></i><i style="background:#466be3"></i><i style="background:#3ba0fd"></i><i style="background:#1ad2d2"></i><i style="background:#32f298"></i><i style="background:#80ff53"></i><i style="background:#bef434"></i><i style="background:#eecf3a"></i><i style="background:#fe9e2f"></i><i style="background:#f26014"></i><i style="background:#d02f05"></i><i style="background:#9b0f01"></i></span><span class="wl-ticks"><span style="left:0.000%">0</span><span style="left:33.333%">20</span><span style="left:66.667%">40 MPa</span><span style="left:91.667%">55+</span></span></span></figcaption></figure>
-    <h2 id="what-i-caught-along-the-way">What I caught along the way</h2>
+    <h2 id="what-i-caught-along-the-way">What I Caught Along the Way</h2>
     <div class="findings opt-caught">
-      <article class="finding"><span class="label">A margin sized for the wrong stress</span><h2 id="the-first-answer-failed-its-own-mesh-study">The first answer failed its own mesh study</h2><p>With a 1 % margin, the optimiser's pick read 94 MPa on its mesh. The mesh study put it at 101.7 MPa once the uncertainty was included. A peak in a fillet needs far more room than a smooth bending stress, where 0.5 % had been plenty.</p></article>
-      <article class="finding"><span class="label">A mesh study that missed the peak</span><h2 id="the-second-answer-failed-too">The second answer failed too</h2><p>Gmsh held the fillet elements at about 1.6 mm whatever the overall element size, so the "global" mesh study barely touched the peak, and the margin sized from it failed as well. The final mesh study refines the fillet itself, from 1.0 to 0.75 mm.</p></article>
-      <article class="finding"><span class="label">The same CAD, different meshes</span><h2 id="a-model-that-wasn-t-repeatable">A model that wasn't repeatable</h2><p>The same three dimensions gave 40 or 41 faces from run to run, so different meshes and different stresses: 94.0 against 94.9 MPa. CadQuery was ordering the fillet edges by memory address. They now go in a fixed order, and a test checks that two builds are byte-identical.</p></article>
+      <article class="finding"><span class="label">A margin sized for the wrong stress</span><h2 id="the-first-answer-failed-its-own-mesh-study">The First Answer Failed Its Own Mesh Study</h2><p>With a 1 % margin, the optimiser's pick read 94 MPa on its mesh. The mesh study put it at 101.7 MPa once the uncertainty was included. A peak in a fillet needs far more room than a smooth bending stress, where 0.5 % had been plenty.</p></article>
+      <article class="finding"><span class="label">A mesh study that missed the peak</span><h2 id="the-second-answer-failed-too">The Second Answer Failed Too</h2><p>Gmsh held the fillet elements at about 1.6 mm whatever the overall element size, so the "global" mesh study barely touched the peak, and the margin sized from it failed as well. The final mesh study refines the fillet itself, from 1.0 to 0.75 mm.</p></article>
+      <article class="finding"><span class="label">The same CAD, different meshes</span><h2 id="a-model-that-wasn-t-repeatable">A Model That Wasn't Repeatable</h2><p>The same three dimensions gave 40 or 41 faces from run to run, so different meshes and different stresses: 94.0 against 94.9 MPa. CadQuery was ordering the fillet edges by memory address. They now go in a fixed order, and a test checks that two builds are byte-identical.</p></article>
     </div>
-    <h2 id="how-i-checked-it">How I checked it</h2>
+    <h2 id="how-i-checked-it">How I Checked It</h2>
       <ul class="proof">
         <li>No closed form covers this shape, so every candidate is checked by what has to hold exactly. The CAD solid is valid. The meshed volume equals the CAD volume to 2 × 10⁻⁴. The base reactions balance the pin load in force and moment to 10⁻⁸, so the load acts where it should. Where the lug has a clear section, its stress is compared with beam theory. The stress stays below yield and the deflection small.</li>
         <li>Design D has its own mesh study, refining the peak itself: fillet elements of 1.0, 0.85 and 0.75 mm. The peak moves 0.99 %, less than the 1.5 % mesh noise I measured beforehand, so it counts as converged, with 0.62 % uncertainty. The requirement holds with that added: 98.9 MPa against 100.</li>
@@ -161,10 +161,10 @@
     <div class="side-card"><ul class="ev-list"><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/portfolio/12-bracket-optimisation.md">Full write-up on GitHub</a></li></ul><p class="label">Run reports, with every check and the saved inputs</p><ul class="ev-list ev-runs"><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261120-225322_bracket_opt/report.md">bracket_opt</a></li><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261120-225744_bracket_opt_confirm/report.md">bracket_opt_confirm</a></li><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261121-000013_clevis_opt/report.md">clevis_opt</a></li><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261121-002416_clevis_confirm/report.md">clevis_confirm · 00:24</a></li><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261121-004057_clevis_confirm/report.md">clevis_confirm · 00:40</a></li><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261121-004740_clevis_opt_r1/report.md">clevis_opt_r1</a></li><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261121-010500_clevis_confirm_r1/report.md">clevis_confirm_r1</a></li><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261121-091836_clevis_confirm_r1_fillet/report.md">clevis_confirm_r1_fillet</a></li><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261121-091836_clevis_opt_r2/report.md">clevis_opt_r2</a></li><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261121-111455_clevis_confirm_r2/report.md">clevis_confirm_r2</a></li><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261121-115130_clevis_confirm_r2b/report.md">clevis_confirm_r2b</a></li></ul></div>
       </article>
       <aside class="study-side" aria-label="Summary of this study">
-        <div class="side-card"><h2>At a glance</h2><dl><div><dt>Study</dt><dd>12</dd></div><div><dt>Discipline</dt><dd>Structures and vibration</dd></div><div><dt>Tools</dt><dd>CadQuery · Gmsh · CalculiX · SciPy</dd></div><div><dt>Verdict</dt><dd><span class="v v-pass">Passes</span></dd></div></dl></div><div class="side-card"><h2>Requirements</h2><ul class="side-reqs"><li><span class="r-what">Peak stress at design D, 372 g</span><span class="r-num">≤ 100 MPa · 98.3 MPa; 98.9 MPa with the mesh uncertainty added</span><span class="chip pass">Met</span></li><li><span class="r-what">Pin deflection at design D</span><span class="r-num">≤ 0.10 mm · 0.079 mm</span><span class="chip pass">Met</span></li></ul></div><div class="side-card side-toc"><h2>On this page</h2><ul class="toc"><li><a href="#the-question">The question</a></li><li><a href="#the-answer">The answer</a></li><li><a href="#why-it-matters">Why it matters</a></li><li><a href="#the-model">The model</a></li><li><a href="#how-it-works">How it works</a></li><li><a href="#what-i-caught-along-the-way">What I caught along the way</a></li><li><a href="#the-first-answer-failed-its-own-mesh-study">The first answer failed its own mesh study</a></li><li><a href="#the-second-answer-failed-too">The second answer failed too</a></li><li><a href="#a-model-that-wasn-t-repeatable">A model that wasn&#x27;t repeatable</a></li><li><a href="#how-i-checked-it">How I checked it</a></li><li><a href="#limits">Limits</a></li><li><a href="#evidence">Evidence</a></li></ul></div>
+        <div class="side-card"><h2>At a Glance</h2><dl><div><dt>Study</dt><dd>12</dd></div><div><dt>Discipline</dt><dd>Structures and vibration</dd></div><div><dt>Tools</dt><dd>CadQuery · Gmsh · CalculiX · SciPy</dd></div><div><dt>Verdict</dt><dd><span class="v v-pass">Passes</span></dd></div></dl></div><div class="side-card"><h2>Requirements</h2><ul class="side-reqs"><li><span class="r-what">Peak stress at design D, 372 g</span><span class="r-num">≤ 100 MPa · 98.3 MPa; 98.9 MPa with the mesh uncertainty added</span><span class="chip pass">Met</span></li><li><span class="r-what">Pin deflection at design D</span><span class="r-num">≤ 0.10 mm · 0.079 mm</span><span class="chip pass">Met</span></li></ul></div><div class="side-card side-toc"><h2>On This Page</h2><ul class="toc"><li><a href="#the-question">The question</a></li><li><a href="#the-answer">The answer</a></li><li><a href="#why-it-matters">Why it matters</a></li><li><a href="#the-model">The model</a></li><li><a href="#how-it-works">How it works</a></li><li><a href="#what-i-caught-along-the-way">What I caught along the way</a></li><li><a href="#the-first-answer-failed-its-own-mesh-study">The first answer failed its own mesh study</a></li><li><a href="#the-second-answer-failed-too">The second answer failed too</a></li><li><a href="#a-model-that-wasn-t-repeatable">A model that wasn&#x27;t repeatable</a></li><li><a href="#how-i-checked-it">How I checked it</a></li><li><a href="#limits">Limits</a></li><li><a href="#evidence">Evidence</a></li></ul></div>
       </aside>
     </div>
-    <nav class="pager" aria-label="More studies"><a class="next" href="pressure-vessel-nozzle.html"><small>Next study →</small><b>Pressure vessel nozzle, design code check</b></a></nav>
+    <nav class="pager" aria-label="More studies"><a class="next" href="pressure-vessel-nozzle.html"><small>Next study →</small><b>Pressure Vessel Nozzle, Design Code Check</b></a></nav>
   </div>
 
 </main>
@@ -174,7 +174,7 @@
     <section class="contact" id="contact" aria-labelledby="contact-title">
       <div class="band-head">
         <p class="eyebrow">Contact</p>
-        <h2 id="contact-title">Get in touch</h2>
+        <h2 id="contact-title">Get in Touch</h2>
         <p class="contact-name"><b>Justin Smith</b>, mechanical engineer (MS), with a background in automotive.</p>
         <p>If something here is close to what you need, or you have a model that needs building or checking, send me a note and tell me about it. I'm available for remote contract work.</p>
       </div>

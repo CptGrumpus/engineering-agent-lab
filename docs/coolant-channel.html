@@ -3,11 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Coolant channel pressure budget · Justin Smith</title>
+<title>Coolant Channel Pressure Budget · Justin Smith</title>
 <meta name="description" content="Fails. It needs 33.4 Pa against a 30 Pa budget, and no gap size fixes it.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://cptgrumpus.github.io/engineering-agent-lab/coolant-channel.html">
-<meta property="og:title" content="Coolant channel pressure budget">
+<meta property="og:title" content="Coolant Channel Pressure Budget">
 <meta property="og:description" content="Fails. It needs 33.4 Pa against a 30 Pa budget, and no gap size fixes it.">
 <meta property="og:image" content="https://cptgrumpus.github.io/engineering-agent-lab/v2/og_coolant-channel.png">
 <meta property="og:image:width" content="1200">
@@ -30,9 +30,9 @@
     <div class="navgroup">
       <div class="topnav">
         <a href="index.html#work" aria-current="page">Studies</a>
-        <a href="how-i-work.html">How I work</a>
+        <a href="how-i-work.html">How I Work</a>
         <a href="grading.html">Grading</a>
-        <a href="in-progress.html">In progress</a>
+        <a href="in-progress.html">In Progress</a>
         <a href="requirements.html">Requirements</a>
       </div>
       <a class="nav-contact" href="#contact">Contact</a>
@@ -40,9 +40,9 @@
         <summary>Menu</summary>
         <div class="menu-panel">
         <a href="index.html#work" aria-current="page">Studies</a>
-        <a href="how-i-work.html">How I work</a>
+        <a href="how-i-work.html">How I Work</a>
         <a href="grading.html">Grading</a>
-        <a href="in-progress.html">In progress</a>
+        <a href="in-progress.html">In Progress</a>
         <a href="requirements.html">Requirements</a>
           <a href="#contact">Contact</a>
         </div>
@@ -56,7 +56,7 @@
     <nav class="crumbs" aria-label="Breadcrumb"><a href="index.html#work">All studies</a><span>/</span><span>Thermal and fluids</span></nav>
     <header class="study-hero">
       <p class="eyebrow">Study 5 · OpenFOAM</p>
-      <h1>Coolant channel pressure budget</h1>
+      <h1>Coolant Channel Pressure Budget</h1>
       <span class="v v-fail">Fails</span>
       <p class="study-lede">Fails. It needs 33.4 Pa against a 30 Pa budget, and no gap size fixes it.</p>
     </header>
@@ -86,19 +86,19 @@
     <div class="study-layout">
       <article class="study-main">
 
-    <h2 id="the-question">The question</h2>
+    <h2 id="the-question">The Question</h2>
     <p>A cold-plate passage is a 1 mm gap between two plates, 20 mm long, with water flowing at about 0.1 m/s. It gets a 30 Pa share of the pump's pressure budget, and it needs at least 0.5 Pa of shear on the walls to keep fouling down. Does it meet both if the gap can vary by ±0.05 mm and the coolant can be anywhere from 15 to 40 °C?</p>
-    <h2 id="the-answer">The answer</h2>
+    <h2 id="the-answer">The Answer</h2>
     <div class="answer">
       <div class="chips"><span class="chip fail">Over budget at nominal</span><span class="chip fail">No gap meets both requirements</span><span class="chip pass">Mesh uncertainty 0.04 %</span></div>
       <p><strong>No.</strong> At nominal conditions it needs 33.4 Pa, 11 % over budget. Across the tolerance range it needs anywhere from 28 to 42 Pa, and with warm coolant the wall shear drops to 0.43 Pa.</p>
       <p>The two requirements pull against each other. To stay inside the pressure budget with cold coolant, the gap has to be at least 1.078 mm. To keep enough wall shear with warm coolant, it can't be more than 0.885 mm. No gap does both. I predicted those two limits before running them, and the confirmation runs came back at 30.02 Pa and 0.500 Pa.</p>
       <p>So the fix has to come from the design side. The options are a narrower coolant temperature range, a bigger pressure budget, a different flow split between channels, or a second look at the shear guideline.</p>
     </div>
-    <h2 id="why-it-matters">Why it matters</h2>
+    <h2 id="why-it-matters">Why It Matters</h2>
     <p>A pump can only supply so much pressure, and every passage in a cooling circuit gets a share of it. A passage that needs more than its share starves the others of flow. At the same time the water has to move fast enough along the walls to stop deposits building up, and that sets a minimum wall shear. A narrow gap helps the shear and hurts the pressure; a wide gap does the opposite.</p>
     <p>The useful result here is a failure. Showing that no gap size satisfies both requirements moves the problem from "tune the gap" to "change the requirements or the layout", which is a much cheaper thing to learn from a model than from a prototype.</p>
-    <h2 id="the-model">The model</h2>
+    <h2 id="the-model">The Model</h2>
     <dl class="spec">
       <dt>Geometry</dt><dd>A 3 mm high supply header, a smooth 3 mm contraction, then the channel: a 1 mm gap, 20 mm long. Modelled in 2D, as a slice through a wide passage.</dd>
       <dt>Fluid</dt><dd>Water at 20 °C: density 998.2 kg/m³, viscosity 1.0016 mPa·s. Properties at 15 and 40 °C for the tolerance cases, from the IAPWS tables.</dd>
@@ -109,8 +109,8 @@
       <dt>Tolerance cases</dt><dd>The four corners of gap (0.95 and 1.05 mm) and coolant temperature (15 and 40 °C), plus nominal.</dd>
     </dl>
     <figure class="drawing"><div class="plate"><img src="v2/dwg_cfd.webp" alt="The flow domain: a supply header narrowing smoothly into a long thin channel" loading="lazy"></div><figcaption>The flow domain: the supply header, the smooth contraction and the 1 mm channel. Heights are drawn larger so the channel can be seen.</figcaption></figure>
-    <details class="record"><summary>The case file: recorded assumptions, limits and inputs</summary><div class="record-body"><p>This is the study's own record, written before the run and saved with it, in the shorthand of the case file.</p><p class="case"><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/cases/channel_header_tolerance.toml">cases/channel_header_tolerance.toml ↗</a></p><p>Header-fed 1 mm parallel-plate channel (as channel_header_mesh, 80 cells across the gap) evaluated at the corners of the gap tolerance (0.95-1.05 mm) and coolant temperature range (15-40 C) at a fixed flow rate of 1.0e-4 m^2/s per unit width. Finds whether the pressure budget and minimum wall shear hold across the tolerance band.</p><h3>Assumptions, and how each is checked</h3><ul><li>As channel_header_mesh, except the inputs varied below.</li><li>Flow rate per unit width is fixed by the pump: mean velocity = 1.0e-4 / gap (m/s, gap in m).</li><li>Water properties from IAPWS tables: 15 C (999.10 kg/m^3, 1.1375 mPa s), 20 C (998.21, 1.0016), 40 C (992.22, 0.6527).</li><li>Gap is uniform along the channel within each scenario (no taper or waviness).</li></ul><h3>Limits</h3><ul><li>Synthetic tolerance band and temperature range; not from a drawing or a thermal analysis.</li><li>Corners only: no statistical (e.g. Monte Carlo) combination of tolerances.</li><li>Numerical uncertainty is taken from channel_header_mesh (same mesh resolution).</li><li>No physical test data.</li></ul><h3>Inputs</h3><div class="table-wrap"><table><thead><tr><th>Input</th><th>Value</th></tr></thead><tbody><tr><td>gap_mm</td><td>1</td></tr><tr><td>length_mm</td><td>20</td></tr><tr><td>mean_velocity_m_per_s</td><td>0.1</td></tr><tr><td>density_kg_per_m3</td><td>998.21</td></tr><tr><td>dynamic_viscosity_Pa_s</td><td>0.0010016</td></tr><tr><td>cells_across_gap</td><td>80</td></tr><tr><td>cell_aspect_ratio</td><td>2</td></tr><tr><td>window_start_mm</td><td>10</td></tr><tr><td>window_end_mm</td><td>18</td></tr><tr><td>supply_height_mm</td><td>3</td></tr><tr><td>supply_length_mm</td><td>3</td></tr><tr><td>contraction_length_mm</td><td>3</td></tr></tbody></table></div><p class="case"><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/cases/duct_side_walls.toml">cases/duct_side_walls.toml ↗</a></p><p>Fully developed laminar water flow (20 C, 0.1 m/s mean) in a 1 mm x 20 mm rectangular duct, i.e. the coolant channel with its side walls. 3D OpenFOAM on a periodic quarter cross-section; mesh refined from 10 to 80 cells across the gap (ratio 2). Quantifies the error of the 2D parallel-plate assumption.</p><h3>Assumptions, and how each is checked</h3><ul><li>Channel width 20 mm (synthetic; the real width is not specified). The side-wall effect scales roughly with gap / width.</li><li>Fully developed flow (periodic in x): entrance effects are covered by the 2D header model.</li><li>Incompressible, isothermal, Newtonian water at 20 C (IAPWS: rho = 998.21 kg/m^3, mu = 1.0016 mPa s); laminar.</li><li>Symmetric about mid-gap and mid-width (quarter section modelled).</li></ul><h3>Limits</h3><ul><li>One width only; other widths follow from the verified exact series solution.</li><li>Corner regions of a real channel (fillets, side-wall roughness) are not modelled.</li><li>No physical test data.</li></ul><h3>Inputs</h3><div class="table-wrap"><table><thead><tr><th>Input</th><th>Value</th></tr></thead><tbody><tr><td>gap_mm</td><td>1</td></tr><tr><td>width_mm</td><td>20</td></tr><tr><td>mean_velocity_m_per_s</td><td>0.1</td></tr><tr><td>density_kg_per_m3</td><td>998.21</td></tr><tr><td>dynamic_viscosity_Pa_s</td><td>0.0010016</td></tr><tr><td>cells_across_gap</td><td>20</td></tr><tr><td>width_cells_per_gap_cell</td><td>2</td></tr><tr><td>side_wall_grading</td><td>10</td></tr></tbody></table></div></div></details>
-    <h2 id="how-it-works">How it works</h2>
+    <details class="record"><summary>The case file: recorded assumptions, limits and inputs</summary><div class="record-body"><p>This is the study's own record, written before the run and saved with it, in the shorthand of the case file.</p><p class="case"><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/cases/channel_header_tolerance.toml">cases/channel_header_tolerance.toml ↗</a></p><p>Header-fed 1 mm parallel-plate channel (as channel_header_mesh, 80 cells across the gap) evaluated at the corners of the gap tolerance (0.95-1.05 mm) and coolant temperature range (15-40 C) at a fixed flow rate of 1.0e-4 m^2/s per unit width. Finds whether the pressure budget and minimum wall shear hold across the tolerance band.</p><h3>Assumptions, and How Each Is Checked</h3><ul><li>As channel_header_mesh, except the inputs varied below.</li><li>Flow rate per unit width is fixed by the pump: mean velocity = 1.0e-4 / gap (m/s, gap in m).</li><li>Water properties from IAPWS tables: 15 C (999.10 kg/m^3, 1.1375 mPa s), 20 C (998.21, 1.0016), 40 C (992.22, 0.6527).</li><li>Gap is uniform along the channel within each scenario (no taper or waviness).</li></ul><h3>Limits</h3><ul><li>Synthetic tolerance band and temperature range; not from a drawing or a thermal analysis.</li><li>Corners only: no statistical (e.g. Monte Carlo) combination of tolerances.</li><li>Numerical uncertainty is taken from channel_header_mesh (same mesh resolution).</li><li>No physical test data.</li></ul><h3>Inputs</h3><div class="table-wrap"><table><thead><tr><th>Input</th><th>Value</th></tr></thead><tbody><tr><td>gap_mm</td><td>1</td></tr><tr><td>length_mm</td><td>20</td></tr><tr><td>mean_velocity_m_per_s</td><td>0.1</td></tr><tr><td>density_kg_per_m3</td><td>998.21</td></tr><tr><td>dynamic_viscosity_Pa_s</td><td>0.0010016</td></tr><tr><td>cells_across_gap</td><td>80</td></tr><tr><td>cell_aspect_ratio</td><td>2</td></tr><tr><td>window_start_mm</td><td>10</td></tr><tr><td>window_end_mm</td><td>18</td></tr><tr><td>supply_height_mm</td><td>3</td></tr><tr><td>supply_length_mm</td><td>3</td></tr><tr><td>contraction_length_mm</td><td>3</td></tr></tbody></table></div><p class="case"><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/cases/duct_side_walls.toml">cases/duct_side_walls.toml ↗</a></p><p>Fully developed laminar water flow (20 C, 0.1 m/s mean) in a 1 mm x 20 mm rectangular duct, i.e. the coolant channel with its side walls. 3D OpenFOAM on a periodic quarter cross-section; mesh refined from 10 to 80 cells across the gap (ratio 2). Quantifies the error of the 2D parallel-plate assumption.</p><h3>Assumptions, and How Each Is Checked</h3><ul><li>Channel width 20 mm (synthetic; the real width is not specified). The side-wall effect scales roughly with gap / width.</li><li>Fully developed flow (periodic in x): entrance effects are covered by the 2D header model.</li><li>Incompressible, isothermal, Newtonian water at 20 C (IAPWS: rho = 998.21 kg/m^3, mu = 1.0016 mPa s); laminar.</li><li>Symmetric about mid-gap and mid-width (quarter section modelled).</li></ul><h3>Limits</h3><ul><li>One width only; other widths follow from the verified exact series solution.</li><li>Corner regions of a real channel (fillets, side-wall roughness) are not modelled.</li><li>No physical test data.</li></ul><h3>Inputs</h3><div class="table-wrap"><table><thead><tr><th>Input</th><th>Value</th></tr></thead><tbody><tr><td>gap_mm</td><td>1</td></tr><tr><td>width_mm</td><td>20</td></tr><tr><td>mean_velocity_m_per_s</td><td>0.1</td></tr><tr><td>density_kg_per_m3</td><td>998.21</td></tr><tr><td>dynamic_viscosity_Pa_s</td><td>0.0010016</td></tr><tr><td>cells_across_gap</td><td>20</td></tr><tr><td>width_cells_per_gap_cell</td><td>2</td></tr><tr><td>side_wall_grading</td><td>10</td></tr></tbody></table></div></div></details>
+    <h2 id="how-it-works">How It Works</h2>
     <p>The model includes the supply header and a smooth contraction into the channel, not just the channel. That matters: the flow speeds up as it enters, and the pressure that takes is part of the budget. I count the flow's kinetic energy at the exit as lost, which is the usual cautious assumption. That exit loss is 7.7 Pa of the 33.4.</p>
     <figure class="half">
       <div class="plate"><img src="v2/fig_cfd_field.svg" alt="Water velocity through the supply header, contraction and channel: slow in the header, fastest along the middle of the channel" loading="lazy"></div>
@@ -120,7 +120,7 @@
       <div class="plate"><img src="v2/fig_cfd_response.svg" alt="Velocity profile, pressure and centre-line velocity from the model, each lying on the exact solution" loading="lazy"></div>
       <figcaption>On the left, the velocity across the gap sits on the exact solution. On the right, the pressure drops through the contraction and then follows the exact slope, and the flow settles within the predicted entrance length.</figcaption>
     </figure>
-    <h2 id="how-i-checked-it">How I checked it</h2>
+    <h2 id="how-i-checked-it">How I Checked It</h2>
     <ul class="proof">
       <li><strong>Against the exact solution.</strong> Once the flow has settled, the velocity profile, pressure gradient and wall shear match the textbook solution for flow between parallel plates within 0.02 %.</li>
       <li><strong>Conservation.</strong> Mass is conserved to about one part in a hundred million, and wall friction balances the pressure force within a few parts in a hundred thousand.</li>
@@ -128,7 +128,7 @@
       <li><strong>A hand calculation.</strong> Lubrication theory for the header and the Shah and London correlation for the developing flow in the channel agree with the model within 0.3 % in every case.</li>
       <li><strong>The 2D assumption.</strong> A separate 3D model includes the side walls of a 20 mm wide channel. The side walls add 3.2 % friction, and the exact rectangular-duct solution says 3.25 %. That's about 0.8 Pa more, which only makes it a clearer fail.</li>
     </ul>
-    <h3>Where the uncertainty comes from</h3>
+    <h3>Where the Uncertainty Comes From</h3>
     <div class="table-wrap">
       <table>
         <thead><tr><th>Source of uncertainty</th><th>How big it is</th></tr></thead>
@@ -149,14 +149,14 @@
       <figcaption>The 3D side-wall check. Away from the side walls the flow is the same as between two wide plates; next to each wall it slows, which is where the extra 3.2 % of friction comes from.</figcaption>
     </figure>
     <div class="caught">
-      <h2 id="what-i-caught-along-the-way">What I caught along the way</h2>
+      <h2 id="what-i-caught-along-the-way">What I Caught Along the Way</h2>
       <ul>
         <li><strong>A simplified inlet that flipped the answer.</strong> My first model pushed a perfectly uniform flow straight into the channel, which is a common shortcut, and it said the channel passed at 28.6 Pa. But the pressure kept creeping up as I refined the mesh and never settled, which usually means there's a sharp corner the solver can't resolve. The mesh check failed, so that answer was never reported as verified. Adding the supply header fixed it, and once I counted the exit loss the answer went from a pass to a fail.</li>
         <li><strong>A case that wasn't settled.</strong> With warm water and the widest gap, the flow was still developing slightly where I take the measurements. That case is marked unverified, and the conclusion stands on the other four.</li>
         <li><strong>An average that hid a local error.</strong> My first 3D mesh was coarsest right where it needed to be finest, next to the side walls. The overall friction still looked fine, but comparing the whole velocity field point by point failed every time, always next to the wall. Averages can hide local errors, so I compare the full field too.</li>
       </ul>
     </div>
-    <h2 id="limits-and-what-i-d-do-next">Limits, and what I'd do next</h2>
+    <h2 id="limits-and-what-i-d-do-next">Limits, and What I'd Do Next</h2>
     <ul>
       <li>The flow is laminar and at one temperature throughout. Heat transfer isn't modelled here; studies 11 and 15 add it.</li>
       <li>The 20 mm channel width used for the 3D check is assumed. The side-wall effect grows roughly with gap over width.</li>
@@ -167,10 +167,10 @@
     <div class="side-card"><ul class="ev-list"><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/portfolio/05-coolant-channel.md">Full write-up on GitHub</a></li><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/portfolio/deliverables/coolant-channel-memo.md">Sample client memo from this study</a></li></ul><p class="label">Run reports, with every check and the saved inputs</p><ul class="ev-list ev-runs"><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261119-191916_channel_mesh/report.md">channel_mesh</a></li><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261119-200042_channel_header_mesh/report.md">channel_header_mesh</a></li><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261119-200202_channel_header_tolerance/report.md">channel_header_tolerance</a></li><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261119-201615_channel_header_gap_limits/report.md">channel_header_gap_limits</a></li><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261119-202956_duct_side_walls/report.md">duct_side_walls · 20:29</a></li><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261119-204111_duct_side_walls/report.md">duct_side_walls · 20:41</a></li></ul></div>
       </article>
       <aside class="study-side" aria-label="Summary of this study">
-        <div class="side-card"><h2>At a glance</h2><dl><div><dt>Study</dt><dd>05</dd></div><div><dt>Discipline</dt><dd>Thermal and fluids</dd></div><div><dt>Tools</dt><dd>OpenFOAM</dd></div><div><dt>Verdict</dt><dd><span class="v v-fail">Fails</span></dd></div></dl></div><div class="side-card"><h2>Requirements</h2><ul class="side-reqs"><li><span class="r-what">Supply pressure</span><span class="r-num">≤ 30 Pa · 33.4 Pa nominal, 28–42 Pa over tolerances</span><span class="chip fail">Not met</span></li><li><span class="r-what">Wall shear stress</span><span class="r-num">≥ 0.5 Pa · 0.43 Pa with warm coolant</span><span class="chip fail">Not met</span></li><li><span class="r-what">2D assumption: side-wall effect</span><span class="r-num">≤ 5 % · 3.2 %</span><span class="chip pass">Met</span></li></ul></div><div class="side-card side-toc"><h2>On this page</h2><ul class="toc"><li><a href="#the-question">The question</a></li><li><a href="#the-answer">The answer</a></li><li><a href="#why-it-matters">Why it matters</a></li><li><a href="#the-model">The model</a></li><li><a href="#how-it-works">How it works</a></li><li><a href="#how-i-checked-it">How I checked it</a></li><li><a href="#what-i-caught-along-the-way">What I caught along the way</a></li><li><a href="#limits-and-what-i-d-do-next">Limits, and what I&#x27;d do next</a></li><li><a href="#evidence">Evidence</a></li></ul></div>
+        <div class="side-card"><h2>At a Glance</h2><dl><div><dt>Study</dt><dd>05</dd></div><div><dt>Discipline</dt><dd>Thermal and fluids</dd></div><div><dt>Tools</dt><dd>OpenFOAM</dd></div><div><dt>Verdict</dt><dd><span class="v v-fail">Fails</span></dd></div></dl></div><div class="side-card"><h2>Requirements</h2><ul class="side-reqs"><li><span class="r-what">Supply pressure</span><span class="r-num">≤ 30 Pa · 33.4 Pa nominal, 28–42 Pa over tolerances</span><span class="chip fail">Not met</span></li><li><span class="r-what">Wall shear stress</span><span class="r-num">≥ 0.5 Pa · 0.43 Pa with warm coolant</span><span class="chip fail">Not met</span></li><li><span class="r-what">2D assumption: side-wall effect</span><span class="r-num">≤ 5 % · 3.2 %</span><span class="chip pass">Met</span></li></ul></div><div class="side-card side-toc"><h2>On This Page</h2><ul class="toc"><li><a href="#the-question">The question</a></li><li><a href="#the-answer">The answer</a></li><li><a href="#why-it-matters">Why it matters</a></li><li><a href="#the-model">The model</a></li><li><a href="#how-it-works">How it works</a></li><li><a href="#how-i-checked-it">How I checked it</a></li><li><a href="#what-i-caught-along-the-way">What I caught along the way</a></li><li><a href="#limits-and-what-i-d-do-next">Limits, and what I&#x27;d do next</a></li><li><a href="#evidence">Evidence</a></li></ul></div>
       </aside>
     </div>
-    <nav class="pager" aria-label="More studies"><a class="prev" href="turbulent-pipe-friction.html"><small>← Previous study</small><b>Turbulent pipe friction, against measured data</b></a><a class="next" href="heat-sink-fin.html"><small>Next study →</small><b>Heat-sink fin temperature</b></a></nav>
+    <nav class="pager" aria-label="More studies"><a class="prev" href="turbulent-pipe-friction.html"><small>← Previous study</small><b>Turbulent Pipe Friction, Against Measured Data</b></a><a class="next" href="heat-sink-fin.html"><small>Next study →</small><b>Heat-Sink Fin Temperature</b></a></nav>
   </div>
 
 </main>
@@ -180,7 +180,7 @@
     <section class="contact" id="contact" aria-labelledby="contact-title">
       <div class="band-head">
         <p class="eyebrow">Contact</p>
-        <h2 id="contact-title">Get in touch</h2>
+        <h2 id="contact-title">Get in Touch</h2>
         <p class="contact-name"><b>Justin Smith</b>, mechanical engineer (MS), with a background in automotive.</p>
         <p>If something here is close to what you need, or you have a model that needs building or checking, send me a note and tell me about it. I'm available for remote contract work.</p>
       </div>

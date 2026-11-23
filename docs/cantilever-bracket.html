@@ -3,11 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Cantilever bracket: stress check, then optimised · Justin Smith</title>
+<title>Cantilever Bracket: Stress Check, Then Optimised · Justin Smith</title>
 <meta name="description" content="First the straight steel bar: 0.953 mm and 150 MPa, inside its 213 MPa limit. Then a 100 MPa fatigue limit rules that bar out, and the optimiser tapers it from 26.0 to 8.7 mm: 546 g, 30 % under the lightest straight bar that passes, verified against beam theory to 0.13 %.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://cptgrumpus.github.io/engineering-agent-lab/cantilever-bracket.html">
-<meta property="og:title" content="Cantilever bracket: stress check, then optimised">
+<meta property="og:title" content="Cantilever Bracket: Stress Check, Then Optimised">
 <meta property="og:description" content="First the straight steel bar: 0.953 mm and 150 MPa, inside its 213 MPa limit. Then a 100 MPa fatigue limit rules that bar out, and the optimiser tapers it from 26.0 to 8.7 mm: 546 g, 30 % under the lightest straight bar that passes, verified against beam theory to 0.13 %.">
 <meta property="og:image" content="https://cptgrumpus.github.io/engineering-agent-lab/v2/og_cantilever-bracket.png">
 <meta property="og:image:width" content="1200">
@@ -30,9 +30,9 @@
     <div class="navgroup">
       <div class="topnav">
         <a href="index.html#work" aria-current="page">Studies</a>
-        <a href="how-i-work.html">How I work</a>
+        <a href="how-i-work.html">How I Work</a>
         <a href="grading.html">Grading</a>
-        <a href="in-progress.html">In progress</a>
+        <a href="in-progress.html">In Progress</a>
         <a href="requirements.html">Requirements</a>
       </div>
       <a class="nav-contact" href="#contact">Contact</a>
@@ -40,9 +40,9 @@
         <summary>Menu</summary>
         <div class="menu-panel">
         <a href="index.html#work" aria-current="page">Studies</a>
-        <a href="how-i-work.html">How I work</a>
+        <a href="how-i-work.html">How I Work</a>
         <a href="grading.html">Grading</a>
-        <a href="in-progress.html">In progress</a>
+        <a href="in-progress.html">In Progress</a>
         <a href="requirements.html">Requirements</a>
           <a href="#contact">Contact</a>
         </div>
@@ -56,7 +56,7 @@
     <nav class="crumbs" aria-label="Breadcrumb"><a href="index.html#work">All studies</a><span>/</span><span>Structures and vibration</span></nav>
     <header class="study-hero">
       <p class="eyebrow">Studies 1 and 1b · FreeCAD, CadQuery, Gmsh, CalculiX and SciPy</p>
-      <h1>Cantilever bracket: stress check, then optimised</h1>
+      <h1>Cantilever Bracket: Stress Check, Then Optimised</h1>
       <span class="v v-pass">Passes</span>
       <p class="study-lede">First the straight steel bar: 0.953 mm and 150 MPa, inside its 213 MPa limit. Then a 100 MPa fatigue limit rules that bar out, and the optimiser tapers it from 26.0 to 8.7 mm: 546 g, 30 % under the lightest straight bar that passes, verified against beam theory to 0.13 %.</p>
     </header>
@@ -86,18 +86,18 @@
     <div class="study-layout">
       <article class="study-main">
       <section class="part" id="fea" data-part="fea">
-        <div class="part-head"><span class="label">Study 1 · FreeCAD, Gmsh and CalculiX</span><h2>Cantilever bracket, 3D finite elements</h2></div>
-    <h3 id="fea-the-question">The question</h3>
+        <div class="part-head"><span class="label">Study 1 · FreeCAD, Gmsh and CalculiX</span><h2>Cantilever Bracket, 3D Finite Elements</h2></div>
+    <h3 id="fea-the-question">The Question</h3>
     <p>A steel bracket, 200 mm long and 20 × 20 mm in section, is clamped at one end and takes a 1 kN load at the tip. Does it stay under 1.0 mm of deflection and 213 MPa of stress, and how far can I trust the model?</p>
-    <h3 id="fea-the-answer">The answer</h3>
+    <h3 id="fea-the-answer">The Answer</h3>
     <div class="answer">
       <div class="chips"><span class="chip pass">Deflection 0.953 mm</span><span class="chip pass">Root stress 150 MPa</span><span class="chip pass">Mesh uncertainty 0.02 %</span></div>
       <p><strong>Yes, with room to spare.</strong> The tip moves 0.953 mm against a 1.0 mm limit, and the bending stress at the root is 150 MPa against 213 MPa. The mesh uncertainty is about 0.02 %, so the mesh isn't what decides either number.</p>
     </div>
-    <h3 id="fea-why-it-matters">Why it matters</h3>
+    <h3 id="fea-why-it-matters">Why It Matters</h3>
     <p>A cantilever is about the simplest structural check there is, and that's the point of starting here. Beam theory gives the answer by hand, so any mistake in the chain from geometry to mesh to solver shows up straight away.</p>
     <p>It also contains the most common trap in stress analysis. Where the bar meets its support there's a perfectly sharp corner, and the stress a model computes there keeps rising as the mesh gets finer. It never settles on a value. A report that quotes "the maximum stress in the model" is quoting a number that depends on how fine the mesh happened to be. Knowing which numbers from a model can be held against a requirement, and which can't, is what this study is about.</p>
-    <h3 id="fea-the-model">The model</h3>
+    <h3 id="fea-the-model">The Model</h3>
     <dl class="spec">
       <dt>Part</dt><dd>A straight steel bar, 200 mm long with a 20 × 20 mm section.</dd>
       <dt>Material</dt><dd>Steel, linear elastic: Young's modulus 210 GPa, Poisson's ratio 0.3. The 213 MPa stress limit is the 355 MPa yield strength divided by 1.67.</dd>
@@ -108,8 +108,8 @@
       <dt>What's reported</dt><dd>The tip deflection, and the bending stress on the top face extrapolated to the root from the smooth middle of the span.</dd>
     </dl>
     <figure class="drawing"><div class="plate"><img src="v2/dwg_fea.webp" alt="Side view of the bar with its fixed root and tip load, and its square section" loading="lazy"></div><figcaption>The bar as modelled: fixed at the root, 1 kN at the tip.</figcaption></figure>
-    <details class="record"><summary>The case file: recorded assumptions, limits and inputs</summary><div class="record-body"><p>This is the study's own record, written before the run and saved with it, in the shorthand of the case file.</p><p class="case"><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/cases/cantilever_tet10.toml">cases/cantilever_tet10.toml ↗</a></p><p>Steel cantilever, 200 x 20 x 20 mm, clamped at x = 0, 1000 N downward tip load distributed over the free end face. Mesh refinement (characteristic length 8 -&gt; 1.95 mm, ratio 1.6) with quadratic (10-node) tetrahedra; checks tip stiffness and root bending stress requirements.</p><h4>Assumptions, and how each is checked</h4><ul><li>Linear elastic, isotropic, homogeneous steel (E = 210 GPa, nu = 0.3); checked against yield.</li><li>Small deflections and strains (geometrically linear); checked: tip deflection / L.</li><li>Ideal clamp: all displacements fixed on the x = 0 face (stiffer than a real bolted joint).</li><li>Tip load applied as a uniform traction over the x = L face.</li><li>Root bending stress is evaluated by extrapolating the top-fibre stress from 0.25L-0.75L to x = 0, because the clamp corners are stress singularities (peak FE stress there grows with mesh refinement).</li></ul><h4>Limits</h4><ul><li>Synthetic geometry and load; not a specific part.</li><li>Beam theory is an approximate reference for a 3D clamped solid (L/h = 10): agreement within ~1 % is expected, not exact.</li><li>The max von Mises value is reported for information only; it sits at a singular clamp corner and is mesh-dependent.</li><li>No physical test data.</li></ul><h4>Inputs</h4><div class="table-wrap"><table><thead><tr><th>Input</th><th>Value</th></tr></thead><tbody><tr><td>length_mm</td><td>200</td></tr><tr><td>width_mm</td><td>20</td></tr><tr><td>height_mm</td><td>20</td></tr><tr><td>youngs_modulus_MPa</td><td>210000</td></tr><tr><td>poisson_ratio</td><td>0.3</td></tr><tr><td>yield_strength_MPa</td><td>355</td></tr><tr><td>tip_load_N</td><td>1000</td></tr><tr><td>mesh_size_mm</td><td>5</td></tr><tr><td>element_order</td><td>2nd</td></tr></tbody></table></div></div></details>
-    <h3 id="fea-how-it-works">How it works</h3>
+    <details class="record"><summary>The case file: recorded assumptions, limits and inputs</summary><div class="record-body"><p>This is the study's own record, written before the run and saved with it, in the shorthand of the case file.</p><p class="case"><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/cases/cantilever_tet10.toml">cases/cantilever_tet10.toml ↗</a></p><p>Steel cantilever, 200 x 20 x 20 mm, clamped at x = 0, 1000 N downward tip load distributed over the free end face. Mesh refinement (characteristic length 8 -&gt; 1.95 mm, ratio 1.6) with quadratic (10-node) tetrahedra; checks tip stiffness and root bending stress requirements.</p><h4>Assumptions, and How Each Is Checked</h4><ul><li>Linear elastic, isotropic, homogeneous steel (E = 210 GPa, nu = 0.3); checked against yield.</li><li>Small deflections and strains (geometrically linear); checked: tip deflection / L.</li><li>Ideal clamp: all displacements fixed on the x = 0 face (stiffer than a real bolted joint).</li><li>Tip load applied as a uniform traction over the x = L face.</li><li>Root bending stress is evaluated by extrapolating the top-fibre stress from 0.25L-0.75L to x = 0, because the clamp corners are stress singularities (peak FE stress there grows with mesh refinement).</li></ul><h4>Limits</h4><ul><li>Synthetic geometry and load; not a specific part.</li><li>Beam theory is an approximate reference for a 3D clamped solid (L/h = 10): agreement within ~1 % is expected, not exact.</li><li>The max von Mises value is reported for information only; it sits at a singular clamp corner and is mesh-dependent.</li><li>No physical test data.</li></ul><h4>Inputs</h4><div class="table-wrap"><table><thead><tr><th>Input</th><th>Value</th></tr></thead><tbody><tr><td>length_mm</td><td>200</td></tr><tr><td>width_mm</td><td>20</td></tr><tr><td>height_mm</td><td>20</td></tr><tr><td>youngs_modulus_MPa</td><td>210000</td></tr><tr><td>poisson_ratio</td><td>0.3</td></tr><tr><td>yield_strength_MPa</td><td>355</td></tr><tr><td>tip_load_N</td><td>1000</td></tr><tr><td>mesh_size_mm</td><td>5</td></tr><tr><td>element_order</td><td>2nd</td></tr></tbody></table></div></div></details>
+    <h3 id="fea-how-it-works">How It Works</h3>
     <p>FreeCAD builds the bar, assigns the material, fixes the root face and applies the load. Gmsh fills the solid with tetrahedral elements, and CalculiX solves for the displacements and stresses. I read the results straight from the solver's output files, and the FreeCAD model is saved with every run so the run can be repeated.</p>
     <p>The same model is solved four times on finer and finer meshes. If the answer stops changing as the elements shrink, the mesh isn't deciding it. A standard method, the Grid Convergence Index, turns the last three solutions into an uncertainty figure, which is where the 0.02 % comes from.</p>
     <p>For the stress, I don't take the highest value in the model. That value sits in the clamped corner and climbs from 150 to 217 MPa across the four meshes. Instead the stress along the top face is read over the middle half of the span, where it rises in a straight line towards the root, and that line is extended to the root. The result is 150 MPa on every mesh, which is also what beam theory gives.</p>
@@ -117,7 +117,7 @@
         <div class="plate"><img src="v2/fig_fea_response.svg" alt="Deflection and top-face stress along the bar, with the model's points lying on the beam-theory curves" loading="lazy"></div>
         <figcaption>Deflection and stress along the beam, next to beam theory.</figcaption>
       </figure>
-    <h3 id="fea-how-i-checked-it">How I checked it</h3>
+    <h3 id="fea-how-i-checked-it">How I Checked It</h3>
     <ul class="proof">
       <li><strong>Against beam theory.</strong> The hand calculation gives 0.952 mm if shear deformation is ignored and 0.960 mm if it's included. The model's 0.953 mm falls between the two, which is where a fully clamped solid bar should land.</li>
       <li><strong>Equilibrium.</strong> The support reactions add up to the applied 1 kN, to within rounding.</li>
@@ -125,7 +125,7 @@
       <li><strong>The stress that's reported.</strong> The corner peak is recorded for information and never used for a requirement. The extrapolated bending stress matches beam theory at 150 MPa.</li>
     </ul>
     <div class="caught">
-      <h3 id="fea-what-i-caught-along-the-way">What I caught along the way</h3>
+      <h3 id="fea-what-i-caught-along-the-way">What I Caught Along the Way</h3>
       <ul>
         <li>I also ran the study with the simplest element type, linear tetrahedra. The bracket came out 4 to 33 % too stiff and the stress 7 to 45 % too low, so at face value it would have looked comfortably safe. The beam-theory and mesh checks both failed, and none of those results were reported as verified. The run is kept as evidence.</li>
       </ul>
@@ -134,7 +134,7 @@
       <div class="plate"><img src="v2/fig_fea_tet4.svg" alt="Tip deflection against element size: quadratic elements sit on beam theory at every size, linear elements read up to a third too stiff" loading="lazy"></div>
       <figcaption>The same study run with linear tetrahedra. The checks held back every result.</figcaption>
     </figure>
-    <h3 id="fea-limits-and-what-i-d-do-next">Limits, and what I'd do next</h3>
+    <h3 id="fea-limits-and-what-i-d-do-next">Limits, and What I'd Do Next</h3>
     <ul>
       <li>The clamp is perfectly rigid. A real bolted or welded root gives a little, which adds deflection. The margin on deflection is under 5 %, so the joint's stiffness is the first thing I'd check on a real part.</li>
       <li>Beam theory is an approximate reference for a short, solid bar (ten times longer than it is deep), so agreement within about 1 % is what to expect, not an exact match.</li>
@@ -145,19 +145,19 @@
     <div class="side-card"><ul class="ev-list"><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/portfolio/01-cantilever-bracket.md">Full write-up on GitHub</a></li></ul><p class="label">Run reports, with every check and the saved inputs</p><ul class="ev-list ev-runs"><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261119-085818_cantilever_tet10/report.md">cantilever_tet10</a></li><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261119-090004_cantilever_tet4/report.md">cantilever_tet4</a></li></ul></div>
       </section>
       <section class="part" id="cantilever_opt" data-part="cantilever_opt">
-        <div class="part-head"><span class="label">Study 1b · CadQuery, Gmsh, CalculiX and SciPy, driven by the agent</span><h2>The same cantilever, optimised</h2></div>
-    <h3 id="cantilever_opt-the-question">The question</h3>
+        <div class="part-head"><span class="label">Study 1b · CadQuery, Gmsh, CalculiX and SciPy, driven by the agent</span><h2>The Same Cantilever, Optimised</h2></div>
+    <h3 id="cantilever_opt-the-question">The Question</h3>
     <p>Take the steel bracket from study 1 (200 mm long, 20 mm wide, 1 kN at the tip) and put it in a vibrating assembly. Now its bending stress is limited to 100 MPa for fatigue, not 213 MPa, and the tip can still move at most 1.0 mm. Study 1's 20 × 20 mm bar reaches 150 MPa at the root, so it no longer passes. The width is fixed by the mounting. Which linear taper, meaning which root and tip heights, makes it as light as possible?</p>
-    <h3 id="cantilever_opt-the-answer">The answer</h3>
+    <h3 id="cantilever_opt-the-answer">The Answer</h3>
     <div class="answer">
       <div class="chips"><span class="chip pass">546 g, 30 % lighter</span><span class="chip pass">Peak stress 99.5 MPa</span><span class="chip pass">Tip 0.917 mm</span><span class="chip pass">Beam-theory optimum within 0.13 %</span></div>
       <p><strong>A 26.0 mm root tapering to 8.7 mm at the tip, at 546 g.</strong> The lightest straight bar that meets both limits is 20 × 25 mm and weighs 785 g, so the taper saves 30 %. Stress is the limit that governs, and it peaks partway along the span at 99.5 MPa, not at the root, where it's 88 MPa. The tip moves 0.917 mm, so deflection isn't what sizes it.</p>
       <p>Switch between the two results in the viewer at the top of the page. On the same colour scale, most of study 1's straight bar is lightly loaded, while the taper keeps its surface close to the limit along most of the span, so nearly all of the steel is doing work.</p>
       <p>The answer holds once mesh error is included. At the optimum, going from 4.5 mm to 2 mm elements moves the peak stress by 0.013 MPa. I had the optimiser work to a 0.5 % margin on each limit, and the converged stress sits 0.49 % under 100 MPa.</p>
     </div>
-    <h3 id="cantilever_opt-why-it-matters">Why it matters</h3>
+    <h3 id="cantilever_opt-why-it-matters">Why It Matters</h3>
     <p>Checking one design is the easy half of design work. The harder half is finding a better one, and that means running the model many times with nobody looking at each result. An optimiser will happily exploit any weakness in the model: if a wrong answer looks light and strong, that's the one it will pick. So this study is a test of whether the checks from study 1 are strong enough to run unattended, inside a loop, and still be trusted at the end.</p>
-    <h3 id="cantilever_opt-the-model">The model</h3>
+    <h3 id="cantilever_opt-the-model">The Model</h3>
     <dl class="spec">
       <dt>Part</dt><dd>A steel bar 200 mm long and 20 mm wide. Its height tapers in a straight line from the root to the tip. Those two heights are what the optimiser chooses.</dd>
       <dt>Material</dt><dd>Steel, linear elastic: Young's modulus 210 GPa, Poisson's ratio 0.3, density 7850 kg/m³.</dd>
@@ -168,14 +168,14 @@
       <dt>What's measured</dt><dd>The mass, the tip deflection, and the peak of the bending stress along the whole span, read from the smooth surface and not from the clamped corner.</dd>
     </dl>
     <figure class="drawing"><div class="plate"><img src="v2/dwg_cantilever_opt.webp" alt="Side view of the tapered bar over the dashed outline of a straight bar" loading="lazy"></div><figcaption>The optimised taper against the lightest straight bar that passes, shown dashed.</figcaption></figure>
-    <details class="record"><summary>The case file: recorded assumptions, limits and inputs</summary><div class="record-body"><p>This is the study's own record, written before the run and saved with it, in the shorthand of the case file.</p><p class="case"><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/cases/bracket_opt.toml">cases/bracket_opt.toml ↗</a></p><p>Lightest linearly tapered steel cantilever bracket (200 mm long, 20 mm wide, 1 kN tip load) with tip deflection at most 1.0 mm and peak bending stress at most 100 MPa; COBYLA drives the CadQuery -&gt; Gmsh -&gt; CalculiX pipeline over root and tip height, and every candidate must pass the study&#x27;s checks.</p><h4>Assumptions, and how each is checked</h4><ul><li>Linear elastic steel (E = 210 GPa, nu = 0.3); checked: peak stress below yield.</li><li>Small deflection; checked: tip deflection / length below 1 %.</li><li>Root face fully fixed (rigid mounting); the clamp-corner stress is singular and is not used as a design stress.</li><li>Tip load applied as a uniform shear traction over the tip face.</li><li>Width fixed at 20 mm by the mounting (synthetic); only the two heights vary, linearly between them.</li><li>Stress allowable 100 MPa (fatigue-rated) and deflection limit 1.0 mm: synthetic.</li></ul><h4>Limits</h4><ul><li>Linear taper only; a curved profile could be lighter still.</li><li>No lateral-torsional buckling check (the bracket is a deep, short cantilever loaded in its stiff plane).</li><li>The stress metric uses the FE stress-to-nominal ratio in the smooth region, extrapolated linearly to the root; the root joint itself (weld, bolts) needs its own assessment.</li><li>Beam theory (deflection and nominal stress) is a model-form reference.</li><li>No physical test data.</li></ul><h4>Inputs</h4><div class="table-wrap"><table><thead><tr><th>Input</th><th>Value</th></tr></thead><tbody><tr><td>length_mm</td><td>200</td></tr><tr><td>width_mm</td><td>20</td></tr><tr><td>root_height_mm</td><td>25</td></tr><tr><td>tip_height_mm</td><td>25</td></tr><tr><td>youngs_modulus_MPa</td><td>210000</td></tr><tr><td>poisson_ratio</td><td>0.3</td></tr><tr><td>density_t_per_mm3</td><td>7.85e-09</td></tr><tr><td>tip_load_N</td><td>1000</td></tr><tr><td>element_size_mm</td><td>3</td></tr><tr><td>yield_strength_MPa</td><td>355</td></tr></tbody></table></div></div></details>
-    <h3 id="cantilever_opt-how-it-works">How it works</h3>
+    <details class="record"><summary>The case file: recorded assumptions, limits and inputs</summary><div class="record-body"><p>This is the study's own record, written before the run and saved with it, in the shorthand of the case file.</p><p class="case"><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/cases/bracket_opt.toml">cases/bracket_opt.toml ↗</a></p><p>Lightest linearly tapered steel cantilever bracket (200 mm long, 20 mm wide, 1 kN tip load) with tip deflection at most 1.0 mm and peak bending stress at most 100 MPa; COBYLA drives the CadQuery -&gt; Gmsh -&gt; CalculiX pipeline over root and tip height, and every candidate must pass the study&#x27;s checks.</p><h4>Assumptions, and How Each Is Checked</h4><ul><li>Linear elastic steel (E = 210 GPa, nu = 0.3); checked: peak stress below yield.</li><li>Small deflection; checked: tip deflection / length below 1 %.</li><li>Root face fully fixed (rigid mounting); the clamp-corner stress is singular and is not used as a design stress.</li><li>Tip load applied as a uniform shear traction over the tip face.</li><li>Width fixed at 20 mm by the mounting (synthetic); only the two heights vary, linearly between them.</li><li>Stress allowable 100 MPa (fatigue-rated) and deflection limit 1.0 mm: synthetic.</li></ul><h4>Limits</h4><ul><li>Linear taper only; a curved profile could be lighter still.</li><li>No lateral-torsional buckling check (the bracket is a deep, short cantilever loaded in its stiff plane).</li><li>The stress metric uses the FE stress-to-nominal ratio in the smooth region, extrapolated linearly to the root; the root joint itself (weld, bolts) needs its own assessment.</li><li>Beam theory (deflection and nominal stress) is a model-form reference.</li><li>No physical test data.</li></ul><h4>Inputs</h4><div class="table-wrap"><table><thead><tr><th>Input</th><th>Value</th></tr></thead><tbody><tr><td>length_mm</td><td>200</td></tr><tr><td>width_mm</td><td>20</td></tr><tr><td>root_height_mm</td><td>25</td></tr><tr><td>tip_height_mm</td><td>25</td></tr><tr><td>youngs_modulus_MPa</td><td>210000</td></tr><tr><td>poisson_ratio</td><td>0.3</td></tr><tr><td>density_t_per_mm3</td><td>7.85e-09</td></tr><tr><td>tip_load_N</td><td>1000</td></tr><tr><td>element_size_mm</td><td>3</td></tr><tr><td>yield_strength_MPa</td><td>355</td></tr></tbody></table></div></div></details>
+    <h3 id="cantilever_opt-how-it-works">How It Works</h3>
     <p>The optimiser proposes a root and tip height. For each candidate the harness builds the solid in CadQuery, meshes it in Gmsh, solves it in CalculiX and runs every check of the study, exactly as it would for any other case. A candidate that fails a check counts as infeasible whatever its numbers say, so a result the checks have rejected can't steer the optimiser. The whole search is one command, and it converged in 32 candidates. Study 12 takes the same loop to a 3D machined part.</p>
     <figure><div class="plate"><img src="img/anim_bracket_opt.webp" alt="Animation of the optimiser's search: each candidate's stress render, its place in the design space, and the mass so far" loading="lazy"></div><figcaption>The search as it happened. Each frame is one candidate, with its CalculiX stress, where it sits in the design space and the mass so far. Candidate 8 went too thin, deflected beyond what a linear model can handle, and was thrown out by the checks.</figcaption></figure>
-    <h3 id="cantilever_opt-why-measuring-the-stress-properly-matters">Why measuring the stress properly matters</h3>
+    <h3 id="cantilever_opt-why-measuring-the-stress-properly-matters">Why Measuring the Stress Properly Matters</h3>
     <p>Once the taper is steeper than 2 to 1, the bending stress peaks inside the span and not at the root. An optimiser that only checked the root would have kept thinning the tip and handed back a bracket that fails partway along. The peak right at the clamped corner can't be used either, because it grows without limit as the mesh gets finer, which is the trap from study 1. So the study measures the surface stress against the beam-theory value in the smooth part of the span and takes the peak along the whole length.</p>
     <figure><div class="plate"><img src="img/bracket_stress_span.png" alt="Bending stress along the span for the straight bar, a candidate that passes a root-only check, and the optimum" loading="lazy"></div><figcaption>Candidate 12 is the trap. Its root stress is 90 MPa, comfortably under the limit, but it peaks at 101 MPa partway along the span.</figcaption></figure>
-    <h3 id="cantilever_opt-how-i-checked-it">How I checked it</h3>
+    <h3 id="cantilever_opt-how-i-checked-it">How I Checked It</h3>
     <ul class="proof">
       <li><strong>Every candidate goes through the full set of checks.</strong> The CAD volume is compared with the exact formula, the applied load and tip area are read back from the mesh, and the reactions have to balance. The tip deflection has to match tapered beam theory, which it does within 0.6 %, and the surface stress has to match the beam-theory stress along the span, within 0.7 % as a fit and 1.5 % point by point.</li>
       <li><strong>A separate mesh study at the optimum.</strong> It puts the mesh uncertainty at 0.005 % on the stress and 0.016 % on the deflection, and the requirement is still met with that added.</li>
@@ -183,13 +183,13 @@
       <li><strong>Predictions written first.</strong> Before running it I wrote down the heights, the mass, which limit would govern and where the stress would peak. They all held.</li>
     </ul>
     <div class="caught">
-      <h3 id="cantilever_opt-what-i-caught-along-the-way">What I caught along the way</h3>
+      <h3 id="cantilever_opt-what-i-caught-along-the-way">What I Caught Along the Way</h3>
       <ul>
         <li>Candidate 8 took a long step to a 390 g design that deflected 2.7 mm, 1.35 % of the span. That's past the small-deflection limit of a linear analysis, so the checks rejected it, and the optimiser treated it as infeasible and stepped back. The run is kept as evidence.</li>
         <li>The optimiser drives the stress right onto the limit at whatever mesh size it's using, so without a reserve, a finer mesh could tip the answer over. I set the 0.5 % margin before running, and the confirmation mesh study measured the actual error at 0.005 %.</li>
       </ul>
     </div>
-    <h3 id="cantilever_opt-limits-and-what-i-d-do-next">Limits, and what I'd do next</h3>
+    <h3 id="cantilever_opt-limits-and-what-i-d-do-next">Limits, and What I'd Do Next</h3>
     <ul>
       <li>It's a straight-line taper only. A curved profile would be lighter still.</li>
       <li>The joint at the root (a weld or bolts) needs its own assessment, and there's no lateral-torsional buckling check. The bar is short and deep and loaded in its stiff direction, so that's unlikely to govern, but it isn't shown here.</li>
@@ -201,10 +201,10 @@
       </section>
       </article>
       <aside class="study-side" aria-label="Summary of this study">
-        <div class="side-card"><h2>At a glance</h2><dl><div><dt>Study</dt><dd>01 · 01b</dd></div><div><dt>Discipline</dt><dd>Structures and vibration</dd></div><div><dt>Tools</dt><dd>CalculiX · SciPy</dd></div><div><dt>Verdict</dt><dd><span class="v v-pass">Passes</span></dd></div></dl></div><div class="side-card"><h2>Requirements</h2><ul class="side-reqs"><li class="r-study"><a href="#fea">01 · Stress check</a></li><li><span class="r-what">Tip deflection</span><span class="r-num">≤ 1.0 mm · 0.953 mm</span><span class="chip pass">Met</span></li><li><span class="r-what">Root bending stress</span><span class="r-num">≤ 213 MPa · 150 MPa</span><span class="chip pass">Met</span></li><li class="r-study"><a href="#cantilever_opt">01b · Optimised</a></li><li><span class="r-what">Peak bending stress along the span</span><span class="r-num">≤ 100 MPa · 99.5 MPa</span><span class="chip pass">Met</span></li><li><span class="r-what">Tip deflection</span><span class="r-num">≤ 1.0 mm · 0.917 mm</span><span class="chip pass">Met</span></li><li><span class="r-what">Mass against beam-theory optimum</span><span class="r-num">independent check · 546.0 g against 545.2 g, 0.13 %</span><span class="chip pass">Met</span></li></ul></div><div class="side-card side-toc"><h2>On this page</h2><ul class="toc"><li class="t-part"><a href="#fea">01 · Stress check</a></li><li class="t-sub"><a href="#fea-the-question">The question</a></li><li class="t-sub"><a href="#fea-the-answer">The answer</a></li><li class="t-sub"><a href="#fea-why-it-matters">Why it matters</a></li><li class="t-sub"><a href="#fea-the-model">The model</a></li><li class="t-sub"><a href="#fea-how-it-works">How it works</a></li><li class="t-sub"><a href="#fea-how-i-checked-it">How I checked it</a></li><li class="t-sub"><a href="#fea-what-i-caught-along-the-way">What I caught along the way</a></li><li class="t-sub"><a href="#fea-limits-and-what-i-d-do-next">Limits, and what I&#x27;d do next</a></li><li class="t-sub"><a href="#fea-evidence">Evidence</a></li><li class="t-part"><a href="#cantilever_opt">01b · Optimised</a></li><li class="t-sub"><a href="#cantilever_opt-the-question">The question</a></li><li class="t-sub"><a href="#cantilever_opt-the-answer">The answer</a></li><li class="t-sub"><a href="#cantilever_opt-why-it-matters">Why it matters</a></li><li class="t-sub"><a href="#cantilever_opt-the-model">The model</a></li><li class="t-sub"><a href="#cantilever_opt-how-it-works">How it works</a></li><li class="t-sub"><a href="#cantilever_opt-why-measuring-the-stress-properly-matters">Why measuring the stress properly matters</a></li><li class="t-sub"><a href="#cantilever_opt-how-i-checked-it">How I checked it</a></li><li class="t-sub"><a href="#cantilever_opt-what-i-caught-along-the-way">What I caught along the way</a></li><li class="t-sub"><a href="#cantilever_opt-limits-and-what-i-d-do-next">Limits, and what I&#x27;d do next</a></li><li class="t-sub"><a href="#cantilever_opt-evidence">Evidence</a></li></ul></div>
+        <div class="side-card"><h2>At a Glance</h2><dl><div><dt>Study</dt><dd>01 · 01b</dd></div><div><dt>Discipline</dt><dd>Structures and vibration</dd></div><div><dt>Tools</dt><dd>CalculiX · SciPy</dd></div><div><dt>Verdict</dt><dd><span class="v v-pass">Passes</span></dd></div></dl></div><div class="side-card"><h2>Requirements</h2><ul class="side-reqs"><li class="r-study"><a href="#fea">01 · Stress check</a></li><li><span class="r-what">Tip deflection</span><span class="r-num">≤ 1.0 mm · 0.953 mm</span><span class="chip pass">Met</span></li><li><span class="r-what">Root bending stress</span><span class="r-num">≤ 213 MPa · 150 MPa</span><span class="chip pass">Met</span></li><li class="r-study"><a href="#cantilever_opt">01b · Optimised</a></li><li><span class="r-what">Peak bending stress along the span</span><span class="r-num">≤ 100 MPa · 99.5 MPa</span><span class="chip pass">Met</span></li><li><span class="r-what">Tip deflection</span><span class="r-num">≤ 1.0 mm · 0.917 mm</span><span class="chip pass">Met</span></li><li><span class="r-what">Mass against beam-theory optimum</span><span class="r-num">independent check · 546.0 g against 545.2 g, 0.13 %</span><span class="chip pass">Met</span></li></ul></div><div class="side-card side-toc"><h2>On This Page</h2><ul class="toc"><li class="t-part"><a href="#fea">01 · Stress check</a></li><li class="t-sub"><a href="#fea-the-question">The question</a></li><li class="t-sub"><a href="#fea-the-answer">The answer</a></li><li class="t-sub"><a href="#fea-why-it-matters">Why it matters</a></li><li class="t-sub"><a href="#fea-the-model">The model</a></li><li class="t-sub"><a href="#fea-how-it-works">How it works</a></li><li class="t-sub"><a href="#fea-how-i-checked-it">How I checked it</a></li><li class="t-sub"><a href="#fea-what-i-caught-along-the-way">What I caught along the way</a></li><li class="t-sub"><a href="#fea-limits-and-what-i-d-do-next">Limits, and what I&#x27;d do next</a></li><li class="t-sub"><a href="#fea-evidence">Evidence</a></li><li class="t-part"><a href="#cantilever_opt">01b · Optimised</a></li><li class="t-sub"><a href="#cantilever_opt-the-question">The question</a></li><li class="t-sub"><a href="#cantilever_opt-the-answer">The answer</a></li><li class="t-sub"><a href="#cantilever_opt-why-it-matters">Why it matters</a></li><li class="t-sub"><a href="#cantilever_opt-the-model">The model</a></li><li class="t-sub"><a href="#cantilever_opt-how-it-works">How it works</a></li><li class="t-sub"><a href="#cantilever_opt-why-measuring-the-stress-properly-matters">Why measuring the stress properly matters</a></li><li class="t-sub"><a href="#cantilever_opt-how-i-checked-it">How I checked it</a></li><li class="t-sub"><a href="#cantilever_opt-what-i-caught-along-the-way">What I caught along the way</a></li><li class="t-sub"><a href="#cantilever_opt-limits-and-what-i-d-do-next">Limits, and what I&#x27;d do next</a></li><li class="t-sub"><a href="#cantilever_opt-evidence">Evidence</a></li></ul></div>
       </aside>
     </div>
-    <nav class="pager" aria-label="More studies"><a class="prev" href="roller-contact.html"><small>← Previous study</small><b>Roller-on-plate contact, nonlinear FEA</b></a><a class="next" href="bracket-modal.html"><small>Next study →</small><b>Bracket arm modal analysis</b></a></nav>
+    <nav class="pager" aria-label="More studies"><a class="prev" href="roller-contact.html"><small>← Previous study</small><b>Roller-on-Plate Contact, Nonlinear FEA</b></a><a class="next" href="bracket-modal.html"><small>Next study →</small><b>Bracket Arm Modal Analysis</b></a></nav>
   </div>
 
 </main>
@@ -214,7 +214,7 @@
     <section class="contact" id="contact" aria-labelledby="contact-title">
       <div class="band-head">
         <p class="eyebrow">Contact</p>
-        <h2 id="contact-title">Get in touch</h2>
+        <h2 id="contact-title">Get in Touch</h2>
         <p class="contact-name"><b>Justin Smith</b>, mechanical engineer (MS), with a background in automotive.</p>
         <p>If something here is close to what you need, or you have a model that needs building or checking, send me a note and tell me about it. I'm available for remote contract work.</p>
       </div>

@@ -3,11 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Heat-sink fin temperature · Justin Smith</title>
+<title>Heat-Sink Fin Temperature · Justin Smith</title>
 <meta name="description" content="The tip sits at 73.2 °C, and still 65.9 °C with every input at its worst.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://cptgrumpus.github.io/engineering-agent-lab/heat-sink-fin.html">
-<meta property="og:title" content="Heat-sink fin temperature">
+<meta property="og:title" content="Heat-Sink Fin Temperature">
 <meta property="og:description" content="The tip sits at 73.2 °C, and still 65.9 °C with every input at its worst.">
 <meta property="og:image" content="https://cptgrumpus.github.io/engineering-agent-lab/v2/og_heat-sink-fin.png">
 <meta property="og:image:width" content="1200">
@@ -30,9 +30,9 @@
     <div class="navgroup">
       <div class="topnav">
         <a href="index.html#work" aria-current="page">Studies</a>
-        <a href="how-i-work.html">How I work</a>
+        <a href="how-i-work.html">How I Work</a>
         <a href="grading.html">Grading</a>
-        <a href="in-progress.html">In progress</a>
+        <a href="in-progress.html">In Progress</a>
         <a href="requirements.html">Requirements</a>
       </div>
       <a class="nav-contact" href="#contact">Contact</a>
@@ -40,9 +40,9 @@
         <summary>Menu</summary>
         <div class="menu-panel">
         <a href="index.html#work" aria-current="page">Studies</a>
-        <a href="how-i-work.html">How I work</a>
+        <a href="how-i-work.html">How I Work</a>
         <a href="grading.html">Grading</a>
-        <a href="in-progress.html">In progress</a>
+        <a href="in-progress.html">In Progress</a>
         <a href="requirements.html">Requirements</a>
           <a href="#contact">Contact</a>
         </div>
@@ -56,7 +56,7 @@
     <nav class="crumbs" aria-label="Breadcrumb"><a href="index.html#work">All studies</a><span>/</span><span>Thermal and fluids</span></nav>
     <header class="study-hero">
       <p class="eyebrow">Study 6 · CalculiX heat transfer</p>
-      <h1>Heat-sink fin temperature</h1>
+      <h1>Heat-Sink Fin Temperature</h1>
       <span class="v v-pass">Passes</span>
       <p class="study-lede">The tip sits at 73.2 °C, and still 65.9 °C with every input at its worst.</p>
     </header>
@@ -86,18 +86,18 @@
     <div class="study-layout">
       <article class="study-main">
 
-    <h2 id="the-question">The question</h2>
+    <h2 id="the-question">The Question</h2>
     <p>One fin of a heat sink is 6061 aluminium, 40 mm tall, 20 mm wide and 2 mm thick. The base is at 80 °C and the air is at 25 °C, with a heat-transfer coefficient of about 25 W/m²K. Does the tip stay above 60 °C, and how sure can I be?</p>
-    <h2 id="the-answer">The answer</h2>
+    <h2 id="the-answer">The Answer</h2>
     <div class="answer">
       <div class="chips"><span class="chip pass">Tip 73.2 °C, 13 degrees of margin</span><span class="chip pass">Worst case 65.9 °C</span><span class="chip pass">Numerical error under 0.001 °C</span></div>
       <p><strong>Yes, comfortably.</strong> The coldest point on the tip is 73.2 °C. Even with every input at its worst at the same time (double the air-side coefficient, the lowest likely conductivity for this alloy, and every dimension at the cold end of its tolerance) the tip still sits at 65.9 °C.</p>
       <p>The air-side coefficient matters most. The tip only gets down to 60 °C if that coefficient climbs to about 95 W/m²K, almost four times the estimate. The other realistic way to fail is a poor joint between the fin and the base. If the fin root only reaches about 65 °C and not 80, the tip drops to 60 °C, so that's what I'd check on the real part.</p>
     </div>
-    <h2 id="why-it-matters">Why it matters</h2>
+    <h2 id="why-it-matters">Why It Matters</h2>
     <p>A fin only sheds heat where it's hotter than the air. If the tip cools almost to air temperature, the outer part of the fin is doing nothing and the metal is wasted. So a minimum tip temperature is a simple way to say the whole fin is working.</p>
     <p>The more interesting part of this study is the second half of the question. The numerical answer is good to a thousandth of a degree, but the inputs aren't. The air-side coefficient is "about 25", which could easily be half or double that. A thermal answer is only useful if it says how far the inputs can move before the verdict changes.</p>
-    <h2 id="the-model">The model</h2>
+    <h2 id="the-model">The Model</h2>
     <dl class="spec">
       <dt>Part</dt><dd>A straight rectangular fin, 40 mm long from base to tip, 20 mm wide and 2 mm thick, in full 3D.</dd>
       <dt>Material</dt><dd>6061 aluminium, conductivity 167 W/mK (the T6 temper). A range of 150 to 180 covers the other tempers.</dd>
@@ -108,8 +108,8 @@
       <dt>What's measured</dt><dd>The lowest temperature on the tip face, which is checked to be the lowest in the whole fin.</dd>
     </dl>
     <figure class="drawing"><div class="plate"><img src="v2/dwg_thermal.webp" alt="Front and side view of the fin standing on its base" loading="lazy"></div><figcaption>The fin on its base, in front and side view.</figcaption></figure>
-    <details class="record"><summary>The case file: recorded assumptions, limits and inputs</summary><div class="record-body"><p>This is the study's own record, written before the run and saved with it, in the shorthand of the case file.</p><p class="case"><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/cases/fin_tolerance.toml">cases/fin_tolerance.toml ↗</a></p><p>Straight rectangular 6061 aluminium fin (nominal 40 x 20 x 2 mm, base 80 C, air 25 C, h 25 W/m^2K) evaluated at the corners of the heat-transfer coefficient range (12.5-50 W/m^2K), conductivity range (150-180 W/mK) and dimensional tolerances, with 3D CalculiX conduction on 0.25 mm hex elements. Finds whether the minimum tip temperature stays at or above 60 C across the ranges.</p><h3>Assumptions, and how each is checked</h3><ul><li>As fin_mesh, except the inputs varied below.</li><li>h is an effective coefficient (convection plus linearised radiation), uniform over all exposed faces; range 12.5-50 W/m^2K is synthetic (factor 2 on the user&#x27;s &#x27;about 25&#x27;).</li><li>Conductivity range 150-180 W/mK covers the 6061 tempers (T6 167, T4 154, O 180); constant within each scenario.</li><li>Dimensional tolerances t +- 0.1 mm, w +- 0.2 mm, L +- 0.2 mm are synthetic.</li><li>Base 80 C and air 25 C are fixed user values.</li><li>1D fin theory is a valid independent reference; checked: Biot number below 0.1.</li><li>Requirement metric is the minimum tip-face temperature; checked: it is the global minimum of the fin.</li></ul><h3>Limits</h3><ul><li>Synthetic input ranges; not from a drawing, a material certificate, or a measured h.</li><li>Corners only: no statistical (e.g. Monte Carlo) combination of the ranges.</li><li>Numerical uncertainty is taken from fin_mesh (same element size).</li><li>Single isolated fin with uniform h: neighbouring fins, air preheating, and the variation of h along the fin are not modelled.</li><li>No physical test data.</li></ul><h3>Inputs</h3><div class="table-wrap"><table><thead><tr><th>Input</th><th>Value</th></tr></thead><tbody><tr><td>thickness_mm</td><td>2</td></tr><tr><td>width_mm</td><td>20</td></tr><tr><td>length_mm</td><td>40</td></tr><tr><td>conductivity_W_per_mK</td><td>167</td></tr><tr><td>htc_W_per_m2K</td><td>25</td></tr><tr><td>base_temperature_C</td><td>80</td></tr><tr><td>air_temperature_C</td><td>25</td></tr><tr><td>element_size_mm</td><td>0.25</td></tr></tbody></table></div></div></details>
-    <h2 id="how-it-works">How it works</h2>
+    <details class="record"><summary>The case file: recorded assumptions, limits and inputs</summary><div class="record-body"><p>This is the study's own record, written before the run and saved with it, in the shorthand of the case file.</p><p class="case"><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/cases/fin_tolerance.toml">cases/fin_tolerance.toml ↗</a></p><p>Straight rectangular 6061 aluminium fin (nominal 40 x 20 x 2 mm, base 80 C, air 25 C, h 25 W/m^2K) evaluated at the corners of the heat-transfer coefficient range (12.5-50 W/m^2K), conductivity range (150-180 W/mK) and dimensional tolerances, with 3D CalculiX conduction on 0.25 mm hex elements. Finds whether the minimum tip temperature stays at or above 60 C across the ranges.</p><h3>Assumptions, and How Each Is Checked</h3><ul><li>As fin_mesh, except the inputs varied below.</li><li>h is an effective coefficient (convection plus linearised radiation), uniform over all exposed faces; range 12.5-50 W/m^2K is synthetic (factor 2 on the user&#x27;s &#x27;about 25&#x27;).</li><li>Conductivity range 150-180 W/mK covers the 6061 tempers (T6 167, T4 154, O 180); constant within each scenario.</li><li>Dimensional tolerances t +- 0.1 mm, w +- 0.2 mm, L +- 0.2 mm are synthetic.</li><li>Base 80 C and air 25 C are fixed user values.</li><li>1D fin theory is a valid independent reference; checked: Biot number below 0.1.</li><li>Requirement metric is the minimum tip-face temperature; checked: it is the global minimum of the fin.</li></ul><h3>Limits</h3><ul><li>Synthetic input ranges; not from a drawing, a material certificate, or a measured h.</li><li>Corners only: no statistical (e.g. Monte Carlo) combination of the ranges.</li><li>Numerical uncertainty is taken from fin_mesh (same element size).</li><li>Single isolated fin with uniform h: neighbouring fins, air preheating, and the variation of h along the fin are not modelled.</li><li>No physical test data.</li></ul><h3>Inputs</h3><div class="table-wrap"><table><thead><tr><th>Input</th><th>Value</th></tr></thead><tbody><tr><td>thickness_mm</td><td>2</td></tr><tr><td>width_mm</td><td>20</td></tr><tr><td>length_mm</td><td>40</td></tr><tr><td>conductivity_W_per_mK</td><td>167</td></tr><tr><td>htc_W_per_m2K</td><td>25</td></tr><tr><td>base_temperature_C</td><td>80</td></tr><tr><td>air_temperature_C</td><td>25</td></tr><tr><td>element_size_mm</td><td>0.25</td></tr></tbody></table></div></div></details>
+    <h2 id="how-it-works">How It Works</h2>
     <p>The model solves for the temperature everywhere in the fin, with heat entering at the base and leaving through all five exposed faces. After the nominal case, four more cases put the inputs at the corners of their ranges: the coldest combination, the warmest, and the two main effects on their own (a cold build, and a high air-side coefficient). A separate sweep raises the air-side coefficient until the tip reaches 60 °C, which is what gives the "about 95" figure.</p>
     <div class="figs-2">
       <figure>
@@ -121,7 +121,7 @@
         <figcaption>How high the air-side coefficient can go before the tip drops below 60 °C.</figcaption>
       </figure>
     </div>
-    <h2 id="how-i-checked-it">How I checked it</h2>
+    <h2 id="how-i-checked-it">How I Checked It</h2>
     <ul class="proof">
       <li><strong>Against fin theory.</strong> The textbook 1D fin solution agrees with the 3D result within half a thousandth of a degree along the whole fin. I wrote down the expected values before running, and every result came within a tenth of a degree of them.</li>
       <li><strong>The comparison is fair.</strong> The temperature through the thickness is uniform to a few hundredths of a degree, which is the condition for the 1D solution to apply.</li>
@@ -129,13 +129,13 @@
       <li><strong>Mesh refinement.</strong> Going from 2 mm to 0.25 mm elements converges at exactly the expected rate, leaving under a thousandth of a degree of numerical uncertainty.</li>
     </ul>
     <div class="caught">
-      <h2 id="what-i-caught-along-the-way">What I caught along the way</h2>
+      <h2 id="what-i-caught-along-the-way">What I Caught Along the Way</h2>
       <ul>
         <li>The base heat flow CalculiX reported was 1.3 % short of the heat leaving the surfaces, because the solver leaves out the convection on the base nodes themselves. With that added back, the energy balance closes exactly.</li>
         <li>On the finest meshes, the change in tip temperature was about the same size as the rounding in the solver's standard output, which made convergence impossible to judge. I switched to a higher-precision output so rounding can't decide it.</li>
       </ul>
     </div>
-    <h2 id="limits-and-what-i-d-do-next">Limits, and what I'd do next</h2>
+    <h2 id="limits-and-what-i-d-do-next">Limits, and What I'd Do Next</h2>
     <ul>
       <li>The fin root is taken at exactly 80 °C. A poor fin-to-base joint is the realistic way to fail, and it's what I'd measure first.</li>
       <li>The air-side coefficient is an input, the same on every face. It isn't computed from the airflow, and neighbouring fins and warming of the air along the fin aren't modelled.</li>
@@ -146,10 +146,10 @@
     <div class="side-card"><ul class="ev-list"><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/portfolio/06-heat-sink-fin.md">Full write-up on GitHub</a></li></ul><p class="label">Run reports, with every check and the saved inputs</p><ul class="ev-list ev-runs"><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261119-221454_fin_mesh/report.md">fin_mesh</a></li><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261119-221517_fin_tolerance/report.md">fin_tolerance</a></li><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261119-221655_fin_h_sweep/report.md">fin_h_sweep</a></li></ul></div>
       </article>
       <aside class="study-side" aria-label="Summary of this study">
-        <div class="side-card"><h2>At a glance</h2><dl><div><dt>Study</dt><dd>06</dd></div><div><dt>Discipline</dt><dd>Thermal and fluids</dd></div><div><dt>Tools</dt><dd>CalculiX</dd></div><div><dt>Verdict</dt><dd><span class="v v-pass">Passes</span></dd></div></dl></div><div class="side-card"><h2>Requirements</h2><ul class="side-reqs"><li><span class="r-what">Coldest tip temperature</span><span class="r-num">≥ 60 °C · 73.2 °C (65.9 °C worst case)</span><span class="chip pass">Met</span></li></ul></div><div class="side-card side-toc"><h2>On this page</h2><ul class="toc"><li><a href="#the-question">The question</a></li><li><a href="#the-answer">The answer</a></li><li><a href="#why-it-matters">Why it matters</a></li><li><a href="#the-model">The model</a></li><li><a href="#how-it-works">How it works</a></li><li><a href="#how-i-checked-it">How I checked it</a></li><li><a href="#what-i-caught-along-the-way">What I caught along the way</a></li><li><a href="#limits-and-what-i-d-do-next">Limits, and what I&#x27;d do next</a></li><li><a href="#evidence">Evidence</a></li></ul></div>
+        <div class="side-card"><h2>At a Glance</h2><dl><div><dt>Study</dt><dd>06</dd></div><div><dt>Discipline</dt><dd>Thermal and fluids</dd></div><div><dt>Tools</dt><dd>CalculiX</dd></div><div><dt>Verdict</dt><dd><span class="v v-pass">Passes</span></dd></div></dl></div><div class="side-card"><h2>Requirements</h2><ul class="side-reqs"><li><span class="r-what">Coldest tip temperature</span><span class="r-num">≥ 60 °C · 73.2 °C (65.9 °C worst case)</span><span class="chip pass">Met</span></li></ul></div><div class="side-card side-toc"><h2>On This Page</h2><ul class="toc"><li><a href="#the-question">The question</a></li><li><a href="#the-answer">The answer</a></li><li><a href="#why-it-matters">Why it matters</a></li><li><a href="#the-model">The model</a></li><li><a href="#how-it-works">How it works</a></li><li><a href="#how-i-checked-it">How I checked it</a></li><li><a href="#what-i-caught-along-the-way">What I caught along the way</a></li><li><a href="#limits-and-what-i-d-do-next">Limits, and what I&#x27;d do next</a></li><li><a href="#evidence">Evidence</a></li></ul></div>
       </aside>
     </div>
-    <nav class="pager" aria-label="More studies"><a class="prev" href="coolant-channel.html"><small>← Previous study</small><b>Coolant channel pressure budget</b></a><a class="next" href="quarter-car.html"><small>Next study →</small><b>Quarter car, ride and road holding</b></a></nav>
+    <nav class="pager" aria-label="More studies"><a class="prev" href="coolant-channel.html"><small>← Previous study</small><b>Coolant Channel Pressure Budget</b></a><a class="next" href="quarter-car.html"><small>Next study →</small><b>Quarter Car, Ride and Road Holding</b></a></nav>
   </div>
 
 </main>
@@ -159,7 +159,7 @@
     <section class="contact" id="contact" aria-labelledby="contact-title">
       <div class="band-head">
         <p class="eyebrow">Contact</p>
-        <h2 id="contact-title">Get in touch</h2>
+        <h2 id="contact-title">Get in Touch</h2>
         <p class="contact-name"><b>Justin Smith</b>, mechanical engineer (MS), with a background in automotive.</p>
         <p>If something here is close to what you need, or you have a model that needs building or checking, send me a note and tell me about it. I'm available for remote contract work.</p>
       </div>

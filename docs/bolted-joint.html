@@ -3,11 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Bolted joint, slip and opening · Justin Smith</title>
+<title>Bolted Joint, Slip and Opening · Justin Smith</title>
 <meta name="description" content="Fails narrowly: once the joint settles it slips at 2.39 kN, 4.4 % short of the 2.5 kN it must carry. A 15.6 kN preload fixes it, and it stays closed to 13.1 kN.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://cptgrumpus.github.io/engineering-agent-lab/bolted-joint.html">
-<meta property="og:title" content="Bolted joint, slip and opening">
+<meta property="og:title" content="Bolted Joint, Slip and Opening">
 <meta property="og:description" content="Fails narrowly: once the joint settles it slips at 2.39 kN, 4.4 % short of the 2.5 kN it must carry. A 15.6 kN preload fixes it, and it stays closed to 13.1 kN.">
 <meta property="og:image" content="https://cptgrumpus.github.io/engineering-agent-lab/v2/og_bolted-joint.png">
 <meta property="og:image:width" content="1200">
@@ -30,9 +30,9 @@
     <div class="navgroup">
       <div class="topnav">
         <a href="index.html#work" aria-current="page">Studies</a>
-        <a href="how-i-work.html">How I work</a>
+        <a href="how-i-work.html">How I Work</a>
         <a href="grading.html">Grading</a>
-        <a href="in-progress.html">In progress</a>
+        <a href="in-progress.html">In Progress</a>
         <a href="requirements.html">Requirements</a>
       </div>
       <a class="nav-contact" href="#contact">Contact</a>
@@ -40,9 +40,9 @@
         <summary>Menu</summary>
         <div class="menu-panel">
         <a href="index.html#work" aria-current="page">Studies</a>
-        <a href="how-i-work.html">How I work</a>
+        <a href="how-i-work.html">How I Work</a>
         <a href="grading.html">Grading</a>
-        <a href="in-progress.html">In progress</a>
+        <a href="in-progress.html">In Progress</a>
         <a href="requirements.html">Requirements</a>
           <a href="#contact">Contact</a>
         </div>
@@ -56,7 +56,7 @@
     <nav class="crumbs" aria-label="Breadcrumb"><a href="index.html#work">All studies</a><span>/</span><span>Structures and vibration</span></nav>
     <header class="study-hero">
       <p class="eyebrow">Study 16 · CalculiX, friction contact</p>
-      <h1>Bolted joint, slip and opening</h1>
+      <h1>Bolted Joint, Slip and Opening</h1>
       <span class="v v-fail">Fails</span>
       <p class="study-lede">Fails narrowly: once the joint settles it slips at 2.39 kN, 4.4 % short of the 2.5 kN it must carry. A 15.6 kN preload fixes it, and it stays closed to 13.1 kN.</p>
     </header>
@@ -86,19 +86,19 @@
     <div class="study-layout">
       <article class="study-main">
 
-    <h2 id="the-question">The question</h2>
+    <h2 id="the-question">The Question</h2>
     <p>Two 6 mm steel plates are clamped by an M8 class 8.8 bolt tightened to 15 kN. The joint has to carry a 2 kN side load by friction alone, with a safety factor of 1.25 against slip, so 2.5 kN. It also mustn't open under a 10 kN axial load. Both have to hold after the joint settles. Does it, and if not, what fixes it?</p>
-    <h2 id="the-answer">The answer</h2>
+    <h2 id="the-answer">The Answer</h2>
     <div class="answer">
       <div class="chips"><span class="chip fail">Slips at 2.39 kN, 4.4 % short</span><span class="chip pass">15.6 kN preload fixes it</span><span class="chip pass">Stays closed to 13.1 kN</span></div>
       <p><strong>No, narrowly.</strong> Clamped at 15 kN the interface carries 3.0 kN of friction, but settling (9.5 µm of embedding) costs 3.03 kN of clamp force. That leaves 11.97 kN and a slip load of 2.39 kN, 4.4 % short.</p>
       <p>A preload of about 15.6 kN fixes it, keeping 12.5 kN after settling and loading the bolt to 71 % of its proof stress. The joint doesn't open below 13.1 kN.</p>
       <p>Drag the slider in the viewer at the top of the page to push the top plate sideways. The stuck region shrinks from the outside in until the whole joint slides.</p>
     </div>
-    <h2 id="why-it-matters">Why it matters</h2>
+    <h2 id="why-it-matters">Why It Matters</h2>
     <p>Most bolted joints aren't meant to carry side load on the bolt itself. The bolt clamps the plates together, and friction between them carries the load. If the plates slip, the bolt ends up in shear and bending, the joint shifts every load cycle, and it works loose. So the design question is whether friction can hold the load with a margin.</p>
     <p>The catch is that a joint loses clamp force after it's tightened. The rough surfaces under the head, the nut and between the plates flatten by a few thousandths of a millimetre (embedding), and because a short bolt is stiff, that small loss of stretch costs a lot of force. A joint that passes when it is tightened can fail once it has settled. This one does.</p>
-    <h2 id="the-model">The model</h2>
+    <h2 id="the-model">The Model</h2>
     <dl class="spec">
       <dt>Parts</dt><dd>Two round steel plates, 40 mm across and 6 mm thick, with a 9 mm hole for an M8 bolt. Half the joint is modelled, cut along the direction of the side load.</dd>
       <dt>Material</dt><dd>Steel, linear elastic: Young's modulus 210 GPa, Poisson's ratio 0.3.</dd>
@@ -110,12 +110,12 @@
       <dt>Analysis</dt><dd>Nonlinear static with friction contact, in CalculiX 2.22, combined with the VDI 2230 joint diagram.</dd>
     </dl>
     <figure class="drawing"><div class="plate"><img src="v2/dwg_bolted_joint.webp" alt="Section through the two plates and the bolt hole, with the clamp force on the washer faces and the side load" loading="lazy"></div><figcaption>A section through the bolt axis. The bolt is drawn dashed for reference; in the model it's represented by its clamp force on the washer faces.</figcaption></figure>
-    <details class="record"><summary>The case file: recorded assumptions, limits and inputs</summary><div class="record-body"><p>This is the study's own record, written before the run and saved with it, in the shorthand of the case file.</p><p class="case"><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/cases/bolted_joint_mesh_r1.toml">cases/bolted_joint_mesh_r1.toml ↗</a></p><p>Two 6 mm steel plates clamped by an M8 8.8 bolt at 15 kN, friction 0.2: CalculiX half model with penalty friction contact, clamp then side displacement to gross slip; joint diagram with VDI 2230 bolt compliance and embedding; element size 1.0 / 0.75 / 0.5 mm; each point also solved with the plates 100 times stiffer to extrapolate the slip load to a rigid interface.</p><h3>Assumptions, and how each is checked</h3><ul><li>The bolt acts through its clamp force: uniform pressure on the washer annuli (head and nut bearing areas); its shank is not modelled and must not touch the hole (checked: slip displacement below the 0.5 mm clearance).</li><li>Coulomb friction, mu = 0.2 at the plate interface (dry machined steel): synthetic.</li><li>Clamped region represented by circular plates of 40 mm diameter (the VDI substitute body; checked: the pressure cone fits inside).</li><li>Embedding (settling) 9.5 um: VDI 2230 Table 5 for Rz &lt; 10 um, axial load (thread 3, head 2.5, nut 2.5, one interface 1.5): synthetic surface finish.</li><li>Axial load introduced at mid-thickness of the plates (load introduction factor n = 0.5): synthetic.</li><li>Linear elastic steel, small displacement.</li></ul><h3>Limits</h3><ul><li>No tightening torque scatter (VDI alpha_A): the 15 kN is the minimum preload assumed after tightening.</li><li>Bolt compliance, embedding and the load factor come from VDI 2230 (hand method), not from a modelled bolt.</li><li>Slip under a static side load only; no cyclic loading, fretting or self-loosening.</li><li>No physical test data.</li></ul><h3>Inputs</h3><div class="table-wrap"><table><thead><tr><th>Input</th><th>Value</th></tr></thead><tbody><tr><td>plate_outer_diameter_mm</td><td>40</td></tr><tr><td>hole_diameter_mm</td><td>9</td></tr><tr><td>washer_diameter_mm</td><td>13</td></tr><tr><td>top_thickness_mm</td><td>6</td></tr><tr><td>bottom_thickness_mm</td><td>6</td></tr><tr><td>youngs_modulus_MPa</td><td>210000</td></tr><tr><td>poisson_ratio</td><td>0.3</td></tr><tr><td>preload_N</td><td>15000</td></tr><tr><td>friction_coefficient</td><td>0.2</td></tr><tr><td>element_size_mm</td><td>1</td></tr><tr><td>contact_stiffness_factor</td><td>50</td></tr><tr><td>stick_slope_factor</td><td>50</td></tr><tr><td>slip_displacement_mm</td><td>0.012</td></tr><tr><td>slip_increments</td><td>6</td></tr><tr><td>bolt_thread</td><td>M8</td></tr><tr><td>bolt_shank_length_mm</td><td>8</td></tr><tr><td>bolt_free_thread_length_mm</td><td>4</td></tr><tr><td>bolt_proof_stress_MPa</td><td>600</td></tr><tr><td>embedding_um</td><td>9.5</td></tr><tr><td>load_introduction_factor</td><td>0.5</td></tr></tbody></table></div></div></details>
-    <h2 id="how-it-works">How it works</h2>
+    <details class="record"><summary>The case file: recorded assumptions, limits and inputs</summary><div class="record-body"><p>This is the study's own record, written before the run and saved with it, in the shorthand of the case file.</p><p class="case"><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/cases/bolted_joint_mesh_r1.toml">cases/bolted_joint_mesh_r1.toml ↗</a></p><p>Two 6 mm steel plates clamped by an M8 8.8 bolt at 15 kN, friction 0.2: CalculiX half model with penalty friction contact, clamp then side displacement to gross slip; joint diagram with VDI 2230 bolt compliance and embedding; element size 1.0 / 0.75 / 0.5 mm; each point also solved with the plates 100 times stiffer to extrapolate the slip load to a rigid interface.</p><h3>Assumptions, and How Each Is Checked</h3><ul><li>The bolt acts through its clamp force: uniform pressure on the washer annuli (head and nut bearing areas); its shank is not modelled and must not touch the hole (checked: slip displacement below the 0.5 mm clearance).</li><li>Coulomb friction, mu = 0.2 at the plate interface (dry machined steel): synthetic.</li><li>Clamped region represented by circular plates of 40 mm diameter (the VDI substitute body; checked: the pressure cone fits inside).</li><li>Embedding (settling) 9.5 um: VDI 2230 Table 5 for Rz &lt; 10 um, axial load (thread 3, head 2.5, nut 2.5, one interface 1.5): synthetic surface finish.</li><li>Axial load introduced at mid-thickness of the plates (load introduction factor n = 0.5): synthetic.</li><li>Linear elastic steel, small displacement.</li></ul><h3>Limits</h3><ul><li>No tightening torque scatter (VDI alpha_A): the 15 kN is the minimum preload assumed after tightening.</li><li>Bolt compliance, embedding and the load factor come from VDI 2230 (hand method), not from a modelled bolt.</li><li>Slip under a static side load only; no cyclic loading, fretting or self-loosening.</li><li>No physical test data.</li></ul><h3>Inputs</h3><div class="table-wrap"><table><thead><tr><th>Input</th><th>Value</th></tr></thead><tbody><tr><td>plate_outer_diameter_mm</td><td>40</td></tr><tr><td>hole_diameter_mm</td><td>9</td></tr><tr><td>washer_diameter_mm</td><td>13</td></tr><tr><td>top_thickness_mm</td><td>6</td></tr><tr><td>bottom_thickness_mm</td><td>6</td></tr><tr><td>youngs_modulus_MPa</td><td>210000</td></tr><tr><td>poisson_ratio</td><td>0.3</td></tr><tr><td>preload_N</td><td>15000</td></tr><tr><td>friction_coefficient</td><td>0.2</td></tr><tr><td>element_size_mm</td><td>1</td></tr><tr><td>contact_stiffness_factor</td><td>50</td></tr><tr><td>stick_slope_factor</td><td>50</td></tr><tr><td>slip_displacement_mm</td><td>0.012</td></tr><tr><td>slip_increments</td><td>6</td></tr><tr><td>bolt_thread</td><td>M8</td></tr><tr><td>bolt_shank_length_mm</td><td>8</td></tr><tr><td>bolt_free_thread_length_mm</td><td>4</td></tr><tr><td>bolt_proof_stress_MPa</td><td>600</td></tr><tr><td>embedding_um</td><td>9.5</td></tr><tr><td>load_introduction_factor</td><td>0.5</td></tr></tbody></table></div></div></details>
+    <h2 id="how-it-works">How It Works</h2>
     <p>The finite-element model measures what a hand calculation can only estimate: how stiff the plates are under the clamp, where they actually touch, and how much friction the interface carries before it slides. The VDI 2230 joint diagram, the standard method for bolted joints, then combines those with the bolt's own stiffness and the settling loss to give the two design loads: the side load at which it slips and the axial load at which it opens.</p>
     <figure><div class="plate"><img src="v2/vp_joint_section.webp" alt="Section through the bolt axis after clamping: compression spreading from the washers through both plates" loading="lazy"></div><figcaption><b>Section through the bolt axis, after clamping.</b> The compression spreads from each washer through both plates in a barrel-shaped cone, and the steel outside it carries almost nothing. That cone is what VDI 2230 approximates, and the plate stiffness the joint calculation needs comes from it. Under the washers the model carries 212 MPa against the 217 MPa clamp pressure applied there.</figcaption></figure>
     <figure><div class="plate"><img src="v2/vp_bolted_joint_pressure.webp" alt="Contact pressure on the bottom plate's face after clamping, highest at the hole and fading out about 21 mm across" loading="lazy"></div><figcaption><b>Where the plates press together, after clamping.</b> The pressure on the bottom plate's face peaks at 162 MPa beside the hole and has gone by 21.1 mm across, so only the middle of the 40 mm plates does any clamping. Friction can only act where there's pressure, which is why the joint starts to slide at its outer edge first.</figcaption></figure>
-    <h2 id="how-i-checked-it">How I checked it</h2>
+    <h2 id="how-i-checked-it">How I Checked It</h2>
     <ul class="proof">
       <li><strong>The friction is exact where the reference is exact.</strong> For a rigid, flat interface the slip load is simply the friction coefficient times the clamp force. Each mesh is solved twice, at the real stiffness and with the plates 100 times stiffer. Extrapolating to a rigid interface recovers that product to 1 × 10⁻⁷ or better.</li>
       <li><strong>Equilibrium.</strong> The clamp forces balance and the side forces on the two plates cancel, to round-off.</li>
@@ -125,13 +125,13 @@
     </ul>
     <figure><div class="plate"><img src="v2/fig_joint_response.svg" alt="Side load rising until the joint slides at 3,000 N, and the pressure between the plates falling to zero about 21 mm across" loading="lazy"></div><figcaption>The side load until the joint slips, and where the plates press together, against the VDI cone limit.</figcaption></figure>
     <div class="caught">
-      <h2 id="what-i-caught-along-the-way">What I caught along the way</h2>
+      <h2 id="what-i-caught-along-the-way">What I Caught Along the Way</h2>
       <ul>
         <li><strong>A small miss that turned out to be physics.</strong> The slip load came out 0.13 % under friction coefficient times clamp force on every mesh, against a 0.1 % tolerance. The friction law, the applied load and the solver's friction all checked out exactly. The decisive test was making the plates stiffer: the shortfall fell exactly in proportion, 1.3 × 10⁻³, then 10⁻⁴, then 10⁻⁵. CalculiX works on the deformed surfaces, and under the side load the interface tilts by about the strain, while the hand formula assumes a rigid, flat interface. So the exact check now uses the rigid-limit extrapolation. Raising the tolerance would have hidden all of this.</li>
         <li><strong>A stall that wasn't about size.</strong> One mesh level stalled for four hours while a finer one finished in 22 minutes. It was a convergence stall on that mesh, not cost, and another level replaced it.</li>
       </ul>
     </div>
-    <h2 id="limits-and-what-i-d-do-next">Limits, and what I'd do next</h2>
+    <h2 id="limits-and-what-i-d-do-next">Limits, and What I'd Do Next</h2>
     <ul>
       <li>The friction coefficient (0.2) and the embedding (9.5 µm) are assumed values, and they dominate the answer: ±20 % on friction moves the slip load by the same 20 %. On a real joint I'd want both measured, or a larger margin.</li>
       <li>The 15 kN is taken as the minimum preload after tightening. Scatter in tightening torque isn't included.</li>
@@ -142,10 +142,10 @@
     <div class="side-card"><ul class="ev-list"><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/portfolio/16-bolted-joint-slip.md">Full write-up on GitHub</a></li></ul><p class="label">Run reports, with every check and the saved inputs</p><ul class="ev-list ev-runs"><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261120-235041_bolted_joint_mesh/report.md">bolted_joint_mesh</a></li><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261121-110554_bolted_joint_mesh_r1/report.md">bolted_joint_mesh_r1</a></li></ul></div>
       </article>
       <aside class="study-side" aria-label="Summary of this study">
-        <div class="side-card"><h2>At a glance</h2><dl><div><dt>Study</dt><dd>16</dd></div><div><dt>Discipline</dt><dd>Structures and vibration</dd></div><div><dt>Tools</dt><dd>CalculiX</dd></div><div><dt>Verdict</dt><dd><span class="v v-fail">Fails</span></dd></div></dl></div><div class="side-card"><h2>Requirements</h2><ul class="side-reqs"><li><span class="r-what">Side load carried by friction after settling</span><span class="r-num">≥ 2.5 kN · 2.39 kN, 4.4 % short; a 15.6 kN preload fixes it</span><span class="chip fail">Not met</span></li><li><span class="r-what">Axial load before the joint opens, after settling</span><span class="r-num">≥ 10 kN · 13.1 kN</span><span class="chip pass">Met</span></li></ul></div><div class="side-card side-toc"><h2>On this page</h2><ul class="toc"><li><a href="#the-question">The question</a></li><li><a href="#the-answer">The answer</a></li><li><a href="#why-it-matters">Why it matters</a></li><li><a href="#the-model">The model</a></li><li><a href="#how-it-works">How it works</a></li><li><a href="#how-i-checked-it">How I checked it</a></li><li><a href="#what-i-caught-along-the-way">What I caught along the way</a></li><li><a href="#limits-and-what-i-d-do-next">Limits, and what I&#x27;d do next</a></li><li><a href="#evidence">Evidence</a></li></ul></div>
+        <div class="side-card"><h2>At a Glance</h2><dl><div><dt>Study</dt><dd>16</dd></div><div><dt>Discipline</dt><dd>Structures and vibration</dd></div><div><dt>Tools</dt><dd>CalculiX</dd></div><div><dt>Verdict</dt><dd><span class="v v-fail">Fails</span></dd></div></dl></div><div class="side-card"><h2>Requirements</h2><ul class="side-reqs"><li><span class="r-what">Side load carried by friction after settling</span><span class="r-num">≥ 2.5 kN · 2.39 kN, 4.4 % short; a 15.6 kN preload fixes it</span><span class="chip fail">Not met</span></li><li><span class="r-what">Axial load before the joint opens, after settling</span><span class="r-num">≥ 10 kN · 13.1 kN</span><span class="chip pass">Met</span></li></ul></div><div class="side-card side-toc"><h2>On This Page</h2><ul class="toc"><li><a href="#the-question">The question</a></li><li><a href="#the-answer">The answer</a></li><li><a href="#why-it-matters">Why it matters</a></li><li><a href="#the-model">The model</a></li><li><a href="#how-it-works">How it works</a></li><li><a href="#how-i-checked-it">How I checked it</a></li><li><a href="#what-i-caught-along-the-way">What I caught along the way</a></li><li><a href="#limits-and-what-i-d-do-next">Limits, and what I&#x27;d do next</a></li><li><a href="#evidence">Evidence</a></li></ul></div>
       </aside>
     </div>
-    <nav class="pager" aria-label="More studies"><a class="prev" href="traction-motor.html"><small>← Previous study</small><b>Traction motor, rebuilt and tested blind</b></a><a class="next" href="aluminium-strap.html"><small>Next study →</small><b>Aluminium strap: cable hole, fatigue life and proof test</b></a></nav>
+    <nav class="pager" aria-label="More studies"><a class="prev" href="traction-motor.html"><small>← Previous study</small><b>Traction Motor, Rebuilt and Tested Blind</b></a><a class="next" href="aluminium-strap.html"><small>Next study →</small><b>Aluminium Strap: Cable Hole, Fatigue Life and Proof Test</b></a></nav>
   </div>
 
 </main>
@@ -155,7 +155,7 @@
     <section class="contact" id="contact" aria-labelledby="contact-title">
       <div class="band-head">
         <p class="eyebrow">Contact</p>
-        <h2 id="contact-title">Get in touch</h2>
+        <h2 id="contact-title">Get in Touch</h2>
         <p class="contact-name"><b>Justin Smith</b>, mechanical engineer (MS), with a background in automotive.</p>
         <p>If something here is close to what you need, or you have a model that needs building or checking, send me a note and tell me about it. I'm available for remote contract work.</p>
       </div>

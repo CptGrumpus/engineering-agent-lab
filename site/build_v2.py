@@ -278,6 +278,7 @@ import tomllib
 
 import extras
 import make_og
+import titlecase
 
 LOOPS = json.loads((HERE / "v2" / "loops.json").read_text(encoding="utf-8")) if (HERE / "v2" / "loops.json").exists() else {}
 _fr = HERE / "v2" / "frames.json"
@@ -497,7 +498,7 @@ def study_page(gk: str) -> dict:
     {pager}
   </div>
 '''
-    og = make_og.study(SLUG[gk], f"Study {no} · {d.replace('New · ', '').replace('Featured · ', '')}", title,
+    og = make_og.study(SLUG[gk], f"Study {no} · {d.replace('New · ', '').replace('Featured · ', '')}", titlecase.title_case(title),
                        VERDICT[verdict], HERE / "v2" / f"th_{thumb}.webp", figure=entries[0].get("kind") == "figure")
     return {"file": FILE[gk], "title": f"{title} · {AUTHOR}", "og_title": title, "desc": answer, "nav": "index",
             "main": body, "scripts": viewer_scripts(entries), "og": og, "og_alt": f"{title}: result render",
@@ -634,6 +635,7 @@ for p in pages:
                  .replace("{{OG_ALT}}", esc(p.get("og_alt", "Simulation portfolio")))
                  .replace("{{NAV}}", nav).replace("{{MAIN}}", main).replace("{{SCRIPTS}}", p["scripts"])
                  .replace("{{ASSET_V}}", asset_v))
+    doc = titlecase.apply(doc)                                  # every title in title case (site/titlecase.py)
     left = re.findall(r"\{\{[A-Z_]+\}\}", doc)
     assert not left, f'{p["file"]}: unfilled {left}'
     built[p["file"]] = doc

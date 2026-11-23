@@ -3,11 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Quarter car, ride and road holding · Justin Smith</title>
+<title>Quarter Car, Ride and Road Holding · Justin Smith</title>
 <meta name="description" content="600 to 1000 N·s/m works at 18 km/h. At 36 km/h the wheel leaves the road.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://cptgrumpus.github.io/engineering-agent-lab/quarter-car.html">
-<meta property="og:title" content="Quarter car, ride and road holding">
+<meta property="og:title" content="Quarter Car, Ride and Road Holding">
 <meta property="og:description" content="600 to 1000 N·s/m works at 18 km/h. At 36 km/h the wheel leaves the road.">
 <meta property="og:image" content="https://cptgrumpus.github.io/engineering-agent-lab/v2/og_quarter-car.png">
 <meta property="og:image:width" content="1200">
@@ -30,9 +30,9 @@
     <div class="navgroup">
       <div class="topnav">
         <a href="index.html#work" aria-current="page">Studies</a>
-        <a href="how-i-work.html">How I work</a>
+        <a href="how-i-work.html">How I Work</a>
         <a href="grading.html">Grading</a>
-        <a href="in-progress.html">In progress</a>
+        <a href="in-progress.html">In Progress</a>
         <a href="requirements.html">Requirements</a>
       </div>
       <a class="nav-contact" href="#contact">Contact</a>
@@ -40,9 +40,9 @@
         <summary>Menu</summary>
         <div class="menu-panel">
         <a href="index.html#work" aria-current="page">Studies</a>
-        <a href="how-i-work.html">How I work</a>
+        <a href="how-i-work.html">How I Work</a>
         <a href="grading.html">Grading</a>
-        <a href="in-progress.html">In progress</a>
+        <a href="in-progress.html">In Progress</a>
         <a href="requirements.html">Requirements</a>
           <a href="#contact">Contact</a>
         </div>
@@ -56,7 +56,7 @@
     <nav class="crumbs" aria-label="Breadcrumb"><a href="index.html#work">All studies</a><span>/</span><span>Vehicle dynamics</span></nav>
     <header class="study-hero">
       <p class="eyebrow">Study 7 · Python (SciPy) and OpenModelica</p>
-      <h1>Quarter car, ride and road holding</h1>
+      <h1>Quarter Car, Ride and Road Holding</h1>
       <span class="v v-mixed">Depends on speed</span>
       <p class="study-lede">600 to 1000 N·s/m works at 18 km/h. At 36 km/h the wheel leaves the road.</p>
     </header>
@@ -86,9 +86,9 @@
     <div class="study-layout">
       <article class="study-main">
 
-    <h2 id="the-question">The question</h2>
+    <h2 id="the-question">The Question</h2>
     <p>For a compact car's front corner, which damper rates between 600 and 3500 N·s/m meet the targets for ride comfort, suspension travel and tire load? I tested it over a speed bump and over a rough road.</p>
-    <h2 id="the-answer">The answer</h2>
+    <h2 id="the-answer">The Answer</h2>
     <div class="answer">
       <div class="chips"><span class="chip pass">Speed bump: 600 to 1000 N·s/m</span><span class="chip fail">36 km/h: wheel leaves the road</span><span class="chip warn">Bump stop: harsher at light damping</span><span class="chip fail">Rough road: comfort not met</span><span class="chip pass">Two tools agree to one part in a million</span></div>
       <p><strong>Over a 40 mm speed bump at 18 km/h,</strong> anything from 600 to 1000 N·s/m meets all three targets. At 1500 it just misses the comfort limit, 4.18 against 4.0 m/s², and at 3500 the tire load goes over.</p>
@@ -97,10 +97,10 @@
       <p><strong>On a rough road at 72 km/h,</strong> no damper rate meets the comfort target, while travel and tire load need at least about 1500. Those pull in opposite directions, so the real fix is a different spring rate.</p>
       <p><strong>Weighted the way people actually feel vibration (ISO 2631-1),</strong> the rough-road ride rates as uncomfortable at 1000 N·s/m (1.01 m/s²) and gets worse with more damping, up to very uncomfortable at 3500 (1.64 m/s²). The raw, unweighted acceleration overstates it by 10 to 29 %.</p>
     </div>
-    <h2 id="why-it-matters">Why it matters</h2>
+    <h2 id="why-it-matters">Why It Matters</h2>
     <p>A damper has two jobs that pull against each other. A soft one lets the body float over bumps, which is comfortable, but lets the wheel bounce, which hurts grip and uses up suspension travel. A stiff one holds the wheel on the road but passes every bump into the body. Choosing a rate means finding the range where comfort, travel and tire load are all acceptable, and sometimes finding that there isn't one.</p>
     <p>The quarter-car model is the standard first tool for this: one corner of the car, with the body on a spring and damper, on a wheel, on a tire. It's simple enough to check exactly, which makes it a good place to show what happens when a model is pushed outside what it can represent.</p>
-    <h2 id="the-model">The model</h2>
+    <h2 id="the-model">The Model</h2>
     <dl class="spec">
       <dt>Vehicle corner</dt><dd>350 kg of body on the suspension, a 45 kg wheel assembly, a 22 kN/m spring and a 220 kN/m tire. All values are at the wheel.</dd>
       <dt>Damper</dt><dd>Five rates from 600 to 3500 N·s/m.</dd>
@@ -112,8 +112,8 @@
       <dt>Tools</dt><dd>My own Python model solved with SciPy, and the same car built from standard library components in OpenModelica.</dd>
     </dl>
     <figure class="drawing"><div class="plate"><img src="v2/dwg_suspension.webp" alt="Schematic of the body on a spring and damper, on a wheel, on a tire, crossing a bump" loading="lazy"></div><figcaption>The quarter-car model: one corner of the car as two masses, a spring, a damper and a tire.</figcaption></figure>
-    <details class="record"><summary>The case file: recorded assumptions, limits and inputs</summary><div class="record-body"><p>This is the study's own record, written before the run and saved with it, in the shorthand of the case file.</p><p class="case"><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/cases/qc_speed_bump.toml">cases/qc_speed_bump.toml ↗</a></p><p>Linear 2-DOF quarter car crossing a 40 mm x 1.0 m (1 - cos) speed bump at 5 m/s (18 km/h); wheel-rate damping swept from 600 to 3500 N.s/m against peak body acceleration, suspension travel, and dynamic tire load requirements.</p><h3>Assumptions, and how each is checked</h3><ul><li>Linear spring, damper, and tire; parameters are wheel rates (motion ratio already applied).</li><li>Point-contact tire with no tire damping; the tire never leaves the road (checked: no_wheel_lift).</li><li>Coordinates from static equilibrium; gravity cancels in the linear model.</li><li>Rigid body above one corner (no pitch/roll coupling, no seat or occupant dynamics).</li><li>Suspension travel stays inside the linear range (no bump-stop contact); REQ-QB2 bounds it.</li></ul><h3>Limits</h3><ul><li>Synthetic parameters; not calibrated to any vehicle.</li><li>Peak acceleration is unweighted; ISO 2631 frequency weighting is not applied.</li><li>Checks establish numerical verification and model-validity limits only; no test data.</li></ul><h3>Inputs</h3><div class="table-wrap"><table><thead><tr><th>Input</th><th>Value</th></tr></thead><tbody><tr><td>sprung_mass_kg</td><td>350</td></tr><tr><td>unsprung_mass_kg</td><td>45</td></tr><tr><td>suspension_stiffness_N_per_m</td><td>22000</td></tr><tr><td>damping_N_s_per_m</td><td>1500</td></tr><tr><td>tire_stiffness_N_per_m</td><td>220000</td></tr><tr><td>road</td><td>bump</td></tr><tr><td>speed_m_per_s</td><td>5</td></tr><tr><td>bump_height_m</td><td>0.04</td></tr><tr><td>bump_length_m</td><td>1</td></tr></tbody></table></div><p class="case"><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/cases/qc_bump_liftoff.toml">cases/qc_bump_liftoff.toml ↗</a></p><p>2-DOF quarter car with a tire that can leave the road, crossing a 40 mm x 1.0 m (1 - cos) bump at 10 m/s (36 km/h); wheel-rate damping swept from 600 to 3500 N.s/m against peak body acceleration, suspension travel, and dynamic tire load requirements.</p><h3>Assumptions, and how each is checked</h3><ul><li>Linear spring and damper; parameters are wheel rates (motion ratio already applied).</li><li>Point-contact tire that pushes but never pulls: load = max(0, W + kt (zr - zu)); no tire damping, no tread radius (the contact point follows the road profile).</li><li>Coordinates from static equilibrium; gravity acts explicitly while the wheel is airborne.</li><li>Rigid body above one corner (no pitch/roll coupling, no seat or occupant dynamics).</li><li>Suspension travel stays inside the linear range (no bump-stop or rebound-stop contact); REQ-QB2 bounds it.</li></ul><h3>Limits</h3><ul><li>Synthetic parameters; not calibrated to any vehicle.</li><li>Peak acceleration is unweighted; ISO 2631 frequency weighting is not applied.</li><li>A point-contact tire ignores the tire&#x27;s footprint, which smooths a short bump; the lift-off is likely overstated for a real tire.</li><li>Checks establish numerical verification only; no test data.</li></ul><h3>Inputs</h3><div class="table-wrap"><table><thead><tr><th>Input</th><th>Value</th></tr></thead><tbody><tr><td>sprung_mass_kg</td><td>350</td></tr><tr><td>unsprung_mass_kg</td><td>45</td></tr><tr><td>suspension_stiffness_N_per_m</td><td>22000</td></tr><tr><td>damping_N_s_per_m</td><td>1500</td></tr><tr><td>tire_stiffness_N_per_m</td><td>220000</td></tr><tr><td>road</td><td>bump</td></tr><tr><td>speed_m_per_s</td><td>10</td></tr><tr><td>bump_height_m</td><td>0.04</td></tr><tr><td>bump_length_m</td><td>1</td></tr><tr><td>tire_model</td><td>liftoff</td></tr></tbody></table></div></div></details>
-    <h2 id="how-it-works">How it works</h2>
+    <details class="record"><summary>The case file: recorded assumptions, limits and inputs</summary><div class="record-body"><p>This is the study's own record, written before the run and saved with it, in the shorthand of the case file.</p><p class="case"><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/cases/qc_speed_bump.toml">cases/qc_speed_bump.toml ↗</a></p><p>Linear 2-DOF quarter car crossing a 40 mm x 1.0 m (1 - cos) speed bump at 5 m/s (18 km/h); wheel-rate damping swept from 600 to 3500 N.s/m against peak body acceleration, suspension travel, and dynamic tire load requirements.</p><h3>Assumptions, and How Each Is Checked</h3><ul><li>Linear spring, damper, and tire; parameters are wheel rates (motion ratio already applied).</li><li>Point-contact tire with no tire damping; the tire never leaves the road (checked: no_wheel_lift).</li><li>Coordinates from static equilibrium; gravity cancels in the linear model.</li><li>Rigid body above one corner (no pitch/roll coupling, no seat or occupant dynamics).</li><li>Suspension travel stays inside the linear range (no bump-stop contact); REQ-QB2 bounds it.</li></ul><h3>Limits</h3><ul><li>Synthetic parameters; not calibrated to any vehicle.</li><li>Peak acceleration is unweighted; ISO 2631 frequency weighting is not applied.</li><li>Checks establish numerical verification and model-validity limits only; no test data.</li></ul><h3>Inputs</h3><div class="table-wrap"><table><thead><tr><th>Input</th><th>Value</th></tr></thead><tbody><tr><td>sprung_mass_kg</td><td>350</td></tr><tr><td>unsprung_mass_kg</td><td>45</td></tr><tr><td>suspension_stiffness_N_per_m</td><td>22000</td></tr><tr><td>damping_N_s_per_m</td><td>1500</td></tr><tr><td>tire_stiffness_N_per_m</td><td>220000</td></tr><tr><td>road</td><td>bump</td></tr><tr><td>speed_m_per_s</td><td>5</td></tr><tr><td>bump_height_m</td><td>0.04</td></tr><tr><td>bump_length_m</td><td>1</td></tr></tbody></table></div><p class="case"><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/cases/qc_bump_liftoff.toml">cases/qc_bump_liftoff.toml ↗</a></p><p>2-DOF quarter car with a tire that can leave the road, crossing a 40 mm x 1.0 m (1 - cos) bump at 10 m/s (36 km/h); wheel-rate damping swept from 600 to 3500 N.s/m against peak body acceleration, suspension travel, and dynamic tire load requirements.</p><h3>Assumptions, and How Each Is Checked</h3><ul><li>Linear spring and damper; parameters are wheel rates (motion ratio already applied).</li><li>Point-contact tire that pushes but never pulls: load = max(0, W + kt (zr - zu)); no tire damping, no tread radius (the contact point follows the road profile).</li><li>Coordinates from static equilibrium; gravity acts explicitly while the wheel is airborne.</li><li>Rigid body above one corner (no pitch/roll coupling, no seat or occupant dynamics).</li><li>Suspension travel stays inside the linear range (no bump-stop or rebound-stop contact); REQ-QB2 bounds it.</li></ul><h3>Limits</h3><ul><li>Synthetic parameters; not calibrated to any vehicle.</li><li>Peak acceleration is unweighted; ISO 2631 frequency weighting is not applied.</li><li>A point-contact tire ignores the tire&#x27;s footprint, which smooths a short bump; the lift-off is likely overstated for a real tire.</li><li>Checks establish numerical verification only; no test data.</li></ul><h3>Inputs</h3><div class="table-wrap"><table><thead><tr><th>Input</th><th>Value</th></tr></thead><tbody><tr><td>sprung_mass_kg</td><td>350</td></tr><tr><td>unsprung_mass_kg</td><td>45</td></tr><tr><td>suspension_stiffness_N_per_m</td><td>22000</td></tr><tr><td>damping_N_s_per_m</td><td>1500</td></tr><tr><td>tire_stiffness_N_per_m</td><td>220000</td></tr><tr><td>road</td><td>bump</td></tr><tr><td>speed_m_per_s</td><td>10</td></tr><tr><td>bump_height_m</td><td>0.04</td></tr><tr><td>bump_length_m</td><td>1</td></tr><tr><td>tire_model</td><td>liftoff</td></tr></tbody></table></div></div></details>
+    <h2 id="how-it-works">How It Works</h2>
     <p>The model is two masses and three springs and dampers, solved in time as the wheel crosses the bump or runs along the road. For the lift-off cases the solver stops exactly at the instant the tire load reaches zero, switches to the airborne equations, and stops again at the instant of landing.</p>
     <p>The same car is built a second time in OpenModelica, a different tool with a different solver, from its standard library of masses, springs and dampers. Two tools that share no code agreeing is strong evidence neither has a bug in how the equations are set up.</p>
     <figure>
@@ -125,7 +125,7 @@
         <figcaption>The rough-road simulation against the frequency-response prediction.</figcaption>
       </figure>
     <figure><div class="plate"><img src="v2/fig_qc_liftoff.svg" alt="Tire load and body acceleration at 36 km/h: the tire load is zero twice, then spikes to 2.6 times static on landing" loading="lazy"></div><figcaption>At 36 km/h and 600 N·s/m, the tire load sits at zero twice while the wheel is in the air, and the landing spikes it to 2.6 times static. The simulation follows the exact solution the whole way.</figcaption></figure>
-    <h2 id="how-i-checked-it">How I checked it</h2>
+    <h2 id="how-i-checked-it">How I Checked It</h2>
     <ul class="proof">
       <li><strong>Against an exact solution.</strong> Over the speed bump, the simulation matches an independent exact solution of the same equations, and the energy going in balances the energy stored and dissipated. All 30 checks pass.</li>
       <li><strong>Against a second tool.</strong> The OpenModelica model agrees with the Python model to about one part in a million.</li>
@@ -135,13 +135,13 @@
       <li><strong>The rough road.</strong> The simulated vibration levels match the prediction from the frequency response within one part in ten billion.</li>
     </ul>
     <div class="caught">
-      <h2 id="what-i-caught-along-the-way">What I caught along the way</h2>
+      <h2 id="what-i-caught-along-the-way">What I Caught Along the Way</h2>
       <ul>
         <li><strong>A wheel that left the road.</strong> I first ran the bump at 36 km/h. Every numerical check passed, but the check on whether the wheel stays on the road failed at every damper rate, with the tire load swinging to as much as 1.7 times static. A linear tire model can't handle a wheel leaving the ground, so I didn't report any of those results as a pass or a fail. I kept that run and added a case at 18 km/h.</li>
         <li><strong>What the better model showed.</strong> Then I built the model that check was asking for, a tire that can leave the road, and wrote down five predictions first. It turned out the linear model had overstated the peak body acceleration by up to 29 %. After the crest, the linear tire pulls the wheel back down, which a real tire can't do, and a stiff damper passes that pull straight into the body. The other surprise was that the worst moment for the tire is the landing. With light damping the wheel bounces twice and comes down hard enough to load the tire to 2.6 times its static load.</li>
       </ul>
     </div>
-    <h2 id="limits-and-what-i-d-do-next">Limits, and what I'd do next</h2>
+    <h2 id="limits-and-what-i-d-do-next">Limits, and What I'd Do Next</h2>
     <ul>
       <li>The tire touches the road at a single point and follows the profile exactly. A real tire's footprint smooths a short bump, so the lift-off here is probably overstated.</li>
       <li>The bump stop is linear and undamped. Real rubber stops stiffen progressively and absorb energy.</li>
@@ -153,10 +153,10 @@
     <div class="side-card"><ul class="ev-list"><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/portfolio/07-quarter-car.md">Full write-up on GitHub</a></li></ul><p class="label">Run reports, with every check and the saved inputs</p><ul class="ev-list ev-runs"><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261119-084857_qc_bump/report.md">qc_bump</a></li><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261119-084926_qc_iso_road/report.md">qc_iso_road · 08:49</a></li><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261119-085019_qc_speed_bump/report.md">qc_speed_bump</a></li><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261119-085040_qc_speed_bump_modelica/report.md">qc_speed_bump_modelica</a></li><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261120-105126_qc_bump_liftoff/report.md">qc_bump_liftoff</a></li><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261120-123312_qc_bump_stop/report.md">qc_bump_stop</a></li><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261120-124907_qc_iso_road/report.md">qc_iso_road · 12:49</a></li></ul></div>
       </article>
       <aside class="study-side" aria-label="Summary of this study">
-        <div class="side-card"><h2>At a glance</h2><dl><div><dt>Study</dt><dd>07</dd></div><div><dt>Discipline</dt><dd>Vehicle dynamics</dd></div><div><dt>Tools</dt><dd>SciPy · OpenModelica</dd></div><div><dt>Verdict</dt><dd><span class="v v-mixed">Depends on speed</span></dd></div></dl></div><div class="side-card"><h2>Requirements</h2><ul class="side-reqs"><li><span class="r-what">Bump at 18 km/h: comfort, travel, tire load</span><span class="r-num">4.0 m/s², 40 mm, ±70 % · all met from 600 to 1000 N·s/m</span><span class="chip pass">Met</span></li><li><span class="r-what">Bump at 36 km/h: peak body acceleration</span><span class="r-num">≤ 4.0 m/s² · 5.2 m/s², and the wheel leaves the road at every rate</span><span class="chip fail">Not met</span></li><li><span class="r-what">Bump-stop force at 36 km/h</span><span class="r-num">≤ 2.5 kN · 2.8 kN at 600 N·s/m (met from 1000 up)</span><span class="chip fail">Not met</span></li><li><span class="r-what">Rough road at 72 km/h: RMS body acceleration</span><span class="r-num">≤ 1.0 m/s² · missed at every damper rate</span><span class="chip fail">Not met</span></li></ul></div><div class="side-card side-toc"><h2>On this page</h2><ul class="toc"><li><a href="#the-question">The question</a></li><li><a href="#the-answer">The answer</a></li><li><a href="#why-it-matters">Why it matters</a></li><li><a href="#the-model">The model</a></li><li><a href="#how-it-works">How it works</a></li><li><a href="#how-i-checked-it">How I checked it</a></li><li><a href="#what-i-caught-along-the-way">What I caught along the way</a></li><li><a href="#limits-and-what-i-d-do-next">Limits, and what I&#x27;d do next</a></li><li><a href="#evidence">Evidence</a></li></ul></div>
+        <div class="side-card"><h2>At a Glance</h2><dl><div><dt>Study</dt><dd>07</dd></div><div><dt>Discipline</dt><dd>Vehicle dynamics</dd></div><div><dt>Tools</dt><dd>SciPy · OpenModelica</dd></div><div><dt>Verdict</dt><dd><span class="v v-mixed">Depends on speed</span></dd></div></dl></div><div class="side-card"><h2>Requirements</h2><ul class="side-reqs"><li><span class="r-what">Bump at 18 km/h: comfort, travel, tire load</span><span class="r-num">4.0 m/s², 40 mm, ±70 % · all met from 600 to 1000 N·s/m</span><span class="chip pass">Met</span></li><li><span class="r-what">Bump at 36 km/h: peak body acceleration</span><span class="r-num">≤ 4.0 m/s² · 5.2 m/s², and the wheel leaves the road at every rate</span><span class="chip fail">Not met</span></li><li><span class="r-what">Bump-stop force at 36 km/h</span><span class="r-num">≤ 2.5 kN · 2.8 kN at 600 N·s/m (met from 1000 up)</span><span class="chip fail">Not met</span></li><li><span class="r-what">Rough road at 72 km/h: RMS body acceleration</span><span class="r-num">≤ 1.0 m/s² · missed at every damper rate</span><span class="chip fail">Not met</span></li></ul></div><div class="side-card side-toc"><h2>On This Page</h2><ul class="toc"><li><a href="#the-question">The question</a></li><li><a href="#the-answer">The answer</a></li><li><a href="#why-it-matters">Why it matters</a></li><li><a href="#the-model">The model</a></li><li><a href="#how-it-works">How it works</a></li><li><a href="#how-i-checked-it">How I checked it</a></li><li><a href="#what-i-caught-along-the-way">What I caught along the way</a></li><li><a href="#limits-and-what-i-d-do-next">Limits, and what I&#x27;d do next</a></li><li><a href="#evidence">Evidence</a></li></ul></div>
       </aside>
     </div>
-    <nav class="pager" aria-label="More studies"><a class="prev" href="heat-sink-fin.html"><small>← Previous study</small><b>Heat-sink fin temperature</b></a><a class="next" href="mounting-plate.html"><small>Next study →</small><b>Parametric mounting plate</b></a></nav>
+    <nav class="pager" aria-label="More studies"><a class="prev" href="heat-sink-fin.html"><small>← Previous study</small><b>Heat-Sink Fin Temperature</b></a><a class="next" href="mounting-plate.html"><small>Next study →</small><b>Parametric Mounting Plate</b></a></nav>
   </div>
 
 </main>
@@ -166,7 +166,7 @@
     <section class="contact" id="contact" aria-labelledby="contact-title">
       <div class="band-head">
         <p class="eyebrow">Contact</p>
-        <h2 id="contact-title">Get in touch</h2>
+        <h2 id="contact-title">Get in Touch</h2>
         <p class="contact-name"><b>Justin Smith</b>, mechanical engineer (MS), with a background in automotive.</p>
         <p>If something here is close to what you need, or you have a model that needs building or checking, send me a note and tell me about it. I'm available for remote contract work.</p>
       </div>

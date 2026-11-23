@@ -3,11 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Mass-spring-damper baseline · Justin Smith</title>
+<title>Mass-Spring-Damper Baseline · Justin Smith</title>
 <meta name="description" content="All 72 checks pass, and the two tools agree to a few parts per million.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://cptgrumpus.github.io/engineering-agent-lab/mass-spring-damper.html">
-<meta property="og:title" content="Mass-spring-damper baseline">
+<meta property="og:title" content="Mass-Spring-Damper Baseline">
 <meta property="og:description" content="All 72 checks pass, and the two tools agree to a few parts per million.">
 <meta property="og:image" content="https://cptgrumpus.github.io/engineering-agent-lab/v2/og_mass-spring-damper.png">
 <meta property="og:image:width" content="1200">
@@ -30,9 +30,9 @@
     <div class="navgroup">
       <div class="topnav">
         <a href="index.html#work" aria-current="page">Studies</a>
-        <a href="how-i-work.html">How I work</a>
+        <a href="how-i-work.html">How I Work</a>
         <a href="grading.html">Grading</a>
-        <a href="in-progress.html">In progress</a>
+        <a href="in-progress.html">In Progress</a>
         <a href="requirements.html">Requirements</a>
       </div>
       <a class="nav-contact" href="#contact">Contact</a>
@@ -40,9 +40,9 @@
         <summary>Menu</summary>
         <div class="menu-panel">
         <a href="index.html#work" aria-current="page">Studies</a>
-        <a href="how-i-work.html">How I work</a>
+        <a href="how-i-work.html">How I Work</a>
         <a href="grading.html">Grading</a>
-        <a href="in-progress.html">In progress</a>
+        <a href="in-progress.html">In Progress</a>
         <a href="requirements.html">Requirements</a>
           <a href="#contact">Contact</a>
         </div>
@@ -56,7 +56,7 @@
     <nav class="crumbs" aria-label="Breadcrumb"><a href="index.html#work">All studies</a><span>/</span><span>Workflow validation</span></nav>
     <header class="study-hero">
       <p class="eyebrow">Study 9 · Python and OpenModelica</p>
-      <h1>Mass-spring-damper baseline</h1>
+      <h1>Mass-Spring-Damper Baseline</h1>
       <span class="v v-pass">Passes</span>
       <p class="study-lede">All 72 checks pass, and the two tools agree to a few parts per million.</p>
     </header>
@@ -86,18 +86,18 @@
     <div class="study-layout">
       <article class="study-main">
 
-    <h2 id="the-question">The question</h2>
+    <h2 id="the-question">The Question</h2>
     <p>A 1 kg mass on a spring and damper is hit with a sudden 10 N force. How much damping does it need to overshoot by no more than 20 %, settle within 0.5 s and deflect no more than 12 mm? And, more to the point, does the workflow that answers it get a known answer right?</p>
-    <h2 id="the-answer">The answer</h2>
+    <h2 id="the-answer">The Answer</h2>
     <div class="answer">
       <div class="chips"><span class="chip pass">All 72 checks pass</span><span class="chip pass">Two tools agree to a few parts per million</span></div>
       <p><strong>A damping ratio of 0.5 or more meets all three requirements.</strong> Below that the mass overshoots too far and rings for too long.</p>
       <p>This was the first study, and its real job was to prove the workflow on a problem with a known answer. Every result is checked against the exact textbook solution, and a second tool, OpenModelica, solves the same problem independently.</p>
     </div>
-    <h2 id="why-it-matters">Why it matters</h2>
+    <h2 id="why-it-matters">Why It Matters</h2>
     <p>Before trusting a workflow on a problem nobody knows the answer to, it has to get a problem everybody knows the answer to exactly right. The mass-spring-damper is that problem: its response to a step force has a closed-form solution found in any vibration textbook.</p>
     <p>Everything the later studies rely on was built and tested here first: a case file that records the question and the tolerances before the run, a solver, a set of automatic checks, a second tool for cross-checking, and a report that ties each requirement to its evidence. If any of that were wrong, this is where it would show.</p>
-    <h2 id="the-model">The model</h2>
+    <h2 id="the-model">The Model</h2>
     <dl class="spec">
       <dt>System</dt><dd>One mass, 1 kg, on a 1000 N/m spring and a viscous damper. It moves in one direction only.</dd>
       <dt>Load</dt><dd>A 10 N force applied suddenly at time zero, from rest.</dd>
@@ -106,8 +106,8 @@
       <dt>Tools</dt><dd>A Python model solved with SciPy, and the same system in OpenModelica.</dd>
     </dl>
     <figure class="drawing"><div class="plate"><img src="v2/dwg_baseline.webp" alt="Schematic of a mass on a spring and a damper with a force applied" loading="lazy"></div><figcaption>The system: one mass on a spring and a damper, pushed by a sudden force.</figcaption></figure>
-    <details class="record"><summary>The case file: recorded assumptions, limits and inputs</summary><div class="record-body"><p>This is the study's own record, written before the run and saved with it, in the shorthand of the case file.</p><p class="case"><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/cases/msd_step.toml">cases/msd_step.toml ↗</a></p><p>1-DOF mass-spring-damper subjected to a 10 N step force; damping-ratio sweep against overshoot, settling-time, and deflection requirements.</p><h3>Assumptions, and how each is checked</h3><ul><li>Single translational degree of freedom; no gravity or preload.</li><li>Linear spring and viscous damper, constant over the full stroke.</li><li>Ideal step force applied at t = 0 from rest (x = 0, v = 0).</li><li>Rigid mass; no compliance or friction elsewhere in the load path.</li></ul><h3>Limits</h3><ul><li>Synthetic parameters; not calibrated to any physical part.</li><li>Checks establish numerical verification only. No physical validation data exists for this case.</li></ul><h3>Inputs</h3><div class="table-wrap"><table><thead><tr><th>Input</th><th>Value</th></tr></thead><tbody><tr><td>mass_kg</td><td>1</td></tr><tr><td>stiffness_N_per_m</td><td>1000</td></tr><tr><td>damping_ratio</td><td>0.5</td></tr><tr><td>step_force_N</td><td>10</td></tr></tbody></table></div></div></details>
-    <h2 id="how-i-checked-it">How I checked it</h2>
+    <details class="record"><summary>The case file: recorded assumptions, limits and inputs</summary><div class="record-body"><p>This is the study's own record, written before the run and saved with it, in the shorthand of the case file.</p><p class="case"><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/cases/msd_step.toml">cases/msd_step.toml ↗</a></p><p>1-DOF mass-spring-damper subjected to a 10 N step force; damping-ratio sweep against overshoot, settling-time, and deflection requirements.</p><h3>Assumptions, and How Each Is Checked</h3><ul><li>Single translational degree of freedom; no gravity or preload.</li><li>Linear spring and viscous damper, constant over the full stroke.</li><li>Ideal step force applied at t = 0 from rest (x = 0, v = 0).</li><li>Rigid mass; no compliance or friction elsewhere in the load path.</li></ul><h3>Limits</h3><ul><li>Synthetic parameters; not calibrated to any physical part.</li><li>Checks establish numerical verification only. No physical validation data exists for this case.</li></ul><h3>Inputs</h3><div class="table-wrap"><table><thead><tr><th>Input</th><th>Value</th></tr></thead><tbody><tr><td>mass_kg</td><td>1</td></tr><tr><td>stiffness_N_per_m</td><td>1000</td></tr><tr><td>damping_ratio</td><td>0.5</td></tr><tr><td>step_force_N</td><td>10</td></tr></tbody></table></div></div></details>
+    <h2 id="how-i-checked-it">How I Checked It</h2>
     <ul class="proof">
       <li><strong>Against the exact solution.</strong> The simulated motion is compared with the textbook formula at every damping ratio.</li>
       <li><strong>Energy balance.</strong> The work done by the force equals the energy stored in the spring plus the energy the damper has dissipated.</li>
@@ -116,12 +116,12 @@
       <li><strong>A second tool.</strong> OpenModelica agrees with the Python model to a few parts per million.</li>
     </ul>
     <div class="caught">
-      <h2 id="what-i-caught-along-the-way">What I caught along the way</h2>
+      <h2 id="what-i-caught-along-the-way">What I Caught Along the Way</h2>
       <ul>
         <li>When I was hooking up OpenModelica, the check that results land on the requested time points failed. OpenModelica was quietly ignoring some of the settings I passed it. I changed how the settings get passed, and that check has been watching for it ever since.</li>
       </ul>
     </div>
-    <h2 id="limits-and-what-i-d-do-next">Limits, and what I'd do next</h2>
+    <h2 id="limits-and-what-i-d-do-next">Limits, and What I'd Do Next</h2>
     <ul>
       <li>It's a textbook problem used to prove the workflow, not a design study.</li>
       <li>The parameters are made up, and there's nothing to validate against beyond the exact solution.</li>
@@ -130,10 +130,10 @@
     <div class="side-card"><ul class="ev-list"><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/portfolio/09-mass-spring-damper.md">Full write-up on GitHub</a></li></ul><p class="label">Run reports, with every check and the saved inputs</p><ul class="ev-list ev-runs"><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261118-200205_msd_step/report.md">msd_step</a></li><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261118-213145_msd_step_modelica/report.md">msd_step_modelica</a></li></ul></div>
       </article>
       <aside class="study-side" aria-label="Summary of this study">
-        <div class="side-card"><h2>At a glance</h2><dl><div><dt>Study</dt><dd>09</dd></div><div><dt>Discipline</dt><dd>Workflow validation</dd></div><div><dt>Tools</dt><dd>SciPy · OpenModelica</dd></div><div><dt>Verdict</dt><dd><span class="v v-pass">Passes</span></dd></div></dl></div><div class="side-card"><h2>Requirements</h2><ul class="side-reqs"><li><span class="r-what">Overshoot, settling time, deflection</span><span class="r-num">≤ 20 %, ≤ 0.5 s, ≤ 12 mm · all met for damping ratio ≥ 0.5</span><span class="chip pass">Met</span></li></ul></div><div class="side-card side-toc"><h2>On this page</h2><ul class="toc"><li><a href="#the-question">The question</a></li><li><a href="#the-answer">The answer</a></li><li><a href="#why-it-matters">Why it matters</a></li><li><a href="#the-model">The model</a></li><li><a href="#how-i-checked-it">How I checked it</a></li><li><a href="#what-i-caught-along-the-way">What I caught along the way</a></li><li><a href="#limits-and-what-i-d-do-next">Limits, and what I&#x27;d do next</a></li><li><a href="#evidence">Evidence</a></li></ul></div>
+        <div class="side-card"><h2>At a Glance</h2><dl><div><dt>Study</dt><dd>09</dd></div><div><dt>Discipline</dt><dd>Workflow validation</dd></div><div><dt>Tools</dt><dd>SciPy · OpenModelica</dd></div><div><dt>Verdict</dt><dd><span class="v v-pass">Passes</span></dd></div></dl></div><div class="side-card"><h2>Requirements</h2><ul class="side-reqs"><li><span class="r-what">Overshoot, settling time, deflection</span><span class="r-num">≤ 20 %, ≤ 0.5 s, ≤ 12 mm · all met for damping ratio ≥ 0.5</span><span class="chip pass">Met</span></li></ul></div><div class="side-card side-toc"><h2>On This Page</h2><ul class="toc"><li><a href="#the-question">The question</a></li><li><a href="#the-answer">The answer</a></li><li><a href="#why-it-matters">Why it matters</a></li><li><a href="#the-model">The model</a></li><li><a href="#how-i-checked-it">How I checked it</a></li><li><a href="#what-i-caught-along-the-way">What I caught along the way</a></li><li><a href="#limits-and-what-i-d-do-next">Limits, and what I&#x27;d do next</a></li><li><a href="#evidence">Evidence</a></li></ul></div>
       </aside>
     </div>
-    <nav class="pager" aria-label="More studies"><a class="prev" href="mounting-plate.html"><small>← Previous study</small><b>Parametric mounting plate</b></a></nav>
+    <nav class="pager" aria-label="More studies"><a class="prev" href="mounting-plate.html"><small>← Previous study</small><b>Parametric Mounting Plate</b></a></nav>
   </div>
 
 </main>
@@ -143,7 +143,7 @@
     <section class="contact" id="contact" aria-labelledby="contact-title">
       <div class="band-head">
         <p class="eyebrow">Contact</p>
-        <h2 id="contact-title">Get in touch</h2>
+        <h2 id="contact-title">Get in Touch</h2>
         <p class="contact-name"><b>Justin Smith</b>, mechanical engineer (MS), with a background in automotive.</p>
         <p>If something here is close to what you need, or you have a model that needs building or checking, send me a note and tell me about it. I'm available for remote contract work.</p>
       </div>
