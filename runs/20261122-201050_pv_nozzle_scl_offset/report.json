@@ -1,0 +1,907 @@
+{
+  "points": [
+    {
+      "label": "p00_scl_toe_offset_mm-0",
+      "parameters": {
+        "shell_inner_radius_mm": 500.0,
+        "shell_thickness_mm": 16.0,
+        "shell_half_length_mm": 1000.0,
+        "nozzle_inner_radius_mm": 100.0,
+        "nozzle_thickness_mm": 12.0,
+        "nozzle_length_mm": 350.0,
+        "weld_fillet_radius_mm": 10.0,
+        "pressure_MPa": 3.5,
+        "youngs_modulus_MPa": 200000.0,
+        "poisson_ratio": 0.3,
+        "element_size_local_mm": 4.0,
+        "element_size_far_mm": 14.0,
+        "refine_radius_mm": 140.0,
+        "mesh_growth": 0.08,
+        "allowable_stress_MPa": 138.0,
+        "scl_toe_offset_mm": 0.0
+      },
+      "derived": {
+        "hoop_membrane_pR_over_t_MPa": 109.375,
+        "allowable_PL_MPa": 207.0,
+        "allowable_PS_MPa": 414.0,
+        "d_over_D": 0.2,
+        "sqrt_Rt_mm": 90.15542135667715,
+        "pressure_area_mean_stress_MPa": 153.21774978567876
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "cad_valid",
+          "description": "CadQuery B-rep valid (0 = yes)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "mesh_volume",
+          "description": "|mesh volume (straight-sided tets) - CAD volume| / CAD volume",
+          "kind": "numerical",
+          "value": 1.0947304925947385e-05,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "equilibrium_y",
+          "description": "|support reaction on y = 0 - exact pressure resultant (p x projected wetted area)| / resultant",
+          "kind": "numerical",
+          "value": 2.7562636090515695e-07,
+          "tolerance": 1e-05,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "equilibrium_z",
+          "description": "|support reaction on z = 0 - exact resultant (end thrust + nozzle bore)| / resultant",
+          "kind": "numerical",
+          "value": 2.961960962640968e-07,
+          "tolerance": 1e-05,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "self_balance_x",
+          "description": "|reaction at the single axial support| / quarter nozzle thrust (closed vessel: 0)",
+          "kind": "numerical",
+          "value": 8.257205819861936e-07,
+          "tolerance": 1e-05,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "lame_bore_hoop",
+          "description": "|FE hoop stress at the bore on the far line - Lame| / Lame (exact)",
+          "kind": "numerical",
+          "value": 0.004790181615322708,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "lame_membrane",
+          "description": "|FE linearised membrane (von Mises) on the far line - the same linearisation of the Lame stresses| / Lame (exact)",
+          "kind": "numerical",
+          "value": 0.00022440522537096495,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "scl_inside_mesh",
+          "description": "max barycentric violation of the SCL sample points (0 = inside an element; points on a curved surface lie about h^2 / 8R outside the straight-sided element, where the quadratic shape functions extrapolate smoothly)",
+          "kind": "validity",
+          "value": 0.0011666616628924096,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "scl_crotch_inside_mesh",
+          "description": "max barycentric violation of the crotch-line sample points (their outer end lies on the weld fillet, radius rf, so about h^2 / 8 rf outside the straight-sided element: a larger chord error than on the shell's surfaces)",
+          "kind": "validity",
+          "value": 8.654269326167112e-08,
+          "tolerance": 0.05,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "small_displacement",
+          "description": "max displacement / shell thickness (linear geometry)",
+          "kind": "validity",
+          "value": 0.03747686698620314,
+          "tolerance": 0.1,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-PV1",
+          "text": "General primary membrane stress in the shell away from the nozzle shall not exceed S (138 MPa).",
+          "metric": "pm_general_MPa",
+          "operator": "<=",
+          "limit": 138.0,
+          "units": "MPa",
+          "value": 96.23479689994446,
+          "margin": 41.765203100055544,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-PV2",
+          "text": "Local primary membrane stress at the nozzle junction (all classification lines) shall not exceed 1.5 S (207 MPa).",
+          "metric": "pl_max_MPa",
+          "operator": "<=",
+          "limit": 207.0,
+          "units": "MPa",
+          "value": 205.13353002286513,
+          "margin": 1.8664699771348694,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-PV3",
+          "text": "Primary plus secondary stress at the nozzle junction (membrane plus bending, all classification lines) shall not exceed S_PS = 3 S (414 MPa).",
+          "metric": "pq_max_MPa",
+          "operator": "<=",
+          "limit": 414.0,
+          "units": "MPa",
+          "value": 240.23211141326112,
+          "margin": 173.76788858673888,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-PV2C",
+          "text": "Local primary membrane stress on the crotch classification lines shall not exceed 1.5 S (207 MPa) (REQ-PV2 with the lines through the crotch corner instead of at the fillet toes).",
+          "metric": "pl_crotch_max_MPa",
+          "operator": "<=",
+          "limit": 207.0,
+          "units": "MPa",
+          "value": 256.62666363000983,
+          "margin": -49.62666363000983,
+          "verdict": "FAIL"
+        },
+        {
+          "id": "REQ-PV3C",
+          "text": "Primary plus secondary stress on the crotch classification lines shall not exceed S_PS = 3 S (414 MPa).",
+          "metric": "pq_crotch_max_MPa",
+          "operator": "<=",
+          "limit": 414.0,
+          "units": "MPa",
+          "value": 351.9647697178948,
+          "margin": 62.0352302821052,
+          "verdict": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p01_scl_toe_offset_mm-2.5",
+      "parameters": {
+        "shell_inner_radius_mm": 500.0,
+        "shell_thickness_mm": 16.0,
+        "shell_half_length_mm": 1000.0,
+        "nozzle_inner_radius_mm": 100.0,
+        "nozzle_thickness_mm": 12.0,
+        "nozzle_length_mm": 350.0,
+        "weld_fillet_radius_mm": 10.0,
+        "pressure_MPa": 3.5,
+        "youngs_modulus_MPa": 200000.0,
+        "poisson_ratio": 0.3,
+        "element_size_local_mm": 4.0,
+        "element_size_far_mm": 14.0,
+        "refine_radius_mm": 140.0,
+        "mesh_growth": 0.08,
+        "allowable_stress_MPa": 138.0,
+        "scl_toe_offset_mm": 2.5
+      },
+      "derived": {
+        "hoop_membrane_pR_over_t_MPa": 109.375,
+        "allowable_PL_MPa": 207.0,
+        "allowable_PS_MPa": 414.0,
+        "d_over_D": 0.2,
+        "sqrt_Rt_mm": 90.15542135667715,
+        "pressure_area_mean_stress_MPa": 153.21774978567876
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "cad_valid",
+          "description": "CadQuery B-rep valid (0 = yes)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "mesh_volume",
+          "description": "|mesh volume (straight-sided tets) - CAD volume| / CAD volume",
+          "kind": "numerical",
+          "value": 1.0947304925947385e-05,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "equilibrium_y",
+          "description": "|support reaction on y = 0 - exact pressure resultant (p x projected wetted area)| / resultant",
+          "kind": "numerical",
+          "value": 2.7562636090515695e-07,
+          "tolerance": 1e-05,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "equilibrium_z",
+          "description": "|support reaction on z = 0 - exact resultant (end thrust + nozzle bore)| / resultant",
+          "kind": "numerical",
+          "value": 2.961960962640968e-07,
+          "tolerance": 1e-05,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "self_balance_x",
+          "description": "|reaction at the single axial support| / quarter nozzle thrust (closed vessel: 0)",
+          "kind": "numerical",
+          "value": 8.257205819861936e-07,
+          "tolerance": 1e-05,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "lame_bore_hoop",
+          "description": "|FE hoop stress at the bore on the far line - Lame| / Lame (exact)",
+          "kind": "numerical",
+          "value": 0.004790181615322708,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "lame_membrane",
+          "description": "|FE linearised membrane (von Mises) on the far line - the same linearisation of the Lame stresses| / Lame (exact)",
+          "kind": "numerical",
+          "value": 0.00022440522537096495,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "scl_inside_mesh",
+          "description": "max barycentric violation of the SCL sample points (0 = inside an element; points on a curved surface lie about h^2 / 8R outside the straight-sided element, where the quadratic shape functions extrapolate smoothly)",
+          "kind": "validity",
+          "value": 0.0007647595193567606,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "scl_crotch_inside_mesh",
+          "description": "max barycentric violation of the crotch-line sample points (their outer end lies on the weld fillet, radius rf, so about h^2 / 8 rf outside the straight-sided element: a larger chord error than on the shell's surfaces)",
+          "kind": "validity",
+          "value": 8.654269326167112e-08,
+          "tolerance": 0.05,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "small_displacement",
+          "description": "max displacement / shell thickness (linear geometry)",
+          "kind": "validity",
+          "value": 0.03747686698620314,
+          "tolerance": 0.1,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-PV1",
+          "text": "General primary membrane stress in the shell away from the nozzle shall not exceed S (138 MPa).",
+          "metric": "pm_general_MPa",
+          "operator": "<=",
+          "limit": 138.0,
+          "units": "MPa",
+          "value": 96.23479689994446,
+          "margin": 41.765203100055544,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-PV2",
+          "text": "Local primary membrane stress at the nozzle junction (all classification lines) shall not exceed 1.5 S (207 MPa).",
+          "metric": "pl_max_MPa",
+          "operator": "<=",
+          "limit": 207.0,
+          "units": "MPa",
+          "value": 200.61057696301725,
+          "margin": 6.389423036982748,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-PV3",
+          "text": "Primary plus secondary stress at the nozzle junction (membrane plus bending, all classification lines) shall not exceed S_PS = 3 S (414 MPa).",
+          "metric": "pq_max_MPa",
+          "operator": "<=",
+          "limit": 414.0,
+          "units": "MPa",
+          "value": 228.0150747359624,
+          "margin": 185.9849252640376,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-PV2C",
+          "text": "Local primary membrane stress on the crotch classification lines shall not exceed 1.5 S (207 MPa) (REQ-PV2 with the lines through the crotch corner instead of at the fillet toes).",
+          "metric": "pl_crotch_max_MPa",
+          "operator": "<=",
+          "limit": 207.0,
+          "units": "MPa",
+          "value": 256.62666363000983,
+          "margin": -49.62666363000983,
+          "verdict": "FAIL"
+        },
+        {
+          "id": "REQ-PV3C",
+          "text": "Primary plus secondary stress on the crotch classification lines shall not exceed S_PS = 3 S (414 MPa).",
+          "metric": "pq_crotch_max_MPa",
+          "operator": "<=",
+          "limit": 414.0,
+          "units": "MPa",
+          "value": 351.9647697178948,
+          "margin": 62.0352302821052,
+          "verdict": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p02_scl_toe_offset_mm-5",
+      "parameters": {
+        "shell_inner_radius_mm": 500.0,
+        "shell_thickness_mm": 16.0,
+        "shell_half_length_mm": 1000.0,
+        "nozzle_inner_radius_mm": 100.0,
+        "nozzle_thickness_mm": 12.0,
+        "nozzle_length_mm": 350.0,
+        "weld_fillet_radius_mm": 10.0,
+        "pressure_MPa": 3.5,
+        "youngs_modulus_MPa": 200000.0,
+        "poisson_ratio": 0.3,
+        "element_size_local_mm": 4.0,
+        "element_size_far_mm": 14.0,
+        "refine_radius_mm": 140.0,
+        "mesh_growth": 0.08,
+        "allowable_stress_MPa": 138.0,
+        "scl_toe_offset_mm": 5.0
+      },
+      "derived": {
+        "hoop_membrane_pR_over_t_MPa": 109.375,
+        "allowable_PL_MPa": 207.0,
+        "allowable_PS_MPa": 414.0,
+        "d_over_D": 0.2,
+        "sqrt_Rt_mm": 90.15542135667715,
+        "pressure_area_mean_stress_MPa": 153.21774978567876
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "cad_valid",
+          "description": "CadQuery B-rep valid (0 = yes)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "mesh_volume",
+          "description": "|mesh volume (straight-sided tets) - CAD volume| / CAD volume",
+          "kind": "numerical",
+          "value": 1.0947304925947385e-05,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "equilibrium_y",
+          "description": "|support reaction on y = 0 - exact pressure resultant (p x projected wetted area)| / resultant",
+          "kind": "numerical",
+          "value": 2.7562636090515695e-07,
+          "tolerance": 1e-05,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "equilibrium_z",
+          "description": "|support reaction on z = 0 - exact resultant (end thrust + nozzle bore)| / resultant",
+          "kind": "numerical",
+          "value": 2.961960962640968e-07,
+          "tolerance": 1e-05,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "self_balance_x",
+          "description": "|reaction at the single axial support| / quarter nozzle thrust (closed vessel: 0)",
+          "kind": "numerical",
+          "value": 8.257205819861936e-07,
+          "tolerance": 1e-05,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "lame_bore_hoop",
+          "description": "|FE hoop stress at the bore on the far line - Lame| / Lame (exact)",
+          "kind": "numerical",
+          "value": 0.004790181615322708,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "lame_membrane",
+          "description": "|FE linearised membrane (von Mises) on the far line - the same linearisation of the Lame stresses| / Lame (exact)",
+          "kind": "numerical",
+          "value": 0.00022440522537096495,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "scl_inside_mesh",
+          "description": "max barycentric violation of the SCL sample points (0 = inside an element; points on a curved surface lie about h^2 / 8R outside the straight-sided element, where the quadratic shape functions extrapolate smoothly)",
+          "kind": "validity",
+          "value": 0.0005432979612181961,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "scl_crotch_inside_mesh",
+          "description": "max barycentric violation of the crotch-line sample points (their outer end lies on the weld fillet, radius rf, so about h^2 / 8 rf outside the straight-sided element: a larger chord error than on the shell's surfaces)",
+          "kind": "validity",
+          "value": 8.654269326167112e-08,
+          "tolerance": 0.05,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "small_displacement",
+          "description": "max displacement / shell thickness (linear geometry)",
+          "kind": "validity",
+          "value": 0.03747686698620314,
+          "tolerance": 0.1,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-PV1",
+          "text": "General primary membrane stress in the shell away from the nozzle shall not exceed S (138 MPa).",
+          "metric": "pm_general_MPa",
+          "operator": "<=",
+          "limit": 138.0,
+          "units": "MPa",
+          "value": 96.23479689994446,
+          "margin": 41.765203100055544,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-PV2",
+          "text": "Local primary membrane stress at the nozzle junction (all classification lines) shall not exceed 1.5 S (207 MPa).",
+          "metric": "pl_max_MPa",
+          "operator": "<=",
+          "limit": 207.0,
+          "units": "MPa",
+          "value": 195.72989761301838,
+          "margin": 11.27010238698162,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-PV3",
+          "text": "Primary plus secondary stress at the nozzle junction (membrane plus bending, all classification lines) shall not exceed S_PS = 3 S (414 MPa).",
+          "metric": "pq_max_MPa",
+          "operator": "<=",
+          "limit": 414.0,
+          "units": "MPa",
+          "value": 217.2352892140577,
+          "margin": 196.7647107859423,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-PV2C",
+          "text": "Local primary membrane stress on the crotch classification lines shall not exceed 1.5 S (207 MPa) (REQ-PV2 with the lines through the crotch corner instead of at the fillet toes).",
+          "metric": "pl_crotch_max_MPa",
+          "operator": "<=",
+          "limit": 207.0,
+          "units": "MPa",
+          "value": 256.62666363000983,
+          "margin": -49.62666363000983,
+          "verdict": "FAIL"
+        },
+        {
+          "id": "REQ-PV3C",
+          "text": "Primary plus secondary stress on the crotch classification lines shall not exceed S_PS = 3 S (414 MPa).",
+          "metric": "pq_crotch_max_MPa",
+          "operator": "<=",
+          "limit": 414.0,
+          "units": "MPa",
+          "value": 351.9647697178948,
+          "margin": 62.0352302821052,
+          "verdict": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p03_scl_toe_offset_mm-10",
+      "parameters": {
+        "shell_inner_radius_mm": 500.0,
+        "shell_thickness_mm": 16.0,
+        "shell_half_length_mm": 1000.0,
+        "nozzle_inner_radius_mm": 100.0,
+        "nozzle_thickness_mm": 12.0,
+        "nozzle_length_mm": 350.0,
+        "weld_fillet_radius_mm": 10.0,
+        "pressure_MPa": 3.5,
+        "youngs_modulus_MPa": 200000.0,
+        "poisson_ratio": 0.3,
+        "element_size_local_mm": 4.0,
+        "element_size_far_mm": 14.0,
+        "refine_radius_mm": 140.0,
+        "mesh_growth": 0.08,
+        "allowable_stress_MPa": 138.0,
+        "scl_toe_offset_mm": 10.0
+      },
+      "derived": {
+        "hoop_membrane_pR_over_t_MPa": 109.375,
+        "allowable_PL_MPa": 207.0,
+        "allowable_PS_MPa": 414.0,
+        "d_over_D": 0.2,
+        "sqrt_Rt_mm": 90.15542135667715,
+        "pressure_area_mean_stress_MPa": 153.21774978567876
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "cad_valid",
+          "description": "CadQuery B-rep valid (0 = yes)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "mesh_volume",
+          "description": "|mesh volume (straight-sided tets) - CAD volume| / CAD volume",
+          "kind": "numerical",
+          "value": 1.0947304925947385e-05,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "equilibrium_y",
+          "description": "|support reaction on y = 0 - exact pressure resultant (p x projected wetted area)| / resultant",
+          "kind": "numerical",
+          "value": 2.7562636090515695e-07,
+          "tolerance": 1e-05,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "equilibrium_z",
+          "description": "|support reaction on z = 0 - exact resultant (end thrust + nozzle bore)| / resultant",
+          "kind": "numerical",
+          "value": 2.961960962640968e-07,
+          "tolerance": 1e-05,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "self_balance_x",
+          "description": "|reaction at the single axial support| / quarter nozzle thrust (closed vessel: 0)",
+          "kind": "numerical",
+          "value": 8.257205819861936e-07,
+          "tolerance": 1e-05,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "lame_bore_hoop",
+          "description": "|FE hoop stress at the bore on the far line - Lame| / Lame (exact)",
+          "kind": "numerical",
+          "value": 0.004790181615322708,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "lame_membrane",
+          "description": "|FE linearised membrane (von Mises) on the far line - the same linearisation of the Lame stresses| / Lame (exact)",
+          "kind": "numerical",
+          "value": 0.00022440522537096495,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "scl_inside_mesh",
+          "description": "max barycentric violation of the SCL sample points (0 = inside an element; points on a curved surface lie about h^2 / 8R outside the straight-sided element, where the quadratic shape functions extrapolate smoothly)",
+          "kind": "validity",
+          "value": 0.0004347333808359112,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "scl_crotch_inside_mesh",
+          "description": "max barycentric violation of the crotch-line sample points (their outer end lies on the weld fillet, radius rf, so about h^2 / 8 rf outside the straight-sided element: a larger chord error than on the shell's surfaces)",
+          "kind": "validity",
+          "value": 8.654269326167112e-08,
+          "tolerance": 0.05,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "small_displacement",
+          "description": "max displacement / shell thickness (linear geometry)",
+          "kind": "validity",
+          "value": 0.03747686698620314,
+          "tolerance": 0.1,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-PV1",
+          "text": "General primary membrane stress in the shell away from the nozzle shall not exceed S (138 MPa).",
+          "metric": "pm_general_MPa",
+          "operator": "<=",
+          "limit": 138.0,
+          "units": "MPa",
+          "value": 96.23479689994446,
+          "margin": 41.765203100055544,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-PV2",
+          "text": "Local primary membrane stress at the nozzle junction (all classification lines) shall not exceed 1.5 S (207 MPa).",
+          "metric": "pl_max_MPa",
+          "operator": "<=",
+          "limit": 207.0,
+          "units": "MPa",
+          "value": 185.56096280613923,
+          "margin": 21.43903719386077,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-PV3",
+          "text": "Primary plus secondary stress at the nozzle junction (membrane plus bending, all classification lines) shall not exceed S_PS = 3 S (414 MPa).",
+          "metric": "pq_max_MPa",
+          "operator": "<=",
+          "limit": 414.0,
+          "units": "MPa",
+          "value": 198.7796428660153,
+          "margin": 215.2203571339847,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-PV2C",
+          "text": "Local primary membrane stress on the crotch classification lines shall not exceed 1.5 S (207 MPa) (REQ-PV2 with the lines through the crotch corner instead of at the fillet toes).",
+          "metric": "pl_crotch_max_MPa",
+          "operator": "<=",
+          "limit": 207.0,
+          "units": "MPa",
+          "value": 256.62666363000983,
+          "margin": -49.62666363000983,
+          "verdict": "FAIL"
+        },
+        {
+          "id": "REQ-PV3C",
+          "text": "Primary plus secondary stress on the crotch classification lines shall not exceed S_PS = 3 S (414 MPa).",
+          "metric": "pq_crotch_max_MPa",
+          "operator": "<=",
+          "limit": 414.0,
+          "units": "MPa",
+          "value": 351.9647697178948,
+          "margin": 62.0352302821052,
+          "verdict": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p04_scl_toe_offset_mm-20",
+      "parameters": {
+        "shell_inner_radius_mm": 500.0,
+        "shell_thickness_mm": 16.0,
+        "shell_half_length_mm": 1000.0,
+        "nozzle_inner_radius_mm": 100.0,
+        "nozzle_thickness_mm": 12.0,
+        "nozzle_length_mm": 350.0,
+        "weld_fillet_radius_mm": 10.0,
+        "pressure_MPa": 3.5,
+        "youngs_modulus_MPa": 200000.0,
+        "poisson_ratio": 0.3,
+        "element_size_local_mm": 4.0,
+        "element_size_far_mm": 14.0,
+        "refine_radius_mm": 140.0,
+        "mesh_growth": 0.08,
+        "allowable_stress_MPa": 138.0,
+        "scl_toe_offset_mm": 20.0
+      },
+      "derived": {
+        "hoop_membrane_pR_over_t_MPa": 109.375,
+        "allowable_PL_MPa": 207.0,
+        "allowable_PS_MPa": 414.0,
+        "d_over_D": 0.2,
+        "sqrt_Rt_mm": 90.15542135667715,
+        "pressure_area_mean_stress_MPa": 153.21774978567876
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "cad_valid",
+          "description": "CadQuery B-rep valid (0 = yes)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "mesh_volume",
+          "description": "|mesh volume (straight-sided tets) - CAD volume| / CAD volume",
+          "kind": "numerical",
+          "value": 1.0947304925947385e-05,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "equilibrium_y",
+          "description": "|support reaction on y = 0 - exact pressure resultant (p x projected wetted area)| / resultant",
+          "kind": "numerical",
+          "value": 2.7562636090515695e-07,
+          "tolerance": 1e-05,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "equilibrium_z",
+          "description": "|support reaction on z = 0 - exact resultant (end thrust + nozzle bore)| / resultant",
+          "kind": "numerical",
+          "value": 2.961960962640968e-07,
+          "tolerance": 1e-05,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "self_balance_x",
+          "description": "|reaction at the single axial support| / quarter nozzle thrust (closed vessel: 0)",
+          "kind": "numerical",
+          "value": 8.257205819861936e-07,
+          "tolerance": 1e-05,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "lame_bore_hoop",
+          "description": "|FE hoop stress at the bore on the far line - Lame| / Lame (exact)",
+          "kind": "numerical",
+          "value": 0.004790181615322708,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "lame_membrane",
+          "description": "|FE linearised membrane (von Mises) on the far line - the same linearisation of the Lame stresses| / Lame (exact)",
+          "kind": "numerical",
+          "value": 0.00022440522537096495,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "scl_inside_mesh",
+          "description": "max barycentric violation of the SCL sample points (0 = inside an element; points on a curved surface lie about h^2 / 8R outside the straight-sided element, where the quadratic shape functions extrapolate smoothly)",
+          "kind": "validity",
+          "value": 0.001119756185747614,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "scl_crotch_inside_mesh",
+          "description": "max barycentric violation of the crotch-line sample points (their outer end lies on the weld fillet, radius rf, so about h^2 / 8 rf outside the straight-sided element: a larger chord error than on the shell's surfaces)",
+          "kind": "validity",
+          "value": 8.654269326167112e-08,
+          "tolerance": 0.05,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "small_displacement",
+          "description": "max displacement / shell thickness (linear geometry)",
+          "kind": "validity",
+          "value": 0.03747686698620314,
+          "tolerance": 0.1,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-PV1",
+          "text": "General primary membrane stress in the shell away from the nozzle shall not exceed S (138 MPa).",
+          "metric": "pm_general_MPa",
+          "operator": "<=",
+          "limit": 138.0,
+          "units": "MPa",
+          "value": 96.23479689994446,
+          "margin": 41.765203100055544,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-PV2",
+          "text": "Local primary membrane stress at the nozzle junction (all classification lines) shall not exceed 1.5 S (207 MPa).",
+          "metric": "pl_max_MPa",
+          "operator": "<=",
+          "limit": 207.0,
+          "units": "MPa",
+          "value": 167.30177919849274,
+          "margin": 39.69822080150726,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-PV3",
+          "text": "Primary plus secondary stress at the nozzle junction (membrane plus bending, all classification lines) shall not exceed S_PS = 3 S (414 MPa).",
+          "metric": "pq_max_MPa",
+          "operator": "<=",
+          "limit": 414.0,
+          "units": "MPa",
+          "value": 172.99807072126728,
+          "margin": 241.00192927873272,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-PV2C",
+          "text": "Local primary membrane stress on the crotch classification lines shall not exceed 1.5 S (207 MPa) (REQ-PV2 with the lines through the crotch corner instead of at the fillet toes).",
+          "metric": "pl_crotch_max_MPa",
+          "operator": "<=",
+          "limit": 207.0,
+          "units": "MPa",
+          "value": 256.62666363000983,
+          "margin": -49.62666363000983,
+          "verdict": "FAIL"
+        },
+        {
+          "id": "REQ-PV3C",
+          "text": "Primary plus secondary stress on the crotch classification lines shall not exceed S_PS = 3 S (414 MPa).",
+          "metric": "pq_crotch_max_MPa",
+          "operator": "<=",
+          "limit": 414.0,
+          "units": "MPa",
+          "value": 351.9647697178948,
+          "margin": 62.0352302821052,
+          "verdict": "PASS"
+        }
+      ]
+    }
+  ],
+  "run_id": "20261122-201050_pv_nozzle_scl_offset",
+  "generated_utc": "2026-11-23T01:20:03+00:00",
+  "verification_status": "PASS"
+}

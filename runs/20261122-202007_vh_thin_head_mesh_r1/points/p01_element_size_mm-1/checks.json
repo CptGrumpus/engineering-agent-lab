@@ -1,0 +1,60 @@
+{
+  "label": "p01_element_size_mm-1",
+  "status": "PASS",
+  "checks": [
+    {
+      "id": "equilibrium_z",
+      "description": "|axial reaction on the mid-length plane / 2-degree segment - p pi Ri^2| / p pi Ri^2 (exact: the pressure on the head's projected area)",
+      "kind": "numerical",
+      "value": 6.253100185375747e-08,
+      "tolerance": 1e-05,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "lame_shell_membrane",
+      "description": "|far-shell linearised membrane (von Mises) - the same linearisation of Lame| / Lame (exact)",
+      "kind": "numerical",
+      "value": 0.0005662733988279724,
+      "tolerance": 0.005,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "lame_head_membrane",
+      "description": "|far-head linearised membrane (von Mises) - the thick sphere's| / exact",
+      "kind": "numerical",
+      "value": 5.6515840789690255e-05,
+      "tolerance": 0.005,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "lame_shell_hoop_range",
+      "description": "|far-shell hoop stress, bore minus outside, FE - Lame| / Lame (the through-wall gradient, not only the mean)",
+      "kind": "numerical",
+      "value": 0.00018977295870935152,
+      "tolerance": 0.005,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "small_displacement",
+      "description": "max displacement / shell thickness (linear geometry)",
+      "kind": "validity",
+      "value": 0.018604640547248835,
+      "tolerance": 0.1,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "far_lines_far",
+      "description": "junction region / distance of the far lines (the far shell line at L / 2; the head line at the stated angle): far lines outside the bending zone",
+      "kind": "validity",
+      "value": 0.5409325281400629,
+      "tolerance": 1.0,
+      "comparison": "<=",
+      "status": "PASS"
+    }
+  ]
+}

@@ -1,0 +1,358 @@
+{
+  "points": [
+    {
+      "label": "p00_element_size_mm-2",
+      "parameters": {
+        "shell_inner_radius_mm": 500.0,
+        "shell_thickness_mm": 16.0,
+        "head_thickness_mm": 8.0,
+        "shell_length_mm": 1000.0,
+        "pressure_MPa": 3.5,
+        "youngs_modulus_MPa": 200000.0,
+        "poisson_ratio": 0.3,
+        "element_size_mm": 2.0,
+        "element_aspect": 2.0,
+        "allowable_stress_MPa": 138.0
+      },
+      "derived": {
+        "hoop_membrane_p_Ri_over_t_MPa": 109.375,
+        "allowable_PL_MPa": 207.0,
+        "allowable_PS_MPa": 414.0,
+        "sqrt_Rt_mm": 90.15542135667715,
+        "head_rule_thickness_mm": 6.340579710144928,
+        "lame_pm_shell_MPa": 96.21320615373384,
+        "lame_pm_head_MPa": 110.24074093515001
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "equilibrium_z",
+          "description": "|axial reaction on the mid-length plane / 2-degree segment - p pi Ri^2| / p pi Ri^2 (exact: the pressure on the head's projected area)",
+          "kind": "numerical",
+          "value": 6.253100185375747e-08,
+          "tolerance": 1e-05,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "lame_shell_membrane",
+          "description": "|far-shell linearised membrane (von Mises) - the same linearisation of Lame| / Lame (exact)",
+          "kind": "numerical",
+          "value": 0.0005655363819743783,
+          "tolerance": 0.005,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "lame_head_membrane",
+          "description": "|far-head linearised membrane (von Mises) - the thick sphere's| / exact",
+          "kind": "numerical",
+          "value": 5.623673031942136e-05,
+          "tolerance": 0.005,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "lame_shell_hoop_range",
+          "description": "|far-shell hoop stress, bore minus outside, FE - Lame| / Lame (the through-wall gradient, not only the mean)",
+          "kind": "numerical",
+          "value": 0.0001923032648254796,
+          "tolerance": 0.005,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "small_displacement",
+          "description": "max displacement / shell thickness (linear geometry)",
+          "kind": "validity",
+          "value": 0.01859975,
+          "tolerance": 0.1,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "far_lines_far",
+          "description": "junction region / distance of the far lines (the far shell line at L / 2; the head line at the stated angle): far lines outside the bending zone",
+          "kind": "validity",
+          "value": 0.5409325281400629,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-HJ1",
+          "text": "General primary membrane stress in the head away from the junction shall not exceed S (138 MPa).",
+          "metric": "pm_head_MPa",
+          "operator": "<=",
+          "limit": 138.0,
+          "units": "MPa",
+          "value": 110.23454135633183,
+          "margin": 27.76545864366817,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-HJ2",
+          "text": "Local primary membrane stress in the head-to-shell junction region (shell and head lines) shall not exceed 1.5 S (207 MPa).",
+          "metric": "pl_junction_MPa",
+          "operator": "<=",
+          "limit": 207.0,
+          "units": "MPa",
+          "value": 127.03142846091093,
+          "margin": 79.96857153908907,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-HJ3",
+          "text": "Primary plus secondary stress in the head-to-shell junction region shall not exceed S_PS = 3 S (414 MPa).",
+          "metric": "pq_junction_MPa",
+          "operator": "<=",
+          "limit": 414.0,
+          "units": "MPa",
+          "value": 174.21833518215664,
+          "margin": 239.78166481784336,
+          "verdict": "PASS (unverified)"
+        }
+      ]
+    },
+    {
+      "label": "p01_element_size_mm-1",
+      "parameters": {
+        "shell_inner_radius_mm": 500.0,
+        "shell_thickness_mm": 16.0,
+        "head_thickness_mm": 8.0,
+        "shell_length_mm": 1000.0,
+        "pressure_MPa": 3.5,
+        "youngs_modulus_MPa": 200000.0,
+        "poisson_ratio": 0.3,
+        "element_size_mm": 1.0,
+        "element_aspect": 2.0,
+        "allowable_stress_MPa": 138.0
+      },
+      "derived": {
+        "hoop_membrane_p_Ri_over_t_MPa": 109.375,
+        "allowable_PL_MPa": 207.0,
+        "allowable_PS_MPa": 414.0,
+        "sqrt_Rt_mm": 90.15542135667715,
+        "head_rule_thickness_mm": 6.340579710144928,
+        "lame_pm_shell_MPa": 96.21320615373384,
+        "lame_pm_head_MPa": 110.24074093515001
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "equilibrium_z",
+          "description": "|axial reaction on the mid-length plane / 2-degree segment - p pi Ri^2| / p pi Ri^2 (exact: the pressure on the head's projected area)",
+          "kind": "numerical",
+          "value": 6.253100185375747e-08,
+          "tolerance": 1e-05,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "lame_shell_membrane",
+          "description": "|far-shell linearised membrane (von Mises) - the same linearisation of Lame| / Lame (exact)",
+          "kind": "numerical",
+          "value": 0.0005662733988279724,
+          "tolerance": 0.005,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "lame_head_membrane",
+          "description": "|far-head linearised membrane (von Mises) - the thick sphere's| / exact",
+          "kind": "numerical",
+          "value": 5.6515840789690255e-05,
+          "tolerance": 0.005,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "lame_shell_hoop_range",
+          "description": "|far-shell hoop stress, bore minus outside, FE - Lame| / Lame (the through-wall gradient, not only the mean)",
+          "kind": "numerical",
+          "value": 0.00018977295870935152,
+          "tolerance": 0.005,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "small_displacement",
+          "description": "max displacement / shell thickness (linear geometry)",
+          "kind": "validity",
+          "value": 0.018604640547248835,
+          "tolerance": 0.1,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "far_lines_far",
+          "description": "junction region / distance of the far lines (the far shell line at L / 2; the head line at the stated angle): far lines outside the bending zone",
+          "kind": "validity",
+          "value": 0.5409325281400629,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-HJ1",
+          "text": "General primary membrane stress in the head away from the junction shall not exceed S (138 MPa).",
+          "metric": "pm_head_MPa",
+          "operator": "<=",
+          "limit": 138.0,
+          "units": "MPa",
+          "value": 110.23451058698679,
+          "margin": 27.765489413013213,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-HJ2",
+          "text": "Local primary membrane stress in the head-to-shell junction region (shell and head lines) shall not exceed 1.5 S (207 MPa).",
+          "metric": "pl_junction_MPa",
+          "operator": "<=",
+          "limit": 207.0,
+          "units": "MPa",
+          "value": 127.02431637691433,
+          "margin": 79.97568362308567,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-HJ3",
+          "text": "Primary plus secondary stress in the head-to-shell junction region shall not exceed S_PS = 3 S (414 MPa).",
+          "metric": "pq_junction_MPa",
+          "operator": "<=",
+          "limit": 414.0,
+          "units": "MPa",
+          "value": 174.4108997543377,
+          "margin": 239.5891002456623,
+          "verdict": "PASS (unverified)"
+        }
+      ]
+    },
+    {
+      "label": "p02_element_size_mm-0.5",
+      "parameters": {
+        "shell_inner_radius_mm": 500.0,
+        "shell_thickness_mm": 16.0,
+        "head_thickness_mm": 8.0,
+        "shell_length_mm": 1000.0,
+        "pressure_MPa": 3.5,
+        "youngs_modulus_MPa": 200000.0,
+        "poisson_ratio": 0.3,
+        "element_size_mm": 0.5,
+        "element_aspect": 2.0,
+        "allowable_stress_MPa": 138.0
+      },
+      "derived": {
+        "hoop_membrane_p_Ri_over_t_MPa": 109.375,
+        "allowable_PL_MPa": 207.0,
+        "allowable_PS_MPa": 414.0,
+        "sqrt_Rt_mm": 90.15542135667715,
+        "head_rule_thickness_mm": 6.340579710144928,
+        "lame_pm_shell_MPa": 96.21320615373384,
+        "lame_pm_head_MPa": 110.24074093515001
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "equilibrium_z",
+          "description": "|axial reaction on the mid-length plane / 2-degree segment - p pi Ri^2| / p pi Ri^2 (exact: the pressure on the head's projected area)",
+          "kind": "numerical",
+          "value": 6.253100185375747e-08,
+          "tolerance": 1e-05,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "lame_shell_membrane",
+          "description": "|far-shell linearised membrane (von Mises) - the same linearisation of Lame| / Lame (exact)",
+          "kind": "numerical",
+          "value": 0.0005659927461536728,
+          "tolerance": 0.005,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "lame_head_membrane",
+          "description": "|far-head linearised membrane (von Mises) - the thick sphere's| / exact",
+          "kind": "numerical",
+          "value": 5.680166281345479e-05,
+          "tolerance": 0.005,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "lame_shell_hoop_range",
+          "description": "|far-shell hoop stress, bore minus outside, FE - Lame| / Lame (the through-wall gradient, not only the mean)",
+          "kind": "numerical",
+          "value": 0.00019279526879260395,
+          "tolerance": 0.005,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "small_displacement",
+          "description": "max displacement / shell thickness (linear geometry)",
+          "kind": "validity",
+          "value": 0.018606953048467566,
+          "tolerance": 0.1,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "far_lines_far",
+          "description": "junction region / distance of the far lines (the far shell line at L / 2; the head line at the stated angle): far lines outside the bending zone",
+          "kind": "validity",
+          "value": 0.5409325281400629,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-HJ1",
+          "text": "General primary membrane stress in the head away from the junction shall not exceed S (138 MPa).",
+          "metric": "pm_head_MPa",
+          "operator": "<=",
+          "limit": 138.0,
+          "units": "MPa",
+          "value": 110.23447907775511,
+          "margin": 27.76552092224489,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-HJ2",
+          "text": "Local primary membrane stress in the head-to-shell junction region (shell and head lines) shall not exceed 1.5 S (207 MPa).",
+          "metric": "pl_junction_MPa",
+          "operator": "<=",
+          "limit": 207.0,
+          "units": "MPa",
+          "value": 127.02340074783451,
+          "margin": 79.97659925216549,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-HJ3",
+          "text": "Primary plus secondary stress in the head-to-shell junction region shall not exceed S_PS = 3 S (414 MPa).",
+          "metric": "pq_junction_MPa",
+          "operator": "<=",
+          "limit": 414.0,
+          "units": "MPa",
+          "value": 171.8223607021978,
+          "margin": 242.1776392978022,
+          "verdict": "PASS (unverified)"
+        }
+      ]
+    }
+  ],
+  "run_id": "20261122-202007_vh_thin_head_mesh_r1",
+  "generated_utc": "2026-11-23T01:20:42+00:00",
+  "verification_status": "FAIL"
+}

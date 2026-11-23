@@ -12,6 +12,17 @@
 #      estimate under 1 % (if the coarse mesh's parabola, through lines 4 mm apart that include the singular step
 #      line, misreads the peak, the triple may still be non-monotone; then a finer pair decides).
 #   P3 PL converges to the noise floor (its peak is broad, 12-14 mm out). REQ-HJ1-3 verified PASS.
+#
+# Results (run 20261122-202007_vh_thin_head_mesh_r1): verification FAIL on one run-level check (P + Q).
+#   P1 HELD: 18/18 point checks.
+#   P2 PARTLY: P + Q 174.22 / 174.41 / 171.82 MPa, inside 172-176 but not monotone (R -13), no estimate: the case P2
+#      allowed for. On the two coarser meshes the parabola passes through the line at the step plane, which ends at
+#      the singular re-entrant corner (its P + Q 153 / 157 / 159 MPa, rising with refinement) and pulls the vertex;
+#      on the finest the peak (s about 3 mm) has its own neighbours clear of it. Spread 1.5 %, margin 58 %: REQ-HJ3
+#      PASS, unverified. Not revised further: a finer pair would settle the digit, not the verdict, and the governing
+#      requirement is REQ-HJ1 (exact).
+#   P3 HELD: PL 127.031 / 127.024 / 127.023 MPa, monotone at order 3.0, GCI 1.3e-6: REQ-HJ2 verified PASS (39 %
+#      margin); REQ-HJ1 verified PASS (110.23 MPa, 20 %).
 
 [case]
 name = "vh_thin_head_mesh_r1"

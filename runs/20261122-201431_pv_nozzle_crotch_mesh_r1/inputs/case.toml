@@ -1,0 +1,108 @@
+# Study 18, classification-line placement, case 1 revision 1: the crotch mesh study with the measured mesh noise
+# declared (read pv_nozzle_crotch_mesh for the framing, model and first results).
+#
+# Change, and the only one: verification.mesh_noise_rel 1e-5 -> 3e-3, measured by pv_nozzle_crotch_noise (run
+# 20261122-200428) before this revision: five regenerated meshes at 3.90-4.10 mm scatter by 8e-4 on PL crotch, 9e-4
+# on P + Q crotch, 8e-4 on toe PL and 2.9e-3 on toe P + Q. Same model, meshes and code as run 20261122-195433.
+#
+# Predictions, written BEFORE the run:
+#   P1 Every point and every metric repeats run 20261122-195433 to every digit (Gmsh and CalculiX are deterministic).
+#   P2 The GCI now reads PL crotch (spread 1.7e-4), P + Q crotch (2.1e-3), toe PL (4.5e-4) and Pm (1e-4) as converged
+#      within the noise floor: REQ-PV2C verified FAIL (256.7 MPa against 207, uncertainty about 0.1 %, the noise),
+#      REQ-PV3C verified PASS, REQ-PV2 verified PASS (0.9 % margin, as before), REQ-PV1 verified PASS.
+#   P3 Toe P + Q (spread 3.5e-3) stays above the floor and reads divergent, as in pv_nozzle_mesh: REQ-PV3 PASS
+#      unverified (margin 42 %), and the run's verification FAIL on that one check only.
+#   P4 About 7 min.
+
+[case]
+name = "pv_nozzle_crotch_mesh_r1"
+model = "cadquery_ccx_vessel"
+description = "Cylindrical shell (Ri 500 mm, t 16 mm) with a set-in radial nozzle (ri 100 mm, tn 12 mm, 10 mm outer weld fillet) at 3.5 MPa; as pv_nozzle_mesh, with the stresses also linearised on classification lines through the crotch corner; local element size 6 / 4 / 2.67 mm at the junction."
+assumptions = [
+  "Linear elastic steel, E 200 GPa, nu 0.3; small displacement (checked).",
+  "Closed vessel: the end thrusts of the shell and the nozzle are applied as uniform axial tractions on their cut ends (the far field is then the Lame closed-end cylinder exactly).",
+  "Symmetry about the planes through the nozzle axis; no external nozzle loads (piping loads would add to the junction stresses).",
+  "Outer weld modelled as a 10 mm fillet; the inner corner of the bore is sharp (affects peak stress, not the linearised values on the toe lines).",
+  "Classification: membrane at the junction lines is local primary (PL), membrane plus bending there is primary plus secondary (P + Q); far from the nozzle the membrane is general primary (Pm). S_PS taken as 3 S.",
+  "Crotch lines (CROTCH_LONG, CROTCH_TRANS): from the sharp inner corner towards the weld fillet's centre, ending on the fillet surface, in each symmetry plane; the weld metal is the same steel. Their membrane is classified local primary (PL) and membrane plus bending primary plus secondary, as at the toe lines.",
+  "Allowable S = 138 MPa: synthetic, of the order of carbon-steel plate values; not from ASME Section II.",
+]
+limitations = [
+  "Elastic analysis only: no limit-load or elastic-plastic route, no fatigue (peak stress reported, not assessed), no external loads, no corrosion allowance.",
+  "The inner corner is sharp: the crotch line starts at a stress singularity (integrable, so its linearised membrane converges); a fabricated corner radius would lower the crotch values somewhat.",
+  "The pressure-area cross-check is a simplified form of the rule, not the standard's full procedure.",
+]
+
+[parameters]
+shell_inner_radius_mm = 500.0
+shell_thickness_mm = 16.0
+shell_half_length_mm = 1000.0
+nozzle_inner_radius_mm = 100.0
+nozzle_thickness_mm = 12.0
+nozzle_length_mm = 350.0
+weld_fillet_radius_mm = 10.0
+pressure_MPa = 3.5
+youngs_modulus_MPa = 200000.0
+poisson_ratio = 0.3
+element_size_local_mm = 4.0
+element_size_far_mm = 14.0
+refine_radius_mm = 140.0
+mesh_growth = 0.08
+allowable_stress_MPa = 138.0
+
+[sweep]
+parameter = "element_size_local_mm"
+values = [6.0, 4.0, 2.6667]
+
+[numerics]
+solver_timeout_s = 7200
+scl_points = 21
+
+[verification]
+volume_rel_tol = 0.01        # mesh volume from straight-sided tets vs the CAD volume
+equilibrium_rel_tol = 1e-5   # exact resultants: anything above solver precision means a load face was missed
+lame_rel_tol = 0.01          # exact far field; the bore hoop is a nodal extrapolation to the surface
+scl_violation_tol = 0.01     # SCL end points on curved surfaces lie about h^2/8R outside straight-sided elements
+scl_crotch_violation_tol = 0.05  # the crotch line ends on the 10 mm fillet: chord error about h^2 / 8 rf
+mesh_noise_rel = 3e-3           # measured: pv_nozzle_crotch_noise, largest spread on a requirement metric (toe P + Q 2.9e-3), rounded up
+gci_max = 0.03
+
+[[requirements]]
+id = "REQ-PV1"
+text = "General primary membrane stress in the shell away from the nozzle shall not exceed S (138 MPa)."
+metric = "pm_general_MPa"
+operator = "<="
+limit = 138.0
+units = "MPa"
+
+[[requirements]]
+id = "REQ-PV2"
+text = "Local primary membrane stress at the nozzle junction (all classification lines) shall not exceed 1.5 S (207 MPa)."
+metric = "pl_max_MPa"
+operator = "<="
+limit = 207.0
+units = "MPa"
+
+[[requirements]]
+id = "REQ-PV3"
+text = "Primary plus secondary stress at the nozzle junction (membrane plus bending, all classification lines) shall not exceed S_PS = 3 S (414 MPa)."
+metric = "pq_max_MPa"
+operator = "<="
+limit = 414.0
+units = "MPa"
+
+[[requirements]]
+id = "REQ-PV2C"
+text = "Local primary membrane stress on the crotch classification lines shall not exceed 1.5 S (207 MPa) (REQ-PV2 with the lines through the crotch corner instead of at the fillet toes)."
+metric = "pl_crotch_max_MPa"
+operator = "<="
+limit = 207.0
+units = "MPa"
+
+[[requirements]]
+id = "REQ-PV3C"
+text = "Primary plus secondary stress on the crotch classification lines shall not exceed S_PS = 3 S (414 MPa)."
+metric = "pq_crotch_max_MPa"
+operator = "<="
+limit = 414.0
+units = "MPa"

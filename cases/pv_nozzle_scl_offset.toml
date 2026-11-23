@@ -15,6 +15,19 @@
 #   P4 The transverse lines (57-70 MPa) change by under 3 % over the first 2.5 mm: their misplacement does not matter
 #      for the verdict (they carry a third of the limit).
 #   P5 About 9 min.
+#
+# Results (run 20261122-201050_pv_nozzle_scl_offset): verification PASS (50/50 point checks).
+#   P1 HELD.  P2 HELD: offset 0 repeats the 4 mm mesh (205.13 MPa).
+#   P3 HELD, closely: PL on shell_long 205.1 / 200.6 / 195.7 / 185.6 / 167.3 MPa at 0 / 2.5 / 5 / 10 / 20 mm
+#      (predicted 200 / 195 / 186 / 170): 0.9 % per mm at first, 0.9 %/mm to 10 mm, falling to 0.5 %/mm. The toe
+#      line passes at every offset; a weld size (10 mm) out it has a 10 % margin. nozzle_long falls faster (181.7 /
+#      167.1 / 152.3 / 124.3 / 81.2): the nozzle's local stress decays over sqrt(r t) = 35 mm. Toe P + Q 240.2 to 173.0.
+#   P4 HELD: over the first 2.5 mm shell_trans rises 2.3 % (66.3 to 67.8; it climbs to 73.3 at 20 mm, moving towards
+#      the plain shell's 96 MPa) and nozzle_trans falls 0.4 %. Their 2.0-2.4 mm misplacement changes values that carry
+#      a third of the limit by about 2 %: no effect on any verdict.
+#   P5 HELD: 9 min.
+# Reading: within a weld size of the toe the toe-line PL moves by under 10 %; the crotch line differs from the toe
+# line by 25 %. Placement through the corner, not the exact toe position, is what changes the verdict.
 
 [case]
 name = "pv_nozzle_scl_offset"
