@@ -187,6 +187,12 @@ prediction is written into a case file.
 - Match the test's operating conditions with what the test recorded before blaming the model: study 7 assumed one
   winding temperature (100 C); ORNL logged 43-207 C per point, and using it closed 0.45 points of the gap and a
   quarter of the missing loss at high torque (revision 3).
+- Before using, dismissing or explaining away a number from a source, read the source's own definition of it: its
+  abbreviation, glossary or parameter list, and the condition (temperature, load, units) it is stated at. Separate a
+  source's measurements and hardware facts from its own design-study model inputs; the latter are neither data nor
+  errors. Study 7 read ORNL's design-report "magnet strength" of 1.12 T as a value lowered to compensate a filled pocket;
+  the report labels it BrT and defines Br as the remanence at 20 C, and 1.243 T at -0.1 %/C is 1.12 T at about
+  119 C: most likely a hot value (corrected the same day, CALIBRATION_PLAN.md). Do not infer intent from a sketch.
 
 ### 7. Missing information
 

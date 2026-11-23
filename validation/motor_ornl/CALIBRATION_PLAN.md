@@ -247,7 +247,7 @@ value" without a check. The same three placements at 1.12 T.
 - P5 Back-EMF at 1.12 T = 0.88-0.89 x its value at 1.243 T, placement by placement (the calibration runs showed about
   1.2 % of back-EMF per 1 % of remanence near 1.0 T; 1.12 / 1.243 = 0.901); 66-85 V per 1000 rpm on P1's band.
 
-### Source check on revision 4's geometry (2026-11-23 12:24): the sources disagree on the air layer
+### Source check on revision 4's geometry (2026-11-23 12:24): the sources disagree on the air layer (its reading of 1.12 T is corrected at 13:32, below)
 Revision 4 combines two hardware sources: the lamination drawing (TM-2005/33 Fig. 21: the punched pocket, 6.80 mm,
 measured on 8 poles) and the magnet size in the design report (TM-2004/120 Table 5.3: 5.31 mm). But the same design
 report's own model sketch (Fig. 5.2) and its Flux2D flux map (Fig. 5.10, p. 37) draw the magnet FILLING its pocket,
@@ -274,3 +274,35 @@ of an asymmetric shell (85.31 / 79.26 V). Chosen on the design information, not 
 placement matches better; choosing it for that would be calibration).
 *Logged:* reading p. 11's text also printed the axis labels of Fig. 13 (the measured air-gap flux, teardown-only);
 no data values, and nothing of it is used.
+
+### Result of P5 (2026-11-23 13:15; run 20261123-120639_motor_prius_rev4_oc_br112, case motor_prius_rev4_oc_br112.toml)
+VERIFICATION PASS, 15/15 checks. Back-EMF fundamental, V rms line-to-line per 1000 rpm, at 1.12 T: outer 75.17,
+centre 72.58, inner 69.81; ratio to 1.243 T 0.881 on every placement. **P5 held** (each value inside its band, at the
+low end). Against ORNL's test (about 89.38 V as a fundamental): -15.9 / -18.8 / -21.9 %, against -4.6 / -7.8 / -11.3 % at
+1.243 T. Peak at 6000 rpm 726 / 701 / 672 V: REQ-M1 still fails on every placement (limit 500 V; ORNL measured 850).
+
+*What it decides:* the drawn magnet (in its polymer shell) at 1.12 T misses the test by 16-22 %; at 1.243 T by 5-11 %.
+The measured sample remanence stays the primary value. Neither run is calibrated; the 1.12 T run is not used to tune
+anything.
+
+### Correction to the 12:24 note: what ORNL's 1.12 T is (2026-11-23 13:32; source check after the run)
+The 12:24 note read ORNL's 1.12 T as a lower remanence that compensates a magnet filling its pocket. That was an
+inference about intent from a sketch, and the report's own definitions point elsewhere:
+- TM-2004/120 Table 5.4 (sha256 6548edc4...) lists "Magnet strength, Tesla", abbreviation **BrT**, 1.12, as an
+  input to the SPEED lumped-parameter model (SPEEDCAD), the same value for the low- and high-speed cases, and again for
+  the second IPM design in Sect. 5.5.
+- The report's Appendix D, Table D.2 (SPEEDCAD magnet parameters) defines **Br** as the "magnet remanence at 20 C",
+  with separate temperature coefficients for Br and HcJ. BrT is not in that partial list; in SPEED's naming, a T
+  suffix marks the value at the magnet's working temperature. Not confirmed from the report itself.
+- The report's NdFeB temperature coefficient (Table 5.2) is -0.1 %/C; 1.243 T at 20 C becomes 1.12 T at about 119 C.
+  The same report's stator winding temperature tests (p. 71: chiller at 23 C) expected the rotor
+  above 90 C. The build script already called 1.12 T "probably a hot value" (2026-11-21), unchecked until now.
+**Reading now:** 1.12 T is most likely ORNL's hot design value for the same material, not a calibration. ORNL's design
+study is not "wrong": it is a parametric design tool (lumped model plus Flux2D) for a design-trend report, not a
+model validated against the Prius tests, and it simplifies the pocket the way our blind model did. Whether its filled
+pocket at a hot 1.12 T happened to give the right cold back-EMF is not checked here (its back-EMF output is not used).
+What stays open: (1) the temperature of the 1.243 T sample curve (not stated; taken as 20 C) and of ORNL's back-EMF
+test (not stated; the test is a routine room-temperature spin); (2) the extrapolation of the sample curve to H = 0
+(measured points span -7.2 to -4.7 kOe). Both move the primary back-EMF by a few percent.
+*Hot-magnet use of the 1.12 T run:* if 1.12 T is the value at about 120 C, this run is the hot-magnet back-EMF on the
+revision-4 geometry (useful for the hot efficiency and REQ-M5 checks later; REQ-M1's worst case is the cold magnet).

@@ -6,6 +6,22 @@
 # Prediction (CALIBRATION_PLAN.md, addendum P5, committed f86277d BEFORE the 1.243 T result was read): back-EMF at
 # 1.12 T = 0.88-0.89 x the 1.243 T value placement by placement. Read since (run 20261123-110021): 85.31 / 82.37 /
 # 79.26 V at 1.243 T, so P5 says 75.1-75.9 / 72.5-73.3 / 69.7-70.5 V. Every point check passes; about 55 min.
+#
+# Results (run 20261123-120639_motor_prius_rev4_oc_br112, 12:06-13:15): VERIFICATION PASS, 15/15 checks (5 per point).
+#   Back-EMF fundamental, V rms line-to-line per 1000 rpm: outer 75.17, centre 72.58, inner 69.81.
+#   Ratio to the 1.243 T run: 0.8811 / 0.8811 / 0.8808. Against ORNL's routine test (about 89.38 as a fundamental):
+#   outer -15.9 %, centre -18.8 %, inner -21.9 % (at 1.243 T: -4.6 / -7.8 / -11.3 %).
+#   P5 HELD on every placement (inside each band, at its low end) and inside 66-85 V. Time MISSED: 69 min, not about
+#      55 (the third solve took 32 min against 18: the machine was loaded with five other jobs).
+#   Peak at 6000 rpm: 726.3 / 700.8 / 672.1 V (REQ-M1 FAIL on every placement; ORNL measured 850).
+#   Reading: 1.12 T with the drawn magnet misses ORNL's cold back-EMF by 16-22 %, so the pair (1.12 T, drawn magnet) is
+#   ruled out for the test condition; 1.243 T with the drawn magnet stays the primary model. Source check after the
+#   run (CALIBRATION_PLAN.md, "Result of P5"): TM-2004/120 labels the value "BrT" while its own SPEED parameter list
+#   (Appendix D, Table D.2) defines Br as the remanence at 20 C, and 1.243 T at the report's -0.1 %/C is 1.12 T at
+#   about 119 C: most likely a hot design value, not a compensation for the filled pocket.
+#   Documentation errors in this file, left as run (the run's input copy is hashed): the second assumption and the
+#   magnet-temperature assumption still say 1.243 T at 20 C (this case uses 1.12 T); the second limitation (magnet fills
+#   the pocket) is stale since revision 4, here and in motor_prius_rev4_oc.toml.
 
 [case]
 name = "motor_prius_rev4_oc_br112"
