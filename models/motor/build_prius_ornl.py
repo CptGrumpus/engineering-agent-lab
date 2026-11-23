@@ -216,8 +216,9 @@ def _materials(m):
     if m.shaft and m.shaft.mat_type:
         yield m.shaft.mat_type
     for hole in m.rotor.hole:
-        yield hole.magnet_0.mat_type
-        yield hole.magnet_1.mat_type
+        for mag in (hole.get_magnet_dict().values()):          # HoleM50 or HoleUD (revision 4)
+            if mag is not None:
+                yield mag.mat_type
     w = m.stator.winding
     if w and w.conductor:
         for k in ("cond_mat", "ins_mat"):
@@ -231,11 +232,71 @@ def _get(m, path):
     return m
 
 
-def build(steel=DEFAULT_STEEL, out=None, br=None):
+DESIGN_MAGNET = {"width": 19.24e-3, "thickness": 5.31e-3,
+                 "source": "ORNL/TM-2004/120 Table 5.3: magnet width 38.48 mm for the pair (19.24 each), thickness 5.31 mm"}
+PLACEMENTS = ("outer", "centre", "inner")
+
+
+def design_magnet(m, placement: str) -> list:
+    """Study 7 revision 4: the magnet at its design size inside the drawn pocket. Sets HoleM50's magnet width (W4) to
+    the design width, converts the hole to HoleUD, and replaces each magnet rectangle (pocket thickness H3) by a
+    design-thickness magnet plus air strip(s): against the outer (air-gap side) face, centred, or against the inner
+    face. The magnetization directions are kept (HoleM50's). Returns rows for the change table."""
+    from pyleecan.Classes.Segment import Segment
+    from pyleecan.Classes.SurfLine import SurfLine
+    from pyleecan.Functions.labels import HOLEM_LAB, HOLEV_LAB
+
+    if placement not in PLACEMENTS:
+        raise ValueError(f"placement must be one of {PLACEMENTS}")
+    hole = m.rotor.hole[0]
+    rows = [("rotor.hole.0.W4", hole.W4, DESIGN_MAGNET["width"], f"{DESIGN_MAGNET['width'] * 1e3:.2f} mm: "
+             f"{DESIGN_MAGNET['source']}")]
+    hole.W4 = DESIGN_MAGNET["width"]
+    hole.check()
+    H, t = hole.H3, DESIGN_MAGNET["thickness"]
+    if not 0 < t < H:
+        raise ValueError(f"design magnet thickness {t} must be inside the pocket thickness {H}")
+    a = {"outer": 0.0, "centre": (H - t) / 2, "inner": H - t}[placement]
+    pd = hole._comp_point_coordinate()
+
+    def rect(p1, p2, p3, p4, label):
+        pts = [p1, p2, p3, p4]
+        lines = [Segment(pts[i], pts[(i + 1) % 4]) for i in range(4)]
+        return SurfLine(line_list=lines, label=label, point_ref=sum(pts) / 4)
+
+    ud = hole.convert_to_UD()
+    new = []
+    for s in ud.surf_list:
+        if HOLEM_LAB not in s.label:
+            new.append(s)
+            continue
+        pts = [ln.get_begin() for ln in s.get_lines()]
+        z8b, z8c, z4 = pd["Z8b"], pd["Z8c"], pd["Z4"]
+        if sum(p.imag for p in pts) > 0:                                        # the mirrored magnet (magnet_1)
+            z8b, z8c, z4 = z8b.conjugate(), z8c.conjugate(), z4.conjugate()
+        if min(abs(p - z8c) for p in pts) > 1e-9 or min(abs(p - z4) for p in pts) > 1e-9:
+            raise RuntimeError(f"magnet surface {s.label} does not match HoleM50's corner points")
+        u = (z4 - z8c) / abs(z4 - z8c)                                         # unit vector into the rotor
+        if abs(abs(z4 - z8c) - H) > 1e-9:
+            raise RuntimeError("pocket thickness from the corners differs from H3")
+        new.append(rect(z8b + a * u, z8c + a * u, z8c + (a + t) * u, z8b + (a + t) * u, s.label))
+        if a > 0:
+            new.append(rect(z8b, z8c, z8c + a * u, z8b + a * u, s.label.replace(HOLEM_LAB, HOLEV_LAB) + "-strip-out"))
+        if a + t < H - 1e-12:
+            new.append(rect(z8b + (a + t) * u, z8c + (a + t) * u, z8c + H * u, z8b + H * u,
+                            s.label.replace(HOLEM_LAB, HOLEV_LAB) + "-strip-in"))
+    ud.surf_list = new
+    m.rotor.hole[0] = ud
+    rows.append(("rotor.hole.0 (HoleUD)", H, t, f"{t * 1e3:.2f} mm magnet in the {H * 1e3:.2f} mm pocket, placed "
+                 f"{placement}; air strip {(H - t) * 1e3:.2f} mm: {DESIGN_MAGNET['source']} (study 7 revision 4)"))
+    return rows
+
+
+def build(steel=DEFAULT_STEEL, out=None, br=None, magnet=None):
     if steel != "M400-50A" and steel not in LAMINATIONS:
         raise ValueError(f"unknown lamination grade {steel}; known: M400-50A, {', '.join(LAMINATIONS)}")
     stem = "Toyota_Prius_ORNL" + ("" if steel == DEFAULT_STEEL else f"_{steel}") + (
-        "" if br is None else f"_Br{br:.4f}".replace(".", "p"))
+        "" if br is None else f"_Br{br:.4f}".replace(".", "p")) + ("" if magnet is None else f"_mag531{magnet}")
     out = Path(out) if out else (OUT if stem == "Toyota_Prius_ORNL" else HERE / f"{stem}.json")
     from pyleecan.definitions import DATA_DIR
     from pyleecan.Functions.load import load
@@ -264,9 +325,10 @@ def build(steel=DEFAULT_STEEL, out=None, br=None):
         for mag in mags:
             setattr(mag.mat_type.mag, attr, value)
         rows.append((f"magnets.mat_type.mag.{attr}", old.pop(), value, f"{label}: {note}"))
+    if magnet is not None:
+        rows += design_magnet(m, magnet)
     rows += _set_lamination(m, steel)
-    m.name = ("Toyota_Prius_ORNL" if steel == DEFAULT_STEEL else f"Toyota_Prius_ORNL_{steel}") + (
-        "" if br is None else f"_Br{br:.4f}".replace(".", "p"))
+    m.name = stem
     m.desc = (f"2004 Toyota Prius: Pyleecan's Toyota_Prius.json with the stator, rotor and slot dimensions of {SOURCE}, "
               "the pocket thickness from the same figure, the bridge from ORNL/TM-2004/120 and the magnet B-H line from "
               f"ORNL/TM-2004/137 Fig. 14, laminations {steel} (see models/motor/build_prius_ornl.py); magnet width "
@@ -288,8 +350,11 @@ def main():
     ap.add_argument("--out", help="output path (default: see the module docstring)")
     ap.add_argument("--br", type=float, help="post-test calibration only: magnet remanence at 20 C (T), replacing the "
                     "design value; writes Toyota_Prius_ORNL_Br<value>.json")
+    ap.add_argument("--design-magnet", choices=PLACEMENTS, help="study 7 revision 4: the design magnet (19.24 x 5.31 mm, "
+                    "TM-2004/120) in the drawn pocket, placed against its outer face, centred or against its inner face; "
+                    "writes Toyota_Prius_ORNL_mag531<placement>.json")
     args = ap.parse_args()
-    m, rows, out = build(args.steel, args.out, args.br)
+    m, rows, out = build(args.steel, args.out, args.br, args.design_magnet)
     print("| Parameter | Pyleecan file | Ours | Difference | Source |")
     print("|---|---|---|---|---|")
     for name, old, new, note in rows:

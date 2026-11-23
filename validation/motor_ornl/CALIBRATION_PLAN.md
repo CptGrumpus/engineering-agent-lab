@@ -211,7 +211,7 @@ gap); ORNL's design report (TM-2004/120) gives the magnet as 19.24 x 5.31 mm, so
 That changes the magnet's working point, the d-axis path (Ld) and the leakage through the bridges. A drawing a client
 would provide; it was set aside on 2026-11-21 for a 0.4 % back-EMF estimate, which did not look at inductance.
 
-## Revision 4 (2026-11-23 ~11:00, before any computation): the magnet at its design size, no calibration
+## Revision 4 (2026-11-23 10:56, before any computation): the magnet at its design size, no calibration
 *Why:* every model so far fills the 6.80 mm V pocket (ORNL/TM-2005/33 Fig. 21, measured) with magnet (Pyleecan's
 HoleM50 cannot leave a gap), 18.9 mm wide. ORNL's design report (TM-2004/120 Table 5.3, re-downloaded 2026-11-23,
 sha256 6548edc4...) gives the magnet as 5.31 mm thick, 38.48 mm for the pair (19.24 each), with the same bridge
