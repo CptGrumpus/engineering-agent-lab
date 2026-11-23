@@ -7,7 +7,7 @@ Reference: the far shell against the Lame closed-end cylinder (an exact solution
            linearised membrane); global equilibrium against the exact pressure resultants on both symmetry planes and a
            zero reaction at the single axial support (the pressure on a closed vessel balances itself); CAD and mesh
            volume. No closed form covers the junction: there the evidence is the mesh study of the linearised stresses
-           (linearised values converge where a peak at a sharp corner would not).
+           (linearised values converge even where a peak would not).
 Run-level: GCI on the requirement metrics when the sweep is element_size_local_mm.
 
 Classification (stated in each case, the analyst's judgement): far from the nozzle the membrane is general primary

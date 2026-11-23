@@ -35,6 +35,10 @@
 # Design answer: the verdict on REQ-PV2 depends on where the classification line sits. At the fillet toes the 12 mm
 # nozzle passes (205.1 against 207); through the crotch it fails (256.6). Pending human review.
 
+# Correction (2026-11-22 ~20:45, review; numbers and verdicts unchanged): the inner corner is NOT a stress
+# singularity. Its peak converges (349.95 / 350.96 / 351.13 MPa at 6 / 4 / 2.67 mm): in the longitudinal plane it is
+# a convex 90-degree edge of metal. Statements below (and in the limitations) that call it singular are wrong; the
+# P + Q spread is the measured mesh noise (pv_nozzle_crotch_noise), not the corner.
 [case]
 name = "pv_nozzle_crotch_mesh"
 model = "cadquery_ccx_vessel"
