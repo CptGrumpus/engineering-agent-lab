@@ -22,6 +22,35 @@
 #   P4 REQ-M5 PASS in both scenarios: 400 N m needs about 190 A cold (calibrated torque 419 N m at 200 A), under the
 #      212 A limit; less back-EMF eases field weakening at 6000 rpm. Minimum power over the range 52-62 kW.
 #   P5 Seconds per scenario.
+#
+# Results (run 20261123-032756_motor_prius_efficiency_br, seconds): verification FAIL (cold: 3 of 8 checks; hot: 1 of 5).
+#   P1 MISSED.
+#      - lut_back_emf 1.009e-3 against 1e-3: MY SET-UP ERROR. r1's reference (111.006 V) came from an open-circuit
+#        run on the tables' own mesh (fineness 2); I took 89.37 V from the fineness-8 calibration run, interpolated
+#        in remanence. The table gives 89.46 V; a 0.1 % difference between fineness 2 and 8 is the expected mesh
+#        effect, not a defect of the table. A fineness-2 open-circuit point at 1.036 T would settle it.
+#      - interp_iron_loss 6.9 % (cold) and 7.5 % (hot) against 5 % (r1: 3.0 / 4.2 %): with 19 % less magnet flux the
+#        iron loss is smaller and bends more between nodes, so the half table misses it by more. Real; the full table
+#        is better by at least 4x (h^2), about 2 %.
+#      - interp_map, cold, 6.38 points at 6000 rpm / 10 N m (r1: the hot map failed in the same row); hot 1.27 (pass).
+#        The 10 N m row above 4000 rpm is still unresolved, as r1 reported; which scenario trips moved.
+#      - Passed: MTPA 100 / 200 A within 0.07 / 0.09 % of the torque run; merge exact; magnet temperature; torque
+#        interpolation 1.1 / 1.3 %.
+#   P2 HELD: at 1000 rpm / 300 N m -1.25 (cold) / -1.61 (hot) points; at 6000 rpm / 30 N m +2.60 / +3.00; at
+#      4500 rpm / 50 N m +0.65 / +0.52; peaks 97.31 % at 70 N m (cold) and 96.97 % at 50 N m (hot), 0.10 / 0.07 point
+#      below r1 and at a lower torque, as predicted.
+#   P3 MISSED, the direction wrong (scored by scripts/motor_calibration.py, once; validation/motor_ornl/
+#      calibration.json): the median hot-minus-ORNL gap FELL, from 5.21 (blind) to 4.50 points (10th-90th
+#      percentile 2.9-7.7; B 5.32); 6 of 393 points within 2 points of the cold-hot band (blind 3). The plan's
+#      looser prediction ("the median gap stays 3-5 points") holds. A closes about 0.7 point of the 5: most of the
+#      gap remains the losses the model leaves out.
+#   P4 MISSED, badly: REQ-M5 FAILS (unverified) in both scenarios: 48.0 kW cold and 44.5 kW hot at 6000 rpm (r1:
+#      58.6 / 53.7). 400 N m is reachable (434 N m below 1500 rpm), but above it, at the 212 A design limit, 19 % less
+#      magnet flux means 19 % less field-weakening torque per ampere; I reasoned from voltage headroom and got the
+#      sign wrong. Engineering reading: the design verdict on REQ-M5 depends on the remanence; with the value ORNL's
+#      back-EMF implies, our model of this machine does not hold 50 kW to 6000 rpm at 212 A (our own stated current
+#      density, not a published rating) and 500 V.
+#   P5 HELD: seconds.
 
 [case]
 name = "motor_prius_efficiency_br"

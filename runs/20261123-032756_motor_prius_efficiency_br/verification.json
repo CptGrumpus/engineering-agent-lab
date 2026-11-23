@@ -1,0 +1,143 @@
+{
+  "run_id": "20261123-032756_motor_prius_efficiency_br",
+  "verified_utc": "2026-11-23T08:27:58+00:00",
+  "tolerances": {
+    "back_emf_rel_tol": 0.001,
+    "mtpa_rel_tol": 0.01,
+    "interp_halfgrid_rel_tol": 0.05,
+    "merge_rel_tol": 0.0001,
+    "interp_map_max_pts": 2.0
+  },
+  "points": [
+    {
+      "label": "p00_cold",
+      "status": "FAIL",
+      "checks": [
+        {
+          "id": "lut_back_emf",
+          "description": "|table open-circuit back-EMF (sqrt 3 w phi_d at id = iq = 0) - open-circuit study| / open-circuit study (same mesh fineness)",
+          "kind": "numerical",
+          "value": 0.001009102445013893,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "FAIL"
+        },
+        {
+          "id": "lut_mtpa_100A",
+          "description": "|table MTPA torque at 100 A rms - torque-curve study| / torque-curve study (cubic interpolation against an angle sweep with a parabola)",
+          "kind": "numerical",
+          "value": 0.0006904475800518221,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "lut_mtpa_200A",
+          "description": "|table MTPA torque at 200 A rms - torque-curve study| / torque-curve study (cubic interpolation against an angle sweep with a parabola)",
+          "kind": "numerical",
+          "value": 0.0008636615845683349,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "interp_torque",
+          "description": "max over the left-out nodes (|T| >= 20 N m) of the torque error of the table on every second node: bounds the full table's interpolation error (cubic: about 1/16 of this)",
+          "kind": "numerical",
+          "value": 0.011308208232173237,
+          "tolerance": 0.05,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "interp_iron_loss",
+          "description": "the same for the iron loss at 6000 rpm",
+          "kind": "numerical",
+          "value": 0.06872811137937679,
+          "tolerance": 0.05,
+          "comparison": "<=",
+          "status": "FAIL"
+        },
+        {
+          "id": "magnet_temperature",
+          "description": "|table's magnet temperature - this scenario's| (K)",
+          "kind": "validity",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "lut_merge",
+          "description": "max relative difference over the nodes two merged table runs both computed (same model, mesh and rotor positions: it must reproduce itself)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.0001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "interp_map",
+          "description": "max |efficiency from the half table - from the full table| over the map (efficiency points): bounds the full table's interpolation error on the output itself",
+          "kind": "numerical",
+          "value": 6.383580624224635,
+          "tolerance": 2.0,
+          "comparison": "<=",
+          "status": "FAIL"
+        }
+      ]
+    },
+    {
+      "label": "p01_hot",
+      "status": "FAIL",
+      "checks": [
+        {
+          "id": "interp_torque",
+          "description": "max over the left-out nodes (|T| >= 20 N m) of the torque error of the table on every second node: bounds the full table's interpolation error (cubic: about 1/16 of this)",
+          "kind": "numerical",
+          "value": 0.012600477789418123,
+          "tolerance": 0.05,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "interp_iron_loss",
+          "description": "the same for the iron loss at 6000 rpm",
+          "kind": "numerical",
+          "value": 0.07473618346658231,
+          "tolerance": 0.05,
+          "comparison": "<=",
+          "status": "FAIL"
+        },
+        {
+          "id": "magnet_temperature",
+          "description": "|table's magnet temperature - this scenario's| (K)",
+          "kind": "validity",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "lut_merge",
+          "description": "max relative difference over the nodes two merged table runs both computed (same model, mesh and rotor positions: it must reproduce itself)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.0001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "interp_map",
+          "description": "max |efficiency from the half table - from the full table| over the map (efficiency points): bounds the full table's interpolation error on the output itself",
+          "kind": "numerical",
+          "value": 1.26995989832524,
+          "tolerance": 2.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ]
+    }
+  ],
+  "status": "FAIL"
+}
