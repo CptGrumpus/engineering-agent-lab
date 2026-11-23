@@ -99,7 +99,7 @@ FSI progress: the two newest `$TEMP/fsi_*/case/fluid/precice-Fluid-iterations.lo
   does carry the copper correction (the note further down saying otherwise is stale).
 - **Item 2:** n640 probe converges at 1 mm axial length (slowly: f about 0.01835 at 80000 iterations); r3 running.
 - **Study 19 part 2 UNBLOCKED (20:31):** the ERCOFTAC classic database answers again (case 030, Driver & Seegmiller);
-  all seven data files fetched to `C:/Users/mrstego/data/ercoftac_case030/` (outside the repo: redistribution terms
+  all seven data files fetched to `~/data/ercoftac_case030/` (Windows home) (outside the repo: redistribution terms
   not checked; `SOURCE.txt` has the URL and sha256; turbmodels.larc.nasa.gov still has the certificate mismatch).
   **Prior knowledge to declare in part 2's case headers:** printing the head of `bkst-reattach.dat` showed the
   measured reattachment length, Xr/H 6.26 +- 0.10 at 0 deg (5.82 at -2, 6.72 at +2); nothing else was opened. Part 2
