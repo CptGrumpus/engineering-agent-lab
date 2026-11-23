@@ -17,7 +17,7 @@
 **The passage as specified does not meet its requirements, and no choice of gap alone can fix it.**
 
 - At nominal conditions (1.00 mm gap, 20 °C) the passage needs **33.4 Pa** of supply pressure against a **30 Pa** budget, 11 % over.
-- Across the gap tolerance (±0.05 mm) and coolant range (15–40 °C) it needs **28–42 Pa**, and warm coolant drops the wall shear to **0.43 Pa** against a **0.5 Pa** minimum.
+- Across the gap tolerance (±0.05 mm) and coolant range (15–40 °C) it needs **28–42 Pa** at the four verified corners, and warm coolant drops the wall shear to **0.43 Pa** against a **0.5 Pa** minimum (0.36 Pa at the warm, wide-gap corner, which is unverified; see below).
 - The two requirements pull in opposite directions. The pressure budget at 15 °C needs a gap of at least **1.078 mm**; the shear minimum at 40 °C allows at most **0.885 mm**. Both limits were predicted before running and confirmed by simulation (30.02 Pa and 0.500 Pa).
 
 **Recommendation.** Decide which requirement can move, then I will confirm the chosen design with one more run:

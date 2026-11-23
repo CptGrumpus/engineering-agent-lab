@@ -17,7 +17,7 @@ A cold-plate passage is a 1 mm gap between two plates, 20 mm long, carrying wate
 
 ## The answer
 
-**No.** At nominal conditions the passage needs 33.4 Pa, which is 11 % over budget. Across the tolerance range it needs anywhere from 28 to 42 Pa, and warm coolant drops the wall shear to 0.43 Pa.
+**No.** At nominal conditions the passage needs 33.4 Pa, which is 11 % over budget. Across the four verified tolerance corners it needs anywhere from 28 to 42 Pa, and warm coolant drops the wall shear to 0.43 Pa. The fifth corner (warm coolant, widest gap: 21.6 Pa, 0.36 Pa) is unverified, because the flow there is still developing where it is measured; it can only make the shear shortfall worse.
 
 The two requirements pull in opposite directions. To stay within the pressure budget with cold coolant, the gap has to be at least 1.078 mm. To keep enough wall shear with warm coolant, it can be at most 0.885 mm. No gap does both. I predicted those two limits before running them, and the confirmation runs came back at 30.02 Pa and 0.500 Pa, right on target.
 
@@ -48,7 +48,7 @@ So this is a design decision rather than a modeling one. The options are to narr
 ## What the checks caught
 
 - **The simple inlet hid a problem, and gave the wrong verdict.** My first model forced a perfectly uniform flow straight into the channel, a common shortcut. It said the channel passed, at 28.6 Pa. But the pressure kept creeping up as the mesh got finer and never settled. That is the signature of a sharp corner the solver can't resolve, here where the uniform inflow meets the wall. The mesh-convergence check failed, so that answer was never reported as verified. Modeling the supply header fixed the convergence. Counting the exit loss then turned the verdict from pass to fail.
-- **One tolerance case wasn't fully developed.** With warm water and the widest gap, the flow was still settling slightly where the measurements are taken. That case is marked unverified, and the conclusion rests on the other four.
+- **One tolerance case wasn't fully developed.** With warm water and the widest gap, the flow was still settling slightly where the measurements are taken. That case is marked unverified, and the conclusion rests on the other four. It stays unverified as a stated limit rather than being rerun with a longer channel: it is the mildest case for pressure and the worst for shear, so it cannot change either verdict.
 - **A meshing mistake in the 3D check.** In my first 3D run the mesh was coarsest exactly where it needed to be finest, next to the side walls. The overall friction still looked fine on the finer meshes, but a point-by-point comparison of the whole velocity field against the exact solution failed every time, always next to the side wall. An average result can hide a local error, so I check the full field as well.
 
 ## Limits
