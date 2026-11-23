@@ -1,0 +1,67 @@
+# Study 7, POST-TEST CALIBRATION, hypothesis A (validation/motor_ornl/CALIBRATION_PLAN.md): motor_prius_lut_hot (read it for
+# the grid, losses and checks) rebuilt with the calibrated machine, Toyota_Prius_ORNL_Br1p0360.json (remanence
+# 1.036 T, selected on ORNL's static inductances). Only the machine changes. For the out-of-sample efficiency test.
+#
+# Predictions, written BEFORE the run:
+#   P1 Every point check passes, as in motor_prius_lut_hot.
+#   P2 Flux linkage at id = iq = 0: x 0.807 of the original's (the back-EMF calibration ratio, 89.47 / 110.88), with the 80 C magnets' drop on top as before (about -7 %).
+#   P3 MTPA torque at 100 A rms about 233 N m (the calibrated torque run, fineness 4; fineness 2 agrees within 0.4 %), about 5 % less hot.
+#   P4 About the time of motor_prius_lut_hot (about 1 h 40 min).
+
+[case]
+name = "motor_prius_lut_hot_br"
+model = "pyleecan_femm_lut"
+description = "2004 Toyota Prius traction motor (our machine from ORNL Fig. 21, laminations M330-35A, magnets at 80 C), dq look-up table, id 0 to -300 A rms and iq 0 to 300 A rms in 25 A steps, 1000 rpm; Pyleecan + FEMM 4.2 magnetostatics over one electrical period (48 steps) with element fields; mesh fineness 2; torque, dq flux linkages and iron-loss coefficients. Post-test calibration, hypothesis A: magnet remanence 1.036 T at 20 C."
+assumptions = [
+  "2D magnetostatics (FEMM), no end effects; torque is the mean of FEMM's stress-tensor torque over one electrical period.",
+  "Iron loss from the element fields with the M330-35A three-term fit applied per harmonic; rotational fields counted as two orthogonal alternating ones; minor loops and DC bias not modelled.",
+  "Core mass without the stacking factor (FEMM models the stack as solid steel, lam_fill 1).",
+  "Magnet temperature 80 C (MagFEMM T_mag; Br falls 0.1 %/K, Pyleecan's alpha_Br for this magnet: a generic NdFeB value, not ORNL's).",
+  "Copper 76.4 mm^2 per slot (Pyleecan's 13 x 0.912 mm strands per turn, 9 turns), consistent with ORNL's 0.84 fill on the squares of insulated wires.",
+]
+limitations = [
+  "No test data in this case: the ORNL comparison is a separate, blind step at the end of the study.",
+  "The loss fit covers 0.1-1.8 T at 50-2500 Hz; deep-saturation regions (tooth tips at load) extrapolate it.",
+  "No magnet eddy-current loss, no AC copper loss (proximity, skin), no mechanical loss.",
+]
+
+[parameters]
+machine = "Toyota_Prius_ORNL_Br1p0360.json"
+speed_rpm = 1000.0
+id_A = 0.0
+iq_min_A = 0.0
+iq_max_A = 300.0
+iq_steps = 13
+mesh_fineness = 2.0
+steps_per_period = 48
+angle_points = 2048
+magnet_temperature_C = 80.0
+iron_kh = 0.0202
+iron_alpha = 1.791
+iron_kc = 7.91e-5
+iron_ke = 3.70e-4
+slot_fill = 0.5345
+slot_area_mm2 = 143.0
+turns_per_slot = 9
+
+[sweep]
+parameter = "id_A"
+values = [-300.0, -275.0, -250.0, -225.0, -200.0, -175.0, -150.0, -125.0, -100.0, -75.0, -50.0, -25.0, 0.0]
+
+[numerics]
+solver_timeout_s = 7200
+
+[verification]
+power_balance_rel_tol = 0.02
+dq_torque_rel_tol = 0.005
+current_rel_tol = 1e-3
+mesh_noise_rel = 1e-5
+gci_max = 0.02
+
+[[requirements]]
+id = "REQ-M3"
+text = "The column's operating points shall stay within the 25 A/mm^2 rms copper current-density limit (marks the grid points the motor can sustain for a short time)."
+metric = "current_density_max_A_per_mm2"
+operator = "<="
+limit = 25.0
+units = "A/mm^2"
