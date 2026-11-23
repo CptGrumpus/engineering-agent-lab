@@ -1,0 +1,301 @@
+{
+  "run_id": "20261123-070600_turek_hron_fsi1_mesh_r2",
+  "verified_utc": "2026-11-23T18:37:01+00:00",
+  "tolerances": {
+    "steady_measure": "drift",
+    "steady_window_s": 2.0,
+    "steady_rel_tol": 0.001,
+    "force_transfer_rel_tol": 0.001,
+    "profile_rel_tol": 1e-06,
+    "gci_max": 0.01,
+    "flag_cell_max_angle_deg": 140.0,
+    "mesh_noise_rel": {
+      "ux_A_m": 0.002,
+      "uy_A_m": 0.0194,
+      "drag_N_per_m": 0.00075,
+      "lift_N_per_m": 0.0112
+    }
+  },
+  "points": [
+    {
+      "label": "p00_fluid_cell_size_m-0.0025",
+      "status": "PASS",
+      "checks": [
+        {
+          "id": "mesh",
+          "description": "checkMesh reports Mesh OK (1 = failed)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.5,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "flag_cells",
+          "description": "largest interior angle (deg) of the fluid cells touching the flag, at (0.3455, 0.2110) m (a cell wrapped around a tip corner reads near 180)",
+          "kind": "numerical",
+          "value": 122.63748739834053,
+          "tolerance": 140.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "coupling_converged",
+          "description": "coupling windows that hit the iteration limit without converging",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.5,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "steady",
+          "description": "max over uy(A), drag, lift of the change of the mean between the two halves of the last 2 s / mean (drift, not jitter)",
+          "kind": "numerical",
+          "value": 0.00010409381925429152,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "force_transfer",
+          "description": "force transfer per coupling window over 10-12 s: the larger of |force the solid receives - force the fluid writes| and |force the fluid writes - OpenFOAM's force on the flag|, each over the largest force in the window",
+          "kind": "numerical",
+          "value": 1.9171942560930035e-09,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "inflow_profile",
+          "description": "max over inlet faces |U - benchmark parabola| / (1.5 U_mean), after the ramp",
+          "kind": "numerical",
+          "value": 4.663357200396233e-10,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "laminar",
+          "description": "Reynolds number (D) / 200",
+          "kind": "validity",
+          "value": 0.10000000000000002,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p01_fluid_cell_size_m-0.00176777",
+      "status": "PASS",
+      "checks": [
+        {
+          "id": "mesh",
+          "description": "checkMesh reports Mesh OK (1 = failed)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.5,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "flag_cells",
+          "description": "largest interior angle (deg) of the fluid cells touching the flag, at (0.3616, 0.1891) m (a cell wrapped around a tip corner reads near 180)",
+          "kind": "numerical",
+          "value": 122.31146714824521,
+          "tolerance": 140.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "coupling_converged",
+          "description": "coupling windows that hit the iteration limit without converging",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.5,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "steady",
+          "description": "max over uy(A), drag, lift of the change of the mean between the two halves of the last 2 s / mean (drift, not jitter)",
+          "kind": "numerical",
+          "value": 0.00010236584767009533,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "force_transfer",
+          "description": "force transfer per coupling window over 10-12 s: the larger of |force the solid receives - force the fluid writes| and |force the fluid writes - OpenFOAM's force on the flag|, each over the largest force in the window",
+          "kind": "numerical",
+          "value": 1.908394971081991e-09,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "inflow_profile",
+          "description": "max over inlet faces |U - benchmark parabola| / (1.5 U_mean), after the ramp",
+          "kind": "numerical",
+          "value": 5.156881403382366e-10,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "laminar",
+          "description": "Reynolds number (D) / 200",
+          "kind": "validity",
+          "value": 0.10000000000000002,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p02_fluid_cell_size_m-0.00125",
+      "status": "PASS",
+      "checks": [
+        {
+          "id": "mesh",
+          "description": "checkMesh reports Mesh OK (1 = failed)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.5,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "flag_cells",
+          "description": "largest interior angle (deg) of the fluid cells touching the flag, at (0.4502, 0.2106) m (a cell wrapped around a tip corner reads near 180)",
+          "kind": "numerical",
+          "value": 127.57858556653112,
+          "tolerance": 140.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "coupling_converged",
+          "description": "coupling windows that hit the iteration limit without converging",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.5,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "steady",
+          "description": "max over uy(A), drag, lift of the change of the mean between the two halves of the last 2 s / mean (drift, not jitter)",
+          "kind": "numerical",
+          "value": 0.00010445575529817034,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "force_transfer",
+          "description": "force transfer per coupling window over 10-12 s: the larger of |force the solid receives - force the fluid writes| and |force the fluid writes - OpenFOAM's force on the flag|, each over the largest force in the window",
+          "kind": "numerical",
+          "value": 1.899859405132727e-09,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "inflow_profile",
+          "description": "max over inlet faces |U - benchmark parabola| / (1.5 U_mean), after the ramp",
+          "kind": "numerical",
+          "value": 5.038072736773812e-10,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "laminar",
+          "description": "Reynolds number (D) / 200",
+          "kind": "validity",
+          "value": 0.10000000000000002,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ]
+    }
+  ],
+  "run_checks": [
+    {
+      "id": "discretization_ux_A_m",
+      "description": "relative discretization uncertainty of ux_A_m, divergent (R = 1.348): no estimate",
+      "kind": "numerical",
+      "value": Infinity,
+      "tolerance": 0.01,
+      "comparison": "<=",
+      "status": "FAIL",
+      "metric": "ux_A_deviation_pct"
+    },
+    {
+      "id": "discretization_uy_A_m",
+      "description": "relative discretization uncertainty of uy_A_m, converged to within the noise floor (spread 1.0e-02 <= 0.019)",
+      "kind": "numerical",
+      "value": 0.006302722812883044,
+      "tolerance": 0.01,
+      "comparison": "<=",
+      "status": "PASS",
+      "metric": "uy_A_deviation_pct"
+    },
+    {
+      "id": "discretization_drag_N_per_m",
+      "description": "relative discretization uncertainty of drag_N_per_m, converged to within the noise floor (spread 4.7e-04 <= 0.00075)",
+      "kind": "numerical",
+      "value": 0.00029232935540016234,
+      "tolerance": 0.01,
+      "comparison": "<=",
+      "status": "PASS",
+      "metric": "drag_deviation_pct"
+    },
+    {
+      "id": "discretization_lift_N_per_m",
+      "description": "relative discretization uncertainty of lift_N_per_m, converged to within the noise floor (spread 4.9e-03 <= 0.011)",
+      "kind": "numerical",
+      "value": 0.0030642336151300276,
+      "tolerance": 0.01,
+      "comparison": "<=",
+      "status": "PASS",
+      "metric": "lift_deviation_pct"
+    }
+  ],
+  "run_check_detail": {
+    "meshes_used": [
+      "p02_fluid_cell_size_m-0.00125",
+      "p01_fluid_cell_size_m-0.00176777",
+      "p00_fluid_cell_size_m-0.0025"
+    ],
+    "ux_A_m": {
+      "regime": "divergent",
+      "uncertainty": Infinity,
+      "convergence_ratio": 1.3477884059965288
+    },
+    "uy_A_m": {
+      "regime": "converged",
+      "uncertainty": 0.006302722812883044,
+      "relative_spread": 0.01008435650061287,
+      "noise_floor": 0.0194
+    },
+    "drag_N_per_m": {
+      "regime": "converged",
+      "uncertainty": 0.00029232935540016234,
+      "relative_spread": 0.00046772696864025976,
+      "noise_floor": 0.00075
+    },
+    "lift_N_per_m": {
+      "regime": "converged",
+      "uncertainty": 0.0030642336151300276,
+      "relative_spread": 0.004902773784208044,
+      "noise_floor": 0.0112
+    }
+  },
+  "status": "FAIL"
+}

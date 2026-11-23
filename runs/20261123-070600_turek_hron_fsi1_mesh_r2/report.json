@@ -1,0 +1,415 @@
+{
+  "points": [
+    {
+      "label": "p00_fluid_cell_size_m-0.0025",
+      "parameters": {
+        "solid_density_kg_per_m3": 1000.0,
+        "shear_modulus_Pa": 500000.0,
+        "poisson_ratio": 0.4,
+        "fluid_density_kg_per_m3": 1000.0,
+        "kinematic_viscosity_m2_per_s": 0.001,
+        "mean_velocity_m_per_s": 0.2,
+        "fluid_cell_size_m": 0.0025,
+        "solid_element_size_mm": 2.5,
+        "time_step_s": 0.0025,
+        "end_time_s": 12.0,
+        "benchmark_ux_A_m": 2.270493e-05,
+        "benchmark_uy_A_m": 0.0008208773,
+        "benchmark_drag_N_per_m": 14.29426,
+        "benchmark_lift_N_per_m": 0.763746
+      },
+      "derived": {
+        "reynolds_D": 20.000000000000004,
+        "mass_ratio": 1.0
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "mesh",
+          "description": "checkMesh reports Mesh OK (1 = failed)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.5,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "flag_cells",
+          "description": "largest interior angle (deg) of the fluid cells touching the flag, at (0.3455, 0.2110) m (a cell wrapped around a tip corner reads near 180)",
+          "kind": "numerical",
+          "value": 122.63748739834053,
+          "tolerance": 140.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "coupling_converged",
+          "description": "coupling windows that hit the iteration limit without converging",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.5,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "steady",
+          "description": "max over uy(A), drag, lift of the change of the mean between the two halves of the last 2 s / mean (drift, not jitter)",
+          "kind": "numerical",
+          "value": 0.00010409381925429152,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "force_transfer",
+          "description": "force transfer per coupling window over 10-12 s: the larger of |force the solid receives - force the fluid writes| and |force the fluid writes - OpenFOAM's force on the flag|, each over the largest force in the window",
+          "kind": "numerical",
+          "value": 1.9171942560930035e-09,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "inflow_profile",
+          "description": "max over inlet faces |U - benchmark parabola| / (1.5 U_mean), after the ramp",
+          "kind": "numerical",
+          "value": 4.663357200396233e-10,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "laminar",
+          "description": "Reynolds number (D) / 200",
+          "kind": "validity",
+          "value": 0.10000000000000002,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-FSI-1",
+          "text": "The coupled model shall reproduce the Turek-Hron FSI1 horizontal displacement of point A within 5 % (a second-order quantity, 3 % of the vertical one).",
+          "metric": "ux_A_deviation_pct",
+          "operator": "<=",
+          "limit": 5.0,
+          "units": "%",
+          "value": 0.6818498673246046,
+          "margin": 4.318150132675395,
+          "verdict": "PASS (unverified)"
+        },
+        {
+          "id": "REQ-FSI-2",
+          "text": "It shall reproduce the FSI1 vertical displacement of point A within 3 %.",
+          "metric": "uy_A_deviation_pct",
+          "operator": "<=",
+          "limit": 3.0,
+          "units": "%",
+          "value": 0.412332020577627,
+          "margin": 2.587667979422373,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-FSI-3",
+          "text": "It shall reproduce the FSI1 drag within 1 %.",
+          "metric": "drag_deviation_pct",
+          "operator": "<=",
+          "limit": 1.0,
+          "units": "%",
+          "value": 0.0025954497684907447,
+          "margin": 0.9974045502315092,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-FSI-4",
+          "text": "It shall reproduce the FSI1 lift within 5 % (lift is about 5 % of the drag and moved 30 % from the rigid CFD1 value once the flag bends).",
+          "metric": "lift_deviation_pct",
+          "operator": "<=",
+          "limit": 5.0,
+          "units": "%",
+          "value": 0.02660797210693485,
+          "margin": 4.973392027893065,
+          "verdict": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p01_fluid_cell_size_m-0.00176777",
+      "parameters": {
+        "solid_density_kg_per_m3": 1000.0,
+        "shear_modulus_Pa": 500000.0,
+        "poisson_ratio": 0.4,
+        "fluid_density_kg_per_m3": 1000.0,
+        "kinematic_viscosity_m2_per_s": 0.001,
+        "mean_velocity_m_per_s": 0.2,
+        "fluid_cell_size_m": 0.001767767,
+        "solid_element_size_mm": 2.5,
+        "time_step_s": 0.0025,
+        "end_time_s": 12.0,
+        "benchmark_ux_A_m": 2.270493e-05,
+        "benchmark_uy_A_m": 0.0008208773,
+        "benchmark_drag_N_per_m": 14.29426,
+        "benchmark_lift_N_per_m": 0.763746
+      },
+      "derived": {
+        "reynolds_D": 20.000000000000004,
+        "mass_ratio": 1.0
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "mesh",
+          "description": "checkMesh reports Mesh OK (1 = failed)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.5,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "flag_cells",
+          "description": "largest interior angle (deg) of the fluid cells touching the flag, at (0.3616, 0.1891) m (a cell wrapped around a tip corner reads near 180)",
+          "kind": "numerical",
+          "value": 122.31146714824521,
+          "tolerance": 140.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "coupling_converged",
+          "description": "coupling windows that hit the iteration limit without converging",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.5,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "steady",
+          "description": "max over uy(A), drag, lift of the change of the mean between the two halves of the last 2 s / mean (drift, not jitter)",
+          "kind": "numerical",
+          "value": 0.00010236584767009533,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "force_transfer",
+          "description": "force transfer per coupling window over 10-12 s: the larger of |force the solid receives - force the fluid writes| and |force the fluid writes - OpenFOAM's force on the flag|, each over the largest force in the window",
+          "kind": "numerical",
+          "value": 1.908394971081991e-09,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "inflow_profile",
+          "description": "max over inlet faces |U - benchmark parabola| / (1.5 U_mean), after the ramp",
+          "kind": "numerical",
+          "value": 5.156881403382366e-10,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "laminar",
+          "description": "Reynolds number (D) / 200",
+          "kind": "validity",
+          "value": 0.10000000000000002,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-FSI-1",
+          "text": "The coupled model shall reproduce the Turek-Hron FSI1 horizontal displacement of point A within 5 % (a second-order quantity, 3 % of the vertical one).",
+          "metric": "ux_A_deviation_pct",
+          "operator": "<=",
+          "limit": 5.0,
+          "units": "%",
+          "value": 0.5036778598001986,
+          "margin": 4.496322140199801,
+          "verdict": "PASS (unverified)"
+        },
+        {
+          "id": "REQ-FSI-2",
+          "text": "It shall reproduce the FSI1 vertical displacement of point A within 3 %.",
+          "metric": "uy_A_deviation_pct",
+          "operator": "<=",
+          "limit": 3.0,
+          "units": "%",
+          "value": 0.03868791454758423,
+          "margin": 2.9613120854524158,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-FSI-3",
+          "text": "It shall reproduce the FSI1 drag within 1 %.",
+          "metric": "drag_deviation_pct",
+          "operator": "<=",
+          "limit": 1.0,
+          "units": "%",
+          "value": 0.04418971269913226,
+          "margin": 0.9558102873008677,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-FSI-4",
+          "text": "It shall reproduce the FSI1 lift within 5 % (lift is about 5 % of the drag and moved 30 % from the rigid CFD1 value once the flag bends).",
+          "metric": "lift_deviation_pct",
+          "operator": "<=",
+          "limit": 5.0,
+          "units": "%",
+          "value": 0.46280937695595775,
+          "margin": 4.537190623044042,
+          "verdict": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p02_fluid_cell_size_m-0.00125",
+      "parameters": {
+        "solid_density_kg_per_m3": 1000.0,
+        "shear_modulus_Pa": 500000.0,
+        "poisson_ratio": 0.4,
+        "fluid_density_kg_per_m3": 1000.0,
+        "kinematic_viscosity_m2_per_s": 0.001,
+        "mean_velocity_m_per_s": 0.2,
+        "fluid_cell_size_m": 0.00125,
+        "solid_element_size_mm": 2.5,
+        "time_step_s": 0.0025,
+        "end_time_s": 12.0,
+        "benchmark_ux_A_m": 2.270493e-05,
+        "benchmark_uy_A_m": 0.0008208773,
+        "benchmark_drag_N_per_m": 14.29426,
+        "benchmark_lift_N_per_m": 0.763746
+      },
+      "derived": {
+        "reynolds_D": 20.000000000000004,
+        "mass_ratio": 1.0
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "mesh",
+          "description": "checkMesh reports Mesh OK (1 = failed)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.5,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "flag_cells",
+          "description": "largest interior angle (deg) of the fluid cells touching the flag, at (0.4502, 0.2106) m (a cell wrapped around a tip corner reads near 180)",
+          "kind": "numerical",
+          "value": 127.57858556653112,
+          "tolerance": 140.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "coupling_converged",
+          "description": "coupling windows that hit the iteration limit without converging",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.5,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "steady",
+          "description": "max over uy(A), drag, lift of the change of the mean between the two halves of the last 2 s / mean (drift, not jitter)",
+          "kind": "numerical",
+          "value": 0.00010445575529817034,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "force_transfer",
+          "description": "force transfer per coupling window over 10-12 s: the larger of |force the solid receives - force the fluid writes| and |force the fluid writes - OpenFOAM's force on the flag|, each over the largest force in the window",
+          "kind": "numerical",
+          "value": 1.899859405132727e-09,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "inflow_profile",
+          "description": "max over inlet faces |U - benchmark parabola| / (1.5 U_mean), after the ramp",
+          "kind": "numerical",
+          "value": 5.038072736773812e-10,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "laminar",
+          "description": "Reynolds number (D) / 200",
+          "kind": "validity",
+          "value": 0.10000000000000002,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-FSI-1",
+          "text": "The coupled model shall reproduce the Turek-Hron FSI1 horizontal displacement of point A within 5 % (a second-order quantity, 3 % of the vertical one).",
+          "metric": "ux_A_deviation_pct",
+          "operator": "<=",
+          "limit": 5.0,
+          "units": "%",
+          "value": 0.26353969378567793,
+          "margin": 4.7364603062143225,
+          "verdict": "PASS (unverified)"
+        },
+        {
+          "id": "REQ-FSI-2",
+          "text": "It shall reproduce the FSI1 vertical displacement of point A within 3 %.",
+          "metric": "uy_A_deviation_pct",
+          "operator": "<=",
+          "limit": 3.0,
+          "units": "%",
+          "value": 0.9600660868299611,
+          "margin": 2.0399339131700387,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-FSI-3",
+          "text": "It shall reproduce the FSI1 drag within 1 %.",
+          "metric": "drag_deviation_pct",
+          "operator": "<=",
+          "limit": 1.0,
+          "units": "%",
+          "value": 0.026651453588970656,
+          "margin": 0.9733485464110293,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-FSI-4",
+          "text": "It shall reproduce the FSI1 lift within 5 % (lift is about 5 % of the drag and moved 30 % from the rigid CFD1 value once the flag bends).",
+          "metric": "lift_deviation_pct",
+          "operator": "<=",
+          "limit": 5.0,
+          "units": "%",
+          "value": 0.17541689577479305,
+          "margin": 4.824583104225207,
+          "verdict": "PASS"
+        }
+      ]
+    }
+  ],
+  "run_id": "20261123-070600_turek_hron_fsi1_mesh_r2",
+  "generated_utc": "2026-11-23T18:37:02+00:00",
+  "verification_status": "FAIL"
+}

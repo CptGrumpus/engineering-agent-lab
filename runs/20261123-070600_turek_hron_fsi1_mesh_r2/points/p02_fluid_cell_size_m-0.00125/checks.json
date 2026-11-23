@@ -1,0 +1,69 @@
+{
+  "label": "p02_fluid_cell_size_m-0.00125",
+  "status": "PASS",
+  "checks": [
+    {
+      "id": "mesh",
+      "description": "checkMesh reports Mesh OK (1 = failed)",
+      "kind": "numerical",
+      "value": 0.0,
+      "tolerance": 0.5,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "flag_cells",
+      "description": "largest interior angle (deg) of the fluid cells touching the flag, at (0.4502, 0.2106) m (a cell wrapped around a tip corner reads near 180)",
+      "kind": "numerical",
+      "value": 127.57858556653112,
+      "tolerance": 140.0,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "coupling_converged",
+      "description": "coupling windows that hit the iteration limit without converging",
+      "kind": "numerical",
+      "value": 0.0,
+      "tolerance": 0.5,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "steady",
+      "description": "max over uy(A), drag, lift of the change of the mean between the two halves of the last 2 s / mean (drift, not jitter)",
+      "kind": "numerical",
+      "value": 0.00010445575529817034,
+      "tolerance": 0.001,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "force_transfer",
+      "description": "force transfer per coupling window over 10-12 s: the larger of |force the solid receives - force the fluid writes| and |force the fluid writes - OpenFOAM's force on the flag|, each over the largest force in the window",
+      "kind": "numerical",
+      "value": 1.899859405132727e-09,
+      "tolerance": 0.001,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "inflow_profile",
+      "description": "max over inlet faces |U - benchmark parabola| / (1.5 U_mean), after the ramp",
+      "kind": "numerical",
+      "value": 5.038072736773812e-10,
+      "tolerance": 1e-06,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "laminar",
+      "description": "Reynolds number (D) / 200",
+      "kind": "validity",
+      "value": 0.10000000000000002,
+      "tolerance": 1.0,
+      "comparison": "<=",
+      "status": "PASS"
+    }
+  ]
+}

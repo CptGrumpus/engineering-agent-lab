@@ -26,6 +26,22 @@
 #   P5 Drag (0.047 % < 0.075 %) and lift (0.49 % < 1.12 %) now converged, with the same uncertainties as r1's
 #      oscillatory class (0.029 %, 0.31 %): REQ-FSI-3 and REQ-FSI-4 verified PASS as before.
 #   P6 About 5 h 30 min (r1 5 h 11 min alone; two step runs share the CPU at first).
+#
+# Results (run 20261123-070600_turek_hron_fsi1_mesh_r2, 07:06-13:37): 21/21 point checks PASS; run-level 3 of 4 PASS,
+# ux(A) FAIL as predicted, so VERIFICATION FAIL.
+#   P1 HELD: flag_cells 122.6 / 122.3 / 127.6 deg; force transfer per window 1.9e-9; drift 1.0e-4; all converged.
+#   P2 HELD: uy(A) 0.817493 / 0.821195 / 0.812996 mm, drag 14.29389 / 14.30058 / 14.29807 N/m: r1's values to 5-6
+#      digits (deterministic serial solvers).
+#   P3 HELD: uy(A) converged within its noise, uncertainty 0.63 %; REQ-FSI-2 verified PASS (finest 0.96 % from the
+#      benchmark).
+#   P4 HELD: ux(A) 22.550 / 22.591 / 22.645 um, differences grow on refinement (ratio 1.35), spread 0.42 % over its
+#      0.20 % noise: divergent, no estimate; REQ-FSI-1 PASS (0.26 % at the finest, 0.50-0.68 % on the others) but
+#      unverified; the run-level verification fails on this one check.
+#   P5 HELD: drag 0.029 %, lift 0.31 % uncertainty; REQ-FSI-3 and REQ-FSI-4 verified PASS.
+#   P6 MISSED: 6 h 31 min, not about 5 h 30 min: the machine carried up to five other jobs.
+#   Reading: three of four benchmark quantities are verified within limits; ux(A), a second-order quantity (about 3 %
+#   of uy), is within 0.7 % of the benchmark on every mesh but does not show a convergent trend at this noise floor
+#   (measured on four meshes only). Its verdict stays unverified rather than forced.
 
 [case]
 name = "turek_hron_fsi1_mesh_r2"
