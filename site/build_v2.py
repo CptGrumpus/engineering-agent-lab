@@ -527,7 +527,7 @@ def home_page(facts) -> dict:
     legacy = {**STUDY_URL, **{k: FILE[k] for k in FILE}, **{k: v for k, v in SECTION_URL.items() if k not in ("work", "top")}}
     legacy.update({k: STUDY_URL[k] for k in PART_OF})          # a study inside a report keeps its own address
     scripts = f"<script>window.LEGACY = {json.dumps(legacy)};</script>\n" + viewer_scripts(entries)
-    return {"file": "index.html", "title": f"{AUTHOR} · Simulation portfolio", "og_title": "Simulation, proof attached",
+    return {"file": "index.html", "title": f"{AUTHOR} · Simulation Portfolio", "og_title": "Simulation, Proof Attached",
             "desc": f"{WORDS[len(CARDS)][1]} open-source simulation studies by {AUTHOR}, mechanical engineer: FEA, CFD, coupled "
                     "multiphysics and an optimisation loop, each checked against an independent reference.",
             "nav": "index", "main": main, "scripts": scripts, "og": make_og.make({**facts, "studies": len(CARDS)}),
@@ -678,7 +678,7 @@ nf = (layout.replace("{{TITLE}}", f"Page not found · {AUTHOR}").replace("{{DESC
                      '<p><a class="cta" href="index.html#work">See the studies</a></p></div></div>')
             .replace("{{SCRIPTS}}", "").replace("{{ASSET_V}}", asset_v))
 # the 404 page is served at any address, so its relative links need the site's base
-(DOCS / "404.html").write_text(nf.replace("<head>", '<head>\n<base href="/engineering-agent-lab/">', 1), encoding="utf-8")
+(DOCS / "404.html").write_text(titlecase.apply(nf).replace("<head>", '<head>\n<base href="/engineering-agent-lab/">', 1), encoding="utf-8")
 (DOCS / "sitemap.xml").write_text(
     '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
     + "".join(f"  <url><loc>{SITE_URL}{'' if f == 'index.html' else f}</loc></url>\n" for f in sorted(built))

@@ -83,6 +83,7 @@ _TITLE_ELEMENTS = [
     re.compile(r'(<a class="linkcard"[^>]*><b>)(.*?)(</b>)', re.S),
     re.compile(r'(<div class="skill"><code>[^<]*</code><b>)(.*?)(</b>)', re.S),
     re.compile(r'(<article class="skill">\s*<span class="plan-meta">.*?</span></span>\s*<b>)(.*?)(</b>)', re.S),
+    re.compile(r'(<a class="brand"[^>]*>.*?<small>)(.*?)(</small>)', re.S),
     re.compile(r'(<nav class="topbar".*?</nav>)', re.S),
     re.compile(r'(<button type="button" aria-pressed="(?:true|false)" data-f="[^"]+">)(.*?)(</button>)'),
     re.compile(r'(<span class="r-no">[^<]*</span> )(.*?)(</a>)', re.S),

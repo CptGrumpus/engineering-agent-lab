@@ -11,8 +11,8 @@ something that went wrong on it.
 ## Titles are in title case
 
 Anything that is a title uses title case: page titles and `<title>`, every heading (h1 to h4), study titles on
-cards, pagers and the requirements table, card titles on the in-progress, How I work and home pages, the nav and the
-filter buttons. Sentences are not titles: ledes, captions, chart headings, card answers and run-in labels stay in
+cards, pagers and the requirements table, card titles on the In Progress, How I Work and home pages, the "Simulation
+Portfolio" label beside the name in the top bar, the nav, the filter buttons and the 404 page. Sentences are not titles: ledes, captions, chart headings, card answers and run-in labels stay in
 sentence case.
 
 The style is AP: capitalise every word, including the first, the last and the first after a colon; keep
