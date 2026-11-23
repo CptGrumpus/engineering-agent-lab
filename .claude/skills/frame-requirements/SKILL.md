@@ -134,6 +134,11 @@ prediction is written into a case file.
   would have shown before the data that a 5 % limit was a gamble.
 - When sources conflict, carry both until the data decides; don't pick one and explain the other away ("probably a
   hot value" was never checked).
+- Check that a hand estimate's simplifications hold across the whole band, not only at its nominal point. Study G's
+  Rayleigh estimate (17/35 of the shaft mass at mid-span, the factor for a simply supported mode shape) matched ROSS
+  within 0.2 % on stiff bearings but ran 2 % high on soft ones: with soft bearings the shaft also translates, so more
+  of its mass takes part. A case right at a limit (60 mm, margin 14.3 % against 15) is where that 2 % decides the
+  verdict: widen the band at the soft end or run that corner before predicting its side of the limit.
 - Predict the quantity that is measured. A loss model that leaves terms out by design (mechanical, inverter
   harmonics) gives an upper bound, not a prediction of a measured efficiency: estimate the missing terms, or set the
   limit with them in mind (study 7: 5.2 points high against a 2-point limit).
