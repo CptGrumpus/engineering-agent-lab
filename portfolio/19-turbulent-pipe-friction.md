@@ -7,7 +7,7 @@
 
 | | |
 |---|---|
-| **Answer** | Yes, with the viscous sublayer resolved. k-omega SST predicts the smooth-pipe friction factor at Re 10⁵ about 2.4 % above Prandtl's law once the mesh is converged (mesh uncertainty 0.5 %, verified), inside the 5 % a pressure-drop budget needs. Within 2 % across Re 2 × 10⁴ to 2 × 10⁶. With wall functions instead it sits about 5 % low whatever the mesh and wherever the wall cell sits: not usable to 5 %. |
+| **Answer** | Yes, with the viscous sublayer resolved. k-omega SST predicts the smooth-pipe friction factor at Re 10⁵ about 2.4 % above Prandtl's law, extrapolated to zero cell size from three meshes (mesh uncertainty 0.5 %, verified), inside the 5 % a pressure-drop budget needs. Within 2 % across Re 2 × 10⁴ to 2 × 10⁶. With wall functions instead it sits about 5 % low whatever the mesh and wherever the wall cell sits: not usable to 5 %. |
 | **Discipline** | Fluids, turbulence modelling, validation against measured data |
 | **Tools** | OpenFOAM 14 (k-omega SST), Python |
 | **Methods** | Fully developed RANS on a periodic axisymmetric wedge; low-Reynolds and wall-function wall treatments; an exact force balance; mesh studies with GCI; comparison with Prandtl's smooth-pipe law (Nikuradse's measurements), Blasius and Petukhov |
@@ -25,6 +25,11 @@ chart, so this is the portfolio's first comparison with measured data, through a
 
 - **Resolved sublayer (y+ below 1):** f = 0.01813 / 0.01828 / 0.01835 on 160 / 320 / 640 radial cells, extrapolating
   to 0.01842, **+2.4 %** on Prandtl, with a mesh uncertainty of 0.48 %. REQ-T1 passes, verified, with a clear margin.
+  The meshes never stop changing; what converges is the estimate. Each halving of the cells halves the change
+  (+0.83 %, then +0.38 %), so the error falls in proportion to the cell size and what is left after 640 cells is about
+  one more such step, +0.38 %: the extrapolated value. That holds only while the changes keep shrinking at a steady
+  rate, which is why the study needed three meshes and checks the rate (observed order 0.84, then 0.98) before
+  extrapolating.
   (The coarser study, 80 / 160 / 320 cells, gave the same extrapolation with an uncertainty of 1.05 %, just over the
   1 % limit; one finer level settled it.)
 - **Across Reynolds numbers** (Re 2 × 10⁴ to 2 × 10⁶, on 60-120 cells): within 1.4 % of Prandtl at every point. Those

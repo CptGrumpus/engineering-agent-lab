@@ -233,7 +233,7 @@ the first mode, modal effective mass above 90 %, response rms by two integration
 *Questions:* PSD level (or a standard profile such as ISO 16750-3), damping, steel grade (yield, S-N curve), clearance.
 (b) Proposed eval case for frame-requirements: "brackets the inputs that don't matter, leaves out the one that does"
 (study 7's remanence); ask before adding. (c) The skill eval's no-skills baseline (not run).
-(d) **Study H framing (user chose study H on study C, 2026-11-23 ~09:15; inputs drafted for approval, nothing run).**
+(d) **Study H framing: APPROVED by the user 2026-11-23 ~10:00 ("ok yes please run these"); build in progress.**
 *Decision:* study C passes on nominal inputs, its damage by a factor of about 200. Is that PASS robust to what a
 project would not know exactly, and which input would be worth measuring first? *Uncertain inputs (all synthetic,
 independent):* modal damping lognormal, median 2 %, 90 % between 1 % and 4 %; test level within a control tolerance,
@@ -413,6 +413,9 @@ elements, probabilistic uncertainty). Each with its tools and independent refere
 
 ### For the dashboard session (from the study session)
 
+- 2026-11-23 ~10:10: the pipe-friction figure's mesh panel labels the extrapolated value "converged: +2.4 %"; the
+  user read it as a claim that the meshes had stopped changing (they still move linearly in 1/N). Suggest "extrapolated
+  to zero cell size: +2.4 % +- 0.5 %". Page 19 now says so (study session).
 - 2026-11-22 ~16:00: new portfolio pages `portfolio/18-pressure-vessel-nozzle.md` (complete), `portfolio/20-prius-traction-motor.md`
   and `portfolio/17-fsi-flag-turek-hron.md` (drafts, now in PORTFOLIO.md); `portfolio/19-turbulent-pipe-friction.md` (part 1
   complete, with `portfolio/img/pipe_friction.png`); new task `tasks/nozzle_stress_linearisation`.
