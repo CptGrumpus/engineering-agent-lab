@@ -1,6 +1,6 @@
 # Study 7 (2004 Prius motor against ORNL's tests): where it stands
 
-Updated 2026-11-23 14:00 (time from `date`). Since about 13:50 the study runs as a **regular client project**
+Updated 2026-11-23 15:06 (time from `date`). Since about 13:50 the study runs as a **regular client project**
 (user's decision): every piece of information a client would hand over is collected in `CLIENT_DATA.md` and used as
 input; what the job must predict (torque, efficiency) stays a validation target. The record of earlier steps:
 `RESULTS.md` (the blind pass), `CALIBRATION_PLAN.md` (revisions 1-4, predictions before each run), `DRAWING_AUDIT.md`.
@@ -25,6 +25,7 @@ Line-to-line, V rms per 1000 rpm, fundamental. ORNL's test: 89.78 V full wavefor
 | Revision 1 | fills the pocket | 1.036 T (fitted) | 89.4 | 0 % by construction | calibration; withdrawn as a model |
 | Revision 4, centred | 19.24 x 5.31 mm + 1.5 mm non-magnetic layer | 1.243 T | 82.4 | -7.8 % | **overturned**: the magnet is 6.5 mm thick |
 | Revision 4 at 1.12 T | same | 1.12 T | 72.6 | -18.8 % | 1.12 T is the magnet at about 125 C |
+| **Revision 5 (client data)** | 18.9 x 6.5 mm centred, 0.15 mm polymer each side | 1.255 T at 20 C, magnet at 25 C | **105.2** (gap 0.775) / 106.1 (gap 0.730) | **+17.7 / +18.7 %** | every client input measured and in the model; predicted to 0.1 V |
 
 ## What the client data settled (2026-11-23 13:55)
 
@@ -44,8 +45,9 @@ this motor's back-EMF.
 
 ## Next steps (no calibration)
 
-1. **Revision 5, the client-data model**: magnet 83.1 x 18.9 x 6.5 mm centred in the 6.80 mm pocket, Br 1.255 T at
-   20 C (test at 25 C), lamination 0.33 mm, air gap at both band ends; predictions first.
+1. Done 15:04: **revision 5, the client-data model**, +17.7 % (gap 0.775 mm) / +18.7 % (0.730 mm), as predicted.
+   The blind comparison's torque was also high, most at low current, where torque follows the magnet flux: the
+   excess is on the magnet side (the field the magnets drive), not in the voltmeter or the winding.
 2. **Find the model-form cause** of what remains, one effect at a time, each with a hand estimate first:
    (a) how fully the magnets are magnetised in the assembled rotor (a question for the client's production engineer;
    the literature on in-rotor magnetising of high-coercivity NdFeB gives the typical range); (b) 3D end effects;
