@@ -65,3 +65,16 @@ pass (`RESULTS.md`) and revisions 1-4 (`CALIBRATION_PLAN.md`) stay as the record
 Locked-rotor torque (TM-2004/185, TM-2006/423 Fig. 3.10), the efficiency map (TM-2006/423 Table B-1), the measured
 air-gap flux map (TM-2004/137 Fig. 13, teardown-only), the 900 rpm load tests (thermal report; a check on the thermal
 model).
+
+## Searched, nothing usable (2026-11-23 14:25)
+
+- Magnet grade or supplier datasheet for the 2004 Prius: not found in the literature searched; the measured curve
+  (TM-2010/253 Fig. 2.72) replaces it.
+- Lamination grade: not found (Cobham's 2013 Opera model of this motor used M19 as a stand-in, as we use M330-35A).
+- Independent FEA of this motor: R. Kaczmarek (Cobham / Vector Fields), "Simulating the Toyota Prius electric motor",
+  Magnetics Business & Technology, Spring 2013 (magneticsmag.com): 2D Opera model from ORNL data, gap 0.75 mm, stack
+  83.56 mm, M19 steel, magnet B-H interpolated from ORNL's points; back-EMF and torque compared with ORNL only in
+  plots, described as a "slight difference". No numbers in the text, so it cannot be used as a cross-check.
+- Magnetisation level after in-rotor (post-assembly) magnetising: the literature found discusses the effect
+  (IEEE Access 2024, Moon, Kim and Kang; VDE 2025, Slatter and Saito) but gives no general percentage. On a real job
+  this is a question for the client's production engineer.
