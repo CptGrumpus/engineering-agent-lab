@@ -164,7 +164,7 @@ Only the speed and motor-rotor columns were transcribed (`tm2006_423_table_3_7.c
   harmonics, magnet eddy currents under armature reaction). AC strand effects are small (0.91 mm strands, skin depth
   about 3.3 mm at 400 Hz).
 
-## Revision 3 (2026-11-23 ~10:50): each test point's measured winding temperature
+## Revision 3 (2026-11-23 ~10:37; time corrected from "~10:50"): each test point's measured winding temperature
 *Why:* revision 2 left the gap load-dependent, with copper loss about 1.5x ours at the hot, high-torque points. The
 efficiency maps assume one winding temperature (100 C hot, 20 C cold); ORNL recorded the stator-winding temperature
 at every Table B-1 point. Using a test's measured operating condition as an input matches conditions; the measured
@@ -194,3 +194,19 @@ with revision 2's additive no-load residual.
   points at load-dependent iron and magnet losses the 2D model with sinusoidal currents leaves out: the inverter's PWM
   ripple (switching frequency is routine inverter data), field-weakening harmonics, magnet eddy currents. Sizing them
   needs a PWM-current time-stepping model: a separate piece of work, scoped before starting.
+
+### Diagnostic after revision 3 (2026-11-23 10:52; documentation only, nothing fed back into the model)
+User's rule, 2026-11-23: any ORNL data may be opened; only what a real job would provide may be used in the model.
+Table B-1 also records the phase current at each point (rms, average of three phases; column rebuilt above). At the
+same speed and torque, ORNL's motor drew **6-30 % more current than our model's loss-optimal point** (median 1.11;
+about 1.06-1.13 below 2500 rpm, 1.22-1.30 above 3500 rpm). The copper loss of that extra current, 3 R (I_ORNL^2 -
+I_ours^2) at the measured winding temperature, is **43 % of the missing loss** over all 393 points and about three
+quarters of it at 500-1500 rpm, 200-400 N m (1053 of 1429 W). So much of the efficiency gap is torque per ampere, not
+an omitted loss term: the model makes its torque with too little current. That agrees with the static inductances
+(measured saliency Lq / Ld 2.6 against the model's 3.2: less reluctance torque in the real machine) and with the
+locked-rotor torque (A's torque 3.6 % low to 13.5 % high). The rest of the gap (about 57 %) grows with speed: iron and
+magnet losses at load, PWM.
+*Next (revision 4, design data only):* the model's magnet fills the 6.80 mm pocket (Pyleecan's HoleM50 cannot leave a
+gap); ORNL's design report (TM-2004/120) gives the magnet as 19.24 x 5.31 mm, so the pocket holds about 1.5 mm of air.
+That changes the magnet's working point, the d-axis path (Ld) and the leakage through the bridges. A drawing a client
+would provide; it was set aside on 2026-11-21 for a 0.4 % back-EMF estimate, which did not look at inductance.
