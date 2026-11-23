@@ -11,7 +11,7 @@ Planned studies, not started. Each one follows the usual loop (frame requirement
 | 5 | Buckling: column or thin panel, linear eigenvalue, then with a small imperfection | Stability: a load-path problem, not just stress | Euler and Johnson formulas, Southwell plot | CalculiX | Low-medium | **Done**: longest acceptable strut about 587 mm; [portfolio/13](portfolio/13-strut-buckling.md) |
 | 6 | Fluid-structure interaction: flexible flap in a channel | Coupled multiphysics | A published benchmark | OpenFOAM · CalculiX · preCICE | High (a weekend or more) | **In progress** (study 6): CSM1-3, CFD1-2 done; FSI1 revision 1 under way; FSI2, FSI3 to come (handoff) |
 | 7 | Electric motor, an open-source Motor-CAD alternative: the Toyota Prius IPM motor (2004, ORNL) | Three physics on one machine. Electromagnetics: torque, back-EMF, flux-linkage and efficiency maps. Thermal: a lumped network from the geometry. Mechanical: rotor stress at overspeed | The published Prius data (Oak Ridge National Laboratory); an analytic air-gap field; the thermal network against CalculiX heat transfer on a stator section; power balance at every map point | Pyleecan + FEMM (pyFEMM), Python or OpenModelica, CalculiX. Options considered 2026-11-20: SyR-e (needs MATLAB), SWAT-EM (windings), Elmer and GetDP (3D) | High | Not started. Feasibility checked 2026-11-21: Pyleecan's PyPI release (1.5.2, 2024) needs Python < 3.11, but its GitHub master installs and imports on Python 3.14 (numpy 2.5, VTK 9.7, PySide6). Install with `PYTHONUTF8=1`, or setup.py fails on Windows' default encoding. It ships a Toyota Prius IPM model (48 slots, 8 poles, 0.75 mm air gap, 83.8 mm stack), which is the 2004 Prius documented by ORNL, so benchmark against the 2004 report rather than the 2010 one. FEMM 4.2 (x64, 22Oct2023 build) installed by the user at C:emm42 on 2026-11-21 and registered for scripting (femm.ActiveFEMM). A pyFEMM smoke test from Python 3.14 (a 100 A wire, where B = mu0 I / (2 pi r) exactly) agreed within 0.1-0.5 % on FEMM's default mesh. pyFEMM needs pywin32. Keep Pyleecan in its own environment, apart from the repo's pinned .venv |
-| 8 | Pressure vessel with a nozzle, ASME VIII-2 Part 5 elastic stress analysis (study 18) | Design-code verdict from linearised stresses on classification lines; rule vs analysis | Lame cylinder, exact pressure resultants, simplified pressure-area rule | CadQuery · Gmsh · CalculiX | Medium | **Done** (optional extras in the handoff): [portfolio/18](portfolio/18-pressure-vessel-nozzle.md), PL 205.1 against 207 MPa, nozzle needs about 11.7 mm (rule: 16) |
+| 8 | Pressure vessel with a nozzle, ASME VIII-2 Part 5 elastic stress analysis (study 18) | Design-code verdict from linearised stresses on classification lines; rule vs analysis | Lame cylinder, exact pressure resultants, simplified pressure-area rule | CadQuery · Gmsh · CalculiX | Medium | **Done**: [portfolio/18](portfolio/18-pressure-vessel-nozzle.md). Placement decides: toe lines PL 205.1 against 207 (about 11.7 mm), crotch line 256.7 (about 20 mm), rule 16 mm; hemispherical head about 6.5 mm (axisymmetric model, checked against shell theory) |
 | 9 | Turbulent CFD: pipe friction, then the backward-facing step against measurements (study 19) | Turbulence modelling; validation against measured data | Prandtl's smooth-pipe law; Driver & Seegmiller's step data | OpenFOAM | Medium | **In progress**: part 1 (pipe friction) done, [portfolio/19](portfolio/19-turbulent-pipe-friction.md): +2.4 % on Prandtl converged, wall functions -5 %; part 2 (step) waits on data hosts (handoff) |
 | 10 | Random vibration of the study-4 bracket (C) | Forced response to a PSD; 3-sigma stress; vibration fatigue | Miles' equation; effective mass | CalculiX · Python | Medium | Documented, not started (handoff) |
 | 11 | Natural convection and radiation (D) | Buoyant flow; view-factor radiation | de Vahl Davis cavity benchmark; two-surface exchange | OpenFOAM · CalculiX | Medium | Documented, not started |
@@ -58,26 +58,54 @@ each part on its own: CSM1 to CSM3 (solid only, CalculiX, nothing new needed), C
 only, OpenFOAM 14, nothing new needed), then FSI1 to FSI3 coupled through preCICE. Each part is
 verified before the coupled run, as in study 2.
 
-## Session handoff (2026-11-22, 19:25; first written 2026-11-21, 23:10)
+## Session handoff (2026-11-22, 20:30; first written 2026-11-21, 23:10)
 
-Read this first. Files under site/, docs/, DASHBOARD.md and `scripts/make_study_renders.py` belong to the dashboard
-session (it commits in this clone: add and commit only your own paths, in one command; never leave files staged).
-Rules that bind: **CLAUDE.md "Use only information a real project would have"** (new, user 2026-11-22 ~19:15: workflows
-use only specs, datasheets, drawings, standards and routine client tests; no teardown / answer-key data; when unsure,
-treat as available and say so); predictions go into a case header and get committed BEFORE the evidence run; Results
-blocks after; `scripts/scrub_paths.py <run dir>`, `git add -f` without `*.inp`, `*.dat`, `__pycache__`, logs > 600 kB,
-then `tests/test_privacy.py`; never two FEMM cases at once (OpenFOAM/CalculiX may run beside FEMM).
+Read this first. Files under site/, docs/, DASHBOARD.md, `scripts/make_study_renders.py`, `scripts/figkit.py` and
+`.claude/skills/publication-figures/` belong to the dashboard session (it commits in this clone: add and commit only
+your own paths, in one command; never leave files staged). Rules that bind: **CLAUDE.md "Use only information a real
+project would have"**; predictions go into a case header and get committed BEFORE the evidence run; Results blocks
+after; `scripts/scrub_paths.py <run dir>`, `git add -f` without `*.inp`, `*.dat`, `__pycache__`, logs > 600 kB, then
+`tests/test_privacy.py`; never two FEMM cases at once (OpenFOAM/CalculiX may run beside FEMM).
 
-### Running at 19:25 (logs in this session's scratchpad: `$TEMP/claude/cb67dd1e648f8970/4abd5a92-1872-493d-b389-7a0cff188b91/scratchpad/`)
+### Running at 20:30 (logs in session e47de8ef's scratchpad `$TEMP/claude/cb67dd1e648f8970/e47de8ef-a563-4e37-9ceb-087236e5c275/scratchpad/`; FSI logs in session 4abd5a92's)
 
 | Job | Run dir (log) | Done about | When it finishes |
 |---|---|---|---|
-| Study 7 calibration, open circuit at remanence 1.00 / 1.03 / 1.06 T (FEMM) | `runs/20261122-192029_motor_prius_cal_oc_br` (`cal_oc.log`) | ~19:40 | (1) Interpolate the remanence where the back-EMF, line-to-line full-waveform rms per 1000 rpm, equals ORNL's 89.78 (the case's metric is the fundamental, 110.88 at 1.243 T; full / fundamental = 1.0034 in r3, so the target fundamental is 89.47 V); Results block in `cases/motor_prius_cal_oc_br.toml` (prediction: 87 / 90 / 92.5 V); commit with evidence. (2) Build `models/motor/build_prius_ornl.py --br <value>` (Pyleecan env, `PYTHONUTF8=1 ~/.venvs/pyleecan/Scripts/python.exe`), add the file to `MACHINES` in `studies/motor_em.py`, set it in `cases/motor_prius_cal_torque_br.toml` (replacing `PENDING_calibrated_remanence.json`), commit saying the predictions are unchanged. (3) Run that case (FEMM, about 2 h). |
-| Study 6 FSI2 (2.5 mm, dt 0.001, 15 s, periodic) | started 18:48; `runs/<ts>_turek_hron_fsi2` (`fsi2.log`) | ~22:40 (65 windows/min; 15000) | Score P1-P7 in `cases/turek_hron_fsi2.toml`, Results block, commit evidence (curate as FSI1 r1: no postProcessing, .sta, .dat, logs > 600 kB), update `portfolio/17-...` (draft) and the PORTFOLIO row. At 19:23: 2283 windows, none unconverged, uy(A) growing (1.5 mm at 2.3 s). |
-| Study 6 FSI3 (2.5 mm, dt 0.0005, 8 s, periodic) | started 18:50; `runs/<ts>_turek_hron_fsi3` (`fsi3.log`) | ~22:55 (65 windows/min; 16000) | Same with `cases/turek_hron_fsi3.toml`. At 19:23: 2156 windows, none unconverged. |
+| Study 7 calibration, torque at Br 1.036 T (FEMM, 8 currents) | `runs/<ts>_motor_prius_cal_torque_br` (`cal_torque.log`) | ~22:05 | Results block in `cases/motor_prius_cal_torque_br.toml` (P1-P4); `scripts/motor_calibration.py --torque-run <run id>` (rewrites `validation/motor_ornl/calibration.json`, untracked until then); select A or B by the smaller rms torque error; efficiency for the selected one (B's is scored; A's needs dq tables at 1.036 T: hours of FEMM, ask first); write CALIBRATION_PLAN.md Results, portfolio 20, `reports/motor/build_report.py`, republish artifact C6dNdzjs1FdP8vVb6MLaRy. |
+| Study 19 pipe friction r3 (n 160 / 320 / 640 at 1 mm axial length) | `runs/<ts>_pipe_rans_mesh_r3` (`pipe_r3.log`) | ~22:30 | Score P1-P4 in the case; if the GCI passes, REQ-T1 is verified: update portfolio/19 (answer, mesh table, "What the checks caught"), PORTFOLIO row. |
+| Study 6 FSI2 / FSI3 (session 4abd5a92's) | `runs/20261122-184933_turek_hron_fsi2`, `..._185044_turek_hron_fsi3` (`fsi2.log`, `fsi3.log`) | ~23:50 / ~01:45 (slowed to 48 / 35 windows/min by the CPU share) | As before: score P1-P7, Results, evidence (no postProcessing, .sta, .dat, logs > 600 kB), portfolio/17, PORTFOLIO row. Then start the FSI1 noise runs (work order item 3). |
 
 Alive check: `ps -ef | grep "[h]arness pipeline"`; WSL: `wsl.exe -e bash -lc "ps -eo etime,cmd | grep -E 'Foam|ccx' | grep -v grep"`.
 FSI progress: the two newest `$TEMP/fsi_*/case/fluid/precice-Fluid-iterations.log` (one line per window).
+
+### Done 19:45-20:30 (work order below)
+- **Study 7:** open-circuit calibration scored (d6ddf02): back-EMF linear in Br, **calibrated remanence 1.036 T**
+  (full waveform to 89.78 V; fundamental route 1.037); prediction missed by about 1.5 %. Machine built and set in the
+  torque case (10ce915); torque run going.
+- **Study 18, item 1 DONE, and the answer changed.** Crotch classification lines (82b3c74 .. 7d1b7a0): PL through the
+  crotch **256.7 MPa against 207, verified FAIL** (r1 with the measured mesh noise 3e-3; noise case: five regenerated
+  meshes at 4 mm scatter 8e-4 to 2.9e-3). Wall where crotch PL = 207: about 20.1 mm (toe 11.7, rule 16). Toe line
+  moved a weld size out: -10 %. The 14 mm recommendation is withdrawn. **Head-to-shell junction:** new axisymmetric
+  model (`ccx_vessel_head_axi`), equal thickness against thin-shell theory (bending -1.5 %, hoop -0.04 %, verified);
+  head thickness sweep: the head's own membrane governs, about 6.5 mm (rule 6.34); junction P + Q 210 MPa at 6.5 mm.
+  One stated limit: the 8 mm head's P + Q spreads 1.5 % (unverified, margin 58 %). Page 18 rewritten (03fc4a9).
+- **Item 5 DONE:** coolant page and memo say the 28-42 Pa range is the four verified corners (54f8001); quarter car
+  already plain.
+- **Item 6 (skills audit) DONE:** every "What the checks caught" lesson on pages 02-20 is in a skill or enforced by
+  code, except study 13's *BUCKLE output (tool note added); pressure-vessel checks moved out of the electric-machines
+  table; new notes: CAX8 reactions per 2 degrees, the 21-character number limit on any card, the sampled-maximum
+  pattern, study 18's mesh noise, placement sensitivity (check catalog and frame-requirements).
+- **Item 7:** scan done; only FSI2/FSI3 (page 17) and the calibration (page 20) remain in progress. `reports/motor/`
+  does carry the copper correction (the note further down saying otherwise is stale).
+- **Item 2:** n640 probe converges at 1 mm axial length (slowly: f about 0.01835 at 80000 iterations); r3 running.
+- **Item 3 (FSI1 noise), prepared, not started:** at 1.77 mm each coupled run takes about 1.7 h alone and the harness
+  runs points in sequence, so run one case per perturbation (fluid_cell_size_m 0.00172 / 0.00175 / 0.00180 / 0.00183;
+  r1's 0.0017678 is the fifth) concurrently once FSI2/FSI3 are done; then r2 of FSI1 declares the measured
+  `mesh_noise_rel` (a 5 h rerun).
+
+**For the dashboard session:** study 18's answer changed (placement-dependent; nozzle needs about 20 mm with the crotch
+line; head about 6.5 mm; a new axisymmetric head model). The site's study-18 page and any "passes narrowly" line are
+stale. README model table has a new row.
 
 ### Study 7: post-test revision in progress (plan `validation/motor_ornl/CALIBRATION_PLAN.md`, committed 31449ff before computing)
 
@@ -105,7 +133,7 @@ S355-type steel (yield 355 MPa, a published S-N curve), all marked synthetic (fr
 Already done (19:35): stale status lines fixed (8b78f7e); every relative link in portfolio/, PORTFOLIO.md, README.md
 resolves. Loose ends found by a keyword scan (draft / pending / unverified / withheld / not yet), to close or to state
 plainly as final:
-1. **Study 18:** classification-line placement sensitivity "not yet quantified" (portfolio/18 line ~54) and the
+1. **DONE 20:30** **Study 18:** classification-line placement sensitivity "not yet quantified" (portfolio/18 line ~54) and the
    head-to-shell junction against shell discontinuity theory: run both (CalculiX), predictions first.
 2. **Study 19:** REQ-T1 unverified by 0.05 point of GCI (1.05 % vs 1 %): an n640 level with a 1 mm axial length would
    settle it (stall risk: probe convergence first, BACKLOG study 19 notes); part 2 still blocked (retry the NASA host).
@@ -114,9 +142,9 @@ plainly as final:
    re-verify r1 (CFD1/CFD2 carry the same issue: "the fix (nested meshes ...)" on page 17).
 4. **Study 7:** hot REQ-M5 unverified (one map cell); the 10 N m row above 4000 rpm unresolved; the calibrated revision
    (running). Decide which stay as stated limits.
-5. **Study 5 (coolant channel)** one case unverified (settling); **quarter car** wheel lift (a validity flag, correct as
+5. **DONE** **Study 5 (coolant channel)** one case unverified (settling); **quarter car** wheel lift (a validity flag, correct as
    is). Check each page states these plainly.
-6. **Skills audit:** for every study page's "What the checks caught", confirm the lesson is in a skill (tool-notes,
+6. **DONE** **Skills audit:** for every study page's "What the checks caught", confirm the lesson is in a skill (tool-notes,
    convergence-diagnosis, check-catalog, frame-requirements) or is enforced by code; add what is missing; prune what is
    duplicated (CLAUDE.md "Keep the skills current").
 7. **Every page:** numbers match the latest run reports; no "running" / "pending" left except FSI2/FSI3 until they land.
@@ -181,7 +209,7 @@ running. Pages under `site/` / `docs/` showing study 7 or 6 status are stale.
 - **Copper correction (2026-11-22 ~09:30, 5714743):** ORNL's 0.84 fill is on the squares of insulated wires; bare
   copper is 76.4 mm^2 per slot (13 x 0.912 mm strands per turn), not 120. **25 A/mm^2 = 212 A rms, not 333.** REQ-M2
   still PASS (400 N m at 168 A, 19.8 A/mm^2); REQ-M3 now fails from 250 A. Notes in the five torque case headers.
-  **Not yet in `reports/motor/`** (they still show the old J values).
+  (In `reports/motor/` since the 15:12 rebuild.)
 - **User decisions today:** the 25 A/mm^2 limit stays as a stated assumption; efficiency = motor only, a cold/hot band
   (cold: all 20 C; hot: windings 100 C, magnets 80 C), mechanical losses left out and stated; bus 500 V.
 - **Efficiency map, built:** `studies/motor_lut.py` (dq table per (id, iq): torque, dq flux, iron-loss coefficients A,
@@ -247,8 +275,7 @@ there matches our case's values exactly.
 - `pv_nozzle_mesh` (5feb663): PL 205.1 MPa, GCI 0.03 %, REQ-PV2 verified PASS by 0.9 %; Pm exact to 0.03 %; equilibrium
   exact. `pv_nozzle_thickness` (17fc040): by analysis the nozzle needs about 11.7 mm, by the simplified pressure-area
   rule about 16 mm; recommendation for review 14 mm.
-- **Next (optional):** a classification-line placement sensitivity (a line through the crotch corner), the head-to-shell
-  junction against shell discontinuity theory; then the portfolio page (`portfolio/18-...`) and a PORTFOLIO.md row.
+- Placement sensitivity and the head-to-shell junction: done 20:30 (see the top of the handoff).
 
 ### Study 19 (turbulent flow)
 
@@ -306,7 +333,7 @@ elements, probabilistic uncertainty). Each with its tools and independent refere
 
 ### Waiting on the user
 
-Nothing blocking. For review when convenient: study 18's 14 mm recommendation. (User, 2026-11-22 ~15:00: "keep working
+Nothing blocking. For review when convenient: study 18's answer (placement-dependent: about 20 mm with the crotch line; 14 mm withdrawn). (User, 2026-11-22 ~15:00: "keep working
 on our studies, updating docs and skills and building out the portfolio": study 18's page is published (0feac56); study
 19's page is published (6454d5e). New evaluation task
 `tasks/nozzle_stress_linearisation` (ea159d0). Skills updated (6eadf71). README study table (4d484d3). Next ideas: a
