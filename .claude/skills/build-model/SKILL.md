@@ -96,8 +96,8 @@ per problem type:
    magnet, -0.4 %; the real change leaves air in series, -23 to -28 %). A difference the template cannot represent
    is an assumption in the case file with its estimated effect, not a silent default.
    How to make the audit complete (study 7's audit, `validation/motor_ornl/DRAWING_AUDIT.md`): list every label on
-   the drawing and mark the ones the model does not use (study 7: 11 of 25, most on the stator's mounting ears, but
-   also two bridge values and the magnet stops); render the whole part, not only the sector you measured (one
+   the drawing and mark the ones the model does not use (study 7: 12 of 23, most on the stator's mounting ears, but
+   also a second bridge value and the hub keys), and unlabelled features too (the magnet stops); render the whole part, not only the sector you measured (one
    rotor view settled "is there a centre rib?"); check what the solver leaves out of the template, not only what
    the template draws (Pyleecan leaves the shaft unmeshed, so a steel hub ring that the designer's own model
    counted as rotor iron was missing); and for each such gap, read the saved field (flux density in the region)
