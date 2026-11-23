@@ -120,7 +120,9 @@ prediction is written into a case file.
   own lines and labels are abbreviations (study 7 saw ORNL model results this way, and recorded it).
 - Render only the figure you need, cropped to its image block; check what else shares the page.
 - Material properties measured by the same lab are a judgement call for the user, not for you.
-- Keep a protocol log (what was opened, when, why) and declare any prior knowledge in the case headers.
+- Keep a protocol log (what was opened, when, why) and declare any prior knowledge in the case headers. Take every
+  time from the clock (`date`), never from memory: study 7's revision log carried two times 15-25 min ahead of the
+  clock until they were corrected.
 - Agree the validation limits before the data is seen; after that, any change is a documented revision.
 - Agree how the data will be read at the same time: line-to-line or phase, peak or rms, which table or figure, what
   temperature. Test reports often don't say (study 7: the back-EMF and locked-rotor tables state neither, and the
@@ -149,6 +151,25 @@ prediction is written into a case file.
   voltage headroom; check the sign with the torque equation, not intuition.
 - Transcribe a test table before reasoning from it: run-together PDF text puts a frequency column where the voltage
   should be (study 7, caught before scoring).
+- Audit every column of a transcription, not only the ones being scored: check each row against identities in the
+  table itself (speed x torque = mechanical power; efficiency = output / input power). Study 7's Table B-1 scored
+  columns were right on all 428 rows, but the stator temperature was empty in every row and the phase voltage and
+  current shifted in 345 (three rows lacked one value); nobody noticed for a day because nothing used them, until the
+  temperature was the next thing needed.
+- After the blind comparison, more test material may be opened to diagnose and document (user, 2026-11-23: "we can
+  open up as much of the ORNL data as we want ... we just need to make sure we don't USE anything we wouldn't be
+  provided with a real job"). Opening and using are different: a model input, a calibration or a choice between
+  hypotheses may rest only on what a client would provide (specs, datasheets, routine tests such as back-EMF,
+  resistance, inductance, no-load losses, and the operating conditions recorded with a test). Teardown-only data
+  (study 7: the measured air-gap flux map) may be looked at and reported, never fed back into the model. When the
+  line is unclear, ask, and log the decision either way.
+- Even when data is allowed, locate it with a masked search, write the method and predictions, then open it once.
+  Study 7 revision 2 predicted that ORNL's no-load spin loss would exceed the model's open-circuit iron loss 1.3-2.5
+  times and close a 4.5-point efficiency gap; it matched the model (0.87-1.35) and moved the gap by 0.02 points. The
+  miss was the finding: the gap is load-dependent.
+- Match the test's operating conditions with what the test recorded before blaming the model: study 7 assumed one
+  winding temperature (100 C); ORNL logged 43-207 C per point, and using it closed 0.45 points of the gap and a
+  quarter of the missing loss at high torque (revision 3).
 
 ### 7. Missing information
 

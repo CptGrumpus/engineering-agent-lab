@@ -124,6 +124,19 @@ Run every command from the repository root.
 5. **Inspect `<run_dir>/manifest.json`.** Report the status per point. For any point with
    status `failed`, quote its `error` or `solver.message` and the relevant lines of `run.log`.
 
+## Resources (the user's machine is shared)
+
+- Before a mesh study, run the coarsest point (or a scratch prototype) and look at its peak memory and output sizes;
+  scale them by the node count to the finest mesh. Study C's finest mesh wrote a 16.5 GB result file and its reader
+  took 38 of 64 GB of RAM (CalculiX output requests carried into later steps); the coarse mesh's 40 MB file would have
+  shown it (x 12 nodes).
+- While long runs go, check free RAM and the processes now and then (`Get-Process`, `Win32_OperatingSystem`), not only
+  the log: a run can be "progressing" while the machine pages.
+- To stop a run of your own, stop its background task (TaskStop), not by killing processes. Then fix the cause, note
+  the stopped run in the case's Results, and rerun; don't keep the partial run as evidence of anything but the stop.
+- One FEMM at a time; OpenFOAM under `nice -n 19`; several single-core jobs at once are fine on this machine, but
+  watch memory more than CPU.
+
 ## Artifacts
 
 `runs/<run_id>/`: `inputs/case.toml`, `manifest.json`, `run.log`,
