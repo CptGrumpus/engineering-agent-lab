@@ -131,7 +131,7 @@ def miles_tip_rms(phi_gamma: float, fn: float, zeta: float, S: float) -> float:
 # ----------------------------------------------------------------------------------------------------- fatigue
 def ec3_cycles(drange: np.ndarray, dsc: float) -> np.ndarray:
     """EN 1993-1-9 direct-stress S-N curve, detail category dsc (stress range at 2e6 cycles): slope 3 to 5e6, slope
-    5 to 1e8, no damage below the cut-off (0.549 dsc). Returns the cycles to failure (inf below the cut-off)."""
+    5 to 1e8, no damage below the cut-off (0.405 dsc). Returns the cycles to failure (inf below the cut-off)."""
     d = np.asarray(drange, dtype=float)
     dD, dL = dsc * (2 / 5) ** (1 / 3), dsc * (2 / 5) ** (1 / 3) * (5 / 100) ** (1 / 5)
     with np.errstate(divide="ignore"):

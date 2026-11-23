@@ -47,6 +47,9 @@
 #   P4 HELD: Dirlik damage 2.85e-3 / 2.46e-3 / 2.43e-3; Steinberg 3.14e-3 / 2.81e-3 / 2.78e-3 (10-14 % above Dirlik).
 #      REQ-RV2 PASS by a factor of about 200 (damage is not a GCI metric; it follows the stress).
 #   P5 MISSED: 37 min (46 s / 3 min / 34 min); the 1 h 40 min estimate carried the frd bloat's cost.
+#   Correction to P4's reasoning (found writing the page, 2026-11-23): the S-N cut-off is 0.405 x 160 = 64.8 MPa,
+#   not 88 MPa (0.549 x 160, from a wrong docstring; the code and its test always used 0.405). The 3 sigma range
+#   (about 77 MPa) is above it, so damage comes from the upper tail of the ranges; the sensitivity claim stands.
 
 [case]
 name = "bracket_random_mesh"
