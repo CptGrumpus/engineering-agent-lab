@@ -231,10 +231,12 @@ def _get(m, path):
     return m
 
 
-def build(steel=DEFAULT_STEEL, out=None):
+def build(steel=DEFAULT_STEEL, out=None, br=None):
     if steel != "M400-50A" and steel not in LAMINATIONS:
         raise ValueError(f"unknown lamination grade {steel}; known: M400-50A, {', '.join(LAMINATIONS)}")
-    out = Path(out) if out else (OUT if steel == DEFAULT_STEEL else HERE / f"Toyota_Prius_ORNL_{steel}.json")
+    stem = "Toyota_Prius_ORNL" + ("" if steel == DEFAULT_STEEL else f"_{steel}") + (
+        "" if br is None else f"_Br{br:.4f}".replace(".", "p"))
+    out = Path(out) if out else (OUT if stem == "Toyota_Prius_ORNL" else HERE / f"{stem}.json")
     from pyleecan.definitions import DATA_DIR
     from pyleecan.Functions.load import load
 
@@ -251,7 +253,11 @@ def build(steel=DEFAULT_STEEL, out=None):
         setattr(obj, attr, value)
         rows.append((f"{path}.{attr}", old, value, f"{label}: {note}"))
     mags = [mag for hole in m.rotor.hole for mag in (hole.magnet_0, hole.magnet_1)]
-    for attr, value, label, note in MAGNET_CHANGES:
+    changes = MAGNET_CHANGES if br is None else [
+        (a, br, f"{br:.4f} T", "POST-TEST CALIBRATION (study 7, hypothesis A): remanence scaled so the open-circuit "
+         "back-EMF matches ORNL's routine back-EMF test; not a design input") if a == "Brm20" else (a, v, l, n)
+        for a, v, l, n in MAGNET_CHANGES]
+    for attr, value, label, note in changes:
         old = {getattr(mag.mat_type.mag, attr) for mag in mags}
         if len(old) != 1:
             raise ValueError(f"the magnets disagree on {attr}: {old}")
@@ -259,7 +265,8 @@ def build(steel=DEFAULT_STEEL, out=None):
             setattr(mag.mat_type.mag, attr, value)
         rows.append((f"magnets.mat_type.mag.{attr}", old.pop(), value, f"{label}: {note}"))
     rows += _set_lamination(m, steel)
-    m.name = "Toyota_Prius_ORNL" if steel == DEFAULT_STEEL else f"Toyota_Prius_ORNL_{steel}"
+    m.name = ("Toyota_Prius_ORNL" if steel == DEFAULT_STEEL else f"Toyota_Prius_ORNL_{steel}") + (
+        "" if br is None else f"_Br{br:.4f}".replace(".", "p"))
     m.desc = (f"2004 Toyota Prius: Pyleecan's Toyota_Prius.json with the stator, rotor and slot dimensions of {SOURCE}, "
               "the pocket thickness from the same figure, the bridge from ORNL/TM-2004/120 and the magnet B-H line from "
               f"ORNL/TM-2004/137 Fig. 14, laminations {steel} (see models/motor/build_prius_ornl.py); magnet width "
@@ -279,8 +286,10 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--steel", default=DEFAULT_STEEL, help=f"lamination grade (default {DEFAULT_STEEL})")
     ap.add_argument("--out", help="output path (default: see the module docstring)")
+    ap.add_argument("--br", type=float, help="post-test calibration only: magnet remanence at 20 C (T), replacing the "
+                    "design value; writes Toyota_Prius_ORNL_Br<value>.json")
     args = ap.parse_args()
-    m, rows, out = build(args.steel, args.out)
+    m, rows, out = build(args.steel, args.out, args.br)
     print("| Parameter | Pyleecan file | Ours | Difference | Source |")
     print("|---|---|---|---|---|")
     for name, old, new, note in rows:
