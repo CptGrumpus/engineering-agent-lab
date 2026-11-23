@@ -1,0 +1,87 @@
+# Study 19 part 2, the backward-facing step (Driver and Seegmiller, ERCOFTAC classic case 030, parallel walls).
+# Decision: can the setup part 1 verified (k-omega SST, sublayer resolved, OpenFOAM 14) predict a separated, reattaching
+# flow well enough for design use? Validation limits AGREED with the user before any measured data beyond the inflow
+# was opened (2026-11-22 ~20:50): REQ-S1 reattachment length Xr/H within 10 % of measured; REQ-S2 skin friction on the
+# step-side wall over 10 <= x/H <= 30 within 15 % (rms) of measured; REQ-S3 pressure recovery Cp(30 H) - Cp(-4 H)
+# within 0.02. Scored once, after this case's predictions are committed, by validation/step_driver_seegmiller/.
+# PRIOR KNOWLEDGE (declared): the measured Xr/H, 6.26 +- 0.10, was seen when the data was downloaded; the case
+# description gives the inflow (U_ref 44.2 m/s, delta 19 mm, Re_theta 5000 at x/H = -4) and the geometry.
+#
+# Inflow, matched in two scratch smoke tests (level 0.7): Lup 0.90 m, U_in 44.2 gave theta 1.33 mm, U_e 46.05; Lup
+# 1.22 m, U_in 42.42 gave theta 1.776 mm, U_e 44.70, delta99 15.2 mm; this case's Lup 1.153 m and U_in 41.95 m/s are
+# scaled from the second (theta ~ x^0.8). The 99 % thickness cannot be matched with theta: SST's boundary layer is
+# fuller than the measured one (delta99 / theta 8.6 against about 11.2), so theta (the integral quantity the
+# separating shear layer inherits) gates and delta99 is reported, not gated: a change from the framing's "theta and
+# delta within 5 %", made before any evidence run. Both smoke tests gave Xr/H 6.41-6.42 although their theta differed
+# by 34 %: the reattachment is insensitive to the inflow thickness here.
+# Numerics: two stages (first-order k, omega for 500 iterations, then limitedLinear 1; linearUpwind diverged from a
+# cold start); residual targets p 1e-6, U 2e-7, k / omega 2e-6 (k stalls at about 1.1e-6). One core, nice 19.
+#
+# Case 3: the inlet turbulence intensity, an input the case description does not give.
+# Predictions, written BEFORE the evidence run:
+#   P1 Every point check passes, the inflow checks included (theta moves by a few % with the intensity: the layer
+#      grows from the inlet at a rate that depends on it; if one fails its 5 %, that is reported as the input's reach,
+#      not tuned away).
+#   P2 Xr/H moves by under 2 % across 0.5-2 % (the smoke tests showed little sensitivity to the inflow thickness).
+#   P3 About 3 h.
+
+[case]
+name = "step_inlet_tu"
+model = "openfoam_step_rans"
+description = "Backward-facing step (as step_mesh), level 1; inlet turbulence intensity 0.5 / 1 / 2 % (the inflow's free-stream turbulence is not stated)."
+assumptions = [
+  "2D, steady, incompressible RANS (M 0.128); k-omega SST (openfoam.org v14), walls resolved (y+ under 1 on the floors and the top wall).",
+  "Geometry from the case description: step H 12.7 mm, inlet duct 8 H (expansion 1.125), parallel top wall; Re_H 37500 at U_ref 44.2 m/s (nu 1.497e-5 m^2/s).",
+  "Inflow: uniform velocity 1.153 m upstream of the step (as the experiment's trip, 1.0 m), turbulence intensity 1 % and eddy-viscosity ratio 10; both walls grow their own boundary layers; matched on the step-side momentum thickness and edge velocity at x = -4 H.",
+  "Outlet at 50 H, fixed pressure; Cp referred to the floor at x = -4 H.",
+]
+limitations = [
+  "2D: the tunnel's span is 12 H, so the side walls' boundary layers and any spanwise flow are not modelled.",
+  "One turbulence model; its boundary layer is fuller than the measured one at the same momentum thickness (delta99 15 against 19 mm).",
+  "Steady RANS: the shear layer's unsteadiness is not resolved.",
+]
+
+[parameters]
+step_height_m = 0.0127
+inlet_height_ratio = 8.0
+reynolds_number_h = 37500.0
+inlet_velocity_m_per_s = 41.95
+reference_velocity_m_per_s = 44.2
+upstream_length_m = 1.153
+downstream_length_over_h = 50.0
+inlet_turbulence_intensity = 0.01
+inlet_viscosity_ratio = 10.0
+mesh_level = 1.0
+turbulence_model = "kOmegaSST"
+
+[sweep]
+parameter = "inlet_turbulence_intensity"
+values = [0.005, 0.01, 0.02]
+
+[numerics]
+residual_p = 1e-6
+residual_U = 2e-7
+residual_turb = 2e-6
+max_iterations = 80000
+stage1_iterations = 500
+solver_timeout_s = 28800
+
+[verification]
+continuity_tol = 1e-6
+inflow_theta_mm = 1.697          # Re_theta 5000 at U_ref 44.2 m/s, nu 1.497e-5
+inflow_delta99_mm = 19.0         # reported, not gated (see the header)
+inflow_u_ref_m_per_s = 44.2
+inflow_theta_rel_tol = 0.05
+inflow_u_rel_tol = 0.02
+yplus_max = 1.0
+mesh_noise_rel = 1e-5
+gci_max = 0.03
+gci_metrics = ["xr_over_h", "cf_x20h", "cp_recovery_30h"]
+
+[[requirements]]
+id = "REQ-SD1"
+text = "Design use (synthetic): the flow shall be reattached by x/H = 8, where a heat-transfer surface starts."
+metric = "xr_over_h"
+operator = "<="
+limit = 8.0
+units = "-"
