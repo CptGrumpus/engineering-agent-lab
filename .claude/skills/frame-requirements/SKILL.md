@@ -138,6 +138,11 @@ prediction is written into a case file.
   theory, mesh studies) with the magnet flux 24 % high.
 - After a blind miss, keep the verdict on the record. Test data used to diagnose or calibrate stops being evidence;
   validate the revision on quantities that weren't used (calibrate one, predict the rest).
+- When two explanations both fit the calibration, choose between them with the cheapest routine measurement that
+  separates them (resistance, inductance, a tap test), not with the next high-value test. Study 7 first chose with
+  the locked-rotor torque: a weak discriminator (8.7 % against 10.7 % rms error) that then stopped being evidence. A
+  turns error scales resistance and inductance by k^2 and a magnet error does not, so the static inductances separate
+  them by 35 % (the user asked whether a contract job would even have the torque data; often it would not).
 - Transcribe a test table before reasoning from it: run-together PDF text puts a frequency column where the voltage
   should be (study 7, caught before scoring).
 
