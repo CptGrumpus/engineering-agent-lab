@@ -207,5 +207,6 @@ a limit-load or elastic-plastic analysis removes the judgement.
 | Re below transition | validity | `laminar` |
 | Entrance length ends before the measurement window; centreline constant across it | validity | `entrance_before_window`, `fully_developed` |
 | checkMesh passes | numerical | `mesh_quality` |
+| Shape of the cells on the surface that carries the requirement (largest interior angle of the cells touching it): checkMesh's limits are global and loose, and one quad wrapped around a corner (165 deg, skewness 0.994, 'Mesh OK') moved the flag-tip displacement 28 % with every other check passing. Scan all the study's meshes once to set the limit (24 Turek-Hron meshes: 128 deg at most, the bad one 165) | numerical | Turek-Hron FSI `flag_cells` |
 | Prescribed inflow profile checked face by face against the formula; flow rate carries the face-sampling error | numerical | Turek-Hron `inflow_profile`, `flow_rate` |
 | Force history settled over the last 10 % of iterations; SIMPLE met its residual targets | numerical | Turek-Hron `forces_settled`, `converged` |

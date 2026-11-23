@@ -311,6 +311,12 @@ Traps found while building the studies in this repo, by tool.
   cells, with the CPU shared by other runs), so the 160-cell point hit a fixed 2-hour backend timeout
   halfway through. Set `flow_iterations` from where the residuals actually reach the convergence check's
   limit (here about 1e-8 by iteration 940), and give the backend a `solver_timeout_s` numerics setting.
+- **Gmsh's quad recombination (`Mesh.Algorithm = 8; Recombine`) can wrap one cell around a convex corner.** At a 1.72 mm size
+  (turek_hron_fsi1_noise_a) the flag's upper tip corner was shared by two quads (165 and 105 deg) instead of three of
+  about 90; checkMesh said OK (max skewness 0.994, limit 4), every check passed, and uy(A) came out 28 % low; at 1.75
+  mm the corner was clean again. It depends on the exact size, so nothing warns you: check the angles of the cells on
+  the measured surface (`studies/turek_hron_fsi.py` `flag_cell_quality`), and rebuild a suspect mesh from the kept
+  mesh.geo: Gmsh regenerates it exactly (same cell count), so a defect can be located after the run.
 - **Gmsh `-setnumber` did not override a `DefineNumber` in the .geo** (the mesh came out unchanged);
   write the sizes into the .geo itself. `gmshToFoam` names patches after the physical groups and types
   them all `patch`: set `empty`, `wall` with `foamDictionary constant/polyMesh/boundary -entry
