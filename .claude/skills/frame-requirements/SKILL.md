@@ -168,6 +168,17 @@ prediction is written into a case file.
   Study 7 revision 2 predicted that ORNL's no-load spin loss would exceed the model's open-circuit iron loss 1.3-2.5
   times and close a 4.5-point efficiency gap; it matched the model (0.87-1.35) and moved the gap by 0.02 points. The
   miss was the finding: the gap is load-dependent.
+- A calibrated value far outside its own measurement is a model-form alarm, not a material finding. Study 7's
+  back-EMF fit needed the remanence at 1.036 T against the 1.243 T measured on a sample (-17 %, about four times any
+  plausible material scatter). Both hypotheses on the table were knobs (remanence, turns); none was "the model is
+  not the drawing". It was: the magnet filled its pocket. Modelled as drawn, with the material as measured and
+  nothing fitted, the back-EMF came within 4.6-11 % (revision 4), from +23.5 % blind. Order: geometry and template
+  fidelity first (build-model step 3), then material and conditions, calibration last; and when a fit is needed,
+  list model-form causes as hypotheses beside the parameter ones.
+- A calibration makes the fitted quantity right by construction and says nothing about the others. A wrong knob
+  can match the back-EMF exactly and still misplace inductance, saturation, leakage and torque per ampere, because
+  it changes the material where the model's error was in the circuit. Prefer the explanation that reproduces the
+  measurement without fitting, then check it on quantities it was not tuned to.
 - Match the test's operating conditions with what the test recorded before blaming the model: study 7 assumed one
   winding temperature (100 C); ORNL logged 43-207 C per point, and using it closed 0.45 points of the gap and a
   quarter of the missing loss at high torque (revision 3).

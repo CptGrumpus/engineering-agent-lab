@@ -87,36 +87,44 @@ per problem type:
 2. **Model source.** Write the model or case writer. Generated text must not
    contain numpy reprs: cast to `float` before formatting (`np.float64(0.5)`
    breaks OpenFOAM dictionaries).
-3. **Run the tool by hand once**, outside the harness, on a coarse setup: does it
+3. **Audit the model against the drawing, part by part, before any run that matters.** Make a table: every
+   dimension and material value the model uses, its value in the model, its value in each design source, and
+   where they differ. Templates impose simplifications silently: Pyleecan's V-pocket template (HoleM50) makes the
+   magnet as thick as its pocket, so study 7's magnet filled a 6.80 mm pocket where the drawing has a 5.31 mm magnet
+   and 1.5 mm of air. That one difference was most of a 24 % blind error, found two days later. Each difference
+   gets a run or a hand estimate of what EXACTLY changes (study 7's dismissal estimate thinned the pocket with the
+   magnet, -0.4 %; the real change leaves air in series, -23 to -28 %). A difference the template cannot represent
+   is an assumption in the case file with its estimated effect, not a silent default.
+4. **Run the tool by hand once**, outside the harness, on a coarse setup: does it
    mesh, does the mesh check pass, does it converge, where are the outputs?
    Tool-specific traps are in [references/tool-notes.md](references/tool-notes.md).
-4. **Backend and study.** Register the study. Parse results from the tool's own
+5. **Backend and study.** Register the study. Parse results from the tool's own
    files where possible.
-5. **Smoke test into the scratchpad**, never into `runs/`:
+6. **Smoke test into the scratchpad**, never into `runs/`:
    `run_case(Path("<scratch>/case.toml"), runs_root=Path("<scratch>/runs"))` with
    the sweep cut to the coarsest point, then `verify_run`. Look at every check
    value and at the figures. The smoke test exists to find problems with the
    setup before an evidence run: a metric that measures the wrong thing, a
    convergence criterion that can never pass, a plot that misleads.
-6. If the smoke test changes the case (metric definition, convergence criterion),
+7. If the smoke test changes the case (metric definition, convergence criterion),
    record it in the case header per `frame-requirements` before the evidence run.
-7. **Evidence run:** `.venv/Scripts/python.exe -m harness pipeline cases/<name>.toml`.
-8. **Read it critically.** Compare the observed order of convergence with the
+8. **Evidence run:** `.venv/Scripts/python.exe -m harness pipeline cases/<name>.toml`.
+9. **Read it critically.** Compare the observed order of convergence with the
    method's design order, find where the maximum error sits, and check every
    figure. Symptoms and causes are in
    [references/convergence-diagnosis.md](references/convergence-diagnosis.md).
-9. **When a check fails, classify it** before changing anything:
+10. **When a check fails, classify it** before changing anything:
    - Model or setup bug (wrong grading, wrong face, wrong sign): fix the code,
      keep the failed run, rerun, and record the history in the case header.
    - Model limit (validity failure, singularity in the metric): the model is the
      wrong tool for that point; revise the scenario or the model
      (`frame-requirements`, "Revising a case").
    - Tolerance: never loosen it to pass.
-10. **Tests:** `.venv/Scripts/python.exe -m pytest -q -p no:cacheprovider`.
-11. **Docs:** add the model to the tables in `run-case` and
+11. **Tests:** `.venv/Scripts/python.exe -m pytest -q -p no:cacheprovider`.
+12. **Docs:** add the model to the tables in `run-case` and
     `verify-against-reference`, the README studies table, and PORTFOLIO if it is a
     portfolio piece.
-12. **Commit curated evidence** with `git add -f`, leaving out bulky result CSVs,
+13. **Commit curated evidence** with `git add -f`, leaving out bulky result CSVs,
     long solver logs, and `__pycache__`.
 
 ## Human judgment needed
