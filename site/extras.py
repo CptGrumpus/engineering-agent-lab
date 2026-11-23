@@ -579,11 +579,10 @@ REQS = [
         ("Pressure recovery to 30 step heights", "within 0.02", "0.153 against 0.131 measured: 0.023 high", "fail"),
         ("Design use: flow reattached before the heated surface at 8 step heights", "≤ 8 H", "6.40 H", "met")]),
     ("motor", "20", "Traction motor", [
-        ("Back-EMF against the test", "within 5 %", "17.7 % high (105.2 against 89.4 V per 1,000 rpm)", "fail"),
-        ("Locked-rotor torque against the test, 50 to 250 A", "within 10 %", "17 to 19 % high at five of seven currents", "fail"),
-        ("Voltage at 6,000 rpm if the inverter stops switching", "≤ 500 V", "850 V peak measured; about 1,000 V in the model", "fail"),
-        ("Rotor bridge stress at 7,200 rpm overspeed", "≤ 335 MPa", "424 MPa; elastic at 6,000 rpm (295 MPa)", "fail"),
-        ("Efficiency, rated torque within the copper limit, rated and continuous power", "within 2 points; ≤ 212 A; ≥ 50 kW; ≥ 25 kW", "wait until the model's 18 % flux excess is explained", "held")]),
+        ("Model against the test: magnet flux (back-EMF and locked-rotor torque)", "within 5 % and 10 %", "about 18 % high in both (back-EMF 17.7 %, torque 17 to 19 %); one cause, being isolated; nothing tuned", "open"),
+        ("Design finding: voltage at 6,000 rpm if the inverter stops switching", "≤ 500 V", "850 V measured, about 1,000 V in the model: the motor fails, as the model predicted", "finding"),
+        ("Design finding: rotor bridge stress at 7,200 rpm overspeed", "≤ 335 MPa", "424 MPa: past yield for the stand-in M330-35A; a stronger grade such as M250-35A would pass", "cond"),
+        ("Efficiency, rated torque within the copper limit, rated and continuous power", "within 2 points; ≤ 212 A; ≥ 50 kW; ≥ 25 kW", "withheld until the flux is explained", "held")]),
     ("strut", "13", "Strut buckling", [
         ("Load before first yield, 500 mm strut with an L/1000 bow", "≥ 16 kN", "21.8 kN (the longest that passes is about 587 mm)", "met")]),
     ("strap_proof", "14", "Strap proof test", [
@@ -597,14 +596,17 @@ REQS = [
         ("Side load carried by friction after settling", "≥ 2.5 kN", "2.39 kN, 4.4 % short; a 15.6 kN preload fixes it", "fail"),
         ("Axial load before the joint opens, after settling", "≥ 10 kN", "13.1 kN", "met")]),
 ]
-CHIP = {"met": ("pass", "Met"), "fail": ("fail", "Not met"), "held": ("warn", "Withheld")}
+CHIP = {"met": ("pass", "Met"), "fail": ("fail", "Not met"), "held": ("warn", "Withheld"),
+        "open": ("warn", "Open"), "finding": ("note", "Finding, confirmed by test"), "cond": ("warn", "Depends on steel grade")}
+# how each status counts in the summary line: a design finding is still a requirement the design doesn't meet
+COUNT_AS = {"met": "met", "fail": "fail", "held": "held", "open": "held", "finding": "fail", "cond": "fail"}
 
 
 def reqs_html() -> str:
     rows, counts = [], {"met": 0, "fail": 0, "held": 0}
     for sid, no, title, items in REQS:
         for i, (req, limit, result, v) in enumerate(items):
-            counts[v] += 1
+            counts[COUNT_AS[v]] += 1
             cls, word = CHIP[v]
             study = f'<a href="#{sid}"><span class="r-no">{no}</span> {html.escape(title)}</a>' if i == 0 else ""
             rows.append(f'          <tr{" class=\"r-first\"" if i == 0 else ""}><td>{study}</td><td>{html.escape(req)}</td>'

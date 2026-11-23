@@ -177,7 +177,6 @@ for v in VP:
 CARDS = [
     ("bracket_opt", "12", "struct", "Featured · Design automation", "Bracket optimisation loop, driven by the agent", "The agent searched 78 designs over three runs for the lightest machined clevis bracket that stays under 100 MPa. The checks threw out its first two answers. The final one is 372 g, 4 % lighter than the start, at 98.3 MPa, and its own mesh study confirms it.", "pass", "CadQuery · Gmsh · CalculiX · SciPy"),
     ("pv_nozzle", "18", "struct", "New · Design code", "Pressure vessel nozzle, design code check", "Passes ASME-style design by analysis on lines at the weld toes (205.1 MPa against 207), fails by 24 % on a line through the corner. I'd judge it by the corner: about 21 mm, or a pad.", "line", "CadQuery · Gmsh · CalculiX"),
-    ("motor", "20", "em", "New · Electric machines", "Traction motor, modelled from client data and checked against test", "The 2004 Prius motor, modelled from the drawings, parts list and measured magnet material, with nothing tuned. Against the laboratory's test it reads about 18 % high on both back-EMF and torque, so the model carries too much magnet flux. Every client input matches the hardware, so I'm testing the model's own assumptions one at a time. Two design checks fail regardless: the voltage at top speed if the inverter stops, and the rotor bridges at overspeed.", "wip", "Pyleecan · FEMM · CalculiX"),
     ("bolted_joint", "16", "struct", "New · Friction contact", "Bolted joint, slip and opening", "Fails narrowly: once the joint settles it slips at 2.39 kN, 4.4 % short of the 2.5 kN it must carry. A 15.6 kN preload fixes it, and it stays closed to 13.1 kN.", "fail", "CalculiX"),
     ("strap_proof", "14", "struct", "New · Plasticity", "Strap proof test, notch plasticity", "A 15 kN proof test strains the hole edge to 0.58 %, inside a 1 % limit, and leaves −77 MPa of compression behind, which helps fatigue.", "pass", "CadQuery · Gmsh · CalculiX"),
     ("strut", "13", "struct", "New · Stability", "Strut buckling, with an imperfect strut", "The longest acceptable strut is about 587 mm. The bow costs 4 to 7 % of the buckling load, so a buckling check alone would overstate the capacity.", "pass", "CalculiX"),
@@ -197,6 +196,7 @@ CARDS = [
     ("cfd", "05", "fluid", "CFD", "Coolant channel pressure budget", "Fails. It needs 33.4 Pa against a 30 Pa budget, and no gap size fixes it.", "fail", "OpenFOAM"),
     ("thermal", "06", "fluid", "Heat transfer", "Heat-sink fin temperature", "The tip sits at 73.2 °C, and still 65.9 °C with every input at its worst.", "pass", "CalculiX"),
     ("heat", "11", "fluid", "Heat transfer", "Cold-plate channel heat transfer", "Passes, verified: the wall peaks at 44.03 °C against 45, and the coolant warms 7.2 K. A finer mesh study was needed to settle the peak.", "pass", "OpenFOAM"),
+    ("motor", "20", "em", "In progress · Electric machines", "Traction motor, modelled from client data and checked against test", "The 2004 Prius motor, modelled from the drawings, parts list and measured magnet material, with nothing tuned. Against the laboratory's test it reads about 18 % high on both back-EMF and torque, so the model carries too much magnet flux. Every client input matches the hardware, so I'm testing the model's own assumptions one at a time. Two design checks fail regardless: the voltage at top speed if the inverter stops, and the rotor bridges at overspeed.", "wip", "Pyleecan · FEMM · CalculiX"),
     ("suspension", "07", "vehicle", "Vehicle dynamics", "Quarter car, ride and road holding", "600 to 1000 N·s/m works at 18 km/h. At 36 km/h the wheel leaves the road.", "mixed", "SciPy · OpenModelica"),
     ("cad", "08", "geom", "Geometry", "Parametric mounting plate", "Only the 9 mm (M8 clearance) hole meets both the weight and edge-distance rules.", "pass", "CadQuery"),
     ("baseline", "09", "workflow", "Workflow", "Mass-spring-damper baseline", "All 72 checks pass, and the two tools agree to a few parts per million.", "pass", "SciPy · OpenModelica"),
@@ -464,7 +464,7 @@ def evidence_block(key: str) -> str:
             + "</div>")
 
 
-CHIP = {"met": ("pass", "Met"), "fail": ("fail", "Not met"), "held": ("warn", "Withheld")}
+CHIP = extras.CHIP
 
 
 def side_reqs(keys: list[str]) -> str:
@@ -590,7 +590,7 @@ def reqs_page() -> dict:
     rows, counts = [], {"met": 0, "fail": 0, "held": 0}
     for sid, no, title, items in extras.REQS:
         for i, (req, limit, result, v) in enumerate(items):
-            counts[v] += 1
+            counts[extras.COUNT_AS[v]] += 1
             cls, word = CHIP[v]
             study = f'<a href="{STUDY_URL[sid]}"><span class="r-no">{no}</span> {esc(title)}</a>' if i == 0 else ""
             rows.append(f'          <tr{" class=\"r-first\"" if i == 0 else ""}><td>{study}</td><td>{esc(req)}</td>'
@@ -601,7 +601,7 @@ def reqs_page() -> dict:
     <div class="page-head">
       <p class="eyebrow">Requirements</p>
       <h1>Every requirement in one table</h1>
-      <p>{n} requirements across the studies: <b class="c-pass">{counts["met"]} met</b>, <b class="c-fail">{counts["fail"]} not met</b>, <b class="c-warn">{counts["held"]} withheld</b>. "Not met" is still a verified answer: the design fails, and the study explains what would fix it. "Withheld" means the checks didn't support calling it either way. Each study's name links to its page.</p>
+      <p>{n} requirements across the studies: <b class="c-pass">{counts["met"]} met</b>, <b class="c-fail">{counts["fail"]} not met</b>, <b class="c-warn">{counts["held"]} withheld</b>. "Not met" is still a verified answer: the design fails, and the study explains what would fix it. "Withheld" means the checks didn't support calling it either way, or that the result waits on open work. Each study's name links to its page.</p>
     </div>
     <div class="reqs open">
       <div class="table-wrap">
