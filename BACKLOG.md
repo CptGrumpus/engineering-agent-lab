@@ -16,8 +16,8 @@ Planned studies, not started. Each one follows the usual loop (frame requirement
 | 10 | Random vibration of the study-4 bracket (C) | Forced response to a PSD; 3-sigma stress; vibration fatigue | Miles' equation; effective mass | CalculiX · Python | Medium | **Verified** (run 20261123-100907_bracket_random_mesh, 3.1 / 1.95 / 1.22 mm): PASS on all three: 3-sigma root stress 38.6 MPa (limit 236.7, GCI 1.3 %), damage 2.4e-3 (limit 0.5), tip 0.345 mm (limit 1.0, GCI 0.1 %); harmonic check 1e-6 after finding CalculiX's absolute-damping base motion; a 16.5 GB .frd from carried-over output requests, fixed; [portfolio/21](portfolio/21-bracket-random-vibration.md) |
 | 11 | Natural convection and radiation (D) | Buoyant flow; view-factor radiation | de Vahl Davis cavity benchmark; two-surface exchange | OpenFOAM · CalculiX | Medium | Documented, not started |
 | 12 | O-ring compression (E) | Hyperelastic large strain with self-contact | Published force-squeeze correlation; J about 1 | CalculiX | High | Documented, not started |
-| 13 | Cracked plate, K and crack growth (F) | Fracture mechanics; damage tolerance | Handbook K solutions; G-K consistency | CalculiX · Python | Medium | Documented, not started |
-| 14 | Rotor critical speeds (G) | Rotordynamics, Campbell diagram | Jeffcott rotor closed form | ROSS (Python) | Low-medium | Documented, not started |
+| 13 | Cracked plate, K and crack growth (F) | Fracture mechanics; damage tolerance | Handbook K solutions; G-K consistency | CalculiX · Python | Medium | **Framing approved 2026-11-23**, building (S355 steel, BS 7910 crack growth; Open for the user (f)) |
+| 14 | Rotor critical speeds (G) | Rotordynamics, Campbell diagram | Jeffcott rotor closed form | ROSS (Python) | Low-medium | **Framing approved 2026-11-23**, building (fan rotor; Open for the user (e)) |
 | 15 | Probabilistic uncertainty on an existing study (H) | Sobol indices, failure probability | Monte Carlo convergence; analytic linear case | Python | Low-medium | **Verified** (run 20261123-104847_bracket_random_uq, on study C): pf_any 2.2e-6 against 1e-3, tip governs (beta 4.55), damping 71 % of the damage variance; [portfolio/22](portfolio/22-bracket-random-uncertainty.md) |
 
 Notes
@@ -233,6 +233,30 @@ plainly as final:
 Then study C.
 
 ### Open for the user
+(e) **Study G framing: APPROVED by the user 2026-11-23 ~16:05 (with F and the FSI3 mesh study; building since 16:13).**
+*Decision:* does a fan rotor (steel shaft 50 mm, bearing span 1.0 m, central impeller 400 x 25 mm steel, 24.7 kg)
+running 1000-3000 rpm on a variable-speed drive keep every critical speed at least 15 % outside its range (no forward
+critical speed in 850-3450 rpm), for any bearing stiffness 1e7-1e8 N/m (rolling bearings on pedestals; unknown, so a
+band)? If not, what shaft diameter does? *Requirements:* REQ-G1 the separation margin above, over the whole bearing
+band; REQ-G2 disc unbalance response at most 50 um (0-peak) over 1000-3000 rpm with API 684's unbalance
+(U = 6350 W / N g mm) and bearing damping 500 N s/m (synthetic). *Model:* ROSS 3.1 (open source), Timoshenko shaft
+elements, rigid disc, linear bearings; Campbell diagram, unbalance response. *Verification:* Jeffcott closed form
+(massless shaft, rigid supports, central disc: sqrt(48 EI / (m L^3))); uniform pinned-pinned shaft against Euler-
+Bernoulli (pi / L)^2 sqrt(EI / rho A); series bearing spring closed form; element-count convergence; gyroscopic
+split of the second mode reported. *Hand estimate (before any run):* 50 mm: n1 2730-2930 rpm, inside the band: FAIL;
+60 mm 3500-4010 rpm (passes only with stiff bearings); 65 mm 3840-4590 rpm. *Synthetic:* geometry, speed range, bearing
+band, damping. Environment: ~/.venvs/ross (ROSS 3.1.0 from PyPI), outside the project lock, like Pyleecan.
+(f) **Study F framing: APPROVED by the user 2026-11-23 ~16:05.** *Decision:* an S355 steel plate (100 mm wide, 10 mm
+thick) with an edge crack, cyclic remote tension 150 MPa maximum at R = 0.1 (synthetic): how many cycles from a
+detectable crack (2 mm, magnetic particle) to failure, and what inspection interval follows? *Material (published):*
+crack growth by the BS 7910 / IIW simplified law for steels in air, da/dN = 5.21e-13 dK^3 (mm/cycle, N/mm^1.5),
+threshold 63 N/mm^1.5; fracture toughness Kmat 100 MPa sqrt(m) (synthetic; a client would give CTOD or Charpy);
+net-section yield 355 MPa. *Requirements:* REQ-F1 at the detectable crack, Kmax at most Kmat / 2 and the net section
+below yield; REQ-F2 growth life from 2 mm to critical at least twice the inspection interval, interval recommended from
+it. *Model:* CalculiX 2D plane strain, half model on the crack plane, collapsed quarter-point elements at the tip; K by
+displacement extrapolation and by energy release (compliance at two crack lengths, K = sqrt(E' G)); Paris integration in
+Python over the K(a) curve. *Verification:* Tada's finite-width edge-crack K (handbook, 0.5 % for a/W up to 0.6); the
+two K routes agree; tip-mesh refinement; integration step convergence.
 (0) **Study 19 part 2 framing: LIMITS AGREED by the user 2026-11-22 ~20:50 (REQ-S1 10 %, REQ-S2 15 % rms, REQ-S3 0.02; nothing built yet; next: the build plan below, in a fresh session).**
 *Decision:* can the setup part 1 verified (k-omega SST, sublayer resolved, OpenFOAM 14) predict a separated,
 reattaching flow well enough for design use: where the flow reattaches behind a sudden step, how much pressure it
