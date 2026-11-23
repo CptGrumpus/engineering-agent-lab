@@ -1,0 +1,266 @@
+{
+  "run_id": "20261123-164209_edge_crack_mesh_r1",
+  "verified_utc": "2026-11-23T21:45:38+00:00",
+  "tolerances": {
+    "tada_rel_tol": 0.01,
+    "routes_rel_tol": 0.03,
+    "equilibrium_rel_tol": 1e-06,
+    "energy_step_rel_tol": 0.001,
+    "integral_rel_tol": 0.0001,
+    "gci_max": 0.01,
+    "mesh_noise_rel": 0.0001
+  },
+  "points": [
+    {
+      "label": "p00_tip_element_size_mm-0.1",
+      "status": "FAIL",
+      "checks": [
+        {
+          "id": "tada",
+          "description": "max |K (energy route) / Tada - 1| for a/W <= 0.6 (Tada's own accuracy 0.5 %)",
+          "kind": "numerical",
+          "value": 0.014090302102052421,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "FAIL"
+        },
+        {
+          "id": "k_routes",
+          "description": "max |K (crack opening) / K (energy) - 1| over the crack lengths",
+          "kind": "numerical",
+          "value": 0.022165794741133893,
+          "tolerance": 0.03,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "equilibrium",
+          "description": "max |ligament reaction + applied load| / applied load",
+          "kind": "numerical",
+          "value": 1.2126596023639044e-16,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "energy_step",
+          "description": "|K (energy, step eps) / K (step eps / 2) - 1| at a = 10 mm (the central difference's step and the mesh noise in U together)",
+          "kind": "numerical",
+          "value": 0.0005814598599622745,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "life_integral",
+          "description": "|life by adaptive quadrature - by Simpson on 4000 steps| / quadrature",
+          "kind": "numerical",
+          "value": 4.128347858385192e-09,
+          "tolerance": 0.0001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "crack_range",
+          "description": "critical crack / largest sampled crack (below 1: K(a) is sampled past the critical crack)",
+          "kind": "validity",
+          "value": 0.8186359818606802,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p01_tip_element_size_mm-0.05",
+      "status": "FAIL",
+      "checks": [
+        {
+          "id": "tada",
+          "description": "max |K (energy route) / Tada - 1| for a/W <= 0.6 (Tada's own accuracy 0.5 %)",
+          "kind": "numerical",
+          "value": 0.014280405908673188,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "FAIL"
+        },
+        {
+          "id": "k_routes",
+          "description": "max |K (crack opening) / K (energy) - 1| over the crack lengths",
+          "kind": "numerical",
+          "value": 0.021855132606079852,
+          "tolerance": 0.03,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "equilibrium",
+          "description": "max |ligament reaction + applied load| / applied load",
+          "kind": "numerical",
+          "value": 1.2126596023639044e-16,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "energy_step",
+          "description": "|K (energy, step eps) / K (step eps / 2) - 1| at a = 10 mm (the central difference's step and the mesh noise in U together)",
+          "kind": "numerical",
+          "value": 0.0003022317248688733,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "life_integral",
+          "description": "|life by adaptive quadrature - by Simpson on 4000 steps| / quadrature",
+          "kind": "numerical",
+          "value": 4.964867176031097e-10,
+          "tolerance": 0.0001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "crack_range",
+          "description": "critical crack / largest sampled crack (below 1: K(a) is sampled past the critical crack)",
+          "kind": "validity",
+          "value": 0.8185338171797014,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p02_tip_element_size_mm-0.025",
+      "status": "FAIL",
+      "checks": [
+        {
+          "id": "tada",
+          "description": "max |K (energy route) / Tada - 1| for a/W <= 0.6 (Tada's own accuracy 0.5 %)",
+          "kind": "numerical",
+          "value": 0.014356126208794562,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "FAIL"
+        },
+        {
+          "id": "k_routes",
+          "description": "max |K (crack opening) / K (energy) - 1| over the crack lengths",
+          "kind": "numerical",
+          "value": 0.018992137581717472,
+          "tolerance": 0.03,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "equilibrium",
+          "description": "max |ligament reaction + applied load| / applied load",
+          "kind": "numerical",
+          "value": 1.2126596023639044e-16,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "energy_step",
+          "description": "|K (energy, step eps) / K (step eps / 2) - 1| at a = 10 mm (the central difference's step and the mesh noise in U together)",
+          "kind": "numerical",
+          "value": 0.0003541512076825626,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "life_integral",
+          "description": "|life by adaptive quadrature - by Simpson on 4000 steps| / quadrature",
+          "kind": "numerical",
+          "value": 4.404188577655472e-10,
+          "tolerance": 0.0001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "crack_range",
+          "description": "critical crack / largest sampled crack (below 1: K(a) is sampled past the critical crack)",
+          "kind": "validity",
+          "value": 0.81849191481409,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ]
+    }
+  ],
+  "run_checks": [
+    {
+      "id": "discretization_K_a0_MPa_sqrt_m",
+      "description": "relative discretization uncertainty of K_a0_MPa_sqrt_m, divergent (R = 1.681): no estimate",
+      "kind": "numerical",
+      "value": Infinity,
+      "tolerance": 0.01,
+      "comparison": "<=",
+      "status": "FAIL",
+      "metric": "K_a0_MPa_sqrt_m"
+    },
+    {
+      "id": "discretization_crit_crack_mm",
+      "description": "relative discretization uncertainty of crit_crack_mm, monotone (R = 0.410): GCI_fine, observed order 1.29, extrapolated 36.8308",
+      "kind": "numerical",
+      "value": 4.44966062995724e-05,
+      "tolerance": 0.01,
+      "comparison": "<=",
+      "status": "PASS",
+      "metric": "crit_crack_mm"
+    },
+    {
+      "id": "discretization_growth_life_cycles",
+      "description": "relative discretization uncertainty of growth_life_cycles, monotone (R = 0.837): GCI_fine, observed order 0.26, extrapolated 91461.5",
+      "kind": "numerical",
+      "value": 0.00543926189251613,
+      "tolerance": 0.01,
+      "comparison": "<=",
+      "status": "PASS",
+      "metric": "growth_life_cycles"
+    }
+  ],
+  "run_check_detail": {
+    "levels_used": [
+      "p02_tip_element_size_mm-0.025",
+      "p01_tip_element_size_mm-0.05",
+      "p00_tip_element_size_mm-0.1"
+    ],
+    "K_a0_MPa_sqrt_m": {
+      "regime": "divergent",
+      "uncertainty": Infinity,
+      "convergence_ratio": 1.6808156418834965
+    },
+    "crit_crack_mm": {
+      "regime": "monotone",
+      "uncertainty": 4.44966062995724e-05,
+      "converged_exactly": false,
+      "order": 1.2857929338951497,
+      "extrapolated": 36.830825042584316,
+      "rel_error_fine": 5.119459930244457e-05,
+      "rel_error_extrapolated": 3.5598552251446396e-05,
+      "gci_fine": 4.44966062995724e-05,
+      "convergence_ratio": 0.41014531841878427,
+      "r21": 2.0,
+      "r32": 2.0
+    },
+    "growth_life_cycles": {
+      "regime": "monotone",
+      "uncertainty": 0.00543926189251613,
+      "converged_exactly": false,
+      "order": 0.25696205599036415,
+      "extrapolated": 91461.51751523616,
+      "rel_error_fine": 0.0008483498244206448,
+      "rel_error_extrapolated": 0.0043704270317792854,
+      "gci_fine": 0.00543926189251613,
+      "convergence_ratio": 0.8368482521584906,
+      "r21": 2.0,
+      "r32": 2.0
+    }
+  },
+  "status": "FAIL"
+}

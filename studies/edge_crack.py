@@ -88,14 +88,19 @@ class GmshCalculiXEdgeCrack(Backend):
         p = params
         E, nu = float(p["youngs_modulus_MPa"]), float(p["poisson_ratio"])
         h = float(p["tip_element_size_mm"])
-        eps = float(numerics["energy_step_rel"])
+        # energy step: absolute (energy_step_mm) if given, else a fraction of a (energy_step_rel). r1 showed a
+        # relative step trades mesh noise at short cracks for truncation error at long ones; an absolute step of a
+        # few tip elements avoids both
+        step = (lambda a: float(numerics["energy_step_mm"])) if "energy_step_mm" in numerics else (
+            lambda a: float(numerics["energy_step_rel"]) * a)
         rows = []
         try:
             for a in [float(x) for x in numerics["crack_lengths_mm"]]:
                 mid = self._solve_one(work / f"a{a:g}", a, p)
-                lo = self._solve_one(work / f"a{a:g}_m", a * (1 - eps), p)
-                hi = self._solve_one(work / f"a{a:g}_p", a * (1 + eps), p)
-                G = 2 * (hi["U_half"] - lo["U_half"]) / (2 * eps * a)       # per unit thickness, full crack
+                da = step(a)
+                lo = self._solve_one(work / f"a{a:g}_m", a - da, p)
+                hi = self._solve_one(work / f"a{a:g}_p", a + da, p)
+                G = 2 * (hi["U_half"] - lo["U_half"]) / (2 * da)            # per unit thickness, full crack
                 k_en = float(np.sqrt(E * G / (1 - nu ** 2)))
                 k_cod, n_cod = self.ec.k_from_opening(mid["crack"], mid["info"], a=a, E=E, nu=nu, r_min=2 * h,
                                                       r_max=max(0.1 * a, 6 * h))
@@ -105,9 +110,10 @@ class GmshCalculiXEdgeCrack(Backend):
                              "equilibrium": max(mid["eq"], lo["eq"], hi["eq"]), "nodes": mid["nodes"]})
             # step check: the central difference again at one crack length with half the step
             a_chk = float(numerics["energy_step_check_mm"])
-            lo2 = self._solve_one(work / "chk_m", a_chk * (1 - eps / 2), p)
-            hi2 = self._solve_one(work / "chk_p", a_chk * (1 + eps / 2), p)
-            G2 = 2 * (hi2["U_half"] - lo2["U_half"]) / (eps * a_chk)
+            da2 = step(a_chk) / 2
+            lo2 = self._solve_one(work / "chk_m", a_chk - da2, p)
+            hi2 = self._solve_one(work / "chk_p", a_chk + da2, p)
+            G2 = 2 * (hi2["U_half"] - lo2["U_half"]) / (2 * da2)
             k_half = float(np.sqrt(E * G2 / (1 - nu ** 2)))
             k_full = next(r["K_energy"] for r in rows if abs(r["a_mm"] - a_chk) < 1e-9)
         except (RuntimeError, StopIteration) as e:

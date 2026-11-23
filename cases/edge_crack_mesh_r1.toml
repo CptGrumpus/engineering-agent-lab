@@ -11,6 +11,15 @@
 #      cycles; REQ-F2 verified PASS. The critical crack stays 37.0 mm.
 #   P3 Step check (10 % against 5 % at 10 mm) under 5e-4; every point check passes.
 #   P4 5-10 min.
+#
+# Results (run 20261123-164209_edge_crack_mesh_r1, 16:42-16:45): VERIFICATION FAIL on the Tada check (1.4 %, every
+# tip size) and the run-level K at 2 mm (inf; 13.35 / 13.35 / 13.36, a spread inside 0.1 % but not monotone).
+#   Life 92,030 / 91,940 / 91,860 cycles: now monotone, GCI 0.54 % (PASS); critical crack 36.84 / 36.83 / 36.83 mm.
+#   P1 HELD (K at 2 mm 13.35-13.36).  P2 HELD for the life, MISSED for the critical crack (36.83, not 37.0).
+#   P3 MISSED: the step check passed (3-6e-4) but the Tada check failed: K / Tada - 1 rises to +0.87 / +1.23 / +1.44 %
+#   at 35 / 40 / 45 mm (r0: +0.27 / +0.40 / +0.28). A 10 % step is 4.5 mm at 45 mm, where K rises steeply: truncation
+#   error. The relative step traded noise at short cracks for truncation at long ones. P4 HELD (4 min).
+#   Next: r2 with an absolute step, 0.2 mm (edge_crack_mesh_r2).
 
 [case]
 name = "edge_crack_mesh_r1"
