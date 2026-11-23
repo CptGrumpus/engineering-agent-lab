@@ -1,0 +1,69 @@
+{
+  "label": "p02_mesh_level-1.4142",
+  "status": "FAIL",
+  "checks": [
+    {
+      "id": "converged",
+      "description": "SIMPLE residual control reached (0 = yes)",
+      "kind": "numerical",
+      "value": 1.0,
+      "tolerance": 0.0,
+      "comparison": "<=",
+      "status": "FAIL"
+    },
+    {
+      "id": "continuity",
+      "description": "time-step continuity error, sum local (last iteration)",
+      "kind": "numerical",
+      "value": 1.47847450494e-08,
+      "tolerance": 1e-06,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "inflow_theta",
+      "description": "|momentum thickness at x = -4 H - stated| / stated (the inflow condition)",
+      "kind": "validity",
+      "value": 0.006649944810036301,
+      "tolerance": 0.05,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "inflow_velocity",
+      "description": "|edge velocity at x = -4 H - stated reference| / reference",
+      "kind": "validity",
+      "value": 0.0007224002239819284,
+      "tolerance": 0.02,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "yplus_floors",
+      "description": "max y+ on the walls but the step face (viscous sublayer resolved)",
+      "kind": "validity",
+      "value": 0.3477653547776,
+      "tolerance": 1.0,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "mesh",
+      "description": "checkMesh failures other than the aspect-ratio test (0 = none)",
+      "kind": "numerical",
+      "value": 0.0,
+      "tolerance": 0.0,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "reattachment_found",
+      "description": "number of reattachment points found on the floor (1 or more = found; 0 = none)",
+      "kind": "numerical",
+      "value": 0.0,
+      "tolerance": 0.0,
+      "comparison": "<=",
+      "status": "PASS"
+    }
+  ]
+}

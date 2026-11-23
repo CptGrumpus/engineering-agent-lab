@@ -1,0 +1,319 @@
+{
+  "points": [
+    {
+      "label": "p00_mesh_level-0.7071",
+      "parameters": {
+        "step_height_m": 0.0127,
+        "inlet_height_ratio": 8.0,
+        "reynolds_number_h": 37500.0,
+        "inlet_velocity_m_per_s": 41.95,
+        "reference_velocity_m_per_s": 44.2,
+        "upstream_length_m": 1.153,
+        "downstream_length_over_h": 50.0,
+        "inlet_turbulence_intensity": 0.01,
+        "inlet_viscosity_ratio": 10.0,
+        "mesh_level": 0.7071,
+        "turbulence_model": "kOmegaSST"
+      },
+      "derived": {
+        "nu_m2_per_s": 1.4969066666666669e-05,
+        "cells": 35678,
+        "y1_m": 4.242681374628766e-06,
+        "dx_lip_m": 0.0004490171121482111,
+        "dx_up_max_m": 0.03597789394137061,
+        "dx_far_max_m": 0.008742954255961445
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "converged",
+          "description": "SIMPLE residual control reached (0 = yes)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "continuity",
+          "description": "time-step continuity error, sum local (last iteration)",
+          "kind": "numerical",
+          "value": 1.0649723549e-08,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "inflow_theta",
+          "description": "|momentum thickness at x = -4 H - stated| / stated (the inflow condition)",
+          "kind": "validity",
+          "value": 0.0014375837152865703,
+          "tolerance": 0.05,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "inflow_velocity",
+          "description": "|edge velocity at x = -4 H - stated reference| / reference",
+          "kind": "validity",
+          "value": 0.0017140563710407867,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "yplus_floors",
+          "description": "max y+ on the walls but the step face (viscous sublayer resolved)",
+          "kind": "validity",
+          "value": 0.6296025306743,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "mesh",
+          "description": "checkMesh failures other than the aspect-ratio test (0 = none)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "reattachment_found",
+          "description": "number of reattachment points found on the floor (1 or more = found; 0 = none)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-SD1",
+          "text": "Design use (synthetic): the flow shall be reattached by x/H = 8, where a heat-transfer surface starts.",
+          "metric": "xr_over_h",
+          "operator": "<=",
+          "limit": 8.0,
+          "units": "-",
+          "value": 6.413704118179459,
+          "margin": 1.5862958818205408,
+          "verdict": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p01_mesh_level-1",
+      "parameters": {
+        "step_height_m": 0.0127,
+        "inlet_height_ratio": 8.0,
+        "reynolds_number_h": 37500.0,
+        "inlet_velocity_m_per_s": 41.95,
+        "reference_velocity_m_per_s": 44.2,
+        "upstream_length_m": 1.153,
+        "downstream_length_over_h": 50.0,
+        "inlet_turbulence_intensity": 0.01,
+        "inlet_viscosity_ratio": 10.0,
+        "mesh_level": 1.0,
+        "turbulence_model": "kOmegaSST"
+      },
+      "derived": {
+        "nu_m2_per_s": 1.4969066666666669e-05,
+        "cells": 70800,
+        "y1_m": 3e-06,
+        "dx_lip_m": 0.0003175,
+        "dx_up_max_m": 0.025428848015934306,
+        "dx_far_max_m": 0.006259622643331879
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "converged",
+          "description": "SIMPLE residual control reached (0 = yes)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "continuity",
+          "description": "time-step continuity error, sum local (last iteration)",
+          "kind": "numerical",
+          "value": 9.17043156849e-09,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "inflow_theta",
+          "description": "|momentum thickness at x = -4 H - stated| / stated (the inflow condition)",
+          "kind": "validity",
+          "value": 0.0044608148761155295,
+          "tolerance": 0.05,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "inflow_velocity",
+          "description": "|edge velocity at x = -4 H - stated reference| / reference",
+          "kind": "validity",
+          "value": 0.0011315476334842988,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "yplus_floors",
+          "description": "max y+ on the walls but the step face (viscous sublayer resolved)",
+          "kind": "validity",
+          "value": 0.3352477612127,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "mesh",
+          "description": "checkMesh failures other than the aspect-ratio test (0 = none)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "reattachment_found",
+          "description": "number of reattachment points found on the floor (1 or more = found; 0 = none)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-SD1",
+          "text": "Design use (synthetic): the flow shall be reattached by x/H = 8, where a heat-transfer surface starts.",
+          "metric": "xr_over_h",
+          "operator": "<=",
+          "limit": 8.0,
+          "units": "-",
+          "value": 6.407990964833146,
+          "margin": 1.5920090351668543,
+          "verdict": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p02_mesh_level-1.4142",
+      "parameters": {
+        "step_height_m": 0.0127,
+        "inlet_height_ratio": 8.0,
+        "reynolds_number_h": 37500.0,
+        "inlet_velocity_m_per_s": 41.95,
+        "reference_velocity_m_per_s": 44.2,
+        "upstream_length_m": 1.153,
+        "downstream_length_over_h": 50.0,
+        "inlet_turbulence_intensity": 0.01,
+        "inlet_viscosity_ratio": 10.0,
+        "mesh_level": 1.4142,
+        "turbulence_model": "kOmegaSST"
+      },
+      "derived": {
+        "nu_m2_per_s": 1.4969066666666669e-05,
+        "cells": 142062,
+        "y1_m": 2.121340687314383e-06,
+        "dx_lip_m": 0.00022450855607410554,
+        "dx_up_max_m": 0.018010233513138494,
+        "dx_far_max_m": 0.004455242179677257
+      },
+      "simulation_status": "completed",
+      "verification_status": "FAIL",
+      "checks": [
+        {
+          "id": "converged",
+          "description": "SIMPLE residual control reached (0 = yes)",
+          "kind": "numerical",
+          "value": 1.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "FAIL"
+        },
+        {
+          "id": "continuity",
+          "description": "time-step continuity error, sum local (last iteration)",
+          "kind": "numerical",
+          "value": 1.47847450494e-08,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "inflow_theta",
+          "description": "|momentum thickness at x = -4 H - stated| / stated (the inflow condition)",
+          "kind": "validity",
+          "value": 0.006649944810036301,
+          "tolerance": 0.05,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "inflow_velocity",
+          "description": "|edge velocity at x = -4 H - stated reference| / reference",
+          "kind": "validity",
+          "value": 0.0007224002239819284,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "yplus_floors",
+          "description": "max y+ on the walls but the step face (viscous sublayer resolved)",
+          "kind": "validity",
+          "value": 0.3477653547776,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "mesh",
+          "description": "checkMesh failures other than the aspect-ratio test (0 = none)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "reattachment_found",
+          "description": "number of reattachment points found on the floor (1 or more = found; 0 = none)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-SD1",
+          "text": "Design use (synthetic): the flow shall be reattached by x/H = 8, where a heat-transfer surface starts.",
+          "metric": "xr_over_h",
+          "operator": "<=",
+          "limit": 8.0,
+          "units": "-",
+          "value": 6.403886240968153,
+          "margin": 1.596113759031847,
+          "verdict": "PASS (unverified)"
+        }
+      ]
+    }
+  ],
+  "run_id": "20261122-233146_step_mesh",
+  "generated_utc": "2026-11-23T15:10:57+00:00",
+  "verification_status": "FAIL"
+}

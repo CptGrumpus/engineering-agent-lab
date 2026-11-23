@@ -27,6 +27,23 @@
 #      usual weak point; I expect our Cf within 15 % rms over 10-30 H, perhaps low near 10 H); REQ-S3 PASS, moderate
 #      confidence (the recovery is set mostly by the area ratio, which the model has exactly).
 #   P4 About 4-5 h in all on one core.
+#
+# Results (run 20261122-233146_step_mesh, 23:31-10:10, 10 h 39 min, beside four other jobs): VERIFICATION FAIL.
+#   P1 MISSED: level 1.41 hit the 80000-iteration cap unconverged (U residuals 3.6e-7 / 4.7e-7 against 2e-7, still
+#      falling; p and k, omega met; levels 0.7 and 1 converged in 39111 and 60596 iterations). Its other 6 checks pass
+#      (continuity 1.5e-8, inflow theta 0.7 %, y+ 0.35). The FAIL stands; not rerun.
+#   P2 Xr/H 6.414 / 6.408 / 6.404, monotone, order 0.95, GCI 0.20 % (extrapolated 6.393): HELD. Cf at 20 H 1.779 /
+#      1.807 / 1.824e-3, GCI 1.9 %: HELD. Cp recovery 0.1545 / 0.1541 / 0.1534: the steps grow (-0.0004, then -0.0007),
+#      classed divergent, no GCI: MISSED (the unconverged finest level may contribute). REQ-SD1 PASS on every level,
+#      verified on Xr.
+#   P3 Scored once against the measurements, 2026-11-23 10:13 (validation/step_driver_seegmiller/RESULTS.md, PROTOCOL.md):
+#      REQ-S1 PASS, +2.3 % (6.404 against 6.26 +- 0.10): HELD (within about 3 %; not blind). REQ-S2 PASS, rms 7.0 %,
+#      ours low at all six stations (-1 % at 11 H to -10 % at 20 H): HELD, though the low side was expected near 10 H and
+#      sits at 16-28 H instead. REQ-S3 FAIL, 0.1534 against 0.1307 (+0.0227, limit 0.02): MISSED. The peak (about 9 H)
+#      is close (0.177 against 0.163); downstream the measured pressure falls back faster than ours, as the tunnel's
+#      side-wall boundary layers (span 12 H) would make it: a 2D model has no side walls (stated in the framing). The
+#      mesh and iteration uncertainty (spread 0.0011) cannot close 0.0027.
+#   P4 MISSED: 10 h 39 min (about 2.3x; the finest level alone took about 6 h sharing the CPU).
 
 [case]
 name = "step_mesh"
