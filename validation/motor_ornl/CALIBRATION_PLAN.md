@@ -344,3 +344,11 @@ Small dq table on the revision-5 machine (centred, 0.775 mm gap), id 0 / -25 / -
 - P2 Lq 5.1-5.6 mH: 2-12 % above ORNL's 5.0.
 - P3 Lq / Ld 3.0-3.4 against 2.6: the d-axis gap remains.
 - P4 Checks pass; 20-45 min. Runs after the revision-5 open-circuit case (one FEMM at a time).
+
+### Result of revision 5 (2026-11-23 15:04; run 20261123-141642_motor_prius_rev5_oc)
+VERIFICATION PASS. Back-EMF 105.2 V (gap 0.775 mm) and 106.1 V (gap 0.730 mm) per 1000 rpm, line to line: +17.7 % and
++18.7 % on ORNL. Every prediction held; P1 and P2 landed on the hand estimate to 0.1 V. Peak at 6000 rpm 998.5 / 1010 V
+(REQ-M1 FAIL; ORNL 850). **The client's data does not close the gap.** Every input a client supplies is now measured
+and in the model, so the remaining 18 % is model form or manufacturing. Candidates, each to be tested on its own:
+(a) magnetisation level in the assembled rotor (the 1.255 T is a re-saturated sample); (b) 3D end effects; (c) an
+independent check of the 2D field. No calibration: the model is reported as it stands, +18 % on back-EMF.

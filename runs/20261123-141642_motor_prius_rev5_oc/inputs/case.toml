@@ -1,0 +1,77 @@
+# Study 7, revision 5: the client-data model (validation/motor_ornl/CLIENT_DATA.md; the study runs as a regular client
+# project since 2026-11-23 ~13:50). Every input a client supplies, as measured: magnet 83.1 x 18.9 x 6.5 mm (ORNL/
+# TM-2010/253 Table 2.7) centred in the drawn 6.80 mm pocket (0.15 mm of polymer each side, teardown TM-2004/137 pp.
+# 9-10), remanence 1.255 T at 20 C and -0.10 %/C (TM-2010/253 Fig. 2.72), recoil permeability 1.129 (TM-2004/137 Fig.
+# 14), magnet at the test's 25 C (TM-2006/423 Table 3.3 and p. 21: oil at a nominal 25 C). Two air gaps: 0.775 mm
+# (drawing) and 0.730 mm (BOM). Machines: build_prius_ornl.py --client-magnet centre [--airgap-mm 0.73]. Nothing fitted.
+#
+# Predictions (written and committed BEFORE the run; hand estimate from runs already made, CALIBRATION_PLAN.md
+# "Revision 5": EMF = a Br - b with the bridge leakage b = 16.6 V from revision 4's two remanences, and an effective
+# series gap of 1.07 mm from the blind and revision-4 geometries):
+#   P1 Back-EMF fundamental, V rms line to line per 1000 rpm, gap 0.775 mm: 103-108 V (estimate 105.2), +15 to +21 %
+#      on ORNL's 89.38.
+#   P2 Gap 0.730 mm: 0.5-1.5 % above the 0.775 mm value (estimate +0.9 %).
+#   P3 The client data does NOT close the gap: both points outside +-5 % of ORNL. What remains is model form or
+#      manufacturing (STATUS.md, next steps).
+#   P4 Peak at 6000 rpm 980-1060 V (revision 4's peak / back-EMF ratio 9.67); REQ-M1 FAIL (ORNL measured 850 V).
+#   P5 Every point check passes (5 per point); 35-60 min for the two solves under the present load.
+
+[case]
+name = "motor_prius_rev5_oc"
+model = "pyleecan_femm"
+description = "2004 Toyota Prius traction motor, REVISION 5 (client data): lamination geometry from ORNL/TM-2005/33 Fig. 21 (radii, slot, pocket thickness and position), bridge 1.45 mm (ORNL/TM-2004/120), magnet 83.1 x 18.9 x 6.5 mm centred in the 6.80 mm pocket (ORNL/TM-2010/253 Table 2.7), remanence 1.255 T at 20 C, -0.10 %/C (TM-2010/253 Fig. 2.72), magnet at 25 C, laminations M330-35A (stand-in grade), at open circuit, 1000 rpm; air gap 0.775 mm (drawing) and 0.730 mm (BOM); Pyleecan + FEMM 4.2 magnetostatics over one electrical period (48 steps), mesh fineness 8; no calibration."
+assumptions = [
+  "2D magnetostatics (FEMM), no end effects: the stack (83.8 mm) is long against the air gap (0.73-0.775 mm), but end-winding leakage and axial fringing are not modelled. [model form]",
+  "Lamination geometry from ORNL/TM-2005/33 Fig. 21 [client: drawing]; bridge 1.45 mm from ORNL/TM-2004/120 [design report]; stator geometry confirmed by the stator core mass, 19.05 kg (ORNL/TM-2010/253 Table 2.7) [client: BOM].",
+  "Magnet 83.1 x 18.9 x 6.5 mm, 77 g (ORNL/TM-2010/253 Table 2.7) [client: BOM], centred in the 6.80 mm pocket: the 0.30 mm left is polymer moulding (ORNL/TM-2004/137 pp. 9-10), magnetically air. The 2D solve uses the stack length (83.82 mm), not the magnet's 83.1 mm (at most -0.9 % on magnet flux).",
+  "Magnet remanence 1.255 T at 20 C, -0.10 %/C (ORNL/TM-2010/253 Fig. 2.72, hysteresisgraph of a 2004 Prius motor magnet) [client: material data]; recoil permeability 1.129 (ORNL/TM-2004/137 Fig. 14). Assumes the magnets in the rotor are magnetised to the hysteresisgraph's saturation [manufacturing: not known].",
+  "Magnet temperature 25 C: ORNL's back-EMF test ran with oil at a nominal 25 C, near room temperature (ORNL/TM-2006/423 p. 21) [client: test conditions].",
+  "Laminations M330-35A, a stand-in: thickness 0.33 mm (BOM) or 0.36 mm (teardown), grade not found; FEMM's magnetostatic solve reads only the B-H curve [assumption; three grades moved back-EMF 0.13 %].",
+  "Winding 9 turns per coil, 8 coils in series per phase, one path, 13 x AWG 19 (ORNL/TM-2010/253 Table 2.7) [client: BOM].",
+  "Maximum speed 6000 rpm (ORNL's back-EMF test range, ORNL/TM-2006/423 Table 3.3).",
+]
+limitations = [
+  "The back-EMF test (89.78 V full waveform per 1000 rpm, line to line) is the comparison, made in CALIBRATION_PLAN.md after the run.",
+  "Line-to-line peak from the phase flux linkages with their harmonics; the inverter's own clamping is not modelled.",
+  "Air-gap band only at the centred placement; the outer / inner placements of a 0.30 mm strip are estimated at +-1.5 % from revision 4's spread (7.6 % for a 1.49 mm strip), not run.",
+]
+
+[parameters]
+machine = "Toyota_Prius_ORNL.json"
+speed_rpm = 1000.0
+id_A = 0.0
+iq_A = 0.0
+mesh_fineness = 8.0
+steps_per_period = 48
+angle_points = 2048
+max_speed_rpm = 6000.0
+bus_voltage_V = 500.0
+rated_torque_Nm = 400.0
+magnet_temperature_C = 25.0
+
+[[sweep.scenarios]]
+name = "gap0775"
+machine = "Toyota_Prius_ORNL_rev5centre.json"
+
+[[sweep.scenarios]]
+name = "gap0730"
+machine = "Toyota_Prius_ORNL_rev5centre_gap0p730.json"
+
+[numerics]
+solver_timeout_s = 3600
+
+[verification]
+phase_symmetry_rel_tol = 1e-3
+phase_shift_deg_tol = 0.5
+winding_theory_rel_tol = 0.02
+open_circuit_torque_rel_tol = 1e-3
+mesh_noise_rel = 1e-5
+gci_max = 0.01
+
+[[requirements]]
+id = "REQ-M1"
+text = "With the inverter not switching (a fault at top speed), the line-to-line back-EMF peak at 6000 rpm shall not exceed the 500 V maximum bus voltage."
+metric = "back_emf_LL_peak_at_max_speed_V"
+operator = "<="
+limit = 500.0
+units = "V"

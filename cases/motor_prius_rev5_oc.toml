@@ -15,6 +15,16 @@
 #      manufacturing (STATUS.md, next steps).
 #   P4 Peak at 6000 rpm 980-1060 V (revision 4's peak / back-EMF ratio 9.67); REQ-M1 FAIL (ORNL measured 850 V).
 #   P5 Every point check passes (5 per point); 35-60 min for the two solves under the present load.
+#
+# Results (run 20261123-141642_motor_prius_rev5_oc, 14:16-15:04): VERIFICATION PASS, 10/10 checks.
+#   Back-EMF fundamental, V rms line to line per 1000 rpm: gap 0.775 mm 105.2, gap 0.730 mm 106.1. Against ORNL's
+#   89.38: +17.7 % and +18.7 %.
+#   P1 HELD (105.2, on the hand estimate to 0.1 V). P2 HELD (+0.86 %). P3 HELD: the client data does not close the gap.
+#   P4 HELD: peak at 6000 rpm 998.5 / 1010 V, REQ-M1 FAIL (ORNL measured 850). P5 HELD (47 min).
+#   Reading: with every client input measured and matching, the model reads 18-19 % high. The hand estimate built on
+#   the blind and revision-4 runs predicted the value to 0.1 V, so the model responds to geometry and remanence as a
+#   simple magnetic circuit would: no numerical surprise inside it. The gap is in what the 2D model with fully
+#   magnetised magnets leaves out (STATUS.md, next steps).
 
 [case]
 name = "motor_prius_rev5_oc"

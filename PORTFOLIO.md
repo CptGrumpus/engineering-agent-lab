@@ -25,7 +25,7 @@ All problems are synthetic, so no client data is involved. Every number comes fr
 | Fluid-structure interaction: partitioned coupling, each participant verified on its own first | OpenFOAM, CalculiX, preCICE | [17](portfolio/17-fsi-flag-turek-hron.md) (draft) |
 | Vehicle and system dynamics: ride, road holding, frequency response | Python (SciPy), OpenModelica | [7](portfolio/07-quarter-car.md), [9](portfolio/09-mass-spring-damper.md) |
 | Presentation renders: FE results and CAD parts rendered in Blender, with legend colours and geometry checked automatically | Blender (Cycles), Python | [1](portfolio/01-cantilever-bracket.md), [2](portfolio/02-strap-cable-hole.md), [4](portfolio/04-bracket-modal.md), [6](portfolio/06-heat-sink-fin.md), [8](portfolio/08-mounting-plate.md) |
-| Verification and uncertainty: exact and handbook references, Grid Convergence Index, tolerance and sensitivity studies | Python | All |
+| Verification and uncertainty: exact and handbook references, Grid Convergence Index, tolerance and sensitivity studies; probabilistic uncertainty (Monte Carlo, Sobol indices, FORM, importance sampling) | Python | All; [22](portfolio/22-bracket-random-uncertainty.md) |
 
 ## Sample deliverable
 
@@ -52,6 +52,7 @@ All problems are synthetic, so no client data is involved. Every number comes fr
 | [16. Bolted joint, slip and opening](portfolio/16-bolted-joint-slip.md) | Does a preloaded M8 joint carry a 2.5 kN side load by friction after it settles, and stay closed under 10 kN? | No: it slips at 2.39 kN, 4.4 % short; a 15.6 kN preload fixes it. It stays closed to 13.1 kN. |
 | [18. Pressure vessel nozzle, design by analysis](portfolio/18-pressure-vessel-nozzle.md) | Can a 200 mm nozzle with a 12 mm wall go into a 16 mm shell at 3.5 MPa without a reinforcing pad, and how thin can the head be? | It depends on the classification line: at the weld-fillet toes it passes by 0.9 % (205.1 MPa against 207; about 11.7 mm needed), through the crotch it fails by 24 % (256.7 MPa; about 20 mm needed); a simplified pressure-area rule asks for about 16. Recommended for review: judge the opening by the crotch line (about 21 mm, or a pad). The hemispherical head can be about 6.5 mm (its membrane governs, not the junction). |
 | [21. Bracket arm under random vibration](portfolio/21-bracket-random-vibration.md) | Does study 4's steel arm survive a random-vibration qualification, one hour per axis at 0.04 g²/Hz (20-2000 Hz)? | Yes, with wide margins: 3-sigma root stress 38.6 MPa against 236.7, fatigue damage 0.0024 against 0.5, tip 0.345 mm against a 1 mm clearance (the closest margin). |
+| [22. Bracket arm under random vibration: how robust is the PASS?](portfolio/22-bracket-random-uncertainty.md) | With damping, test level, fatigue strength and thickness uncertain, how likely is study 21's arm to fail, and what should be measured first? | Failure probability about 2e-6 against a 1e-3 limit; the tip clearance governs (reliability index 4.55); damping drives 71 % of the damage variance: measure it first. Synthetic distributions. |
 
 ### Thermal and fluids
 

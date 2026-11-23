@@ -18,7 +18,7 @@ Planned studies, not started. Each one follows the usual loop (frame requirement
 | 12 | O-ring compression (E) | Hyperelastic large strain with self-contact | Published force-squeeze correlation; J about 1 | CalculiX | High | Documented, not started |
 | 13 | Cracked plate, K and crack growth (F) | Fracture mechanics; damage tolerance | Handbook K solutions; G-K consistency | CalculiX · Python | Medium | Documented, not started |
 | 14 | Rotor critical speeds (G) | Rotordynamics, Campbell diagram | Jeffcott rotor closed form | ROSS (Python) | Low-medium | Documented, not started |
-| 15 | Probabilistic uncertainty on an existing study (H) | Sobol indices, failure probability | Monte Carlo convergence; analytic linear case | Python | Low-medium | **Running** (on study C; framing approved 2026-11-23): `harness/uncertainty.py` verified on closed forms; evidence case `bracket_random_uq` (1.22 mm, n 2048 / 8192 / 32768) started 10:47, predictions committed (5ca3574) |
+| 15 | Probabilistic uncertainty on an existing study (H) | Sobol indices, failure probability | Monte Carlo convergence; analytic linear case | Python | Low-medium | **Verified** (run 20261123-104847_bracket_random_uq, on study C): pf_any 2.2e-6 against 1e-3, tip governs (beta 4.55), damping 71 % of the damage variance; [portfolio/22](portfolio/22-bracket-random-uncertainty.md) |
 
 Notes
 - Study 2 can start from the verified heated-channel flow (`studies/heated_channel.py`).
