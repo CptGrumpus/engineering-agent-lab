@@ -24,6 +24,8 @@ is the `verify-against-reference` skill.
 | `cadquery_ccx_modal` | bracket modal analysis | CadQuery -> STEP -> Gmsh (C3D10) -> CalculiX *FREQUENCY | `models/fea/bracket_modal.py` |
 | `cadquery_ccx_random` | bracket random vibration (study C): base PSD, 3 sigma stress, fatigue | CadQuery -> Gmsh (C3D10) -> CalculiX *FREQUENCY (modal stresses, participation factors) + *STEADY STATE DYNAMICS check; modal superposition in Python | `models/fea/bracket_random.py`, `studies/bracket_random.py` |
 | `cadquery_ccx_random_uq` | probabilistic uncertainty on study C (study H): failure probability, Sobol indices | study C's model at several thicknesses (one mesh, z scaled), a surrogate in (log damping, thickness), Monte Carlo / Sobol, FORM and importance sampling (`harness/uncertainty.py`) | `models/fea/bracket_random.py`, `studies/bracket_random_uq.py` |
+| `gmsh_ccx_edge_crack` | edge-cracked plate: stress intensity, critical crack, fatigue crack growth life (study F) | Gmsh half model, 6-node triangles at the tip -> CalculiX plane strain; K(a) by energy release rate and crack opening, BS 7910 / IIW growth law | `models/fea/edge_crack.py`, `studies/edge_crack.py` |
+| `ross_rotor` | fan rotor critical speeds and unbalance response (study G) | ROSS 3.1 in its own environment (`~/.venvs/ross`): Timoshenko shaft, rigid disc, linear bearings; Campbell diagram, API 684 unbalance | `models/rotor/fan_rotor.py`, `studies/rotor_critical.py` |
 | `gmsh_ccx_contact` | roller-on-plate contact | scripted Gmsh .geo (C3D8 slab, plane strain) -> CalculiX surface-to-surface contact | `models/fea/hertz_contact.py` |
 | `strap_fatigue` | strap fatigue life (chained) | strap CAD-to-FEA pipeline, then Peterson K_f, SWT, Basquin fit to cited 6061-T6 data | `models/fea/strap_hole.py`, `models/fatigue/sn_6061.py` |
 | `openfoam_channel` | laminar channel flow | OpenFOAM 14 in WSL (blockMesh, checkMesh, foamRun) | `models/cfd/channel_openfoam.py`, `models/cfd/run_channel.sh` |
@@ -134,6 +136,16 @@ Run every command from the repository root.
   the log: a run can be "progressing" while the machine pages.
 - To stop a run of your own, stop its background task (TaskStop), not by killing processes. Then fix the cause, note
   the stopped run in the case's Results, and rerun; don't keep the partial run as evidence of anything but the stop.
+- Before a transient mesh study at a fixed time step, compute or measure the Courant number on every level: it
+  scales as 1/h, so the finest level runs at a different temporal resolution from the coarsest. Write the
+  per-level value in the case and decide on purpose: a fixed dt (the study then mixes in temporal error, and the
+  fine level carries a stability risk under PISO, `nOuterCorrectors 1`) or a fixed Courant number (dt scaled with
+  h, stated). Study 6 measured max Co 1.2-1.4 on the 3.54 / 2.5 mm levels and 2.36 on 1.77 mm; FSI2's 1.77 mm level
+  crashed at 8.8 s (cause pending the rerun's log tail, 2026-11-23; Co was flat from 1 s, so not proven the trigger).
+- On long runs, read the live solver log in the work dir now and then, not only the harness log: the max Courant
+  number per simulated second and the coupling iterations per window, from the log's tail (FSI / CFD studies:
+  `%LOCALAPPDATA%/Temp/fsi_*/case/fluid/log.pimpleFoam`). A rising trend is the warning a crash otherwise gives
+  only after hours.
 - One FEMM at a time; OpenFOAM under `nice -n 19`; several single-core jobs at once are fine on this machine, but
   watch memory more than CPU.
 
@@ -150,6 +162,10 @@ the grid check.
 ## Failure handling
 
 - Never delete or overwrite a run directory, including failed ones. Failed runs are evidence.
+- A failed point keeps the last 400 lines of every solver log the study did not copy, in
+  `points/<label>/solver/failure_tails/` (`harness/run.py`, `keep_failure_tails`). Read them before
+  changing anything, then change one thing per rerun. If the tail is missing (a study that deletes its own work
+  dir), rerun unchanged first to capture the error: a serial solve repeats the same crash.
 - Do not change the case's tolerances or requirements to make a run pass. If a change is
   justified, edit the case file, say why, and start a new run.
 - If a solver fails, report it. Changing `method`, `rtol`, or `atol` is an engineering decision

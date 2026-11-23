@@ -23,6 +23,39 @@ def _new_run_dir(runs_root: Path, case_name: str) -> Path:
     return run_dir
 
 
+LOG_PATTERNS = ("log.*", "*.log", "*.sta", "*.out", "*.err", "*.msg")
+TAIL_LINES, TAIL_BYTES = 400, 200_000
+
+
+def keep_failure_tails(work: Path, copied: set[Path], dest: Path) -> list[str]:
+    """Before a failed point's work dir is deleted, save the last TAIL_LINES lines of every solver log in it that
+    was not copied in full (too large for the study's keep list, or not on it) as dest/<relative path>.tail.
+    Without this a crash after hours leaves no error message (FSI2 mesh c, 2026-11-23: a 53 MB fluid log)."""
+    kept = []
+    work = Path(work)
+    if not work.is_dir():
+        return kept
+    copied = {Path(p).resolve() for p in copied}
+    for pattern in LOG_PATTERNS:
+        for f in sorted(work.rglob(pattern)):
+            if (not f.is_file() or f.suffix == ".tail" or f.resolve() in copied
+                    or f.with_name(f.name + ".tail").resolve() in copied):   # the study kept its own tail
+                continue
+            size = f.stat().st_size
+            with f.open("rb") as fh:
+                fh.seek(max(0, size - TAIL_BYTES))
+                lines = fh.read().decode("utf-8", "replace").splitlines()[-TAIL_LINES:]
+            rel = f.relative_to(work).as_posix()
+            out = dest / (rel + ".tail")
+            if out.exists():
+                continue
+            out.parent.mkdir(parents=True, exist_ok=True)
+            out.write_text(f"# last {len(lines)} lines of {rel} ({size} bytes), kept because the point failed\n"
+                           + "\n".join(lines) + "\n", encoding="utf-8")
+            kept.append(rel)
+    return kept
+
+
 def _fmt_metrics(m: dict) -> str:
     return ", ".join(f"{k} {v:.4g}" for k, v in m.items())
 
@@ -48,6 +81,13 @@ def execute_point(study, backend, case: dict, label: str, params: dict, run_dir:
                 (pdir / "solver" / name).parent.mkdir(parents=True, exist_ok=True)
                 shutil.copyfile(src, pdir / "solver" / name)
         if res.get("cleanup"):
+            if not res["success"]:
+                tails = keep_failure_tails(Path(res["cleanup"]), set((res.get("files") or {}).values()),
+                                           pdir / "solver" / "failure_tails")
+                if tails:
+                    entry["failure_tails"] = tails
+                    log.error("%s: kept the tails of %d logs from the work dir: %s", label, len(tails),
+                              ", ".join(tails[:6]))
             shutil.rmtree(res["cleanup"], ignore_errors=True)
         if not res["success"]:
             log.error("%s: solver failed: %s", label, res["message"])

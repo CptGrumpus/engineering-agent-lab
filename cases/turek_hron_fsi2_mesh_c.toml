@@ -30,6 +30,9 @@
 # last 400 lines of such logs (e92aceb). Rerun with the same settings started 18:06 to capture the error (the solve is
 # deterministic, so it should fail at the same time, about 23:30) before anything is changed. Predictions are scored
 # on the run that finishes.
+# Courant numbers measured 18:20 from the live logs of the other levels (max per simulated second): FSI2 a 1.24, b 1.36
+# rising to 1.43 by 8 s; FSI3 a 1.17, b 1.35, c 2.36, flat after the 1 s inflow ramp. Level c here, scaled from b,
+# about 1.9-2.0 under PISO (nOuterCorrectors 1): a likely risk factor, not shown to be the trigger (it ran 7 s at it).
 
 [case]
 name = "turek_hron_fsi2_mesh_c"
