@@ -240,7 +240,7 @@ old scratch); design magnet with the 1.49 mm strip 13.5 Br; useful flux ratio ab
 *Then, if P1 holds:* the design-magnet machine at Br 1.243 T replaces hypothesis A (remanence 1.036 T) as the
 calibrated model; static inductances, locked-rotor torque, efficiency and the design verdicts are re-run on it, each
 with predictions first.
-*Addendum (2026-11-23 11:05, user's decision "Run 1.12 T too"; written before the 1.243 T result was read):* carry
+*Addendum (2026-11-23 12:05, time corrected from "11:05"; user's decision "Run 1.12 T too"; written before the 1.243 T result was read):* carry
 both remanence sources until the data decides: ORNL's measured sample curve (TM-2004/137 Fig. 14, 1.243 T) and the
 design report's value (TM-2004/120 Table 5.4, "Magnet strength 1.12 T"), set aside on 2026-11-21 as "probably a hot
 value" without a check. The same three placements at 1.12 T.
