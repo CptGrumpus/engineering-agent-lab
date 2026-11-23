@@ -88,3 +88,25 @@ inductance, A's torque against ORNL (rms error 8.7 %, -3.6 % to +13.5 %, three o
 2.6 against the model's 3.2 (Ld 13 % above the model): the d-axis path is not quite ours (the thinner 5.31 mm magnet
 and its pocket clearance are the first suspect; not modelled). Next: the out-of-sample efficiency for A (dq tables at
 1.036 T, cold and hot).
+
+## Result: the out-of-sample efficiency test for A (2026-11-23 03:30; predictions in cases/motor_prius_efficiency_br.toml, b2d7092)
+Four dq tables at 1.036 T (cold, hot and their low-q-current supplements; c6d39dc) and the efficiency case built from
+them (run 20261123-032756_motor_prius_efficiency_br), scored once against ORNL's Table B-1 (`calibration.json`):
+
+| | blind (1.243 T) | B (turns x 0.807) | **A (remanence 1.036 T)** |
+|---|---|---|---|
+| median efficiency, ours (hot) minus ORNL, over 393 points | 5.21 points | 5.32 | **4.50** |
+| 10th-90th percentile | 3.4-7.9 | 3.4-8.3 | 2.9-7.7 |
+| points within 2 points of our cold-hot band | 3 | 3 | 6 |
+
+- The 2-point limit is still missed by a wide margin: A closes about 0.7 of the 5 points. This plan's prediction (the
+  median gap stays 3-5 points, most of it the omitted losses) holds; the case's sharper prediction (the gap GROWS to
+  5.5-7, because A raises our light-load efficiency) had the direction wrong.
+- A design consequence nobody asked for, found by the same case: with A's weaker magnets, REQ-M5 (50 kW to 6000 rpm
+  at 500 V and our 212 A design current) FAILS, 48.0 kW cold and 44.5 kW hot (blind model: 58.6 / 53.7). Less magnet
+  flux means less torque per ampere in field weakening. The verdict was flux-dependent all along.
+- The case's verification failed: my back-EMF reference came from a different mesh (fineness 8, not the tables' 2:
+  0.1 % apart, as expected); the half-table iron-loss check misses 5 % (6.9 / 7.5 %); the unresolved 10 N m row
+  trips the map check cold instead of hot. None of these touches the comparison above, which uses the full tables.
+- What remains: the efficiency gap is mostly losses the model leaves out (mechanical, magnet eddy-current, AC copper),
+  which no routine client data here would size; and the d-axis saliency (2.6 measured against 3.2).

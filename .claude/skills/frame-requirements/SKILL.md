@@ -143,6 +143,10 @@ prediction is written into a case file.
   the locked-rotor torque: a weak discriminator (8.7 % against 10.7 % rms error) that then stopped being evidence. A
   turns error scales resistance and inductance by k^2 and a magnet error does not, so the static inductances separate
   them by 35 % (the user asked whether a contract job would even have the torque data; often it would not).
+- After a calibration, re-run every design verdict that depends on the calibrated quantity before reporting it. Study 7's
+  rated-power requirement (50 kW to 6000 rpm) passed with the blind model (58.6 kW) and failed with the calibrated
+  magnets (48.0 kW): less magnet flux, less field-weakening torque per ampere. I had predicted the opposite from
+  voltage headroom; check the sign with the torque equation, not intuition.
 - Transcribe a test table before reasoning from it: run-together PDF text puts a frequency column where the voltage
   should be (study 7, caught before scoring).
 

@@ -142,6 +142,13 @@ never converge, so measure convergence and extrapolation on the reported states,
 | Efficiency map from the half table against the map from the full table, in efficiency points: the interpolation error on the output itself | numerical | `motor_efficiency` `interp_map` |
 | The table's own back-EMF and MTPA torque against the open-circuit and torque-curve studies | numerical | `motor_efficiency` `lut_back_emf`, `lut_mtpa_100A` |
 
+Take a consistency check's reference from the same mesh as the thing checked, or set the tolerance from the mesh
+uncertainty between them. The calibrated efficiency case took its back-EMF reference from a fineness-8 run and failed
+at 1.009e-3 against 1e-3: a mesh difference, not a fault in the table (r1's same-mesh reference matched to 1e-6).
+The dq-torque check's miss is an absolute fraction of a N m of ripple, so it fails wherever the mean torque is small;
+weaker magnets moved the failing columns, and "passes, as in the original" was a wrong prediction because the original
+had failed too: read a case's Results, not only its predictions, before predicting its copy.
+
 ## Pressure vessels (design by analysis, linearised stresses)
 
 | Check | Kind | Example |

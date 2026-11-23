@@ -360,6 +360,36 @@ also the strongest of the three on typical values.</p></div>
 
 # --------------------------------------------------------------------------- page: overview
 
+def calibration_section():
+    """Post-test calibration (validation/motor_ornl/CALIBRATION_PLAN.md): the three hypotheses' scores."""
+    cj = REPO / "validation" / "motor_ornl" / "calibration.json"
+    if not cj.is_file():
+        return ""
+    c = json.loads(cj.read_text(encoding="utf-8"))
+    rows = []
+    for key, name in (("blind", "Blind model (1.243 T)"), ("B_turns", "B: series turns × 0.807"),
+                      ("A_remanence", "<b>A: remanence 1.036 T (selected)</b>")):
+        h = c.get(key, {})
+        e = h.get("efficiency", {})
+        rows.append([name, f"{100 * h['rms_err_if_peak']:.1f} %" if "rms_err_if_peak" in h else "-",
+                     f"{e['hot_minus_ornl_median_pts']:.2f}" if e else "-",
+                     f"{e['hot_minus_ornl_p10_p90'][0]:.1f} to {e['hot_minus_ornl_p10_p90'][1]:.1f}" if e else "-"])
+    return f"""<h2 id="calibration">Post-test calibration</h2>
+<div class="col"><p>The blind verdicts stay on the record. Afterwards the model was calibrated the way a client's routine
+data would allow (<code>validation/motor_ornl/CALIBRATION_PLAN.md</code>, predictions committed before each step):
+on the back-EMF, two explanations fit exactly; the static inductances chose between them (A); the efficiency was then
+scored once, out of sample. Torque is reported as a comparison, not a fit (it was looked at before the inductance
+rule was written).</p></div>
+{table(["Model", "Torque, rms error at ORNL's 7 currents", "Efficiency, ours (hot) − ORNL, median (points)",
+        "10th to 90th percentile"], rows)}
+<div class="col"><p>The calibration closes about 0.7 of the 5-point efficiency gap; the 2-point limit is still missed,
+because the model leaves out mechanical, magnet eddy-current and AC copper loss. It also changes a design verdict:
+with A's magnets the rated 50 kW no longer holds to 6000 rpm at 500 V and 212 A (REQ-M5: 48.0 kW cold, 44.5 kW hot;
+blind 58.6 / 53.7). The calibrated efficiency run itself fails three of its checks (a back-EMF reference I took from a
+different mesh, the half-table iron-loss estimate, the unresolved 10 N m row); none touches this comparison.</p></div>
+"""
+
+
 def build_index(cases, runs, full=True):
     r0, r1, r2, r3, r4, r5 = (runs[c] for c in CASES)
     f0, f1, f2, f3, f4, f5 = (finest(r) if r else None for r in (r0, r1, r2, r3, r4, r5))
@@ -457,6 +487,10 @@ def build_index(cases, runs, full=True):
         ["Blind comparison with ORNL test data (ORNL/TM-2006/423)", "Opened once, on 2026-11-22 after every prediction "
          "was committed; limits agreed the day before", pill("FAIL") + " all three: back-EMF +23.5 %, torque +7 to +24 %, "
          "efficiency +5.2 points (see the validation table above)", ""],
+        ["Post-test calibration (after the blind comparison)", "Two hypotheses fit the back-EMF; ORNL's static "
+         "inductances choose A (magnet remanence 1.036 T); efficiency then scored once, out of sample",
+         pill("FAIL") + " efficiency 4.5 points high (limit 2); REQ-M5 48.0 / 44.5 kW (cold / hot) against 50",
+         '<a href="#calibration">below</a>'],
     ]
 
     body = f"""
@@ -472,7 +506,7 @@ the slot heat check, a lumped thermal network) predict a production traction mot
   <div class="fact"><div class="k">Machine</div><div class="v">48 slots · 8 poles</div><div class="n">Interior V magnets, 83.8 mm stack, 50 kW, 400 N m to base speed</div></div>
   <div class="fact"><div class="k">Back-EMF, current prediction</div><div class="v">{fmt(current, 4)} V</div><div class="n">rms line-to-line per 1000 rpm at 20 °C, run {E(latest_run["id"][:15])}</div></div>
   <div class="fact"><div class="k">REQ-M1, uncontrolled generator</div><div class="v">{pill("FAIL")} ≈ {fmt(latest_pt["metrics"]["back_emf_LL_peak_at_max_speed_V"], 4)} V</div><div class="n">Line-to-line peak at 6000 rpm against the 500 V bus</div></div>
-  <div class="fact sealed"><div class="k">Blind comparison with ORNL</div><div class="v">{pill("FAIL")} 3 of 3</div><div class="n">Run once on 2026-11-22: the model carries about 24 % too much magnet flux. Cause being diagnosed.</div></div>
+  <div class="fact sealed"><div class="k">Blind comparison with ORNL</div><div class="v">{pill("FAIL")} 3 of 3</div><div class="n">Run once on 2026-11-22: the model carries about 24 % too much magnet flux. Calibrated afterwards on routine data (magnets 1.036 T): efficiency still 4.5 points high; REQ-M5 flips to a fail.</div></div>
 </div>
 
 <h2>The question and the limits</h2>
@@ -566,7 +600,13 @@ inputs, hashes and tool versions with every run.</li>
 <li><time>17:46</time><span>Thermal network, first run: about 230 N m continuous to 2000 rpm, 42-48 kW above; the magnets, not the winding, bind at every speed. REQ-TH1 (25 kW from 1250 rpm) 30.2 kW. CalculiX's slot-pitch check puts the slot hotspot 10 % higher on its rise than the network's slab estimate.</span></li>
 <li><time>17:54</time><span>Revision 1 reads the slot hotspot at the top of the slot, by the tooth tips (where CalculiX put it): the shortfall halves to 4-7 %, still over the 5 % tolerance in six of ten scenarios; a bound shows it cannot move the envelope from 1250 rpm. At a winding mean of 100 °C the magnets are at 93-105 °C, not 80.</span></li>
 <li><time>19:00</time><span>Blind comparison against ORNL/TM-2006/423, once, with the limits agreed the day before: back-EMF +23.5 % (limit 5 %), torque +7 to +24 % (limit 10 %), efficiency 5.2 points high (limit 2). All three fail. The model carries about 24 % too much magnet flux; the cause (magnet remanence or size, series turns, end leakage) is the next diagnostic.</span></li>
+<li><time>19:20</time><span>Post-test calibration planned before computing anything: two hypotheses that each fit ORNL's back-EMF exactly, (A) weaker magnets or (B) fewer effective turns; choose between them, then test the chosen one on efficiency, out of sample.</span></li>
+<li><time>22:15</time><span>Back-EMF calibration: A needs remanence 1.036 T (from 1.243), B the turns × 0.807. A first chosen on the locked-rotor torque (8.7 % against 10.7 % rms error).</span></li>
+<li><time>22:30</time><span>Re-decided on a test a client would actually have: ORNL's static inductances (Ld 1.92, Lq 5 mH) sit near A (1.70, 5.38) and far from B (1.11, 3.50). A selected; the calibrated torque is still 12-14 % high at 150-250 A.</span></li>
+<li><time>03:30</time><span>(Next day.) Out of sample, with A's dq tables: efficiency 4.5 points high at the median over ORNL's 393 points (blind 5.2): still far outside the 2-point limit, the rest being losses the model leaves out. REQ-M5 flips to a fail: 48.0 kW cold, 44.5 kW hot at 6000 rpm, because weaker magnets give less torque per ampere in field weakening.</span></li>
 </ol>
+
+{calibration_section()}
 
 <h2>Blind protocol log</h2>
 <div class="col">
@@ -581,8 +621,13 @@ inputs, hashes and tool versions with every run.</li>
         ["2026-11-22 18:36-19:00", "The blind comparison (user's go-ahead): ORNL/TM-2006/423 back-emf and locked-rotor tables, "
          "Appendix B test data; TM-2004/247 rev. for its current label. Step by step, including a misread column caught "
          "before any score: reports/motor/blind_comparison_log.md", "The comparison itself: all three limits missed"],
+        ["2026-11-22 22:21", "ORNL/TM-2006/423 p. 51, the static inductances, opened with the user's OK (a routine test a "
+         "client would have), after the predictions for both hypotheses were committed",
+         "Post-test calibration: chooses between hypotheses A and B"],
+        ["2026-11-23 03:30", "The calibrated efficiency scored once against TM-2006/423 Table B-1 (already opened for the "
+         "blind comparison)", "Out-of-sample test of the calibration"],
         ["not opened", "ORNL/TM-2004/137 Fig. 13 (measured no-load air-gap flux density); ORNL/TM-2005/33 pages 20-30",
-         "Fig. 13 is the proposed next diagnostic"],
+         "Fig. 13 is a possible diagnostic for the remaining saliency error"],
     ])}
 
 <p class="muted">Generated from the case files and runs by <code>reports/motor/build_report.py</code>.</p>

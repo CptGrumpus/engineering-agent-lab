@@ -2,14 +2,15 @@
 
 [Portfolio index](../PORTFOLIO.md) · Electric machines
 
-> **Draft (2026-11-22).** Every prediction below was written before any of Oak Ridge National Laboratory's (ORNL's)
+> **Draft (updated 2026-11-23).** Every prediction below was written before any of Oak Ridge National Laboratory's (ORNL's)
 > measurements of this motor was opened. The blind comparison has now been run, once, against limits agreed in
-> advance: **all three missed** (see "The blind comparison"). The full reports, the extracted data and the protocol
+> advance: **all three missed** (see "The blind comparison"). A post-test calibration on routine data followed: it
+> narrows the efficiency gap only a little and flips the rated-power verdict (see "The post-test revision"). The full reports, the extracted data and the protocol
 > log are in `reports/motor/` and `validation/motor_ornl/`.
 
 | | |
 |---|---|
-| **Answer so far** | **Blind comparison against ORNL's measurements: fail on all three agreed limits.** Back-EMF +23.5 % (limit 5 %), torque +7 to +24 % (limit 10 %), motor efficiency about 5 points high (limit 2). One fault explains most of it: the model's magnet flux linkage is about 24 % too high; the cause is not yet pinned down. The predictions as written:  back-EMF 110.9 V rms line-to-line per 1000 rpm at 20 °C; torque 119-606 N m from 50 to 350 A rms (400 N m at about 168 A); an efficiency map with a 97.4 % peak (motor only). Design checks: the rated 400 N m fits inside the copper limit (REQ-M2 pass), and the rated 50 kW holds to 6000 rpm (58.6 kW, verified). Two fails a design review would want to know about: the open-circuit voltage at top speed is about 1040 V against a 500 V bus (REQ-M1), and the rotor bridges exceed the stand-in steel's yield at overspeed (424 against 335 MPa, REQ-M4). Thermal network (synthetic 65 °C water jacket): about 230 N m continuous to 2000 rpm and 42-48 kW from 2500 to 6000 rpm, limited by the magnets (150 °C) at every speed, not the winding; the efficiency map's hot corner understates the magnets by 13-25 K. |
+| **Answer so far** | **Blind comparison against ORNL's measurements: fail on all three agreed limits.** Back-EMF +23.5 % (limit 5 %), torque +7 to +24 % (limit 10 %), motor efficiency about 5 points high (limit 2). One fault explains most of it: the model's magnet flux linkage is about 24 % too high. **Calibrated afterwards on routine data** (magnet remanence 1.036 T, chosen on the static inductances): the efficiency gap narrows only from 5.2 to 4.5 points (the rest is losses the model leaves out), and the rated-power verdict flips to a fail (48 kW at 6000 rpm). The predictions as written:  back-EMF 110.9 V rms line-to-line per 1000 rpm at 20 °C; torque 119-606 N m from 50 to 350 A rms (400 N m at about 168 A); an efficiency map with a 97.4 % peak (motor only). Design checks: the rated 400 N m fits inside the copper limit (REQ-M2 pass), and the rated 50 kW holds to 6000 rpm (58.6 kW, verified; but not after calibration, above). Two fails a design review would want to know about: the open-circuit voltage at top speed is about 1040 V against a 500 V bus (REQ-M1), and the rotor bridges exceed the stand-in steel's yield at overspeed (424 against 335 MPa, REQ-M4). Thermal network (synthetic 65 °C water jacket): about 230 N m continuous to 2000 rpm and 42-48 kW from 2500 to 6000 rpm, limited by the magnets (150 °C) at every speed, not the winding; the efficiency map's hot corner understates the magnets by 13-25 K. |
 | **Discipline** | Electric machines: electromagnetics, losses, thermal, rotor stress |
 | **Tools** | Pyleecan (geometry, drives FEMM), FEMM 4.2 (2D magnetostatics), CalculiX (rotor stress, slot heat conduction), Gmsh, Python |
 | **Methods** | Machine rebuilt from published drawings (PDF vector data); open-circuit and loaded magnetostatics; maximum torque per amp; dq look-up tables with iron-loss coefficients; loss-minimising current search under voltage and current limits; a lumped thermal network coupled to the losses; mesh studies; a blind-validation protocol |
@@ -36,7 +37,7 @@ drew and measured. Two kinds of answer are kept apart:
 | REQ-M2: 400 N m within 25 A/mm² of copper current density | 400 N m at about 168 A rms, 19.8 A/mm² | **Pass** |
 | REQ-M3: every operating point within 25 A/mm² | the limit is 212 A rms; 250 A and above exceed it | **Fail** above 212 A (a short-time rating question) |
 | REQ-M4: rotor bridges below yield at 7200 rpm overspeed | 424 MPa against 335 MPa (M330-35A) | **Fail**, verified; elastic at 6000 rpm (295 MPa). A stronger grade (M250-35A, 455 MPa typical) would pass |
-| REQ-M5: rated 50 kW from base speed to 6000 rpm (500 V, 212 A) | 58.6 kW at the worst speed (6000 rpm), magnets and copper at 20 °C; 53.7 kW hot | **Pass** (verified cold; hot unverified) |
+| REQ-M5: rated 50 kW from base speed to 6000 rpm (500 V, 212 A) | Blind model: 58.6 kW at the worst speed (6000 rpm), 20 °C; 53.7 kW hot. Calibrated (magnets 1.036 T): 48.0 kW cold, 44.5 kW hot | Blind: **Pass** (verified cold). Calibrated: **Fail** (unverified) |
 | REQ-TH1: at least 25 kW continuous from 1250 to 6000 rpm (winding hotspot ≤ 180 °C, magnets ≤ 150 °C; jacket 65 °C, synthetic) | 30.2 kW at the worst speed (1250 rpm); 26.2-34.3 kW over ten cooling and material scenarios | **Pass**: verified in four scenarios; in the other six the slot-hotspot check misses its 5 % by 0.1-2.2 points, and a bound shows that cannot move the answer |
 
 Blind predictions, for the comparison at the end: back-EMF **110.9 V** per 1000 rpm; MTPA torque **118.8 / 251.6 /
@@ -79,7 +80,7 @@ speed (105 to 35 °C coolant); our thermal network gives about 30 kW under its s
 flux 24 % high (and so the current low) and an assumed cooling system, it is optimistic too (thermal was not in the
 agreed validation set).
 
-## The post-test revision (in progress)
+## The post-test revision
 
 The blind verdicts stay on the record. The revision uses only the kind of data a client would hand over for an existing
 motor, and spends it deliberately ([plan](../validation/motor_ornl/CALIBRATION_PLAN.md), predictions committed before
@@ -95,7 +96,19 @@ each step):
 - **What the calibrated model still gets wrong.** Torque: within 4 % at low current but 12-14 % high at 150-250 A
   (three of ORNL's seven currents outside the original 10 % band). The measured saliency Lq / Ld is 2.6 against our
   3.2, so the d-axis path is not quite right (the thinner real magnet is the first suspect).
-- **Next, out of sample:** efficiency with A's dq tables (running), scored against the unchanged 2-point limit.
+- **Out of sample: efficiency, with A's dq tables.** Over ORNL's 393 measured points our (hot) efficiency is now
+  4.5 points high at the median, against 5.2 for the blind model and 5.3 for B. Still far outside the 2-point limit:
+  the calibration fixes the flux, and the remaining gap is losses this model leaves out (mechanical, magnet eddy
+  currents, AC copper). My sharper prediction, that A would widen the gap, had the direction wrong; the plan's
+  looser one (it stays 3-5 points) held.
+- **A design verdict flips.** With the weaker magnets the motor no longer holds 50 kW to 6000 rpm at 500 V and the
+  212 A design current (REQ-M5): 48.0 kW cold, 44.5 kW hot at 6000 rpm, against 58.6 / 53.7 before. Less magnet flux
+  is less torque per ampere in field weakening. I had predicted the opposite. A design review using the blind model
+  would have signed off a requirement the calibrated model fails, which is the strongest argument on this page for
+  calibrating against a routine test before trusting a flux-dependent verdict.
+- **Its own checks:** the calibrated efficiency run fails verification on three checks, none of which touches the
+  comparison: my back-EMF reference came from a different mesh (0.1 % apart), the half-table iron-loss estimate misses
+  its 5 % (7 %), and the unresolved 10 N m row trips the map check in the other scenario.
 
 ## How it works
 
@@ -167,8 +180,10 @@ each step):
   first cell), and with hot magnets one cell there (4500 rpm, 10 N m) fails the interpolation check, so the hot
   REQ-M5 result (53.7 kW) is a pass but unverified. Both are left as stated limits rather than revised: light load at
   high speed does not bear on any requirement, and a calibrated model would rebuild the tables anyway.
-- Validated against ORNL's measurements once: it failed (above). Until the flux error is found and a revised model
-  is compared again, treat every flux-dependent number on this page as about 24 % optimistic.
+- Validated against ORNL's measurements once: it failed (above). The calibrated model (magnets 1.036 T) fixes the
+  back-EMF by construction and moves torque and efficiency closer, but it is calibrated, not validated; the blind
+  model's flux-dependent numbers on this page (REQ-M1, REQ-M5, the thermal rating) are about 24 % optimistic in flux,
+  and REQ-M5 already fails once that is corrected. The thermal rating has not been recomputed with it.
 
 ## Evidence
 
