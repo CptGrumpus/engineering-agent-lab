@@ -16,6 +16,16 @@
 #      study's 1.7e-4, so its differences are noise); P + Q crotch 1e-3 to 3e-3; toe P + Q 1e-3 to 3e-3; toe PL under
 #      5e-4. The rerun then declares mesh_noise_rel as the largest measured spread on a requirement metric, rounded up.
 #   P4 About 10 min.
+#
+# Results (run 20261122-200428_pv_nozzle_crotch_noise): verification PASS (50/50 point checks).
+#   P1 HELD.  P2 HELD: h 4.00 repeats the mesh study's 4 mm point to every digit (256.627, 351.965).
+#   P3 PARTLY: relative spread over the five meshes: PL crotch 8.2e-4 (predicted 1e-4 to 5e-4: larger), P + Q crotch
+#      8.9e-4 (predicted 1e-3 to 3e-3: a little smaller), toe PL 7.6e-4 (predicted under 5e-4: larger), toe P + Q
+#      2.9e-3 (inside 1e-3 to 3e-3), Pm 7.5e-5. Against the mesh study's spreads over 6 / 4 / 2.67 mm (PL crotch
+#      1.7e-4, P + Q crotch 2.1e-3, toe PL 4.5e-4, toe P + Q 3.5e-3), three of the four are at or below this noise:
+#      the "divergent" readings were mesh regeneration, not discretization error. The rule stated above gives
+#      mesh_noise_rel = 3e-3 (toe P + Q's 2.9e-3, rounded up) for the rerun.
+#   P4 HELD: 9 min.
 
 [case]
 name = "pv_nozzle_crotch_noise"

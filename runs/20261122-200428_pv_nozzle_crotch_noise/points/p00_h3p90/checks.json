@@ -1,0 +1,96 @@
+{
+  "label": "p00_h3p90",
+  "status": "PASS",
+  "checks": [
+    {
+      "id": "cad_valid",
+      "description": "CadQuery B-rep valid (0 = yes)",
+      "kind": "numerical",
+      "value": 0.0,
+      "tolerance": 0.0,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "mesh_volume",
+      "description": "|mesh volume (straight-sided tets) - CAD volume| / CAD volume",
+      "kind": "numerical",
+      "value": 5.987210083734779e-06,
+      "tolerance": 0.01,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "equilibrium_y",
+      "description": "|support reaction on y = 0 - exact pressure resultant (p x projected wetted area)| / resultant",
+      "kind": "numerical",
+      "value": 0.0,
+      "tolerance": 1e-05,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "equilibrium_z",
+      "description": "|support reaction on z = 0 - exact resultant (end thrust + nozzle bore)| / resultant",
+      "kind": "numerical",
+      "value": 2.961960962640968e-07,
+      "tolerance": 1e-05,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "self_balance_x",
+      "description": "|reaction at the single axial support| / quarter nozzle thrust (closed vessel: 0)",
+      "kind": "numerical",
+      "value": 8.257231284652831e-07,
+      "tolerance": 1e-05,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "lame_bore_hoop",
+      "description": "|FE hoop stress at the bore on the far line - Lame| / Lame (exact)",
+      "kind": "numerical",
+      "value": 0.004808174903259548,
+      "tolerance": 0.01,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "lame_membrane",
+      "description": "|FE linearised membrane (von Mises) on the far line - the same linearisation of the Lame stresses| / Lame (exact)",
+      "kind": "numerical",
+      "value": 0.00017662931897318744,
+      "tolerance": 0.01,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "scl_inside_mesh",
+      "description": "max barycentric violation of the SCL sample points (0 = inside an element; points on a curved surface lie about h^2 / 8R outside the straight-sided element, where the quadratic shape functions extrapolate smoothly)",
+      "kind": "validity",
+      "value": 0.0010671444958802597,
+      "tolerance": 0.01,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "scl_crotch_inside_mesh",
+      "description": "max barycentric violation of the crotch-line sample points (their outer end lies on the weld fillet, radius rf, so about h^2 / 8 rf outside the straight-sided element: a larger chord error than on the shell's surfaces)",
+      "kind": "validity",
+      "value": 8.355144100831351e-08,
+      "tolerance": 0.05,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "small_displacement",
+      "description": "max displacement / shell thickness (linear geometry)",
+      "kind": "validity",
+      "value": 0.03747791986795567,
+      "tolerance": 0.1,
+      "comparison": "<=",
+      "status": "PASS"
+    }
+  ]
+}
