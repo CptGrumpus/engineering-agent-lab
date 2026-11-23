@@ -44,8 +44,13 @@ def main() -> int:
             shutil.copyfile(src, dst)
     if missing:
         raise SystemExit("missing files for the public site: " + ", ".join(missing))
+    # docs/ holds only what the pages use: a file no page references any more is removed, so the public
+    # folder doesn't keep superseded images around
+    stale = [f for folder in SOURCES for f in (DOCS / folder).glob("*") if f.is_file() and f"{folder}/{f.name}" not in refs]
+    for f in stale:
+        f.unlink()
     (DOCS / ".nojekyll").touch()
-    print(f"{len(pages)} pages in docs/; {len(refs)} referenced files in place")
+    print(f"{len(pages)} pages in docs/; {len(refs)} referenced files in place; {len(stale)} unreferenced files removed")
     return 0
 
 

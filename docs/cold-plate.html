@@ -21,7 +21,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
-<link rel="stylesheet" href="assets/site.css?v=4937421060">
+<link rel="stylesheet" href="assets/site.css?v=004ab254f1">
 </head>
 <body>
 <nav class="topbar" aria-label="Site">
@@ -169,7 +169,7 @@
       <li><strong>Thermal stress (CalculiX).</strong> The converged plate temperatures go into a stress model with the ends held.</li>
     </ul>
     <p>One command runs the whole chain at three mesh densities, and the chain is refined together, not one stage at a time.</p>
-    <figure><div class="plate"><img src="img/coldplate_response.png" alt="Heat flux into the coolant, temperatures through the chain against the references, the plate temperature field and the thermal stress" loading="lazy"></div><figcaption>How the heat spreads before reaching the coolant, the temperatures through the chain against both references, and the thermal stress against beam theory.</figcaption></figure>
+    <figure><div class="plate"><img src="v2/fig_coldplate_response.svg" alt="The plate's temperature field, its two face temperatures under the 45 °C limit, and its thermal stress matching beam theory under the 60 MPa limit" loading="lazy"></div><figcaption>How the heat spreads before reaching the coolant, the temperatures through the chain against both references, and the thermal stress against beam theory.</figcaption></figure>
     <h3 id="cold_plate-how-i-checked-it">How I checked it</h3>
     <ul class="proof">
       <li><strong>The coolant.</strong> Its wall temperature matches the thermal-entry solution with the same heat-flux profile to 0.08 %, and its energy balance is exact to 2 × 10⁻¹².</li>
@@ -232,9 +232,9 @@
     </div>
   </div>
 </footer>
-<script>window.VP = [{"id": "heat", "study": "heat", "kind": "figure", "img": "v2/heat_response.webp", "model": "Cold-plate channel · water in a 1 mm gap, 30 kW/m² on both walls", "lines": ["Solver: OpenFOAM 14 · laminar flow with heat transfer", "Wall and bulk temperature, and the local Nusselt number, against the Graetz thermal-entry solution", "Wall peak 44.03 °C against 45 · coolant rise 7.2 K"], "check": "", "card": "cold_plate", "part": "11 · Coolant channel", "main": false}, {"id": "cold_plate", "study": "cold_plate", "tab": "Cold plate", "legend": "NT11", "unit": "°C", "model": "Cold plate · 3 mm 6061-T6 on a 1 mm water channel, 30 kW/m²", "lines": ["Solver: OpenFOAM 14 → CalculiX 2.22 · coupled, 28 passes", "A 30 mm slice of the plane-strain section · coolant left to right · the 3D view keeps every fourth node through the thickness", "Component face 40.99 °C against 45 · coolant rise 7.20 K"], "mesh": "v2/m3d_cold_plate.bin", "mesh_kb": 537, "elev": 30, "azim": -62, "img": "v2/vp_cold_plate.webp", "bands": ["#3c3286", "#4771e9", "#33adf7", "#18dec0", "#4ef97d", "#a4fc3c", "#dde037", "#fcb136", "#f76f1a", "#d63506", "#9e1001"], "vmin": 30.5, "vmax": 41.5, "check": "Render check: encloses 5 400.0 mm³ of 5 400.0 design · 100.0 % of pixels on the legend", "card": "cold_plate", "part": "15 · Full thermal chain", "main": true}];</script>
-<script src="assets/viewer.js?v=4937421060"></script>
-<script src="assets/viewer3d.js?v=4937421060"></script>
-<script src="assets/site.js?v=4937421060"></script>
+<script>window.VP = [{"id": "heat", "study": "heat", "kind": "figure", "img": "v2/fig_heat_response.svg", "model": "Cold-plate channel · water in a 1 mm gap, 30 kW/m² on both walls", "lines": ["Solver: OpenFOAM 14 · laminar flow with heat transfer", "Wall and bulk temperature, and the local Nusselt number, against the Graetz thermal-entry solution", "Wall peak 44.03 °C against 45 · coolant rise 7.2 K"], "check": "", "card": "cold_plate", "part": "11 · Coolant channel", "main": false}, {"id": "cold_plate", "study": "cold_plate", "tab": "Cold plate", "legend": "NT11", "unit": "°C", "model": "Cold plate · 3 mm 6061-T6 on a 1 mm water channel, 30 kW/m²", "lines": ["Solver: OpenFOAM 14 → CalculiX 2.22 · coupled, 28 passes", "A 30 mm slice of the plane-strain section · coolant left to right · the 3D view keeps every fourth node through the thickness", "Component face 40.99 °C against 45 · coolant rise 7.20 K"], "mesh": "v2/m3d_cold_plate.bin", "mesh_kb": 537, "elev": 30, "azim": -62, "img": "v2/vp_cold_plate.webp", "bands": ["#3c3286", "#4771e9", "#33adf7", "#18dec0", "#4ef97d", "#a4fc3c", "#dde037", "#fcb136", "#f76f1a", "#d63506", "#9e1001"], "vmin": 30.5, "vmax": 41.5, "check": "Render check: encloses 5 400.0 mm³ of 5 400.0 design · 100.0 % of pixels on the legend", "card": "cold_plate", "part": "15 · Full thermal chain", "main": true}];</script>
+<script src="assets/viewer.js?v=004ab254f1"></script>
+<script src="assets/viewer3d.js?v=004ab254f1"></script>
+<script src="assets/site.js?v=004ab254f1"></script>
 </body>
 </html>

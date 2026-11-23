@@ -28,13 +28,10 @@
     <p>FreeCAD builds the bar, assigns the material, fixes the root face and applies the load. Gmsh fills the solid with tetrahedral elements, and CalculiX solves for the displacements and stresses. I read the results straight from the solver's output files, and the FreeCAD model is saved with every run so the run can be repeated.</p>
     <p>The same model is solved four times on finer and finer meshes. If the answer stops changing as the elements shrink, the mesh isn't deciding it. A standard method, the Grid Convergence Index, turns the last three solutions into an uncertainty figure, which is where the 0.02 % comes from.</p>
     <p>For the stress, I don't take the highest value in the model. That value sits in the clamped corner and climbs from 150 to 217 MPa across the four meshes. Instead the stress along the top face is read over the middle half of the span, where it rises in a straight line towards the root, and that line is extended to the root. The result is 150 MPa on every mesh, which is also what beam theory gives.</p>
-    <div class="figs-2">
-      <figure>
-        <div class="plate"><img src="img/fea_response.png" alt="Deflection and stress along the beam compared with beam theory" loading="lazy"></div>
+    <figure>
+        <div class="plate"><img src="v2/fig_fea_response.svg" alt="Deflection and top-face stress along the bar, with the model's points lying on the beam-theory curves" loading="lazy"></div>
         <figcaption>Deflection and stress along the beam, next to beam theory.</figcaption>
       </figure>
-      <figure><div class="plate"><img src="img/turntable_cantilever.webp" alt="The cantilever result turning, rendered in Blender" loading="lazy"></div><figcaption>The result from all sides. At the clamped end you can see the bending stress across the section, highest at the top and bottom faces and zero along the middle.</figcaption></figure>
-    </div>
     <h3>How I checked it</h3>
     <ul class="proof">
       <li><strong>Against beam theory.</strong> The hand calculation gives 0.952 mm if shear deformation is ignored and 0.960 mm if it's included. The model's 0.953 mm falls between the two, which is where a fully clamped solid bar should land.</li>
@@ -48,8 +45,8 @@
         <li>I also ran the study with the simplest element type, linear tetrahedra. The bracket came out 4 to 33 % too stiff and the stress 7 to 45 % too low, so at face value it would have looked comfortably safe. The beam-theory and mesh checks both failed, and none of those results were reported as verified. The run is kept as evidence.</li>
       </ul>
     </div>
-    <figure>
-      <div class="plate"><img src="img/fea_tet4_sweep.png" alt="Linear-element results, all held back by the checks" loading="lazy"></div>
+    <figure class="half">
+      <div class="plate"><img src="v2/fig_fea_tet4.svg" alt="Tip deflection against element size: quadratic elements sit on beam theory at every size, linear elements read up to a third too stiff" loading="lazy"></div>
       <figcaption>The same study run with linear tetrahedra. The checks held back every result.</figcaption>
     </figure>
     <h3>Limits, and what I'd do next</h3>

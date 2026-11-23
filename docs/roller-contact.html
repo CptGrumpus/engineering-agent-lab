@@ -21,7 +21,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
-<link rel="stylesheet" href="assets/site.css?v=4937421060">
+<link rel="stylesheet" href="assets/site.css?v=004ab254f1">
 </head>
 <body>
 <nav class="topbar" aria-label="Site">
@@ -112,7 +112,7 @@
     <p>I push the roller down a set distance and read the force from the reactions, which is more reliable than applying a force before the parts are touching. CalculiX works out where the two surfaces are in contact as it solves.</p>
     <p>The reference is Hertz's solution from 1882, which gives the exact contact width, pressure distribution and stresses underneath for two elastic cylinders. Because the load isn't an input here, the comparison is made at the load the model actually carried.</p>
     <figure><div class="plate"><img src="img/render_contact.png" alt="Von Mises stress at the contact: whole roller and a section through the contact" loading="lazy"></div><figcaption>Von Mises stress from the CalculiX results. The highest stress sits just under the surface in both parts.</figcaption></figure>
-    <figure><div class="plate"><img src="v2/contact_response.webp" alt="Contact pressure and subsurface shear from CalculiX against the exact Hertz solution" loading="lazy"></div><figcaption>Contact pressure across the patch and shear stress below its centre, both sitting on the exact Hertz curves.</figcaption></figure>
+    <figure><div class="plate"><img src="v2/fig_contact_response.svg" alt="Contact pressure across the patch and shear stress below its centre, with the model's points on the exact Hertz curves" loading="lazy"></div><figcaption>Contact pressure across the patch and shear stress below its centre, both sitting on the exact Hertz curves.</figcaption></figure>
     <h2 id="how-i-checked-it">How I checked it</h2>
     <ul class="proof">
       <li><strong>Against Hertz.</strong> At 501.1 N/mm, the contact half-width matches to 0.005 %, the peak pressure to 0.4 %, and the depth of maximum shear to within 2 % of one element.</li>
@@ -175,7 +175,7 @@
   </div>
 </footer>
 <script>window.VP = [{"id": "contact_detail", "study": "contact", "tab": "Contact", "legend": "S, Mises", "unit": "MPa", "model": "Roller on plate · steel, R = 50 mm, 501 N/mm · section through the contact", "lines": ["Solver: CalculiX 2.22 · surface-to-surface penalty contact", "Peak contact pressure +6.092e+02 · Hertz exact +6.067e+02", "Highest stress 0.41 mm below the surface, where Hertz puts it"], "img": "v2/vp_contact_detail.webp", "bands": ["#3a2d79", "#455ed3", "#458cfd", "#28bceb", "#18e0bd", "#3ff68a", "#84ff51", "#bcf534", "#e5d938", "#fcb336", "#fb7e21", "#e84b0c", "#c82803", "#980e01"], "vmin": 0.0, "vmax": 350.0, "check": "Render check: encloses 59 544.3 mm³ of 59 561.9 design · 100.0 % of pixels on the legend", "card": "contact"}];</script>
-<script src="assets/viewer.js?v=4937421060"></script>
-<script src="assets/site.js?v=4937421060"></script>
+<script src="assets/viewer.js?v=004ab254f1"></script>
+<script src="assets/site.js?v=004ab254f1"></script>
 </body>
 </html>

@@ -21,7 +21,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
-<link rel="stylesheet" href="assets/site.css?v=4937421060">
+<link rel="stylesheet" href="assets/site.css?v=004ab254f1">
 </head>
 <body>
 <nav class="topbar" aria-label="Site">
@@ -112,11 +112,11 @@
     <details class="record"><summary>The case file: recorded assumptions, limits and inputs</summary><div class="record-body"><p>This is the study's own record, written before the run and saved with it, in the shorthand of the case file.</p><p class="case"><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/cases/channel_header_tolerance.toml">cases/channel_header_tolerance.toml ↗</a></p><p>Header-fed 1 mm parallel-plate channel (as channel_header_mesh, 80 cells across the gap) evaluated at the corners of the gap tolerance (0.95-1.05 mm) and coolant temperature range (15-40 C) at a fixed flow rate of 1.0e-4 m^2/s per unit width. Finds whether the pressure budget and minimum wall shear hold across the tolerance band.</p><h3>Assumptions, and how each is checked</h3><ul><li>As channel_header_mesh, except the inputs varied below.</li><li>Flow rate per unit width is fixed by the pump: mean velocity = 1.0e-4 / gap (m/s, gap in m).</li><li>Water properties from IAPWS tables: 15 C (999.10 kg/m^3, 1.1375 mPa s), 20 C (998.21, 1.0016), 40 C (992.22, 0.6527).</li><li>Gap is uniform along the channel within each scenario (no taper or waviness).</li></ul><h3>Limits</h3><ul><li>Synthetic tolerance band and temperature range; not from a drawing or a thermal analysis.</li><li>Corners only: no statistical (e.g. Monte Carlo) combination of tolerances.</li><li>Numerical uncertainty is taken from channel_header_mesh (same mesh resolution).</li><li>No physical test data.</li></ul><h3>Inputs</h3><div class="table-wrap"><table><thead><tr><th>Input</th><th>Value</th></tr></thead><tbody><tr><td>gap_mm</td><td>1</td></tr><tr><td>length_mm</td><td>20</td></tr><tr><td>mean_velocity_m_per_s</td><td>0.1</td></tr><tr><td>density_kg_per_m3</td><td>998.21</td></tr><tr><td>dynamic_viscosity_Pa_s</td><td>0.0010016</td></tr><tr><td>cells_across_gap</td><td>80</td></tr><tr><td>cell_aspect_ratio</td><td>2</td></tr><tr><td>window_start_mm</td><td>10</td></tr><tr><td>window_end_mm</td><td>18</td></tr><tr><td>supply_height_mm</td><td>3</td></tr><tr><td>supply_length_mm</td><td>3</td></tr><tr><td>contraction_length_mm</td><td>3</td></tr></tbody></table></div><p class="case"><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/cases/duct_side_walls.toml">cases/duct_side_walls.toml ↗</a></p><p>Fully developed laminar water flow (20 C, 0.1 m/s mean) in a 1 mm x 20 mm rectangular duct, i.e. the coolant channel with its side walls. 3D OpenFOAM on a periodic quarter cross-section; mesh refined from 10 to 80 cells across the gap (ratio 2). Quantifies the error of the 2D parallel-plate assumption.</p><h3>Assumptions, and how each is checked</h3><ul><li>Channel width 20 mm (synthetic; the real width is not specified). The side-wall effect scales roughly with gap / width.</li><li>Fully developed flow (periodic in x): entrance effects are covered by the 2D header model.</li><li>Incompressible, isothermal, Newtonian water at 20 C (IAPWS: rho = 998.21 kg/m^3, mu = 1.0016 mPa s); laminar.</li><li>Symmetric about mid-gap and mid-width (quarter section modelled).</li></ul><h3>Limits</h3><ul><li>One width only; other widths follow from the verified exact series solution.</li><li>Corner regions of a real channel (fillets, side-wall roughness) are not modelled.</li><li>No physical test data.</li></ul><h3>Inputs</h3><div class="table-wrap"><table><thead><tr><th>Input</th><th>Value</th></tr></thead><tbody><tr><td>gap_mm</td><td>1</td></tr><tr><td>width_mm</td><td>20</td></tr><tr><td>mean_velocity_m_per_s</td><td>0.1</td></tr><tr><td>density_kg_per_m3</td><td>998.21</td></tr><tr><td>dynamic_viscosity_Pa_s</td><td>0.0010016</td></tr><tr><td>cells_across_gap</td><td>20</td></tr><tr><td>width_cells_per_gap_cell</td><td>2</td></tr><tr><td>side_wall_grading</td><td>10</td></tr></tbody></table></div></div></details>
     <h2 id="how-it-works">How it works</h2>
     <p>The model includes the supply header and a smooth contraction into the channel, not just the channel. That matters: the flow speeds up as it enters, and the pressure that takes is part of the budget. I count the flow's kinetic energy at the exit as lost, which is the usual cautious assumption. That exit loss is 7.7 Pa of the 33.4.</p>
-    <figure>
+    <figure class="half">
       <div class="plate"><img src="v2/fig_cfd_field.svg" alt="Water velocity through the supply header, contraction and channel: slow in the header, fastest along the middle of the channel" loading="lazy"></div>
       <figcaption>Water velocity through the supply header, the contraction and the 1 mm channel. The height is stretched so you can see the channel.</figcaption>
     </figure>
-    <figure>
+    <figure class="half">
       <div class="plate"><img src="v2/fig_cfd_response.svg" alt="Velocity profile, pressure and centre-line velocity from the model, each lying on the exact solution" loading="lazy"></div>
       <figcaption>On the left, the velocity across the gap sits on the exact solution. On the right, the pressure drops through the contraction and then follows the exact slope, and the flow settles within the predicted entrance length.</figcaption>
     </figure>
@@ -140,11 +140,11 @@
         </tbody>
       </table>
     </div>
-    <figure>
+    <figure class="half">
       <div class="plate"><img src="v2/fig_cfd_tolerance.svg" alt="Supply pressure and wall shear for five combinations of gap and coolant temperature: no combination is inside both limits" loading="lazy"></div>
       <figcaption>Both requirements at the corners of the tolerance range. Each row is one combination of gap and coolant temperature, and the shaded side of each limit is the failing side. The hollow marker is a case the checks held back because the flow hadn't fully settled.</figcaption>
     </figure>
-    <figure>
+    <figure class="half">
       <div class="plate"><img src="v2/fig_cfd_duct.svg" alt="Velocity across the width and across the gap of the 3D channel model, with the model's points lying on the exact rectangular-duct solution" loading="lazy"></div>
       <figcaption>The 3D side-wall check. Away from the side walls the flow is the same as between two wide plates; next to each wall it slows, which is where the extra 3.2 % of friction comes from.</figcaption>
     </figure>
@@ -203,8 +203,8 @@
   </div>
 </footer>
 <script>window.VP = [{"id": "duct", "study": "cfd", "tab": "Flow", "legend": "U, axial", "unit": "m/s", "model": "Coolant passage · 20 × 1 mm, water at 0.1 m/s mean, Re 199", "lines": ["Solver: OpenFOAM 14 · 3D laminar, quarter section mirrored", "Height = velocity; gap direction drawn 5× wider", "Pressure gradient within 0.03 % of the exact rectangular-duct solution"], "check_text": "Render check: the volume under the surface equals the imposed flow rate to {err} · {col} of pixels on the legend", "mesh": "v2/m3d_duct.bin", "mesh_kb": 1135, "elev": 30, "azim": -58, "img": "v2/vp_duct.webp", "bands": ["#4040a2", "#4294ff", "#18ddc2", "#6dfe62", "#cdec34", "#fdac34", "#eb500e", "#a91601"], "vmin": 0.0, "vmax": 0.16, "check": "Render check: the volume under the surface equals the imposed flow rate to 0.03 % · 100.0 % of pixels on the legend", "card": "cfd"}];</script>
-<script src="assets/viewer.js?v=4937421060"></script>
-<script src="assets/viewer3d.js?v=4937421060"></script>
-<script src="assets/site.js?v=4937421060"></script>
+<script src="assets/viewer.js?v=004ab254f1"></script>
+<script src="assets/viewer3d.js?v=004ab254f1"></script>
+<script src="assets/site.js?v=004ab254f1"></script>
 </body>
 </html>

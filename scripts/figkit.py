@@ -89,7 +89,7 @@ def limit(ax, value: float, text: str, bad: str, axis: str = "x", at: float = 0.
                     ha="left" if bad == "above" else "right", va="top", fontsize=8.5, color=INK2)
     else:
         ax.annotate(text, (at, value), xycoords=("axes fraction", "data"), xytext=(0, off), textcoords="offset points",
-                    ha="right", va="bottom" if bad == "above" else "top", fontsize=8.5, color=INK2)
+                    ha="right" if at >= 0.5 else "left", va="bottom" if bad == "above" else "top", fontsize=8.5, color=INK2)
 
 
 MARK = {"meets": dict(marker="o", color=MODEL), "misses": dict(marker="D", color=FAIL), "held": dict(marker="o", color=HELD)}

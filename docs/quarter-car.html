@@ -21,7 +21,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
-<link rel="stylesheet" href="assets/site.css?v=4937421060">
+<link rel="stylesheet" href="assets/site.css?v=004ab254f1">
 </head>
 <body>
 <nav class="topbar" aria-label="Site">
@@ -116,17 +116,15 @@
     <h2 id="how-it-works">How it works</h2>
     <p>The model is two masses and three springs and dampers, solved in time as the wheel crosses the bump or runs along the road. For the lift-off cases the solver stops exactly at the instant the tire load reaches zero, switches to the airborne equations, and stops again at the instant of landing.</p>
     <p>The same car is built a second time in OpenModelica, a different tool with a different solver, from its standard library of masses, springs and dampers. Two tools that share no code agreeing is strong evidence neither has a bug in how the equations are set up.</p>
-    <div class="figs-2">
-      <figure>
-        <div class="plate"><img src="img/qc_bump_sweep.png" alt="Comfort, travel, and tire load against damper rate over the speed bump" loading="lazy"></div>
+    <figure>
+        <div class="plate"><img src="v2/fig_qc_bump_sweep.svg" alt="Body acceleration, suspension travel and tire load against damper rate: all three targets are met from 600 to 1000 N·s/m" loading="lazy"></div>
         <figcaption>Each requirement against damper rate over the speed bump.</figcaption>
       </figure>
       <figure>
-        <div class="plate"><img src="img/qc_iso_response.png" alt="Rough-road response compared with the frequency-response prediction" loading="lazy"></div>
+        <div class="plate"><img src="v2/fig_qc_iso.svg" alt="Body acceleration on the rough road, and its content by frequency lying on the frequency-response prediction" loading="lazy"></div>
         <figcaption>The rough-road simulation against the frequency-response prediction.</figcaption>
       </figure>
-    </div>
-    <figure><div class="plate"><img src="img/qc_liftoff_response.png" alt="At 36 km/h with light damping the wheel leaves the road twice" loading="lazy"></div><figcaption>At 36 km/h and 600 N·s/m, the tire load sits at zero twice while the wheel is in the air, and the landing spikes it to 2.6 times static. The simulation follows the exact solution the whole way.</figcaption></figure>
+    <figure><div class="plate"><img src="v2/fig_qc_liftoff.svg" alt="Tire load and body acceleration at 36 km/h: the tire load is zero twice, then spikes to 2.6 times static on landing" loading="lazy"></div><figcaption>At 36 km/h and 600 N·s/m, the tire load sits at zero twice while the wheel is in the air, and the landing spikes it to 2.6 times static. The simulation follows the exact solution the whole way.</figcaption></figure>
     <h2 id="how-i-checked-it">How I checked it</h2>
     <ul class="proof">
       <li><strong>Against an exact solution.</strong> Over the speed bump, the simulation matches an independent exact solution of the same equations, and the energy going in balances the energy stored and dissipated. All 30 checks pass.</li>
@@ -191,7 +189,7 @@
   </div>
 </footer>
 <script>window.VP = [{"id": "suspension", "study": "suspension", "kind": "figure", "img": "img/anim_quarter_car.webp", "model": "Quarter car over a bump · SciPy and OpenModelica", "lines": ["Drawn from the simulation at 36 km/h and 600 N·s/m, with the tire load and body acceleration", "The wheel leaves the road twice", "600 to 1000 N·s/m passes at 18 km/h; at 36 km/h no damping rate does"], "check": "", "card": "suspension"}];</script>
-<script src="assets/viewer.js?v=4937421060"></script>
-<script src="assets/site.js?v=4937421060"></script>
+<script src="assets/viewer.js?v=004ab254f1"></script>
+<script src="assets/site.js?v=004ab254f1"></script>
 </body>
 </html>

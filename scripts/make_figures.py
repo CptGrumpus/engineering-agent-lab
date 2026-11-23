@@ -270,7 +270,1081 @@ def cfd_field():
     print("fig cfd_field", f"{(fk.OUT / 'fig_cfd_field.svg').stat().st_size // 1024} KB")
 
 
-ALL = {f.__name__: f for f in (cfd_tolerance, cfd_duct, cfd_response, cfd_field)}
+
+# ---------------------------------------------------------------------------------------- shared: a result against a limit
+
+def pts(run: str) -> list:
+    """Every point of a run, in order: (label, record, verified)."""
+    ok = verified(run)
+    out = []
+    for d in sorted((RUNS / run / "points").iterdir()):
+        if (d / "point.json").exists():
+            out.append((d.name, json.loads((d / "point.json").read_text(encoding="utf-8")), ok.get(d.name, False)))
+    return out
+
+
+def sweep_panel(ax, xs, ys, oks, op, L, limtext, fmt="{:.0f}", ylim=None, logx=False, logy=False, labels=None, at=0.98):
+    """A metric at each value of the swept input, with its limit: a faint line through the points, a status
+    marker on each, and the value beside it. `labels` picks which points get their value written."""
+    fk.style(ax)
+    if logx:
+        ax.set_xscale("log")
+    if logy:
+        ax.set_yscale("log")
+    ax.plot(xs, ys, color=MODEL, linewidth=1.6, alpha=0.45, zorder=3)
+    if ylim:
+        ax.set_ylim(*ylim)
+    ax.margins(x=0.08)
+    fk.limit(ax, L, limtext, bad="above" if op == "<=" else "below", axis="y", at=at)
+    for k, (x, y, ok) in enumerate(zip(xs, ys, oks)):
+        meets = y <= L if op == "<=" else y >= L
+        fk.status_dot(ax, x, y, "held" if not ok else ("meets" if meets else "misses"))
+        if labels is None or k in labels:
+            fk.label(ax, x, y, fmt.format(y), dy=10, ha="center", va="bottom", size=8.5)
+
+
+# ---------------------------------------------------------------------------------------- structures
+
+def fea_tet4():
+    """Tip deflection against element size, linear and quadratic tetrahedra, with the beam-theory band."""
+    lin, quad = pts("20261119-090004_cantilever_tet4"), pts("20261119-085818_cantilever_tet10")
+    fig, gs = fk.new(fk.HALF, 3.9, top=0.95)
+    gs.update(left=0.17, right=0.96)
+    ax = fig.add_subplot(gs[0, 0])
+    fk.style(ax)
+    ax.axhspan(0.952, 0.960, color=REF, alpha=0.18, linewidth=0, zorder=1)
+    ax.axhline(0.956, color=REF, linewidth=1.2, zorder=1)
+    for rows, status, text in ((quad, "meets", "quadratic elements"), (lin, "held", "linear elements,\nheld back by the checks")):
+        xs = [r["parameters"]["mesh_size_mm"] for _, r, _ in rows]
+        ys = [r["metrics"]["tip_deflection_mm"] for _, r, _ in rows]
+        ax.plot(xs, ys, color=fk.MARK[status]["color"], linewidth=1.6, alpha=0.5, zorder=3)
+        for x, y in zip(xs, ys):
+            fk.status_dot(ax, x, y, status)
+        if status == "held":
+            fk.label(ax, xs[0], ys[0], f"{ys[0]:.2f} mm: a third too stiff", dx=10, dy=-3, va="top", size=8.5)
+            fk.label(ax, xs[1], ys[1], text, dx=10, dy=-6, va="top", color=INK2, size=8.5)
+        else:
+            fk.label(ax, xs[0], ys[0], text, dx=0, dy=-10, va="top", color=INK2, size=8.5)
+    ax.set_xlim(8.6, 1.3)
+    ax.set_ylim(0.58, 1.04)
+    fk.label(ax, 1.5, 0.960, "beam theory, 0.952 to 0.960", dx=0, dy=6, ha="right", va="bottom", color=INK2, size=8.5)
+    ax.set_xlabel("element size, mm (finer to the right)")
+    ax.set_ylabel("tip deflection, mm")
+    fk.heading(fig, "Linear elements make the bracket look too stiff", "Tip deflection against element size, for two element types")
+    fk.save(fig, "fea_tet4")
+
+
+def strap_sweep():
+    rows = pts("20261119-235211_strap_hole_size")
+    op, L = limits("strap_hole_size")["peak_hole_stress_MPa"]
+    fig, gs = fk.new(fk.HALF, 3.7, top=0.95)
+    gs.update(left=0.15, right=0.96)
+    ax = fig.add_subplot(gs[0, 0])
+    xs = [r["parameters"]["hole_diameter_mm"] for _, r, _ in rows]
+    ys = [r["metrics"]["peak_hole_stress_MPa"] for _, r, _ in rows]
+    sweep_panel(ax, xs, ys, [ok for *_, ok in rows], op, L, f"allowable {L:g} MPa", ylim=(85, 132), labels={0, 5, 6}, at=0.03)
+    ax.set_xlabel("hole diameter, mm")
+    ax.set_ylabel("peak stress at the hole edge, MPa")
+    fk.heading(fig, "A 16 mm hole passes; 18 mm does not", "Peak stress at the hole edge against hole size")
+    fk.save(fig, "strap_sweep")
+
+
+def fatigue_sweep():
+    rows = pts("20261120-011347_strap_fatigue_load")
+    op, L = limits("strap_fatigue_load")["fatigue_life_cycles"]
+    fig, gs = fk.new(fk.HALF, 3.7, top=0.95)
+    gs.update(left=0.16, right=0.96)
+    ax = fig.add_subplot(gs[0, 0])
+    xs = [r["parameters"]["axial_load_N"] / 1000 for _, r, _ in rows]
+    ys = [r["metrics"]["fatigue_life_cycles"] for _, r, _ in rows]
+    sweep_panel(ax, xs, ys, [ok for *_, ok in rows], op, L, "needed: 3 × 10⁷ cycles", logy=True, ylim=(4e5, 3e10), labels=set(), at=0.03)
+    lx, ly = np.array(xs), np.log10(ys)
+    k = int(np.argmax(ly < np.log10(L)))
+    rated = lx[k - 1] + (np.log10(L) - ly[k - 1]) * (lx[k] - lx[k - 1]) / (ly[k] - ly[k - 1])
+    ax.plot([rated, rated], [4e5, L], color=INK2, linewidth=0.9, zorder=2)
+    fk.label(ax, rated, 5.5e5, f"rated {rated:.1f} kN", dx=-5, ha="right", va="bottom", size=8.5)
+    fk.label(ax, xs[0], ys[0], "service load: about 8 × 10⁹ cycles", dx=9, dy=2, size=8.5)
+    ax.set_xlabel("peak cyclic load, kN")
+    ax.set_ylabel("predicted life, cycles")
+    fk.heading(fig, f"Rated to about {rated:.1f} kN", "Predicted fatigue life against the peak of the load cycle")
+    fk.save(fig, "fatigue_sweep")
+
+
+def strut_sweep():
+    rows = pts("20261120-232856_strut_length")
+    op, L = limits("strut_length")["first_yield_load_N"]
+    fig, gs = fk.new(fk.HALF, 3.7, top=0.95)
+    gs.update(left=0.14, right=0.96)
+    ax = fig.add_subplot(gs[0, 0])
+    xs = [r["parameters"]["length_mm"] for _, r, _ in rows]
+    ys = [r["metrics"]["first_yield_load_N"] / 1000 for _, r, _ in rows]
+    pc = [r["metrics"]["critical_load_N"] / 1000 for _, r, _ in rows]
+    ax.plot(xs, pc, color=fk.AXIS, linewidth=1.6, zorder=2)
+    fk.label(ax, xs[0], pc[0], "elastic buckling load", dx=10, dy=6, color=INK2, size=8.5)
+    sweep_panel(ax, xs, ys, [ok for *_, ok in rows], op, L / 1000, f"must reach {L / 1000:g} kN", fmt="{:.1f}", ylim=(6, 40), at=0.03)
+    ax.set_xlabel("strut length, mm")
+    ax.set_ylabel("load at first yield, kN")
+    fk.heading(fig, "The strut can be about 587 mm long", "Load at first yield against length, with the buckling load above it")
+    fk.save(fig, "strut_sweep")
+
+
+def strut_response():
+    rec = point("20261120-232856_strut_length", "p01_length_mm-500")
+    so, m, p = rec["solver_outputs"], rec["metrics"], rec["parameters"]
+    P, dlt, vm = (np.array(so[k]) for k in ("load_N", "midspan_deflection_mm", "midspan_peak_von_mises_MPa"))
+    Pcr, Py, e0 = m["critical_load_N"], m["first_yield_load_N"], p["length_mm"] * p["imperfection_over_length"]
+    fig, gs = fk.new(FULL, 3.9, 1, 3, wspace=0.34, top=1.0)
+    ax = fig.add_subplot(gs[0, 0])
+    fk.style(ax)
+    Pl = np.linspace(0, P.max(), 200)
+    ax.plot(e0 / (1 - Pl / Pcr), Pl / 1000, color=REF, zorder=3)
+    fk.dots(ax, dlt, P / 1000)
+    ax.axhline(Pcr / 1000, color=INK2, linewidth=1.1, zorder=1)
+    fk.label(ax, 0, Pcr / 1000, f"buckling load, {Pcr / 1000:.1f} kN", dx=2, dy=6, va="bottom", color=INK2, size=8.5)
+    ax.set_xlim(0, dlt.max() * 1.05)
+    ax.set_ylim(0, Pcr / 1000 * 1.15)
+    ax.set_xlabel("sideways deflection at mid-length, mm")
+    ax.set_ylabel("load, kN")
+    fk.panel(ax, "The bow grows with load")
+
+    ax = fig.add_subplot(gs[0, 1])
+    fk.style(ax)
+    w = dlt - e0
+    sel = P <= 0.8 * Pcr
+    fit = np.polyfit(w[sel], (w / P)[sel] * 1000, 1)
+    ax.plot(w, np.polyval(fit, w), color=REF, zorder=3)
+    fk.dots(ax, w, w / P * 1000)
+    ax.set_xlim(0, w.max() * 1.05)
+    ax.set_ylim(0, None)
+    ax.set_xlabel("growth of the bow, mm")
+    ax.set_ylabel("growth ÷ load, mm per kN")
+    fk.label(ax, w.max() * 0.45, np.polyval(fit, w.max() * 0.45), f"a straight line: its slope\ngives {m['southwell_load_N'] / 1000:.2f} kN",
+             dx=10, dy=-16, color=INK2, size=8.5)
+    fk.panel(ax, "Southwell plot")
+
+    ax = fig.add_subplot(gs[0, 2])
+    fk.style(ax)
+    ax.plot(P / 1000, vm, color=MODEL, zorder=4)
+    ax.set_xlim(0, P.max() / 1000 * 1.04)
+    ax.set_ylim(0, 320)
+    fk.limit(ax, 276.0, "yield, 276 MPa", bad="above", axis="y", at=0.6)
+    ax.plot([Py / 1000], [276.0], marker="o", markersize=8, color=fk.FAIL, markeredgecolor=SURFACE, markeredgewidth=1.4, zorder=5)
+    fk.label(ax, Py / 1000, 276.0, f"first yield\n{Py / 1000:.1f} kN", dx=-9, dy=-4, ha="right", va="top", size=8.5)
+    ax.set_xlabel("load, kN")
+    ax.set_ylabel("highest stress, MPa")
+    fk.panel(ax, "Stress climbing to yield")
+    fk.heading(fig, f"The bowed strut yields at {100 * Py / Pcr:.0f} % of its buckling load",
+               "The 500 mm strut with an initial bow of 0.5 mm, loaded step by step")
+    fk.key(fig, [("beam-column theory", "line", REF), ("model", "dot", MODEL)], y_in=0.66)
+    fk.save(fig, "strut_response")
+
+
+def proof_response():
+    run, lab = "20261120-233830_strap_proof_r1", "p02_hole_element_ratio-0.00625"
+    rec = point(run, lab)
+    p, d, m = rec["parameters"], rec["derived"], rec["metrics"]
+    s = read_series(RUNS / run / "points" / lab / "ligament.csv")
+    r = p["hole_diameter_mm"] / 2
+    x = s["y_mm"] - r
+    fig, gs = fk.new(FULL, 3.9, 1, 2, width_ratios=(1.25, 1), wspace=0.24, top=1.0)
+    ax = fig.add_subplot(gs[0, 0])
+    fk.style(ax)
+    ax.axhline(0, color=fk.AXIS, linewidth=1.0, zorder=1)
+    ax.plot(x, s["sxx_elastic_MPa"], color=fk.AXIS, zorder=2)
+    ax.plot(x, s["sxx_proof_MPa"], color=MODEL, zorder=4)
+    ax.plot(x, s["sxx_residual_MPa"], color=fk.THIRD, zorder=4)
+    ax.set_xlim(0, x.max())
+    ax.set_ylim(-135, 380)
+    fk.callout(ax, (0.3, float(np.interp(0.3, x, s["sxx_elastic_MPa"]))), (62, 2), "if it stayed elastic")
+    fk.label(ax, 3.0, np.interp(3.0, x, s["sxx_proof_MPa"]), "at the 15 kN proof load", dx=4, dy=10, va="bottom", color=INK2, size=8.5)
+    fk.label(ax, 3.0, np.interp(3.0, x, s["sxx_residual_MPa"]), "after unloading", dx=4, dy=9, va="bottom", color=INK2, size=8.5)
+    fk.label(ax, 0.0, m["residual_stress_MPa"], f"{m['residual_stress_MPa']:.0f} MPa left at the hole edge", dx=26, dy=-8, va="center", size=8.5)
+    ax.axvspan(0, m["plastic_zone_mm"], color=fk.FAIL, alpha=0.07, linewidth=0, zorder=0.5)
+    fk.label(ax, m["plastic_zone_mm"], 372, f"yielded, {m['plastic_zone_mm']:.1f} mm deep", dx=6, va="top", color=INK2, size=8.5)
+    ax.set_xlabel("distance from the hole edge, mm")
+    ax.set_ylabel("stress along the strap, MPa")
+    fk.panel(ax, "Stress across the ligament")
+
+    ax = fig.add_subplot(gs[0, 1])
+    fk.style(ax)
+    E = p["youngs_modulus_MPa"]
+    sp, ep = np.array(p["plastic_stress_MPa"]), np.array(p["plastic_strain"])
+    ax.plot(np.concatenate([[0], 100 * (sp / E + ep)]), np.concatenate([[0], sp]), color=fk.AXIS, zorder=2)
+    for name, e, sg in (("Neuber", d["neuber_strain"], d["neuber_stress_MPa"]), ("Glinka", d["glinka_strain"], d["glinka_stress_MPa"])):
+        fk.dots(ax, [100 * e], [sg], color=REF, size=52)
+        left = name == "Glinka"
+        fk.label(ax, 100 * e, sg, f"{name}, {100 * e:.2f} %", dx=-4 if left else 4, dy=-12, ha="right" if left else "left", va="top",
+                 color=INK2, size=8.5)
+    fk.dots(ax, [m["notch_strain_percent"]], [m["notch_stress_MPa"]], size=62)
+    fk.label(ax, m["notch_strain_percent"], m["notch_stress_MPa"], f"model, {m['notch_strain_percent']:.2f} %", dy=12, ha="center", va="bottom", size=8.5)
+    ax.set_xlim(0, 1.3)
+    ax.set_ylim(0, 320)
+    fk.limit(ax, 1.0, "limit 1 %", bad="above", axis="x", at=0.2)
+    fk.label(ax, 0.2, np.interp(0.2, np.concatenate([[0], 100 * (sp / E + ep)]), np.concatenate([[0], sp])), "the material's curve", dx=6, dy=-14,
+             color=INK2, size=8.5)
+    ax.set_xlabel("strain at the hole edge, %")
+    ax.set_ylabel("stress at the hole edge, MPa")
+    fk.panel(ax, "The hole edge at the proof load")
+    fk.heading(fig, f"The hole edge yields to {m['notch_strain_percent']:.2f} % and is left in compression",
+               "The proof test on the strap: a pocket of material yields, and the elastic material around it squeezes it on unloading")
+    fk.key(fig, [("classical estimates", "dot", REF), ("model", "dot", MODEL)], y_in=0.66)
+    fk.save(fig, "proof_response")
+
+
+def joint_response():
+    run, lab = "20261121-110554_bolted_joint_mesh_r1", "p02_element_size_mm-0.5"
+    rec = point(run, lab)
+    p, d, so, m = rec["parameters"], rec["derived"], rec["solver_outputs"], rec["metrics"]
+    s = read_series(RUNS / run / "points" / lab / "interface_pressure.csv")
+    fig, gs = fk.new(FULL, 3.8, 1, 2, wspace=0.24, top=1.0)
+    ax = fig.add_subplot(gs[0, 0])
+    fk.style(ax)
+    u = np.concatenate([[0], np.array(so["slip_displacement_mm"]) * 1000])
+    F = np.concatenate([[0], np.abs(np.array(so["rim_force_top_N"])) * 2])       # half model: twice the rim force
+    lim = p["friction_coefficient"] * p["preload_N"]
+    ax.axhline(lim, color=REF, zorder=3)
+    ax.plot(u, F, color=MODEL, zorder=4)
+    fk.dots(ax, u[1:], F[1:])
+    ax.set_xlim(0, u.max() * 1.04)
+    ax.set_ylim(0, lim * 1.2)
+    fk.label(ax, u.max(), lim, f"friction × clamp force = {lim:,.0f} N", dx=0, dy=7, ha="right", va="bottom", color=INK2, size=8.5)
+    fk.label(ax, u[2], F[2], f"the whole joint slides at {m['slip_load_N']:,.0f} N", dx=8, dy=-14, color=INK, size=8.5)
+    ax.set_xlabel("sideways movement of the top plate, µm")
+    ax.set_ylabel("side load carried, N")
+    fk.panel(ax, "Side load until the joint slides")
+
+    ax = fig.add_subplot(gs[0, 1])
+    fk.style(ax)
+    ax.fill_between(s["r_mm"], s["contact_pressure_MPa"], color=MODEL, alpha=0.10, linewidth=0, zorder=2)
+    ax.plot(s["r_mm"], s["contact_pressure_MPa"], color=MODEL, zorder=4)
+    rc = d["cone_limit_diameter_mm"] / 2
+    ax.axvline(rc, color=REF, zorder=3)
+    ax.set_xlim(0, p["plate_outer_diameter_mm"] / 2)
+    ax.set_ylim(0, None)
+    ax.axvspan(0, p["hole_diameter_mm"] / 2, color=fk.GRID, linewidth=0, zorder=1)
+    fk.label(ax, p["hole_diameter_mm"] / 4, ax.get_ylim()[1] * 0.5, "bolt\nhole", ha="center", color=INK2, size=8.5)
+    fk.label(ax, rc, ax.get_ylim()[1] * 0.86, f"VDI 2230's estimate of where\ncontact ends, {2 * rc:.1f} mm across", dx=7, color=INK2, size=8.5)
+    fk.label(ax, m["contact_diameter_mm"] / 2, 0, f"contact ends, {m['contact_diameter_mm']:.1f} mm across", dx=4, dy=16, va="bottom", size=8.5)
+    ax.set_xlabel("distance from the bolt axis, mm")
+    ax.set_ylabel("pressure between the plates, MPa")
+    fk.panel(ax, "Where the plates press together")
+    fk.heading(fig, "Friction holds 3.0 kN at full clamp, and only the middle of the plates does the clamping",
+               "Two 6 mm plates clamped at 15 kN: the side load until slip, and the pressure between the plates")
+    fk.key(fig, [("hand method (VDI 2230)", "line", REF), ("model", "line", MODEL)], y_in=0.66)
+    fk.save(fig, "joint_response")
+
+
+def contact_response():
+    from validation import hertz
+
+    run, lab = "20261120-120243_contact_roller_mesh", "p02_contact_element_size_mm-0.02"
+    rec = point(run, lab)
+    p, m, so = rec["parameters"], rec["metrics"], rec["solver_outputs"]
+    s = read_series(RUNS / run / "points" / lab / "contact_profile.csv")
+    h = hertz.line_contact(m["line_load_N_per_mm"], p["roller_radius_mm"], p["youngs_modulus_MPa"], p["poisson_ratio"])
+    a, p0 = h["half_width_mm"], h["peak_pressure_MPa"]
+    lim = limits("contact_roller_mesh")
+    fig, gs = fk.new(FULL, 3.9, 1, 2, wspace=0.24, top=1.0)
+    ax = fig.add_subplot(gs[0, 0])
+    fk.style(ax)
+    xs = np.linspace(-a, a, 300)
+    ax.plot(xs, hertz.pressure(np.abs(xs), a, p0), color=REF, zorder=3)
+    inside = s["x_mm"] <= 1.25 * a
+    xf, pf = s["x_mm"][inside], s["contact_pressure_MPa"][inside]
+    step = max(1, len(xf) // 14)
+    fk.dots(ax, np.concatenate([-xf[::step][::-1], xf[::step]]), np.concatenate([pf[::step][::-1], pf[::step]]))
+    ax.set_xlim(-1.5 * a, 1.5 * a)
+    ax.set_ylim(0, 720)
+    op, L = lim["peak_contact_pressure_MPa"]
+    fk.limit(ax, L, f"limit {L:g} MPa", bad="above", axis="y")
+    fk.label(ax, 0, m["peak_contact_pressure_MPa"], f"peak {m['peak_contact_pressure_MPa']:.0f} MPa", dy=-16, ha="center", va="top", size=8.5)
+    ax.set_xlabel("position across the contact, mm")
+    ax.set_ylabel("contact pressure, MPa")
+    fk.panel(ax, "Pressure across the contact")
+
+    ax = fig.add_subplot(gs[0, 1])
+    fk.style(ax, grid="x")
+    z = np.linspace(0, 2.0, 300)
+    ax.plot(hertz.subsurface_shear(z, a, p0), z, color=REF, zorder=3)
+    dz, tau = np.array(so["axis"]["depth_mm"]), np.array(so["axis"]["tau_MPa"])
+    keep = dz <= 2.0
+    step = max(1, keep.sum() // 22)
+    fk.dots(ax, tau[keep][::step], dz[keep][::step])
+    ax.set_xlim(0, 262)
+    ax.set_ylim(2.0, 0)
+    op, L = lim["max_subsurface_shear_MPa"]
+    fk.limit(ax, L, f"limit {L:g} MPa", bad="above", axis="x", at=0.08)
+    fk.label(ax, m["max_subsurface_shear_MPa"], m["max_shear_depth_mm"], f"{m['max_subsurface_shear_MPa']:.0f} MPa,\n{m['max_shear_depth_mm']:.2f} mm down",
+             dx=-10, dy=-4, ha="right", va="top", size=8.5)
+    ax.set_xlabel("shear stress, MPa")
+    ax.set_ylabel("depth below the surface, mm")
+    fk.panel(ax, "Shear below the centre of the contact")
+    fk.heading(fig, "The contact model lands on Hertz's exact solution",
+               f"Peak pressure within 0.4 %; the highest shear sits {m['max_shear_depth_mm']:.2f} mm below the surface, where cracks start")
+    fk.key(fig, [("Hertz, exact", "line", REF), ("model", "dot", MODEL)], y_in=0.66)
+    fk.save(fig, "contact_response")
+
+
+
+def fea_response():
+    """Deflection and top-face stress along the bar against beam theory."""
+    from validation import beam_theory as beam
+
+    run, lab = "20261119-085818_cantilever_tet10", "p03_mesh_size_mm-1.95312"
+    rec = point(run, lab)
+    p, m = rec["parameters"], rec["metrics"]
+    s = read_series(RUNS / run / "points" / lab / "nodal_results.csv")
+    L, b, h = float(p["length_mm"]), float(p["width_mm"]), float(p["height_mm"])
+    E, nu, F = float(p["youngs_modulus_MPa"]), float(p["poisson_ratio"]), float(p["tip_load_N"])
+    x, y, z = s["x_mm"], s["y_mm"], s["z_mm"]
+    xs = np.linspace(0, L, 200)
+    fig, gs = fk.new(FULL, 3.9, 1, 2, wspace=0.24, top=1.0)
+    ax = fig.add_subplot(gs[0, 0])
+    fk.style(ax)
+    line = np.isclose(z, h, atol=1e-6) & np.isclose(y, y[np.argmin(np.abs(y - (y.min() + y.max()) / 2))], atol=1e-6)
+    o = np.argsort(x[line])
+    step = max(1, line.sum() // 22)
+    ax.plot(xs, beam.timoshenko_deflection(xs, F, L, E, nu, b, h), color=REF, zorder=3)
+    fk.dots(ax, x[line][o][::step], -s["uz_mm"][line][o][::step])
+    ax.set_xlim(0, L * 1.03)
+    ax.set_ylim(0, 1.12)
+    op, lim = limits("cantilever_tet10")["tip_deflection_mm"]
+    fk.limit(ax, lim, f"limit {lim:g} mm", bad="above", axis="y", at=0.03)
+    fk.label(ax, L, m["tip_deflection_mm"], f"{m['tip_deflection_mm']:.3f} mm", dx=-8, dy=-10, ha="right", va="top", size=8.5)
+    ax.set_xlabel("distance from the fixed end, mm")
+    ax.set_ylabel("downward deflection, mm")
+    fk.panel(ax, "Deflection along the bar")
+
+    ax = fig.add_subplot(gs[0, 1])
+    fk.style(ax)
+    top = np.isclose(z, h, atol=1e-6) & (np.abs(y - (y.min() + y.max()) / 2) < 0.26 * b)
+    o = np.argsort(x[top])
+    step = max(1, top.sum() // 60)
+    ax.axvspan(0.25 * L, 0.75 * L, color=INK2, alpha=0.07, linewidth=0, zorder=0.5)
+    ax.plot(xs, beam.bending_stress(F, L, b, h, xs), color=REF, zorder=3)
+    fk.dots(ax, x[top][o][::step], s["sxx_MPa"][top][o][::step], size=22)
+    ax.set_xlim(0, L * 1.03)
+    ax.set_ylim(0, 235)
+    fk.label(ax, L / 2, 14, "the stress is read here,\nwhere it's smooth", ha="center", va="bottom", color=INK2, size=8.5)
+    fk.callout(ax, (1.5, 184), (30, 12), "at the clamped corner it climbs\nwithout limit as the mesh is refined")
+    ax.set_xlabel("distance from the fixed end, mm")
+    ax.set_ylabel("stress on the top face, MPa")
+    fk.panel(ax, "Bending stress along the bar")
+    fk.heading(fig, f"The model matches beam theory: {m['tip_deflection_mm']:.3f} mm at the tip, {m['root_bending_stress_MPa']:.0f} MPa at the root",
+               "The finest mesh of the study against the hand calculation")
+    fk.key(fig, [("beam theory", "line", REF), ("model", "dot", MODEL)], y_in=0.66)
+    fk.save(fig, "fea_response")
+
+
+def strap_response():
+    """Stress across the section beside the hole, with the handbook peak."""
+    run, lab = "20261119-235201_strap_hole_mesh", "p03_hole_element_size_mm-0.125"
+    rec = point(run, lab)
+    p, d, m = rec["parameters"], rec["derived"], rec["metrics"]
+    s = read_series(RUNS / run / "points" / lab / "nodal_results.csv")
+    r = float(p["hole_diameter_mm"]) / 2
+    lig = np.isclose(s["x_mm"], 0.0, atol=1e-6)
+    o = np.argsort(s["y_mm"][lig])
+    yy, sg = s["y_mm"][lig][o] - r, s["sxx_MPa"][lig][o]
+    fig, gs = fk.new(fk.HALF, 3.8, top=0.95)
+    gs.update(left=0.15, right=0.96)
+    ax = fig.add_subplot(gs[0, 0])
+    fk.style(ax)
+    ax.axhline(d["net_stress_MPa"], color=fk.AXIS, linewidth=1.1, zorder=1)
+    ax.fill_between(yy, sg, color=MODEL, alpha=0.10, linewidth=0, zorder=2)
+    ax.plot(yy, sg, color=MODEL, zorder=4)
+    fk.dots(ax, [0], [d["peak_stress_peterson_MPa"]], color=REF, size=62)
+    ax.set_xlim(-0.4, yy.max())
+    ax.set_ylim(0, m["peak_hole_stress_MPa"] * 1.22)
+    fk.label(ax, 0, m["peak_hole_stress_MPa"], f"model {m['peak_hole_stress_MPa']:.1f} MPa\nhandbook {d['peak_stress_peterson_MPa']:.1f} MPa", dx=10, dy=2, size=8.5)
+    fk.label(ax, yy.max(), d["net_stress_MPa"], f"average over the section, {d['net_stress_MPa']:.1f} MPa", dx=-2, dy=6, ha="right", va="bottom", color=INK2, size=8.5)
+    ax.set_xlabel("distance from the hole edge, mm")
+    ax.set_ylabel("stress along the strap, MPa")
+    fk.heading(fig, f"The stress peaks at {m['kt_net']:.2f} times the average", "Across the section beside a 10 mm hole, from its edge outward")
+    fk.key(fig, [("handbook peak", "dot", REF), ("model", "line", MODEL)], y_in=0.66)
+    fk.save(fig, "strap_response")
+
+
+def fatigue_sn():
+    """The published test points, the fitted curve, the independent long-life value and the service cycle."""
+    from matplotlib.ticker import FixedLocator, NullFormatter, ScalarFormatter
+
+    from studies.strap_fatigue import _SN as sn
+
+    rec = point("20261120-011347_strap_fatigue_load", "p00_axial_load_N-5000")
+    out, m = rec["solver_outputs"], rec["metrics"]
+    fig, gs = fk.new(FULL, 4.0, top=1.0)
+    ax = fig.add_subplot(gs[0, 0])
+    fk.style(ax)
+    ax.set_xscale("log")
+    ax.set_yscale("log")
+    n = np.logspace(1.5, 10.5, 200)
+    for name in ("chung_abel", "brodrick_spiering"):
+        f = sn.fit_basquin(name)
+        ax.plot(n, sn.amplitude_at(2 * n, f), color=fk.AXIS, linewidth=1.2, zorder=2)
+    f = out["sn_fit"]
+    ax.plot(n, sn.amplitude_at(2 * n, f), color=MODEL, zorder=4)
+    for name, mk in (("chung_abel", "o"), ("brodrick_spiering", "s")):
+        data = sn.DATA_SETS[name]
+        ax.scatter([r / 2 for _, r in data], [sg * sn.KSI for sg, _ in data], s=30, marker=mk, facecolor=fk.THIRD,
+                   edgecolor=SURFACE, linewidth=1.0, zorder=5)
+    fk.dots(ax, [5e8], [96.5], color=REF, size=62)
+    fk.callout(ax, (5e8, 96.5), (-150, 70), "an independent handbook value,\n96.5 MPa at 5 × 10⁸ cycles", ha="center")
+    life = m["fatigue_life_cycles"]
+    amp = float(sn.amplitude_at(2 * life, f))
+    ax.scatter([life], [amp], s=70, marker="D", facecolor=INK, edgecolor=SURFACE, linewidth=1.2, zorder=6)
+    fk.label(ax, life, amp, f"the service cycle:\n{amp:.0f} MPa, about 8 × 10⁹ cycles", dx=6, dy=-12, ha="right", va="top", size=8.5)
+    ax.axvline(3e7, color=INK2, linewidth=1.1, zorder=1)
+    fk.label(ax, 3e7, 440, "life needed, 3 × 10⁷", dx=5, va="top", color=INK2, size=8.5)
+    ax.axvspan(30, 5e4 / 2 * 2, color=INK2, alpha=0.06, linewidth=0, zorder=0.5)
+    fk.label(ax, 40, 55, "all the test data is in this range", dx=0, va="bottom", color=INK2, size=8.5)
+    fk.label(ax, 3e9, float(sn.amplitude_at(6e9, sn.fit_basquin("brodrick_spiering"))), "each data set on its own", dx=0, dy=12, ha="right", va="bottom", color=INK2, size=8.5)
+    ax.set_xlim(30, 3e10)
+    ax.set_ylim(50, 500)
+    ax.yaxis.set_major_locator(FixedLocator([50, 70, 100, 150, 200, 300, 500]))
+    ax.yaxis.set_major_formatter(ScalarFormatter())
+    ax.yaxis.set_minor_formatter(NullFormatter())
+    ax.set_xlabel("cycles to failure")
+    ax.set_ylabel("stress amplitude, MPa")
+    fk.heading(fig, "The life is an extrapolation far beyond the test data, checked at one independent point",
+               "Published tests of 6061-T6, the curve fitted to them, and where the strap's service cycle falls")
+    fk.key(fig, [("published test points", "dot", fk.THIRD), ("fitted curve", "line", MODEL), ("independent value", "dot", REF)], y_in=0.66)
+    fk.save(fig, "fatigue_sn")
+
+
+def fin_response():
+    """Temperature along the fin, the 3D model against 1D fin theory."""
+    from validation import fin_conduction as ref
+
+    run, lab = "20261119-221454_fin_mesh", "p03_element_size_mm-0.25"
+    rec = point(run, lab)
+    p, m = rec["parameters"], rec["metrics"]
+    s = read_series(RUNS / run / "points" / lab / "profile.csv")
+    z = s["z_mm"]
+    fig, gs = fk.new(fk.HALF, 3.8, top=0.95)
+    gs.update(left=0.15, right=0.96)
+    ax = fig.add_subplot(gs[0, 0])
+    fk.style(ax)
+    ax.plot(z, ref.temperature_C(p, z * 1e-3), color=REF, zorder=3)
+    step = max(1, len(z) // 16)
+    fk.dots(ax, z[::step], s["T_mean_C"][::step])
+    ax.set_xlim(0, z.max() * 1.04)
+    ax.set_ylim(56, 82)
+    op, L = limits("fin_mesh")["tip_temperature_min_C"]
+    fk.limit(ax, L, f"the tip must stay above {L:g} °C", bad="below", axis="y", at=0.03)
+    fk.label(ax, z.max(), m["tip_temperature_min_C"], f"tip {m['tip_temperature_min_C']:.1f} °C", dx=-4, dy=10, ha="right", va="bottom", size=8.5)
+    ax.set_xlabel("distance from the base, mm")
+    ax.set_ylabel("temperature, °C")
+    fk.heading(fig, "The 3D model sits on the textbook fin solution", "Temperature along the fin, from the 80 °C base to the tip")
+    fk.key(fig, [("fin theory", "line", REF), ("3D model", "dot", MODEL)], y_in=0.66)
+    fk.save(fig, "fin_response")
+
+
+def fin_h_sweep():
+    rows = pts("20261119-221655_fin_h_sweep")
+    op, L = limits("fin_h_sweep")["tip_temperature_min_C"]
+    fig, gs = fk.new(fk.HALF, 3.8, top=0.95)
+    gs.update(left=0.15, right=0.96)
+    ax = fig.add_subplot(gs[0, 0])
+    xs = [r["parameters"]["htc_W_per_m2K"] for _, r, _ in rows]
+    ys = [r["metrics"]["tip_temperature_min_C"] for _, r, _ in rows]
+    sweep_panel(ax, xs, ys, [ok for *_, ok in rows], op, L, f"the tip must stay above {L:g} °C", fmt="{:.1f}", ylim=(50, 80), at=0.03)
+    k = int(np.argmax(np.array(ys) < L))
+    cross = xs[k - 1] + (L - ys[k - 1]) * (xs[k] - xs[k - 1]) / (ys[k] - ys[k - 1])
+    ax.plot([cross, cross], [50, L], color=INK2, linewidth=0.9, zorder=2)
+    fk.label(ax, cross, 51, f"about {cross:.0f}", dx=-5, ha="right", va="bottom", size=8.5)
+    fk.label(ax, xs[0], ys[0], "the estimate, 25", dx=-2, dy=-12, ha="left", va="top", color=INK2, size=8.5)
+    ax.set_xlabel("air-side heat-transfer coefficient, W/m²K")
+    ax.set_ylabel("tip temperature, °C")
+    fk.heading(fig, "It takes four times the estimated cooling to fail", "Tip temperature as the air-side coefficient rises")
+    fk.save(fig, "fin_h_sweep")
+
+
+def qc_bump_sweep():
+    rows = pts("20261119-085019_qc_speed_bump")
+    lim = limits("qc_speed_bump")
+    xs = [r["parameters"]["damping_N_s_per_m"] for _, r, _ in rows]
+    oks = [ok for *_, ok in rows]
+    fig, gs = fk.new(FULL, 3.7, 1, 3, wspace=0.3, top=1.0)
+    spec = [("peak_body_accel_m_per_s2", "Peak body acceleration, m/s²", "{:.2f}", (2.4, 9.4), "limit 4.0 m/s²"),
+            ("max_suspension_travel_mm", "Suspension travel, mm", "{:.0f}", (0, 48), "limit 40 mm"),
+            ("max_tire_load_ratio", "Tire load swing, share of static", "{:.2f}", (0.3, 0.92), "limit 0.70")]
+    for k, (metric, title, fmt, ylim, text) in enumerate(spec):
+        ax = fig.add_subplot(gs[0, k])
+        op, L = lim[metric]
+        ys = [r["metrics"][metric] for _, r, _ in rows]
+        sweep_panel(ax, xs, ys, oks, op, L, text, fmt=fmt, ylim=ylim, logx=True, at=0.97 if k == 1 else 0.03)
+        ax.set_xticks(xs)
+        ax.set_xticklabels([f"{x:g}" for x in xs])
+        ax.minorticks_off()
+        ax.set_xlabel("damper rate, N·s/m")
+        fk.panel(ax, title)
+    fk.heading(fig, "Over the bump at 18 km/h, 600 to 1000 N·s/m meets all three targets",
+               "Each target against damper rate: a stiffer damper passes more of the bump into the body and the tire")
+    fk.key(fig, [("meets", "meets", None), ("misses", "misses", None)], y_in=0.66)
+    fk.save(fig, "qc_bump_sweep")
+
+
+def cad_sweep():
+    rows = pts("20261119-090540_mounting_plate")
+    lim = limits("mounting_plate")
+    xs = [r["parameters"]["hole_diameter_mm"] for _, r, _ in rows]
+    oks = [ok for *_, ok in rows]
+    fig, gs = fk.new(FULL, 3.6, 1, 2, wspace=0.24, top=1.0)
+    spec = [("mass_g", "Plate mass, g", "{:.1f}", (128, 160), "limit 150 g"),
+            ("edge_distance_ratio", "Edge distance ÷ hole diameter", "{:.2f}", (1.0, 4.2), "at least 2")]
+    for k, (metric, title, fmt, ylim, text) in enumerate(spec):
+        ax = fig.add_subplot(gs[0, k])
+        op, L = lim[metric]
+        ys = [r["metrics"][metric] for _, r, _ in rows]
+        sweep_panel(ax, xs, ys, oks, op, L, text, fmt=fmt, ylim=ylim, at=0.97 if k == 0 else 0.5)
+        ax.set_xticks(xs)
+        ax.set_xticklabels([f"{x:g}" for x in xs])
+        ax.set_xlabel("hole diameter, mm (M5, M6, M8, M10, M12 clearance)")
+        fk.panel(ax, title)
+    fk.heading(fig, "Only the 9 mm hole meets both rules", "Bigger holes save weight but eat into the edge distance; smaller ones leave the plate too heavy")
+    fk.key(fig, [("meets", "meets", None), ("misses", "misses", None)], y_in=0.66)
+    fk.save(fig, "cad_sweep")
+
+
+def heat_response():
+    """Wall and coolant temperature along the heated channel, and the local Nusselt number, against Graetz."""
+    from studies.heated_channel import props, wall_profile
+    from validation import graetz
+
+    run, lab = "20261121-151154_heated_channel_mesh_r2", "p02_cells_across_gap-160"
+    rec = point(run, lab)
+    prm, m = rec["parameters"], rec["metrics"]
+    s = read_series(RUNS / run / "points" / lab / "cells.csv")
+    pr = props(prm)
+    xs, tw = wall_profile(s, prm)
+    xr = np.linspace(xs[0], xs[-1], 160)
+    ref = graetz.thermal_entry(xr * 1e-3, n_cells=400, **pr)
+    bulk = lambda x: graetz.bulk_temperature(x * 1e-3, pr["T_in"], pr["q"], pr["H"], pr["U"], pr["rho"], pr["cp"])  # noqa: E731
+    fig, gs = fk.new(FULL, 3.9, 1, 2, wspace=0.24, top=1.0)
+    ax = fig.add_subplot(gs[0, 0])
+    fk.style(ax)
+    pick = np.unique(np.round(np.linspace(0, len(xs) - 1, 26)).astype(int))
+    ax.plot(xr, bulk(xr), color=fk.AXIS, zorder=2)
+    ax.plot(xr, ref["T_wall"], color=REF, zorder=3)
+    fk.dots(ax, xs[pick], tw[pick])
+    ax.set_xlim(0, xs.max() * 1.04)
+    ax.set_ylim(24, 47.5)
+    op, L = limits("heated_channel_mesh_r2")["max_wall_temperature_C"]
+    fk.limit(ax, L, f"wall limit {L:g} °C", bad="above", axis="y", at=0.03)
+    fk.label(ax, xs.max(), m["max_wall_temperature_C"], f"{m['max_wall_temperature_C']:.2f} °C", dx=-6, dy=-10, ha="right", va="top", size=8.5)
+    fk.label(ax, xs.max() * 0.62, float(bulk(np.array(xs.max() * 0.62))), "the coolant, on average", dx=4, dy=-8, va="top", color=INK2, size=8.5)
+    fk.label(ax, xs.max() * 0.3, float(np.interp(xs.max() * 0.3, xr, ref["T_wall"])), "the wall", dx=-4, dy=8, ha="right", va="bottom", color=INK2, size=8.5)
+    ax.set_xlabel("distance from the start of heating, mm")
+    ax.set_ylabel("temperature, °C")
+    fk.panel(ax, "Wall and coolant temperature")
+
+    ax = fig.add_subplot(gs[0, 1])
+    fk.style(ax)
+    nu = pr["q"] * 2 * pr["H"] / (pr["k"] * (tw - bulk(xs)))
+    ax.axhline(graetz.NU_FULLY_DEVELOPED, color=fk.AXIS, linewidth=1.2, zorder=1)
+    ax.plot(xr, ref["Nu"], color=REF, zorder=3)
+    fk.dots(ax, xs[pick], nu[pick])
+    ax.set_xlim(0, xs.max() * 1.04)
+    ax.set_ylim(7, 20)
+    fk.label(ax, xs.max(), graetz.NU_FULLY_DEVELOPED, "the textbook value for settled flow, 8.24", dx=0, dy=-6, ha="right", va="top", color=INK2, size=8.5)
+    fk.callout(ax, (xs.max(), float(nu[-1])), (-70, 46), f"still settling at the end\nof the heating: {nu[-1]:.2f}", ha="center")
+    ax.set_xlabel("distance from the start of heating, mm")
+    ax.set_ylabel("Nusselt number (how well the flow cools the wall)")
+    fk.panel(ax, "Heat transfer along the channel")
+    fk.heading(fig, f"The wall peaks at {m['max_wall_temperature_C']:.2f} °C, just under its limit, and matches the thermal-entry solution",
+               "A 1 mm water channel heated on both walls at 30 kW/m², against the Graetz solution")
+    fk.key(fig, [("Graetz solution", "line", REF), ("model", "dot", MODEL)], y_in=0.66)
+    fk.save(fig, "heat_response")
+
+
+
+# ---------------------------------------------------------------------------------------- dynamics
+
+def qc_liftoff():
+    """The wheel leaving the road at 36 km/h: tire load and body acceleration, model against the exact solution."""
+    from studies.quarter_car import body_accel
+
+    run, lab = "20261120-105126_qc_bump_liftoff", "p00_damping_N_s_per_m-600"
+    rec = point(run, lab)
+    prm = rec["parameters"]
+    s = read_series(RUNS / run / "points" / lab / "timeseries.csv")
+    r = read_series(RUNS / run / "points" / lab / "reference.csv")
+    rs = {"t_s": r["t_s"], "zs_m": r["zs_ref_m"], "vs_m_per_s": r["vs_ref_m_per_s"], "zu_m": r["zu_ref_m"],
+          "vu_m_per_s": r["vu_ref_m_per_s"], "zr_m": np.interp(r["t_s"], s["t_s"], s["zr_m"])}
+    W = (prm["sprung_mass_kg"] + prm["unsprung_mass_kg"]) * 9.80665
+    load = lambda q: np.maximum(0.0, 1 + prm["tire_stiffness_N_per_m"] * (q["zr_m"] - q["zu_m"]) / W)  # noqa: E731
+    tmax = 1.2
+    sel, rsel = s["t_s"] <= tmax, rs["t_s"] <= tmax
+    fig, gs = fk.new(FULL, 5.0, 2, 1, hspace=0.42, top=1.0)
+    ax = fig.add_subplot(gs[0, 0])
+    fk.style(ax)
+    ld = load(s)
+    air = (ld <= 1e-9) & sel
+    edges = np.flatnonzero(np.diff(np.concatenate([[0], air.astype(int), [0]])))
+    for a, b in zip(edges[::2], edges[1::2]):
+        ax.axvspan(s["t_s"][a], s["t_s"][min(b, len(ld) - 1)], color=fk.FAIL, alpha=0.10, linewidth=0, zorder=0.5)
+    ax.axhline(1.0, color=fk.AXIS, linewidth=1.0, zorder=1)
+    ax.plot(rs["t_s"][rsel], load(rs)[rsel], color=REF, zorder=3)
+    ax.plot(s["t_s"][sel], ld[sel], color=MODEL, linewidth=1.3, zorder=4)
+    k = int(np.argmax(np.where(sel, ld, 0)))
+    fk.label(ax, s["t_s"][k], ld[k], f"the landing: {ld[k]:.1f} times the static load", dx=8, dy=-2, size=8.5)
+    if len(edges) >= 4:
+        fk.label(ax, s["t_s"][min(edges[3], len(ld) - 1)], 0.0, "shaded: the wheel is in the air", dx=52, dy=3, va="bottom", color=INK2, size=8.5)
+    ax.set_xlim(0, tmax)
+    ax.set_ylim(0, ld[sel].max() * 1.12)
+    ax.set_ylabel("tire load ÷ static load")
+    ax.tick_params(labelbottom=False)
+    fk.panel(ax, "Load on the tire")
+
+    ax = fig.add_subplot(gs[1, 0])
+    fk.style(ax)
+    acc, acc_ref = body_accel(s, prm), body_accel(rs, prm)
+    ax.axhline(0, color=fk.AXIS, linewidth=1.0, zorder=1)
+    ax.plot(rs["t_s"][rsel], acc_ref[rsel], color=REF, zorder=3)
+    ax.plot(s["t_s"][sel], acc[sel], color=MODEL, linewidth=1.3, zorder=4)
+    ax.set_xlim(0, tmax)
+    lim = max(6.2, float(np.abs(acc[sel]).max()) * 1.15)
+    ax.set_ylim(-lim, lim)
+    fk.limit(ax, 4.0, "comfort limit 4.0 m/s²", bad="above", axis="y", at=0.985)
+    ax.axhspan(-lim, -4.0, color=fk.FAIL, alpha=0.07, linewidth=0, zorder=0.5)
+    ax.axhline(-4.0, color=INK2, linewidth=1.1, zorder=1)
+    ax.set_xlabel("time, s")
+    ax.set_ylabel("body acceleration, m/s²")
+    fk.panel(ax, "Acceleration of the body")
+    fk.heading(fig, "At 36 km/h the wheel leaves the road twice, and the landing is the worst moment for the tire",
+               "The lightest damper, 600 N·s/m: the simulation follows the exact solution through both lift-offs")
+    fk.key(fig, [("exact solution", "line", REF), ("model", "line", MODEL)], y_in=0.66)
+    fk.save(fig, "qc_liftoff")
+
+
+def qc_iso():
+    """Rough road at 72 km/h: the body's vibration, and its spectrum against the frequency-response prediction."""
+    from studies.quarter_car import Road, body_accel, window_slice
+    from validation import quarter_car_reference as ref
+
+    run, lab = "20261120-124907_qc_iso_road", "p01_damping_N_s_per_m-1000"
+    rec = point(run, lab)
+    prm = rec["parameters"]
+    s = read_series(RUNS / run / "points" / lab / "timeseries.csv")
+    t = s["t_s"]
+    w = window_slice(t, prm)
+    acc = body_accel(s, prm)[w]
+    tw = t[w]
+    road = Road(prm)
+    f = road.sines.freq_hz
+    expected = np.abs(ref.frequency_response(prm, f)["body_accel"]) * road.sines.amp_m
+    fig, gs = fk.new(FULL, 3.9, 1, 2, width_ratios=(1, 1.25), wspace=0.24, top=1.0)
+    ax = fig.add_subplot(gs[0, 0])
+    fk.style(ax)
+    sel = tw <= tw[0] + 4.0
+    ax.axhline(0, color=fk.AXIS, linewidth=1.0, zorder=1)
+    ax.plot(tw[sel] - tw[0], acc[sel], color=MODEL, linewidth=1.1, zorder=4)
+    ax.set_xlim(0, 4.0)
+    ax.set_xlabel("time, s")
+    ax.set_ylabel("body acceleration, m/s²")
+    fk.panel(ax, "Four seconds of the ride")
+
+    ax = fig.add_subplot(gs[0, 1])
+    fk.style(ax)
+    ax.set_yscale("log")
+    n = len(acc)
+    spec = np.abs(np.fft.rfft(acc) * 2 / n)
+    idx = np.searchsorted(np.fft.rfftfreq(n, d=tw[1] - tw[0]), f)
+    ax.plot(f, expected, color=REF, zorder=3)
+    pick = np.unique(np.round(np.geomspace(1, len(f), 46)).astype(int) - 1)
+    fk.dots(ax, f[pick], spec[idx][pick], size=24)
+    ax.set_xlim(0, 20.5)
+    ax.set_ylim(0.02, 1.0)
+    ax.set_yticks([0.02, 0.05, 0.1, 0.2, 0.5, 1.0])
+    ax.set_yticklabels(["0.02", "0.05", "0.1", "0.2", "0.5", "1"])
+    ax.minorticks_off()
+    kb = int(np.argmax(expected * (f < 4)))
+    fk.label(ax, f[kb], expected[kb], f"the body bouncing,\nabout {f[kb]:.1f} Hz", dx=10, dy=4, color=INK2, size=8.5)
+    kw = int(np.argmax(expected * (f > 7)))
+    fk.label(ax, f[kw], expected[kw], f"the wheel hopping,\nabout {f[kw]:.0f} Hz", dx=0, dy=12, ha="center", va="bottom", color=INK2, size=8.5)
+    ax.set_xlabel("frequency, Hz")
+    ax.set_ylabel("acceleration at each frequency, m/s²")
+    fk.panel(ax, "What the ride is made of")
+    fk.heading(fig, "On a rough road the simulation matches the prediction at every frequency",
+               "An average-quality road at 72 km/h with the 1000 N·s/m damper: body acceleration, and its content by frequency")
+    fk.key(fig, [("frequency-response prediction", "line", REF), ("simulation", "dot", MODEL)], y_in=0.66)
+    fk.save(fig, "qc_iso")
+
+
+# ---------------------------------------------------------------------------------------- thermal chain, pipe
+
+def coldplate_response():
+    """The plate's temperature field, its face temperatures, and its thermal stress against beam theory."""
+    from studies.cold_plate import interior_window, stress_reference, to_grid, von_mises
+
+    run, lab = "20261121-094235_cold_plate_mesh_r1", "p02_cells_across_gap-80"
+    rec = point(run, lab)
+    p, m = rec["parameters"], rec["metrics"]
+    xs, ys, g = to_grid(read_series(RUNS / run / "points" / lab / "plate_nodes.csv"))
+    lim = limits("cold_plate_mesh_r1")
+    fig, gs = fk.new(FULL, 6.2, 2, 2, hspace=0.5, wspace=0.24, top=1.0, height_ratios=(0.72, 1))
+    ax = fig.add_subplot(gs[0, :])
+    fk.style(ax, grid="")
+    X, Y = np.meshgrid(xs, ys - ys.min(), indexing="ij")
+    mesh = ax.pcolormesh(X, Y, g["T_C"], cmap="YlOrRd", shading="gouraud", rasterized=True)
+    cb = fig.colorbar(mesh, ax=ax, pad=0.015, aspect=10)
+    cb.outline.set_visible(False)
+    cb.ax.tick_params(length=0, labelsize=8.5, colors=INK2)
+    cb.set_label("temperature, °C", color=INK2, fontsize=9)
+    Lf = float(p["footprint_length_mm"])
+    top = float((ys - ys.min()).max())
+    ax.plot([0, Lf], [top, top], color=INK, linewidth=2.2, solid_capstyle="butt", clip_on=False, zorder=5)
+    ax.text(Lf, top * 1.06, "components heat this face, over the 50 mm footprint", ha="right", va="bottom", fontsize=8.5, color=INK2)
+    ax.text(xs.min() + 1, -top * 0.16, "coolant runs along this face, left to right", ha="left", va="top", fontsize=8.5, color=INK2)
+    ax.set_ylim(0, top)
+    ax.set_yticks([0, top])
+    ax.set_yticklabels(["0", f"{top:g}"])
+    ax.set_ylabel("through the\nplate, mm")
+    ax.tick_params(labelbottom=False)
+    fk.panel(ax, "Temperature in the plate")
+
+    ax = fig.add_subplot(gs[1, 0])
+    fk.style(ax)
+    ax.plot(xs, g["T_C"][:, -1], color=MODEL, zorder=4)
+    ax.plot(xs, g["T_C"][:, 0], color=fk.THIRD, zorder=4)
+    ax.set_xlim(xs.min(), xs.max())
+    ax.set_ylim(24, 47.5)
+    op, L = lim["component_face_max_temperature_C"]
+    fk.limit(ax, L, f"limit {L:g} °C", bad="above", axis="y", at=0.03)
+    k = int(np.argmax(g["T_C"][:, -1]))
+    fk.label(ax, xs[k], g["T_C"][k, -1], f"{m['component_face_max_temperature_C']:.2f} °C", dx=0, dy=8, ha="center", va="bottom", size=8.5)
+    fk.label(ax, xs[len(xs) // 3], g["T_C"][len(xs) // 3, -1], "component face", dx=-4, dy=10, ha="right", va="bottom", color=INK2, size=8.5)
+    fk.label(ax, xs[len(xs) // 2], g["T_C"][len(xs) // 2, 0], "coolant face", dx=6, dy=-10, va="top", color=INK2, size=8.5)
+    ax.set_xlabel("distance along the flow, mm")
+    ax.set_ylabel("temperature, °C")
+    fk.panel(ax, "The plate's two faces")
+
+    ax = fig.add_subplot(gs[1, 1])
+    fk.style(ax)
+    vm = von_mises(g["sxx_MPa"], g["syy_MPa"], g["szz_MPa"], g["sxy_MPa"])
+    ref = stress_reference(p, xs, ys, g["T_C"])
+    win = interior_window(xs, p)
+    ax.axvspan(xs[0], xs[win][0], color=fk.GRID, linewidth=0, zorder=0.6)
+    ax.axvspan(xs[win][-1], xs[-1], color=fk.GRID, linewidth=0, zorder=0.6)
+    ax.plot(xs[win], ref["von_mises"][win][:, -1], color=REF, zorder=3)
+    ax.plot(xs, vm[:, -1], color=MODEL, linewidth=1.4, zorder=4)
+    ax.set_xlim(xs.min(), xs.max())
+    ax.set_ylim(0, 72)
+    op, L = lim["interior_von_mises_max_MPa"]
+    fk.limit(ax, L, f"limit {L:g} MPa", bad="above", axis="y", at=0.5)
+    fk.label(ax, xs[len(xs) // 2], vm[len(xs) // 2, -1], f"peak {m['interior_von_mises_max_MPa']:.1f} MPa", dx=0, dy=-10, ha="center", va="top", size=8.5)
+    fk.label(ax, xs[0], 4, "near the\nclamps:\nnot assessed", dx=3, va="bottom", color=INK2, size=8)
+    ax.set_xlabel("distance along the flow, mm")
+    ax.set_ylabel("stress on the component face, MPa")
+    fk.panel(ax, "Thermal stress, plate held at both ends")
+    fk.heading(fig, "The plate stays 4 °C under its limit, and the stress it builds by not being free to expand is 46.8 MPa",
+               "The last two stages of the chain: conduction through the plate, then the stress from holding it at both ends")
+    fk.key(fig, [("beam theory", "line", REF), ("model", "line", MODEL)], y_in=0.66)
+    fig.savefig(fk.OUT / "fig_coldplate_response.svg", format="svg", dpi=300, metadata={"Date": None, "Creator": None})
+    fk.plt.close(fig)
+    print("fig coldplate_response")
+
+
+def pipe_friction():
+    """Friction factor against Prandtl's law: the mesh study, across Reynolds numbers, and wall-function placement."""
+    from matplotlib.ticker import NullFormatter, ScalarFormatter
+
+    def dev(run, key):
+        rows = sorted((r for _, r, _ in pts(run)), key=lambda r: r["parameters" if key != "yplus_first_cell" else "metrics"][key])
+        return rows
+
+    fig, gs = fk.new(FULL, 3.9, 1, 3, wspace=0.16, top=1.0)
+    axes = [fig.add_subplot(gs[0, k]) for k in range(3)]
+    for ax in axes:
+        fk.style(ax)
+        ax.set_ylim(-7.4, 7.4)
+        ax.axhspan(5, 7.4, color=fk.FAIL, alpha=0.07, linewidth=0, zorder=0.5)
+        ax.axhspan(-7.4, -5, color=fk.FAIL, alpha=0.07, linewidth=0, zorder=0.5)
+        for y in (-5, 5):
+            ax.axhline(y, color=INK2, linewidth=1.1, zorder=1)
+        ax.axhline(0, color=fk.AXIS, linewidth=1.0, zorder=1)
+    for ax in axes[1:]:
+        ax.tick_params(labelleft=False)
+    axes[0].set_ylabel("friction factor against Prandtl's law, %")
+    fk.label(axes[0], 0.027, 5, "limit ±5 %", dx=0, dy=6, ha="right", va="bottom", color=INK2, size=8.5)
+
+    ax = axes[0]
+    first, rev = dev("20261122-104218_pipe_rans_mesh", "n_radial"), dev("20261122-153857_pipe_rans_mesh_r2", "n_radial")
+    seen = {}
+    for rows in (first, rev):
+        for r in rows:
+            seen[r["parameters"]["n_radial"]] = r["metrics"]["friction_dev_prandtl_pct"]
+    ns = sorted(seen)
+    ax.plot([1 / n for n in ns], [seen[n] for n in ns], color=MODEL, linewidth=1.6, alpha=0.5, zorder=3)
+    fk.dots(ax, [1 / n for n in ns], [seen[n] for n in ns], size=44)
+    for n in ns:
+        fk.label(ax, 1 / n, seen[n], f"{n}", dx=6, dy=-9, va="top", color=INK2, size=8.5)
+    v = json.loads((RUNS / "20261122-153857_pipe_rans_mesh_r2" / "verification.json").read_text(encoding="utf-8"))
+    u = v["run_check_detail"]["friction_factor"]
+    m0 = rev[0]["metrics"]
+    pr = m0["friction_factor"] / (1 + m0["friction_dev_prandtl_pct"] / 100)
+    ye, ue = 100 * (u["extrapolated"] / pr - 1), 100 * u["uncertainty"] * u["extrapolated"] / pr
+    ax.errorbar([0.0006], [ye], yerr=[ue], color=INK, marker="D", markersize=6, capsize=3, linewidth=1.2, zorder=5)
+    fk.label(ax, 0.0006, ye, f"converged: {ye:+.1f} %", dx=9, dy=8, va="bottom", size=8.5)
+    fk.label(ax, 1 / ns[1], seen[ns[1]], "one mesh alone\nreads −0.9 %", dx=-4, dy=-22, ha="center", va="top", color=INK2, size=8.5)
+    ax.set_xlim(0, 0.028)
+    ax.set_xlabel("1 ÷ cells across the radius (finer to the left)")
+    fk.panel(ax, "Refining the mesh")
+
+    ax = axes[1]
+    rows = [r for _, r, _ in pts("20261122-104744_pipe_rans_reynolds")]
+    for treat, color, text, dy in (("low_re", MODEL, "wall layer resolved", 12), ("wall_function", REF, "wall functions", -12)):
+        sel = sorted((r for r in rows if r["parameters"]["wall_treatment"] == treat), key=lambda r: r["parameters"]["reynolds_number"])
+        xs = [r["parameters"]["reynolds_number"] for r in sel]
+        ys = [r["metrics"]["friction_dev_prandtl_pct"] for r in sel]
+        ax.plot(xs, ys, color=color, linewidth=1.6, alpha=0.5, zorder=3)
+        fk.dots(ax, xs, ys, color=color, size=44)
+        fk.label(ax, xs[-1], ys[-1], text, dx=0, dy=dy, ha="right", va="bottom" if dy > 0 else "top", color=INK2, size=8.5)
+    ax.set_xscale("log")
+    ax.set_xlim(1e4, 4e6)
+    ax.set_xlabel("Reynolds number")
+    fk.panel(ax, "Across flow speeds")
+
+    ax = axes[2]
+    rows = dev("20261122-140211_pipe_rans_wf_yplus", "yplus_first_cell")
+    xs = [r["metrics"]["yplus_first_cell"] for r in rows]
+    ys = [r["metrics"]["friction_dev_prandtl_pct"] for r in rows]
+    ax.plot(xs, ys, color=REF, linewidth=1.6, alpha=0.5, zorder=3)
+    fk.dots(ax, xs, ys, color=REF, size=44)
+    ax.set_xscale("log")
+    ax.set_xlim(20, 300)
+    ax.set_xticks([30, 50, 100, 200])
+    ax.xaxis.set_major_formatter(ScalarFormatter())
+    ax.xaxis.set_minor_formatter(NullFormatter())
+    fk.label(ax, xs[len(xs) // 2], ys[len(xs) // 2], "about 5 % low wherever\nthe first cell sits", dx=0, dy=14, ha="center", va="bottom", color=INK2, size=8.5)
+    ax.set_xlabel("where the first cell sits (y+)")
+    fk.panel(ax, "Wall functions: moving the first cell")
+    fk.heading(fig, "Resolved at the wall, the model converges 2.4 % above the measured law; wall functions sit 5 % low",
+               "Smooth-pipe friction factor from the turbulence model against Prandtl's law, the fit to Nikuradse's measurements")
+    fk.key(fig, [("wall layer resolved", "dot", MODEL), ("wall functions", "dot", REF)], y_in=0.66)
+    fk.save(fig, "pipe_friction")
+
+
+# ---------------------------------------------------------------------------------------- study 20, the motor
+
+def motor_comparison():
+    """The blind predictions against the laboratory's measurements: back-EMF, peak torque and efficiency."""
+    c = json.loads((REPO / "validation" / "motor_ornl" / "comparison.json").read_text(encoding="utf-8"))
+    emf = read_series(REPO / "validation" / "motor_ornl" / "tm2006_423_back_emf.csv")
+    fig, gs = fk.new(FULL, 3.9, 1, 3, wspace=0.3, top=1.0)
+    ax = fig.add_subplot(gs[0, 0])
+    fk.style(ax)
+    k = c["back_emf"]["ours"]["LL_fundamental"]
+    rpm = np.array([0, 6200.0])
+    ax.plot(rpm, k * rpm / 1000, color=MODEL, zorder=3)
+    fk.dots(ax, emf["motor_shaft_speed_rpm"], emf["back_emf_Vrms"], color=REF, size=40)
+    ax.set_xlim(0, 6300)
+    ax.set_ylim(0, 720)
+    fk.label(ax, 4200, k * 4.2, f"predicted\n{k:.1f} V per 1,000 rpm", dx=-8, dy=6, ha="right", va="bottom", color=INK2, size=8.5)
+    fk.label(ax, 5000, c["back_emf"]["ornl_Vrms_per_krpm"] * 5.0, f"measured\n{c['back_emf']['ornl_Vrms_per_krpm']:.1f}", dx=14, dy=-22, va="top", color=INK2, size=8.5)
+    ax.set_xlabel("speed, rpm")
+    ax.set_ylabel("back-EMF, V")
+    fk.panel(ax, f"Back-EMF: {100 * c['back_emf']['err_LL_prediction']:+.1f} %")
+
+    ax = fig.add_subplot(gs[0, 1])
+    fk.style(ax)
+    I = [r["ornl_current_A"] for r in c["torque"]]
+    ax.plot(I, [r["ours_if_peak_Nm"] for r in c["torque"]], color=MODEL, zorder=3)
+    fk.dots(ax, I, [r["ornl_fig_Nm"] for r in c["torque"]], color=REF, size=40)
+    ax.set_xlim(40, 262)
+    ax.set_ylim(0, 500)
+    e = [100 * r["err_if_peak"] for r in c["torque"]]
+    fk.label(ax, I[0], c["torque"][0]["ours_if_peak_Nm"], f"{e[0]:+.0f} %", dx=-2, dy=12, ha="center", va="bottom", size=8.5)
+    fk.label(ax, I[-1], c["torque"][-1]["ours_if_peak_Nm"], f"{e[-1]:+.0f} %", dx=-4, dy=8, ha="right", va="bottom", size=8.5)
+    ax.set_xlabel("current, A")
+    ax.set_ylabel("peak torque, N m")
+    fk.panel(ax, f"Torque: {min(e):+.0f} to {max(e):+.0f} %")
+
+    ax = fig.add_subplot(gs[0, 2])
+    fk.style(ax)
+    pts_ = c["efficiency_points"]
+    x = np.array([q["ornl_motor_eff_pct"] for q in pts_])
+    y = np.array([q["ours_hot_pct"] for q in pts_])
+    lo, hi = 62, 100
+    ax.fill_between([lo, hi], [lo - 2, hi - 2], [lo + 2, hi + 2], color=REF, alpha=0.16, linewidth=0, zorder=1)
+    ax.plot([lo, hi], [lo, hi], color=REF, linewidth=1.2, zorder=2)
+    ax.scatter(x, y, s=9, facecolor=MODEL, edgecolor="none", alpha=0.7, zorder=4)
+    ax.set_xlim(lo, hi)
+    ax.set_ylim(lo, hi)
+    ax.set_aspect("equal")
+    fk.label(ax, 78, 78, "agreement,\n±2 points", dx=12, dy=-10, va="top", color=INK2, size=8.5)
+    ax.set_xlabel("measured efficiency, %")
+    ax.set_ylabel("predicted efficiency, %")
+    fk.panel(ax, f"Efficiency: {c['efficiency_summary']['hot_minus_ornl_median_pts']:+.1f} points")
+    fk.heading(fig, "The blind test: all three predictions came out high, and all three missed their limits",
+               "Predictions committed before the data was opened, against Oak Ridge National Laboratory's measurements of the motor")
+    fk.key(fig, [("measured", "dot", REF), ("predicted", "line", MODEL)], y_in=0.66)
+    fk.save(fig, "motor_comparison")
+
+
+def motor_efficiency():
+    """The predicted motor-only efficiency map, one cell per computed point."""
+    import matplotlib
+
+    run, lab = "20261122-175650_motor_prius_efficiency_r1", "p00_cold"
+    rec = point(run, lab)
+    so, m = rec["solver_outputs"], rec["metrics"]
+    s = read_series(RUNS / run / "points" / lab / "efficiency_map.csv")
+    sp, tq = np.unique(s["speed_rpm"]), np.unique(s["target_torque_Nm"])
+    Z = np.full((len(tq), len(sp)), np.nan)
+    Z[np.searchsorted(tq, s["target_torque_Nm"]), np.searchsorted(sp, s["speed_rpm"])] = s["efficiency_pct"]
+    fig, gs = fk.new(FULL, 4.3, top=0.72)
+    gs.update(right=0.99)
+    ax = fig.add_subplot(gs[0, 0])
+    fk.style(ax, grid="")
+    levels = [70, 80, 85, 88, 90, 92, 93, 94, 95, 96, 97, 98]
+    cmap = matplotlib.colormaps[fk.SEQ].resampled(len(levels) - 1)
+    norm = matplotlib.colors.BoundaryNorm(levels, cmap.N)
+    mesh = ax.pcolormesh(sp, tq, np.ma.masked_invalid(Z), cmap=cmap, norm=norm, shading="nearest", rasterized=True)
+    cb = fig.colorbar(mesh, ax=ax, pad=0.015, aspect=18, ticks=levels)
+    cb.outline.set_visible(False)
+    cb.ax.tick_params(length=0, labelsize=8.5, colors=INK2)
+    cb.set_label("predicted efficiency, %", color=INK2, fontsize=9)
+    ax.plot(so["speeds_rpm"], so["t_max_design_Nm"], color=INK, linewidth=1.6, zorder=4)
+    fk.label(ax, so["speeds_rpm"][10], so["t_max_design_Nm"][10], "the most torque the 212 A\ndesign current allows", dx=12, dy=14, color=INK2, size=8.5)
+    ax.scatter([m["peak_efficiency_speed_rpm"]], [m["peak_efficiency_torque_Nm"]], s=44, facecolor=SURFACE, edgecolor=INK, linewidth=1.3, zorder=5)
+    fk.label(ax, m["peak_efficiency_speed_rpm"], m["peak_efficiency_torque_Nm"], f"peak {m['peak_efficiency_pct']:.1f} %", dx=9, dy=0, size=8.5, color=SURFACE)
+    ax.set_xlim(sp.min() - 125, sp.max() + 125)
+    ax.set_ylim(0, 480)
+    ax.set_xlabel("speed, rpm")
+    ax.set_ylabel("torque, N m")
+    fk.heading(fig, "The efficiency map, as predicted",
+               "Motor only, cold. Against the laboratory's measurements it reads about 5 points high, so this is the prediction that was tested, not a result")
+    fig.savefig(fk.OUT / "fig_motor_efficiency.svg", format="svg", dpi=300, metadata={"Date": None, "Creator": None})
+    fk.plt.close(fig)
+    print("fig motor_efficiency")
+
+
+def motor_thermal():
+    """The continuous rating from the thermal network, and the temperatures along it."""
+    rec = point("20261122-174925_motor_prius_thermal_r1", "p00_nominal")
+    e = {k: np.array(v) for k, v in rec["solver_outputs"]["envelope"].items()}
+    fig, gs = fk.new(FULL, 3.9, 1, 3, wspace=0.3, top=1.0)
+    ax = fig.add_subplot(gs[0, 0])
+    fk.style(ax)
+    ax.plot(e["speed_rpm"], e["continuous_torque_Nm"], color=MODEL, zorder=4)
+    ax.set_xlim(0, 6200)
+    ax.set_ylim(0, 260)
+    ax.set_xlabel("speed, rpm")
+    ax.set_ylabel("torque it can hold, N m")
+    fk.panel(ax, "Continuous torque")
+
+    ax = fig.add_subplot(gs[0, 1])
+    fk.style(ax)
+    ax.plot(e["speed_rpm"], e["continuous_power_kW"], color=MODEL, zorder=4)
+    ax.set_xlim(0, 6200)
+    ax.set_ylim(0, 56)
+    op, L = limits("motor_prius_thermal_r1")["min_continuous_power_kW"] if "min_continuous_power_kW" in limits("motor_prius_thermal_r1") else (">=", 25.0)
+    fk.limit(ax, L, f"at least {L:g} kW from 1,250 rpm", bad="below", axis="y", at=0.97)
+    ax.set_xlabel("speed, rpm")
+    ax.set_ylabel("power it can hold, kW")
+    fk.panel(ax, "Continuous power")
+
+    ax = fig.add_subplot(gs[0, 2])
+    fk.style(ax)
+    ax.plot(e["speed_rpm"], e["winding_hotspot_C"], color=MODEL, zorder=4)
+    ax.plot(e["speed_rpm"], e["magnet_C"], color=fk.THIRD, zorder=4)
+    ax.set_xlim(0, 6200)
+    ax.set_ylim(120, 190)
+    ax.axhline(180, color=INK2, linewidth=1.1, zorder=1)
+    ax.axhline(150, color=INK2, linewidth=1.1, zorder=1)
+    fk.label(ax, 6100, 180, "winding limit 180 °C", dx=0, dy=5, ha="right", va="bottom", color=INK2, size=8.5)
+    fk.label(ax, 200, 150, "magnet limit 150 °C", dx=0, dy=5, va="bottom", color=INK2, size=8.5)
+    fk.label(ax, 3000, float(np.interp(3000, e["speed_rpm"], e["winding_hotspot_C"])), "winding hotspot", dx=8, dy=10, va="bottom", color=INK2, size=8.5)
+    fk.label(ax, 4300, 150, "magnets, at their limit\nat every speed", dx=0, dy=-12, ha="center", va="top", color=INK2, size=8.5)
+    ax.set_xlabel("speed, rpm")
+    ax.set_ylabel("temperature, °C")
+    fk.panel(ax, "What limits it")
+    fk.heading(fig, "In the model, the magnets set the continuous rating, not the winding",
+               "The thermal network with its assumed 65 °C water jacket. With the model's flux 24 % high, the power shown is optimistic")
+    fk.save(fig, "motor_thermal")
+
+
+def motor_rotor():
+    """Linearised stress across the rotor bridge at overspeed, against the lamination's yield."""
+    run, lab = "20261122-001104_motor_prius_rotor_overspeed_mesh", "p02_bridge_element_size_mm-0.05"
+    rec = point(run, lab)
+    m = rec["metrics"]
+    s = read_series(RUNS / run / "points" / lab / "bridge_scl.csv")
+    a = s["scl_angle_deg"]
+    fig, gs = fk.new(fk.HALF, 3.8, top=0.95)
+    gs.update(left=0.15, right=0.96)
+    ax = fig.add_subplot(gs[0, 0])
+    fk.style(ax)
+    ax.plot(a, s["membrane_vm_MPa"], color=fk.AXIS, zorder=3)
+    ax.plot(a, s["membrane_bending_vm_MPa"], color=MODEL, zorder=4)
+    ax.set_xlim(a.min(), a.max())
+    ax.set_xticks([15.5, 16.0, 16.5, 17.0])
+    ax.set_ylim(0, 470)
+    op, L = limits("motor_prius_rotor_overspeed_mesh")["bridge_linearized_vm_MPa"]
+    fk.limit(ax, L, f"yield, {L:g} MPa", bad="above", axis="y", at=0.03)
+    k = int(np.argmax(s["membrane_bending_vm_MPa"]))
+    fk.label(ax, a[k], s["membrane_bending_vm_MPa"][k], f"{m['bridge_linearized_vm_MPa']:.0f} MPa", dx=-8, dy=4, ha="right", va="bottom", size=8.5)
+    fk.label(ax, a[len(a) // 2], s["membrane_vm_MPa"][len(a) // 2], "average through the bridge", dx=0, dy=-8, ha="center", va="top", color=INK2, size=8.5)
+    fk.label(ax, a[len(a) // 2], s["membrane_bending_vm_MPa"][len(a) // 2], "with bending", dx=-12, dy=10, ha="right", va="bottom", color=INK2, size=8.5)
+    ax.set_xlabel("position along the bridge, degrees from the pole axis")
+    ax.set_ylabel("stress across the bridge, MPa")
+    fk.heading(fig, "The rotor bridge is past yield at overspeed", "At 7,200 rpm, 20 % over the maximum speed")
+    fk.save(fig, "motor_rotor")
+
+
+# ---------------------------------------------------------------------------------------- study 18, pressure vessel
+
+def pv_nozzle():
+    """The governing classification line, and the membrane stress against nozzle wall thickness."""
+    from harness.linearize import von_mises
+
+    rec = point("20261122-102842_pv_nozzle_mesh", "p02_element_size_local_mm-2.6667")
+    line = rec["solver_outputs"]["lines"]["shell_long"]
+    prof = rec["solver_outputs"]["profiles"]["shell_long"]
+    sx, vm = np.asarray(prof["s_mm"]), np.asarray(prof["vm_MPa"])
+    th, mem, ben = line["thickness"], np.asarray(line["membrane"]), np.asarray(line["bending"])
+    lin = von_mises(mem[None, :] + ben[None, :] * (1 - 2 * sx[:, None] / th))
+    pl = line["membrane_vm"]
+    op, L = limits("pv_nozzle_mesh")["pl_max_MPa"] if "pl_max_MPa" in limits("pv_nozzle_mesh") else ("<=", 207.0)
+    fig, gs = fk.new(FULL, 3.9, 1, 2, wspace=0.24, top=1.0)
+    ax = fig.add_subplot(gs[0, 0])
+    fk.style(ax)
+    ax.plot(sx, vm, color=MODEL, zorder=4)
+    ax.plot(sx, lin, color=fk.THIRD, zorder=3)
+    ax.axhline(pl, color=fk.THIRD, linewidth=1.2, zorder=3)
+    ax.set_xlim(0, th)
+    ax.set_ylim(180, 250)
+    fk.limit(ax, L, f"membrane limit {L:g} MPa", bad="above", axis="y", at=0.03)
+    fk.label(ax, 0.3, pl, f"membrane (the average): {pl:.1f} MPa", dx=0, dy=-6, va="top", size=8.5)
+    ax.set_xlabel("through the shell wall, inside to outside, mm")
+    ax.set_ylabel("stress, MPa")
+    fk.panel(ax, "The governing line through the wall")
+
+    ax = fig.add_subplot(gs[0, 1])
+    rows = pts("20261122-103521_pv_nozzle_thickness")
+    xs = [r["parameters"]["nozzle_thickness_mm"] for _, r, _ in rows]
+    ys = [r["metrics"]["pl_max_MPa"] for _, r, _ in rows]
+    sweep_panel(ax, xs, ys, [True] * len(xs), "<=", L, f"limit {L:g} MPa", fmt="{:.1f}", ylim=(172, 250), at=0.97)
+    k = int(np.argmax(np.array(ys) <= L))
+    need = xs[k - 1] + (L - ys[k - 1]) * (xs[k] - xs[k - 1]) / (ys[k] - ys[k - 1])
+    ax.plot([need, need], [172, L], color=INK2, linewidth=0.9, zorder=2)
+    fk.label(ax, need, 174, f"needs {need:.1f} mm", dx=-5, ha="right", va="bottom", size=8.5)
+    ax.set_xlabel("nozzle wall thickness, mm")
+    ax.set_ylabel("membrane stress at the junction, MPa")
+    fk.panel(ax, "The same check at four nozzle walls")
+    fk.heading(fig, f"The 12 mm nozzle passes at {pl:.1f} MPa against {L:g}; the wall needs about {need:.1f} mm",
+               "Linearising splits the stress through the wall into its average (membrane) and a straight-line bending part")
+    fk.key(fig, [("stress from the model", "line", MODEL), ("its straight-line fit", "line", fk.THIRD)], y_in=0.66)
+    fk.save(fig, "pv_nozzle")
+
+
+ALL = {f.__name__: f for f in (cfd_tolerance, cfd_duct, cfd_response, cfd_field, fea_tet4, strap_sweep, fatigue_sweep,
+                               strut_sweep, strut_response, proof_response, joint_response, contact_response, fea_response, strap_response,
+                               fatigue_sn, fin_response, fin_h_sweep, qc_bump_sweep, cad_sweep, heat_response,
+                               qc_liftoff, qc_iso, coldplate_response, pipe_friction, motor_comparison, motor_efficiency, motor_thermal,
+                               motor_rotor, pv_nozzle)}
 
 if __name__ == "__main__":
     for name in sys.argv[1:] or ALL:

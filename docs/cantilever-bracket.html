@@ -21,7 +21,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
-<link rel="stylesheet" href="assets/site.css?v=4937421060">
+<link rel="stylesheet" href="assets/site.css?v=004ab254f1">
 </head>
 <body>
 <nav class="topbar" aria-label="Site">
@@ -113,13 +113,10 @@
     <p>FreeCAD builds the bar, assigns the material, fixes the root face and applies the load. Gmsh fills the solid with tetrahedral elements, and CalculiX solves for the displacements and stresses. I read the results straight from the solver's output files, and the FreeCAD model is saved with every run so the run can be repeated.</p>
     <p>The same model is solved four times on finer and finer meshes. If the answer stops changing as the elements shrink, the mesh isn't deciding it. A standard method, the Grid Convergence Index, turns the last three solutions into an uncertainty figure, which is where the 0.02 % comes from.</p>
     <p>For the stress, I don't take the highest value in the model. That value sits in the clamped corner and climbs from 150 to 217 MPa across the four meshes. Instead the stress along the top face is read over the middle half of the span, where it rises in a straight line towards the root, and that line is extended to the root. The result is 150 MPa on every mesh, which is also what beam theory gives.</p>
-    <div class="figs-2">
-      <figure>
-        <div class="plate"><img src="img/fea_response.png" alt="Deflection and stress along the beam compared with beam theory" loading="lazy"></div>
+    <figure>
+        <div class="plate"><img src="v2/fig_fea_response.svg" alt="Deflection and top-face stress along the bar, with the model's points lying on the beam-theory curves" loading="lazy"></div>
         <figcaption>Deflection and stress along the beam, next to beam theory.</figcaption>
       </figure>
-      <figure><div class="plate"><img src="img/turntable_cantilever.webp" alt="The cantilever result turning, rendered in Blender" loading="lazy"></div><figcaption>The result from all sides. At the clamped end you can see the bending stress across the section, highest at the top and bottom faces and zero along the middle.</figcaption></figure>
-    </div>
     <h3 id="fea-how-i-checked-it">How I checked it</h3>
     <ul class="proof">
       <li><strong>Against beam theory.</strong> The hand calculation gives 0.952 mm if shear deformation is ignored and 0.960 mm if it's included. The model's 0.953 mm falls between the two, which is where a fully clamped solid bar should land.</li>
@@ -133,8 +130,8 @@
         <li>I also ran the study with the simplest element type, linear tetrahedra. The bracket came out 4 to 33 % too stiff and the stress 7 to 45 % too low, so at face value it would have looked comfortably safe. The beam-theory and mesh checks both failed, and none of those results were reported as verified. The run is kept as evidence.</li>
       </ul>
     </div>
-    <figure>
-      <div class="plate"><img src="img/fea_tet4_sweep.png" alt="Linear-element results, all held back by the checks" loading="lazy"></div>
+    <figure class="half">
+      <div class="plate"><img src="v2/fig_fea_tet4.svg" alt="Tip deflection against element size: quadratic elements sit on beam theory at every size, linear elements read up to a third too stiff" loading="lazy"></div>
       <figcaption>The same study run with linear tetrahedra. The checks held back every result.</figcaption>
     </figure>
     <h3 id="fea-limits-and-what-i-d-do-next">Limits, and what I'd do next</h3>
@@ -240,8 +237,8 @@
   </div>
 </footer>
 <script>window.VP = [{"id": "cantilever", "study": "fea", "tab": "Stress", "legend": "S, Mises", "unit": "MPa", "model": "Cantilever bracket · steel, 200 × 20 × 20 mm, 1 kN at the tip", "lines": ["Solver: CalculiX 2.22 · C3D10 · 5 758 surface nodes", "Deformation scale factor: +2.500e+01", "Range capped at the 150 MPa beam-theory stress; the clamp corners are singular"], "mesh": "v2/m3d_cantilever.bin", "mesh_kb": 135, "elev": 20, "azim": -58, "img": "v2/vp_cantilever.webp", "bands": ["#3b2f80", "#466be3", "#3ba0fd", "#1ad2d2", "#32f298", "#80ff53", "#bef434", "#eecf3a", "#fe9e2f", "#f26014", "#d02f05", "#9b0f01"], "vmin": 0.0, "vmax": 150.0, "check": "Render check: encloses 80 000.0 mm³ of 80 000.0 design · 100.0 % of pixels on the legend", "card": "cantilever_bracket", "part": "01 · Stress check", "main": false}, {"id": "cantilever_opt", "study": "cantilever_opt", "tab": "Optimised", "legend": "S, Mises", "unit": "MPa", "model": "The same cantilever, optimised · steel, 200 mm × 20 mm wide, tapered 26.0 → 8.7 mm, 1 kN at the tip", "lines": ["Solver: CalculiX 2.22 · C3D10 · the confirmation run's finest mesh (2 mm)", "Deformation scale factor: +2.500e+01 · same scale and framing as study 1's straight bar", "546 g, 30 % under the lightest straight bar that passes · peak 99.5 MPa along the span against 100"], "mesh": "v2/m3d_cantilever_opt.bin", "mesh_kb": 114, "elev": 20, "azim": -58, "img": "v2/vp_cantilever_opt.webp", "bands": ["#3b2f80", "#466be3", "#3ba0fd", "#1ad2d2", "#32f298", "#80ff53", "#bef434", "#eecf3a", "#fe9e2f", "#f26014", "#d02f05", "#9b0f01"], "vmin": 0.0, "vmax": 150.0, "check": "Render check: encloses 69 549.1 mm³ of 69 549.1 design · 100.0 % of pixels on the legend", "card": "cantilever_bracket", "part": "01b · Optimised", "main": true}];</script>
-<script src="assets/viewer.js?v=4937421060"></script>
-<script src="assets/viewer3d.js?v=4937421060"></script>
-<script src="assets/site.js?v=4937421060"></script>
+<script src="assets/viewer.js?v=004ab254f1"></script>
+<script src="assets/viewer3d.js?v=004ab254f1"></script>
+<script src="assets/site.js?v=004ab254f1"></script>
 </body>
 </html>
