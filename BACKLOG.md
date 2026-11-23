@@ -58,40 +58,72 @@ each part on its own: CSM1 to CSM3 (solid only, CalculiX, nothing new needed), C
 only, OpenFOAM 14, nothing new needed), then FSI1 to FSI3 coupled through preCICE. Each part is
 verified before the coupled run, as in study 2.
 
-## Session handoff (2026-11-23, 12:40; first written 2026-11-21, 23:10)
+## Session handoff (2026-11-23, 17:48; first written 2026-11-21, 23:10)
 
-Read this first. Files under site/, docs/, DASHBOARD.md, `scripts/make_study_renders.py`, `scripts/figkit.py` and
-`.claude/skills/publication-figures/` belong to the dashboard session (it commits in this clone: add and commit only
-your own paths, in one command; never leave files staged). Rules that bind: **CLAUDE.md "Use only information a real
-project would have"** (user, 2026-11-23: any ORNL data may be OPENED; USE only what a client would provide, and if a
-client would have it, look for it in the literature without asking); **isolate one effect per revision and test it
-locally; calibration is the risky last resort** (it moves error elsewhere); **audit the model against the drawing
-before trusting it** (build-model step 3); every lesson goes into the matching skill the same session; predictions in
-the case header, committed BEFORE the evidence run; Results after; take log times from `date` run on its own;
-`scripts/scrub_paths.py <run dir>`, `git add -f` without `*.inp`, `*.dat`, `__pycache__`, files > 600 kB, then
-`tests/test_privacy.py`; never two FEMM cases at once; check free RAM on long runs (run-case "Resources").
+Read this first. Files under site/, docs/, DASHBOARD.md, `scripts/make_study_renders.py`, `scripts/make_figures.py`,
+`scripts/make_drawings.py`, `scripts/figkit.py` and `.claude/skills/publication-figures/` belong to the dashboard
+session (it commits in this clone: add and commit only your own paths, in one command; never leave files staged; a
+gitignored run dir needs `git add -f`, and a failed add can leave files staged: check `git status` after every
+commit). Rules that bind:
+- **Study 7 runs as a regular client project since about 13:50 (user):** use everything a client would hand over
+  (drawings, bill of materials and masses, material data, routine tests) as input, look up anything missing before
+  assuming it, never calibrate to hide a gap; test results the job must predict stay targets. Short version of the
+  study: `validation/motor_ornl/STATUS.md`; inputs: `CLIENT_DATA.md`.
+- **Isolate one effect per revision; predictions in the case header committed BEFORE the run; Results after.**
+- **Take every clock time from `date` in the same command** (memory `clock-times-from-date`: guessed times were wrong
+  five times today and each needed a correction commit).
+- **Measure a noise floor before declaring it** (study F); **compare the statistic the test reports** (study 7's
+  locked-rotor maximum against the model's mean, withdrawn the same hour).
+- Every lesson into the matching skill the same session; `scripts/scrub_paths.py <run dir>`, `git add -f` without
+  `*.inp`, `*.dat`, `__pycache__`, files > 600 kB, then `tests/test_privacy.py`; never two FEMM cases at once; check
+  free RAM on long runs.
 
-### Running at 12:40 (logs in session e47de8ef's scratchpad)
+### Running at 17:48 (logs in session cd9b49cb's scratchpad unless stated)
 
 | Job | Run dir (log) | Done about | When it finishes |
 |---|---|---|---|
-| Study 7 revision 4 at 1.12 T (design-report remanence bracket; prediction P5 in CALIBRATION_PLAN, f86277d) | `runs/20261123-120639_motor_prius_rev4_oc_br112` (`rev4_br112.log`) | ~13:00 | Results in `cases/motor_prius_rev4_oc_br112.toml`; score P5 (0.88-0.89 x the 1.243 T values: 75.1-75.9 / 72.5-73.3 / 69.7-70.5 V); note in CALIBRATION_PLAN; commit the run. |
-| Study 6: turek_hron_fsi1_mesh_r2 (2 of 3 levels: middle level 0.8212 mm, as predicted) | `runs/20261123-070600_turek_hron_fsi1_mesh_r2` (`fsi1_r2.log`) | ~13:30 | Results (P1-P6 in the case); page 17 (noise study, the noise_a corner cell, r2 verdicts); PORTFOLIO row. |
-| Study H: bracket_random_uq (study C's 1.22 mm mesh, 6 FE solves then n 2048 / 8192 / 32768) | `runs/20261123-104847_bracket_random_uq` (`uq_evidence.log`) | ~16:30 | Results (P1-P6); portfolio page 22; PORTFOLIO row (Verification and uncertainty capability); BACKLOG row 15. Prototype (3.125 mm) gave pf_any 2.4e-6, tip governing. |
-| Study 6: FSI2 mesh study, three levels side by side (user's choice 12:30): a 3.54 mm, b 2.5 mm, c 1.77 mm, 15 s | `runs/*_turek_hron_fsi2_mesh_{a,b,c}` (`fsi2_mesh_{a,b,c}.log`) | ~15:30 / ~21:00 / tomorrow late morning | Results per case (shared P1-P5); then `scripts/combine_mesh_levels.py <out.json> <a> <b> <c>` for the run-level GCI; page 17; then FSI3 the same way. |
+| Study 7, 18 % diagnosis step 2: revision 5 with three lamination steels (bridge saturation) | `runs/*_motor_prius_rev5_steel` (`rev5_steel.log`) | ~18:40 | Score P1-P2 (`cases/motor_prius_rev5_steel.toml`: every steel 104.5-106.0 V, Js 2.05 lowest); Results in the case and CALIBRATION_PLAN; STATUS "Next steps" 2 and the page-20 line "running now"; commit the run; tell the dashboard session the result. |
+| Study 6: FSI2 mesh study a / b / c (3.54 / 2.5 / 1.77 mm, 15 s); simulated 11.1 / 10.8 / 8.6 s at 17:48 | `runs/*_turek_hron_fsi2_mesh_{a,b,c}` (`fsi2_mesh_{a,b,c}.log` in session e47de8ef's scratchpad) | ~20:45 / ~20:45 / ~00:30 | Results per case (P1-P5 in `turek_hron_fsi2_mesh_a.toml`); `scripts/combine_mesh_levels.py <out.json> <a> <b> <c>` for the run-level GCI; page 17. |
+| Study 6: FSI3 mesh study a / b / c (3.54 / 2.5 / 1.77 mm, dt 0.0005 s, 8 s; user's go-ahead 16:05), started 16:10-16:11 | `runs/*_turek_hron_fsi3_mesh_{a,b,c}` (`fsi3_mesh_{a,b,c}.log`) | ~21:30-22:00 / same / after midnight | Results per case (P1-P5 in `turek_hron_fsi3_mesh_a.toml`; level b should repeat `turek_hron_fsi3` to 4 digits); combined GCI; page 17. |
 
 ### Next (in order)
-1. **Study 7 revision 4, one effect at a time** (`validation/motor_ornl/CALIBRATION_PLAN.md`, sections "Revision 4"
-   onward): the drawn magnet (5.31 mm in a polymer shell, 6.80 mm pocket; TM-2004/137 pp. 9-10) explains most of the
-   blind back-EMF miss uncalibrated (centred, primary: 82.4 V, -7.8 %; bounds 85.3 / 79.3). Then: (a) a full
-   drawing-vs-model audit table of the motor (every dimension and material value against TM-2005/33 Fig. 21,
-   TM-2004/120 Tables 5.3-5.4, TM-2004/137, Pyleecan's inherited values); (b) static inductances on the centred machine
-   against ORNL's Ld 1.92 / Lq 5.0 mH (P3: Ld within 5 % of the blind model's, saliency NOT fixed); (c) torque per
-   ampere (locked rotor), then efficiency and the design verdicts (REQ-M1, M5, TH1), each with predictions first; the
-   placement band carried throughout. Then refresh `reports/motor/` and the artifact (version 8 is stale: no revisions
-   2-4).
-2. FSI2 results and the combined GCI; page 17; FSI3 mesh study (same design).
-3. Study H write-up.
+1. **Study 7, the 18 % flux excess** (STATUS.md "Next steps"; CALIBRATION_PLAN.md from "Revision 5" on). The client-data
+   model reads +17.7 % on back-EMF and +17 to +19 % on locked-rotor torque like for like (`scripts/motor_locked_rotor.py`);
+   ORNL's data are self-consistent. Done: step 1 (literature: no published model with inputs and numbers against ORNL;
+   Chalmers thesis puts 3D end effects at -3.7 %). Running: step 2 (steels). Then, as agreed with the user: step 3 end
+   effects (hand estimate first, 3D model only if it says 5 % or more; include the rotor end clamping plates), and an
+   independent second 2D model (ElmerFEM, open source) on the same geometry to check our field; step 4 magnetisation
+   level is reported as the leading hypothesis with the client test that settles it (fluxmeter on one magnet before and
+   after re-saturating), never fitted. The inductance mismatch (Ld -10.6 %, Lq +10 %) is separate, after these.
+   The user can save the MDPI Machines 2019 7(4) 75 PDF (MotorAnalysis-PM, "high correlation" with ORNL) into the
+   project if they want it read: its server blocks automated fetches; do not retry it.
+2. FSI2 / FSI3 mesh results and combined GCIs; page 17.
+3. Motor field render for the site: re-export from a revision-5 solution (`scripts/export_femm_field.py`; copy the
+   evidence run's .ans to build/ first, Pyleecan overwrites it); the revision-4 export in `build/render/motor_rev4_centre`
+   has the wrong magnet. Refresh `reports/motor/` after the 18 % is explained.
+4. Open for the user: whether the site shows the user's name (earlier notes said email only; the motor page now shows
+   it): ask, don't change.
+
+### Done 12:40-17:48
+- **Study 7 turned into a client project.** Revision 4 at 1.12 T scored (P5 held; 1.12 T is ORNL's hot design value,
+  TM-2004/120 "BrT"); drawing audit (`DRAWING_AUDIT.md`); **client data pack** from ORNL/TM-2010/253 Table 2.7 and
+  Fig. 2.72, TM-2004/185, the test and thermal reports (`CLIENT_DATA.md`): magnet 83.1 x 18.9 x 6.5 mm, 77 g (**revision
+  4's 5.31 mm overturned**), Br 1.255 T at 20 C, phase resistance 69 mOhm at 21 C, back-EMF test line to line at 25 C.
+  **Revision 5** (client data, nothing fitted; all predictions held): back-EMF 105.2 / 106.1 V (+17.7 / +18.7 %),
+  Ld / Lq 1.72 / 5.50 mH, torque run (mean +3.9 to +21.8 %) and the **locked-rotor emulation** (+17.5 % at 50 A, mostly
+  17-19 %). A "tests disagree" diagnosis was withdrawn (mean against maximum). Pages 20 and STATUS rewritten; dashboard
+  given a presentation note (results split into "model against test" and "design findings").
+- **FSI1 mesh r2 scored** (P1-P5 held: uy, drag, lift verified; ux unverified as predicted). **FSI3 mesh study started.**
+- **Study H scored** (pf_any 2.2e-6, PASS; damping 71 % of the variance); page 22.
+- **Study G (rotor critical speeds) built and verified:** ROSS 3.1 in `~/.venvs/ross`; 50 mm FAILS, 60 mm FAILS on soft
+  bearings (14.3 %), 65 mm PASSES (23.8 % or more); page 23.
+- **Study F (crack growth) built:** K within 0.66 % of Tada, critical crack 37.0 mm (verified), life about 92,000
+  cycles (+-0.2 %, formally unverified: mesh noise measured at 1.1e-3), inspection interval about 46,000; three
+  revisions and a noise case; page 24.
+- **Skills:** frame-requirements (read a source's own definition; assemble the client data pack first and cross-check
+  dimensions by mass; compare the test's statistic; hand-estimate simplifications across the band), build-model step 3
+  (complete audits), convergence-diagnosis (measured noise floors; finite-difference steps). Memories: client-project
+  mode, clock times.
 
 ### Done 07:40-12:40
 - **Study C (random vibration) verified:** run 20261123-100907, 38.6 MPa / 2.4e-3 / 0.345 mm, all PASS (GCI 1.3 % /
