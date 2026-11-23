@@ -79,6 +79,24 @@ speed (105 to 35 °C coolant); our thermal network gives about 30 kW under its s
 flux 24 % high (and so the current low) and an assumed cooling system, it is optimistic too (thermal was not in the
 agreed validation set).
 
+## The post-test revision (in progress)
+
+The blind verdicts stay on the record. The revision uses only the kind of data a client would hand over for an existing
+motor, and spends it deliberately ([plan](../validation/motor_ornl/CALIBRATION_PLAN.md), predictions committed before
+each step):
+
+- **Calibrate on the routine test.** Two explanations fit ORNL's back-EMF exactly: (A) weaker magnets, remanence
+  1.036 T instead of 1.243 T, or (B) fewer effective turns (× 0.807).
+- **Choose with the cheapest test that separates them.** I first chose with the locked-rotor torque (A: 8.7 % rms error,
+  B: 10.7 %), which spends the torque data and barely separates them. Asked whether a client would even have that
+  test, I switched to the static inductances, which a client usually would have. A turns error scales inductance by
+  0.807² = 0.65; a magnet error does not. ORNL's static Ld = 1.92 mH and Lq = 5 mH sit near A (1.70 and 5.38 mH, per
+  phase) and far from B (1.11 and 3.50 mH). **A is selected.**
+- **What the calibrated model still gets wrong.** Torque: within 4 % at low current but 12-14 % high at 150-250 A
+  (three of ORNL's seven currents outside the original 10 % band). The measured saliency Lq / Ld is 2.6 against our
+  3.2, so the d-axis path is not quite right (the thinner real magnet is the first suspect).
+- **Next, out of sample:** efficiency with A's dq tables (running), scored against the unchanged 2-point limit.
+
 ## How it works
 
 - **The machine.** Pyleecan ships a model of this motor, but rebuilt from ORNL's dimensioned drawing (read from the
