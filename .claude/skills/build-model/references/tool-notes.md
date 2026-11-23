@@ -133,6 +133,17 @@ Traps found while building the studies in this repo, by tool.
 - Frequencies of quadratic tetrahedra on a fully clamped root converged at
   order 1.8, not the textbook 4: the clamp corners are singular. A rate below
   the design order is fine for the GCI; only a rate far above it is suspect.
+- Modes are mass-normalised; the .dat also prints PARTICIPATION FACTORS (x, y, z, rx, ry, rz), Gamma_i = phi_i^T M r,
+  with effective mass = Gamma_i^2 (study C prototype, 2026-11-23).
+- **Harmonic base excitation** (`*FREQUENCY, STORAGE=YES`, then `*STEADY STATE DYNAMICS` f1, f2, n, bias with
+  `*MODAL DAMPING` and `*BASE MOTION, DOF=3, AMPLITUDE=.., TYPE=ACCELERATION`): the output is the ABSOLUTE
+  displacement (relative + the base's -a / w^2), one real and one imaginary block per frequency, with points added at
+  the eigenfrequencies. Its modal damping acts on the absolute velocity, base included: each mode gets an extra
+  forcing 2 j zeta w_i Gamma_i a / w, so q_i = (-Gamma_i + 2 j zeta w_i Gamma_i / w) a / (w_i^2 - w^2 + 2 j zeta w_i w).
+  A Python modal sum with that term matches ccx to 1e-5 at every frequency (bar, 20 modes); without it the real part
+  at resonance is off by Gamma phi / w_i^2 (4 % of the peak at zeta 0.02) and low-frequency imaginary parts by several
+  times. Physical structural damping acts on the relative velocity: use ccx to verify the modal sum (with the term),
+  then report the response without it.
 
 ## CalculiX axisymmetric (CAX8, study 18 head-to-shell junction)
 
