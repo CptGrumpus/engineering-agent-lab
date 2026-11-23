@@ -179,21 +179,22 @@ def rotor_figure(path, series, out, p, *, title):
     wh = np.asarray(out["campbell_whirl"])
     for j in range(wd.shape[1]):
         fwd = wh[:, j] < 0.5
-        a1.plot(sp[fwd], wd[fwd, j], ".", color=SERIES_1, ms=3)
-        a1.plot(sp[~fwd], wd[~fwd, j], ".", color=SERIES_2, ms=3)
+        a1.plot(sp[fwd], wd[fwd, j], ".", color=SERIES_1, ms=3, label="forward whirl" if j == 0 else None)
+        a1.plot(sp[~fwd], wd[~fwd, j], ".", color=SERIES_2, ms=3, label="backward whirl" if j == 0 else None)
     a1.plot(sp, sp, color=TEXT, lw=0.8, label="1x running speed")
     a1.axvspan(float(p["speed_min_rpm"]), float(p["speed_max_rpm"]), color=TEXT_2, alpha=0.15, label="operating range")
     for c in out["critical_speeds"]:
         a1.plot(c["rpm"], c["rpm"], "o", mfc="none", color=TEXT, ms=7)
     a1.set_ylim(0, sp.max() * 1.5)
     a1.set_xlabel("speed (rpm)")
-    a1.set_ylabel("damped natural frequency (rpm); forward and backward whirl")
+    a1.set_ylabel("natural frequency (rpm)")
     a1.legend(frameon=False, fontsize=8)
     s = np.asarray(series["speed_rpm"])
     a2.plot(s, np.asarray(series["disc_amp_x_m"]) * 1e6, color=SERIES_1, lw=1.4, label="disc, x")
     a2.plot(s, np.asarray(series["disc_amp_y_m"]) * 1e6, color=SERIES_2, lw=1.0, ls="--", label="disc, y")
     a2.set_xlabel("speed (rpm)")
-    a2.set_ylabel(f"unbalance response, 0-peak (um), U = {out['unbalance_g_mm']:.0f} g mm")
+    a2.set_ylabel("disc response, 0-peak (um)")
+    a2.set_title(f"API 684 unbalance {out['unbalance_g_mm']:.0f} g mm", fontsize=9, color=TEXT_2)
     a2.legend(frameon=False, fontsize=8)
     for ax in (a1, a2):
         _style(ax)
