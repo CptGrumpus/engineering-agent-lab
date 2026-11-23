@@ -479,6 +479,13 @@ Traps found while building the studies in this repo, by tool.
 - **HoleM50**: H3 is the magnet thickness AND the pocket thickness (the magnet fills it), and it grows inward from the
   outer edge, whose apex sits at depth H0. The arm angle is set by H0, H1 (bridge) and W0 together, so changing H0
   alone tilts the arms: re-solve W0 to keep a measured angle (study 7 machine build).
+- **A magnet thinner than its pocket needs a user-defined hole.** HoleM50 always fills the pocket thickness (H3)
+  with magnet; H2 only adds a vertex on the pocket side. Build the pocket with HoleM50, `convert_to_UD()` (keeps the
+  magnetization angles), then replace each magnet rectangle by the magnet plus air strips (labels containing
+  `HoleMag` / `HoleVoid`; magnets are numbered in list order). `get_magnet_dict()` works on both; `hole.magnet_0`
+  does not exist on HoleUD (`models/motor/build_prius_ornl.py --design-magnet`, study 7 revision 4).
+- **A new machine file must be added to `studies/motor_em.py`'s MACHINES** before a case can name it; otherwise the
+  runner looks in Pyleecan's own data folder and every point fails in `load_json` (study 7 revision 4's first run).
 - **Bundled machine files carry absolute material paths from Pyleecan's authors' computer** (`mat_type.path`).
   `tests/test_privacy.py` catches them once committed; strip them to file names when you build a machine
   (`models/motor/build_prius_ornl.py`).
