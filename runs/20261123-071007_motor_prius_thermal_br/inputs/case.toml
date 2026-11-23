@@ -1,0 +1,162 @@
+# Study 7, thermal network on the calibrated machine (hypothesis A, remanence 1.036 T): motor_prius_thermal_r1 (read
+# it, and motor_prius_thermal for the decision, sources and hand estimate) with the four dq tables and the efficiency
+# run replaced by their calibrated versions (motor_prius_lut_*_br, motor_prius_efficiency_br). Network, cooling,
+# scenarios, requirement and tolerances unchanged. Why: the calibration lowered the magnet flux by 19 %, which changes
+# the current needed for a torque (copper loss) and the iron loss, so the continuous rating on page 20 was still the
+# blind machine's (BACKLOG, open item since 03:30).
+#
+# Predictions, written BEFORE the run (hand reasoning from r1's envelope and the tables' MTPA, no run of this case):
+#   P1 Checks as r1: balance, coupling, efficiency consistency (against the br efficiency run) and every GCI pass;
+#      section_wind_peak FAILs in the same six scenarios (-4 to -7 %), interface_0p01 also section_wind_mean: the
+#      lumped-network model form does not depend on the magnets.
+#   P2 Magnets still bind at every speed. At 1250 rpm, where the minimum sits, copper loss dominates (2.7 kW against
+#      0.2 kW iron in r1), so the allowed current stays about 97 A while the torque per ampere falls (MTPA at 100 A:
+#      233.4 against 251.6 N m cold, -7 %): REQ-TH1 about 28.0-29.0 kW nominal (30.2 blind), still PASS, unverified in
+#      the nominal scenario as before; 24.5-33 kW over the scenarios (jacket_h1000 or interface_0p08 the lowest, may
+#      dip near 25).
+#   P3 At 4000-6000 rpm the continuous torque RISES: weaker magnets need less field-weakening current (blind 6000 rpm:
+#      id -74 of 75.7 A) and make less iron loss (1.75 kW of 3.3 kW at 6000 rpm in r1): 6000 rpm 75-95 N m (67.5
+#      blind). The minimum stays at 1250 rpm.
+#   P4 Magnet temperature where the winding mean reaches 100 C: within 5 K of r1's 93.4-104.6 C.
+#   P5 About 5 min.
+
+[case]
+name = "motor_prius_thermal_br"
+model = "lumped_thermal"
+description = "2004 Toyota Prius traction motor (our machine): steady lumped thermal network from the geometry, coupled to the verified dq tables (losses at the network's temperatures); continuous torque-speed envelope 500-6000 rpm within a 180 C winding hotspot and 150 C magnets under a synthetic 65 C water jacket, and the magnet temperature where the winding mean reaches the efficiency map's 100 C; nominal and nine sensitivity scenarios; CalculiX slot-pitch conduction check."
+assumptions = [
+  "Steady state; continuous duty. Losses: copper (DC resistance at each winding part's temperature) and iron (the tables' stator and rotor coefficients); no AC copper, magnet eddy-current or mechanical loss (as in the efficiency study). Magnets carry no loss, so they sit at the rotor's mean temperature.",
+  "Tables blended linearly in magnet temperature between the cold (20 C) and hot (80 C) runs; above 80 C this is an extrapolation (linear reversible Br loss), reported as magnet_extrapolation_above_hot_table_K.",
+  "Cooling synthetic (user, 2026-11-22): water-glycol jacket 65 C, h 3000 W/m^2 K on the housing over the stack and end-winding extensions; the result scales with it through the jacket scenarios.",
+  "Limits synthetic (user, 2026-11-22): winding hotspot 180 C (class H), magnets 150 C.",
+  "Stator-housing interface: an equivalent air gap of 0.037 mm (Staton et al. 2005 Table III average of measured machines); swept 0.01 / 0.08 mm.",
+  "End-space convection from correlations measured on TEFC induction motors (Boglietti and Cavagnino 2007 form; Micallef constants), v = rotor peripheral speed; scenario 0.5x.",
+  "Air gap: conduction only (Nu = 2), the lower bound; scenario 3x. Shaft adiabatic: no heat path through the shaft and bearings (conservative for the rotor).",
+  "Slot hotspot: the larger of the slab value (winding surface + 1.5 (mean - surface)) and the top-of-slot value (tooth-tip temperature + liner drop + local slab rise across the top width; revision 1); checked against the CalculiX section's peak. End-turn hotspot: slot exit + 1.5 (mean - slot exit), not checked by FE.",
+  "Stator iron loss split 0.57 teeth / 0.43 yoke (area x B^2 estimate); scenarios 0.4 and 0.75.",
+]
+limitations = [
+  "No test data: thermal is not in the agreed ORNL validation set.",
+  "The CalculiX check covers the stator cross-section only; the axial copper paths, end windings, end space and rotor are network-only (their T-equivalents are exact for 1D conduction, tests/test_motor_thermal.py).",
+  "Steady state only: no transient (peak) ratings.",
+  "Material conductivities and the slot liner are typical values, not measured on this machine.",
+]
+
+[parameters]
+# geometry (mm), models/motor/Toyota_Prius_ORNL.json and the efficiency case
+n_slots = 48
+stack_length_mm = 83.82
+stator_outer_radius_mm = 134.62
+stator_bore_radius_mm = 80.9625
+slot_shoulder_x_mm = 81.9727
+slot_width_shoulder_mm = 3.1496
+slot_width_round_mm = 5.6388
+slot_round_centre_x_mm = 111.6653
+slot_opening_mm = 1.9304
+liner_thickness_mm = 0.25            # synthetic
+copper_area_per_slot_mm2 = 76.4
+rotor_outer_radius_mm = 80.1878
+rotor_inner_radius_mm = 55.3212
+end_connection_length_mm = 120.6
+end_extension_mm = 38.4
+# materials and cooling
+impregnant_conductivity_W_mK = 0.25  # synthetic
+copper_conductivity_W_mK = 390.0
+liner_conductivity_W_mK = 0.2        # synthetic
+lamination_conductivity_W_mK = 28.0  # synthetic, in plane
+housing_conductivity_W_mK = 160.0    # synthetic, aluminium
+housing_wall_mm = 6.0                # synthetic
+interface_gap_mm = 0.037             # Staton et al. 2005 Table III average
+jacket_htc_W_m2K = 3000.0            # synthetic (user)
+coolant_temperature_C = 65.0         # synthetic (user)
+air_gap_h_factor = 1.0
+end_space_h_scale = 1.0
+winding_k_scale = 1.0
+teeth_iron_fraction = 0.57
+h_winding_end_space_k1 = 15.0
+h_winding_end_space_k2 = 6.0
+h_winding_end_space_k3 = 0.9
+h_housing_end_space_k1 = 20.0
+h_housing_end_space_k2 = 8.7
+h_housing_end_space_k3 = 0.7
+h_rotor_end_space_k1 = 41.4
+h_rotor_end_space_k2 = 6.22
+h_rotor_end_space_k3 = 1.0
+# electrical (as the efficiency case) and the searches
+lut_run_cold = "20261122-222259_motor_prius_lut_cold_br,20261123-000206_motor_prius_lut_cold_lowiq_br"
+lut_run_hot = "20261123-005801_motor_prius_lut_hot_br,20261123-023248_motor_prius_lut_hot_lowiq_br"
+efficiency_run = "20261123-032756_motor_prius_efficiency_br"
+series_turns_per_phase = 72
+turn_copper_area_mm2 = 8.492
+stack_length_m = 0.08382
+end_connection_length_m = 0.1206
+copper_resistivity_20C_ohm_m = 1.72e-8
+copper_alpha_per_K = 0.00393
+bus_voltage_V = 500.0
+current_limit_design_A = 212.0
+winding_hotspot_limit_C = 180.0      # class H (user)
+magnet_limit_C = 150.0               # (user)
+speed_min_rpm = 500.0
+speed_max_rpm = 6000.0
+speed_step_rpm = 250.0
+hot_corner_winding_C = 100.0
+fe_reference_speed_rpm = 3000.0
+
+[[sweep.scenarios]]
+name = "nominal"
+
+[[sweep.scenarios]]
+name = "jacket_h1000"
+jacket_htc_W_m2K = 1000.0
+
+[[sweep.scenarios]]
+name = "jacket_h6000"
+jacket_htc_W_m2K = 6000.0
+
+[[sweep.scenarios]]
+name = "interface_0p01"
+interface_gap_mm = 0.01
+
+[[sweep.scenarios]]
+name = "interface_0p08"
+interface_gap_mm = 0.08
+
+[[sweep.scenarios]]
+name = "end_space_half"
+end_space_h_scale = 0.5
+
+[[sweep.scenarios]]
+name = "air_gap_x3"
+air_gap_h_factor = 3.0
+
+[[sweep.scenarios]]
+name = "winding_k_half"
+winding_k_scale = 0.5
+
+[[sweep.scenarios]]
+name = "teeth_0p40"
+teeth_iron_fraction = 0.40
+
+[[sweep.scenarios]]
+name = "teeth_0p75"
+teeth_iron_fraction = 0.75
+
+[numerics]
+solver = "numpy linear network; fixed-point loss-temperature iteration; bisection to 0.05 N m; CalculiX 2.22 steady heat transfer on Gmsh 6-node triangles"
+fe_element_size_mm = 0.4             # winding element size on the coarsest of three meshes (0.4 / 0.283 / 0.2 mm)
+
+[verification]
+balance_rel_tol = 1e-9               # exact linear solve: anything larger is a wiring error
+coupling_tol_K = 0.1                 # the operating point moves on a 1 A grid; 0.1 K is far below the limits' meaning
+consistency_rel_tol = 1e-6           # same tables, same resistance, same search: must reproduce the efficiency run
+fe_balance_rel_tol = 1e-3            # film heat integrated by Simpson on curved quadratic edges
+fe_gci_tol = 0.01                    # the reference must be converged well inside the 5 % comparison
+section_rise_rel_tol = 0.05          # model form (lumped vs 2D): 5 % of the rise is about 2.5 % of continuous torque (rise ~ I^2)
+
+[[requirements]]
+id = "REQ-TH1"
+text = "The motor shall deliver at least 25 kW continuously (steady state, winding hotspot <= 180 C, magnets <= 150 C) at every speed from 1250 rpm (just above the 1194 rpm rated base speed) to 6000 rpm, under the stated jacket."
+metric = "min_continuous_power_kW"
+operator = ">="
+limit = 25.0
+units = "kW"

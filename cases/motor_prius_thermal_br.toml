@@ -19,6 +19,27 @@
 #      blind). The minimum stays at 1250 rpm.
 #   P4 Magnet temperature where the winding mean reaches 100 C: within 5 K of r1's 93.4-104.6 C.
 #   P5 About 5 min.
+#
+# Results (run 20261123-071007_motor_prius_thermal_br, 07:10-07:14): verification PASS in four scenarios, FAIL in six on
+# section_wind_peak (as r1). REQ-TH1 28.07 kW nominal, PASS (unverified); over the scenarios 24.32-31.90 kW, and
+# interface_0p08 FAILS it, verified (24.32 kW, 9/9 checks pass).
+#   P1 HELD: the same six scenarios fail section_wind_peak (5.1-7.2 %; nominal 5.25 %, as r1), interface_0p01 also
+#      section_wind_mean (6.39 %); balance, coupling, efficiency consistency and every GCI pass.
+#   P2 HELD nominal (28.07 kW, magnets binding at 22 of 23 speeds; 1250 rpm: 96.9 A as r1's 97.0, 214.4 against 230.8
+#      N m, -7.1 %); PARTLY over the scenarios: 24.32-31.90 kW against 24.5-33 predicted, and the low end crosses the
+#      limit (interface_0p08 24.32, jacket_h1000 25.99, end_space_half 25.58 kW).
+#   P3 MISSED (wrong direction): the high-speed torque FELL, 103.8 / 78.1 / 64.0 N m at 4000 / 5000 / 6000 rpm against
+#      113.4 / 86.5 / 67.5 (-8 / -10 / -5 %). The operating currents are unchanged to 1 A (6000 rpm: id -74, iq 16 A in
+#      both) and the iron loss fell only 3 % (1.70 against 1.75 kW). The efficiency model picks the minimum-loss current
+#      for each torque within the voltage and current limits; at under 90 A the negative id is chosen to cut loss, not
+#      forced by the voltage (it would have moved), so weaker magnets just give less torque for the same heat. The
+#      minimum stays at 1250 rpm.
+#   P4 HELD: 93.4-105.2 C (r1 93.4-104.6).
+#   P5 HELD: 4 min.
+# Engineering reading: on the calibrated machine the continuous rating falls 7 % (30.2 to 28.1 kW nominal) and the 25 kW
+# requirement now depends on the stator-to-housing fit: it passes at the literature-average interface gap (0.037 mm)
+# and fails at 0.08 mm (24.3 kW). A client would be asked for the press-fit interference or a measured interface
+# resistance before the rating is quoted.
 
 [case]
 name = "motor_prius_thermal_br"
