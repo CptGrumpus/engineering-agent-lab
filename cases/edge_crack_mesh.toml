@@ -19,6 +19,18 @@
 #   P4 Every point check passes; the worst is the two K routes at 2 mm on the 0.1 mm tip (up to 3 %).
 #   P5 Run level: K at 2 mm, critical crack and life converge (GCI under 1 %).
 #   P6 5-12 min for the three points (35 CalculiX solves each).
+#
+# Results (run 20261123-163724_edge_crack_mesh, 16:37-16:40): 18/18 point checks PASS; run level: K at 2 mm and the
+# critical crack PASS, life FAIL (inf), so VERIFICATION FAIL.
+#   tip 0.1 / 0.05 / 0.025 mm: K at 2 mm 13.39 / 13.35 / 13.36 MPa sqrt m; critical crack 37.02 / 37.01 / 37.01 mm
+#   (toughness); life 92,030 / 92,220 / 91,980 cycles (Tada's K: 93,256); inspection interval about 46,000.
+#   P1, P2, P3, P4, P6 HELD (REQ-F1 and REQ-F2 PASS with wide margins: 13.4 against 50, 92,000 against 80,000).
+#   P5 MISSED for the life: it moves +0.21 % then -0.26 % with the tip size, above the declared 1e-4 noise floor, so
+#   the GCI is not evaluable and the life verdict is unverified.
+#   Diagnosis (per crack length, K energy / Tada - 1): a smooth +0.6 / -0.25 / +0.4 % wave in a, identical on the three
+#   meshes, is Tada's polynomial (its stated accuracy 0.5 %); the mesh-to-mesh scatter is only at 2-7 mm (up to 0.2 %),
+#   where the energy step (2 % of a: 0.04 mm at 2 mm) is about one tip element. Revision r1 (edge_crack_mesh_r1):
+#   energy step 10 % of a. The 1e-4 floor stays: it is not loosened after the fact.
 
 [case]
 name = "edge_crack_mesh"
