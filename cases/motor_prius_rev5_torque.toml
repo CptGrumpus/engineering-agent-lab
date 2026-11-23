@@ -1,0 +1,72 @@
+# Study 7, revision 5: MTPA torque of the client-data machine (centred, gap 0.775 mm, magnets at 25 C) at ORNL's seven
+# locked-rotor currents, read as peak (ORNL/TM-2004/185: phase currents Ia, -Ia/2, -Ia/2), i.e. 50-250 A peak =
+# 35.4-176.8 A rms; lowest currents first. A validation target, not an input. Same angle sweep and mesh fineness as the
+# blind torque case and hypothesis A's (cal_torque_br).
+#
+# Why now: the hand diagnostic (CALIBRATION_PLAN.md, "ORNL's back-EMF and ORNL's low-current torque disagree") shows
+# ORNL's back-EMF flux with ORNL's static inductances 12 % short of ORNL's own 50 A torque, while revision 5's flux
+# reproduces it within 1 %. FEMM's own torque at low current decides whether the model's flux is high or not.
+#
+# Predictions (written and committed BEFORE the run, 15:08): blind values 79.1 / 127.2 / 175.5 / 222.1 / 266.6 / 347.4 /
+# 417.0 N m; revision 5 has 5 % less magnet flux than the blind model (105.2 against 110.9 V), which lowers the
+# magnet part of the torque (most of it at low current) and matters less where saturation governs.
+#   P1 50 A peak: 75-78 N m (ORNL 74: +1 to +6 %).   P2 75 A: 121-125 N m (ORNL 118: +3 to +6 %).
+#   P3 100 / 125 A: 168-173 / 213-219 N m (ORNL 154 / 199: +9 to +12 % / +7 to +10 %).
+#   P4 150 / 200 / 250 A: 256-263 / 335-344 / 403-413 N m (ORNL 221 / 286 / 337: +16 to +23 %): the high-current excess
+#      stays, a separate effect (saturation, the steel's B-H, or the test at high current).
+#   P5 Every point check passes; 2-3.5 h.
+
+[case]
+name = "motor_prius_rev5_torque"
+model = "pyleecan_femm_load"
+description = "2004 Toyota Prius traction motor, REVISION 5 (client data: magnet 83.1 x 18.9 x 6.5 mm centred in the 6.80 mm pocket, 1.255 T at 20 C, magnets at 25 C, air gap 0.775 mm, winding from the BOM), MTPA torque at ORNL's locked-rotor currents 50-250 A peak (35.4-176.8 A rms), 1000 rpm; Pyleecan + FEMM 4.2 magnetostatics, current angle 0-70 deg from the q axis, mesh fineness 4."
+assumptions = [
+  "2D magnetostatics (FEMM), no end effects; torque is the mean of FEMM's stress-tensor torque over one electrical period. [model form]",
+  "Machine: revision 5 (models/motor/Toyota_Prius_ORNL_rev5centre.json): lamination geometry from ORNL/TM-2005/33 Fig. 21 [client: drawing]; magnet 83.1 x 18.9 x 6.5 mm, 1.255 T at 20 C, -0.10 %/C (ORNL/TM-2010/253 Table 2.7, Fig. 2.72) [client: BOM, material data], centred in the 6.80 mm pocket; winding 9 turns per coil, 8 coils in series per phase [client: BOM].",
+  "Magnet temperature 25 C: the locked-rotor test's temperature is not stated; ORNL checked for magnet heating after it (TM-2006/423 p. 19) [assumption: room temperature].",
+  "ORNL's currents read as peak: the DC test sets Ia, -Ia/2, -Ia/2 in the three phases (ORNL/TM-2004/185), a current space vector of magnitude Ia, so Ia is the peak of the equivalent sinusoidal current.",
+  "Current-density limit 25 A/mm^2 rms on 0.84 x 143.0 mm^2 of copper per slot (stated assumption).",
+]
+limitations = [
+  "ORNL takes the largest torque over shaft angle at each current, which includes the torque ripple at that angle; the model's value is the mean over an electrical period at the best current angle.",
+  "Sinusoidal currents; no inverter harmonics, no voltage limit (1000 rpm is below base speed).",
+  "The real lamination grade is unknown (M330-35A stand-in); it matters most at high current, where the steel saturates.",
+]
+
+[parameters]
+machine = "Toyota_Prius_ORNL_rev5centre.json"
+speed_rpm = 1000.0
+current_rms_A = 100.0
+angle_min_deg = 0.0
+angle_max_deg = 70.0
+angle_steps = 8
+mesh_fineness = 4.0
+steps_per_period = 48
+angle_points = 2048
+rated_torque_Nm = 400.0
+slot_fill = 0.84
+slot_area_mm2 = 143.0
+turns_per_slot = 9
+magnet_temperature_C = 25.0
+
+[sweep]
+parameter = "current_rms_A"
+values = [35.355, 53.033, 70.711, 88.388, 106.066, 141.421, 176.777]
+
+[numerics]
+solver_timeout_s = 7200
+
+[verification]
+power_balance_rel_tol = 0.02
+current_rel_tol = 1e-3
+phase_symmetry_rel_tol = 2e-3
+mesh_noise_rel = 1e-5
+gci_max = 0.01
+
+[[requirements]]
+id = "REQ-M3"
+text = "Each operating point of the torque curve shall stay within the 25 A/mm^2 rms copper current-density limit (marks which points of the curve the motor can sustain for a short time)."
+metric = "current_density_rms_A_per_mm2"
+operator = "<="
+limit = 25.0
+units = "A/mm^2"

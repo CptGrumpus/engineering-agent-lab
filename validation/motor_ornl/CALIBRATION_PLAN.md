@@ -352,3 +352,20 @@ VERIFICATION PASS. Back-EMF 105.2 V (gap 0.775 mm) and 106.1 V (gap 0.730 mm) pe
 and in the model, so the remaining 18 % is model form or manufacturing. Candidates, each to be tested on its own:
 (a) magnetisation level in the assembled rotor (the 1.255 T is a re-saturated sample); (b) 3D end effects; (c) an
 independent check of the 2D field. No calibration: the model is reported as it stands, +18 % on back-EMF.
+
+### Diagnostic: ORNL's back-EMF and ORNL's low-current torque disagree (2026-11-23 15:07; hand calculation, no new run)
+dq torque at the best current angle, T = 1.5 p (psi iq + (Ld - Lq) id iq), p = 4, with ORNL's static inductances
+(Ld 1.92, Lq 5.0 mH), at ORNL's locked-rotor currents read as peak (TM-2004/185: phase currents Ia, -Ia/2, -Ia/2):
+| Current (A peak) | ORNL measured | ORNL's back-EMF flux (0.1742 Wb) | Revision 5's flux (0.2051 Wb) |
+|---|---|---|---|
+| 50 | 74 N m | 65.3 (-11.7 %) | 73.5 (-0.7 %) |
+| 75 | 118 N m | 113.2 (-4.0 %) | 125.0 (+5.9 %) |
+Above 75 A constant inductances overstate the reluctance torque (saturation; the model's own Lq falls from 5.4 to
+2.7 mH by 100 A rms), so only the low-current points carry information. At 50 A, where saturation matters least, ORNL's
+back-EMF flux with ORNL's inductances is 12 % short of ORNL's torque; ORNL's back-EMF would need Lq - Ld = 4.5 mH
+there (static: 3.08 mH, and inductances fall with current, they do not rise). The revision-5 flux reproduces the
+50 A torque within 1 %. Reading: ORNL's two tests do not agree with each other at low current by about the size of
+the model's back-EMF excess. This does NOT show that the back-EMF test is wrong (ORNL's report says ANL's back-EMF data
+agree with it; the static inductances' current and convention are not stated), but it means the +18 % cannot be
+called model error with confidence. The FEMM torque of revision 5 at 50 and 75 A is the next check (case
+motor_prius_rev5_torque.toml, predictions before the run).
