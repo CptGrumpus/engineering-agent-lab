@@ -53,3 +53,25 @@ reported as the size of gap the omitted losses would have to explain, not as a f
 - **Out-of-sample efficiency for A: not yet run.** It needs dq tables at 1.036 T (cold and hot, several hours of
   FEMM); B's is scored (median 5.3 points high, unchanged from the blind map's 5.2), which supports the prediction that
   most of the efficiency gap is the omitted losses, not the flux.
+
+## Revision (2026-11-22 ~22:30, user's go-ahead): re-decide A against B on a routine test, not on torque
+Why: torque is the higher-value test and a weak discriminator here (8.7 % against 10.7 % rms); once used to choose it
+stops being evidence. A real job would choose with the cheapest routine measurement that separates the hypotheses.
+Phase resistance and inductance do: B (series turns x 0.807) scales every inductance and the resistance by
+0.807^2 = 0.651; A (remanence only) leaves them unchanged apart from saturation. ORNL gives no measured resistance
+(masked search of every ORNL document we hold). TM-2006/423 p. 51 (not yet opened; located with every digit masked)
+states that "Lq is greater than Ld ... based on static measurements" with values in mH. Static inductance is a routine
+client test (CLAUDE.md, realistic information).
+
+Predictions, written BEFORE opening p. 51 (model values from the committed blind cold dq tables, runs
+20261122-102002 and 133946; L = d(phi)/d(i) from the zero-current point, rms dq, i.e. per-phase synchronous values):
+| | Ld (mH), low current (25 A rms) | Lq (mH), low current (6-12 A rms) | Lq at 100 A rms |
+|---|---|---|---|
+| A (remanence 1.036 T): about the blind values, within +-5 % (less magnet flux saturates the bridges a little less) | 1.70 | 5.38 | 2.67 |
+| B (turns x 0.807): x 0.651 | 1.11 | 3.50 | 1.74 |
+Reading rules, agreed before the page is read: (1) compare at the current the page states; if none, at low current
+(a static LCR-type test); (2) if the page says line-to-line, compare with 2 x the per-phase values (A 3.40 / 10.8, B
+2.22 / 7.0 mH); if it does not say, report both readings; (3) the hypothesis whose values are nearer on both Ld and Lq
+in a reading the page supports is selected; if the readings disagree or the conditions make the 35 % gap unreadable,
+neither is selected and both are carried as a band. Lq / Ld (3.2 in both) does not discriminate and is reported only.
+
