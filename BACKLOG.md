@@ -90,9 +90,13 @@ commit). Rules that bind:
 1. **Study 7, the 18 % flux excess** (STATUS.md "Next steps"; CALIBRATION_PLAN.md from "Revision 5" on). The client-data
    model reads +17.7 % on back-EMF and +17 to +19 % on locked-rotor torque like for like (`scripts/motor_locked_rotor.py`);
    ORNL's data are self-consistent. Done: step 1 (literature: no published model with inputs and numbers against ORNL;
-   Chalmers thesis puts 3D end effects at -3.7 %). Running: step 2 (steels). Then, as agreed with the user: step 3 end
-   effects (hand estimate first, 3D model only if it says 5 % or more; include the rotor end clamping plates), and an
-   independent second 2D model (ElmerFEM, open source) on the same geometry to check our field; step 4 magnetisation
+   Chalmers thesis puts 3D end effects at -3.7 %). Running: step 2 (steels). Done 17:57: step 3 end effects, hand
+   estimate (`scripts/motor_end_effects.py`): -1.3 to -2.4 %, -3.7 % from Chalmers' 3D model, below the 5 %
+   threshold, no 3D model; the model would read +13 to +16 %; end clamping piece non-magnetic from TM-2004/137
+   Fig. 9's photo (client question). Next: an independent second 2D model (ElmerFEM, open source) on the same
+   geometry to check our field. Elmer 26.1 Windows zip (nogui, nompi, official CSC mirror, sha256 8ce866cc6ff1)
+   downloaded to `~/tools/elmer-26.1-dl/`; unpacking and running it was blocked by the auto-mode classifier at
+   18:00: needs the user's OK; step 4 magnetisation
    level is reported as the leading hypothesis with the client test that settles it (fluxmeter on one magnet before and
    after re-saturating), never fitted. The inductance mismatch (Ld -10.6 %, Lq +10 %) is separate, after these.
    The user can save the MDPI Machines 2019 7(4) 75 PDF (MotorAnalysis-PM, "high correlation" with ORNL) into the
