@@ -1,0 +1,72 @@
+# Study 7, post-test revision: REQ-M1 (uncontrolled-generator voltage at top speed) recomputed on the CALIBRATED
+# machine (magnet remanence 1.036 T, motor_prius_cal_oc_br), as a mesh study (fineness 2 / 4 / 8), instead of
+# scaling the blind value. REQ-M1 is the last flux-dependent verdict on page 20 still quoted from the blind model
+# (1040 V, r3). User, 2026-11-23: "lets make sure we dont take shortcuts".
+#
+# Data already in hand (calibration data, opened 2026-11-22 18:41, blind_comparison_log.md): ORNL's routine back-EMF
+# test, TM-2006/423 Table 3.4, gives 539.8 V rms and 850 V peak at 5998 rpm. The calibration matched the rms constant
+# (89.78 V per 1000 rpm), not the peak: the peak depends also on the harmonics, so the comparison below checks the
+# waveform shape, but it is not independent validation.
+#
+# Predictions, written BEFORE the run:
+#   P1 Every point check passes (15/15 as motor_prius_cal_oc_br).
+#   P2 Peak at 6000 rpm 855-858 V on fineness 8 (linear between cal_oc_br's 851 V at 1.03 T and 879 V at 1.06 T gives
+#      856 V at 1.036 T); about 2 V lower on fineness 2 (r3's spread 1.8 V). Back-EMF fundamental 89.3-89.6 V per 1000
+#      rpm (the calibration target 89.78 V full waveform / 1.0044).
+#   P3 REQ-M1 FAIL (about 1.7x the 500 V bus); the harness may again withhold the verdict on the peak's GCI (r3: an
+#      anomalous order); the flux-linkage GCI under 1 %.
+#   P4 Against ORNL's measured 850 V peak at 5998 rpm: within 1 % (our 6000 rpm value scaled by 5998 / 6000).
+#   P5 About 9 min (21 s / 79 s / 438 s as r3).
+
+[case]
+name = "motor_prius_cal_oc_mesh"
+model = "pyleecan_femm"
+description = "2004 Toyota Prius traction motor rebuilt from ORNL/TM-2005/33 Fig. 21 (radii, air gap 0.775 mm, slot, pocket thickness and position), ORNL/TM-2004/120 (bridge) and magnet remanence calibrated to 1.036 T on ORNL's routine back-EMF test (validation/motor_ornl/CALIBRATION_PLAN.md), laminations M330-35A (stand-in grade), at open circuit, 1000 rpm; Pyleecan + FEMM 4.2 magnetostatics over one electrical period (48 steps), mesh fineness 2 / 4 / 8; back-EMF and the uncontrolled-generator voltage at top speed."
+assumptions = [
+  "2D magnetostatics (FEMM), no end effects: the stack (83.8 mm) is long against the air gap (0.775 mm), but end-winding leakage and axial fringing are not modelled.",
+  "Stator, rotor, slot and pocket thickness from ORNL/TM-2005/33 Fig. 21; bridge 1.45 mm from ORNL/TM-2004/120; magnet Br 1.243 T and recoil permeability 1.129 from ORNL/TM-2004/137 Fig. 14 (temperature not stated, taken as 20 C); magnet width and winding still Pyleecan's.",
+  "Laminations M330-35A, a stand-in: ORNL gives the thickness (0.36 mm) but not the grade. B-H curve from Tata Steel's typical data (50 Hz) up to 1.8 T, extrapolated above (saturation polarization 2.0 T).",
+  "Magnet temperature 20 C; Br falls about 0.1 %/K, so a hot motor has a lower back-EMF (stated, not modelled here).",
+  "Maximum speed 6000 rpm, the commonly published rating for this motor; ORNL's design report tabulates ratings only up to base speed.",
+]
+limitations = [
+  "Calibrated, not validated: the remanence was chosen to match ORNL's back-EMF constant; the 6000 rpm peak compared below is a consequence of that choice plus the waveform shape.",
+  "The magnet fills the pocket thickness (HoleM50); TM-2004/120 gives a thinner magnet (5.31 mm), not modelled.",
+  "Line-to-line peak from the phase flux linkages with their harmonics; the inverter's own clamping is not modelled.",
+  "The real lamination grade is unknown; the bracketing grades (M250-35A, a high-strength rotor grade) are separate cases.",
+]
+
+[parameters]
+machine = "Toyota_Prius_ORNL_Br1p0360.json"
+speed_rpm = 1000.0
+id_A = 0.0
+iq_A = 0.0
+mesh_fineness = 1.0
+steps_per_period = 48
+angle_points = 2048
+max_speed_rpm = 6000.0
+bus_voltage_V = 500.0
+rated_torque_Nm = 400.0
+
+[sweep]
+parameter = "mesh_fineness"
+values = [2.0, 4.0, 8.0]
+
+[numerics]
+solver_timeout_s = 3600
+
+[verification]
+phase_symmetry_rel_tol = 1e-3
+phase_shift_deg_tol = 0.5
+winding_theory_rel_tol = 0.02
+open_circuit_torque_rel_tol = 1e-3
+mesh_noise_rel = 1e-5
+gci_max = 0.01
+
+[[requirements]]
+id = "REQ-M1"
+text = "With the inverter not switching (a fault at top speed), the line-to-line back-EMF peak at 6000 rpm shall not exceed the 500 V maximum bus voltage."
+metric = "back_emf_LL_peak_at_max_speed_V"
+operator = "<="
+limit = 500.0
+units = "V"
