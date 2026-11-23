@@ -118,8 +118,14 @@ each step):
 - **Where the rest of the gap comes from (a diagnostic, not used in the model).** At the same speed and torque, ORNL's
   motor drew 6-30 % more current than ours. That extra current's copper loss is 43 % of what is missing, three
   quarters at low speed and high torque. So the model makes its torque with too little current, which fits the low
-  measured saliency. The next revision models the magnet at its design size (5.31 mm in a 6.80 mm pocket; ours fills
-  the pocket), which is drawing data a client would have.
+  measured saliency.
+- **The magnet as drawn (revision 4, in progress).** Every model so far filled the 6.80 mm rotor pocket with magnet,
+  because the Pyleecan template does. ORNL's design report gives the magnet as 5.31 mm, and its teardown report shows
+  why: the magnets are moulded into a polymer shell sized to the slot. Modelled that way, with the magnet material
+  as ORNL measured it and nothing calibrated, the back-EMF comes out 7.8 % below the measurement with the magnet
+  centred in its shell (4.6 % and 11.3 % low at the extremes of the fit), against 23.5 % high blind. The blind miss
+  was mostly geometry, which the earlier "weaker magnets" calibration had absorbed. Still to run on the drawn-magnet
+  machine, each with predictions first: inductances, torque per ampere, efficiency and the design verdicts.
 - **While doing this, a transcription error.** The efficiency table's winding temperature, phase voltage and phase
   current had been transcribed wrongly (empty, or shifted by one column in 345 of 428 rows). None of them had been
   used in a score, and the scored columns were checked row by row against the table's own identities; they were right.

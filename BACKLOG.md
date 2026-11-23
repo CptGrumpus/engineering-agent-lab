@@ -58,22 +58,56 @@ each part on its own: CSM1 to CSM3 (solid only, CalculiX, nothing new needed), C
 only, OpenFOAM 14, nothing new needed), then FSI1 to FSI3 coupled through preCICE. Each part is
 verified before the coupled run, as in study 2.
 
-## Session handoff (2026-11-23, 07:40; first written 2026-11-21, 23:10)
+## Session handoff (2026-11-23, 12:40; first written 2026-11-21, 23:10)
 
 Read this first. Files under site/, docs/, DASHBOARD.md, `scripts/make_study_renders.py`, `scripts/figkit.py` and
 `.claude/skills/publication-figures/` belong to the dashboard session (it commits in this clone: add and commit only
 your own paths, in one command; never leave files staged). Rules that bind: **CLAUDE.md "Use only information a real
-project would have"**; predictions go into a case header and get committed BEFORE the evidence run; Results blocks
-after; `scripts/scrub_paths.py <run dir>`, `git add -f` without `*.inp`, `*.dat`, `__pycache__`, logs > 600 kB, then
-`tests/test_privacy.py`; never two FEMM cases at once (OpenFOAM/CalculiX may run beside FEMM).
+project would have"** (user, 2026-11-23: any ORNL data may be OPENED; USE only what a client would provide, and if a
+client would have it, look for it in the literature without asking); **isolate one effect per revision and test it
+locally; calibration is the risky last resort** (it moves error elsewhere); **audit the model against the drawing
+before trusting it** (build-model step 3); every lesson goes into the matching skill the same session; predictions in
+the case header, committed BEFORE the evidence run; Results after; take log times from `date` run on its own;
+`scripts/scrub_paths.py <run dir>`, `git add -f` without `*.inp`, `*.dat`, `__pycache__`, files > 600 kB, then
+`tests/test_privacy.py`; never two FEMM cases at once; check free RAM on long runs (run-case "Resources").
 
-### Running at 07:40 (logs in session e47de8ef's scratchpad)
+### Running at 12:40 (logs in session e47de8ef's scratchpad)
 
 | Job | Run dir (log) | Done about | When it finishes |
 |---|---|---|---|
-| Study 19 part 2: step_mesh (finest level 1.41, iteration ~44k of 80k at 06:50, residuals still falling) | `runs/20261122-233146_step_mesh` (`step_mesh.log`) | ~10:30 | Results; `validation/step_driver_seegmiller/compare.py <step_mesh run> p02_mesh_level-1.4142` ONCE; PROTOCOL.md log; page 19 part 2; PORTFOLIO row. |
-| Study 19 part 2: step_inlet_tu (3 points; step_outlet done: Xr/H 6.408 at 30 and 50 H) | `runs/20261123-035753_step_inlet_tu` (`step_inlet_tu.log`) | ~13:00 | Results in the case; step_outlet Results too (run 20261122-233146_step_outlet, not yet written). |
-| Study 6: turek_hron_fsi1_mesh_r2 (noise declared, flag_cells check, per-window transfer; predictions committed 7c4038f) | `runs/20261123-070600_turek_hron_fsi1_mesh_r2` (`fsi1_r2.log`) | ~12:30 | Results in the case; page 17 (noise, the noise_a mesh defect, r2 verdicts); PORTFOLIO row. Then the FSI2/FSI3 mesh / time-step study (~8 h each). |
+| Study 7 revision 4 at 1.12 T (design-report remanence bracket; prediction P5 in CALIBRATION_PLAN, f86277d) | `runs/20261123-120639_motor_prius_rev4_oc_br112` (`rev4_br112.log`) | ~13:00 | Results in `cases/motor_prius_rev4_oc_br112.toml`; score P5 (0.88-0.89 x the 1.243 T values: 75.1-75.9 / 72.5-73.3 / 69.7-70.5 V); note in CALIBRATION_PLAN; commit the run. |
+| Study 6: turek_hron_fsi1_mesh_r2 (2 of 3 levels: middle level 0.8212 mm, as predicted) | `runs/20261123-070600_turek_hron_fsi1_mesh_r2` (`fsi1_r2.log`) | ~13:30 | Results (P1-P6 in the case); page 17 (noise study, the noise_a corner cell, r2 verdicts); PORTFOLIO row. |
+| Study H: bracket_random_uq (study C's 1.22 mm mesh, 6 FE solves then n 2048 / 8192 / 32768) | `runs/20261123-104847_bracket_random_uq` (`uq_evidence.log`) | ~16:30 | Results (P1-P6); portfolio page 22; PORTFOLIO row (Verification and uncertainty capability); BACKLOG row 15. Prototype (3.125 mm) gave pf_any 2.4e-6, tip governing. |
+| Study 6: FSI2 mesh study, three levels side by side (user's choice 12:30): a 3.54 mm, b 2.5 mm, c 1.77 mm, 15 s | `runs/*_turek_hron_fsi2_mesh_{a,b,c}` (`fsi2_mesh_{a,b,c}.log`) | ~15:30 / ~21:00 / tomorrow late morning | Results per case (shared P1-P5); then `scripts/combine_mesh_levels.py <out.json> <a> <b> <c>` for the run-level GCI; page 17; then FSI3 the same way. |
+
+### Next (in order)
+1. **Study 7 revision 4, one effect at a time** (`validation/motor_ornl/CALIBRATION_PLAN.md`, sections "Revision 4"
+   onward): the drawn magnet (5.31 mm in a polymer shell, 6.80 mm pocket; TM-2004/137 pp. 9-10) explains most of the
+   blind back-EMF miss uncalibrated (centred, primary: 82.4 V, -7.8 %; bounds 85.3 / 79.3). Then: (a) a full
+   drawing-vs-model audit table of the motor (every dimension and material value against TM-2005/33 Fig. 21,
+   TM-2004/120 Tables 5.3-5.4, TM-2004/137, Pyleecan's inherited values); (b) static inductances on the centred machine
+   against ORNL's Ld 1.92 / Lq 5.0 mH (P3: Ld within 5 % of the blind model's, saliency NOT fixed); (c) torque per
+   ampere (locked rotor), then efficiency and the design verdicts (REQ-M1, M5, TH1), each with predictions first; the
+   placement band carried throughout. Then refresh `reports/motor/` and the artifact (version 8 is stale: no revisions
+   2-4).
+2. FSI2 results and the combined GCI; page 17; FSI3 mesh study (same design).
+3. Study H write-up.
+
+### Done 07:40-12:40
+- **Study C (random vibration) verified:** run 20261123-100907, 38.6 MPa / 2.4e-3 / 0.345 mm, all PASS (GCI 1.3 % /
+  0.1 %); page 21. A first attempt was stopped: CalculiX output requests carried into the harmonic steps (16.5 GB .frd,
+  38 GB RAM); fixed, tool note, run-case resources section.
+- **Study 19 part 2 scored once:** REQ-S1 PASS (+2.3 %), REQ-S2 PASS (7.0 % rms), REQ-S3 FAIL (+0.0227; 2D, no side
+  walls); finest mesh unconverged at its cap (reported); outlet and inlet-turbulence cases PASS; page 19 part 2.
+- **Study 7:** REQ-M1 on the calibrated machine 856.5 V verified FAIL (ORNL 850 V); revision 2 (ORNL's no-load spin
+  loss = the model's, gap unchanged); revision 3 (measured winding temperature: gap 4.50 -> 4.05 points); diagnostic
+  (ORNL drew 6-30 % more current: 43 % of the missing loss); Table B-1 transcription repaired (unscored columns);
+  revision 4 above. Page 20 and PORTFOLIO updated.
+- **Study H built:** `harness/uncertainty.py` (Sobol, FORM with SLSQP fallback, importance sampling; closed-form tests),
+  `studies/bracket_random_uq.py`; framing approved; evidence run started.
+- **Skills:** build-model step 3 (drawing audit), frame-requirements 6a (opening vs using data, column audits, clock
+  times, calibration as a model-form alarm, isolate effects), run-case resources, tool notes (CalculiX output carry-over
+  and 20-character fields, Pyleecan HoleUD and MACHINES).
 
 ### Done 03:30-07:40
 - **FSI1 noise (study 6):** four meshes at 1.72-1.83 mm. b, c, d (with r1's 1.77 mm mesh) scatter uy(A) 1.94 %, ux(A)
@@ -413,6 +447,16 @@ elements, probabilistic uncertainty). Each with its tools and independent refere
 
 ### For the dashboard session (from the study session)
 
+- 2026-11-23 12:40, ready to show (all committed):
+  - **New page** `portfolio/21-bracket-random-vibration.md` (study C, random vibration of the study-4 bracket: PASS on
+    stress, fatigue and tip clearance, verified); figure in its run. PORTFOLIO.md has its row and two capability rows
+    (vibration, fatigue) now cite it.
+  - **Page 19 part 2** (the backward-facing step against Driver and Seegmiller): two of three limits pass; comparison
+    figure `validation/step_driver_seegmiller/comparison.png`. PORTFOLIO row 19 extended. Study 19 is complete.
+  - **Page 20** (Prius motor): REQ-M1 recomputed on the calibrated machine (856 V, ORNL 850 V), efficiency revisions 2-3,
+    the current diagnostic, and revision 4 in progress (the magnet as drawn explains most of the blind miss without
+    calibration). PORTFOLIO row 20 updated. The motor report artifact (`reports/motor/`) is NOT yet refreshed; wait.
+  - Not ready yet: study H (uncertainty, ~16:30), page 17 (FSI1 r2 ~13:30, FSI2 mesh study tomorrow).
 - 2026-11-23 ~10:10: the pipe-friction figure's mesh panel labels the extrapolated value "converged: +2.4 %"; the
   user read it as a claim that the meshes had stopped changing (they still move linearly in 1/N). Suggest "extrapolated
   to zero cell size: +2.4 % +- 0.5 %". Page 19 now says so (study session).
