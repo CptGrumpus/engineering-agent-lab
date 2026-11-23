@@ -246,3 +246,15 @@ design report's value (TM-2004/120 Table 5.4, "Magnet strength 1.12 T"), set asi
 value" without a check. The same three placements at 1.12 T.
 - P5 Back-EMF at 1.12 T = 0.88-0.89 x its value at 1.243 T, placement by placement (the calibration runs showed about
   1.2 % of back-EMF per 1 % of remanence near 1.0 T; 1.12 / 1.243 = 0.901); 66-85 V per 1000 rpm on P1's band.
+
+### Source check on revision 4's geometry (2026-11-23 12:24): the sources disagree on the air layer
+Revision 4 combines two hardware sources: the lamination drawing (TM-2005/33 Fig. 21: the punched pocket, 6.80 mm,
+measured on 8 poles) and the magnet size in the design report (TM-2004/120 Table 5.3: 5.31 mm). But the same design
+report's own model sketch (Fig. 5.2) and its Flux2D flux map (Fig. 5.10, p. 37) draw the magnet FILLING its pocket,
+and its lumped model ran at 1.12 T, below the 1.243 T measured on a sample: ORNL's parametric model looks like the
+same simplification ours made (pocket = magnet), compensated with a lower remanence. A schematic of a parametric
+model is weaker evidence about the hardware than a lamination drawing, so revision 4 remains the better-supported
+reading, but it is a hypothesis, not a finding, until a lamination drawing and a magnet drawing (or the magnet
+retention method: adhesive, resin, a spring) settle whether 1.5 mm of non-magnetic material really sits in series
+with each magnet. On a real job that is one question to the client. Carried as a model-form bracket alongside the
+placement: pocket filled (the blind geometry, 110.9 V) against magnet plus air (79-85 V).
