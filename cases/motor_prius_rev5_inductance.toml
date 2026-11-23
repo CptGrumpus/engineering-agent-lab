@@ -1,0 +1,70 @@
+# Study 7, revision 5: static inductances of the client-data machine (centred, gap 0.775 mm) against ORNL's "static
+# measurements" Ld 1.92 mH, Lq 5.0 mH (ORNL/TM-2006/423 p. 51; current and convention not stated; read per phase in the
+# dq sense, as decided 2026-11-22, CALIBRATION_PLAN.md). A small dq grid at low current: id 0 / -25 / -50 A rms,
+# iq 6.25 / 12.5 / 18.75 A rms. Ld = (psi_d(id -25) - psi_d(id 0)) / -25 A at iq 6.25 A; Lq = psi_q(iq 6.25) / 6.25 A at
+# id 0 (psi_q is zero at iq 0); per-phase rms dq values, the same definitions as the blind values (1.70 / 5.38 mH).
+#
+# Predictions (written and committed BEFORE the run, 2026-11-23 14:18):
+#   P1 Ld 1.62-1.78 mH (the blind 1.70 mH: revision 5's d-axis air-equivalent, 5.76 + 0.30 = 6.06 mm, is within 1 % of
+#      the blind 6.02 mm), so 7-16 % BELOW ORNL's 1.92 mH: the client data does not fix Ld.
+#   P2 Lq 5.1-5.6 mH (the blind 5.38: the q axis does not pass through the magnets), so 2-12 % above ORNL's 5.0.
+#   P3 Saliency Lq / Ld 3.0-3.4 against ORNL's 2.6: the d-axis gap remains for a later, separate hypothesis.
+#   P4 Every point check passes; 20-45 min (9 solves at fineness 2).
+
+[case]
+name = "motor_prius_rev5_inductance"
+model = "pyleecan_femm_lut"
+description = "2004 Toyota Prius traction motor, REVISION 5 (client-data machine: magnet 83.1 x 18.9 x 6.5 mm centred in the 6.80 mm pocket, 1.255 T at 20 C, magnets at 25 C, air gap 0.775 mm), small dq table for the static inductances: id 0 / -25 / -50 A rms, iq 6.25-18.75 A rms in 3 steps, 1000 rpm; Pyleecan + FEMM 4.2 magnetostatics over one electrical period (48 steps) with element fields; mesh fineness 2."
+assumptions = [
+  "2D magnetostatics (FEMM), no end effects; torque is the mean of FEMM's stress-tensor torque over one electrical period.",
+  "Iron loss from the element fields with the M330-35A three-term fit applied per harmonic; rotational fields counted as two orthogonal alternating ones; minor loops and DC bias not modelled.",
+  "Core mass without the stacking factor (FEMM models the stack as solid steel, lam_fill 1).",
+  "Magnet temperature 25 C (room temperature; MagFEMM T_mag; Br 1.255 T at 20 C falls 0.10 %/C, ORNL/TM-2010/253 Fig. 2.72) [client: material data; the static test's temperature is not stated].",
+  "Copper 76.4 mm^2 per slot: 13 x AWG 19 (0.912 mm) per turn, 9 turns (ORNL/TM-2010/253 Table 2.7) [client: BOM].",
+]
+limitations = [
+  "The comparison with ORNL's static inductances is made in CALIBRATION_PLAN.md after the run; the static test's current is not stated, so low current is compared (rule agreed 2026-11-22).",
+  "The loss fit covers 0.1-1.8 T at 50-2500 Hz; deep-saturation regions (tooth tips at load) extrapolate it.",
+  "No magnet eddy-current loss, no AC copper loss (proximity, skin), no mechanical loss.",
+]
+
+[parameters]
+machine = "Toyota_Prius_ORNL_rev5centre.json"
+speed_rpm = 1000.0
+id_A = 0.0
+iq_min_A = 6.25
+iq_max_A = 18.75
+iq_steps = 3
+mesh_fineness = 2.0
+steps_per_period = 48
+angle_points = 2048
+magnet_temperature_C = 25.0
+iron_kh = 0.0202
+iron_alpha = 1.791
+iron_kc = 7.91e-5
+iron_ke = 3.70e-4
+slot_fill = 0.5345
+slot_area_mm2 = 143.0
+turns_per_slot = 9
+
+[sweep]
+parameter = "id_A"
+values = [-50.0, -25.0, 0.0]
+
+[numerics]
+solver_timeout_s = 7200
+
+[verification]
+power_balance_rel_tol = 0.02
+dq_torque_rel_tol = 0.005
+current_rel_tol = 1e-3
+mesh_noise_rel = 1e-5
+gci_max = 0.02
+
+[[requirements]]
+id = "REQ-M3"
+text = "The column's operating points shall stay within the 25 A/mm^2 rms copper current-density limit (marks the grid points the motor can sustain for a short time)."
+metric = "current_density_max_A_per_mm2"
+operator = "<="
+limit = 25.0
+units = "A/mm^2"

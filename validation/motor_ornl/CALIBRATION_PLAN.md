@@ -336,3 +336,11 @@ a = 97.5 V/T, Br(25 C) = 1.2487 T, EMF = 105.2 V; at the 0.730 mm gap (G about 0
 - P3 The client data does NOT close the gap: both outside +-5 %. The cause is then model form or manufacturing.
 - P4 Peak at 6000 rpm 980-1060 V; REQ-M1 FAIL (ORNL measured 850 V).
 - P5 Every point check passes; 35-60 min.
+
+### Revision 5, static inductances (2026-11-23 14:18, predictions before the run; case motor_prius_rev5_inductance.toml)
+Small dq table on the revision-5 machine (centred, 0.775 mm gap), id 0 / -25 / -50 A, iq 6.25-18.75 A rms, magnets at
+25 C; Ld and Lq per phase (rms dq) from the low-current points, as the blind values (1.70 / 5.38 mH).
+- P1 Ld 1.62-1.78 mH: 7-16 % below ORNL's 1.92 (revision 5's d-axis air-equivalent 6.06 mm against the blind 6.02).
+- P2 Lq 5.1-5.6 mH: 2-12 % above ORNL's 5.0.
+- P3 Lq / Ld 3.0-3.4 against 2.6: the d-axis gap remains.
+- P4 Checks pass; 20-45 min. Runs after the revision-5 open-circuit case (one FEMM at a time).
