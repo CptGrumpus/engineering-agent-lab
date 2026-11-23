@@ -110,3 +110,32 @@ them (run 20261123-032756_motor_prius_efficiency_br), scored once against ORNL's
   trips the map check cold instead of hot. None of these touches the comparison above, which uses the full tables.
 - What remains: the efficiency gap is mostly losses the model leaves out (mechanical, magnet eddy-current, AC copper),
   which no routine client data here would size; and the d-axis saliency (2.6 measured against 3.2).
+
+## Revision 2 (2026-11-23 ~10:55): the no-load (spin) loss test as calibration data, then efficiency again
+*Why:* revision 1's efficiency gap (median 4.5 points, hypothesis A) is mostly losses the model leaves out: friction,
+windage and oil drag, magnet eddy currents, iron loss above the datasheet value. A no-load spin-loss test sizes them
+together and is routine for a motor supplier, so a contractor would have it (user's standing rule, 2026-11-23: "as long
+as we expect this information to be available from a contractor for the work, then we can assume we can use it").
+*Data:* ORNL/TM-2006/423 sec. 3.2.3, Table 3.7 "Summary of hybrid drive system losses", column "Motor-Rotor Losses, W"
+against motor-shaft speed (12 rows, oil near room temperature): configuration A (real rotor) minus configuration B (a
+dummy shaft on bearings), windings not energised. Located by a masked text search (every digit replaced) at 10:45; the
+method text was read masked; no number in the table has been read. Declared: the masked layout shows the column's
+digit counts, two before the decimal point in the first row and three from the fourth row (10-99 W, then 100-999 W).
+*Caveats (stated before opening):* the spin test ran in the transaxle with oil at room temperature; the efficiency
+test (Table B-1) ran the motor in its own casing with transmission oil, the rotor coupled straight to the dynamometer,
+coolant 35 C (some points much colder) and the stator often hot. Oil drag and bearing friction transfer only roughly.
+*Model value (computed before opening, committed cold dq table of hypothesis A, run 20261122-222259, id = iq = 0,
+stator + rotor):* open-circuit iron loss 15 / 35 / 61 / 92 / 167 / 262 / 374 / 505 W at 500 / 1000 / 1500 / 2000 /
+3000 / 4000 / 5000 / 6000 rpm (the blind machine: 22 / 52 / ... / 743 W; less magnet flux, less iron loss).
+*Method (fixed before opening):* residual R(n) = measured motor-rotor loss - model open-circuit iron loss, signed, at
+the table's speeds; linear interpolation in speed; beyond the table's range a least-squares R = a n + b n^2. Two
+readings of what R is, since one test cannot separate them: (a) additive, load-independent (friction, drag): add R(n)
+to every map point's loss; (b) multiplicative, an iron-loss factor k(n) = measured / model applied to the map's iron
+loss at load. The operating point does not change in (a) (a constant per speed); in (b) it is re-optimised. Score
+hypothesis A's hot and cold maps at the same 393 Table B-1 points, same 2-point limit, once, as revision 2.
+*Predictions (before opening):*
+- P1 The measured motor-rotor loss exceeds our open-circuit iron loss at every speed from 1000 rpm, by a factor 1.3-2.5
+  at the top test speed (iron above datasheet: punching, harmonics; plus friction and oil drag; magnet eddy small).
+- P2 Revision 2, reading (a): median gap (hot minus ORNL) falls from 4.50 to 3.0-4.0 points; reading (b) within 0.5
+  point of (a). The 2-point limit still FAILS. Light-load, high-speed points improve most.
+- P3 The residual R grows faster than linearly with speed (b > 0).
