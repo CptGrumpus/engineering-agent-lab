@@ -3,8 +3,8 @@
 [Portfolio index](../PORTFOLIO.md) · Fluids and structures (coupled)
 
 > **Draft, in progress (updated 2026-11-22).** The solid and fluid stages are verified. The coupled stage
-> runs (preCICE); its steady case is on its second mesh study. Numbers marked *pending* are filled in as their
-> runs finish.
+> runs (preCICE): the steady case (FSI1) reproduces the benchmark within 1 %; the two periodic cases (FSI2, FSI3)
+> are running. Numbers marked *pending* are filled in as their runs finish.
 
 | | |
 |---|---|
@@ -46,7 +46,7 @@ published results first, and only then are they coupled.
   not explained yet; lift jitters by about 2 % from one time step to the next (coupling noise on a force 5 % the
   size of drag). Not verified. Two cheap probes before the revision: lift's jitter is zero-mean coupling noise (a tighter
   coupling tolerance cut it 72 times and left every mean unchanged to five digits), and a finer solid moves the tip
-  only 0.035 %, so the solid is not the cause of the drift. The revision (running) averages over the last 2 s,
+  only 0.035 %, so the solid is not the cause of the drift. The revision averages over the last 2 s,
   judges steadiness by drift, tightens the coupling, and uses fluid meshes of 2.5 / 1.77 / 1.25 mm: the 5 mm mesh
   was too coarse to belong in the sequence (+5.8 %). Revision result (5 h): every check passes on every mesh; drag
   14.298 N/m and lift 0.762 N/m verified; the tip displacement reads 0.8175 / 0.8212 / 0.8130 mm against the

@@ -92,7 +92,7 @@ winget install --id FreeCAD.FreeCAD                       # bundles CalculiX and
 .venv\Scripts\python.exe -m pytest -q        # Modelica/FreeCAD/OpenFOAM tests skip if the tool is absent
 ```
 
-Since added: friction contact (the bolted joint), plasticity (the strap proof test), buckling (the strut), a chained coolant-to-conduction-to-stress model (the cold plate), design by analysis of a pressure-vessel nozzle, and turbulent pipe flow against a measured-data correlation. In progress: two-way fluid-structure coupling (the Turek-Hron flag) and the first comparison with measured test data (the traction motor, against Oak Ridge's published tests). Not yet done: fully conjugate heat transfer, where the fluid and solid temperatures are solved together.
+Since added: friction contact (the bolted joint), plasticity (the strap proof test), buckling (the strut), a chained coolant-to-conduction-to-stress model (the cold plate), design by analysis of a pressure-vessel nozzle, and turbulent pipe flow against a measured-data correlation. In progress: two-way fluid-structure coupling (the Turek-Hron flag). Done, and failed: the first blind comparison with measured test data (the traction motor against Oak Ridge's published tests: the model's magnet flux was about 24 % high; a calibrated revision is in progress). Not yet done: fully conjugate heat transfer, where the fluid and solid temperatures are solved together.
 
 ## First implementation milestone (done)
 
