@@ -6,6 +6,13 @@
 #   P1 Every point check passes except, possibly, the dq-torque check in some columns: both earlier low-iq tables
 #      failed it (3 and 6 columns; FEMM's torque against 3 p (phi_d iq - phi_q id) at low iq deep in field weakening).
 #   P2 About 55 min.
+#
+# Results (run 20261124-004731_motor_prius_lut_cold_lowiq_rev5, 00:47-01:45): verification FAIL, the dq torque check
+# in six columns (id -300 to -175 A: 0.52-1.33 % against 0.5 %), every one at iq 6.25 A, where the mean torque is
+# 33-36 N m and the ripple 15-24 N m peak to peak; the absolute miss is 0.18-0.44 N m. Every other check passes on
+# every point. The same mechanism as both earlier low-iq tables (motor_prius_lut_cold_lowiq.toml Results).
+#   P1 HELD as written (the dq-torque check in some columns; six, as the weakened-magnet table).  P2 HELD (58 min).
+# The efficiency map interpolates FEMM's torque, not the dq product; the table is used, with this FAIL reported.
 
 [case]
 name = "motor_prius_lut_cold_lowiq_rev5"
