@@ -188,6 +188,16 @@ the grid check.
   justified, edit the case file, say why, and start a new run.
 - If a solver fails, report it. Changing `method`, `rtol`, or `atol` is an engineering decision
   for the user to make.
+- **A coupled run can die without ending.** `ccx_preCICE` (adapter 2.20.2) crashed twice on 2026-11-24 with heap
+  corruption ("corrupted double-linked list") at random times (6.9 s and 14.0 s, while a sibling ran 15 s cleanly);
+  its abort handler never exits, so the dead process holds a core and the harness waits forever. Check long coupled
+  runs by the age of their solver logs, not only the newest time directory: a log untouched for longer than a few
+  write intervals while `ps` still lists both participants (or only one) means a hang. Killing a process needs the
+  user's go-ahead; then rerun unchanged and record the crash in the case header.
+- **Settling time depends on the corner, not only the model.** Study 11's emissivity-0.1 corners had a time constant
+  of about 534 s against 242 s at 0.9 (radiation carried 22 % of the heat instead of 75 %), so a 2,400 s run sized from
+  one prototype corner left them unsettled (0.62 K over the last tenth against 0.3). Size the run length from the
+  slowest corner: a short pilot at each extreme, or about 7 time constants of the slowest.
 
 ## Human judgment needed
 
