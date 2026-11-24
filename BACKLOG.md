@@ -542,6 +542,13 @@ elements, probabilistic uncertainty). Each with its tools and independent refere
     and peak pressure. Material: E from Shore A by a published relation (Gent; fetch, do not quote) and its
     tolerance; a published NBR Mooney-Rivlin pair as a second material form.
   - Effort: about half a day to build and verify; runs are minutes each.
+  - Sources found 2026-11-24 08:30 (no values used yet): Parker O-Ring Handbook ORD 5700 sec. 2.4.6 publishes
+    measured compression-load charts per inch of seal by cross-section (0.139 in = 3.53 mm among them), squeeze and
+    hardness (70 / 90 Shore A; 50 / 60 / 80 in the full handbook): a measured force-squeeze reference for exactly
+    this ring (read off the chart with its reading uncertainty). Gent, "On the Relation between Indentation Hardness
+    and Young's Modulus", Rubber Chem. Technol. 31(4) 896-906, 1958 (doi 10.5254/1.3542351): the Shore A to E relation;
+    the versions in circulation differ in their coefficients (7.62336 / 0.137505 with a kgf/cm^2 factor, or 7.66 /
+    0.1375 in MPa), so take it from the original. Lindley's exponents still need a second source.
 - **F. Fracture.** Edge- or centre-cracked plate, stress intensity factor from the energy release rate (two runs with
   a small crack extension, G = -dPi/da, K = sqrt(E' G)) and from crack-opening displacement near the tip; against the
   handbook solutions (Tada, Paris and Irwin); then Paris-law crack-growth life by integration.
