@@ -159,10 +159,17 @@ class LUTEfficiency(Backend):
             g = np.radians(np.linspace(0, 80, 801))
             pts = np.column_stack([-I * np.sin(g), I * np.cos(g)])
             mtpa[I] = float(np.max(oc["torque_mean_Nm"](pts)))
-        half = {k: v[::2, ::2] if isinstance(v, np.ndarray) and v.ndim == 2 else v for k, v in grid.items()}
-        half["id"], half["iq"] = grid["id"][::2], grid["iq"][::2]
+        # every second node, keeping both ends (for an even count the last node joins; for an odd count this is the
+        # plain every-second selection every run before 2026-11-24 used)
+        ka, kb = (list(range(0, len(grid[ax]), 2)) for ax in ("id", "iq"))
+        for k_list, ax in ((ka, "id"), (kb, "iq")):
+            if k_list[-1] != len(grid[ax]) - 1:
+                k_list.append(len(grid[ax]) - 1)
+        half = {k: v[np.ix_(ka, kb)] if isinstance(v, np.ndarray) and v.ndim == 2 else v for k, v in grid.items()}
+        half["id"], half["iq"] = grid["id"][ka], grid["iq"][kb]
         hi = m.interpolants(half)
-        odd = [(d, q) for a, d in enumerate(grid["id"]) for b, q in enumerate(grid["iq"]) if a % 2 or b % 2]
+        sa, sb = set(ka), set(kb)
+        odd = [(d, q) for a, d in enumerate(grid["id"]) for b, q in enumerate(grid["iq"]) if a not in sa or b not in sb]
         T_ref = np.array([grid["torque_mean_Nm"][list(grid["id"]).index(d), list(grid["iq"]).index(q)] for d, q in odd])
         T_hal = hi["torque_mean_Nm"](odd)
         sel = np.abs(T_ref) >= 20

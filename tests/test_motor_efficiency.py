@@ -120,3 +120,17 @@ def test_merging_tables_at_different_magnet_temperatures_is_refused(tmp_path):
     b = _fake_run(tmp_path, "b", [0.0], [12.5], magnet_T=80.0)
     with pytest.raises(ValueError, match="magnet temperature"):
         load_lut([a, b])
+
+
+def test_half_table_check_keeps_both_ends_for_even_counts(tmp_path):
+    """A merged grid with an even number of nodes on an axis (an inserted column) must not leave the half table
+    short of the grid's end (the half-table check then extrapolated out of bounds, 2026-11-24)."""
+    from studies.motor_efficiency import load_lut
+
+    ids = [-50.0, -37.5, -25.0, 0.0]                       # even count: the half table must still reach id = 0
+    run = _fake_run(tmp_path, "even", ids, [0.0, 25.0, 50.0])
+    g = load_lut([run])
+    ka = list(range(0, len(g["id"]), 2))
+    if ka[-1] != len(g["id"]) - 1:
+        ka.append(len(g["id"]) - 1)
+    assert g["id"][ka][0] == -50.0 and g["id"][ka][-1] == 0.0
