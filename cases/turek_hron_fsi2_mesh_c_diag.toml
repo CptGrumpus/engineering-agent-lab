@@ -25,6 +25,25 @@
 #      settings with half the swing, which points away from Courant number alone; but the tip passed -58 mm at
 #      8.347 s without trouble, so this is about 60/40, not a finding.
 #   P4 About 5-6 h (the last rerun took 6 h with the CPU shared; the CPU is mostly free now).
+#
+# Results (run 20261124-035322_turek_hron_fsi2_mesh_c_diag, 03:53-08:02; read with scripts/fsi_crash_diagnosis.py,
+# whose face-list parser was fixed on first use, 08:05):
+#   P1 HELD: floating point exception in GAMG at t = 8.836 s, the same step.   P2 HELD: 36 steps kept, 8.800-8.835.
+#   P3 HELD, and not by a small margin: MECHANISM (1), the mesh motion. The cell that fails (19988, at x 593, y 126 mm,
+#      a few mm below the flag tip's lower corner, interior: no face on the flag) shrinks from 36 % of its base volume
+#      at 8.800 s to 3.7 % at 8.835 s and its non-orthogonality rises from 8 to 92 deg, while the flow through it is
+#      ordinary (|U| 1.29 -> 1.56 m/s, smooth); its Courant number reads 17.9 only because the volume collapsed. The
+#      Courant maximum elsewhere (the cylinder's shear layer, x 176, y 255 mm) stays 2.22-2.27 throughout: no sign of a
+#      PISO instability.
+#   Found beyond the criteria: the collapse is a period-2 oscillation of the mesh motion that grows over the last
+#   ~12 steps: the cell's vertices step 0.79 / 0.80 mm at 8.823 s and 0.41 / 1.05 / 0.41 / 0.90 mm by 8.831-8.834 s,
+#   while the flag's own boundary points next to them move smoothly (0.80 -> 0.71 mm per step, no alternation) and
+#   the solid's tip watchpoint is smooth. So the oscillation is made inside the mesh-motion solve, not by the flow,
+#   the structure or the coupling. Candidate cause, from the v2512 source: inverseDistance recomputes the wall
+#   distance on the moved mesh every step with the approximate meshWave method (displacementLaplacianFvMotionSolver
+#   ::solve() calls diffusivity().correct()); v2512 has no frozenDiffusivity switch.
+#   P4 MISSED, faster: 4 h 09 min (the CPU was free; per-step writing from 8.8 s slowed only the last minutes).
+# The kept time directories (222 MB) stay in the local run dir, not committed.
 
 [case]
 name = "turek_hron_fsi2_mesh_c_diag"

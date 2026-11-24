@@ -38,11 +38,11 @@ def read_list(path: Path, key: str | None = None):
             return None
     m = re.search(r"(\d+)\s*\(", t)
     n, s = int(m.group(1)), m.end()
-    if t[s:s + 200].lstrip().startswith("("):                   # vectors or face lists: "(x y z)" / "4(a b c d)"
-        items = re.findall(r"(\d*)\(([^()]*)\)", t[s:])[:n]
-        if items and items[0][0]:                               # face lists
-            return [list(map(int, v.split())) for _, v in items]
-        return np.array([[float(x) for x in v.split()] for _, v in items])
+    head = t[s:s + 200].lstrip()
+    if re.match(r"\d+\(", head):                                # face lists: "4(a b c d)"
+        return [list(map(int, v.split())) for v in re.findall(r"\d+\(([^()]*)\)", t[s:])[:n]]
+    if head.startswith("("):                                    # vectors: "(x y z)"
+        return np.array([[float(x) for x in v.split()] for v in re.findall(r"\(([^()]*)\)", t[s:])[:n]])
     vals = re.findall(NUM, t[s:t.index(")", s)])
     return np.array([float(v) for v in vals[:n]])
 

@@ -1,0 +1,139 @@
+# Turek-Hron FSI2 mesh level c (1.77 mm), crash diagnosis (user's choice 2026-11-24, after 03:35: option B, after
+# accepting two levels for the mesh study for now, option A). The same case as turek_hron_fsi2_mesh_c in every
+# setting (physics, mesh, dt, PISO, mesh motion), plus a writeObjects function object that writes U, p, phi,
+# pointDisplacement and cellDisplacement every time step from 8.8 s; the study keeps those time directories and the
+# base mesh. The function object does not change the solve: on a 50-step test (3.54 mm) the result matched the plain
+# case exactly, and base points + pointDisplacement matched OpenFOAM's moved mesh to 5e-10 m. Not by switching the
+# main write in a re-read controlDict: that resets the end time the preCICE adapter extends (tested; the solid
+# aborted in the last window).
+#
+# Purpose: separate the two mechanisms the crash tails leave open (turek_hron_fsi2_mesh_c.toml): (1) a fluid cell
+# collapsing under the mesh motion as the flag passes, or (2) a local PISO instability at Courant numbers about 2.
+# Reading, decided before the run: rebuild the mesh at every written step (base points + pointDisplacement) and run
+# checkMesh-style measures (minimum cell volume, maximum non-orthogonality and skewness) and the cell Courant
+# number; find where the Courant number peaks at 8.834-8.835 s.
+#   (1) if the peak sits in a cell whose volume falls towards zero or whose non-orthogonality rises past about 80 deg
+#       over the last steps, with the flow around it ordinary until then;
+#   (2) if the cells there keep their shape (volume and angles near their 8.8 s values) while the velocity grows
+#       step to step, starting from an oscillation of a few cells.
+#   Neither, or both: reported as that, and the next change is chosen from it.
+#
+# Predictions (written BEFORE the run, 2026-11-24 03:53):
+#   P1 It fails at the same step, t = 8.836 s (the solve is deterministic and unchanged), floating point exception.
+#   P2 Dense writes exist for every step from 8.800 to 8.835 s.
+#   P3 Weakly, mechanism (1): FSI3's 1.77 mm level ran 8 s at a higher Courant number (2.36) under the same PISO
+#      settings with half the swing, which points away from Courant number alone; but the tip passed -58 mm at
+#      8.347 s without trouble, so this is about 60/40, not a finding.
+#   P4 About 5-6 h (the last rerun took 6 h with the CPU shared; the CPU is mostly free now).
+
+[case]
+name = "turek_hron_fsi2_mesh_c_diag"
+model = "openfoam_ccx_precice_fsi"
+description = "Turek-Hron FSI2: self-excited periodic oscillation of the elastic flag behind the cylinder (Re 100, density ratio 10); OpenFOAM v2512 (moving mesh) coupled to CalculiX through preCICE; fluid 1.77 mm at the body (mesh study level c), solid 2.5 mm, dt 0.001 s to 15 s; mean, amplitude and frequency of the tip displacements, drag and lift over the last periods against the published benchmark."
+assumptions = [
+  "2D: one cell deep in the fluid, plane strain in the solid (one element layer, as deep as the fluid).",
+  "St. Venant-Kirchhoff solid (CalculiX *ELASTIC under NLGEOM), no gravity, as the FSI tests define it.",
+  "No numerical damping in the solid (HHT alpha 0).",
+  "Inflow: the benchmark's parabola with its (1 - cos) ramp over 2 s.",
+  "Statistics from the last whole periods (benchmark definition); the oscillation is periodic (checked: last two periods).",
+]
+limitations = [
+  "One level of a three-level mesh study run as separate cases side by side (scripts/combine_mesh_levels.py applies the study's run-level check to the three runs).",
+  "The fluid mesh is regenerated per size (FSI1: about +-0.5 % mesh-to-mesh scatter on the tip displacement).",
+]
+
+[parameters]
+solid_density_kg_per_m3 = 10000.0
+shear_modulus_Pa = 500000.0
+poisson_ratio = 0.4
+fluid_density_kg_per_m3 = 1000.0
+kinematic_viscosity_m2_per_s = 0.001
+mean_velocity_m_per_s = 1.0
+fluid_cell_size_m = 0.001767767
+solid_element_size_mm = 2.5
+time_step_s = 0.001
+end_time_s = 15.0
+# steady-case benchmark keys (required by the study; unused in periodic mode): the periodic means
+benchmark_ux_A_m = -1.485e-2
+benchmark_uy_A_m = 1.30e-3
+benchmark_drag_N_per_m = 215.06
+benchmark_lift_N_per_m = 0.61
+benchmark_ux_A_mean = -1.485e-2
+benchmark_ux_A_amp = 1.270e-2
+benchmark_ux_A_freq_Hz = 3.86
+benchmark_uy_A_mean = 1.30e-3
+benchmark_uy_A_amp = 8.16e-2
+benchmark_uy_A_freq_Hz = 1.93
+benchmark_drag_mean = 215.06
+benchmark_drag_amp = 77.65
+benchmark_drag_freq_Hz = 3.86
+benchmark_lift_mean = 0.61
+benchmark_lift_amp = 237.8
+benchmark_lift_freq_Hz = 1.93
+
+[numerics]
+periodic_periods = 4
+solid_alpha = 0.0
+write_interval_s = 1.0
+ramp_time_s = 2.0
+coupling_rel_tol = 1e-5
+coupling_max_iterations = 100
+rbf_support_radius_m = 0.05
+solver_timeout_s = 43200
+dense_write_from_s = 8.8          # writeObjects every step from here (the crash is at 8.836 s)
+dense_write_keep = 45
+
+[verification]
+periodic_rel_tol = 0.02           # last two periods: uy amplitude and drag mean agree within 2 % (a settled cycle)
+force_transfer_rel_tol = 1e-3     # window by window (preCICE watch-integrals, fixed in FSI1 r2): no inertia involved
+flag_cell_max_angle_deg = 140.0   # the corner-wrap check from FSI1's noise study
+profile_rel_tol = 1e-6
+gci_max = 0.01
+
+[[requirements]]
+id = "REQ-FSI2-1"
+text = "The coupled model shall reproduce the FSI2 amplitude of the tip's vertical displacement within 5 %."
+metric = "uy_A_amp_deviation_pct"
+operator = "<="
+limit = 5.0
+units = "%"
+
+[[requirements]]
+id = "REQ-FSI2-2"
+text = "It shall reproduce the FSI2 oscillation frequency (uy of point A) within 3 %."
+metric = "uy_A_freq_Hz_deviation_pct"
+operator = "<="
+limit = 3.0
+units = "%"
+
+[[requirements]]
+id = "REQ-FSI2-3"
+text = "It shall reproduce the FSI2 mean drag within 5 %."
+metric = "drag_mean_deviation_pct"
+operator = "<="
+limit = 5.0
+units = "%"
+
+[[requirements]]
+id = "REQ-FSI2-4"
+text = "It shall reproduce the FSI2 drag amplitude within 15 % (the benchmark's own levels spread 15 %)."
+metric = "drag_amp_deviation_pct"
+operator = "<="
+limit = 15.0
+units = "%"
+
+[[requirements]]
+id = "REQ-FSI2-5"
+text = "It shall reproduce the FSI2 lift amplitude within 10 %."
+metric = "lift_amp_deviation_pct"
+operator = "<="
+limit = 10.0
+units = "%"
+
+[[requirements]]
+id = "REQ-FSI2-6"
+text = "It shall reproduce the FSI2 mean horizontal tip displacement within 10 % (second order, as in FSI1)."
+metric = "ux_A_mean_deviation_pct"
+operator = "<="
+limit = 10.0
+units = "%"
