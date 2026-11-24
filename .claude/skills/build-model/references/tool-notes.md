@@ -163,6 +163,22 @@ Traps found while building the studies in this repo, by tool.
   line's corner and mid-side nodes are 2 n + 1 equally spaced points for Simpson's rule: no field sampling needed
   (`models/fea/vessel_head_axi.py`).
 
+## CalculiX hyperelastic contact (study 12, O-ring)
+
+- **Surface-to-surface contact would not converge** for a near-incompressible neo-Hookean ring (K = 1000 G, CAX8R)
+  pressed by a steel plate: too many cutbacks in the first increment. Node-to-surface converged at once.
+- **The second value of `*SURFACE BEHAVIOR, PRESSURE-OVERCLOSURE=LINEAR` is sigma_inf, the tension carried at large
+  clearance.** 1.0 MPa (fine for steel on steel) let the edges of a 2-3 MPa rubber contact pull, and the pressure
+  integral missed the reaction by up to 47 %; use a small fraction of the expected pressure (0.01 MPa here).
+- **Node-to-surface on quadratic faces lumps about equal areas per slave node**: corner and mid-side pressures alternate
+  by about 30 %, and the trapezoid rule over the nodes reproduces the reaction (1.6 %) where Simpson's 1/6-2/3-1/6 does
+  not (+11 %). Report contact pressure as a two-node average; CPRESS is written on the expanded 3D nodes of CAX
+  elements (no simple map to the 2D numbers), so compute it as k x overclosure on the 2D nodes.
+- **An axisymmetric ring squeezed between plates grows in diameter**: the incompressible squeeze spreads into the hoop
+  too, so a ring with no radial restraint drifts outward (1.7-2.0 mm for a 3.53 mm ring at 20 %). A 2D plane-strain
+  model hides it. Model the groove wall that locates the ring; the free ring is Lindley's case (his force relation
+  matched the free FE ring within 0.6-10 % from 10 to 30 % squeeze).
+
 ## CalculiX linear buckling (`*BUCKLE`, study 13)
 
 - **The .dat prints the static pre-buckling solution before the first eigenvector.** A parser that takes the first
