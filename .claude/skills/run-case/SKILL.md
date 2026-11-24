@@ -140,8 +140,12 @@ Run every command from the repository root.
   scales as 1/h, so the finest level runs at a different temporal resolution from the coarsest. Write the
   per-level value in the case and decide on purpose: a fixed dt (the study then mixes in temporal error, and the
   fine level carries a stability risk under PISO, `nOuterCorrectors 1`) or a fixed Courant number (dt scaled with
-  h, stated). Study 6 measured max Co 1.2-1.4 on the 3.54 / 2.5 mm levels and 2.36 on 1.77 mm; FSI2's 1.77 mm level
-  crashed at 8.8 s (cause pending the rerun's log tail, 2026-11-23; Co was flat from 1 s, so not proven the trigger).
+  h, stated). Study 6 measured max Co 1.2-1.4 on the 3.54 / 2.5 mm levels and 2.36 on 1.77 mm.
+- A deforming-mesh run that dies suddenly: read the last max Courant numbers in the kept tail. A jump of several
+  times per step (study 6, FSI2 at 1.77 mm: 2.2 -> 5.8 -> 17.9, then a floating point exception in GAMG) is a
+  cell collapsing under the mesh motion, not the flow; the rerun with unchanged settings failed at the same step,
+  which is what a geometric cause does. Confirm it offline by deforming the mesh to that state, then change the
+  mesh motion only.
 - On long runs, read the live solver log in the work dir now and then, not only the harness log: the max Courant
   number per simulated second and the coupling iterations per window, from the log's tail (FSI / CFD studies:
   `%LOCALAPPDATA%/Temp/fsi_*/case/fluid/log.pimpleFoam`). A rising trend is the warning a crash otherwise gives
