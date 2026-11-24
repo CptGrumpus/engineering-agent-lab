@@ -19,6 +19,25 @@
 #   P4 REQ-M2 PASS (400 N m needs about 175 A, under 212); REQ-M5 PASS cold (55-58 kW minimum over the speed range;
 #      blind 58.6), hot 49-54 kW, near the 50 kW limit (blind 53.7).
 #   P5 Seconds per scenario.
+#
+# Results (run 20261124-062847_motor_prius_efficiency_rev5, 2 s; lut_run names filled in 06:28): verification FAIL,
+# on the hot scenario's half-table map check only (2.32 points against 2, at 4000 rpm / 10 N m; median 0.02 points,
+# at most 0.20 above 60 N m); cold 8/8 PASS (half-table check 0.84 points). REQ-M5 PASS both (cold 55.85 kW, hot
+# 51.65 kW, the hot verdict unverified on that check). Peak efficiency 97.22 % cold (2500 rpm, 70 N m), 96.87 % hot.
+#   P1 HELD (the failure is the light-load row above 4000 rpm, as written).
+#   P2 MISSED in part. Peak within 0.5 point of r1: HELD (-0.19 / -0.18). Lower at high torque below base speed:
+#      right way, larger than written: 1000 rpm / 300 N m -1.32 cold, -1.71 hot (written 0.3-1). Light load above
+#      3000 rpm "about the same or up to 0.3 higher": MISSED, -0.04 to -0.40 lower (cold), except hot 6000 rpm /
+#      30 N m +1.63. Why (loss split, efficiency_map.csv): copper loss +19-25 % everywhere (resistance +15 %, current
+#      +2-4 % from the lower torque per ampere), iron loss within -0.1 to -1 %: in field weakening the voltage limit,
+#      not the magnets, sets the stator flux, so the 4.6 % lower back-EMF does not cut iron loss as written. At hot
+#      6000 rpm / 30 N m the blind map needed 52.6 A against 43.0 (its stronger magnets need more d current).
+#   P3 HELD: median hot-minus-ORNL 4.37 points (p10-p90 2.78-7.11; blind 5.21, calibrated 4.50; 8 of 393 points
+#      within 2 points of the cold-hot band), still above the 2-point limit (scripts/motor_rev5_vs_ornl.py ->
+#      validation/motor_ornl/rev5_efficiency_vs_ornl.json).
+#   P4 HELD: 400 N m needs 171.0 A rms cold, 177.3 hot (MTPA on the merged tables; limit 212): REQ-M2 PASS; REQ-M5
+#      cold 55.85 kW in 55-58, hot 51.65 in 49-54.
+#   P5 HELD (2 s for both).
 
 [case]
 name = "motor_prius_efficiency_rev5"
@@ -38,7 +57,7 @@ limitations = [
 ]
 
 [parameters]
-lut_run = "PENDING_motor_prius_lut_cold_rev5,PENDING_motor_prius_lut_cold_lowiq_rev5"
+lut_run = "20261123-230647_motor_prius_lut_cold_rev5,20261124-004731_motor_prius_lut_cold_lowiq_rev5"
 magnet_temperature_C = 20.0
 winding_temperature_C = 20.0
 series_turns_per_phase = 72
@@ -66,7 +85,7 @@ ref_mtpa_200A_Nm = 449.11
 
 [[sweep.scenarios]]
 name = "cold"
-lut_run = "PENDING_motor_prius_lut_cold_rev5,PENDING_motor_prius_lut_cold_lowiq_rev5"
+lut_run = "20261123-230647_motor_prius_lut_cold_rev5,20261124-004731_motor_prius_lut_cold_lowiq_rev5"
 magnet_temperature_C = 20.0
 winding_temperature_C = 20.0
 ref_back_emf_V = 105.84
@@ -75,7 +94,7 @@ ref_mtpa_200A_Nm = 449.11
 
 [[sweep.scenarios]]
 name = "hot"
-lut_run = "PENDING_motor_prius_lut_hot_rev5,PENDING_motor_prius_lut_hot_lowiq_rev5"
+lut_run = "20261124-014553_motor_prius_lut_hot_rev5,20261124-031723_motor_prius_lut_hot_lowiq_rev5"
 magnet_temperature_C = 80.0
 winding_temperature_C = 100.0
 ref_back_emf_V = 0.0
