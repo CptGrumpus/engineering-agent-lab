@@ -78,7 +78,7 @@ commit). Rules that bind:
   `*.inp`, `*.dat`, `__pycache__`, files > 600 kB, then `tests/test_privacy.py`; never two FEMM cases at once; check
   free RAM on long runs.
 
-### Running at 10:08, 2026-11-24 (scratchpads under `%LOCALAPPDATA%/Temp/claude/cb67dd1e648f8970/<session>/scratchpad/`)
+### Running at 10:06, 2026-11-24 (scratchpads under `%LOCALAPPDATA%/Temp/claude/cb67dd1e648f8970/<session>/scratchpad/`)
 
 | Job | Run dir (log) | Done about | When it finishes |
 |---|---|---|---|
@@ -86,7 +86,7 @@ commit). Rules that bind:
 | Study 12 (O-ring): four evidence cases in parallel, started about 10:06 (`oring_free_lindley`, `oring_free_hertz`, `oring_seal_corners`, `oring_seal_mesh`; predictions P1-P6 in each header) | `runs/*_oring_*` (`oring_runs.log`, session 8f53debf) | about 10:35 | Score P1-P6; portfolio page (new, number 25) and the PORTFOLIO / README rows; BACKLOG row 12. |
 
 ### Next (in order)
-0a. **Done 2026-11-24 07:38-10:08 (this session):** FSI2 level-c crash diagnosed (mechanism 1, mesh motion: a period-2
+0a. **Done 2026-11-24 07:38-10:06 (this session):** FSI2 level-c crash diagnosed (mechanism 1, mesh motion: a period-2
    oscillation made in the motion solve; the current diffusivity is ill-posed, solver-dependent) and fixed by a frozen
    1 / d diffusivity (offline moveMesh test), all three FSI2 levels rerunning; the motor table refinement scored (the
    tables were not coarse; the thermal hot-corner switch is real; the light-load map row was a half-table artefact;
