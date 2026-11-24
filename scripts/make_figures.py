@@ -1640,6 +1640,96 @@ def fan_rotor():
     fk.save(fig, "fan_rotor")
 
 
+def fan_rotor_campbell():
+    """Campbell diagram on soft bearings (the governing case) for the three shafts, and the 65 mm shaft's first two
+    mode shapes. Frequencies from the run; shapes from scripts/export_fan_modes.py (the run's own model, rebuilt and
+    gated on the run's frequencies)."""
+    from scipy.interpolate import CubicSpline
+    L = limits("rotor_fan_design")
+    ok = verified(ROTOR_RUN)
+    md = json.loads((REPO / "build" / "drawings" / "fan_rotor_modes.json").read_text(encoding="utf-8"))
+    assert md["run"] == ROTOR_RUN
+    fig, gs = fk.new(FULL, 4.3, 2, 2, wspace=0.22, hspace=0.75, top=1.0, width_ratios=[1.15, 1])
+    ax = fig.add_subplot(gs[:, 0])
+    fk.style(ax, grid="both")
+    ax.set_xlim(0, 9000)
+    ax.set_ylim(0, 6000)
+    lo, hi = 1000 * 0.85, 3000 * 1.15                       # keep-out: 15 % outside the 1000-3000 rpm range (REQ-G1)
+    ax.axvspan(lo, hi, color=fk.FAIL, alpha=0.07, linewidth=0, zorder=0.5)
+    ax.axvspan(1000, 3000, color=fk.FAIL, alpha=0.07, linewidth=0, zorder=0.6)
+    ax.annotate("operating range,\nand 15 % either side", (2150, 0.985), xycoords=("data", "axes fraction"), ha="center",
+                va="top", fontsize=8.5, color=INK2)
+    ax.plot([0, 6000], [0, 6000], color=INK2, linewidth=1.1, zorder=2)
+    fk.label(ax, 5000, 5000, "running speed", dx=6, dy=-6, ha="left", va="top", color=INK2, size=8.5)
+    colors = {0.05: fk.FAIL, 0.06: REF, 0.065: MODEL}
+    for name in ("p00_d50_kb1e7", "p02_d60_kb1e7", "p04_d65_kb1e7"):
+        r = point(ROTOR_RUN, name)
+        d = r["parameters"]["shaft_diameter_m"]
+        o = r["solver_outputs"]
+        sp = np.asarray(o["campbell_rpm"])
+        wd = np.asarray(o["campbell_wd_rpm"])
+        wh = np.asarray(o["campbell_whirl"])
+        fwd = np.where(wh[:, 1] < 0.25, wd[:, 1], wd[:, 0])  # the first forward mode
+        keep = sp <= 9000
+        ax.plot(sp[keep], fwd[keep], color=colors[d], linewidth=2.0, zorder=3)
+        crit = r["metrics"]["first_forward_critical_rpm"]
+        good = r["metrics"]["separation_margin_pct"] >= L["separation_margin_pct"][1]
+        fk.status_dot(ax, crit, crit, ("meets" if good else "misses") if ok[name] else "held")
+        up = d == 0.065
+        fk.label(ax, 9000, fwd[keep][-1], f"{d * 1000:.0f} mm shaft: critical at {crit:,.0f} rpm", dx=-2, dy=5 if up else -5,
+                 ha="right", va="bottom" if up else "top", color=INK2, size=8.5)
+    ax.set_xticks([0, 1500, 3000, 4500, 6000, 7500, 9000])
+    ax.set_yticks([0, 1000, 2000, 3000, 4000, 5000, 6000])
+    ax.xaxis.set_major_formatter(lambda v, _: f"{v:,.0f}")
+    ax.yaxis.set_major_formatter(lambda v, _: f"{v:,.0f}")
+    ax.set_xlabel("running speed, rpm")
+    ax.set_ylabel("first natural frequency, rpm")
+    fk.panel(ax, "Campbell diagram, soft bearings (10⁷ N/m)")
+
+    m = md["points"]["p04_d65_kb1e7"]
+    z = np.asarray(m["nodes_m"]) * 1000
+    zs = np.linspace(0, z[-1], 201)
+    for row, (j, ttl) in enumerate(((1, "65 mm shaft, first mode: it bows"), (3, "Second mode: the impeller tilts"))):
+        ax = fig.add_subplot(gs[row, 1])
+        fk.style(ax, grid=None)
+        x = np.asarray(m["modes"][j]["x"])
+        if x[len(x) // 2 + 2] < 0:
+            x = -x
+        y = CubicSpline(z, x)(zs)
+        ax.axhline(0, color=fk.AXIS, linewidth=0.8, linestyle=(0, (6, 3)), zorder=1)
+        ax.plot(zs, y, color=MODEL, linewidth=2.2, zorder=3)
+        ax.set_xlim(-60, 1060)
+        ax.set_ylim(-1.3, 2.4)
+        # the impeller: a 400 mm disc, drawn at the shaft's slope at mid-span (display coordinates, so it looks square on)
+        fig.canvas.draw()
+        slope = CubicSpline(z, x)(500, 1)
+        p0, p1 = ax.transData.transform([(500, CubicSpline(z, x)(500)), (501, CubicSpline(z, x)(500) + slope)])
+        t = (p1 - p0) / np.hypot(*(p1 - p0))
+        n_ = np.array([-t[1], t[0]])
+        c = ax.transData.transform((500, float(CubicSpline(z, x)(500))))
+        half = 0.5 * 400 / 1060 * ax.get_window_extent().width * 0.42
+        a_, b_ = ax.transData.inverted().transform([c - n_ * half, c + n_ * half])
+        ax.plot([a_[0], b_[0]], [a_[1], b_[1]], color=INK, linewidth=4.5, solid_capstyle="butt", zorder=4)
+        for zb in (0, z[-1]):
+            ax.scatter([zb], [CubicSpline(z, x)(zb)], marker="^", s=55, color=INK, zorder=5)
+        ax.set_xticks([0, 500, 1000], ["0", "500", "1,000"])
+        ax.set_yticks([])
+        ax.spines["bottom"].set_visible(False)
+        ax.tick_params(axis="x", labelbottom=row == 1)
+        f_b, f_f = m["modes"][j - 1]["wd_rpm"], m["modes"][j]["wd_rpm"]
+        sub = (f"{f_f:,.0f} rpm at every speed: the impeller doesn't tilt" if j == 1 else
+               f"{f_b:,.0f} and {f_f:,.0f} rpm at 3,000 rpm: the spin splits it in two")
+        fk.panel(ax, ttl)
+        ax.annotate(sub, (0, 1), xycoords="axes fraction", xytext=(0, -2), textcoords="offset points", ha="left", va="top",
+                    fontsize=8.5, color=INK2)
+        if row == 1:
+            ax.set_xlabel("along the 65 mm shaft, mm (bearings at 0 and 1,000)")
+    fk.heading(fig, "Only the 65 mm shaft's critical speed stays clear of the operating range",
+               "ROSS rotor model on soft bearings, the governing case; a critical speed is where a mode meets the running speed")
+    fk.key(fig, [("meets", "meets", None), ("misses", "misses", None)], y_in=0.66)
+    fk.save(fig, "fan_rotor_campbell")
+
+
 # ---------------------------------------------------------------------------------------- study 24, cracked plate
 
 CRACK_RUN, CRACK_PT = "20261123-164649_edge_crack_mesh_r2", "p02_tip_element_size_mm-0.025"
@@ -1709,7 +1799,7 @@ ALL = {f.__name__: f for f in (cfd_tolerance, cfd_duct, cfd_response, cfd_field,
                                fatigue_sn, fin_response, fin_h_sweep, qc_bump_sweep, cad_sweep, heat_response,
                                qc_liftoff, qc_iso, coldplate_response, pipe_friction, motor_comparison,
                                motor_rotor, pv_nozzle, step_comparison, random_vibration, bracket_uncertainty,
-                               fan_rotor, crack_growth)}
+                               fan_rotor, fan_rotor_campbell, crack_growth)}
 # not on the site while the motor's flux is being explained (they're the earlier model's): motor_efficiency, motor_thermal
 
 if __name__ == "__main__":

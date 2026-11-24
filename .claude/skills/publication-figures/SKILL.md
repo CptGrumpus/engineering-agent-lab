@@ -72,6 +72,15 @@ Don't put one on the site or in a deliverable. Redraw it.
    finding and a caption that adds something the headline doesn't.
 5. Run `site/build_v2.py` and `site/export_docs.py`, and check 360 and 1280 px.
 
+## Data a run didn't save
+
+Some runs save results but not everything a figure needs (the fan rotor saved its Campbell values, not its mode
+shapes). Rebuild the model from the run's own copy of its source (`runs/<run>/inputs/`) with each point's
+`params.json`, and refuse to use it unless it reproduces numbers the run recorded (`scripts/export_fan_modes.py`
+gates the shapes on the run's frequencies, to 0.01 %). Then the figure shows the verified model, not a new one.
+Say so in the figure's line or the drawing's footer, and give `finish(..., source=...)` the true source when a
+drawing isn't drawn only from the case file (a traced client drawing).
+
 ## Before it ships
 
 - [ ] No code names, case labels or metric names on the figure

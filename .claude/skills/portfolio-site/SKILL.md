@@ -67,6 +67,12 @@ uncertain, and the load history when it matters (a cycle, a proof load). Read ev
 shown on a drawing is labelled as the result. Render it and look at it before publishing: leader lines through holes
 and labels crowding the footer only show up there. The build asserts every page has its `QUESTION`.
 
+Visuals are kept current, and made for a client deciding whether to hire (user, 2026-11-24). When a study's
+result lands, refresh its drawings and figures in the same update, not just the words; an In progress card gets
+its setup drawing too. Aim each one at what a hiring client scans for: the physical part and what's modelled, the
+verdict against the requirement, and the independent check. Where a run saved more than its figure shows (a time
+history, a Campbell table), draw from it: the flag's real tip paths, the rotor's real mode shapes.
+
 ## Adding a finished study to the site
 
 A study the study session has written up (`portfolio/NN-*.md`) gets a section on the site, not just an in-progress

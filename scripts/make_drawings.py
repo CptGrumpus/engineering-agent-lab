@@ -52,9 +52,9 @@ def new(width_in: float, xlim, ylim):
     return fig, ax
 
 
-def finish(fig, key: str, title: str, units: str = "dimensions in mm"):
+def finish(fig, key: str, title: str, units: str = "dimensions in mm", source: str = "Drawn from the case file's inputs"):
     fig.text(0.02, 0.035, title, fontsize=8, color=INK, fontweight="bold")
-    fig.text(0.98, 0.035, f"Drawn from the case file's inputs · {units}", fontsize=7, color=DIMC, ha="right")
+    fig.text(0.98, 0.035, f"{source} · {units}", fontsize=7, color=DIMC, ha="right")
     fig.add_artist(plt.Line2D([0.02, 0.98], [0.085, 0.085], color=CUT, lw=0.6))
     png = OUT / f"dwg_{key}.png"
     fig.savefig(png, dpi=200, facecolor=PLATE)
@@ -838,30 +838,34 @@ def fan_rotor():
     dim(ax, (0, R), (L / 2 - W / 2, R), 35, f"{L / 2 - W / 2:g}")
     dim(ax, (L / 2 + W / 2, -R), (L / 2 + W / 2, R), -150, f"Ø{2 * R:g}", tshift=-110)
     dim(ax, (L / 2 - W / 2, -R), (L / 2 + W / 2, -R), -22, f"{W:g}", outside=True)
-    # inset: the bent shape under the disc's weight, near enough the first mode's shape, for the 65 mm shaft
-    I = np.pi * 0.065 ** 4 / 64
-    xs = np.linspace(0, L, 201) / 1000
-    Lm = L / 1000
-    xm = np.minimum(xs, Lm - xs)
-    bend = xm * (3 * Lm ** 2 - 4 * xm ** 2) / (48 * E * I)         # per newton at mid-span
+    # inset: the 65 mm shaft's first mode, from the run's own ROSS model (scripts/export_fan_modes.py, gated on the
+    # run's recorded frequencies)
+    from scipy.interpolate import CubicSpline
+    md = json.loads((REPO / "build" / "drawings" / "fan_rotor_modes.json").read_text())
+    modes, modes_run = md["points"], md["run"]
     y0, A, x0 = -470, 95, 0
     centre(ax, (-40, y0), (L + 40, y0))
-    text(ax, -150, y0 + 120, "How the 65 mm shaft bends in its first mode (approximately; drawn exaggerated):",
+    text(ax, -150, y0 + 120, "How the 65 mm shaft bends in its first mode (from the rotor model; drawn exaggerated):",
          ha="left", fs=7.5, color=INK, bold=True, box=False)
-    for i, (k, col, ls, lab) in enumerate(((1e7, ACC, "-", "soft pedestals, 10⁷ N/m"), (1e8, DIMC, (0, (5, 3)), "stiff pedestals, 10⁸ N/m"))):
-        end = 1 / (2 * k)
-        y = (bend + end) / (bend.max() + end)
-        ax.plot(x0 + xs * 1000, y0 - A * y, color=col, lw=1.6, ls=ls, zorder=5)
-        f = end / (bend.max() + end)
+    for i, (pk, col, ls, lab) in enumerate((("p04_d65_kb1e7", ACC, "-", "soft pedestals, 10⁷ N/m"),
+                                             ("p05_d65_kb1e8", DIMC, (0, (5, 3)), "stiff pedestals, 10⁸ N/m"))):
+        m = modes[pk]
+        xs = np.linspace(0, L, 201)
+        sh = np.abs(np.asarray(m["modes"][1]["x"]))              # the forward first mode
+        y = CubicSpline(np.asarray(m["nodes_m"]) * 1000, sh)(xs)
+        ax.plot(x0 + xs, y0 - A * y, color=col, lw=1.6, ls=ls, zorder=5)
+        f = sh[0] / sh.max()
         ky = y0 + 75 - 32 * i                              # a key above the curves
         ax.plot([0, 60], [ky, ky], color=col, lw=1.6, ls=ls, zorder=5)
-        text(ax, 75, ky, f"{lab}: the ends move {100 * f:.0f} % as much as the middle", ha="left", fs=7.5, color=col, box=False)
+        crit = json.loads((REPO / "runs" / modes_run / "points" / pk / "point.json").read_text())["metrics"]["first_forward_critical_rpm"]
+        text(ax, 75, ky, f"{lab}: the ends move {100 * f:.0f} % as much as the middle; critical speed {crit:,.0f} rpm",
+             ha="left", fs=7.5, color=col, box=False)
     for x in (0, L):
         ax.plot([x], [y0], marker="^", ms=6, color=INK, zorder=6)
     text(ax, L / 2, y0 - A - 30, "On soft pedestals the whole shaft moves, so more of its mass takes part and the critical speed drops.",
          fs=7, va="top", box=False)
     finish(fig, "fan_rotor", "Study 23 · centre-hung fan rotor · the model: shaft, impeller and two bearings on springs",
-           "dimensions in mm, to scale; bearings and the bend schematic")
+           "dimensions in mm, to scale; bearings schematic; the mode shape from the model, exaggerated")
 
 
 def _cycle(ax, x0, x1, y0, y1, n=4, lo=0.0, hi=1.0, color=ACC):
@@ -1000,9 +1004,209 @@ def crack():
     finish(fig, "crack", "Study 24 · edge-cracked steel plate in cyclic tension", "dimensions in mm, to scale; the load cycle schematic")
 
 
+def motor_stops():
+    # study 20 (study 7 in the repo): the model's pockets and magnets on the client's lamination drawing, one pole.
+    # The drawing's traced lines, its scale (an ellipse fit to the 6.314 in rotor) and the stop gaps are the study's
+    # (scripts/motor_drawing_stops.py -> validation/motor_ornl/drawing_stops/); the model outline is revision 5's
+    # (build/elmer/rev5centre.json, exported by the study session). Rotated so the pole at 67.5 degrees points up.
+    import math
+    vd = REPO / "validation" / "motor_ornl" / "drawing_stops"
+    res = json.loads((vd / "drawing_stops.json").read_text())
+    geo = json.loads((REPO / "build" / "elmer" / "rev5centre.json").read_text())
+    S = np.load(vd / "raw_segs.npy")
+    P = np.vstack([S[:, :2], S[:, 2:]])
+    c0 = np.array([219.137, 228.907])                     # as the study's measure step: rough centre, then the fit
+    od = P[np.hypot(*(P - c0).T) > 0.985 * np.hypot(*(P - c0).T).max()]
+    A, B, C, D = np.linalg.lstsq(np.column_stack([od[:, 0] ** 2, od[:, 1] ** 2, od[:, 0], od[:, 1]]),
+                                 np.ones(len(od)), rcond=None)[0]
+    cx, cy = -C / (2 * A), -D / (2 * B)
+    F = 1 + A * cx * cx + B * cy * cy
+    kx, ky = 6.314 / 2 * 25.4 / math.sqrt(F / A), 6.314 / 2 * 25.4 / math.sqrt(F / B)
+    assert abs(math.sqrt(F / A) / math.sqrt(F / B) - res["aspect_x_over_y"]) < 1e-9   # the same fit as the study
+    rot = math.radians(90 - 67.5 + res["model_rotation_deg"])
+    Rm = np.array([[math.cos(rot), -math.sin(rot)], [math.sin(rot), math.cos(rot)]])
+    X = (S[:, [0, 2]] - cx) * kx
+    Y = -(S[:, [1, 3]] - cy) * ky
+    segs = np.stack([np.column_stack([X[:, 0], Y[:, 0]]), np.column_stack([X[:, 1], Y[:, 1]])], 1) @ Rm.T
+
+    def outline(s):
+        pts = []
+        for ln in s["loops"][0]:
+            if ln["kind"] == "seg":
+                pts += [ln["b"], ln["e"]]
+            else:
+                c = complex(*ln["c"])
+                z0 = complex(*ln["b"]) - c
+                pts += [[(c + z0 * complex(math.cos(t), math.sin(t))).real, (c + z0 * complex(math.cos(t), math.sin(t))).imag]
+                        for t in np.linspace(0, ln["angle"], 12)]
+        return np.array(pts) * 1e3 @ Rm.T
+    rr = geo["dims"]["rotor_Rext"] * 1000
+    x0, x1, y0, y1 = -31.0, 31.0, 49.0, 83.0
+    fig, ax = new(9.5, (x0 - 2, x1 + 48), (y0 - 7, y1 + 1))
+    ax.add_patch(Polygon([(x0, y0), (x1, y0), (x1, y1), (x0, y1)], closed=True, fc="none", ec="none"))
+    clip = Polygon([(x0, y0), (x1, y0), (x1, y1), (x0, y1)], closed=True, transform=ax.transData)
+    for s in geo["surfaces"]:
+        if s["kind"] == "void":
+            q = outline(s)
+            pg = Polygon(q, closed=True, fc="#eef2f8", ec=ACC, lw=1.0, ls=(0, (4, 2)), zorder=3)
+            ax.add_patch(pg)
+            pg.set_clip_path(clip)
+    mags = [s for s in geo["surfaces"] if s["kind"] == "magnet"]
+    for i, s in enumerate(mags):
+        V = np.array([ln["b"] for ln in s["loops"][0]]) * 1e3 @ Rm.T
+        pg = Polygon(V, closed=True, fc="#c9d8f0", ec=ACC, lw=1.1, zorder=4)
+        ax.add_patch(pg)
+        pg.set_clip_path(clip)
+        c = V.mean(0)
+        if not (x0 < c[0] < x1 and y0 < c[1] < y1):
+            continue
+        e = [V[(j + 1) % len(V)] - V[j] for j in range(len(V))]
+        Ls = [float(np.hypot(*v)) for v in e]
+        u = e[int(np.argmax(Ls))] / max(Ls)
+        for sign, key in ((1, "+"), (-1, "-")):
+            g = res["magnet_end_to_stop_mm"][key][i]
+            p_ = c + sign * u * 0.5 * max(Ls)
+            if g < 0.2:                                     # on its stop
+                ax.add_patch(Circle(p_, 0.55, fc=HOT, ec=PLATE, lw=0.6, zorder=7))
+            else:
+                ax.add_patch(Circle(p_, 0.55, fc=PLATE, ec=DIMC, lw=0.9, zorder=7))
+    lc = matplotlib.collections.LineCollection(segs, colors=INK, linewidths=0.7, zorder=5)
+    ax.add_collection(lc)
+    lc.set_clip_path(clip)
+    th = np.radians(np.linspace(90 - 25, 90 + 25, 80))
+    ax.add_patch(Polygon([(x0, y0), (x1, y0), (x1, y1), (x0, y1)], closed=True, fc="none", ec=CUT, lw=0.8, zorder=6))
+    # what the reader should take from it
+    tx = x1 + 4
+    ax.plot([tx, tx + 4], [y1 - 3, y1 - 3], color=INK, lw=0.9)
+    text(ax, tx + 5.5, y1 - 3, "the client's lamination drawing, traced", fs=7.5, color=INK, ha="left", box=False)
+    ax.plot([tx, tx + 4], [y1 - 7, y1 - 7], color=ACC, lw=1.0, ls=(0, (4, 2)))
+    text(ax, tx + 5.5, y1 - 7, "the model's pockets", fs=7.5, color=ACC, ha="left", box=False)
+    ax.add_patch(Polygon([(tx, y1 - 12.2), (tx + 4, y1 - 12.2), (tx + 4, y1 - 10), (tx, y1 - 10)], closed=True, fc="#c9d8f0", ec=ACC,
+                         lw=1.0))
+    text(ax, tx + 5.5, y1 - 11.1, "the model's magnets, 18.9 × 6.5 mm", fs=7.5, color=ACC, ha="left", box=False)
+    ax.add_patch(Circle((tx + 2, y1 - 15.5), 0.6, fc=HOT, ec=PLATE, lw=0.6))
+    text(ax, tx + 5.5, y1 - 15.5, "magnet end on its stop", fs=7.5, color=HOT, ha="left", box=False)
+    ax.add_patch(Circle((tx + 2, y1 - 19.5), 0.6, fc=PLATE, ec=DIMC, lw=0.9))
+    text(ax, tx + 5.5, y1 - 19.5, "other end: up to 0.4 mm of play", fs=7.5, ha="left", box=False)
+    med = res["pocket_outline_median_distance_mm"]
+    text(ax, tx, y1 - 24, f"The model's pockets lie on the\ndrawing's lines to {med:.3f} mm\n(median), and all 16 magnets\n"
+         "already sit on their stops, as\nmodelled. So where the magnets\nsit can't explain the 18 %\nflux excess.", fs=7.5,
+         color=INK, ha="left", va="top", box=False)
+    # where this is on the rotor
+    ix, iy, k = x1 + 39, y1 - 31, 0.085
+    ax.add_patch(Circle((ix, iy), rr * k, fc=FILL, ec=INK, lw=0.7, zorder=3))
+    ax.add_patch(Circle((ix, iy), geo["dims"]["rotor_Rint"] * 1000 * k, fc=PLATE, ec=INK, lw=0.6, zorder=3))
+    ax.add_patch(Polygon([(ix + x0 * k, iy + y0 * k), (ix + x1 * k, iy + y0 * k), (ix + x1 * k, iy + y1 * k), (ix + x0 * k, iy + y1 * k)],
+                         closed=True, fc="none", ec=HOT, lw=0.9, zorder=4))
+    text(ax, ix, iy - rr * k - 1.5, "one of eight poles,\nshown enlarged", fs=6.8, va="top", box=False)
+    text(ax, 0, y0 - 3.5, f"the rotor's outer edge, Ø{2 * rr:.1f} mm, is the arc across the top; its bore is at the bottom",
+         fs=7, box=False)
+    finish(fig, "motor_stops", "Study 20 · 2004 Prius traction motor · one rotor pole: the model on the client's drawing",
+           "dimensions in mm, to scale", source="Drawing traced from ORNL/TM-2005/33 Fig. 21; model from its machine file")
+
+
+FLAG_RUNS = {"fsi2": "20261123-123352_turek_hron_fsi2_mesh_b", "fsi3": "20261123-161128_turek_hron_fsi3_mesh_c"}
+
+
+def flag():
+    # geometry: models/fsi/turek_hron_fsi.py (the benchmark's own); flow and material per case from the case files;
+    # swings from the runs (FSI2 at 2.5 mm, FSI3 at 1.77 mm: the finest level of each that finished)
+    from models.fsi.turek_hron_fsi import CH_H, CH_L, FLAG_H, FLAG_L, XC, YC, R
+    Lc, Hc, xc, yc, r, fl, fh = (v * 1000 for v in (CH_L, CH_H, XC, YC, R, FLAG_L, FLAG_H))
+    x_root, x_tip = xc + np.sqrt(r ** 2 - (fh / 2) ** 2), xc + r + fl
+    cs = {k: case(n) for k, n in (("fsi1", "turek_hron_fsi1_mesh_r1"), ("fsi2", "turek_hron_fsi2_mesh_b"),
+                                  ("fsi3", "turek_hron_fsi3_mesh_c"))}
+    met, path = {}, {}
+    for k, run in FLAG_RUNS.items():
+        pdir = REPO / "runs" / run / "points" / "p00_baseline"
+        met[k] = json.loads((pdir / "point.json").read_text())["metrics"]
+        h = np.genfromtxt(pdir / "history.csv", delimiter=",", names=True)
+        keep = h["t_s"] >= h["t_s"][-1] - 2.0 / met[k]["uy_A_freq_Hz"]          # the last two periods
+        path[k] = (h["ux_A_m"][keep] * 1000, h["uy_A_m"][keep] * 1000)
+    fig, ax = new(9.5, (-150, 2640), (-1270, 540))
+    # ---- the whole channel, to scale
+    ax.fill_between([0, Lc], -22, 0, color=FILL, lw=0, zorder=1)
+    ax.fill_between([0, Lc], Hc, Hc + 22, color=FILL, lw=0, zorder=1)
+    ax.plot([0, Lc], [0, 0], color=INK, lw=1.3, zorder=3)
+    ax.plot([0, Lc], [Hc, Hc], color=INK, lw=1.3, zorder=3)
+    for xb in (0, Lc):
+        ax.plot([xb, xb], [0, Hc], color=CUT, lw=0.8, ls=(0, (2, 2)), zorder=2)
+    ys = np.linspace(0, Hc, 41)
+    prof = 1.5 * 4 * ys * (Hc - ys) / Hc ** 2 * 120                              # the parabola, 1.5 U at the middle
+    ax.plot(prof, ys, color=ACC, lw=1.0, zorder=4)
+    for yv in np.linspace(45, Hc - 45, 6):
+        lv = 1.5 * 4 * yv * (Hc - yv) / Hc ** 2 * 120
+        force(ax, (0, yv), (lv, yv), "", color=ACC, lw=1.1)
+    text(ax, 10, Hc + 40, "inflow: a parabola, peak 1.5 × the mean speed", fs=7, color=ACC, ha="left", va="bottom", box=False, bold=True)
+    text(ax, Lc - 10, Hc + 40, "outlet, open", fs=7, ha="right", va="bottom", box=False)
+    text(ax, Lc / 2 + 300, Hc + 40, "walls: no slip", fs=7, va="bottom", box=False)
+    ax.add_patch(Circle((xc, yc), r, fc="#d3dceb", ec=INK, lw=1.0, zorder=4))
+    rect(ax, x_root, yc - fh / 2, x_tip, yc + fh / 2, fc="#f3d9c6", ec=HOT, lw=0.9, z=4)
+    rect(ax, 100, 100, 680, 300, fc="none", ec=DIMC, lw=0.7, ls=(0, (3, 2)), z=5)
+    text(ax, 690, 300, "enlarged ×2.5 below", fs=7, ha="left", va="top", box=False)
+    dim(ax, (0, 0), (Lc, 0), -45)
+    dim(ax, (Lc, 0), (Lc, Hc), -45)
+    # ---- the cylinder and the flag, enlarged
+    k, ex0, ey0 = 2.5, -110.0, -720.0
+    E = lambda x, y: (ex0 + k * (x - 100), ey0 + k * (y - 100))     # noqa: E731
+    th = np.linspace(0, 2 * np.pi, 120)
+    poly(ax, [E(xc + r * np.cos(t), yc + r * np.sin(t)) for t in th], fc="#d3dceb", hatch="////", z=3)
+    xi = np.linspace(0, 1, 60)
+    shape = xi ** 2 * (3 - xi) / 2                                  # a sketched bend, root clamped
+    for kk, col in (("fsi2", DIMC), ("fsi3", HOT)):
+        for a in (path[kk][1].max(), path[kk][1].min()):
+            xs = x_root + (x_tip - x_root) * xi
+            top = [E(x, yc + fh / 2 + a * s) for x, s in zip(xs, shape)]
+            bot = [E(x, yc - fh / 2 + a * s) for x, s in zip(xs[::-1], shape[::-1])]
+            poly(ax, top + bot, fc="none", ec=col, lw=0.7, ls=(0, (3, 2)), z=3.5)
+        ax.plot(*E(x_tip + path[kk][0], yc + path[kk][1]), color=col, lw=1.4, zorder=6)
+    rect(ax, *E(x_root, yc - fh / 2), *E(x_tip, yc + fh / 2), fc="#f3d9c6", ec=HOT, lw=1.1, z=5)
+    ax.add_patch(Circle(E(x_tip, yc), 5, fc=INK, ec=PLATE, lw=0.8, zorder=7))
+    a2, a3 = met["fsi2"]["uy_A_amp"] * 1000, met["fsi3"]["uy_A_amp"] * 1000
+    f2, f3 = met["fsi2"]["uy_A_freq_Hz"], met["fsi3"]["uy_A_freq_Hz"]
+    xt = E(x_tip, 0)[0] + 110
+    text(ax, xt, -255, f"FSI2: the tip swings ±{a2:.0f} mm at {f2:.2f} Hz", fs=7.5, color=DIMC, ha="left", va="top", box=False, bold=True)
+    text(ax, xt, -305, f"FSI3: the tip swings ±{a3:.0f} mm at {f3:.2f} Hz", fs=7.5, color=HOT, ha="left", va="top", box=False, bold=True)
+    note(ax, E(x_tip, yc), (xt, -420), "A, the tip: where the displacement is scored", ha="left", va="center")
+    text(ax, xt, -500, "Its path traces a figure eight: the tip moves\nalong the flag twice for every swing across it.",
+         fs=7, ha="left", va="top", box=False)
+    text(ax, xt, -620, "Flag shapes sketched; tip paths drawn to scale\nfrom the runs, the last two swings.", fs=6.8, ha="left",
+         va="top", box=False)
+    note(ax, E(xc, yc + r), (E(xc, 0)[0] - 40, E(0, 300)[1] + 55), f"rigid cylinder Ø{2 * r:g}, its centre {xc:g} from the inlet and {yc:g} up:\n"
+         f"{(Hc / 2 - yc):g} mm below the channel's middle, so the flow isn't symmetric", ha="left", va="bottom")
+    note(ax, E(450, yc + fh / 2), (E(450, 0)[0] + 20, E(0, 300)[1] + 18), f"elastic flag {fl:g} × {fh:g}, clamped to the cylinder", ha="left",
+         va="bottom", color=HOT)
+    dim(ax, E(x_root, 100), E(x_tip, 100), -22, f"{fl:g}")
+    for yv in (130, 200, 270):
+        force(ax, E(100, yv), (E(100, yv)[0] + 60, E(100, yv)[1]), "", color=ACC, lw=1.1)
+    # ---- the three cases
+    tx, ty = (-110, 200, 1000), -880
+    text(ax, tx[0], ty + 52, "The three coupled cases", fs=8, color=INK, ha="left", box=False, bold=True)
+    for x, h_ in zip(tx, ("case", "mean inflow, and the flag's material", "what the flag does · result so far")):
+        text(ax, x, ty, h_, fs=7, ha="left", box=False, bold=True)
+    ax.plot([tx[0], 2630], [ty - 24, ty - 24], color=CUT, lw=0.8)
+    nu = cs["fsi3"]["kinematic_viscosity_m2_per_s"]
+    rows = [("fsi1", "bends and holds still", "drag and lift verified"),
+            ("fsi2", f"swings ±{a2:.0f} mm at {f2:.2f} Hz", "two meshes agree within 0.7 %"),
+            ("fsi3", f"swings ±{a3:.0f} mm at {f3:.2f} Hz", "frequency and drag verified, three meshes")]
+    for i, (kk, what, res) in enumerate(rows):
+        p = cs[kk]
+        y = ty - 75 - 100 * i
+        U_ = p["mean_velocity_m_per_s"]
+        text(ax, tx[0], y, f"{kk.upper()}\nRe {U_ * 2 * R / nu:.0f}", fs=7.2, color=INK, ha="left", box=False, bold=kk == "fsi3")
+        text(ax, tx[1], y, f"{U_:g} m/s\n{p['solid_density_kg_per_m3']:,.0f} kg/m³, shear modulus {p['shear_modulus_Pa'] / 1e6:g} MPa",
+             fs=7, ha="left", box=False)
+        text(ax, tx[2], y, f"{what}\n{res}", fs=7, ha="left", box=False, color=HOT if kk == "fsi3" else DIMC)
+        ax.plot([tx[0], 2630], [y - 50, y - 50], color=CUT, lw=0.5)
+    text(ax, tx[0], ty - 75 - 300 + 5, f"all three: fluid {cs['fsi3']['fluid_density_kg_per_m3']:,.0f} kg/m³, viscosity {nu * 1e3:g} × 10⁻³ m²/s; "
+         f"flag Poisson's ratio {cs['fsi3']['poisson_ratio']:g}", fs=6.8, ha="left", box=False)
+    finish(fig, "flag", "Study 17 · flexible flag behind a cylinder (Turek-Hron benchmark) · the channel, the flag and the three cases",
+           "dimensions in mm, to scale")
+
+
 ALL = {f.__name__: f for f in (fea, cantilever_opt, strap, modal, strut, contact, bolted_joint, pv_nozzle, bracket_opt, cad,
                                cfd, thermal, heat, cold_plate, pipe, suspension, baseline, motor, step, random_vib, fan_rotor,
-                               fatigue, strap_proof, bracket_uq, crack)}
+                               fatigue, strap_proof, bracket_uq, crack, flag, motor_stops)}
 
 if __name__ == "__main__":
     for name in sys.argv[1:] or ALL:
