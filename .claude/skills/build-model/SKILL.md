@@ -86,7 +86,9 @@ per problem type:
    the mean velocity). A wrong reference makes every check meaningless.
 2. **Model source.** Write the model or case writer. Generated text must not
    contain numpy reprs: cast to `float` before formatting (`np.float64(0.5)`
-   breaks OpenFOAM dictionaries).
+   breaks OpenFOAM dictionaries, and CalculiX decks: iterating a numpy array of
+   coordinates yields numpy scalars, so `f"{x!r}"` wrote `np.float64(...)` into
+   the shaft model's `*NODE` and `*CLOAD` cards).
 3. **Audit the model against the drawing, part by part, before any run that matters.** Make a table: every
    dimension and material value the model uses, its value in the model, its value in each design source, and
    where they differ. Templates impose simplifications silently: Pyleecan's V-pocket template (HoleM50) makes the
@@ -139,7 +141,9 @@ per problem type:
 11. **Tests:** `.venv/Scripts/python.exe -m pytest -q -p no:cacheprovider`.
 12. **Docs:** add the model to the tables in `run-case` and
     `verify-against-reference`, the README studies table, and PORTFOLIO if it is a
-    portfolio piece.
+    portfolio piece. `tests/test_skill_harness.py` enforces the two skill tables:
+    run it before committing a new model (studies 11 and 12 skipped this step
+    and the test stayed red until the shaft study's commit).
 13. **Commit curated evidence** with `git add -f`, leaving out bulky result CSVs,
     long solver logs, and `__pycache__`. Always keep `manifest.json`, even over the
     size limit (a 13-point dq table's is 2-3.5 MB): `harness rerun` and `verify`

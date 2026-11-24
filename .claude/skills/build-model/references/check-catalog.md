@@ -46,6 +46,16 @@ comparison, and one validity check per assumption that can fail.
 | CAD area or volume vs closed form | numerical | strap `cad_area` |
 | GCI on the peak with the design-order test (a smooth peak converges; a sharp-corner peak does not) | numerical | strap mesh study |
 
+Shoulder fillet in a shaft, 3D half model (machine-elements study, `studies/shaft_fillet.py`):
+
+| Check | Kind | Example |
+|---|---|---|
+| Clamp reaction moment about the loaded axis against the applied (only that component: a half model's symmetry plane carries couples of its own, e.g. M_y in antisymmetric torsion) | numerical | `equilibrium_bending`, `equilibrium_torsion` |
+| Applied end moment from the consistent nodal forces against M / 2, T / 2. Integrate on the curved (isoparametric) 6-node faces: straight-sided faces lost 1.8 % of the moment on a coarse end mesh | numerical | `end_load_*` |
+| Beam theory on the surface far from the fillet (exact if the end tractions are the beam field) | numerical | `beam_theory_*` |
+| The peak on the refined plane against the maximum off it (cos-corrected for bending). A maximum over many nodes picks the nodal-stress extrapolation's positive scatter: 0.9 % above the true peak at 0.2 mm, closing with refinement; report the on-plane peak | numerical | `peak_off_plane_*` |
+| FE Kt against the published fits (Pilkey / Roark, from Peterson's charts): a cross-check with a wide tolerance, since FE work finds the charts up to 15 % low in bending | model form | `kt_fit_*` |
+
 ## Vibration (modal analysis)
 
 | Check | Kind | Example |
@@ -79,6 +89,12 @@ comparison, and one validity check per assumption that can fail.
 | Life inverted back to the stress amplitude (exact round trip) | numerical | strap fatigue `life_round_trip` |
 | Notch stays elastic, or a plasticity correction (Neuber) is needed | validity | strap fatigue `elastic_notch` |
 | Life by each data set separately, reported as the material-data spread | sensitivity | strap fatigue `life_by_data_set` |
+
+Shigley's stress-based method (machine-elements study, `validation/shaft_fatigue.py`): test every fitted relation
+against the source's own worked numbers (the solutions manual's sqrt(a), q, Kf, ka, kb, Se), at more than one worked
+example: the 11th-edition manual's torsion sqrt(a) at 64 kpsi is an arithmetic slip (0.07800 against its fit's
+0.07766) while 68 kpsi agrees to five digits. Name the edition: the 11th edition changed the machined surface factor
+(3.04 Sut^-0.217 against the 10th's 4.51 Sut^-0.265, 6.5 % on Se at 1000 MPa); report the other as a sensitivity.
 
 Fatigue life is extremely sensitive to stress (here a 10 % stress change moves life about 3.4x), so report the spread from the material data and the notch model, not one number.
 
