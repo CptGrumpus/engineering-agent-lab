@@ -9,6 +9,16 @@
 #   P2 jacket_h1000 still fails coupling_convergence at its 5500 rpm hot corner: the jump is a switch between two
 #      near-equal-loss operating points, not interpolation (this revises the refinement case's P3, 60 % converge,
 #      on the refinement's own evidence).
+#
+# First run (20261124-091129_motor_prius_thermal_rev5_refined, 09:11-09:15): P1 HELD (REQ-TH1 identical in every
+# scenario: 27.70 kW nominal, 23.99 kW at the 0.08 mm fit); P2 HELD (jacket_h1000's coupling_convergence 8.83 K: the
+# hot-corner jump is a real switch, not the table). A SETUP ERROR, mine: efficiency_run still pointed at the
+# unrefined efficiency run, so efficiency_consistency failed in every scenario (8.4e-4 against 1e-6: the refined and
+# unrefined tables differ by that much). Corrected below to the refined efficiency run
+# (20261124-091110_motor_prius_efficiency_rev5_refined) and rerun; nothing else changed.
+# Rerun (20261124-091742, 09:17-09:21): efficiency consistency passes in every scenario; P1 and P2 HELD as above;
+# the remaining failures are section_wind_peak in six scenarios (and interface_0p01's wind / teeth mean, as before)
+# and jacket_h1000's coupling_convergence (the real hot-corner switch, reported).
 
 [case]
 name = "motor_prius_thermal_rev5_refined"
@@ -75,7 +85,7 @@ h_rotor_end_space_k3 = 1.0
 # electrical (as the efficiency case) and the searches
 lut_run_cold = "20261123-230647_motor_prius_lut_cold_rev5,20261124-004731_motor_prius_lut_cold_lowiq_rev5,20261124-075333_motor_prius_lut_cold_refine_rev5"
 lut_run_hot = "20261124-014553_motor_prius_lut_hot_rev5,20261124-031723_motor_prius_lut_hot_lowiq_rev5,20261124-082355_motor_prius_lut_hot_refine_rev5"
-efficiency_run = "20261124-062847_motor_prius_efficiency_rev5"
+efficiency_run = "20261124-091110_motor_prius_efficiency_rev5_refined"
 series_turns_per_phase = 72
 turn_copper_area_mm2 = 8.492
 stack_length_m = 0.08382

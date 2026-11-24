@@ -7,6 +7,14 @@
 # Predictions (written BEFORE the run, 2026-11-24 09:10):
 #   P1 Every metric within 0.2 % of motor_prius_efficiency_rev5 (peak 97.22 / 96.87 %, REQ-M5 55.85 / 51.65 kW).
 #   P2 The hot half-table map check still fails on the light-load row above 4000 rpm (a branch switch, not the table).
+#
+# First attempt (20261124-091009): both points raised an exception in the half-table check: the refined grid has an
+# even number of id nodes, and every-second selection dropped id = 0 (fixed in studies/motor_efficiency.py 43c8c16;
+# odd counts unchanged: the revision-5 efficiency run reproduces, rerun 20261124-091054).
+# Results (run 20261124-091110, 2 s): VERIFICATION PASS on both scenarios.
+#   P1 HELD: peak 97.22 / 96.87 %, REQ-M5 55.85 / 51.65 kW, every named point within 0.01 point.
+#   P2 MISSED: the hot half-table check passes, 0.31 points at most (median 0.008; worst at 3250 rpm / 120 N m): the
+#      earlier 2.32 points at 4000 rpm / 10 N m came from a half table without low-iq rows, not from the full table.
 
 [case]
 name = "motor_prius_efficiency_rev5_refined"

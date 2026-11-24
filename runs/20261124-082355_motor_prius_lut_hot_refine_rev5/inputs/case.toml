@@ -1,0 +1,188 @@
+# Study 7, revision 5: refinement of the hot dq table (80 C magnets) where the operating-point search misbehaves.
+# Merged with motor_prius_lut_hot_rev5 + motor_prius_lut_hot_lowiq_rev5 it adds an id column at -37.5 A (every
+# iq row: 0-300 A in 25 A steps and 6.25-43.75 A in 6.25 A steps) and iq rows at 3.125 and 9.375 A (every id column,
+# -37.5 included): 48 grid points, the grid stays complete. Same machine, mesh, steps and loss fit as the tables it
+# joins. User's go-ahead 2026-11-24, after 07:38 ("do 1/2 as well": item 2, the low-current rows).
+# Why: (a) the revision-5 thermal case's hot-corner state at 5500 rpm, 34 N m (jacket_h1000) has no fixed point: the
+# chosen operating point jumps from id -46 to -39 A (iq 10-11 A) between 105 and 106 C magnets, -16 % total loss for
+# 1 K, inside the cell id -50..-25, iq 6.25..12.5; (b) the hot map's half-table check fails on the 10 N m row above
+# 4000 rpm (iq 2-4 A, inside the first cell). Question: are these the cubic interpolation of a coarse cell, or real?
+#
+# Predictions (written BEFORE the run, 2026-11-24 07:53):
+#   P1 Every point check passes except, possibly, the dq-torque check on the 3.125 / 9.375 A rows at id -175 to
+#      -300 A (as the 6.25 A row: small torque, large ripple).
+#   P2 At the new nodes, the merged old table (cubic) misses FEMM's torque by under 2 % above 9 A, more at 3.125 A
+#      (the old main-table check at new low-iq nodes was 1.06 %).
+#   P3 With the refined tables the thermal case's 5500 rpm hot corner converges (the jump was interpolation): about
+#      60 % likely; if the jump survives (smaller or not), it is a real switch between field-weakening branches,
+#      reported as such.
+#   P4 About 30 min per temperature (36 s per grid point, as the earlier tables).
+
+[case]
+name = "motor_prius_lut_hot_refine_rev5"
+model = "pyleecan_femm_lut"
+description = "SUPPLEMENTARY REFINEMENT of the revision-5 tables (an id column at -37.5 A over every iq row, and iq rows at 3.125 and 9.375 A over every id column, so the merged grid stays complete): 2004 Toyota Prius traction motor (revision 5, laminations M330-35A, magnets at 80 C), dq look-up table, id 0 to -300 A rms and iq 6.25 to 43.75 A rms in 6.25 A steps (supplementary low-current rows), 1000 rpm; Pyleecan + FEMM 4.2 magnetostatics over one electrical period (48 steps) with element fields; mesh fineness 2; torque, dq flux linkages and iron-loss coefficients. Revision 5 (client data: magnet 83.1 x 18.9 x 6.5 mm centred in the 6.80 mm pocket, 1.255 T at 20 C, air gap 0.775 mm; machine Toyota_Prius_ORNL_rev5centre.json)."
+assumptions = [
+  "2D magnetostatics (FEMM), no end effects; torque is the mean of FEMM's stress-tensor torque over one electrical period.",
+  "Iron loss from the element fields with the M330-35A three-term fit applied per harmonic; rotational fields counted as two orthogonal alternating ones; minor loops and DC bias not modelled.",
+  "Core mass without the stacking factor (FEMM models the stack as solid steel, lam_fill 1).",
+  "Magnet temperature 80 C (MagFEMM T_mag; Br falls 0.1 %/K, Pyleecan's alpha_Br for this magnet: a generic NdFeB value, not ORNL's).",
+  "Copper 76.4 mm^2 per slot (Pyleecan's 13 x 0.912 mm strands per turn, 9 turns), consistent with ORNL's 0.84 fill on the squares of insulated wires.",
+]
+limitations = [
+  "No test data in this case: the ORNL comparison is a separate, blind step at the end of the study.",
+  "The loss fit covers 0.1-1.8 T at 50-2500 Hz; deep-saturation regions (tooth tips at load) extrapolate it.",
+  "No magnet eddy-current loss, no AC copper loss (proximity, skin), no mechanical loss.",
+]
+
+[parameters]
+machine = "Toyota_Prius_ORNL_rev5centre.json"
+speed_rpm = 1000.0
+id_A = 0.0
+iq_min_A = 6.25
+iq_max_A = 43.75
+iq_steps = 7
+mesh_fineness = 2.0
+steps_per_period = 48
+angle_points = 2048
+magnet_temperature_C = 80.0
+iron_kh = 0.0202
+iron_alpha = 1.791
+iron_kc = 7.91e-5
+iron_ke = 3.70e-4
+slot_fill = 0.5345
+slot_area_mm2 = 143.0
+turns_per_slot = 9
+
+[sweep]
+parameter = "scenario"
+
+[[sweep.scenarios]]
+name = "col_m37p5_main"
+id_A = -37.5
+iq_min_A = 0.0
+iq_max_A = 300.0
+iq_steps = 13
+
+[[sweep.scenarios]]
+name = "col_m37p5_low"
+id_A = -37.5
+iq_min_A = 6.25
+iq_max_A = 43.75
+iq_steps = 7
+
+[[sweep.scenarios]]
+name = "row_id_m300"
+id_A = -300.0
+iq_min_A = 3.125
+iq_max_A = 9.375
+iq_steps = 2
+
+[[sweep.scenarios]]
+name = "row_id_m275"
+id_A = -275.0
+iq_min_A = 3.125
+iq_max_A = 9.375
+iq_steps = 2
+
+[[sweep.scenarios]]
+name = "row_id_m250"
+id_A = -250.0
+iq_min_A = 3.125
+iq_max_A = 9.375
+iq_steps = 2
+
+[[sweep.scenarios]]
+name = "row_id_m225"
+id_A = -225.0
+iq_min_A = 3.125
+iq_max_A = 9.375
+iq_steps = 2
+
+[[sweep.scenarios]]
+name = "row_id_m200"
+id_A = -200.0
+iq_min_A = 3.125
+iq_max_A = 9.375
+iq_steps = 2
+
+[[sweep.scenarios]]
+name = "row_id_m175"
+id_A = -175.0
+iq_min_A = 3.125
+iq_max_A = 9.375
+iq_steps = 2
+
+[[sweep.scenarios]]
+name = "row_id_m150"
+id_A = -150.0
+iq_min_A = 3.125
+iq_max_A = 9.375
+iq_steps = 2
+
+[[sweep.scenarios]]
+name = "row_id_m125"
+id_A = -125.0
+iq_min_A = 3.125
+iq_max_A = 9.375
+iq_steps = 2
+
+[[sweep.scenarios]]
+name = "row_id_m100"
+id_A = -100.0
+iq_min_A = 3.125
+iq_max_A = 9.375
+iq_steps = 2
+
+[[sweep.scenarios]]
+name = "row_id_m75"
+id_A = -75.0
+iq_min_A = 3.125
+iq_max_A = 9.375
+iq_steps = 2
+
+[[sweep.scenarios]]
+name = "row_id_m50"
+id_A = -50.0
+iq_min_A = 3.125
+iq_max_A = 9.375
+iq_steps = 2
+
+[[sweep.scenarios]]
+name = "row_id_m37p5"
+id_A = -37.5
+iq_min_A = 3.125
+iq_max_A = 9.375
+iq_steps = 2
+
+[[sweep.scenarios]]
+name = "row_id_m25"
+id_A = -25.0
+iq_min_A = 3.125
+iq_max_A = 9.375
+iq_steps = 2
+
+[[sweep.scenarios]]
+name = "row_id_0"
+id_A = 0.0
+iq_min_A = 3.125
+iq_max_A = 9.375
+iq_steps = 2
+
+[numerics]
+solver_timeout_s = 7200
+
+[verification]
+power_balance_rel_tol = 0.02
+dq_torque_rel_tol = 0.005
+current_rel_tol = 1e-3
+mesh_noise_rel = 1e-5
+gci_max = 0.02
+
+[[requirements]]
+id = "REQ-M3"
+text = "The column's operating points shall stay within the 25 A/mm^2 rms copper current-density limit (marks the grid points the motor can sustain for a short time)."
+metric = "current_density_max_A_per_mm2"
+operator = "<="
+limit = 25.0
+units = "A/mm^2"

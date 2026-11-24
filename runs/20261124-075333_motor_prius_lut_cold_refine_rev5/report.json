@@ -1,0 +1,1415 @@
+{
+  "points": [
+    {
+      "label": "p00_col_m37p5_main",
+      "parameters": {
+        "machine": "Toyota_Prius_ORNL_rev5centre.json",
+        "speed_rpm": 1000.0,
+        "id_A": -37.5,
+        "iq_min_A": 0.0,
+        "iq_max_A": 300.0,
+        "iq_steps": 13,
+        "mesh_fineness": 2.0,
+        "steps_per_period": 48,
+        "angle_points": 2048,
+        "magnet_temperature_C": 20.0,
+        "iron_kh": 0.0202,
+        "iron_alpha": 1.791,
+        "iron_kc": 7.91e-05,
+        "iron_ke": 0.00037,
+        "slot_fill": 0.5345,
+        "slot_area_mm2": 143.0,
+        "turns_per_slot": 9,
+        "scenario": "col_m37p5_main"
+      },
+      "derived": {
+        "current_rms_max_A": 302.3346655611956
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "power_balance",
+          "description": "max over q-axis currents (|T| >= 5 N m) of |mean(sum i dphi/dt) - mean torque x omega_m| / (mean torque x omega_m)",
+          "kind": "numerical",
+          "value": 0.0017678323230828782,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "dq_torque",
+          "description": "max over q-axis currents (|T| >= 5 N m) of |3 p (phi_d i_q - phi_q i_d) - FEMM torque| / FEMM torque: the mean dq flux linkages the efficiency map interpolates reproduce the torque (model form: harmonics are left out of the dq means)",
+          "kind": "numerical",
+          "value": 0.0017678323230830564,
+          "tolerance": 0.005,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "current_amplitude",
+          "description": "max |imposed phase current fundamental - sqrt(2) x requested rms| / peak",
+          "kind": "numerical",
+          "value": 4.619906541019619e-16,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "iron_coefficients_non_negative",
+          "description": "min iron-loss coefficient over cores and currents (W), below 0 would be unphysical",
+          "kind": "numerical",
+          "value": -0.0003709238354838309,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "time_resolution",
+          "description": "48 / steps per electrical period (below 1: at least 48)",
+          "kind": "validity",
+          "value": 1.0,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-M3",
+          "text": "The column's operating points shall stay within the 25 A/mm^2 rms copper current-density limit (marks the grid points the motor can sustain for a short time).",
+          "metric": "current_density_max_A_per_mm2",
+          "operator": "<=",
+          "limit": 25.0,
+          "units": "A/mm^2",
+          "value": 35.59973035450111,
+          "margin": -10.599730354501112,
+          "verdict": "FAIL"
+        }
+      ]
+    },
+    {
+      "label": "p01_col_m37p5_low",
+      "parameters": {
+        "machine": "Toyota_Prius_ORNL_rev5centre.json",
+        "speed_rpm": 1000.0,
+        "id_A": -37.5,
+        "iq_min_A": 6.25,
+        "iq_max_A": 43.75,
+        "iq_steps": 7,
+        "mesh_fineness": 2.0,
+        "steps_per_period": 48,
+        "angle_points": 2048,
+        "magnet_temperature_C": 20.0,
+        "iron_kh": 0.0202,
+        "iron_alpha": 1.791,
+        "iron_kc": 7.91e-05,
+        "iron_ke": 0.00037,
+        "slot_fill": 0.5345,
+        "slot_area_mm2": 143.0,
+        "turns_per_slot": 9,
+        "scenario": "col_m37p5_low"
+      },
+      "derived": {
+        "current_rms_max_A": 57.62215285808055
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "power_balance",
+          "description": "max over q-axis currents (|T| >= 5 N m) of |mean(sum i dphi/dt) - mean torque x omega_m| / (mean torque x omega_m)",
+          "kind": "numerical",
+          "value": 0.0019650850332398116,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "dq_torque",
+          "description": "max over q-axis currents (|T| >= 5 N m) of |3 p (phi_d i_q - phi_q i_d) - FEMM torque| / FEMM torque: the mean dq flux linkages the efficiency map interpolates reproduce the torque (model form: harmonics are left out of the dq means)",
+          "kind": "numerical",
+          "value": 0.0019650850332399807,
+          "tolerance": 0.005,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "current_amplitude",
+          "description": "max |imposed phase current fundamental - sqrt(2) x requested rms| / peak",
+          "kind": "numerical",
+          "value": 3.7895612573872002e-16,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "iron_coefficients_non_negative",
+          "description": "min iron-loss coefficient over cores and currents (W), below 0 would be unphysical",
+          "kind": "numerical",
+          "value": -0.00039002323536566167,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "time_resolution",
+          "description": "48 / steps per electrical period (below 1: at least 48)",
+          "kind": "validity",
+          "value": 1.0,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-M3",
+          "text": "The column's operating points shall stay within the 25 A/mm^2 rms copper current-density limit (marks the grid points the motor can sustain for a short time).",
+          "metric": "current_density_max_A_per_mm2",
+          "operator": "<=",
+          "limit": 25.0,
+          "units": "A/mm^2",
+          "value": 6.784974856871987,
+          "margin": 18.215025143128013,
+          "verdict": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p02_row_id_m300",
+      "parameters": {
+        "machine": "Toyota_Prius_ORNL_rev5centre.json",
+        "speed_rpm": 1000.0,
+        "id_A": -300.0,
+        "iq_min_A": 3.125,
+        "iq_max_A": 9.375,
+        "iq_steps": 2,
+        "mesh_fineness": 2.0,
+        "steps_per_period": 48,
+        "angle_points": 2048,
+        "magnet_temperature_C": 20.0,
+        "iron_kh": 0.0202,
+        "iron_alpha": 1.791,
+        "iron_kc": 7.91e-05,
+        "iron_ke": 0.00037,
+        "slot_fill": 0.5345,
+        "slot_area_mm2": 143.0,
+        "turns_per_slot": 9,
+        "scenario": "row_id_m300"
+      },
+      "derived": {
+        "current_rms_max_A": 300.1464486296648
+      },
+      "simulation_status": "completed",
+      "verification_status": "FAIL",
+      "checks": [
+        {
+          "id": "power_balance",
+          "description": "max over q-axis currents (|T| >= 5 N m) of |mean(sum i dphi/dt) - mean torque x omega_m| / (mean torque x omega_m)",
+          "kind": "numerical",
+          "value": 0.014384579952101855,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "dq_torque",
+          "description": "max over q-axis currents (|T| >= 5 N m) of |3 p (phi_d i_q - phi_q i_d) - FEMM torque| / FEMM torque: the mean dq flux linkages the efficiency map interpolates reproduce the torque (model form: harmonics are left out of the dq means)",
+          "kind": "numerical",
+          "value": 0.014384579952108434,
+          "tolerance": 0.005,
+          "comparison": "<=",
+          "status": "FAIL"
+        },
+        {
+          "id": "current_amplitude",
+          "description": "max |imposed phase current fundamental - sqrt(2) x requested rms| / peak",
+          "kind": "numerical",
+          "value": 1.3397395478594238e-16,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "iron_coefficients_non_negative",
+          "description": "min iron-loss coefficient over cores and currents (W), below 0 would be unphysical",
+          "kind": "numerical",
+          "value": -0.006530657506182698,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "time_resolution",
+          "description": "48 / steps per electrical period (below 1: at least 48)",
+          "kind": "validity",
+          "value": 1.0,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-M3",
+          "text": "The column's operating points shall stay within the 25 A/mm^2 rms copper current-density limit (marks the grid points the motor can sustain for a short time).",
+          "metric": "current_density_max_A_per_mm2",
+          "operator": "<=",
+          "limit": 25.0,
+          "units": "A/mm^2",
+          "value": 35.3420690883838,
+          "margin": -10.342069088383802,
+          "verdict": "FAIL (unverified)"
+        }
+      ]
+    },
+    {
+      "label": "p03_row_id_m275",
+      "parameters": {
+        "machine": "Toyota_Prius_ORNL_rev5centre.json",
+        "speed_rpm": 1000.0,
+        "id_A": -275.0,
+        "iq_min_A": 3.125,
+        "iq_max_A": 9.375,
+        "iq_steps": 2,
+        "mesh_fineness": 2.0,
+        "steps_per_period": 48,
+        "angle_points": 2048,
+        "magnet_temperature_C": 20.0,
+        "iron_kh": 0.0202,
+        "iron_alpha": 1.791,
+        "iron_kc": 7.91e-05,
+        "iron_ke": 0.00037,
+        "slot_fill": 0.5345,
+        "slot_area_mm2": 143.0,
+        "turns_per_slot": 9,
+        "scenario": "row_id_m275"
+      },
+      "derived": {
+        "current_rms_max_A": 275.1597547335002
+      },
+      "simulation_status": "completed",
+      "verification_status": "FAIL",
+      "checks": [
+        {
+          "id": "power_balance",
+          "description": "max over q-axis currents (|T| >= 5 N m) of |mean(sum i dphi/dt) - mean torque x omega_m| / (mean torque x omega_m)",
+          "kind": "numerical",
+          "value": 0.01047610587283873,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "dq_torque",
+          "description": "max over q-axis currents (|T| >= 5 N m) of |3 p (phi_d i_q - phi_q i_d) - FEMM torque| / FEMM torque: the mean dq flux linkages the efficiency map interpolates reproduce the torque (model form: harmonics are left out of the dq means)",
+          "kind": "numerical",
+          "value": 0.010476105872840306,
+          "tolerance": 0.005,
+          "comparison": "<=",
+          "status": "FAIL"
+        },
+        {
+          "id": "current_amplitude",
+          "description": "max |imposed phase current fundamental - sqrt(2) x requested rms| / peak",
+          "kind": "numerical",
+          "value": 2.9215294933835064e-16,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "iron_coefficients_non_negative",
+          "description": "min iron-loss coefficient over cores and currents (W), below 0 would be unphysical",
+          "kind": "numerical",
+          "value": -0.00636050440166272,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "time_resolution",
+          "description": "48 / steps per electrical period (below 1: at least 48)",
+          "kind": "validity",
+          "value": 1.0,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-M3",
+          "text": "The column's operating points shall stay within the 25 A/mm^2 rms copper current-density limit (marks the grid points the motor can sustain for a short time).",
+          "metric": "current_density_max_A_per_mm2",
+          "operator": "<=",
+          "limit": 25.0,
+          "units": "A/mm^2",
+          "value": 32.39990047036316,
+          "margin": -7.399900470363157,
+          "verdict": "FAIL (unverified)"
+        }
+      ]
+    },
+    {
+      "label": "p04_row_id_m250",
+      "parameters": {
+        "machine": "Toyota_Prius_ORNL_rev5centre.json",
+        "speed_rpm": 1000.0,
+        "id_A": -250.0,
+        "iq_min_A": 3.125,
+        "iq_max_A": 9.375,
+        "iq_steps": 2,
+        "mesh_fineness": 2.0,
+        "steps_per_period": 48,
+        "angle_points": 2048,
+        "magnet_temperature_C": 20.0,
+        "iron_kh": 0.0202,
+        "iron_alpha": 1.791,
+        "iron_kc": 7.91e-05,
+        "iron_ke": 0.00037,
+        "slot_fill": 0.5345,
+        "slot_area_mm2": 143.0,
+        "turns_per_slot": 9,
+        "scenario": "row_id_m250"
+      },
+      "derived": {
+        "current_rms_max_A": 250.17571949531794
+      },
+      "simulation_status": "completed",
+      "verification_status": "FAIL",
+      "checks": [
+        {
+          "id": "power_balance",
+          "description": "max over q-axis currents (|T| >= 5 N m) of |mean(sum i dphi/dt) - mean torque x omega_m| / (mean torque x omega_m)",
+          "kind": "numerical",
+          "value": 0.005604849425600644,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "dq_torque",
+          "description": "max over q-axis currents (|T| >= 5 N m) of |3 p (phi_d i_q - phi_q i_d) - FEMM torque| / FEMM torque: the mean dq flux linkages the efficiency map interpolates reproduce the torque (model form: harmonics are left out of the dq means)",
+          "kind": "numerical",
+          "value": 0.0056048494256035674,
+          "tolerance": 0.005,
+          "comparison": "<=",
+          "status": "FAIL"
+        },
+        {
+          "id": "current_amplitude",
+          "description": "max |imposed phase current fundamental - sqrt(2) x requested rms| / peak",
+          "kind": "numerical",
+          "value": 1.6076490850131912e-16,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "iron_coefficients_non_negative",
+          "description": "min iron-loss coefficient over cores and currents (W), below 0 would be unphysical",
+          "kind": "numerical",
+          "value": -0.005919175347042376,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "time_resolution",
+          "description": "48 / steps per electrical period (below 1: at least 48)",
+          "kind": "validity",
+          "value": 1.0,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-M3",
+          "text": "The column's operating points shall stay within the 25 A/mm^2 rms copper current-density limit (marks the grid points the motor can sustain for a short time).",
+          "metric": "current_density_max_A_per_mm2",
+          "operator": "<=",
+          "limit": 25.0,
+          "units": "A/mm^2",
+          "value": 29.458044907767686,
+          "margin": -4.458044907767686,
+          "verdict": "FAIL (unverified)"
+        }
+      ]
+    },
+    {
+      "label": "p05_row_id_m225",
+      "parameters": {
+        "machine": "Toyota_Prius_ORNL_rev5centre.json",
+        "speed_rpm": 1000.0,
+        "id_A": -225.0,
+        "iq_min_A": 3.125,
+        "iq_max_A": 9.375,
+        "iq_steps": 2,
+        "mesh_fineness": 2.0,
+        "steps_per_period": 48,
+        "angle_points": 2048,
+        "magnet_temperature_C": 20.0,
+        "iron_kh": 0.0202,
+        "iron_alpha": 1.791,
+        "iron_kc": 7.91e-05,
+        "iron_ke": 0.00037,
+        "slot_fill": 0.5345,
+        "slot_area_mm2": 143.0,
+        "turns_per_slot": 9,
+        "scenario": "row_id_m225"
+      },
+      "derived": {
+        "current_rms_max_A": 225.1952278024559
+      },
+      "simulation_status": "completed",
+      "verification_status": "FAIL",
+      "checks": [
+        {
+          "id": "power_balance",
+          "description": "max over q-axis currents (|T| >= 5 N m) of |mean(sum i dphi/dt) - mean torque x omega_m| / (mean torque x omega_m)",
+          "kind": "numerical",
+          "value": 0.006425447214389223,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "dq_torque",
+          "description": "max over q-axis currents (|T| >= 5 N m) of |3 p (phi_d i_q - phi_q i_d) - FEMM torque| / FEMM torque: the mean dq flux linkages the efficiency map interpolates reproduce the torque (model form: harmonics are left out of the dq means)",
+          "kind": "numerical",
+          "value": 0.00642544721439421,
+          "tolerance": 0.005,
+          "comparison": "<=",
+          "status": "FAIL"
+        },
+        {
+          "id": "current_amplitude",
+          "description": "max |imposed phase current fundamental - sqrt(2) x requested rms| / peak",
+          "kind": "numerical",
+          "value": 1.7862440325149814e-16,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "iron_coefficients_non_negative",
+          "description": "min iron-loss coefficient over cores and currents (W), below 0 would be unphysical",
+          "kind": "numerical",
+          "value": -0.00520251160481138,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "time_resolution",
+          "description": "48 / steps per electrical period (below 1: at least 48)",
+          "kind": "validity",
+          "value": 1.0,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-M3",
+          "text": "The column's operating points shall stay within the 25 A/mm^2 rms copper current-density limit (marks the grid points the motor can sustain for a short time).",
+          "metric": "current_density_max_A_per_mm2",
+          "operator": "<=",
+          "limit": 25.0,
+          "units": "A/mm^2",
+          "value": 26.516606595564813,
+          "margin": -1.516606595564813,
+          "verdict": "FAIL (unverified)"
+        }
+      ]
+    },
+    {
+      "label": "p06_row_id_m200",
+      "parameters": {
+        "machine": "Toyota_Prius_ORNL_rev5centre.json",
+        "speed_rpm": 1000.0,
+        "id_A": -200.0,
+        "iq_min_A": 3.125,
+        "iq_max_A": 9.375,
+        "iq_steps": 2,
+        "mesh_fineness": 2.0,
+        "steps_per_period": 48,
+        "angle_points": 2048,
+        "magnet_temperature_C": 20.0,
+        "iron_kh": 0.0202,
+        "iron_alpha": 1.791,
+        "iron_kc": 7.91e-05,
+        "iron_ke": 0.00037,
+        "slot_fill": 0.5345,
+        "slot_area_mm2": 143.0,
+        "turns_per_slot": 9,
+        "scenario": "row_id_m200"
+      },
+      "derived": {
+        "current_rms_max_A": 200.21960599551684
+      },
+      "simulation_status": "completed",
+      "verification_status": "FAIL",
+      "checks": [
+        {
+          "id": "power_balance",
+          "description": "max over q-axis currents (|T| >= 5 N m) of |mean(sum i dphi/dt) - mean torque x omega_m| / (mean torque x omega_m)",
+          "kind": "numerical",
+          "value": 0.0056241679448319525,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "dq_torque",
+          "description": "max over q-axis currents (|T| >= 5 N m) of |3 p (phi_d i_q - phi_q i_d) - FEMM torque| / FEMM torque: the mean dq flux linkages the efficiency map interpolates reproduce the torque (model form: harmonics are left out of the dq means)",
+          "kind": "numerical",
+          "value": 0.005624167944833206,
+          "tolerance": 0.005,
+          "comparison": "<=",
+          "status": "FAIL"
+        },
+        {
+          "id": "current_amplitude",
+          "description": "max |imposed phase current fundamental - sqrt(2) x requested rms| / peak",
+          "kind": "numerical",
+          "value": 2.0094730650801311e-16,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "iron_coefficients_non_negative",
+          "description": "min iron-loss coefficient over cores and currents (W), below 0 would be unphysical",
+          "kind": "numerical",
+          "value": -0.004452645291218275,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "time_resolution",
+          "description": "48 / steps per electrical period (below 1: at least 48)",
+          "kind": "validity",
+          "value": 1.0,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-M3",
+          "text": "The column's operating points shall stay within the 25 A/mm^2 rms copper current-density limit (marks the grid points the motor can sustain for a short time).",
+          "metric": "current_density_max_A_per_mm2",
+          "operator": "<=",
+          "limit": 25.0,
+          "units": "A/mm^2",
+          "value": 23.575741709586133,
+          "margin": 1.4242582904138672,
+          "verdict": "PASS (unverified)"
+        }
+      ]
+    },
+    {
+      "label": "p07_row_id_m175",
+      "parameters": {
+        "machine": "Toyota_Prius_ORNL_rev5centre.json",
+        "speed_rpm": 1000.0,
+        "id_A": -175.0,
+        "iq_min_A": 3.125,
+        "iq_max_A": 9.375,
+        "iq_steps": 2,
+        "mesh_fineness": 2.0,
+        "steps_per_period": 48,
+        "angle_points": 2048,
+        "magnet_temperature_C": 20.0,
+        "iron_kh": 0.0202,
+        "iron_alpha": 1.791,
+        "iron_kc": 7.91e-05,
+        "iron_ke": 0.00037,
+        "slot_fill": 0.5345,
+        "slot_area_mm2": 143.0,
+        "turns_per_slot": 9,
+        "scenario": "row_id_m175"
+      },
+      "derived": {
+        "current_rms_max_A": 175.2509361601244
+      },
+      "simulation_status": "completed",
+      "verification_status": "FAIL",
+      "checks": [
+        {
+          "id": "power_balance",
+          "description": "max over q-axis currents (|T| >= 5 N m) of |mean(sum i dphi/dt) - mean torque x omega_m| / (mean torque x omega_m)",
+          "kind": "numerical",
+          "value": 0.008542974631175176,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "dq_torque",
+          "description": "max over q-axis currents (|T| >= 5 N m) of |3 p (phi_d i_q - phi_q i_d) - FEMM torque| / FEMM torque: the mean dq flux linkages the efficiency map interpolates reproduce the torque (model form: harmonics are left out of the dq means)",
+          "kind": "numerical",
+          "value": 0.00854297463117605,
+          "tolerance": 0.005,
+          "comparison": "<=",
+          "status": "FAIL"
+        },
+        {
+          "id": "current_amplitude",
+          "description": "max |imposed phase current fundamental - sqrt(2) x requested rms| / peak",
+          "kind": "numerical",
+          "value": 2.296454853365977e-16,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "iron_coefficients_non_negative",
+          "description": "min iron-loss coefficient over cores and currents (W), below 0 would be unphysical",
+          "kind": "numerical",
+          "value": -0.003700506309804435,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "time_resolution",
+          "description": "48 / steps per electrical period (below 1: at least 48)",
+          "kind": "validity",
+          "value": 1.0,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-M3",
+          "text": "The column's operating points shall stay within the 25 A/mm^2 rms copper current-density limit (marks the grid points the motor can sustain for a short time).",
+          "metric": "current_density_max_A_per_mm2",
+          "operator": "<=",
+          "limit": 25.0,
+          "units": "A/mm^2",
+          "value": 20.63569541419822,
+          "margin": 4.364304585801779,
+          "verdict": "PASS (unverified)"
+        }
+      ]
+    },
+    {
+      "label": "p08_row_id_m150",
+      "parameters": {
+        "machine": "Toyota_Prius_ORNL_rev5centre.json",
+        "speed_rpm": 1000.0,
+        "id_A": -150.0,
+        "iq_min_A": 3.125,
+        "iq_max_A": 9.375,
+        "iq_steps": 2,
+        "mesh_fineness": 2.0,
+        "steps_per_period": 48,
+        "angle_points": 2048,
+        "magnet_temperature_C": 20.0,
+        "iron_kh": 0.0202,
+        "iron_alpha": 1.791,
+        "iron_kc": 7.91e-05,
+        "iron_ke": 0.00037,
+        "slot_fill": 0.5345,
+        "slot_area_mm2": 143.0,
+        "turns_per_slot": 9,
+        "scenario": "row_id_m150"
+      },
+      "derived": {
+        "current_rms_max_A": 150.2926832051381
+      },
+      "simulation_status": "completed",
+      "verification_status": "FAIL",
+      "checks": [
+        {
+          "id": "power_balance",
+          "description": "max over q-axis currents (|T| >= 5 N m) of |mean(sum i dphi/dt) - mean torque x omega_m| / (mean torque x omega_m)",
+          "kind": "numerical",
+          "value": 0.0059119654911659525,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "dq_torque",
+          "description": "max over q-axis currents (|T| >= 5 N m) of |3 p (phi_d i_q - phi_q i_d) - FEMM torque| / FEMM torque: the mean dq flux linkages the efficiency map interpolates reproduce the torque (model form: harmonics are left out of the dq means)",
+          "kind": "numerical",
+          "value": 0.00591196549116708,
+          "tolerance": 0.005,
+          "comparison": "<=",
+          "status": "FAIL"
+        },
+        {
+          "id": "current_amplitude",
+          "description": "max |imposed phase current fundamental - sqrt(2) x requested rms| / peak",
+          "kind": "numerical",
+          "value": 4.0116091567254517e-16,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "iron_coefficients_non_negative",
+          "description": "min iron-loss coefficient over cores and currents (W), below 0 would be unphysical",
+          "kind": "numerical",
+          "value": -0.0029685739585710424,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "time_resolution",
+          "description": "48 / steps per electrical period (below 1: at least 48)",
+          "kind": "validity",
+          "value": 1.0,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-M3",
+          "text": "The column's operating points shall stay within the 25 A/mm^2 rms copper current-density limit (marks the grid points the motor can sustain for a short time).",
+          "metric": "current_density_max_A_per_mm2",
+          "operator": "<=",
+          "limit": 25.0,
+          "units": "A/mm^2",
+          "value": 17.69687570039633,
+          "margin": 7.30312429960367,
+          "verdict": "PASS (unverified)"
+        }
+      ]
+    },
+    {
+      "label": "p09_row_id_m125",
+      "parameters": {
+        "machine": "Toyota_Prius_ORNL_rev5centre.json",
+        "speed_rpm": 1000.0,
+        "id_A": -125.0,
+        "iq_min_A": 3.125,
+        "iq_max_A": 9.375,
+        "iq_steps": 2,
+        "mesh_fineness": 2.0,
+        "steps_per_period": 48,
+        "angle_points": 2048,
+        "magnet_temperature_C": 20.0,
+        "iron_kh": 0.0202,
+        "iron_alpha": 1.791,
+        "iron_kc": 7.91e-05,
+        "iron_ke": 0.00037,
+        "slot_fill": 0.5345,
+        "slot_area_mm2": 143.0,
+        "turns_per_slot": 9,
+        "scenario": "row_id_m125"
+      },
+      "derived": {
+        "current_rms_max_A": 125.35106950082238
+      },
+      "simulation_status": "completed",
+      "verification_status": "FAIL",
+      "checks": [
+        {
+          "id": "power_balance",
+          "description": "max over q-axis currents (|T| >= 5 N m) of |mean(sum i dphi/dt) - mean torque x omega_m| / (mean torque x omega_m)",
+          "kind": "numerical",
+          "value": 0.006467767068609077,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "dq_torque",
+          "description": "max over q-axis currents (|T| >= 5 N m) of |3 p (phi_d i_q - phi_q i_d) - FEMM torque| / FEMM torque: the mean dq flux linkages the efficiency map interpolates reproduce the torque (model form: harmonics are left out of the dq means)",
+          "kind": "numerical",
+          "value": 0.006467767068609386,
+          "tolerance": 0.005,
+          "comparison": "<=",
+          "status": "FAIL"
+        },
+        {
+          "id": "current_amplitude",
+          "description": "max |imposed phase current fundamental - sqrt(2) x requested rms| / peak",
+          "kind": "numerical",
+          "value": 3.2065435981015653e-16,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "iron_coefficients_non_negative",
+          "description": "min iron-loss coefficient over cores and currents (W), below 0 would be unphysical",
+          "kind": "numerical",
+          "value": -0.00227388795461559,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "time_resolution",
+          "description": "48 / steps per electrical period (below 1: at least 48)",
+          "kind": "validity",
+          "value": 1.0,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-M3",
+          "text": "The column's operating points shall stay within the 25 A/mm^2 rms copper current-density limit (marks the grid points the motor can sustain for a short time).",
+          "metric": "current_density_max_A_per_mm2",
+          "operator": "<=",
+          "limit": 25.0,
+          "units": "A/mm^2",
+          "value": 14.760015248646228,
+          "margin": 10.239984751353772,
+          "verdict": "PASS (unverified)"
+        }
+      ]
+    },
+    {
+      "label": "p10_row_id_m100",
+      "parameters": {
+        "machine": "Toyota_Prius_ORNL_rev5centre.json",
+        "speed_rpm": 1000.0,
+        "id_A": -100.0,
+        "iq_min_A": 3.125,
+        "iq_max_A": 9.375,
+        "iq_steps": 2,
+        "mesh_fineness": 2.0,
+        "steps_per_period": 48,
+        "angle_points": 2048,
+        "magnet_temperature_C": 20.0,
+        "iron_kh": 0.0202,
+        "iron_alpha": 1.791,
+        "iron_kc": 7.91e-05,
+        "iron_ke": 0.00037,
+        "slot_fill": 0.5345,
+        "slot_area_mm2": 143.0,
+        "turns_per_slot": 9,
+        "scenario": "row_id_m100"
+      },
+      "derived": {
+        "current_rms_max_A": 100.43849174992623
+      },
+      "simulation_status": "completed",
+      "verification_status": "FAIL",
+      "checks": [
+        {
+          "id": "power_balance",
+          "description": "max over q-axis currents (|T| >= 5 N m) of |mean(sum i dphi/dt) - mean torque x omega_m| / (mean torque x omega_m)",
+          "kind": "numerical",
+          "value": 0.007714873405612811,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "dq_torque",
+          "description": "max over q-axis currents (|T| >= 5 N m) of |3 p (phi_d i_q - phi_q i_d) - FEMM torque| / FEMM torque: the mean dq flux linkages the efficiency map interpolates reproduce the torque (model form: harmonics are left out of the dq means)",
+          "kind": "numerical",
+          "value": 0.007714873405613224,
+          "tolerance": 0.005,
+          "comparison": "<=",
+          "status": "FAIL"
+        },
+        {
+          "id": "current_amplitude",
+          "description": "max |imposed phase current fundamental - sqrt(2) x requested rms| / peak",
+          "kind": "numerical",
+          "value": 2.008737757475438e-16,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "iron_coefficients_non_negative",
+          "description": "min iron-loss coefficient over cores and currents (W), below 0 would be unphysical",
+          "kind": "numerical",
+          "value": -0.0015983736357716347,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "time_resolution",
+          "description": "48 / steps per electrical period (below 1: at least 48)",
+          "kind": "validity",
+          "value": 1.0,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-M3",
+          "text": "The column's operating points shall stay within the 25 A/mm^2 rms copper current-density limit (marks the grid points the motor can sustain for a short time).",
+          "metric": "current_density_max_A_per_mm2",
+          "operator": "<=",
+          "limit": 25.0,
+          "units": "A/mm^2",
+          "value": 11.826573763458905,
+          "margin": 13.173426236541095,
+          "verdict": "PASS (unverified)"
+        }
+      ]
+    },
+    {
+      "label": "p11_row_id_m75",
+      "parameters": {
+        "machine": "Toyota_Prius_ORNL_rev5centre.json",
+        "speed_rpm": 1000.0,
+        "id_A": -75.0,
+        "iq_min_A": 3.125,
+        "iq_max_A": 9.375,
+        "iq_steps": 2,
+        "mesh_fineness": 2.0,
+        "steps_per_period": 48,
+        "angle_points": 2048,
+        "magnet_temperature_C": 20.0,
+        "iron_kh": 0.0202,
+        "iron_alpha": 1.791,
+        "iron_kc": 7.91e-05,
+        "iron_ke": 0.00037,
+        "slot_fill": 0.5345,
+        "slot_area_mm2": 143.0,
+        "turns_per_slot": 9,
+        "scenario": "row_id_m75"
+      },
+      "derived": {
+        "current_rms_max_A": 75.5836663902989
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "power_balance",
+          "description": "max over q-axis currents (|T| >= 5 N m) of |mean(sum i dphi/dt) - mean torque x omega_m| / (mean torque x omega_m)",
+          "kind": "numerical",
+          "value": 0.0017417949354802268,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "dq_torque",
+          "description": "max over q-axis currents (|T| >= 5 N m) of |3 p (phi_d i_q - phi_q i_d) - FEMM torque| / FEMM torque: the mean dq flux linkages the efficiency map interpolates reproduce the torque (model form: harmonics are left out of the dq means)",
+          "kind": "numerical",
+          "value": 0.0017417949354797608,
+          "tolerance": 0.005,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "current_amplitude",
+          "description": "max |imposed phase current fundamental - sqrt(2) x requested rms| / peak",
+          "kind": "numerical",
+          "value": 2.6773014242710983e-16,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "iron_coefficients_non_negative",
+          "description": "min iron-loss coefficient over cores and currents (W), below 0 would be unphysical",
+          "kind": "numerical",
+          "value": -0.001019976169253437,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "time_resolution",
+          "description": "48 / steps per electrical period (below 1: at least 48)",
+          "kind": "validity",
+          "value": 1.0,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-M3",
+          "text": "The column's operating points shall stay within the 25 A/mm^2 rms copper current-density limit (marks the grid points the motor can sustain for a short time).",
+          "metric": "current_density_max_A_per_mm2",
+          "operator": "<=",
+          "limit": 25.0,
+          "units": "A/mm^2",
+          "value": 8.899932588625278,
+          "margin": 16.100067411374724,
+          "verdict": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p12_row_id_m50",
+      "parameters": {
+        "machine": "Toyota_Prius_ORNL_rev5centre.json",
+        "speed_rpm": 1000.0,
+        "id_A": -50.0,
+        "iq_min_A": 3.125,
+        "iq_max_A": 9.375,
+        "iq_steps": 2,
+        "mesh_fineness": 2.0,
+        "steps_per_period": 48,
+        "angle_points": 2048,
+        "magnet_temperature_C": 20.0,
+        "iron_kh": 0.0202,
+        "iron_alpha": 1.791,
+        "iron_kc": 7.91e-05,
+        "iron_ke": 0.00037,
+        "slot_fill": 0.5345,
+        "slot_area_mm2": 143.0,
+        "turns_per_slot": 9,
+        "scenario": "row_id_m50"
+      },
+      "derived": {
+        "current_rms_max_A": 50.87131436281158
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "power_balance",
+          "description": "max over q-axis currents (|T| >= 5 N m) of |mean(sum i dphi/dt) - mean torque x omega_m| / (mean torque x omega_m)",
+          "kind": "numerical",
+          "value": 0.0009813649953254735,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "dq_torque",
+          "description": "max over q-axis currents (|T| >= 5 N m) of |3 p (phi_d i_q - phi_q i_d) - FEMM torque| / FEMM torque: the mean dq flux linkages the efficiency map interpolates reproduce the torque (model form: harmonics are left out of the dq means)",
+          "kind": "numerical",
+          "value": 0.000981364995325596,
+          "tolerance": 0.005,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "current_amplitude",
+          "description": "max |imposed phase current fundamental - sqrt(2) x requested rms| / peak",
+          "kind": "numerical",
+          "value": 2.0058045783627263e-16,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "iron_coefficients_non_negative",
+          "description": "min iron-loss coefficient over cores and currents (W), below 0 would be unphysical",
+          "kind": "numerical",
+          "value": -0.0005472516290047966,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "time_resolution",
+          "description": "48 / steps per electrical period (below 1: at least 48)",
+          "kind": "validity",
+          "value": 1.0,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-M3",
+          "text": "The column's operating points shall stay within the 25 A/mm^2 rms copper current-density limit (marks the grid points the motor can sustain for a short time).",
+          "metric": "current_density_max_A_per_mm2",
+          "operator": "<=",
+          "limit": 25.0,
+          "units": "A/mm^2",
+          "value": 5.990067565469385,
+          "margin": 19.009932434530615,
+          "verdict": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p13_row_id_m37p5",
+      "parameters": {
+        "machine": "Toyota_Prius_ORNL_rev5centre.json",
+        "speed_rpm": 1000.0,
+        "id_A": -37.5,
+        "iq_min_A": 3.125,
+        "iq_max_A": 9.375,
+        "iq_steps": 2,
+        "mesh_fineness": 2.0,
+        "steps_per_period": 48,
+        "angle_points": 2048,
+        "magnet_temperature_C": 20.0,
+        "iron_kh": 0.0202,
+        "iron_alpha": 1.791,
+        "iron_kc": 7.91e-05,
+        "iron_ke": 0.00037,
+        "slot_fill": 0.5345,
+        "slot_area_mm2": 143.0,
+        "turns_per_slot": 9,
+        "scenario": "row_id_m37p5"
+      },
+      "derived": {
+        "current_rms_max_A": 38.65411524016557
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "power_balance",
+          "description": "max over q-axis currents (|T| >= 5 N m) of |mean(sum i dphi/dt) - mean torque x omega_m| / (mean torque x omega_m)",
+          "kind": "numerical",
+          "value": 0.0014969059490661954,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "dq_torque",
+          "description": "max over q-axis currents (|T| >= 5 N m) of |3 p (phi_d i_q - phi_q i_d) - FEMM torque| / FEMM torque: the mean dq flux linkages the efficiency map interpolates reproduce the torque (model form: harmonics are left out of the dq means)",
+          "kind": "numerical",
+          "value": 0.0014969059490662498,
+          "tolerance": 0.005,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "current_amplitude",
+          "description": "max |imposed phase current fundamental - sqrt(2) x requested rms| / peak",
+          "kind": "numerical",
+          "value": 2.670368392112793e-16,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "iron_coefficients_non_negative",
+          "description": "min iron-loss coefficient over cores and currents (W), below 0 would be unphysical",
+          "kind": "numerical",
+          "value": -0.0003758387021184372,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "time_resolution",
+          "description": "48 / steps per electrical period (below 1: at least 48)",
+          "kind": "validity",
+          "value": 1.0,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-M3",
+          "text": "The column's operating points shall stay within the 25 A/mm^2 rms copper current-density limit (marks the grid points the motor can sustain for a short time).",
+          "metric": "current_density_max_A_per_mm2",
+          "operator": "<=",
+          "limit": 25.0,
+          "units": "A/mm^2",
+          "value": 4.5514995016777995,
+          "margin": 20.4485004983222,
+          "verdict": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p14_row_id_m25",
+      "parameters": {
+        "machine": "Toyota_Prius_ORNL_rev5centre.json",
+        "speed_rpm": 1000.0,
+        "id_A": -25.0,
+        "iq_min_A": 3.125,
+        "iq_max_A": 9.375,
+        "iq_steps": 2,
+        "mesh_fineness": 2.0,
+        "steps_per_period": 48,
+        "angle_points": 2048,
+        "magnet_temperature_C": 20.0,
+        "iron_kh": 0.0202,
+        "iron_alpha": 1.791,
+        "iron_kc": 7.91e-05,
+        "iron_ke": 0.00037,
+        "slot_fill": 0.5345,
+        "slot_area_mm2": 143.0,
+        "turns_per_slot": 9,
+        "scenario": "row_id_m25"
+      },
+      "derived": {
+        "current_rms_max_A": 26.700011704117284
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "power_balance",
+          "description": "max over q-axis currents (|T| >= 5 N m) of |mean(sum i dphi/dt) - mean torque x omega_m| / (mean torque x omega_m)",
+          "kind": "numerical",
+          "value": 0.0018317548809323528,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "dq_torque",
+          "description": "max over q-axis currents (|T| >= 5 N m) of |3 p (phi_d i_q - phi_q i_d) - FEMM torque| / FEMM torque: the mean dq flux linkages the efficiency map interpolates reproduce the torque (model form: harmonics are left out of the dq means)",
+          "kind": "numerical",
+          "value": 0.001831754880932353,
+          "tolerance": 0.005,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "current_amplitude",
+          "description": "max |imposed phase current fundamental - sqrt(2) x requested rms| / peak",
+          "kind": "numerical",
+          "value": 1.994199054268004e-16,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "iron_coefficients_non_negative",
+          "description": "min iron-loss coefficient over cores and currents (W), below 0 would be unphysical",
+          "kind": "numerical",
+          "value": -0.00025852061826615565,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "time_resolution",
+          "description": "48 / steps per electrical period (below 1: at least 48)",
+          "kind": "validity",
+          "value": 1.0,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-M3",
+          "text": "The column's operating points shall stay within the 25 A/mm^2 rms copper current-density limit (marks the grid points the motor can sustain for a short time).",
+          "metric": "current_density_max_A_per_mm2",
+          "operator": "<=",
+          "limit": 25.0,
+          "units": "A/mm^2",
+          "value": 3.1439107896021454,
+          "margin": 21.856089210397855,
+          "verdict": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p15_row_id_0",
+      "parameters": {
+        "machine": "Toyota_Prius_ORNL_rev5centre.json",
+        "speed_rpm": 1000.0,
+        "id_A": 0.0,
+        "iq_min_A": 3.125,
+        "iq_max_A": 9.375,
+        "iq_steps": 2,
+        "mesh_fineness": 2.0,
+        "steps_per_period": 48,
+        "angle_points": 2048,
+        "magnet_temperature_C": 20.0,
+        "iron_kh": 0.0202,
+        "iron_alpha": 1.791,
+        "iron_kc": 7.91e-05,
+        "iron_ke": 0.00037,
+        "slot_fill": 0.5345,
+        "slot_area_mm2": 143.0,
+        "turns_per_slot": 9,
+        "scenario": "row_id_0"
+      },
+      "derived": {
+        "current_rms_max_A": 9.375
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "power_balance",
+          "description": "max over q-axis currents (|T| >= 5 N m) of |mean(sum i dphi/dt) - mean torque x omega_m| / (mean torque x omega_m)",
+          "kind": "numerical",
+          "value": 0.0022431179906981487,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "dq_torque",
+          "description": "max over q-axis currents (|T| >= 5 N m) of |3 p (phi_d i_q - phi_q i_d) - FEMM torque| / FEMM torque: the mean dq flux linkages the efficiency map interpolates reproduce the torque (model form: harmonics are left out of the dq means)",
+          "kind": "numerical",
+          "value": 0.0022431179906983838,
+          "tolerance": 0.005,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "current_amplitude",
+          "description": "max |imposed phase current fundamental - sqrt(2) x requested rms| / peak",
+          "kind": "numerical",
+          "value": 2.6796244628203093e-16,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "iron_coefficients_non_negative",
+          "description": "min iron-loss coefficient over cores and currents (W), below 0 would be unphysical",
+          "kind": "numerical",
+          "value": -0.00019359963785766862,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "time_resolution",
+          "description": "48 / steps per electrical period (below 1: at least 48)",
+          "kind": "validity",
+          "value": 1.0,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-M3",
+          "text": "The column's operating points shall stay within the 25 A/mm^2 rms copper current-density limit (marks the grid points the motor can sustain for a short time).",
+          "metric": "current_density_max_A_per_mm2",
+          "operator": "<=",
+          "limit": 25.0,
+          "units": "A/mm^2",
+          "value": 1.1039007764919833,
+          "margin": 23.896099223508017,
+          "verdict": "PASS"
+        }
+      ]
+    }
+  ],
+  "run_id": "20261124-075333_motor_prius_lut_cold_refine_rev5",
+  "generated_utc": "2026-11-24T13:23:50+00:00",
+  "verification_status": "FAIL"
+}

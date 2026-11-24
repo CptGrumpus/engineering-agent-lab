@@ -1,0 +1,87 @@
+{
+  "label": "p07_winding_k_half",
+  "status": "FAIL",
+  "checks": [
+    {
+      "id": "energy_balance",
+      "description": "max over every network solve of |losses in - heat to the coolant| / losses",
+      "kind": "numerical",
+      "value": 1.8171722145692219e-12,
+      "tolerance": 1e-09,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "coupling_convergence",
+      "description": "max over the envelope and hot-corner searches of the last temperature change of the loss-temperature iteration (K)",
+      "kind": "numerical",
+      "value": 0.000784931950491341,
+      "tolerance": 0.1,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "efficiency_consistency",
+      "description": "max relative difference of the total loss at fixed hot temperatures (windings 100 C, magnets 80 C) against the efficiency run's hot map at five points",
+      "kind": "numerical",
+      "value": 0.000837546714104552,
+      "tolerance": 1e-06,
+      "comparison": "<=",
+      "status": "FAIL"
+    },
+    {
+      "id": "fe_balance",
+      "description": "CalculiX section: |generation - film heat out| / generation, worst mesh",
+      "kind": "numerical",
+      "value": 6.462377137825609e-05,
+      "tolerance": 0.001,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "fe_mesh",
+      "description": "CalculiX section: discretization uncertainty (GCI or spread) of the winding peak rise",
+      "kind": "numerical",
+      "value": 0.0,
+      "tolerance": 0.01,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "section_wind_mean",
+      "description": "|network - CalculiX| / CalculiX, winding mean rise above the coolant, cross-section with the same losses and boundary conditions (model form)",
+      "kind": "numerical",
+      "value": 0.046473136461577184,
+      "tolerance": 0.05,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "section_wind_peak",
+      "description": "|network - CalculiX| / CalculiX, winding peak (network: slab factor 1.5) rise above the coolant, cross-section with the same losses and boundary conditions (model form)",
+      "kind": "numerical",
+      "value": 0.06525905776900862,
+      "tolerance": 0.05,
+      "comparison": "<=",
+      "status": "FAIL"
+    },
+    {
+      "id": "section_teeth_mean",
+      "description": "|network - CalculiX| / CalculiX, teeth mean rise above the coolant, cross-section with the same losses and boundary conditions (model form)",
+      "kind": "numerical",
+      "value": 0.034615429608844415,
+      "tolerance": 0.05,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "section_yoke_mean",
+      "description": "|network - CalculiX| / CalculiX, yoke mean rise above the coolant, cross-section with the same losses and boundary conditions (model form)",
+      "kind": "numerical",
+      "value": 0.006916986905655059,
+      "tolerance": 0.05,
+      "comparison": "<=",
+      "status": "PASS"
+    }
+  ]
+}

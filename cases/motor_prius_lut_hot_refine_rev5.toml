@@ -17,6 +17,20 @@
 #      60 % likely; if the jump survives (smaller or not), it is a real switch between field-weakening branches,
 #      reported as such.
 #   P4 About 30 min per temperature (36 s per grid point, as the earlier tables).
+#
+# Results (cold 20261124-075333, 07:53-08:23; hot 20261124-082355, 08:23-08:56): verification FAIL on the dq-torque
+# check only: cold at id -100 to -300 A, hot at -100 to -300 A except -150 (on the 3.125 / 9.375 A rows); every other
+# check passes on all 48 points.
+#   P1 MISSED in part: the dq-torque failures reach id -100 A, not only -175 to -300 A (same mechanism: small torque,
+#      large ripple at the lowest q-axis currents).
+#   P2 HELD, and then some: the old cubic table missed FEMM's torque at the new nodes by at most 0.1 % above 9 A and
+#      0.06 % (0.011 N m) on the 3.125 A row (scratch scoring; the only large relative misses are at iq = 0, where the
+#      torque is 0.02 N m). The table was not coarse.
+#   P3 MISSED (as written: 60 % converge): on the refined tables the thermal case's 5500 rpm hot corner still cycles
+#      (motor_prius_thermal_rev5_refined, 8.83 K): a real switch between two near-equal-loss operating points. The hot
+#      map's light-load row, by contrast, was a half-table effect: on the refined grid the half-table check is 0.31
+#      points at most (2.32 before), because the half table now keeps low-iq rows (motor_prius_efficiency_rev5_refined).
+#   P4 HELD: 30 / 32 min.
 
 [case]
 name = "motor_prius_lut_hot_refine_rev5"

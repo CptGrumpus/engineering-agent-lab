@@ -1,0 +1,90 @@
+# Study 7, revision 5: the efficiency map on the REFINED tables (the revision-5 tables plus an id column at -37.5 A and
+# iq rows at 3.125 / 9.375 A); otherwise motor_prius_efficiency_rev5 exactly (read it).
+# Why: the refinement tables (motor_prius_lut_{cold,hot}_refine_rev5, Results) show the old cubic table was already
+# within 0.1 % of FEMM's torque at every new node above 9 A and within 0.06 % on the 3.125 A row, so table coarseness
+# is unlikely to be behind the thermal hot-corner jump or the hot map's light-load row; this run settles it.
+#
+# Predictions (written BEFORE the run, 2026-11-24 09:10):
+#   P1 Every metric within 0.2 % of motor_prius_efficiency_rev5 (peak 97.22 / 96.87 %, REQ-M5 55.85 / 51.65 kW).
+#   P2 The hot half-table map check still fails on the light-load row above 4000 rpm (a branch switch, not the table).
+
+[case]
+name = "motor_prius_efficiency_rev5_refined"
+model = "lut_efficiency"
+description = "2004 Toyota Prius traction motor, REVISION 5 (client data: magnet 83.1 x 18.9 x 6.5 mm, 1.255 T at 20 C, air gap 0.775 mm; measured phase resistance 69 mOhm at 21 C), motor-only efficiency map from the verified dq look-up tables (25 A tables merged with low-q-current tables at 6.25 A): 500-6000 rpm, 10-400 N m, least copper + iron loss under the 500 V bus voltage limit and the current limit; cold (all 20 C) and hot (windings 100 C, magnets 80 C) scenarios."
+assumptions = [
+  "Motor-only efficiency: copper (DC resistance, end connections included) and iron loss; no mechanical, magnet eddy-current, AC copper or inverter loss (user's framing, 2026-11-22).",
+  "Voltage limit Vdc / sqrt 6 phase rms (linear modulation of a 500 V bus); the resistive drop is included, inductive coupling to the inverter is not.",
+  "Current limit 212 A rms for the design (25 A/mm^2 on 76.4 mm^2 of bare copper per slot, a stated assumption) and 300 A for the map's edge.",
+  "Iron loss from the table's coefficients, P = A f + B f^2 + C f^1.5 with f the electrical frequency, at each grid point.",
+  "Phase resistance: the client's measured 69 mOhm at 21 C (ORNL/TM-2010/253 Table 2.7), referred to temperature with alpha 0.00393 /K [client: routine test]; the geometric parameters stay in the case for reference only.",
+]
+limitations = [
+  "Revision 5 carries about 18 % more magnet flux than ORNL's back-EMF test shows (unexplained; CALIBRATION_PLAN step 4); not calibrated. ORNL's efficiency is not used here and is scored separately.",
+  "The tables are 2D magnetostatic at 1000 rpm; the iron loss is scaled to speed by the fitted coefficients, not recomputed per speed.",
+  "Steady thermal corners only (cold and hot); no thermal model links temperature to the operating point yet.",
+]
+
+[parameters]
+lut_run = "20261123-230647_motor_prius_lut_cold_rev5,20261124-004731_motor_prius_lut_cold_lowiq_rev5,20261124-075333_motor_prius_lut_cold_refine_rev5"
+magnet_temperature_C = 20.0
+winding_temperature_C = 20.0
+series_turns_per_phase = 72
+turn_copper_area_mm2 = 8.492
+stack_length_m = 0.08382
+end_connection_length_m = 0.1206
+copper_resistivity_20C_ohm_m = 1.72e-8
+copper_alpha_per_K = 0.00393
+phase_resistance_measured_ohm = 0.069
+phase_resistance_measured_at_C = 21.0
+bus_voltage_V = 500.0
+current_limit_design_A = 212.0
+current_limit_map_A = 300.0
+speed_min_rpm = 500.0
+speed_max_rpm = 6000.0
+speed_step_rpm = 250.0
+torque_min_Nm = 10.0
+torque_max_Nm = 400.0
+torque_step_Nm = 10.0
+rated_power_kW = 50.0
+rated_torque_Nm = 400.0
+ref_back_emf_V = 105.84
+ref_mtpa_100A_Nm = 247.68
+ref_mtpa_200A_Nm = 449.11
+
+[[sweep.scenarios]]
+name = "cold"
+lut_run = "20261123-230647_motor_prius_lut_cold_rev5,20261124-004731_motor_prius_lut_cold_lowiq_rev5,20261124-075333_motor_prius_lut_cold_refine_rev5"
+magnet_temperature_C = 20.0
+winding_temperature_C = 20.0
+ref_back_emf_V = 105.84
+ref_mtpa_100A_Nm = 247.68
+ref_mtpa_200A_Nm = 449.11
+
+[[sweep.scenarios]]
+name = "hot"
+lut_run = "20261124-014553_motor_prius_lut_hot_rev5,20261124-031723_motor_prius_lut_hot_lowiq_rev5,20261124-082355_motor_prius_lut_hot_refine_rev5"
+magnet_temperature_C = 80.0
+winding_temperature_C = 100.0
+ref_back_emf_V = 0.0
+ref_mtpa_100A_Nm = 0.0
+ref_mtpa_200A_Nm = 0.0
+
+[numerics]
+fine_step_A = 1.0
+halfgrid_map_check = true
+
+[verification]
+back_emf_rel_tol = 0.001
+mtpa_rel_tol = 0.01
+interp_halfgrid_rel_tol = 0.05
+merge_rel_tol = 1e-4
+interp_map_max_pts = 2.0
+
+[[requirements]]
+id = "REQ-M5"
+text = "The motor shall deliver its rated 50 kW from the rated base speed (50 kW at 400 N m: 1194 rpm) to 6000 rpm within the 500 V bus voltage limit and the 212 A rms design current limit."
+metric = "min_power_rated_speed_range_kW"
+operator = ">="
+limit = 50.0
+units = "kW"

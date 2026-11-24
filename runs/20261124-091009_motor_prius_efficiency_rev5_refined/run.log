@@ -1,0 +1,35 @@
+2026-11-24 09:10:09,510 INFO [harness.20261124-091009_motor_prius_efficiency_rev5_refined.run] run 20261124-091009_motor_prius_efficiency_rev5_refined: case cases/motor_prius_efficiency_rev5_refined.toml (sha256 2f120d5adc8f)
+2026-11-24 09:10:10,257 ERROR [harness.20261124-091009_motor_prius_efficiency_rev5_refined.run] p00_cold: exception
+Traceback (most recent call last):
+  File "<repo>\harness\run.py", line 74, in execute_point
+    res = backend.solve(params, case["numerics"])
+  File "<repo>\studies\motor_efficiency.py", line 167, in solve
+    T_hal = hi["torque_mean_Nm"](odd)
+  File "<repo>\.venv\Lib\site-packages\scipy\interpolate\_rgi.py", line 446, in __call__
+    xi, xi_shape, ndim, nans, out_of_bounds = self._prepare_xi(xi)
+                                              ~~~~~~~~~~~~~~~~^^^^
+  File "<repo>\.venv\Lib\site-packages\scipy\interpolate\_rgi.py", line 511, in _prepare_xi
+    raise ValueError(
+        f"One of the requested xi is out of bounds in dimension {i}"
+    )
+ValueError: One of the requested xi is out of bounds in dimension 0
+
+2026-11-24 09:10:10,633 ERROR [harness.20261124-091009_motor_prius_efficiency_rev5_refined.run] p01_hot: exception
+Traceback (most recent call last):
+  File "<repo>\harness\run.py", line 74, in execute_point
+    res = backend.solve(params, case["numerics"])
+  File "<repo>\studies\motor_efficiency.py", line 167, in solve
+    T_hal = hi["torque_mean_Nm"](odd)
+  File "<repo>\.venv\Lib\site-packages\scipy\interpolate\_rgi.py", line 446, in __call__
+    xi, xi_shape, ndim, nans, out_of_bounds = self._prepare_xi(xi)
+                                              ~~~~~~~~~~~~~~~~^^^^
+  File "<repo>\.venv\Lib\site-packages\scipy\interpolate\_rgi.py", line 511, in _prepare_xi
+    raise ValueError(
+        f"One of the requested xi is out of bounds in dimension {i}"
+    )
+ValueError: One of the requested xi is out of bounds in dimension 0
+
+2026-11-24 09:10:10,637 INFO [harness.20261124-091009_motor_prius_efficiency_rev5_refined.run] run 20261124-091009_motor_prius_efficiency_rev5_refined: failed (0/2 points completed)
+2026-11-24 09:10:10,647 WARNING [harness.20261124-091009_motor_prius_efficiency_rev5_refined.verify] p00_cold: not verified (simulation status 'failed')
+2026-11-24 09:10:10,648 WARNING [harness.20261124-091009_motor_prius_efficiency_rev5_refined.verify] p01_hot: not verified (simulation status 'failed')
+2026-11-24 09:10:10,649 INFO [harness.20261124-091009_motor_prius_efficiency_rev5_refined.verify] verification 20261124-091009_motor_prius_efficiency_rev5_refined: FAIL
