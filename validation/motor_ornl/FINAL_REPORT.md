@@ -42,7 +42,7 @@ machine gave 48.0 kW cold).
 
 | Test | Model (client data) | Limit | Verdict |
 |---|---|---|---|
-| Back-EMF per 1000 rpm, line to line | 105.8 V against 89.4 V: +17.7 % | 5 % | Fail |
+| Back-EMF per 1000 rpm, line to line | 105.2 V (mesh fineness 8, magnets at 25 C) against 89.4 V: +17.7 % (the tables' fineness-2 value at 20 C, 105.8 V, is +18.3 %) | 5 % | Fail |
 | Locked-rotor torque, like for like | +17 to +19 % | 10 % | Fail |
 | Motor efficiency, 393 points (median, hot) | 4.4 points high | 2 points | Fail; the gap is mostly the losses a motor-only model leaves out (mechanical, magnet eddy current, AC copper), not the flux (blind +24 % flux: 5.2 points) |
 | No-load air-gap flux density (Fig. 13) | plateau 1.148 x ORNL's, uniform within 3.4 % | (diagnostic) | supports the magnetisation explanation |
