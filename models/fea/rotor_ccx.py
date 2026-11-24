@@ -147,6 +147,10 @@ def write_deck(geom: dict, params: dict, mesh_inp: Path, deck: Path, with_pocket
             raise RuntimeError(f"seat has {len(sn)} nodes; expected an odd count (quadratic edges)")
         mag = geom["magnet_half"]
         rho_m = float(geom["magnet"]["density_kg_m3"]) * 1e-12
+        if params.get("magnet_mass_g") is not None:
+            # client data (a BOM mass per magnet): the effective density that puts that mass on the stack length
+            # the load uses (the magnet may be shorter than the stack: revision 5, 83.1 against 83.82 mm)
+            rho_m = float(params["magnet_mass_g"]) * 1e-6 / (float(mag["area_mm2"]) * L)
         c = np.array(mag["centroid_mm"], float)
         F_full = rho_m * float(mag["area_mm2"]) * L * w ** 2 * c      # N, whole stack, half pole's magnet
         q = F_full * scale / Ls                                         # N/mm along the seat, analysed layer

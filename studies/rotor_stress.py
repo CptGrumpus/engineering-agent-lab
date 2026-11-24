@@ -29,10 +29,10 @@ from harness.calculix import read_dat_total_forces, read_frd
 from harness.checks import check
 from harness.convergence import describe, discretization_uncertainty
 from harness.study import Study
+from studies.motor_em import MACHINES
 
 EXPORTER = "models/motor/export_rotor_pole.py"
 WRITER = "models/fea/rotor_ccx.py"
-MACHINE = "models/motor/Toyota_Prius_ORNL.json"
 PARAMS = ("machine", "speed_rpm", "max_speed_rpm", "yield_strength_MPa", "bridge_element_size_mm",
           "far_element_size_mm", "refine_distance_mm", "scl_count", "scl_points")
 
@@ -70,7 +70,9 @@ def bridge_scls(geom, xy, stress_xyz, n_lines, n_pts, linearize):
 
 
 class GmshCalculiXRotor(Backend):
-    sources = (EXPORTER, WRITER, MACHINE)
+    # our machine definitions (studies.motor_em.MACHINES), hashed as sources; a case names one by file name. Until
+    # 2026-11-24 the study always loaded the first one and ignored the case's machine (every run so far named it).
+    sources = (EXPORTER, WRITER, *MACHINES)
 
     def __init__(self):
         from studies.fin import find_ccx
@@ -86,7 +88,7 @@ class GmshCalculiXRotor(Backend):
     def prepare(self, source_dir=None, log_dir=None):
         self.writer = _load(self.source_path(WRITER, source_dir), "rotor_ccx_saved")
         self.exporter = self.source_path(EXPORTER, source_dir)
-        self.machine = self.source_path(MACHINE, source_dir)
+        self.machines = {Path(m).name: self.source_path(m, source_dir) for m in MACHINES}
         g = subprocess.run([str(self.gmsh), "--version"], capture_output=True, text=True, timeout=60)
         c = subprocess.run([str(self.ccx), "-v"], capture_output=True, text=True, timeout=60)
         self._versions = {"gmsh": (g.stdout + g.stderr).strip().splitlines()[-1],
@@ -120,7 +122,10 @@ class GmshCalculiXRotor(Backend):
             return {n.replace("/", "_"): work / n for n in keep if (work / n).exists()}
 
         try:
-            e = subprocess.run([str(self.python), str(self.exporter), str(self.machine), "pole.json"], cwd=work,
+            if params["machine"] not in self.machines:
+                raise RuntimeError(f"unknown machine {params['machine']!r}: not in studies.motor_em.MACHINES")
+            e = subprocess.run([str(self.python), str(self.exporter), str(self.machines[params["machine"]]),
+                                "pole.json"], cwd=work,
                                capture_output=True, text=True, timeout=600, env=os.environ | {"PYTHONUTF8": "1"})
             (work / "export.log").write_text(e.stdout + e.stderr, encoding="utf-8")
             if e.returncode != 0:
