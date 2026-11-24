@@ -78,14 +78,14 @@ commit). Rules that bind:
   `*.inp`, `*.dat`, `__pycache__`, files > 600 kB, then `tests/test_privacy.py`; never two FEMM cases at once; check
   free RAM on long runs.
 
-### Running at 15:14, 2026-11-24 (scratchpads under `%LOCALAPPDATA%/Temp/claude/cb67dd1e648f8970/<session>/scratchpad/`)
+### Running at 16:00, 2026-11-24 (scratchpads under `%LOCALAPPDATA%/Temp/claude/cb67dd1e648f8970/<session>/scratchpad/`)
 
 | Job | Run dir (log) | Done about | When it finishes |
 |---|---|---|---|
 | Study 6: FSI2 mesh study revision 1, levels a / b / c (`cases/turek_hron_fsi2_mesh_{a,b,c}_r1.toml`, frozen 1 / d mesh motion), started 08:24; at 15:13 a, b past 13 s, c past 10 s of 15 | `runs/*_turek_hron_fsi2_mesh_*_r1` (`fsi2_r1_{a,b,c}.log`, session 8f53debf) | a, b about 16:00; c about 18:30 | Score P1-P5 (headers); `scripts/combine_mesh_levels.py` over the three r1 runs; page 17 (drop 'draft' if c passes); skill lines. |
 | Study 6: FSI3 time-step study (`turek_hron_fsi3_dt_{a,c}`, dt 0.001 / 0.00025; the middle level is run 20261123-161107), started 10:33; at 15:13 a at 6 s, c at 2 s of 8 | `runs/*_turek_hron_fsi3_dt_*` (`fsi3_dt_{a,c}.log`) | a about 16:30; c late evening | Score; `combine_mesh_levels.py --parameter time_step_s` with 20261123-161107; page 17. |
 | Study 11: enclosure corners (`enclosure_k{5,20}_eps{0p1,0p9}`), started 14:40 | `runs/*_enclosure_*` (`enclosure_*.log`) | eps 0.9 about 16:15; eps 0.1 about 20:30-21:00 (the low-emissivity radiation solve takes 18 sweeps a step) | Score P1-P5; commit; study 11 page; README row; BACKLOG row 11. |
-| Machine elements: `shaft_fillet_mesh` then `shaft_fillet_radius` (predictions in the headers, committed 5bdf70c), started 15:12 | `runs/*_shaft_fillet_*` (`shaft_fillet_*.log`) | about 15:30 | Score P1-P6; portfolio page; README / PORTFOLIO rows; BACKLOG row. |
+| Machine elements (updated 16:00): mesh study done twice (`shaft_fillet_mesh` FAIL: an end-load sign check, fixed; `shaft_fillet_mesh_r1`: point checks pass, Kts / yield GCI fail at the nodal-stress noise scale); now `shaft_fillet_noise` (perturbed meshes, the floor), `shaft_fillet_radius`, then `shaft_fillet_size` (user's decision after 15:15: size a passing step); predictions in each header | `runs/*_shaft_fillet_*` (`shaft_fillet_*.log`) | about 16:15 | Put the measured floor into `shaft_fillet_mesh_r2` (new, predictions first) and run it; score all; page 26; README / PORTFOLIO rows; BACKLOG row. |
 
 ### Next (in order)
 0c. **User's decisions 2026-11-24, after 12:09:** study 11's enclosure verdict BRACKETED in board conductivity (5 and
