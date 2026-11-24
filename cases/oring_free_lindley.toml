@@ -58,6 +58,11 @@
 #      pressure under 5 %, possibly oscillatory (the corner / mid-side alternation).
 #   P6 About 1.5 / 3.5 / 7 min per run at 0.1 / 0.07 / 0.05 mm.
 # This file: the free-ring reference against Lindley and Parker (P2).
+#
+# First run (20261124-100614_oring_free_lindley, 10:06-10:15): FAILED, CalculiX "matrix found to be singular" at step
+# time 0.885 (26.5 % squeeze); the coarse-mesh smoke run had reached 30 %. A free ring is held radially only by its own
+# hoop stiffness. A scratch retry with load increments of 0.005 (first and largest; numerics only) reached 30 % with
+# every check passing (Lindley +10.6 / +0.05 / -8.1 %). This case now carries those increments; nothing else changed.
 
 [case]
 name = "oring_free_lindley"
@@ -88,6 +93,9 @@ bulk_to_shear = 1000.0
 contact_element_size_mm = 0.05
 far_element_size_mm = 0.2
 penalty_factor = 10.0
+first_increment = 0.005          # the first run went singular at 26.5 % with 0.01 / 0.02 (header)
+max_increment = 0.005
+max_increments = 4000
 
 [numerics]
 solver_timeout_s = 7200
