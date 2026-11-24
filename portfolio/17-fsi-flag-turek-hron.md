@@ -2,11 +2,12 @@
 
 [Portfolio index](../PORTFOLIO.md) · Fluids and structures (coupled)
 
-> **Draft, in progress (updated 2026-11-23).** The solid and fluid stages are verified. The coupled stage
-> (preCICE): the steady case (FSI1) reproduces the benchmark within 1 %; the two periodic cases (FSI2, FSI3)
-> reproduce it within 2 % and 9 % on one mesh, but their verification failed on a check that turned out to be
-> unable to measure what it claimed (below), so they are not verified yet. Next: measure FSI1's mesh-to-mesh scatter
-> (running), then a periodic rerun with a force-transfer check that works for a swinging flag.
+> **Draft (updated 2026-11-24).** The solid and fluid stages are verified. The coupled stage (preCICE): the steady
+> case (FSI1) reproduces the benchmark within 1 %; the periodic FSI3 case is verified on three meshes (every
+> requirement passes on the finest; frequency and mean drag converge, the tip amplitude extrapolates to 0.02 % from the
+> benchmark). FSI2 matches within 2.1 % on two meshes that agree to 0.7 %; its finest mesh crashes at 8.8 s, and a
+> rerun that writes every step before the crash is being read to find out why. The page stays a draft until FSI2's
+> third level is settled.
 
 | | |
 |---|---|
