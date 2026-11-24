@@ -4,7 +4,7 @@
 
 | | |
 |---|---|
-| **Answer** | The intermediate shaft as drawn (42CrMo4 Q&T, D 40 -> d 32 mm, fillet 1.6 +0.4 / -0.2 mm; rotating bending 300 N m, steady torque 500 N m) **fails both requirements**: fatigue safety **1.19** at the nominal fillet and **1.15** at its lower tolerance (limit 1.5, modified Goodman), first-cycle yield safety at a 1.5 x overload **1.82 / 1.77** (limit 2.0). **No fillet that fits under the 4 mm shoulder reaches 1.5** (1.47 at 3.9 mm). Scaling the step does: the smallest small diameter meeting both is **35.1 mm**, so a **36 mm seat with a 45 mm shoulder** (fillet 1.8 mm) gives fatigue safety **1.62** and yield safety **2.52** across the fillet tolerance. Verification: two checks fail, neither on a verdict: the mesh study's check on the torsion factor Kts (it creeps up 0.12 % at the finest level, against a measured noise floor of 0.11 %; no requirement uses Kts directly) and the element quality at a 3.7 mm fillet (0.065 against 0.1; that point is unverified, its neighbours at 3.5 and 3.9 mm pass). The client, loads and limits are synthetic; the material values are catalogue values and every fatigue relation is from a fetched, published source. |
+| **Answer** | The intermediate shaft as drawn (42CrMo4 Q&T, D 40 -> d 32 mm, fillet 1.6 +0.4 / -0.2 mm; rotating bending 300 N m, steady torque 500 N m) **fails both requirements**: fatigue safety **1.19** at the nominal fillet and **1.15** at its lower tolerance (limit 1.5, modified Goodman), first-cycle yield safety at a 1.5 x overload **1.83 / 1.77** (limit 2.0). **No fillet that fits under the 4 mm shoulder reaches 1.5** (1.47 at 3.9 mm). Scaling the step does: the smallest small diameter meeting both is **35.1 mm**, so a **36 mm seat with a 45 mm shoulder** (fillet 1.8 mm) gives fatigue safety **1.62** and yield safety **2.52** across the fillet tolerance. Verification: two checks fail, neither on a verdict: the mesh study's check on the torsion factor Kts (it creeps up 0.12 % at the finest level, against a measured noise floor of 0.11 %; no requirement uses Kts directly) and the element quality at a 3.7 mm fillet (0.065 against 0.1; that point is unverified, its neighbours at 3.5 and 3.9 mm pass). The client, loads and limits are synthetic; the material values are catalogue values and every fatigue relation is from a fetched, published source. |
 | **Discipline** | Machine elements: shaft fatigue at a stress concentration |
 | **Tools** | Gmsh (Python API), CalculiX, Python |
 | **Methods** | 3D half model (symmetry for bending, antisymmetry for torsion), Kt and Kts from FE, Shigley's stress-life method (Marin factors, Neuber notch sensitivity, von Mises combined stresses, modified Goodman, ASME elliptic), mesh study with a measured noise floor, published Kt fits (Pilkey, Roark) |
@@ -67,8 +67,9 @@ margin; a stronger steel or a rolled fillet are the other levers, not assessed h
 
 - **Equilibrium**: the clamp's reaction moment matches the applied moment to 1e-7 in both load cases.
 - **Load introduction**: the consistent nodal forces give M / 2 and T / 2 on the half model to 1.4e-5.
-- **Beam theory** in the small section, away from the fillet: within 0.3-0.6 % at every point.
-- **Published fits**: FE Kt is 2.3-6.5 % above Pilkey's fit of Peterson's charts (more at small radii), Kts 1.9-2.6 %
+- **Beam theory** in the small section, away from the fillet: within 0.3-0.6 % at every point (0.6 % on the finest
+  mesh, 0.3-0.5 % at the 0.14 mm evidence mesh).
+- **Published fits**: FE Kt is 1.5-6.7 % above Pilkey's fit of Peterson's charts (more at small radii), Kts 1.8-2.7 %
   below. Recent finite-element work finds Peterson's bending values up to 15 % low, so this is the expected direction;
   the FE value is used for the verdicts. Two published fits of the same charts (Pilkey 2nd ed., Roark 8th ed.) differ by
   up to 2.2 % themselves.
