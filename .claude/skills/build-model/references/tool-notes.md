@@ -502,6 +502,11 @@ Traps found while building the studies in this repo, by tool.
   table's low-iq rows (6.25 A steps) rather than the whole grid. With 6.25 A rows the map resolved to 0.9 point from
   20 N m up (cold, verified), but the 10 N m row above 4000 rpm still switches between field-weakening branches
   (iq 2-4 A, id jumping up to 47 A between neighbouring speeds): report that row as unresolved rather than chase it.
+  Revision 5 (2026-11-24) settled it: with rows at 3.125 and 9.375 A added the half-table check fell from 2.3 to 0.3
+  points, and the old table already matched FEMM within 0.06 % there. The failing 'row' was the HALF table lacking
+  low-iq rows, not the full table. Measure the full table at new nodes before calling a map row unresolved.
+- **An every-second-node (half-table) check must keep both grid ends:** with an even node count (a merged column at
+  -37.5 A) `[::2]` dropped id = 0 and the check extrapolated out of bounds (fixed: append the last index).
 - **The dq torque equation drifts at low iq deep in field weakening:** at iq 6.25-12.5 A and id -175 to -300 A the
   mean torque is 33-70 N m with 18-27 N m of ripple, and 3 p (phi_d iq - phi_q id) from the mean fluxes missed FEMM's
   torque by up to 1 % (0.3 N m). Interpolate FEMM's torque for the map; the dq fluxes are for the voltage limit.
@@ -512,6 +517,7 @@ Traps found while building the studies in this repo, by tool.
   for all 200 iterations. The coupling-convergence check caught it. Diagnose by scanning the operating point
   against the coupled temperature: a jump means the fixed point does not exist, so report it; relaxation
   would only hide it.
+  Confirmed real (not interpolation) on tables refined at the jump's cell: the cycle survived unchanged (8.83 K).
 
 - **Pyleecan overwrites FEMM's solution per machine name** (`<pyleecan>/Results/em/Femm/<machine>_model.ans`): the
   next run of the same machine replaces it, so revision 5's open-circuit solution was lost to its torque run. The
