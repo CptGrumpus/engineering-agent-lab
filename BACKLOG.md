@@ -111,9 +111,9 @@ Machine elements (study 16) DONE 16:24: page 26; dashboard session told.
    SYY slot does NOT match the shear (2,770 against 1,000 N): take shears from statics, check the manual. Sections:
    an equivalent RECT matching A and Ix (in-plane frame). Next: section properties from the Shapes Database once in
    `references/aisc/`, then validation/aisc_frame.py (E3, F2, G2, H1 against the Design Examples), model, cases.
-   **User's decision (after 18:10): the verified Python solver (`validation/frame2d.py`, exact second order by
+   **User's decision (18:52): the verified Python solver (`validation/frame2d.py`, exact second order by
    stability functions) carries the verdicts; CalculiX (`models/fea/frame_ccx.py`, B32) stays as a documented
-   cross-check.** Smoke test 18:05-18:10 against the Python solver (fixed-base portal, A 5000 mm2, I 4e7 mm4, w 35 N/mm,
+   cross-check.** Smoke test (between 18:02 and 18:52) against the Python solver (fixed-base portal, A 5000 mm2, I 4e7 mm4, w 35 N/mm,
    H 15 kN): CalculiX's sway 8.7 % (first order) / 7.3 % (second) low, moments 3-5 % off, unchanged at 16 elements per
    member: the expanded beams make each corner a rigid knot the section's size; and the linear run's vertical
    reactions sum to 187.6 of 210 kN (the NLGEOM run balances).
