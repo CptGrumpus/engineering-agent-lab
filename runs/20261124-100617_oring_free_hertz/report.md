@@ -1,7 +1,7 @@
 # Engineering review report: oring_free_hertz
 
 - **Run:** `20261124-100617_oring_free_hertz`
-- **Generated:** 2026-11-24T15:43:38+00:00
+- **Generated:** 2026-11-24T16:38:02+00:00
 - **Case file SHA-256:** `13b2ee70b157059ac253a6870bbf5228b141dba867bcbc14b7738385cc4f4417`
 - **Environment:** Python 3.14.10, numpy 2.5.5, scipy 1.18.1, matplotlib 3.11.2, cadquery 2.8.0; Windows-11-10.0.26100-SP0
 - **Tools:** CalculiX This is Version 2.22; gmsh 4.15.0
@@ -51,12 +51,12 @@ Derived: squeeze = 0.05, youngs_modulus_MPa = 5.521, groove_fill_hand = 0.608
 
 | Check | Description | Value | Tolerance | Status |
 |---|---|---|---|---|
-| volume_conservation | |deformed / initial ring volume - 1| (near-incompressible: J about 1) | 2.81e-05 | 1e-03 | PASS |
-| contact_force_balance | |integral of the contact pressure over the cover / cover reaction - 1| | 3.08e-02 | 3e-02 | FAIL |
-| equilibrium | |cover reaction - symmetry-plane reaction| / cover reaction (walls frictionless) | 0.00e+00 | 1e-03 | PASS |
-| penalty_penetration | max overclosure of the ring into the cover / cover travel | 4.66e-03 | 2e-02 | PASS |
-| hertz_peak_pressure | |peak contact pressure - Hertz p0 at the FE's force| / p0 | 1.58e-02 | 1e-01 | PASS |
-| hertz_contact_width | |contact width - Hertz 2b at the FE's force| / 2b | 3.36e-03 | 1e-01 | PASS |
+| volume_conservation | \|deformed / initial ring volume - 1\| (near-incompressible: J about 1) | 2.81e-05 | 0.001 | PASS |
+| contact_force_balance | \|integral of the contact pressure over the cover / cover reaction - 1\| | 3.08e-02 | 0.03 | FAIL |
+| equilibrium | \|cover reaction - symmetry-plane reaction\| / cover reaction (walls frictionless) | 0.00e+00 | 0.001 | PASS |
+| penalty_penetration | max overclosure of the ring into the cover / cover travel | 4.66e-03 | 0.02 | PASS |
+| hertz_peak_pressure | \|peak contact pressure - Hertz p0 at the FE's force\| / p0 | 1.58e-02 | 0.1 | PASS |
+| hertz_contact_width | \|contact width - Hertz 2b at the FE's force\| / 2b | 3.36e-03 | 0.1 | PASS |
 
 ![p00_baseline response](points/p00_baseline/response.png)
 

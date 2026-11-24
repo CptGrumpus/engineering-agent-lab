@@ -1,7 +1,7 @@
 # Engineering review report: oring_free_lindley
 
 - **Run:** `20261124-105309_oring_free_lindley`
-- **Generated:** 2026-11-24T16:23:33+00:00
+- **Generated:** 2026-11-24T16:37:55+00:00
 - **Case file SHA-256:** `c8ca5267d3a9cc03dcd1ede0c596395e4b88deb0d66c8de0657597edb40bc176`
 - **Environment:** Python 3.14.10, numpy 2.5.5, scipy 1.18.1, matplotlib 3.11.2, cadquery 2.8.0; Windows-11-10.0.26100-SP0
 - **Tools:** CalculiX This is Version 2.22; gmsh 4.15.0
@@ -49,16 +49,16 @@ Derived: squeeze = 0.3, youngs_modulus_MPa = 5.521, groove_fill_hand = 0.8251
 
 | Check | Description | Value | Tolerance | Status |
 |---|---|---|---|---|
-| volume_conservation | |deformed / initial ring volume - 1| (near-incompressible: J about 1) | 2.99e-04 | 1e-03 | PASS |
-| contact_force_balance | |integral of the contact pressure over the cover / cover reaction - 1| | 1.56e-02 | 3e-02 | PASS |
-| equilibrium | |cover reaction - symmetry-plane reaction| / cover reaction (walls frictionless) | 0.00e+00 | 1e-03 | PASS |
-| penalty_penetration | max overclosure of the ring into the cover / cover travel | 5.03e-03 | 2e-02 | PASS |
-| lindley_10pct | |FE force - Lindley| / Lindley at 10 % squeeze (unrestrained ring) | 1.06e-01 | 1e-01 | PASS |
-| parker_band_10pct | FE force outside Parker's 70 Shore A band at 10 % (0.356-2.524 N/mm; 0 = inside) | 0.00e+00 | 0e+00 | PASS |
-| lindley_20pct | |FE force - Lindley| / Lindley at 20 % squeeze (unrestrained ring) | 4.88e-04 | 1e-01 | PASS |
-| parker_band_20pct | FE force outside Parker's 70 Shore A band at 20 % (0.793-5.119 N/mm; 0 = inside) | 0.00e+00 | 0e+00 | PASS |
-| lindley_30pct | |FE force - Lindley| / Lindley at 30 % squeeze (unrestrained ring) | 8.09e-02 | 1e-01 | PASS |
-| parker_band_30pct | FE force outside Parker's 70 Shore A band at 30 % (1.891-12.999 N/mm; 0 = inside) | 0.00e+00 | 0e+00 | PASS |
+| volume_conservation | \|deformed / initial ring volume - 1\| (near-incompressible: J about 1) | 2.99e-04 | 0.001 | PASS |
+| contact_force_balance | \|integral of the contact pressure over the cover / cover reaction - 1\| | 1.56e-02 | 0.03 | PASS |
+| equilibrium | \|cover reaction - symmetry-plane reaction\| / cover reaction (walls frictionless) | 0.00e+00 | 0.001 | PASS |
+| penalty_penetration | max overclosure of the ring into the cover / cover travel | 5.03e-03 | 0.02 | PASS |
+| lindley_10pct | \|FE force - Lindley\| / Lindley at 10 % squeeze (unrestrained ring) | 1.06e-01 | 0.15 | PASS |
+| parker_band_10pct | FE force outside Parker's 70 Shore A band at 10 % (0.356-2.524 N/mm; 0 = inside) | 0.00e+00 | 0 | PASS |
+| lindley_20pct | \|FE force - Lindley\| / Lindley at 20 % squeeze (unrestrained ring) | 4.88e-04 | 0.15 | PASS |
+| parker_band_20pct | FE force outside Parker's 70 Shore A band at 20 % (0.793-5.119 N/mm; 0 = inside) | 0.00e+00 | 0 | PASS |
+| lindley_30pct | \|FE force - Lindley\| / Lindley at 30 % squeeze (unrestrained ring) | 8.09e-02 | 0.15 | PASS |
+| parker_band_30pct | FE force outside Parker's 70 Shore A band at 30 % (1.891-12.999 N/mm; 0 = inside) | 0.00e+00 | 0 | PASS |
 
 ![p00_baseline response](points/p00_baseline/response.png)
 

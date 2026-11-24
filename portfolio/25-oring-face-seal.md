@@ -4,7 +4,7 @@
 
 | | |
 |---|---|
-| **Answer** | A 3.53 mm NBR 70 O-ring in a 2.79 x 4.80 mm face-seal groove (a coolant-pump cover, 3 bar) **passes every requirement at every corner of the tolerance stack**: squeeze 17.2-24.5 % (limit 15-30 %), peak contact pressure at the loosest corner **1.50 MPa** (2.5 x the 0.6 MPa needed), closing force at the tightest **5.94 N per mm of seal** (2.0 x under the 12 N/mm bolt budget), groove fill at most **80.4 %** (limit 85 %). The client, the limits and the compound are synthetic; the hardness-to-modulus relation, the force-squeeze reference and the measured force band are published. |
+| **Answer** | A 3.53 mm NBR 70 O-ring in a 2.79 x 4.80 mm face-seal groove (a coolant-pump cover, 3 bar) **passes every requirement at every corner of the tolerance stack**: squeeze 17.2-24.5 % (limit 15-30 %), peak contact pressure at the loosest corner **1.50 MPa** (2.5 x the 0.6 MPa needed), closing force at the tightest **5.94 N per mm of seal** (2.0 x under the 12 N/mm bolt budget), groove fill at most **80.4 %** (limit 85 %). Two cross-checks just missed their tolerances (the hand fill at the tightest corner, 1.05 % against 1 %; the contact-pressure integral at 5 % squeeze, 3.08 % against 3 %), explained below; neither touches a verdict. The client, the limits and the compound are synthetic; the hardness-to-modulus relation, the force-squeeze reference and the measured force band are published. |
 | **Discipline** | Elastomer seals: hyperelastic large strain with contact |
 | **Tools** | Gmsh (Python API), CalculiX, Python |
 | **Methods** | Axisymmetric neo-Hookean model with penalty contact, tolerance-stack corners, mesh study (GCI), Hertz line contact, Lindley's force-squeeze relation, Parker's measured load bands |
@@ -27,7 +27,8 @@ pressure at the loosest stack (REQ-E2), close with no more than the bolts' 12 N 
 | Nominal (70 Shore A) | 21.0 % | 3.39 N/mm | 2.34 MPa | 73.7 % |
 | Tightest (3.63 mm ring, 2.74 mm deep, 75 Shore A) | 24.5 % | **5.94 N/mm** | 3.52 MPa | **80.4 %** |
 
-Every requirement passes with margin; the closest is the fill, 4.6 points under 85 %.
+Every requirement passes with margin; the closest is the fill, 4.6 points under 85 %. Verification: every check passes
+except two narrow misses, both on cross-checks rather than on a requirement (below).
 
 ## How it works
 
@@ -40,9 +41,10 @@ quadratic elements meshed by Gmsh, refined where the contact grows.
 
 ## How I know it's right
 
-- **Volume conserved** to 3e-4 or better (the near-incompressible rubber).
-- **The contact pressure adds up to the closing force** within 1.6 %, and the cover's reaction balances the symmetry
-  plane's exactly.
+- **Volume conserved** to 5e-4 or better (the near-incompressible rubber; 4.96e-4 at the tightest corner).
+- **The contact pressure adds up to the closing force** within 2.0 / 1.6 / 1.4 % at the loosest / nominal / tightest
+  corner (tolerance 3 %), and the cover's reaction balances the symmetry plane's exactly. At 5 % squeeze, where the
+  contact is only 0.66 mm wide, the integral missed by 3.08 %: reported, not retuned.
 - **Hertz line contact** at 5 % squeeze, at the model's own force: peak pressure within 1.6 %, contact width within
   0.3 %.
 - **Lindley's relation** for a laterally free ring (the model with the groove walls removed, his test case): within

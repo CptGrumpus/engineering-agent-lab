@@ -1,7 +1,7 @@
 # Engineering review report: oring_seal_mesh
 
 - **Run:** `20261124-100621_oring_seal_mesh`
-- **Generated:** 2026-11-24T15:27:28+00:00
+- **Generated:** 2026-11-24T16:38:18+00:00
 - **Case file SHA-256:** `c892f7b330f6d560ca71a067bf451f67c10f740a12850fd18b789b837fe2815a`
 - **Environment:** Python 3.14.10, numpy 2.5.5, scipy 1.18.1, matplotlib 3.11.2, cadquery 2.8.0; Windows-11-10.0.26100-SP0
 - **Tools:** CalculiX This is Version 2.22; gmsh 4.15.0
@@ -71,12 +71,12 @@ Derived: squeeze = 0.2452, youngs_modulus_MPa = 7.053, groove_fill_hand = 0.7952
 
 | Check | Description | Value | Tolerance | Status |
 |---|---|---|---|---|
-| volume_conservation | |deformed / initial ring volume - 1| (near-incompressible: J about 1) | 5.95e-04 | 1e-03 | PASS |
-| contact_force_balance | |integral of the contact pressure over the cover / cover reaction - 1| | 1.36e-02 | 3e-02 | PASS |
-| equilibrium | |cover reaction - symmetry-plane reaction| / cover reaction (walls frictionless) | 0.00e+00 | 1e-03 | PASS |
-| penalty_penetration | max overclosure of the ring into the cover / cover travel | 1.37e-02 | 2e-02 | PASS |
-| groove_fill_hand | |groove fill from the deformed area - hand fill (volume conserved, ring against the outer wall)| / hand | 1.01e-02 | 1e-02 | FAIL |
-| in_groove (validity) | ring beyond the groove walls (mm, inner or outer; penalty overclosure allowed up to the tolerance; validity) | 1.77e-02 | 3e-02 | PASS |
+| volume_conservation | \|deformed / initial ring volume - 1\| (near-incompressible: J about 1) | 5.95e-04 | 0.001 | PASS |
+| contact_force_balance | \|integral of the contact pressure over the cover / cover reaction - 1\| | 1.36e-02 | 0.03 | PASS |
+| equilibrium | \|cover reaction - symmetry-plane reaction\| / cover reaction (walls frictionless) | 0.00e+00 | 0.001 | PASS |
+| penalty_penetration | max overclosure of the ring into the cover / cover travel | 1.37e-02 | 0.02 | PASS |
+| groove_fill_hand | \|groove fill from the deformed area - hand fill (volume conserved, ring against the outer wall)\| / hand | 1.01e-02 | 0.01 | FAIL |
+| in_groove (validity) | ring beyond the groove walls (mm, inner or outer; penalty overclosure allowed up to the tolerance; validity) | 1.77e-02 | 0.03 | PASS |
 
 ![p00_contact_element_size_mm-0.1 response](points/p00_contact_element_size_mm-0.1/response.png)
 
@@ -96,12 +96,12 @@ Derived: squeeze = 0.2452, youngs_modulus_MPa = 7.053, groove_fill_hand = 0.7952
 
 | Check | Description | Value | Tolerance | Status |
 |---|---|---|---|---|
-| volume_conservation | |deformed / initial ring volume - 1| (near-incompressible: J about 1) | 5.29e-04 | 1e-03 | PASS |
-| contact_force_balance | |integral of the contact pressure over the cover / cover reaction - 1| | 1.40e-02 | 3e-02 | PASS |
-| equilibrium | |cover reaction - symmetry-plane reaction| / cover reaction (walls frictionless) | 0.00e+00 | 1e-03 | PASS |
-| penalty_penetration | max overclosure of the ring into the cover / cover travel | 9.42e-03 | 2e-02 | PASS |
-| groove_fill_hand | |groove fill from the deformed area - hand fill (volume conserved, ring against the outer wall)| / hand | 1.04e-02 | 1e-02 | FAIL |
-| in_groove (validity) | ring beyond the groove walls (mm, inner or outer; penalty overclosure allowed up to the tolerance; validity) | 1.25e-02 | 3e-02 | PASS |
+| volume_conservation | \|deformed / initial ring volume - 1\| (near-incompressible: J about 1) | 5.29e-04 | 0.001 | PASS |
+| contact_force_balance | \|integral of the contact pressure over the cover / cover reaction - 1\| | 1.40e-02 | 0.03 | PASS |
+| equilibrium | \|cover reaction - symmetry-plane reaction\| / cover reaction (walls frictionless) | 0.00e+00 | 0.001 | PASS |
+| penalty_penetration | max overclosure of the ring into the cover / cover travel | 9.42e-03 | 0.02 | PASS |
+| groove_fill_hand | \|groove fill from the deformed area - hand fill (volume conserved, ring against the outer wall)\| / hand | 1.04e-02 | 0.01 | FAIL |
+| in_groove (validity) | ring beyond the groove walls (mm, inner or outer; penalty overclosure allowed up to the tolerance; validity) | 1.25e-02 | 0.03 | PASS |
 
 ![p01_contact_element_size_mm-0.07 response](points/p01_contact_element_size_mm-0.07/response.png)
 
@@ -121,12 +121,12 @@ Derived: squeeze = 0.2452, youngs_modulus_MPa = 7.053, groove_fill_hand = 0.7952
 
 | Check | Description | Value | Tolerance | Status |
 |---|---|---|---|---|
-| volume_conservation | |deformed / initial ring volume - 1| (near-incompressible: J about 1) | 4.96e-04 | 1e-03 | PASS |
-| contact_force_balance | |integral of the contact pressure over the cover / cover reaction - 1| | 1.44e-02 | 3e-02 | PASS |
-| equilibrium | |cover reaction - symmetry-plane reaction| / cover reaction (walls frictionless) | 0.00e+00 | 1e-03 | PASS |
-| penalty_penetration | max overclosure of the ring into the cover / cover travel | 6.82e-03 | 2e-02 | PASS |
-| groove_fill_hand | |groove fill from the deformed area - hand fill (volume conserved, ring against the outer wall)| / hand | 1.05e-02 | 1e-02 | FAIL |
-| in_groove (validity) | ring beyond the groove walls (mm, inner or outer; penalty overclosure allowed up to the tolerance; validity) | 9.03e-03 | 3e-02 | PASS |
+| volume_conservation | \|deformed / initial ring volume - 1\| (near-incompressible: J about 1) | 4.96e-04 | 0.001 | PASS |
+| contact_force_balance | \|integral of the contact pressure over the cover / cover reaction - 1\| | 1.44e-02 | 0.03 | PASS |
+| equilibrium | \|cover reaction - symmetry-plane reaction\| / cover reaction (walls frictionless) | 0.00e+00 | 0.001 | PASS |
+| penalty_penetration | max overclosure of the ring into the cover / cover travel | 6.82e-03 | 0.02 | PASS |
+| groove_fill_hand | \|groove fill from the deformed area - hand fill (volume conserved, ring against the outer wall)\| / hand | 1.05e-02 | 0.01 | FAIL |
+| in_groove (validity) | ring beyond the groove walls (mm, inner or outer; penalty overclosure allowed up to the tolerance; validity) | 9.03e-03 | 0.03 | PASS |
 
 ![p02_contact_element_size_mm-0.05 response](points/p02_contact_element_size_mm-0.05/response.png)
 

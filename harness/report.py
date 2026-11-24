@@ -217,8 +217,8 @@ def build_report(run_dir: str | Path) -> Path:
             L.append("|---|---|---|---|---|")
             for c in pt["checks"]:
                 kind = " (validity)" if c.get("kind") == "validity" else ""
-                L.append(f"| {c['id']}{kind} | {c['description']} | {c['value']:.2e} | "
-                         f"{c['tolerance']:.0e} | {c['status']} |")
+                L.append(f"| {c['id']}{kind} | {c['description'].replace('|', chr(92) + '|')} | {c['value']:.2e} | "
+                         f"{c['tolerance']:.3g} | {c['status']} |")
             for fig in sorted((run_dir / "points" / pt["label"]).glob("*.png")):
                 L.append("")
                 L.append(f"![{pt['label']} {fig.stem}]({rel}/{fig.name})")

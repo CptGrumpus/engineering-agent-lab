@@ -1,7 +1,7 @@
 # Engineering review report: oring_seal_corners
 
 - **Run:** `20261124-100619_oring_seal_corners`
-- **Generated:** 2026-11-24T15:38:16+00:00
+- **Generated:** 2026-11-24T16:38:10+00:00
 - **Case file SHA-256:** `6becc0d8887c337d089764bbf226fb3a85f1faad64ca4e5e9107ae01e3a593cb`
 - **Environment:** Python 3.14.10, numpy 2.5.5, scipy 1.18.1, matplotlib 3.11.2, cadquery 2.8.0; Windows-11-10.0.26100-SP0
 - **Tools:** CalculiX This is Version 2.22; gmsh 4.15.0
@@ -61,12 +61,12 @@ Derived: squeeze = 0.172, youngs_modulus_MPa = 4.426, groove_fill_hand = 0.6708
 
 | Check | Description | Value | Tolerance | Status |
 |---|---|---|---|---|
-| volume_conservation | |deformed / initial ring volume - 1| (near-incompressible: J about 1) | 2.86e-04 | 1e-03 | PASS |
-| contact_force_balance | |integral of the contact pressure over the cover / cover reaction - 1| | 2.00e-02 | 3e-02 | PASS |
-| equilibrium | |cover reaction - symmetry-plane reaction| / cover reaction (walls frictionless) | 0.00e+00 | 1e-03 | PASS |
-| penalty_penetration | max overclosure of the ring into the cover / cover travel | 7.44e-03 | 2e-02 | PASS |
-| groove_fill_hand | |groove fill from the deformed area - hand fill (volume conserved, ring against the outer wall)| / hand | 5.88e-03 | 1e-02 | PASS |
-| in_groove (validity) | ring beyond the groove walls (mm, inner or outer; penalty overclosure allowed up to the tolerance; validity) | 6.39e-03 | 3e-02 | PASS |
+| volume_conservation | \|deformed / initial ring volume - 1\| (near-incompressible: J about 1) | 2.86e-04 | 0.001 | PASS |
+| contact_force_balance | \|integral of the contact pressure over the cover / cover reaction - 1\| | 2.00e-02 | 0.03 | PASS |
+| equilibrium | \|cover reaction - symmetry-plane reaction\| / cover reaction (walls frictionless) | 0.00e+00 | 0.001 | PASS |
+| penalty_penetration | max overclosure of the ring into the cover / cover travel | 7.44e-03 | 0.02 | PASS |
+| groove_fill_hand | \|groove fill from the deformed area - hand fill (volume conserved, ring against the outer wall)\| / hand | 5.88e-03 | 0.01 | PASS |
+| in_groove (validity) | ring beyond the groove walls (mm, inner or outer; penalty overclosure allowed up to the tolerance; validity) | 6.39e-03 | 0.03 | PASS |
 
 ![p00_loosest response](points/p00_loosest/response.png)
 
@@ -86,12 +86,12 @@ Derived: squeeze = 0.2096, youngs_modulus_MPa = 5.521, groove_fill_hand = 0.7308
 
 | Check | Description | Value | Tolerance | Status |
 |---|---|---|---|---|
-| volume_conservation | |deformed / initial ring volume - 1| (near-incompressible: J about 1) | 3.82e-04 | 1e-03 | PASS |
-| contact_force_balance | |integral of the contact pressure over the cover / cover reaction - 1| | 1.64e-02 | 3e-02 | PASS |
-| equilibrium | |cover reaction - symmetry-plane reaction| / cover reaction (walls frictionless) | 0.00e+00 | 1e-03 | PASS |
-| penalty_penetration | max overclosure of the ring into the cover / cover travel | 6.91e-03 | 2e-02 | PASS |
-| groove_fill_hand | |groove fill from the deformed area - hand fill (volume conserved, ring against the outer wall)| / hand | 7.86e-03 | 1e-02 | PASS |
-| in_groove (validity) | ring beyond the groove walls (mm, inner or outer; penalty overclosure allowed up to the tolerance; validity) | 7.65e-03 | 3e-02 | PASS |
+| volume_conservation | \|deformed / initial ring volume - 1\| (near-incompressible: J about 1) | 3.82e-04 | 0.001 | PASS |
+| contact_force_balance | \|integral of the contact pressure over the cover / cover reaction - 1\| | 1.64e-02 | 0.03 | PASS |
+| equilibrium | \|cover reaction - symmetry-plane reaction\| / cover reaction (walls frictionless) | 0.00e+00 | 0.001 | PASS |
+| penalty_penetration | max overclosure of the ring into the cover / cover travel | 6.91e-03 | 0.02 | PASS |
+| groove_fill_hand | \|groove fill from the deformed area - hand fill (volume conserved, ring against the outer wall)\| / hand | 7.86e-03 | 0.01 | PASS |
+| in_groove (validity) | ring beyond the groove walls (mm, inner or outer; penalty overclosure allowed up to the tolerance; validity) | 7.65e-03 | 0.03 | PASS |
 
 ![p01_nominal response](points/p01_nominal/response.png)
 
@@ -111,12 +111,12 @@ Derived: squeeze = 0.2452, youngs_modulus_MPa = 7.053, groove_fill_hand = 0.7952
 
 | Check | Description | Value | Tolerance | Status |
 |---|---|---|---|---|
-| volume_conservation | |deformed / initial ring volume - 1| (near-incompressible: J about 1) | 4.96e-04 | 1e-03 | PASS |
-| contact_force_balance | |integral of the contact pressure over the cover / cover reaction - 1| | 1.44e-02 | 3e-02 | PASS |
-| equilibrium | |cover reaction - symmetry-plane reaction| / cover reaction (walls frictionless) | 0.00e+00 | 1e-03 | PASS |
-| penalty_penetration | max overclosure of the ring into the cover / cover travel | 6.82e-03 | 2e-02 | PASS |
-| groove_fill_hand | |groove fill from the deformed area - hand fill (volume conserved, ring against the outer wall)| / hand | 1.05e-02 | 1e-02 | FAIL |
-| in_groove (validity) | ring beyond the groove walls (mm, inner or outer; penalty overclosure allowed up to the tolerance; validity) | 9.03e-03 | 3e-02 | PASS |
+| volume_conservation | \|deformed / initial ring volume - 1\| (near-incompressible: J about 1) | 4.96e-04 | 0.001 | PASS |
+| contact_force_balance | \|integral of the contact pressure over the cover / cover reaction - 1\| | 1.44e-02 | 0.03 | PASS |
+| equilibrium | \|cover reaction - symmetry-plane reaction\| / cover reaction (walls frictionless) | 0.00e+00 | 0.001 | PASS |
+| penalty_penetration | max overclosure of the ring into the cover / cover travel | 6.82e-03 | 0.02 | PASS |
+| groove_fill_hand | \|groove fill from the deformed area - hand fill (volume conserved, ring against the outer wall)\| / hand | 1.05e-02 | 0.01 | FAIL |
+| in_groove (validity) | ring beyond the groove walls (mm, inner or outer; penalty overclosure allowed up to the tolerance; validity) | 9.03e-03 | 0.03 | PASS |
 
 ![p02_tightest response](points/p02_tightest/response.png)
 
