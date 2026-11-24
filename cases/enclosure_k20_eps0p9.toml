@@ -31,6 +31,14 @@
 #      20 W/mK moves it by under 3 K; the bottleneck is air to walls to ambient.
 #   P5 About 1.5-2 h per case side by side.
 # This file: board 20 W/mK, internal emissivity 0.9.
+#
+# Results (run 20261124-144021_enclosure_k20_eps0p9, 14:40-16:14): verification PASS (heat balance 0.46 %, settled 0.002 K). Component maximum
+# 94.25 C (REQ-D1 FAIL, limit 85), mean air 67.00 C (REQ-D2 FAIL, limit 60), walls 55.7 C mean, radiation
+# 75.6 % of the walls' inside heat. Board 5 against 20 W/mK at emissivity 0.9: component 98.45 against 94.25 C
+# (4.2 K), air unchanged (66.93 / 67.00 C).
+# P1 HELD; P2 HELD (component 93-100, air 65-69 C, both FAIL); P4 MISSED (4.2 K, predicted under 3 K: the board's
+# spreading matters more than its 1-2 K self-rise suggested); P5 HELD for the emissivity-0.9 corners (about 1.6 h; the
+# emissivity-0.1 corners take about 4.5 h, their radiation solve needing 18 sweeps a step). P3 waits for those corners.
 
 [case]
 name = "enclosure_k20_eps0p9"

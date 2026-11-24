@@ -1,0 +1,18 @@
+FoamFile
+{
+    format ascii;
+    class dictionary;
+    object fvSolution;
+}
+
+solvers
+{
+    "(rho|rhoFinal)" { solver diagonal; }
+    p_rgh { solver GAMG; smoother GaussSeidel; tolerance 1e-9; relTol 0.01; maxIter 200; }
+    "(U|h)" { solver PBiCGStab; preconditioner DILU; tolerance 1e-10; relTol 0.05; }
+    "(U|h)Final" { solver PBiCGStab; preconditioner DILU; tolerance 1e-10; relTol 0; }
+    p_rghFinal { solver GAMG; smoother GaussSeidel; tolerance 1e-9; relTol 0; maxIter 200; }
+    "Ii.*" { solver GAMG; smoother symGaussSeidel; tolerance 1e-8; relTol 0; maxIter 100; }
+}
+PIMPLE { momentumPredictor yes; nOuterCorrectors 1; nCorrectors 2; nNonOrthogonalCorrectors 0; pRefCell 0; pRefValue 0; }
+relaxationFactors { equations { ".*" 1; } }
