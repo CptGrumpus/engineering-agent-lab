@@ -390,6 +390,47 @@ different mesh, the half-table iron-loss estimate, the unresolved 10 N m row); n
 """
 
 
+def client_data_section(runs):
+    """Revision 5 (client data, uncalibrated, 2026-11-24): every design check and the efficiency against ORNL."""
+    eff, th, ro = (runs.get(c) for c in ("motor_prius_efficiency_rev5", "motor_prius_thermal_rev5",
+                                         "motor_prius_rotor_overspeed_rev5_mesh"))
+    vj = REPO / "validation" / "motor_ornl" / "rev5_efficiency_vs_ornl.json"
+    if not (eff and eff["complete"] and vj.is_file()):
+        return ""
+    o = json.loads(vj.read_text(encoding="utf-8"))["ornl"]
+    pts = {pt["label"].split("_", 1)[1]: pt for pt in eff["points"]}
+    m = lambda sc, k: pts[sc]["metrics"][k]  # noqa: E731
+    rows = [["Efficiency, ours (hot) − ORNL, median over 393 points",
+             f'{o["hot_minus_ornl_median_pts"]:.2f} points (10th-90th percentile {o["hot_minus_ornl_p10_p90"][0]:.1f} '
+             f'to {o["hot_minus_ornl_p10_p90"][1]:.1f})', pill("FAIL") + " against 2 points (blind 5.21, calibrated 4.50)"],
+            ["Peak efficiency (motor only)", f'{m("cold", "peak_efficiency_pct"):.2f} % cold, '
+             f'{m("hot", "peak_efficiency_pct"):.2f} % hot', ""],
+            ["REQ-M5: rated 50 kW to 6000 rpm", f'{m("cold", "min_power_rated_speed_range_kW"):.2f} kW cold, '
+             f'{m("hot", "min_power_rated_speed_range_kW"):.2f} kW hot', pill("PASS")]]
+    if th and th["complete"]:
+        nom = next(pt for pt in th["points"] if pt["label"].endswith("nominal"))
+        low = min(th["points"], key=lambda pt: pt["metrics"]["min_continuous_power_kW"])
+        rows.append(["REQ-TH1: 25 kW continuous", f'{nom["metrics"]["min_continuous_power_kW"]:.1f} kW nominal; '
+                     f'{low["metrics"]["min_continuous_power_kW"]:.1f} kW at the loosest housing fit',
+                     pill("PASS") + " nominal (unverified) · " + pill("FAIL") + " loosest fit"])
+    if ro and ro["complete"]:
+        f = min(ro["points"], key=lambda pt: float(pt["parameters"]["bridge_element_size_mm"]))  # finest bridge mesh
+        rows.append(["REQ-M4: rotor bridges at 7200 rpm", f'{f["metrics"]["bridge_linearized_vm_MPa"]:.1f} MPa '
+                     "against 335 MPa (blind 424.4)", pill("FAIL") + " verified"])
+    return f"""<h2 id="client-data">Client-data model (revision 5), uncalibrated</h2>
+<div class="col"><p>Since 2026-11-23 the study runs as a client project: everything a client hands over (drawing, bill
+of materials with the magnet's size and mass, measured magnet properties, measured phase resistance) is in the model,
+and nothing is fitted. Its magnet-driven flux is still about 18 % high, in back-EMF and torque alike; an independent
+ElmerFEM model agrees with FEMM to 0.1 %, the steel and 3D end effects are too small, and the leading explanation is
+how fully the magnets are magnetised in the assembled rotor (a question for the client;
+<code>validation/motor_ornl/STATUS.md</code>). Every design check, recomputed on it:</p></div>
+{table(["Check", "Revision 5", "Verdict"], rows)}
+<div class="col"><p>The efficiency gap barely follows the flux (blind +24 %: 5.2 points; client data +18 %: 4.4): it is
+mostly the losses a motor-only model leaves out (mechanical, magnet eddy current, AC copper). Runs:
+{E(eff["id"])}{", " + E(th["id"]) if th else ""}{", " + E(ro["id"]) if ro else ""}.</p></div>
+"""
+
+
 def build_index(cases, runs, full=True):
     r0, r1, r2, r3, r4, r5 = (runs[c] for c in CASES)
     f0, f1, f2, f3, f4, f5 = (finest(r) if r else None for r in (r0, r1, r2, r3, r4, r5))
@@ -616,6 +657,7 @@ inputs, hashes and tool versions with every run.</li>
 </ol>
 
 {calibration_section()}
+{client_data_section(runs)}
 
 <h2>Blind protocol log</h2>
 <div class="col">
@@ -1190,9 +1232,11 @@ above 200 A therefore rests on a stated assumption about deep saturation.</p></d
 
 # --------------------------------------------------------------------------- page: efficiency map
 
-EFF_CASES = ["motor_prius_efficiency", "motor_prius_efficiency_r1"]
+EFF_CASES = ["motor_prius_efficiency", "motor_prius_efficiency_r1", "motor_prius_efficiency_br",
+             "motor_prius_efficiency_rev5"]
 LUT_CASES = ["motor_prius_lut_mesh", "motor_prius_lut_cold", "motor_prius_lut_hot", "motor_prius_lut_cold_lowiq",
-             "motor_prius_lut_hot_lowiq"]
+             "motor_prius_lut_hot_lowiq", "motor_prius_lut_cold_rev5", "motor_prius_lut_cold_lowiq_rev5",
+             "motor_prius_lut_hot_rev5", "motor_prius_lut_hot_lowiq_rev5"]
 EFF_NOTES = {
     "motor_prius_efficiency": "First map, on the 25 A tables. Not verified: below 30 N m at 4000-6000 rpm the best "
                               "operating point uses only 2-5 A of q-axis current, inside the table's first cell, and the "
@@ -1316,7 +1360,7 @@ geometry: 59.6 mΩ per phase at 20 °C, 78.4 mΩ at 100 °C.</li>
     return page("efficiency.html", "Prius Efficiency Map", body, "Study 7: motor-only efficiency map of the Prius motor.")
 
 
-THERMAL_CASES = ["motor_prius_thermal", "motor_prius_thermal_r1", "motor_prius_thermal_br"]
+THERMAL_CASES = ["motor_prius_thermal", "motor_prius_thermal_r1", "motor_prius_thermal_br", "motor_prius_thermal_rev5"]
 
 
 def thermal_scenarios(run):
@@ -1428,7 +1472,7 @@ def main():
     bcases = [case_record(c) for c in BRACKET_OC]
     btcases = [case_record(c) for c in BRACKET_TQ]
     runs = {c: load_run(c) for c in CASES + TORQUE_CASES + BRACKET_OC + BRACKET_TQ + EFF_CASES + LUT_CASES
-            + ["motor_prius_rotor_overspeed_mesh"] + THERMAL_CASES}
+            + ["motor_prius_rotor_overspeed_mesh", "motor_prius_rotor_overspeed_rev5_mesh"] + THERMAL_CASES}
     (OUT / "index.html").write_text(build_index(cases, runs), encoding="utf-8")
     if len(sys.argv) > 1:  # also write the artifact's main page (no document skeleton) to the given path
         Path(sys.argv[1]).write_text(build_index(cases, runs, full=False), encoding="utf-8")

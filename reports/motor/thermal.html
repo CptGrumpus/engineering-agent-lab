@@ -361,7 +361,46 @@ interface_0p08 FAILS it, verified (24.32 kW, 9/9 checks pass).
 Engineering reading: on the calibrated machine the continuous rating falls 7 % (30.2 to 28.1 kW nominal) and the 25 kW
 requirement now depends on the stator-to-housing fit: it passes at the literature-average interface gap (0.037 mm)
 and fails at 0.08 mm (24.3 kW). A client would be asked for the press-fit interference or a measured interface
-resistance before the rating is quoted.</pre></details><p class="muted mono">run 20261123-071007_motor_prius_thermal_br, verification FAIL</p>
+resistance before the rating is quoted.</pre></details><p class="muted mono">run 20261123-071007_motor_prius_thermal_br, verification FAIL</p><h3 id="motor_prius_thermal_rev5">motor_prius_thermal_rev5</h3><p>2004 Toyota Prius traction motor, REVISION 5 (client data: magnets 83.1 x 18.9 x 6.5 mm at 1.255 T, measured phase resistance 69 mOhm at 21 C): steady lumped thermal network from the geometry, coupled to the verified dq tables (losses at the network&#x27;s temperatures); continuous torque-speed envelope 500-6000 rpm within a 180 C winding hotspot and 150 C magnets under a synthetic 65 C water jacket, and the magnet temperature where the winding mean reaches the efficiency map&#x27;s 100 C; nominal and nine sensitivity scenarios; CalculiX slot-pitch conduction check.</p><p>3 of 10 columns pass every check; verification <span class="pill fail">FAIL</span>.</p><details><summary>Case record: predictions before the run, results after</summary><pre>Study 7, thermal network on revision 5 (client data): motor_prius_thermal_br (read it, and motor_prius_thermal_r1 /
+motor_prius_thermal for the decision, sources and hand estimate) with the four dq tables and the efficiency run
+replaced by the revision-5 ones, and the client&#x27;s measured phase resistance (69 mOhm at 21 C, 15 % above the
+geometric 59.6; the slot / end split of it stays geometric). Network, cooling, scenarios, requirement and tolerances
+unchanged; the stator geometry in the parameters is revision 5&#x27;s (identical: Rext 134.62, bore 80.9625, slot SlotW11
+as here; rotor 80.1878 / 55.3212). User&#x27;s go-ahead 2026-11-24, after 03:35 (&quot;Motor rotor + thermal on rev 5&quot;).
+
+Predictions, written BEFORE the run (2026-11-24 06:33; hand reasoning from the br run, no run of this case):
+  P1 Checks as br: balance, coupling, efficiency consistency (against the rev5 efficiency run) and every GCI pass;
+     section_wind_peak FAILs in the same six scenarios (5-7.5 %), interface_0p01 also section_wind_mean.
+  P2 Magnets still bind at nearly every speed; the minimum stays at 1250 rpm, copper-loss dominated: the same heat
+     allows I / sqrt(1.15) (about 90 A against br&#x27;s 96.9), and the revision-5 torque per ampere is 6 % above br&#x27;s
+     (MTPA cold 222.6 N m at 90 A against br 209.9). REQ-TH1 nominal about 26.5-29.0 kW (br 28.07), PASS,
+     unverified as before; over the scenarios about 24-32 kW, interface_0p08 FAILS again (about 23.5-25 kW).
+  P3 At 4000-6000 rpm the torque falls against br by 0-10 %: +15 % resistance on a copper loss that is mostly
+     field-weakening d current, and the stronger magnets add iron loss (6000 rpm: about 56-65 N m, br 64.0).
+  P4 Magnet temperature where the winding mean reaches 100 C: within 5 K of br&#x27;s 93.4-105.2 C.
+  P5 About 4-5 min.
+
+Results (run 20261124-063338_motor_prius_thermal_rev5, 06:33-06:37): verification PASS in three scenarios, FAIL in
+seven. REQ-TH1 27.70 kW nominal, PASS (unverified, as br); over the scenarios 23.99-31.47 kW, and interface_0p08
+FAILS it, verified (23.99 kW, 9/9 checks pass), as br.
+  P1 MISSED in part. As predicted: section_wind_peak fails in the same six scenarios as br (5.2-7.3 %; nominal
+     5.33 %), interface_0p01 also section_wind_mean (6.43 %); balance, efficiency consistency, every GCI pass. Not
+     predicted: (a) interface_0p01 also section_teeth_mean, 0.0500035 against 0.05 (on the limit; model form, the
+     same network); (b) jacket_h1000 fails coupling_convergence, 8.79 K against 0.1: its hot-corner state at
+     5500 rpm (34.4 N m) never converges, a two-state limit cycle (id -38 / -46 A, magnets 102.7 / 111.5 C). Why
+     (scratch probe): the loss search&#x27;s operating point is discontinuous in magnet temperature there: id -46 A up
+     to 105 C, -39 A from 106 C, total loss 1538 -&gt; 1291 W (-16 % for 1 K), at iq 10-11 A in the field-weakening
+     region where the low-iq tables fail the dq-torque check and the efficiency map its half-table check. No fixed
+     point exists between the two branches. It touches that one hot-corner value only, not the envelope or
+     REQ-TH1. Reported, not tuned; a fix belongs to the table / operating-point search (BACKLOG).
+  P2 HELD: nominal 27.70 kW in 26.5-29.0 (1250 rpm: 211.6 N m at 91 A; predicted about 90 A); scenarios 23.99-31.47
+     in about 24-32; interface_0p08 FAILS at 23.99 (23.5-25). Magnets bind at all 23 speeds.
+  P3 MISSED (direction): at 4000 / 5000 / 6000 rpm the torque ROSE against br, 105.8 / 79.9 / 65.5 N m against
+     103.8 / 78.1 / 64.0 (+2 %), not fell 0-10 %: the 6 % more torque per ampere outweighs the 15 % more resistance
+     at 73-83 A (copper loss is I^2 R: -3.5 % current for the same heat, +6 % torque per ampere).
+  P4 HELD: hot-corner magnets 92.4-108.9 C over all scenarios (br 92.5-110.8).   P5 HELD: 4 min 21 s.
+Engineering reading: on client data the continuous rating is 27.7 kW nominal (br 28.1, blind 30.2); REQ-TH1 passes
+at the literature-average interface gap and fails at the loosest fit (0.08 mm), as on the calibrated machine.</pre></details><p class="muted mono">run 20261124-063338_motor_prius_thermal_rev5, verification FAIL</p>
 
 <p class="muted">Generated by <code>reports/motor/build_report.py</code>.</p>
 

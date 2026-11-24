@@ -252,7 +252,98 @@ the cold scenario passes all 8 checks.
 Engineering reading: the map is resolved to about 0.5 efficiency point everywhere from 20 N m up, in both scenarios;
 the 10 N m row above 4000 rpm is not resolved and is reported as such. Resolving it would need table rows below
 6.25 A of q-axis current and a finer current search; at 2.5 % of rated torque that is not worth a revision before
-the blind comparison unless ORNL&#x27;s sample points turn out to lie there.</pre></details><p class="muted mono">run 20261122-175650_motor_prius_efficiency_r1, verification FAIL</p>
+the blind comparison unless ORNL&#x27;s sample points turn out to lie there.</pre></details><p class="muted mono">run 20261122-175650_motor_prius_efficiency_r1, verification FAIL</p><h3 id="motor_prius_efficiency_br">motor_prius_efficiency_br</h3><p>2004 Toyota Prius traction motor, POST-TEST CALIBRATED (hypothesis A: magnet remanence 1.036 T), motor-only efficiency map from the verified dq look-up tables (25 A tables merged with low-q-current tables at 6.25 A): 500-6000 rpm, 10-400 N m, least copper + iron loss under the 500 V bus voltage limit and the current limit; cold (all 20 C) and hot (windings 100 C, magnets 80 C) scenarios.</p><div class="tablewrap"><table class="num"><thead><tr><th>Quantity</th><th>cold</th><th>hot</th></tr></thead><tbody><tr><td>Peak efficiency</td><td>97.31 % at 2750 rpm, 70 N m</td><td>96.97 % at 3000 rpm, 50 N m</td></tr><tr><td>1000 rpm, 50 N m</td><td>96.33 %</td><td>95.44 %</td></tr><tr><td>1000 rpm, 300 N m</td><td>90.78 %</td><td>87.78 %</td></tr><tr><td>1500 rpm, 100 N m</td><td>96.58 %</td><td>95.67 %</td></tr><tr><td>3000 rpm, 50 N m</td><td>97.26 %</td><td>96.97 %</td></tr><tr><td>3000 rpm, 150 N m</td><td>95.84 %</td><td>94.64 %</td></tr><tr><td>4500 rpm, 50 N m</td><td>96.05 %</td><td>95.97 %</td></tr><tr><td>6000 rpm, 30 N m</td><td>94.27 %</td><td>93.84 %</td></tr><tr><td>Lowest power at 212 A, base speed to 6000 rpm (REQ-M5 ≥ 50 kW)</td><td>48.0 kW</td><td>44.5 kW</td></tr><tr><td>400 N m reachable at 212 A up to</td><td>1500 rpm</td><td>1500 rpm</td></tr><tr><td>Phase resistance</td><td>59.6 mΩ</td><td>78.4 mΩ</td></tr></tbody></table></div><div class="tablewrap"><table class=""><thead><tr><th>Scenario</th><th>Check</th><th>Description</th><th>Value</th><th>Limit</th><th>Status</th></tr></thead><tbody><tr><td>cold</td><td><code>lut_back_emf</code></td><td>|table open-circuit back-EMF (sqrt 3 w phi_d at id = iq = 0) - open-circuit study| / open-circuit study (same mesh fineness)</td><td>0.00101</td><td>0.001</td><td><span class="pill fail">FAIL</span></td></tr><tr><td>cold</td><td><code>lut_mtpa_100A</code></td><td>|table MTPA torque at 100 A rms - torque-curve study| / torque-curve study (cubic interpolation against an angle sweep with a parabola)</td><td>6.90e-04</td><td>0.01</td><td><span class="pill pass">PASS</span></td></tr><tr><td>cold</td><td><code>lut_mtpa_200A</code></td><td>|table MTPA torque at 200 A rms - torque-curve study| / torque-curve study (cubic interpolation against an angle sweep with a parabola)</td><td>8.64e-04</td><td>0.01</td><td><span class="pill pass">PASS</span></td></tr><tr><td>cold</td><td><code>interp_torque</code></td><td>max over the left-out nodes (|T| &gt;= 20 N m) of the torque error of the table on every second node: bounds the full table&#x27;s interpolation error (cubic: about 1/16 of this)</td><td>0.0113</td><td>0.05</td><td><span class="pill pass">PASS</span></td></tr><tr><td>cold</td><td><code>interp_iron_loss</code></td><td>the same for the iron loss at 6000 rpm</td><td>0.0687</td><td>0.05</td><td><span class="pill fail">FAIL</span></td></tr><tr><td>cold</td><td><code>magnet_temperature</code></td><td>|table&#x27;s magnet temperature - this scenario&#x27;s| (K)</td><td>0</td><td>0</td><td><span class="pill pass">PASS</span></td></tr><tr><td>cold</td><td><code>lut_merge</code></td><td>max relative difference over the nodes two merged table runs both computed (same model, mesh and rotor positions: it must reproduce itself)</td><td>0</td><td>1.00e-04</td><td><span class="pill pass">PASS</span></td></tr><tr><td>cold</td><td><code>interp_map</code></td><td>max |efficiency from the half table - from the full table| over the map (efficiency points): bounds the full table&#x27;s interpolation error on the output itself</td><td>6.38</td><td>2</td><td><span class="pill fail">FAIL</span></td></tr><tr><td>hot</td><td><code>interp_torque</code></td><td>max over the left-out nodes (|T| &gt;= 20 N m) of the torque error of the table on every second node: bounds the full table&#x27;s interpolation error (cubic: about 1/16 of this)</td><td>0.0126</td><td>0.05</td><td><span class="pill pass">PASS</span></td></tr><tr><td>hot</td><td><code>interp_iron_loss</code></td><td>the same for the iron loss at 6000 rpm</td><td>0.0747</td><td>0.05</td><td><span class="pill fail">FAIL</span></td></tr><tr><td>hot</td><td><code>magnet_temperature</code></td><td>|table&#x27;s magnet temperature - this scenario&#x27;s| (K)</td><td>0</td><td>0</td><td><span class="pill pass">PASS</span></td></tr><tr><td>hot</td><td><code>lut_merge</code></td><td>max relative difference over the nodes two merged table runs both computed (same model, mesh and rotor positions: it must reproduce itself)</td><td>0</td><td>1.00e-04</td><td><span class="pill pass">PASS</span></td></tr><tr><td>hot</td><td><code>interp_map</code></td><td>max |efficiency from the half table - from the full table| over the map (efficiency points): bounds the full table&#x27;s interpolation error on the output itself</td><td>1.27</td><td>2</td><td><span class="pill pass">PASS</span></td></tr></tbody></table></div><p>Requirement verdicts: cold <span class="pill fail">FAIL (unverified)</span>, hot <span class="pill fail">FAIL (unverified)</span></p><details><summary>Case record: predictions before the run, results after</summary><pre>Study 7, POST-TEST CALIBRATION, hypothesis A (validation/motor_ornl/CALIBRATION_PLAN.md): the efficiency map of
+motor_prius_efficiency_r1 (read it for the model, the merged tables and the checks) rebuilt from the four dq tables at
+the calibrated remanence 1.036 T (motor_prius_lut_{cold,cold_lowiq,hot,hot_lowiq}_br, runs 20261122-222259,
+20261123-000206, 20261123-005801, 20261123-023248). Only the tables and the reference values change:
+  back-EMF 89.37 V per 1000 rpm (motor_prius_cal_oc_br, run 20261122-192029, linear in remanence between 1.03 and
+  1.06 T: 88.755 + 0.2 x 3.100); MTPA 233.36 / 419.41 N m at 100 / 200 A (motor_prius_cal_torque_br, run
+  20261122-195712, fineness 4; the tables are fineness 2, within 0.4 %).
+This is the out-of-sample test: ORNL&#x27;s motor efficiency (TM-2006/423 Table B-1) was not used to choose A (chosen on
+the static inductances). Scored against it by scripts/motor_calibration.py, once, after this run.
+
+Predictions, written BEFORE the run:
+  P1 Every check passes in the cold scenario (back-EMF within 0.1 %, MTPA within 1 %, merge, node and half-table map
+     checks); the hot scenario may fail its half-table map check again on the 10 N m row above 4000 rpm (same grid
+     and the same field-weakening branch switching as r1).
+  P2 Against r1: lower efficiency at high torque (more current per N m: about 1-2 points at 300-400 N m below base
+     speed), higher at light load and high speed (19 % less flux, so roughly a third less iron loss): +1 to +3
+     points at 10-30 N m above 3000 rpm. Peak efficiency moves to a lower torque and stays within 0.5 point of 97.4 %.
+  P3 Against ORNL (scored separately): ORNL&#x27;s points mostly lie at light and part load, where A RAISES our
+     efficiency, so the median hot-minus-ORNL gap GROWS from the blind map&#x27;s 5.2 points to about 5.5-7 (the plan&#x27;s
+     &quot;stays 3-5 points&quot; was written loosely: the blind gap was already 5.2). Either way the gap is the omitted
+     losses, not the flux; A does not close it.
+  P4 REQ-M5 PASS in both scenarios: 400 N m needs about 190 A cold (calibrated torque 419 N m at 200 A), under the
+     212 A limit; less back-EMF eases field weakening at 6000 rpm. Minimum power over the range 52-62 kW.
+  P5 Seconds per scenario.
+
+Results (run 20261123-032756_motor_prius_efficiency_br, seconds): verification FAIL (cold: 3 of 8 checks; hot: 1 of 5).
+  P1 MISSED.
+     - lut_back_emf 1.009e-3 against 1e-3: MY SET-UP ERROR. r1&#x27;s reference (111.006 V) came from an open-circuit
+       run on the tables&#x27; own mesh (fineness 2); I took 89.37 V from the fineness-8 calibration run, interpolated
+       in remanence. The table gives 89.46 V; a 0.1 % difference between fineness 2 and 8 is the expected mesh
+       effect, not a defect of the table. A fineness-2 open-circuit point at 1.036 T would settle it.
+     - interp_iron_loss 6.9 % (cold) and 7.5 % (hot) against 5 % (r1: 3.0 / 4.2 %): with 19 % less magnet flux the
+       iron loss is smaller and bends more between nodes, so the half table misses it by more. Real; the full table
+       is better by at least 4x (h^2), about 2 %.
+     - interp_map, cold, 6.38 points at 6000 rpm / 10 N m (r1: the hot map failed in the same row); hot 1.27 (pass).
+       The 10 N m row above 4000 rpm is still unresolved, as r1 reported; which scenario trips moved.
+     - Passed: MTPA 100 / 200 A within 0.07 / 0.09 % of the torque run; merge exact; magnet temperature; torque
+       interpolation 1.1 / 1.3 %.
+  P2 HELD: at 1000 rpm / 300 N m -1.25 (cold) / -1.61 (hot) points; at 6000 rpm / 30 N m +2.60 / +3.00; at
+     4500 rpm / 50 N m +0.65 / +0.52; peaks 97.31 % at 70 N m (cold) and 96.97 % at 50 N m (hot), 0.10 / 0.07 point
+     below r1 and at a lower torque, as predicted.
+  P3 MISSED, the direction wrong (scored by scripts/motor_calibration.py, once; validation/motor_ornl/
+     calibration.json): the median hot-minus-ORNL gap FELL, from 5.21 (blind) to 4.50 points (10th-90th
+     percentile 2.9-7.7; B 5.32); 6 of 393 points within 2 points of the cold-hot band (blind 3). The plan&#x27;s
+     looser prediction (&quot;the median gap stays 3-5 points&quot;) holds. A closes about 0.7 point of the 5: most of the
+     gap remains the losses the model leaves out.
+  P4 MISSED, badly: REQ-M5 FAILS (unverified) in both scenarios: 48.0 kW cold and 44.5 kW hot at 6000 rpm (r1:
+     58.6 / 53.7). 400 N m is reachable (434 N m below 1500 rpm), but above it, at the 212 A design limit, 19 % less
+     magnet flux means 19 % less field-weakening torque per ampere; I reasoned from voltage headroom and got the
+     sign wrong. Engineering reading: the design verdict on REQ-M5 depends on the remanence; with the value ORNL&#x27;s
+     back-EMF implies, our model of this machine does not hold 50 kW to 6000 rpm at 212 A (our own stated current
+     density, not a published rating) and 500 V.
+  P5 HELD: seconds.</pre></details><p class="muted mono">run 20261123-032756_motor_prius_efficiency_br, verification FAIL</p><h3 id="motor_prius_efficiency_rev5">motor_prius_efficiency_rev5</h3><p>2004 Toyota Prius traction motor, REVISION 5 (client data: magnet 83.1 x 18.9 x 6.5 mm, 1.255 T at 20 C, air gap 0.775 mm; measured phase resistance 69 mOhm at 21 C), motor-only efficiency map from the verified dq look-up tables (25 A tables merged with low-q-current tables at 6.25 A): 500-6000 rpm, 10-400 N m, least copper + iron loss under the 500 V bus voltage limit and the current limit; cold (all 20 C) and hot (windings 100 C, magnets 80 C) scenarios.</p><div class="tablewrap"><table class="num"><thead><tr><th>Quantity</th><th>cold</th><th>hot</th></tr></thead><tbody><tr><td>Peak efficiency</td><td>97.22 % at 2500 rpm, 70 N m</td><td>96.87 % at 2750 rpm, 60 N m</td></tr><tr><td>1000 rpm, 50 N m</td><td>96.38 %</td><td>95.44 %</td></tr><tr><td>1000 rpm, 300 N m</td><td>90.71 %</td><td>87.68 %</td></tr><tr><td>1500 rpm, 100 N m</td><td>96.51 %</td><td>95.61 %</td></tr><tr><td>3000 rpm, 50 N m</td><td>97.07 %</td><td>96.83 %</td></tr><tr><td>3000 rpm, 150 N m</td><td>95.98 %</td><td>94.86 %</td></tr><tr><td>4500 rpm, 50 N m</td><td>95.06 %</td><td>95.05 %</td></tr><tr><td>6000 rpm, 30 N m</td><td>91.28 %</td><td>92.47 %</td></tr><tr><td>Lowest power at 212 A, base speed to 6000 rpm (REQ-M5 ≥ 50 kW)</td><td>55.9 kW</td><td>51.6 kW</td></tr><tr><td>400 N m reachable at 212 A up to</td><td>1750 rpm</td><td>1750 rpm</td></tr><tr><td>Phase resistance</td><td>68.7 mΩ</td><td>90.3 mΩ</td></tr></tbody></table></div><div class="tablewrap"><table class=""><thead><tr><th>Scenario</th><th>Check</th><th>Description</th><th>Value</th><th>Limit</th><th>Status</th></tr></thead><tbody><tr><td>cold</td><td><code>lut_back_emf</code></td><td>|table open-circuit back-EMF (sqrt 3 w phi_d at id = iq = 0) - open-circuit study| / open-circuit study (same mesh fineness)</td><td>3.21e-05</td><td>0.001</td><td><span class="pill pass">PASS</span></td></tr><tr><td>cold</td><td><code>lut_mtpa_100A</code></td><td>|table MTPA torque at 100 A rms - torque-curve study| / torque-curve study (cubic interpolation against an angle sweep with a parabola)</td><td>4.99e-04</td><td>0.01</td><td><span class="pill pass">PASS</span></td></tr><tr><td>cold</td><td><code>lut_mtpa_200A</code></td><td>|table MTPA torque at 200 A rms - torque-curve study| / torque-curve study (cubic interpolation against an angle sweep with a parabola)</td><td>0.00227</td><td>0.01</td><td><span class="pill pass">PASS</span></td></tr><tr><td>cold</td><td><code>interp_torque</code></td><td>max over the left-out nodes (|T| &gt;= 20 N m) of the torque error of the table on every second node: bounds the full table&#x27;s interpolation error (cubic: about 1/16 of this)</td><td>0.00769</td><td>0.05</td><td><span class="pill pass">PASS</span></td></tr><tr><td>cold</td><td><code>interp_iron_loss</code></td><td>the same for the iron loss at 6000 rpm</td><td>0.0346</td><td>0.05</td><td><span class="pill pass">PASS</span></td></tr><tr><td>cold</td><td><code>magnet_temperature</code></td><td>|table&#x27;s magnet temperature - this scenario&#x27;s| (K)</td><td>0</td><td>0</td><td><span class="pill pass">PASS</span></td></tr><tr><td>cold</td><td><code>lut_merge</code></td><td>max relative difference over the nodes two merged table runs both computed (same model, mesh and rotor positions: it must reproduce itself)</td><td>0</td><td>1.00e-04</td><td><span class="pill pass">PASS</span></td></tr><tr><td>cold</td><td><code>interp_map</code></td><td>max |efficiency from the half table - from the full table| over the map (efficiency points): bounds the full table&#x27;s interpolation error on the output itself</td><td>0.839</td><td>2</td><td><span class="pill pass">PASS</span></td></tr><tr><td>hot</td><td><code>interp_torque</code></td><td>max over the left-out nodes (|T| &gt;= 20 N m) of the torque error of the table on every second node: bounds the full table&#x27;s interpolation error (cubic: about 1/16 of this)</td><td>0.00904</td><td>0.05</td><td><span class="pill pass">PASS</span></td></tr><tr><td>hot</td><td><code>interp_iron_loss</code></td><td>the same for the iron loss at 6000 rpm</td><td>0.0489</td><td>0.05</td><td><span class="pill pass">PASS</span></td></tr><tr><td>hot</td><td><code>magnet_temperature</code></td><td>|table&#x27;s magnet temperature - this scenario&#x27;s| (K)</td><td>0</td><td>0</td><td><span class="pill pass">PASS</span></td></tr><tr><td>hot</td><td><code>lut_merge</code></td><td>max relative difference over the nodes two merged table runs both computed (same model, mesh and rotor positions: it must reproduce itself)</td><td>0</td><td>1.00e-04</td><td><span class="pill pass">PASS</span></td></tr><tr><td>hot</td><td><code>interp_map</code></td><td>max |efficiency from the half table - from the full table| over the map (efficiency points): bounds the full table&#x27;s interpolation error on the output itself</td><td>2.32</td><td>2</td><td><span class="pill fail">FAIL</span></td></tr></tbody></table></div><p>Requirement verdicts: cold <span class="pill pass">PASS</span>, hot <span class="pill pass">PASS (unverified)</span></p><details><summary>Case record: predictions before the run, results after</summary><pre>Study 7, revision 5 (client data): the efficiency map from the four revision-5 dq tables
+(motor_prius_lut_{cold,cold_lowiq,hot,hot_lowiq}_rev5), with the client&#x27;s measured phase resistance, 69 mOhm at 21 C
+(ORNL/TM-2010/253 Table 2.7; 68.7 mOhm at 20 C, 15 % above the geometric 59.6). Read motor_prius_efficiency_r1.toml
+for the model, the merged tables and the checks. References on the tables&#x27; own mesh and temperature:
+back-EMF 105.84 V (motor_prius_rev5_oc_f2, run 20261123-223450), MTPA 247.68 / 449.11 N m at 100 / 200 A rms
+(motor_prius_rev5_torque_ref, run 20261123-223541, fineness 4). The four lut_run names are filled in when the
+tables finish (written PENDING now): a mechanical edit, nothing else changes. Scored against ORNL&#x27;s efficiency
+(TM-2006/423 Table B-1) separately, once, after this run.
+
+Predictions (written BEFORE the tables finish, 2026-11-23 23:07):
+  P1 Every check passes in the cold scenario (back-EMF and MTPA now referenced on the same mesh and temperature);
+     the hot scenario may fail its half-table map check on the 10 N m row above 4000 rpm (as r1 and the calibrated
+     map: field-weakening branch switching at iq 2-4 A).
+  P2 Against the blind map (r1, 1.243 T on the blind geometry, geometric resistance): lower at high torque below base
+     speed, by 0.3-1 point at 300-400 N m (15 % more copper loss); about the same or up to 0.3 point higher at
+     light load above 3000 rpm (back-EMF 4.6 % lower: less iron loss). Peak efficiency within 0.5 point of r1&#x27;s.
+  P3 Against ORNL (scored separately): median hot-minus-ORNL gap 4.3-5.0 points (blind 5.2, calibrated 4.5): still
+     above the 2-point limit; the gap is the losses the model leaves out, not the flux.
+  P4 REQ-M2 PASS (400 N m needs about 175 A, under 212); REQ-M5 PASS cold (55-58 kW minimum over the speed range;
+     blind 58.6), hot 49-54 kW, near the 50 kW limit (blind 53.7).
+  P5 Seconds per scenario.
+
+Results (run 20261124-062847_motor_prius_efficiency_rev5, 2 s; lut_run names filled in 06:28): verification FAIL,
+on the hot scenario&#x27;s half-table map check only (2.32 points against 2, at 4000 rpm / 10 N m; median 0.02 points,
+at most 0.20 above 60 N m); cold 8/8 PASS (half-table check 0.84 points). REQ-M5 PASS both (cold 55.85 kW, hot
+51.65 kW, the hot verdict unverified on that check). Peak efficiency 97.22 % cold (2500 rpm, 70 N m), 96.87 % hot.
+  P1 HELD (the failure is the light-load row above 4000 rpm, as written).
+  P2 MISSED in part. Peak within 0.5 point of r1: HELD (-0.19 / -0.18). Lower at high torque below base speed:
+     right way, larger than written: 1000 rpm / 300 N m -1.32 cold, -1.71 hot (written 0.3-1). Light load above
+     3000 rpm &quot;about the same or up to 0.3 higher&quot;: MISSED, -0.04 to -0.40 lower (cold), except hot 6000 rpm /
+     30 N m +1.63. Why (loss split, efficiency_map.csv): copper loss +19-25 % everywhere (resistance +15 %, current
+     +2-4 % from the lower torque per ampere), iron loss within -0.1 to -1 %: in field weakening the voltage limit,
+     not the magnets, sets the stator flux, so the 4.6 % lower back-EMF does not cut iron loss as written. At hot
+     6000 rpm / 30 N m the blind map needed 52.6 A against 43.0 (its stronger magnets need more d current).
+  P3 HELD: median hot-minus-ORNL 4.37 points (p10-p90 2.78-7.11; blind 5.21, calibrated 4.50; 8 of 393 points
+     within 2 points of the cold-hot band), still above the 2-point limit (scripts/motor_rev5_vs_ornl.py -&gt;
+     validation/motor_ornl/rev5_efficiency_vs_ornl.json).
+  P4 HELD: 400 N m needs 171.0 A rms cold, 177.3 hot (MTPA on the merged tables; limit 212): REQ-M2 PASS; REQ-M5
+     cold 55.85 kW in 55-58, hot 51.65 in 49-54.
+  P5 HELD (2 s for both).</pre></details><p class="muted mono">run 20261124-062847_motor_prius_efficiency_rev5, verification FAIL</p>
 
 <h2>The tables behind the map</h2>
 <h3 id="motor_prius_lut_mesh">motor_prius_lut_mesh</h3><p>Mesh study for the tables: fineness 2 within 0.4 % of 8 on torque and iron loss.</p><p>3 of 3 columns pass every check; verification <span class="pill fail">FAIL</span>.</p><details><summary>Case record: predictions before the run, results after</summary><pre>Study 7, efficiency map, first case: mesh study of the dq look-up table (LUT) at one loaded point, to choose the
@@ -430,7 +521,58 @@ Results (run 20261122-143828_motor_prius_lut_hot_lowiq): verification FAIL, the 
   P2 HELD exactly: the iq 25 A row is bit-identical to the main hot table&#x27;s in every column.
   P3 HELD (scored by motor_prius_efficiency_r1, run 20261122-153450): the main 25 A table misses FEMM&#x27;s torque at the
      new nodes by 1.23 % at worst, at id -25 A, iq 6.25 A (predicted 0.5-2 %, at iq 6.25-12.5 A, id -25 to -100 A).
-  P4 MISSED a little: 56 min (predicted about 47; the CPU was shared).</pre></details><p class="muted mono">run 20261122-143828_motor_prius_lut_hot_lowiq, verification FAIL</p>
+  P4 MISSED a little: 56 min (predicted about 47; the CPU was shared).</pre></details><p class="muted mono">run 20261122-143828_motor_prius_lut_hot_lowiq, verification FAIL</p><h3 id="motor_prius_lut_cold_rev5">motor_prius_lut_cold_rev5</h3><p>2004 Toyota Prius traction motor (revision 5, laminations M330-35A, magnets at 20 C), dq look-up table, id 0 to -300 A rms and iq 0 to 300 A rms in 25 A steps, 1000 rpm; Pyleecan + FEMM 4.2 magnetostatics over one electrical period (48 steps) with element fields; mesh fineness 2; torque, dq flux linkages and iron-loss coefficients. Revision 5 (client data: magnet 83.1 x 18.9 x 6.5 mm centred in the 6.80 mm pocket, 1.255 T at 20 C, air gap 0.775 mm; machine Toyota_Prius_ORNL_rev5centre.json).</p><p>13 of 13 columns pass every check; verification <span class="pill pass">PASS</span>.</p><details><summary>Case record: predictions before the run, results after</summary><pre>Study 7, revision 5: efficiency chain, dq table cold (read motor_prius_lut_cold.toml for the
+grid, losses and checks). Rebuilt on the revision-5 (client-data) machine; only the machine changes. Feeds the
+revision-5 efficiency map, made with the client&#x27;s measured phase resistance (69 mOhm at 21 C).
+
+Predictions (written BEFORE the run, 2026-11-23 21:58):
+  P1 Every point check passes (as both earlier cold tables).
+  P2 Back-EMF from the table at id = iq = 0 within 0.1 % of motor_prius_rev5_oc_f2 (same machine, mesh, temperature).
+  P3 MTPA torque at 100 A rms within 1 % of motor_prius_rev5_torque_ref (fineness 4 against 2).
+  P4 About 1 h 40 min (the calibrated table took 1 h 39).
+
+Results (run 20261123-230647_motor_prius_lut_cold_rev5, 23:06-00:47): VERIFICATION PASS, all 13 points.
+  P1 HELD.  P2 HELD: sqrt(3) x omega x phi_d at id = iq = 0 gives 105.844 V per 1000 rpm (fundamental, line to
+  line) against 105.84 V (+0.003 %).  P3 HELD: MTPA from the table (cubic interpolation) 247.56 N m at 100 A rms,
+  40.9 deg (-0.05 %); at 200 A rms 448.09 N m, 48.9 deg (-0.23 %).  P4 HELD (1 h 41 min).</pre></details><p class="muted mono">run 20261123-230647_motor_prius_lut_cold_rev5, verification PASS</p><h3 id="motor_prius_lut_cold_lowiq_rev5">motor_prius_lut_cold_lowiq_rev5</h3><p>2004 Toyota Prius traction motor (revision 5, laminations M330-35A, magnets at 20 C), dq look-up table, id 0 to -300 A rms and iq 6.25 to 43.75 A rms in 6.25 A steps (supplementary low-current rows), 1000 rpm; Pyleecan + FEMM 4.2 magnetostatics over one electrical period (48 steps) with element fields; mesh fineness 2; torque, dq flux linkages and iron-loss coefficients. Revision 5 (client data: magnet 83.1 x 18.9 x 6.5 mm centred in the 6.80 mm pocket, 1.255 T at 20 C, air gap 0.775 mm; machine Toyota_Prius_ORNL_rev5centre.json).</p><p>7 of 13 columns pass every check; verification <span class="pill fail">FAIL</span>.</p><details><summary>Case record: predictions before the run, results after</summary><pre>Study 7, revision 5: efficiency chain, dq table cold_lowiq (read motor_prius_lut_cold_lowiq.toml for the
+grid, losses and checks). Rebuilt on the revision-5 (client-data) machine; only the machine changes. Feeds the
+revision-5 efficiency map, made with the client&#x27;s measured phase resistance (69 mOhm at 21 C).
+
+Predictions (written BEFORE the run, 2026-11-23 21:58):
+  P1 Every point check passes except, possibly, the dq-torque check in some columns: both earlier low-iq tables
+     failed it (3 and 6 columns; FEMM&#x27;s torque against 3 p (phi_d iq - phi_q id) at low iq deep in field weakening).
+  P2 About 55 min.
+
+Results (run 20261124-004731_motor_prius_lut_cold_lowiq_rev5, 00:47-01:45): verification FAIL, the dq torque check
+in six columns (id -300 to -175 A: 0.52-1.33 % against 0.5 %), every one at iq 6.25 A, where the mean torque is
+33-36 N m and the ripple 15-24 N m peak to peak; the absolute miss is 0.18-0.44 N m. Every other check passes on
+every point. The same mechanism as both earlier low-iq tables (motor_prius_lut_cold_lowiq.toml Results).
+  P1 HELD as written (the dq-torque check in some columns; six, as the weakened-magnet table).  P2 HELD (58 min).
+The efficiency map interpolates FEMM&#x27;s torque, not the dq product; the table is used, with this FAIL reported.</pre></details><p class="muted mono">run 20261124-004731_motor_prius_lut_cold_lowiq_rev5, verification FAIL</p><h3 id="motor_prius_lut_hot_rev5">motor_prius_lut_hot_rev5</h3><p>2004 Toyota Prius traction motor (revision 5, laminations M330-35A, magnets at 80 C), dq look-up table, id 0 to -300 A rms and iq 0 to 300 A rms in 25 A steps, 1000 rpm; Pyleecan + FEMM 4.2 magnetostatics over one electrical period (48 steps) with element fields; mesh fineness 2; torque, dq flux linkages and iron-loss coefficients. Revision 5 (client data: magnet 83.1 x 18.9 x 6.5 mm centred in the 6.80 mm pocket, 1.255 T at 20 C, air gap 0.775 mm; machine Toyota_Prius_ORNL_rev5centre.json).</p><p>13 of 13 columns pass every check; verification <span class="pill pass">PASS</span>.</p><details><summary>Case record: predictions before the run, results after</summary><pre>Study 7, revision 5: efficiency chain, dq table hot (read motor_prius_lut_hot.toml for the
+grid, losses and checks). Rebuilt on the revision-5 (client-data) machine; only the machine changes. Feeds the
+revision-5 efficiency map, made with the client&#x27;s measured phase resistance (69 mOhm at 21 C).
+
+Predictions (written BEFORE the run, 2026-11-23 21:58):
+  P1 Every point check passes (as both earlier hot tables).
+  P2 Open-circuit flux at id = iq = 0 about 7 % below the cold table&#x27;s (magnets at 80 against 20 C: -6 % on Br, and
+     the bridges&#x27; fixed leakage takes a larger share).
+  P3 About 1 h 35 min.
+
+Results (run 20261124-014553_motor_prius_lut_hot_rev5, 01:45-03:17): VERIFICATION PASS, all 13 points.
+  P1 HELD.  P2 HELD: d-axis flux at id = iq = 0 0.13562 Wb against the cold table&#x27;s 0.14589 (-7.04 %; the earlier
+  cold / hot pair: -7.02 %).  P3 HELD (1 h 31 min).</pre></details><p class="muted mono">run 20261124-014553_motor_prius_lut_hot_rev5, verification PASS</p><h3 id="motor_prius_lut_hot_lowiq_rev5">motor_prius_lut_hot_lowiq_rev5</h3><p>2004 Toyota Prius traction motor (revision 5, laminations M330-35A, magnets at 80 C), dq look-up table, id 0 to -300 A rms and iq 6.25 to 43.75 A rms in 6.25 A steps (supplementary low-current rows), 1000 rpm; Pyleecan + FEMM 4.2 magnetostatics over one electrical period (48 steps) with element fields; mesh fineness 2; torque, dq flux linkages and iron-loss coefficients. Revision 5 (client data: magnet 83.1 x 18.9 x 6.5 mm centred in the 6.80 mm pocket, 1.255 T at 20 C, air gap 0.775 mm; machine Toyota_Prius_ORNL_rev5centre.json).</p><p>7 of 13 columns pass every check; verification <span class="pill fail">FAIL</span>.</p><details><summary>Case record: predictions before the run, results after</summary><pre>Study 7, revision 5: efficiency chain, dq table hot_lowiq (read motor_prius_lut_hot_lowiq.toml for the
+grid, losses and checks). Rebuilt on the revision-5 (client-data) machine; only the machine changes. Feeds the
+revision-5 efficiency map, made with the client&#x27;s measured phase resistance (69 mOhm at 21 C).
+
+Predictions (written BEFORE the run, 2026-11-23 21:58):
+  P1 As the cold low-iq table: every check passes except, possibly, the dq-torque check in some columns.
+  P2 About 55 min.
+
+Results (run 20261124-031723_motor_prius_lut_hot_lowiq_rev5, 03:17-04:12): verification FAIL, the dq torque check in
+six columns (id -300 to -175 A: 0.63-1.30 % against 0.5 %), every one at iq 6.25 A (mean torque 32.5-35.5 N m,
+ripple 13-21 N m peak to peak, absolute miss 0.22-0.42 N m), the mechanism of the cold low-iq table. Every other
+check passes on every point.  P1 HELD as written.  P2 HELD (55 min).
+The efficiency map interpolates FEMM&#x27;s torque, not the dq product; the table is used, with this FAIL reported.</pre></details><p class="muted mono">run 20261124-031723_motor_prius_lut_hot_lowiq_rev5, verification FAIL</p>
 
 <p class="muted">Generated by <code>reports/motor/build_report.py</code>.</p>
 

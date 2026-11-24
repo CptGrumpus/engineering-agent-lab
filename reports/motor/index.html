@@ -228,6 +228,18 @@ with A's magnets the rated 50 kW no longer holds to 6000 rpm at 500 V and 212 A 
 blind 58.6 / 53.7). The calibrated efficiency run itself fails three of its checks (a back-EMF reference I took from a
 different mesh, the half-table iron-loss estimate, the unresolved 10 N m row); none touches this comparison.</p></div>
 
+<h2 id="client-data">Client-data model (revision 5), uncalibrated</h2>
+<div class="col"><p>Since 2026-11-23 the study runs as a client project: everything a client hands over (drawing, bill
+of materials with the magnet's size and mass, measured magnet properties, measured phase resistance) is in the model,
+and nothing is fitted. Its magnet-driven flux is still about 18 % high, in back-EMF and torque alike; an independent
+ElmerFEM model agrees with FEMM to 0.1 %, the steel and 3D end effects are too small, and the leading explanation is
+how fully the magnets are magnetised in the assembled rotor (a question for the client;
+<code>validation/motor_ornl/STATUS.md</code>). Every design check, recomputed on it:</p></div>
+<div class="tablewrap"><table class=""><thead><tr><th>Check</th><th>Revision 5</th><th>Verdict</th></tr></thead><tbody><tr><td>Efficiency, ours (hot) − ORNL, median over 393 points</td><td>4.37 points (10th-90th percentile 2.8 to 7.1)</td><td><span class="pill fail">FAIL</span> against 2 points (blind 5.21, calibrated 4.50)</td></tr><tr><td>Peak efficiency (motor only)</td><td>97.22 % cold, 96.87 % hot</td><td></td></tr><tr><td>REQ-M5: rated 50 kW to 6000 rpm</td><td>55.85 kW cold, 51.65 kW hot</td><td><span class="pill pass">PASS</span></td></tr><tr><td>REQ-TH1: 25 kW continuous</td><td>27.7 kW nominal; 24.0 kW at the loosest housing fit</td><td><span class="pill pass">PASS</span> nominal (unverified) · <span class="pill fail">FAIL</span> loosest fit</td></tr><tr><td>REQ-M4: rotor bridges at 7200 rpm</td><td>415.0 MPa against 335 MPa (blind 424.4)</td><td><span class="pill fail">FAIL</span> verified</td></tr></tbody></table></div>
+<div class="col"><p>The efficiency gap barely follows the flux (blind +24 %: 5.2 points; client data +18 %: 4.4): it is
+mostly the losses a motor-only model leaves out (mechanical, magnet eddy current, AC copper). Runs:
+20261124-062847_motor_prius_efficiency_rev5, 20261124-063338_motor_prius_thermal_rev5, 20261124-063835_motor_prius_rotor_overspeed_rev5_mesh.</p></div>
+
 
 <h2>Blind protocol log</h2>
 <div class="col">
