@@ -1205,38 +1205,68 @@ def motor_comparison():
 
 
 def motor_efficiency():
-    """The predicted motor-only efficiency map, one cell per computed point."""
+    """The client-data model's efficiency map, hot, with the rated-power line; beside it, how far the model sits from the
+    laboratory's 393 measured points. The per-point comparison comes from scripts/export_motor_eff_points.py, which
+    repeats the study's scoring and is gated on its recorded median."""
     import matplotlib
 
-    run, lab = "20261122-175650_motor_prius_efficiency_r1", "p00_cold"
+    run, lab = "20261124-062847_motor_prius_efficiency_rev5", "p01_hot"
     rec = point(run, lab)
     so, m = rec["solver_outputs"], rec["metrics"]
     s = read_series(RUNS / run / "points" / lab / "efficiency_map.csv")
     sp, tq = np.unique(s["speed_rpm"]), np.unique(s["target_torque_Nm"])
     Z = np.full((len(tq), len(sp)), np.nan)
     Z[np.searchsorted(tq, s["target_torque_Nm"]), np.searchsorted(sp, s["speed_rpm"])] = s["efficiency_pct"]
-    fig, gs = fk.new(FULL, 4.3, top=0.72)
-    gs.update(right=0.99)
+    cmp_ = json.loads((REPO / "build" / "drawings" / "motor_eff_vs_ornl.json").read_text(encoding="utf-8"))
+    scored = json.loads((REPO / "validation" / "motor_ornl" / "rev5_efficiency_vs_ornl.json").read_text(encoding="utf-8"))["ornl"]
+    assert cmp_["summary"]["hot_minus_ornl_median_pts"] == scored["hot_minus_ornl_median_pts"]
+    pts = cmp_["points"]
+    gap = np.array([p["hot"] - p["ornl_pct"] for p in pts])
+    med = float(np.median(gap))
+    fig, gs = fk.new(FULL, 4.5, 1, 2, wspace=0.42, top=0.78, width_ratios=[1.55, 1])
     ax = fig.add_subplot(gs[0, 0])
     fk.style(ax, grid="")
-    levels = [70, 80, 85, 88, 90, 92, 93, 94, 95, 96, 97, 98]
-    cmap = matplotlib.colormaps[fk.SEQ].resampled(len(levels) - 1)
-    norm = matplotlib.colors.BoundaryNorm(levels, cmap.N)
+    levels = [80, 85, 88, 90, 92, 93, 94, 95, 96, 97]
+    cmap = matplotlib.colormaps[fk.SEQ].resampled(len(levels))
+    norm = matplotlib.colors.BoundaryNorm(levels, cmap.N, extend="min")
     mesh = ax.pcolormesh(sp, tq, np.ma.masked_invalid(Z), cmap=cmap, norm=norm, shading="nearest", rasterized=True)
-    cb = fig.colorbar(mesh, ax=ax, pad=0.015, aspect=18, ticks=levels)
+    cb = fig.colorbar(mesh, ax=ax, pad=0.02, aspect=18, ticks=levels, extend="min")
     cb.outline.set_visible(False)
     cb.ax.tick_params(length=0, labelsize=8.5, colors=INK2)
-    cb.set_label("predicted efficiency, %", color=INK2, fontsize=9)
+    cb.set_label("efficiency, %", color=INK2, fontsize=9)
+    ax.scatter([p["speed_rpm"] for p in pts], [p["torque_Nm"] for p in pts], s=5, facecolor="none", edgecolor=INK,
+               linewidth=0.5, alpha=0.55, zorder=3)
     ax.plot(so["speeds_rpm"], so["t_max_design_Nm"], color=INK, linewidth=1.6, zorder=4)
-    fk.label(ax, so["speeds_rpm"][10], so["t_max_design_Nm"][10], "the most torque the 212 A\ndesign current allows", dx=12, dy=14, color=INK2, size=8.5)
-    ax.scatter([m["peak_efficiency_speed_rpm"]], [m["peak_efficiency_torque_Nm"]], s=44, facecolor=SURFACE, edgecolor=INK, linewidth=1.3, zorder=5)
-    fk.label(ax, m["peak_efficiency_speed_rpm"], m["peak_efficiency_torque_Nm"], f"peak {m['peak_efficiency_pct']:.1f} %", dx=9, dy=0, size=8.5, color=SURFACE)
+    n50 = np.linspace(50e3 / (400 * np.pi / 30), 6000, 200)
+    ax.plot(n50, 50e3 / (n50 * np.pi / 30), color=REF, linewidth=1.6, linestyle=(0, (4, 2.5)), zorder=4)
+    fk.label(ax, 2900, 470, f"black: most torque within\n212 A and 500 V, "
+             f"{m['min_power_rated_speed_range_kW']:.1f} kW\nat the worst speed\norange: the rated 50 kW",
+             va="top", color=INK, size=8.5)
+    ax.scatter([m["peak_efficiency_speed_rpm"]], [m["peak_efficiency_torque_Nm"]], s=44, facecolor=SURFACE, edgecolor=INK,
+               linewidth=1.3, zorder=5)
+    fk.label(ax, m["peak_efficiency_speed_rpm"], m["peak_efficiency_torque_Nm"], f"peak {m['peak_efficiency_pct']:.1f} %",
+             dx=8, dy=-2, size=8.5, color=SURFACE, bold=True)
     ax.set_xlim(sp.min() - 125, sp.max() + 125)
     ax.set_ylim(0, 480)
     ax.set_xlabel("speed, rpm")
     ax.set_ylabel("torque, N m")
-    fk.heading(fig, "The efficiency map, as predicted",
-               "Motor only, cold. Against the laboratory's measurements it reads about 5 points high, so this is the prediction that was tested, not a result")
+    fk.panel(ax, "The model's map, hot; circles: where the test measured")
+    ax = fig.add_subplot(gs[0, 1])
+    fk.style(ax)
+    ax.axvspan(-2, 2, color=MODEL, alpha=0.10, linewidth=0, zorder=0.5)
+    ax.hist(gap, bins=np.arange(-4.5, 11.01, 0.5), color=fk.HELD, edgecolor=SURFACE, linewidth=0.8, zorder=2)
+    top = ax.get_ylim()[1] * 1.12
+    ax.set_ylim(0, top)
+    ax.axvline(med, color=fk.FAIL, linewidth=1.6, zorder=3)
+    fk.label(ax, med, top * 0.97, f"median +{med:.1f}", dx=5, va="top", color=INK, size=8.5, bold=True)
+    within = int(np.sum(np.abs(gap) <= 2))
+    fk.label(ax, 0, top * 0.97, f"goal:\nwithin 2\n{within} of {len(gap)}", dx=0, va="top", ha="center", color=INK2, size=8.5)
+    ax.set_xlim(-4.5, 11)
+    ax.set_xlabel("model minus test, efficiency points")
+    ax.set_ylabel("test points")
+    fk.panel(ax, f"Against the {len(gap)} test points")
+    fk.heading(fig, f"Rated power holds, but the model's efficiency reads {med:.1f} points above the test",
+               "The client-data model, motor only (copper and iron loss), winding 100 °C, magnets 80 °C; Oak Ridge National Laboratory's test")
     fig.savefig(fk.OUT / "fig_motor_efficiency.svg", format="svg", dpi=300, metadata={"Date": None, "Creator": None})
     fk.plt.close(fig)
     print("fig motor_efficiency")
@@ -1289,7 +1319,7 @@ def motor_thermal():
 
 def motor_rotor():
     """Linearised stress across the rotor bridge at overspeed, against the lamination's yield."""
-    run, lab = "20261122-001104_motor_prius_rotor_overspeed_mesh", "p02_bridge_element_size_mm-0.05"
+    run, lab = "20261124-063835_motor_prius_rotor_overspeed_rev5_mesh", "p02_bridge_element_size_mm-0.05"
     rec = point(run, lab)
     m = rec["metrics"]
     s = read_series(RUNS / run / "points" / lab / "bridge_scl.csv")
@@ -1303,7 +1333,7 @@ def motor_rotor():
     ax.set_xlim(a.min(), a.max())
     ax.set_xticks([15.5, 16.0, 16.5, 17.0])
     ax.set_ylim(0, 470)
-    op, L = limits("motor_prius_rotor_overspeed_mesh")["bridge_linearized_vm_MPa"]
+    op, L = limits("motor_prius_rotor_overspeed_rev5_mesh")["bridge_linearized_vm_MPa"]
     fk.limit(ax, L, f"yield, {L:g} MPa", bad="above", axis="y", at=0.03)
     k = int(np.argmax(s["membrane_bending_vm_MPa"]))
     fk.label(ax, a[k], s["membrane_bending_vm_MPa"][k], f"{m['bridge_linearized_vm_MPa']:.0f} MPa", dx=-8, dy=4, ha="right", va="bottom", size=8.5)
@@ -1799,8 +1829,8 @@ ALL = {f.__name__: f for f in (cfd_tolerance, cfd_duct, cfd_response, cfd_field,
                                fatigue_sn, fin_response, fin_h_sweep, qc_bump_sweep, cad_sweep, heat_response,
                                qc_liftoff, qc_iso, coldplate_response, pipe_friction, motor_comparison,
                                motor_rotor, pv_nozzle, step_comparison, random_vibration, bracket_uncertainty,
-                               fan_rotor, fan_rotor_campbell, crack_growth)}
-# not on the site while the motor's flux is being explained (they're the earlier model's): motor_efficiency, motor_thermal
+                               fan_rotor, fan_rotor_campbell, crack_growth, motor_efficiency)}
+# not on the site (the earlier model's thermal result): motor_thermal
 
 if __name__ == "__main__":
     for name in sys.argv[1:] or ALL:

@@ -581,8 +581,11 @@ REQS = [
     ("motor", "20", "Traction motor", [
         ("Model against the test: magnet flux (back-EMF and locked-rotor torque)", "within 5 % and 10 %", "about 18 % high in both (back-EMF 17.7 %, torque 17 to 19 %); one cause; steel, end effects and the solver ruled out; magnets on the drawing's stops as modelled; magnetisation level leads, a question for the client; nothing tuned", "open"),
         ("Design finding: voltage at 6,000 rpm if the inverter stops switching", "≤ 500 V", "850 V measured, about 1,000 V in the model: the motor fails, as the model predicted", "finding"),
-        ("Design finding: rotor bridge stress at 7,200 rpm overspeed", "≤ 335 MPa", "424 MPa: past yield for the stand-in M330-35A; a stronger grade such as M250-35A would pass", "cond"),
-        ("Efficiency, rated torque within the copper limit, rated and continuous power", "within 2 points; ≤ 212 A; ≥ 50 kW; ≥ 25 kW", "withheld until the flux is explained", "held")]),
+        ("Design finding: rotor bridge stress at 7,200 rpm overspeed", "≤ 335 MPa", "415 MPa: past yield for the stand-in M330-35A; a stronger grade such as M250-35A would pass", "cond"),
+        ("Model against the test: efficiency at 393 measured points", "within 2 points", "4.4 points high at the median, mostly losses a motor-only model leaves out (friction, windage, eddy currents in the magnets)", "fail"),
+        ("Rated 400 N m within the copper's current limit", "≤ 212 A", "171 A (177 A hot)", "met"),
+        ("Rated 50 kW to 6,000 rpm within the 500 V supply", "≥ 50 kW", "51.6 kW hot, 55.9 kW cold; it rides on the flux: 44.5 to 48.0 kW with the flux scaled down to the test", "provisional"),
+        ("Continuous power from 1,250 to 6,000 rpm, with a 65 °C coolant jacket assumed", "≥ 25 kW", "27.7 kW; 24.0 kW with the loosest fit between the stator and its housing", "nominal")]),
     ("strut", "13", "Strut buckling", [
         ("Load before first yield, 500 mm strut with an L/1000 bow", "≥ 16 kN", "21.8 kN (the longest that passes is about 587 mm)", "met")]),
     ("strap_proof", "14", "Strap proof test", [
@@ -597,9 +600,10 @@ REQS = [
         ("Axial load before the joint opens, after settling", "≥ 10 kN", "13.1 kN", "met")]),
 ]
 CHIP = {"met": ("pass", "Met"), "fail": ("fail", "Not met"), "held": ("warn", "Withheld"),
-        "open": ("warn", "Open"), "finding": ("note", "Finding, confirmed by test"), "cond": ("warn", "Depends on steel grade")}
+        "open": ("warn", "Open"), "finding": ("note", "Finding, confirmed by test"), "cond": ("warn", "Depends on steel grade"),
+        "provisional": ("warn", "Met; depends on the flux"), "nominal": ("warn", "Met at the nominal fit")}
 # how each status counts in the summary line: a design finding is still a requirement the design doesn't meet
-COUNT_AS = {"met": "met", "fail": "fail", "held": "held", "open": "held", "finding": "fail", "cond": "fail"}
+COUNT_AS = {"met": "met", "fail": "fail", "held": "held", "open": "held", "finding": "fail", "cond": "fail", "provisional": "held", "nominal": "met"}
 
 
 def reqs_html() -> str:

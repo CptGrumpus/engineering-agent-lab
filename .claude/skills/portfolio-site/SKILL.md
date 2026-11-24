@@ -94,6 +94,14 @@ card. The pieces, all in `site/`:
    already the viewer, so don't repeat it in the body; a part of a grouped page does show its chart in the body.
 5. Take the study off the in-progress page in the same commit.
 
+When an existing study's result changes, its status lives in more places than its page. Update them together:
+the page's chips, answer, tables and figure captions (`studies/<key>.html`); its `REQS` rows in `extras.py`
+(the requirements panel beside the page and the requirements page: the motor's still said "withheld" after its
+text was updated); its `CARDS` blurb; its In progress card; and the run IDs its figures read in
+`make_figures.py` (the motor's rotor chart still drew the blind run). A pass that rests on an unexplained
+discrepancy gets its own `REQS` status that doesn't count as met (the motor's rated power, which rides on the
+18 % flux, is "provisional").
+
 ## Editing the source safely
 
 - Write patch scripts with the Write tool, not a Git Bash heredoc: the heredoc turns `\\n` into a real newline
