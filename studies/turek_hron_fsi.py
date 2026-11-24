@@ -476,20 +476,23 @@ class TurekHronFSIStudy(Study):
         return checks
 
     def verify_run_level(self, case, manifest, points):
-        if case.get("sweep", {}).get("parameter") != "fluid_cell_size_m":
+        # the refined parameter: the fluid cell size (mesh study) or the time step (time-step study; the same mesh on
+        # every level, the fluid's backward and the solid's HHT alpha 0 both second order)
+        par = case.get("sweep", {}).get("parameter")
+        if par not in ("fluid_cell_size_m", "time_step_s"):
             return [], {}
         tol = case["verification"]
         done = sorted((pt for pt in manifest["points"] if pt["status"] == "completed"),
-                      key=lambda pt: float(pt["parameters"]["fluid_cell_size_m"]))
+                      key=lambda pt: float(pt["parameters"][par]))
         if len(done) < 3:
             return [check("mesh_convergence_gci", "needs >= 3 completed mesh levels", float("inf"), 0.0)], {}
         fine = done[:3]
-        hs = tuple(float(pt["parameters"]["fluid_cell_size_m"]) for pt in fine)
+        hs = tuple(float(pt["parameters"][par]) for pt in fine)
         checks, detail = [], {"meshes_used": [pt["label"] for pt in fine]}
         # verification.mesh_noise_rel: the mesh-to-mesh scatter at one nominal size, measured independently
         # (regenerated, unstructured meshes; turek_hron_fsi1_noise_a-d), as one number or a table by metric. Three
         # levels spreading less than it are converged within the noise (uncertainty 1.25 x half the spread).
-        noise = tol.get("mesh_noise_rel", 1e-5)
+        noise = tol.get("mesh_noise_rel", 1e-5) if par == "fluid_cell_size_m" else tol.get("dt_noise_rel", 1e-5)
         periodic = bool(case.get("numerics", {}).get("periodic_periods"))
         for m in (PERIODIC_GCI_METRICS if periodic else METRICS):
             floor = float(noise.get(m, 1e-5) if isinstance(noise, dict) else noise)
