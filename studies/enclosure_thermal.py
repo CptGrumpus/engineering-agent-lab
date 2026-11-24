@@ -73,18 +73,28 @@ class OpenFOAMEnclosure(Backend):
                             and d.name.replace(".", "").isdigit()), key=lambda d: float(d.name))
             Ta = float(params["ambient_C"]) + 273.15
             h, ee = float(params["h_ext_W_m2K"]), float(params["eps_ext"])
+            # with a shell region (the redesign) the outside condition sits on the shell's outer faces and the inside
+            # radiation on the air's interface with the shell; without it both are the air region's `walls`
+            shell = float(params.get("shell_thickness_mm", 0) or 0) > 0
+            face_area = float(params["cell_mm"]) / 1e3 * float(params["box_depth_mm"]) / 1e3   # uniform mesh
             hist = []
             for t in times:
                 Tc = of.read_internal_field(t / "component" / "T")
                 Tb = of.read_internal_field(t / "board" / "T")
                 Tf = of.read_internal_field(t / "fluid" / "T")
-                Tw = of.read_patch_value(t / "fluid" / "T", "walls")
+                Tw = of.read_patch_value(t / ("shell" if shell else "fluid") / "T", "outside" if shell else "walls")
                 qout = h * (Tw - Ta) + ee * SIGMA * (Tw ** 4 - Ta ** 4)          # equal wall faces (uniform mesh)
-                qr = of.read_patch_value(t / "fluid" / "qr", "walls")
-                hist.append({"t": float(t.name), "component_max_C": float(Tc.max()) - 273.15,
-                             "board_max_C": float(Tb.max()) - 273.15, "air_mean_C": float(Tf.mean()) - 273.15,
-                             "walls_mean_C": float(Tw.mean()) - 273.15, "q_out_W_m2": float(qout.mean()),
-                             "qr_walls_W_m2": float(qr.mean())})
+                qr = of.read_patch_value(t / "fluid" / "qr", "fluid_to_shell" if shell else "walls")
+                row = {"t": float(t.name), "component_max_C": float(Tc.max()) - 273.15,
+                       "board_max_C": float(Tb.max()) - 273.15, "air_mean_C": float(Tf.mean()) - 273.15,
+                       "walls_mean_C": float(Tw.mean()) - 273.15, "q_out_W_m2": float(qout.mean()),
+                       "qr_walls_W_m2": float(qr.mean()), "Q_out_W": float(qout.sum()) * face_area,
+                       "Q_rad_W": float(qr.sum()) * face_area}
+                if shell:
+                    row["walls_max_C"] = float(Tw.max()) - 273.15
+                if (t / "bridge" / "T").exists():
+                    row["bridge_max_C"] = float(of.read_internal_field(t / "bridge" / "T").max()) - 273.15
+                hist.append(row)
             for line in (case / "versions.txt").read_text(encoding="utf-8").splitlines():
                 k, _, v = line.partition("=")
                 self._versions[k] = v
@@ -96,7 +106,8 @@ class OpenFOAMEnclosure(Backend):
         q_in = (float(params["power_component_W"]) + float(params["power_board_W"])) / (
             2 * (lay["W"] + lay["H"]) * float(params["box_depth_mm"]) / 1e3)
         series = {k: np.array([hh[k] for hh in hist]) for k in hist[0]}
-        outputs = {**info, "q_in_W_m2": q_in, "history": hist, "final": hist[-1]}
+        outputs = {**info, "q_in_W_m2": q_in, "power_W": float(params["power_component_W"]) + float(params["power_board_W"]),
+                   "history": hist, "final": hist[-1]}
         return {"success": True, "message": f"enclosure: component {hist[-1]['component_max_C']:.2f} C", "nfev": None,
                 "series": series, "outputs": outputs, "files": files(), "cleanup": work}
 
@@ -114,9 +125,12 @@ class EnclosureThermalStudy(Study):
 
     def compute_metrics(self, series, params, case, outputs=None):
         f = outputs["final"]
-        q_in = outputs["q_in_W_m2"]
+        if "Q_rad_W" in f:      # totals over the faces (the same as the means on the original layout)
+            share = 100 * f["Q_rad_W"] / outputs["power_W"]
+        else:
+            share = 100 * f["qr_walls_W_m2"] / outputs["q_in_W_m2"]
         return {"component_max_C": f["component_max_C"], "air_mean_C": f["air_mean_C"],
-                "walls_mean_C": f["walls_mean_C"], "radiation_share_pct": 100 * f["qr_walls_W_m2"] / q_in}
+                "walls_mean_C": f["walls_mean_C"], "radiation_share_pct": share}
 
     def verify_point(self, case, point, pdir: Path, series, backend):
         tol = case["verification"]
@@ -126,7 +140,9 @@ class EnclosureThermalStudy(Study):
         drift = abs(hist[-1]["component_max_C"] - hist[-1 - max(1, n - 1)]["component_max_C"])
         return [
             check("heat_balance", "|heat leaving the walls to the ambient - input power| / input, at the end",
-                  abs(out["final"]["q_out_W_m2"] - out["q_in_W_m2"]) / out["q_in_W_m2"], tol["heat_balance_rel_tol"]),
+                  (abs(out["final"]["Q_out_W"] - out["power_W"]) / out["power_W"]) if "Q_out_W" in out["final"]
+                  else abs(out["final"]["q_out_W_m2"] - out["q_in_W_m2"]) / out["q_in_W_m2"],
+                  tol["heat_balance_rel_tol"]),
             check("settled", "change of the component's maximum over the last tenth of the run (K)", drift,
                   tol["settled_K"]),
         ]

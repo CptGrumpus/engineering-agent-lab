@@ -16,6 +16,13 @@ reached 154 C, because its 5 W could not spread into the board; the hottest-comp
 Mesh: blockMesh, 5 x 3 blocks; the middle row's centre three blocks are the board (zones board, component, board), the
 rest the zone fluid; `splitMeshRegions -cellZones` makes the regions. Uniform cell size `cell_mm`.
 
+Options (2026-11-24, the redesign: a conduction path from the component to the lid): `shell_thickness_mm` > 0 models
+the box's aluminium walls as a solid region `shell` (conductivity `shell_k_W_mK`, default 200) around the air, so the
+lid spreads heat (the walls-as-boundary model has no lateral conduction and would trap a bridge's heat under it); the
+outside faces (patch `outside`) carry the external condition. `bridge_k_W_mK` > 0 adds a solid `bridge` from the
+component's top to the lid, the component's width (a pillar with its gap pad, as one effective conductivity). Both off
+by default: the files are then the same as before.
+
 Run in WSL by models/cfd/run_enclosure.sh. Must not import from validation/.
 """
 
@@ -66,40 +73,62 @@ def write_case(params: dict, numerics: dict, case: Path) -> dict:
     h = float(params["cell_mm"]) / 1e3
     depth = h
     n = lambda a, b: max(1, round((b - a) / h))  # noqa: E731
+    t_sh = float(params.get("shell_thickness_mm", 0) or 0) / 1e3
+    k_br = float(params.get("bridge_k_W_mK", 0) or 0)
+    off = 1 if t_sh else 0
+    if t_sh:
+        xs, ys = [-t_sh] + xs + [lay["W"] + t_sh], [-t_sh] + ys + [lay["H"] + t_sh]
+    nx, ny = len(xs) - 1, len(ys) - 1
     vid, verts = {}, []
     for zl, z in ((0, 0.0), (1, depth)):
         for j, y in enumerate(ys):
             for i, x in enumerate(xs):
                 vid[(i, j, zl)] = len(verts)
                 verts.append((x, y, z))
-    zone = {(1, 1): "board", (2, 1): "component", (3, 1): "board"}
+
+    def zone(i, j):
+        if t_sh and (i in (0, nx - 1) or j in (0, ny - 1)):
+            return "shell"
+        z = {(1, 1): "board", (2, 1): "component", (3, 1): "board"}.get((i - off, j - off))
+        if z:
+            return z
+        return "bridge" if k_br and (i - off, j - off) == (2, 2) else "fluid"
     blocks = []
-    for j in range(3):
-        for i in range(5):
+    for j in range(ny):
+        for i in range(nx):
             v = [vid[(i, j, 0)], vid[(i + 1, j, 0)], vid[(i + 1, j + 1, 0)], vid[(i, j + 1, 0)],
                  vid[(i, j, 1)], vid[(i + 1, j, 1)], vid[(i + 1, j + 1, 1)], vid[(i, j + 1, 1)]]
-            blocks.append(f"    hex ({' '.join(map(str, v))}) {zone.get((i, j), 'fluid')} "
+            blocks.append(f"    hex ({' '.join(map(str, v))}) {zone(i, j)} "
                           f"({n(xs[i], xs[i + 1])} {n(ys[j], ys[j + 1])} 1) simpleGrading (1 1 1)")
+    regions = sorted({zone(i, j) for i in range(nx) for j in range(ny)}, key=lambda r: (r != "fluid", r))
+    nbrs = {r: set() for r in regions}
+    for j in range(ny):
+        for i in range(nx):
+            for di, dj in ((1, 0), (0, 1)):
+                if i + di < nx and j + dj < ny and zone(i, j) != zone(i + di, j + dj):
+                    nbrs[zone(i, j)].add(zone(i + di, j + dj))
+                    nbrs[zone(i + di, j + dj)].add(zone(i, j))
+    outer = "outside" if t_sh else "walls"
 
     def face(i0, j0, i1, j1):
         return f"({vid[(i0, j0, 0)]} {vid[(i1, j1, 0)]} {vid[(i1, j1, 1)]} {vid[(i0, j0, 1)]})"
-    walls = [face(i, 0, i + 1, 0) for i in range(5)] + [face(5, j, 5, j + 1) for j in range(3)] \
-        + [face(i + 1, 3, i, 3) for i in range(5)] + [face(0, j + 1, 0, j) for j in range(3)]
+    walls = [face(i, 0, i + 1, 0) for i in range(nx)] + [face(nx, j, nx, j + 1) for j in range(ny)] \
+        + [face(i + 1, ny, i, ny) for i in range(nx)] + [face(0, j + 1, 0, j) for j in range(ny)]
     fb = []
-    for j in range(3):
-        for i in range(5):
+    for j in range(ny):
+        for i in range(nx):
             fb.append(f"({vid[(i, j, 0)]} {vid[(i, j + 1, 0)]} {vid[(i + 1, j + 1, 0)]} {vid[(i + 1, j, 0)]})")
             fb.append(f"({vid[(i, j, 1)]} {vid[(i + 1, j, 1)]} {vid[(i + 1, j + 1, 1)]} {vid[(i, j + 1, 1)]})")
     _write(case / "system/blockMeshDict", "dictionary", "blockMeshDict",
            "\nconvertToMeters 1;\nvertices\n(\n" + "\n".join(f"    ({x!r} {y!r} {z!r})" for x, y, z in verts) + "\n);\n"
            + "blocks\n(\n" + "\n".join(blocks) + "\n);\nedges ();\nboundary\n(\n"
-           + f"    walls {{ type wall; faces ({' '.join(walls)}); }}\n"
+           + f"    {outer} {{ type wall; faces ({' '.join(walls)}); }}\n"
            + f"    frontAndBack {{ type empty; faces ({' '.join(fb)}); }}\n);\n")
     Ta = float(params["ambient_C"]) + 273.15
     T0 = Ta + 20.0
     it = int(params["max_iterations"])
     _write(case / "system/controlDict", "dictionary", "controlDict", f"""
-regionSolvers {{ fluid fluid; board solid; component solid; }}
+regionSolvers {{ {' '.join(f"{r} {'fluid' if r == 'fluid' else 'solid'};" for r in regions)} }}
 startFrom startTime;
 startTime 0;
 stopAt endTime;
@@ -138,8 +167,14 @@ constant {{ absorptivity 0; emissivity 0; E 0; }}
 scatterModel none;
 sootModel none;
 """)
-    fl = lambda wall, iface: (f"    walls {{ {wall} }}\n    \".*_to_.*\" {{ {iface} }}\n"  # noqa: E731
-                              "    frontAndBack { type empty; }\n")
+    # explicit patch names (as in the solids): the outer walls only without a shell, then each interface
+    if not (t_sh or k_br):   # the original layout: the files as before
+        fl = lambda wall, iface: (f"    walls {{ {wall} }}\n    \".*_to_.*\" {{ {iface} }}\n"  # noqa: E731
+                                  "    frontAndBack { type empty; }\n")
+    else:
+        fl = lambda wall, iface: ((f"    walls {{ {wall} }}\n" if not t_sh else "")  # noqa: E731
+                                  + "".join(f"    fluid_to_{nb} {{ {iface} }}\n" for nb in sorted(nbrs["fluid"]))
+                                  + "    frontAndBack { type empty; }\n")
     _write(case / "0/fluid/U", "volVectorField", "U", "\ndimensions [0 1 -1 0 0 0 0];\ninternalField uniform (0 0 0);\n"
            "boundaryField\n{\n" + fl("type noSlip;", "type noSlip;") + "}\n")
     _write(case / "0/fluid/T", "volScalarField", "T", f"\ndimensions [0 0 0 1 0 0 0];\ninternalField uniform {T0!r};\n"
@@ -185,19 +220,26 @@ relaxationFactors { fields { p_rgh 0.7; } equations { U 0.3; h 0.5; } }
 """)
     # ---- solids
     k = float(params["board_k_W_mK"])
-    for reg, q in (("board", lay["q_board"]), ("component", lay["q_component"])):
+    solids = [r for r in regions if r != "fluid"]
+    mat = {"board": (1900, 1100, k), "component": (1900, 1100, k),
+           "shell": (2700, 900, float(params.get("shell_k_W_mK", 200.0) or 200.0)), "bridge": (2700, 900, k_br)}
+    for reg in solids:
+        rho, cv, kap = mat[reg]
         _write(case / f"constant/{reg}/physicalProperties", "dictionary", "physicalProperties",
-               f"\nthermoType constSolidThermo;\nrho {{ type uniform; value 1900; }}\nCv {{ type uniform; value 1100; }}\n"
-               f"kappa {{ type uniform; value {k!r}; }}\n")
+               f"\nthermoType constSolidThermo;\nrho {{ type uniform; value {rho!r}; }}\nCv {{ type uniform; value {cv!r}; }}\n"
+               f"kappa {{ type uniform; value {kap!r}; }}\n")
+        q = {"board": lay["q_board"], "component": lay["q_component"]}.get(reg)
         _write(case / f"constant/{reg}/fvModels", "dictionary", "fvModels",
-               f"\nheat {{ type heatSource; cellZone all; q {q!r}; }}\n")
+               f"\nheat {{ type heatSource; cellZone all; q {q!r}; }}\n" if q else "\n")
+        out = (f"    outside {{ type externalTemperature; Ta constant {Ta!r}; h uniform {float(params['h_ext_W_m2K'])!r}; "
+               f"emissivity {float(params['eps_ext'])!r}; relaxation 0.5; value uniform {T0!r}; }}\n") if reg == "shell" else ""
         _write(case / f"0/{reg}/T", "volScalarField", "T", f"\ndimensions [0 0 0 1 0 0 0];\ninternalField uniform {T0 + 10!r};\n"
                # explicit patch names: with two regex keys OpenFOAM matches the last defined first, so ".*_to_.*" took
                # the fluid interface too and the solid never lost its radiated heat (energy created, 2026-11-24)
                "boundaryField\n{\n"
-               f"    {reg}_to_fluid {{ type coupledTemperature; qrNbr qr; value $internalField; }}\n"
-               f"    {reg}_to_{'component' if reg == 'board' else 'board'} {{ type coupledTemperature; value $internalField; }}\n"
-               "    frontAndBack { type empty; }\n}\n")
+               + "".join(f"    {reg}_to_{nb} {{ type coupledTemperature; {'qrNbr qr; ' if nb == 'fluid' else ''}"
+                         "value $internalField; }\n" for nb in sorted(nbrs[reg], key=lambda r: (r != "fluid", r)))
+               + out + "    frontAndBack { type empty; }\n}\n")
         _write(case / f"system/{reg}/fvSchemes", "dictionary", "fvSchemes", SOLID_FV)
         _write(case / f"system/{reg}/fvSolution", "dictionary", "fvSolution", SOLID_SOL)
     end = numerics.get("transient_end_s")
@@ -205,7 +247,7 @@ relaxationFactors { fields { p_rgh 0.7; } equations { U 0.3; h 0.5; } }
         # transient to a settled state (the steady coupled solve diverged after 9,000 iterations, 2026-11-24): Euler in
         # every region, adjustable time step at Courant 0.5, no under-relaxation, ten writes to see the settling
         end = float(end)
-        for f in [case / "system/fluid/fvSchemes"] + [case / f"system/{r}/fvSchemes" for r in ("board", "component")]:
+        for f in [case / "system/fluid/fvSchemes"] + [case / f"system/{r}/fvSchemes" for r in solids]:
             f.write_text(f.read_text().replace("default steadyState;", "default Euler;"), encoding="utf-8", newline="\n")
         cd = case / "system/controlDict"
         cd.write_text(cd.read_text().replace(f"endTime {it};", f"endTime {end!r};").replace("deltaT 1;", "deltaT 0.001;")
@@ -221,11 +263,12 @@ relaxationFactors { fields { p_rgh 0.7; } equations { U 0.3; h 0.5; } }
                                '"(U|h)" { solver PBiCGStab; preconditioner DILU; tolerance 1e-10; relTol 0.05; }\n'
                                '    "(U|h)Final" { solver PBiCGStab; preconditioner DILU; tolerance 1e-10; relTol 0; }\n'
                                '    p_rghFinal { solver GAMG; smoother GaussSeidel; tolerance 1e-9; relTol 0; maxIter 200; }'), encoding="utf-8", newline="\n")
-        for r in ("board", "component"):
+        for r in solids:
             fs = case / f"system/{r}/fvSolution"
             fs.write_text(fs.read_text().replace("relaxationFactors { equations { e 0.9; } }", 'relaxationFactors { equations { ".*" 1; } }')
                           .replace("solvers { e { solver PCG; preconditioner DIC; tolerance 1e-10; relTol 0.01; } }",
                                    "solvers { e { solver PCG; preconditioner DIC; tolerance 1e-10; relTol 0.01; }\n"
                                    "          eFinal { solver PCG; preconditioner DIC; tolerance 1e-10; relTol 0; } }"),
                           encoding="utf-8", newline="\n")
-    return {"q_component_W_m3": lay["q_component"], "q_board_W_m3": lay["q_board"]}
+    return {"q_component_W_m3": lay["q_component"], "q_board_W_m3": lay["q_board"], "regions": regions,
+            "interfaces": {r: sorted(v) for r, v in nbrs.items()}, "shell_thickness_m": t_sh, "bridge_k_W_mK": k_br}

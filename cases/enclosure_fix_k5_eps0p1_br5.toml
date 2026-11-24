@@ -1,0 +1,92 @@
+# Study 11, REDESIGN (the user's decision 2026-11-24 after 16:54: size a conduction path from the component to the lid).
+# Base: the corner case enclosure_k5_eps0p1 (board 5 W/mK, the worse board; internal emissivity 0.1). Two changes:
+#   1. The box's walls become a solid aluminium shell, 2 mm, 200 W/mK (`shell_thickness_mm`, `shell_k_W_mK`): the
+#      evidence corners treat the walls as a boundary with no lateral conduction, which would trap a bridge's heat in
+#      the 20 mm of lid above it (5 W through 0.004 m2 at about 11 W/m2K is about 110 K); the shell lets the lid spread
+#      it. The outside condition (h 5 W/m2K, emissivity 0.85, 40 C) moves to the shell's outer faces.
+#   2. A bridge from the component's top to the lid (`bridge_k_W_mK`; 0 = none): the component's width (20 mm) and the
+#      whole 29 mm gap, one effective conductivity standing for a pillar and its gap pad. Resistance L / (k A) per the
+#      box's 200 mm depth: 7.25 / 3.62 / 1.45 / 0.36 K/W at 1 / 2 / 5 / 20 W/mK.
+# The model: models/cfd/enclosure_openfoam.py (options added 17:00-17:12; the original files are byte-identical with the
+# options off); studies/enclosure_thermal.py (heat balance and radiation share as totals over the faces). Smoke test
+# (scratch, 17:12, 30 s of a shell + bridge 10 case): splitMeshRegions made the expected interfaces (component-bridge
+# 10 faces, bridge-shell 10, fluid-bridge 28, fluid-shell 196); it ran; no settled values. The shell adds thermal
+# inertia (about 2,000 J/K per metre of depth: time constant about 440 s against 250), so these runs go to 3,600 s.
+#
+# Verification tolerances (as the corners): heat_balance_rel_tol 0.01, settled_K 0.3.
+#
+# Predictions (written BEFORE the runs, 2026-11-24 17:14; hand values, no run of this layout settled yet):
+#   P1 Every point check passes (heat balance 1 %, settled 0.3 K over the last tenth of 3,600 s).
+#   P2 Shell only (no bridge): within 3 K of the corner without a shell for the component and 2 K for the air (the
+#      corner's 98.45 / 66.93 C at emissivity 0.9; the emissivity-0.1 corner is still running): spreading in the walls
+#      alone changes little.
+#   P3 Bridge: the component sits about (5-6 W) x R_bridge above the local lid (about 57-60 C): about 100 / 80 / 68 /
+#      62 C at 1 / 2 / 5 / 20 W/mK at emissivity 0.9 (a few K hotter at 0.1): REQ-D1 passes from about 2 W/mK (a
+#      common gap-pad value), fails at 1.
+#   P4 REQ-D2 (mean air <= 60 C) still FAILS with every bridge: the board's 10 W still heats the air (mean air about
+#      62-65 C); passing it needs a path for the board's heat as well.
+#   P5 About 2.5 h per run at emissivity 0.9 and 7 h at 0.1, the ten side by side.
+# This file: board 5 W/mK, emissivity 0.1, shell and a bridge of 5 W/mK.
+
+[case]
+name = "enclosure_fix_k5_eps0p1_br5"
+model = "openfoam_enclosure_cht"
+description = "Sealed enclosure redesign: board 5 W/mK, emissivity 0.1, shell and a bridge of 5 W/mK; aluminium shell 2 mm, 200 W/mK; hottest component and mean air against the limits."
+assumptions = [
+  "2D section (per unit depth of the 200 mm box); the box's end walls are left out (conservative).",
+  "Laminar natural convection (Rayleigh number about 1e5-1e6 on the box height), air as a perfect gas.",
+  "Grey diffuse internal surfaces (emissivity the corner's value), transparent air.",
+  "Walls: a 2 mm aluminium shell (200 W/mK) conducting along the walls; outside h 5 W/m2K and emissivity 0.85 to 40 C (synthetic).",
+  "Bridge: a solid block the component's width from its top to the lid, one effective conductivity for a pillar and its gap pad; perfect contact at both ends.",
+  "Board: isotropic effective conductivity (the corner's value; synthetic bracket for FR4 with copper planes); the component a solid block of the board's material.",
+]
+limitations = [
+  "2D: no heat path through the box's end walls and no 3D flow.",
+  "Steady operation only (a transient run to a settled state).",
+  "No physical test data.",
+]
+
+[parameters]
+width_mm = 150.0
+height_mm = 60.0
+box_depth_mm = 200.0
+board_length_mm = 100.0
+board_thickness_mm = 2.0
+component_length_mm = 20.0
+power_component_W = 5.0
+power_board_W = 10.0
+board_k_W_mK = 5.0
+ambient_C = 40.0
+h_ext_W_m2K = 5.0
+eps_ext = 0.85
+eps_int = 0.1
+cell_mm = 2.0
+n_phi = 4
+max_iterations = 1
+shell_thickness_mm = 2.0
+shell_k_W_mK = 200.0
+bridge_k_W_mK = 5.0
+
+[numerics]
+transient_end_s = 3600.0
+solver_timeout_s = 86400
+
+[verification]
+heat_balance_rel_tol = 0.01
+settled_K = 0.3
+
+[[requirements]]
+id = "REQ-D1"
+text = "The hottest component shall stay at or below 85 C at 40 C ambient."
+metric = "component_max_C"
+operator = "<="
+limit = 85.0
+units = "C"
+
+[[requirements]]
+id = "REQ-D2"
+text = "The mean internal air temperature shall stay at or below 60 C at 40 C ambient."
+metric = "air_mean_C"
+operator = "<="
+limit = 60.0
+units = "C"
