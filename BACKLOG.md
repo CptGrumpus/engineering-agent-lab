@@ -86,6 +86,10 @@ commit). Rules that bind:
 | Study 12 (O-ring): four evidence cases in parallel, started about 10:06 (`oring_free_lindley`, `oring_free_hertz`, `oring_seal_corners`, `oring_seal_mesh`; predictions P1-P6 in each header) | `runs/*_oring_*` (`oring_runs.log`, session 8f53debf) | about 10:35 | Score P1-P6; portfolio page (new, number 25) and the PORTFOLIO / README rows; BACKLOG row 12. |
 
 ### Next (in order)
+0c. **User's decisions 2026-11-24, after 12:09:** study 11's enclosure verdict BRACKETED in board conductivity (5 and
+   20 W/mK, each at internal emissivity 0.1 and 0.9: four corners, verdict at each); a NEW STUDY in parallel: machine
+   elements (a shaft with a shoulder fillet under bending and torsion, fatigue safety by DIN 743 against FE notch
+   stresses; framing first, for the user's approval).
 0b. **User's decisions 2026-11-24, after 10:25 (all as recommended):** study 11 framing APPROVED as drafted (enclosure:
    sealed aluminium box 200 x 150 x 60 mm, 15 W board, 40 C ambient; REQ-D1 hottest component <= 85 C, REQ-D2 mean
    internal air <= 60 C, REQ-D3 verdict stated at emissivity 0.1 and 0.9; stages: de Vahl Davis cavity Ra 1e3-1e6,

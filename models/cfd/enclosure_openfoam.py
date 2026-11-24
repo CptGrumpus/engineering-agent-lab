@@ -178,7 +178,7 @@ solvers
     "(rho|rhoFinal)" { solver diagonal; }
     p_rgh { solver GAMG; smoother GaussSeidel; tolerance 1e-9; relTol 0.01; maxIter 200; }
     "(U|h)" { solver PBiCGStab; preconditioner DILU; tolerance 1e-12; relTol 0.05; }
-    Ii { solver GAMG; smoother symGaussSeidel; tolerance 1e-8; relTol 0; maxIter 100; }
+    "Ii.*" { solver GAMG; smoother symGaussSeidel; tolerance 1e-8; relTol 0; maxIter 100; }
 }
 PIMPLE { momentumPredictor yes; nNonOrthogonalCorrectors 0; pRefCell 0; pRefValue 0; }
 relaxationFactors { fields { p_rgh 0.7; } equations { U 0.3; h 0.5; } }
@@ -192,8 +192,12 @@ relaxationFactors { fields { p_rgh 0.7; } equations { U 0.3; h 0.5; } }
         _write(case / f"constant/{reg}/fvModels", "dictionary", "fvModels",
                f"\nheat {{ type heatSource; cellZone all; q {q!r}; }}\n")
         _write(case / f"0/{reg}/T", "volScalarField", "T", f"\ndimensions [0 0 0 1 0 0 0];\ninternalField uniform {T0 + 10!r};\n"
-               "boundaryField\n{\n    \".*_to_fluid\" { type coupledTemperature; qrNbr qr; value $internalField; }\n"
-               "    \".*_to_.*\" { type coupledTemperature; value $internalField; }\n    frontAndBack { type empty; }\n}\n")
+               # explicit patch names: with two regex keys OpenFOAM matches the last defined first, so ".*_to_.*" took
+               # the fluid interface too and the solid never lost its radiated heat (energy created, 2026-11-24)
+               "boundaryField\n{\n"
+               f"    {reg}_to_fluid {{ type coupledTemperature; qrNbr qr; value $internalField; }}\n"
+               f"    {reg}_to_{'component' if reg == 'board' else 'board'} {{ type coupledTemperature; value $internalField; }}\n"
+               "    frontAndBack { type empty; }\n}\n")
         _write(case / f"system/{reg}/fvSchemes", "dictionary", "fvSchemes", SOLID_FV)
         _write(case / f"system/{reg}/fvSolution", "dictionary", "fvSolution", SOLID_SOL)
     end = numerics.get("transient_end_s")
