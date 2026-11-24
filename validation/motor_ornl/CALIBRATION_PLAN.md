@@ -477,3 +477,17 @@ the rotor bore, solid laminations. Revision-5 machine, gap 0.775 mm, magnets at 
 - P4 Waveform: phase-a flux linkage, aligned to FEMM's by the fundamental's phase, differs from FEMM's by under 3 % of
   lambda1 at every position; the gap's radial flux density fundamental within 2 % of FEMM's.
 - P5 Each solve under 60 s; the Newton iterations converge (relative change under 1e-8).
+
+*Attempt 1 (started 18:47, stopped shortly after 19:15), stopped; no comparison made from it.* Two faults, both found before the 48 positions ran:
+(1) Pyleecan's ring surfaces (the stator and rotor laminations: an outer loop and an inner loop) were passed to
+OpenCASCADE as one face with two loops, which gave outer + inner area: the steel filled the shaft, the bore and the
+slots and shorted the magnets. The flux linkage came out about 10x low (0.018 Wb against about 0.2) while the mesh
+study converged to 1e-5 and nothing failed. Fixed by cutting the inner faces out explicitly; build_mesh now checks
+that the bodies tile the domain exactly once (47,319.01 mm2 = the annulus; stator steel 29,384.8 mm2 = annulus
+minus slots; air 1000.8 = gap 392.3 + slot mouths 93.8 + pocket voids 514.8). (2) Newton on a piecewise-linear B-H
+table sat in a two-state limit cycle (relative change alternating at 1e-4 for 60 iterations; log kept in
+elmer_check/attempt1_mesh1.0_limit_cycle.log); the table is now a cubic spline. On the fixed model the relative
+change still stalls at 1.43e-3 (some small region alternates), but the flux linkages move under 1e-9 Wb between 30
+and 120 iterations (refinement 0.7, rotor at 22.5 deg): the run uses 30 iterations, and P5's criterion as written is
+expected to be scored MISSED with that measured stability beside it. The mesh-size note under P2 described the faulty
+mesh (690,000 nodes at 0.5); the fixed mesh has 90,000 / 162,000 nodes at 1.0 / 0.7.

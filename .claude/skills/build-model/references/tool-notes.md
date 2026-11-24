@@ -524,8 +524,15 @@ nic.funet.fi/pub/sci/physics/elmer/bin/windows/rel26.1/) unpacked to `~/tools/el
 - **OpenCASCADE arcs:** dedupe points on rounded keys but create them at exact coordinates; rounding the
   coordinates to 1e-6 mm made an arc's start and end radii differ by ~2e-6 mm and `addCircleArc` failed. Split arcs
   near pi (OCC draws the shorter arc). `getParametrizationBounds` returns one-element arrays: unpack them.
-- **Mesh size:** with second-order triangles, gap 0.20 mm / holes 0.40 mm / far 3 mm on the full Prius machine is
-  about 690,000 nodes (the mesher takes about 25 s); size the coarsest level of a mesh study from that.
+- **Ring surfaces (Pyleecan SurfRing: an outer and an inner loop):** `addPlaneSurface([outer, inner])` in the OCC
+  kernel gave outer + inner area, not a hole: the steel filled the shaft, bore and slots, the magnets were shorted
+  and the flux linkage came out 10x low while the mesh study converged and nothing failed. Cut the inner face out
+  (`occ.cut`) and check that the bodies' areas tile the domain exactly once (`build_mesh` raises otherwise).
+- **Newton and B-H tables:** a piecewise-linear `Real` table put Newton in a two-state limit cycle (change alternating
+  at 1e-4); `Real Cubic` removed it. On the Prius the change norm still stalls at 1.4e-3 while the flux linkages
+  move under 1e-9 Wb from 30 to 120 iterations: judge convergence on the quantity you report, measured.
+- **Mesh size:** with second-order triangles, gap 0.40 mm / holes 0.80 mm / far 6 mm (refinement 1.0) is about
+  90,000 nodes on the full Prius machine, 162,000 at 0.7; one solve at 0.7 with 30 iterations takes about 80 s.
 
 ## Reading dimensions from published PDFs (PyMuPDF, study 7)
 

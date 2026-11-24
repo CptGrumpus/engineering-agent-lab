@@ -100,11 +100,17 @@ def build_mesh(geo: dict, theta_deg: float, out_msh: Path, refine: float = 1.0, 
         inputs = []                                        # (dimtag, record)
         for rec in geo["surfaces"]:
             b = builders[rec["side"]]
-            loops = []
-            for lp in rec["loops"]:
-                cs = [c for ln in lp for c in b.curves(ln)]
-                loops.append(occ.addCurveLoop(cs))
-            inputs.append(((2, occ.addPlaneSurface(loops)), rec))
+            faces = [occ.addPlaneSurface([occ.addCurveLoop([c for ln in lp for c in b.curves(ln)])])
+                     for lp in rec["loops"]]
+            if len(faces) > 1:
+                # a ring (Pyleecan SurfRing): cut the inner faces out explicitly. Passing both loops to
+                # addPlaneSurface gave outer + inner area (the steel filled the shaft, the bore and the slots and
+                # shorted the magnets: flux linkage 10x low, attempt 1)
+                cut, _ = occ.cut([(2, faces[0])], [(2, f) for f in faces[1:]])
+                for dt in cut:
+                    inputs.append((dt, rec))
+            else:
+                inputs.append(((2, faces[0]), rec))
         d = geo["dims"]
         rotor_tags = [dt for dt, rec in inputs if rec["side"] == "rotor"]
         if theta_deg:
@@ -143,6 +149,14 @@ def build_mesh(geo: dict, theta_deg: float, out_msh: Path, refine: float = 1.0, 
             if kind == "winding":
                 info.update(phase=rec["phase"], turns=rec["turns"])
             bodies[tag] = info
+        # area balance: the bodies must tile the domain exactly once (attempt 1 meshed the steel rings twice over the
+        # shaft, bore and slots and every check still ran)
+        body_area = {t: sum(occ.getMass(2, s) for s in gmsh.model.getEntitiesForPhysicalGroup(2, t)) for t in bodies}
+        domain = math.pi * ((d["stator_Rext"] * 1e3) ** 2 - (d["rotor_Rint"] * 1e3) ** 2)
+        if abs(sum(body_area.values()) / domain - 1) > 1e-6:
+            raise RuntimeError(f"bodies cover {sum(body_area.values()):.3f} mm2, domain {domain:.3f} mm2")
+        for t, a_mm2 in body_area.items():
+            bodies[t]["area_mm2"] = a_mm2
         # boundary: the stator's outer circle (A = 0)
         r_out = d["stator_Rext"] * 1e3
         outer_curves = []
@@ -216,7 +230,7 @@ def _bh_table(h_b: list, n: int = 160) -> list[tuple[float, float]]:
     return [(float(b), float(max(f(b), 0.0))) for b in bs]
 
 
-def write_sif(case: Path, geo: dict, bodies: dict, nonlinear_tol: float = 1e-10) -> None:
+def write_sif(case: Path, geo: dict, bodies: dict, nonlinear_tol: float = 1e-10, max_iter: int = 60) -> None:
     mats, blines = [], []
     steel_rows = {"rotor_lam": _bh_table(geo["materials"]["rotor_steel"]["H_B"]),
                   "stator_lam": _bh_table(geo["materials"]["stator_steel"]["H_B"])}
@@ -225,7 +239,9 @@ def write_sif(case: Path, geo: dict, bodies: dict, nonlinear_tol: float = 1e-10)
         mid = len(mats) + 1
         if b["kind"] in ("rotor_lam", "stator_lam"):
             rows = "\n".join(f"      {bb:.8g} {hh:.8g}" for bb, hh in steel_rows[b["kind"]])
-            mats.append(f"Material {mid}\n  Name = \"{b['name']}\"\n  H-B Curve = Variable \"dummy\"\n    Real\n{rows}\n"
+            # Real Cubic: a piecewise-linear table put Newton in a two-state limit cycle (relative change stuck at
+            # 1e-4, alternating every iteration; attempt 1, 2026-11-23); the spline's slope is continuous
+            mats.append(f"Material {mid}\n  Name = \"{b['name']}\"\n  H-B Curve = Variable \"dummy\"\n    Real Cubic\n{rows}\n"
                         f"    End\nEnd\n")
         elif b["kind"] == "magnet":
             a = math.radians(b["mag_deg"])
@@ -264,7 +280,7 @@ Solver 1
   Variable = Potential
   Linear System Solver = Direct
   Linear System Direct Method = UMFPack
-  Nonlinear System Max Iterations = 60
+  Nonlinear System Max Iterations = {max_iter}
   Nonlinear System Convergence Tolerance = {nonlinear_tol:g}
   Nonlinear System Newton After Iterations = 4
   Nonlinear System Newton After Tolerance = 1.0e-3
@@ -370,12 +386,12 @@ def gap_br(v: dict, radius_m: float, n: int = 1440) -> np.ndarray:
 
 
 def solve_position(geo: dict, theta_deg: float, work: Path, refine: float = 1.0, order: int = 2,
-                   keep_vtu: bool = False) -> dict:
+                   keep_vtu: bool = False, max_iter: int = 60) -> dict:
     """One static solve with the rotor at theta_deg. Returns the phase flux linkages (Wb) and diagnostics."""
     work.mkdir(parents=True, exist_ok=True)
     msh = work / "machine.msh"
     meta = build_mesh(geo, theta_deg, msh, refine=refine, order=order)
-    write_sif(work, geo, meta["bodies"])
+    write_sif(work, geo, meta["bodies"], max_iter=max_iter)
     sol = run_elmer(work, msh)
     vtus = sorted(work.glob("mesh/case*.vtu")) or sorted(work.glob("case*.vtu"))
     if not vtus:

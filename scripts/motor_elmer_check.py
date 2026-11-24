@@ -29,10 +29,10 @@ from models.motor.elmer_em import cylinder_check, elmer_version, solve_position 
 
 
 def _one(args):
-    geo_path, theta, refine, work = args
+    geo_path, theta, refine, work, max_iter = args
     geo = json.loads(Path(geo_path).read_text(encoding="utf-8"))
     t0 = time.time()
-    r = solve_position(geo, theta, Path(work), refine=refine)
+    r = solve_position(geo, theta, Path(work), refine=refine, max_iter=max_iter)
     r["wall_s"] = time.time() - t0
     r.pop("nonlinear_changes", None)
     return r
@@ -50,6 +50,7 @@ def main():
     ap.add_argument("out")
     ap.add_argument("--workers", type=int, default=4)
     ap.add_argument("--positions", type=int, default=48)
+    ap.add_argument("--max-iter", type=int, default=30)   # lambda moved < 1e-9 Wb from 30 to 120 (iteration study, refinement 0.7)
     a = ap.parse_args()
     out = Path(a.out)
     out.mkdir(parents=True, exist_ok=True)
@@ -76,13 +77,14 @@ def main():
     # 2. mesh study at theta = 0
     levels = [1.0, 0.7, 0.5]
     with ProcessPoolExecutor(max_workers=min(a.workers, 3)) as ex:
-        mesh = list(ex.map(_one, [(a.geometry, 0.0, r, str(work / f"mesh_{r}")) for r in levels]))
+        mesh = list(ex.map(_one, [(a.geometry, 0.0, r, str(work / f"mesh_{r}"), a.max_iter) for r in levels]))
     res["mesh_study"] = [{k: m[k] for k in ("lambda_Wb", "nodes", "elements", "sizes_mm", "nonlinear_iterations",
                                             "final_change", "wall_s")} | {"refine": r} for m, r in zip(mesh, levels)]
-    la = [m["lambda_Wb"][0] for m in mesh]
-    ref_amp = max(abs(x) for x in mesh[-1]["lambda_Wb"])
-    print("mesh:", [f"{x:.6f}" for x in la], "nodes", [m["nodes"] for m in mesh], flush=True)
-    d12, d23 = abs(la[1] - la[0]) / ref_amp, abs(la[2] - la[1]) / ref_amp
+    L3 = np.array([m["lambda_Wb"] for m in mesh])          # levels x phases
+    ref_amp = float(np.max(np.abs(L3[-1])))
+    print("mesh:", [[f"{x:.6f}" for x in row] for row in L3], "nodes", [m["nodes"] for m in mesh], flush=True)
+    d12 = float(np.max(np.abs(L3[1] - L3[0])) / ref_amp)     # largest change over the three phases
+    d23 = float(np.max(np.abs(L3[2] - L3[1])) / ref_amp)
     res["mesh_change_rel"] = [d12, d23]
     refine = levels[-1]
 
@@ -90,7 +92,7 @@ def main():
     n = a.positions
     thetas = [360.0 / pp * k / n for k in range(n)]
     with ProcessPoolExecutor(max_workers=a.workers) as ex:
-        sweep = list(ex.map(_one, [(a.geometry, th, refine, str(work / f"pos_{k:02d}")) for k, th in
+        sweep = list(ex.map(_one, [(a.geometry, th, refine, str(work / f"pos_{k:02d}"), a.max_iter) for k, th in
                                    enumerate(thetas)]))
     lam = np.array([s["lambda_Wb"] for s in sweep])
     e1 = fund(lam)
@@ -123,6 +125,7 @@ def main():
         full = np.concatenate([fb, -fb])
         res["femm_gap_Br1_T"] = float(np.abs(2 * np.fft.rfft(full)[1] / len(full)))
         res["gap_Br1_rel_diff"] = res["elmer_gap_Br1_T"] / res["femm_gap_Br1_T"] - 1
+    res["max_iter"] = a.max_iter
     res["elapsed_s"] = time.time() - t0
     (out / "elmer_check.json").write_text(json.dumps(res, indent=1), encoding="utf-8")
     with (out / "elmer_check.csv").open("w", newline="") as fh:
