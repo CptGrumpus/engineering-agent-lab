@@ -425,6 +425,12 @@ the 18 % belongs to 2D models of this motor), or do they match the test (then ou
 part of the 18 %, not most of it). An independent check of our 2D field now needs our own second model (a different
 solver on the same geometry), not the literature.
 
+### Result of step 2, the lamination steel (2026-11-23 19:12; run 20261123-172758, case motor_prius_rev5_steel)
+VERIFICATION PASS. M250-35A 105.31 V, M330-35A with a 2.05 T tail 104.79 V, 190Y390 105.29 V per 1000 rpm, against
+105.16 V with M330-35A: -0.35 to +0.14 %, inside the hand estimate's +-0.5 %. P1 held; P2 held on the ordering and the
+checks, missed on run time (105 min against 45-75). **The bridges' steel is not the cause:** the model stays +17.2 to
++17.8 % on ORNL with any plausible grade.
+
 ### The 18 % flux excess, step 3: end effects, hand estimate (2026-11-23 17:57; no runs; scripts/motor_end_effects.py)
 Agreed plan: a hand estimate first; a 3D model only if it says 5 % or more; include the rotor end clamping plates.
 - **End clamping piece:** its material is not stated in any client document (TM-2004/137 text: "top-clamping piece",

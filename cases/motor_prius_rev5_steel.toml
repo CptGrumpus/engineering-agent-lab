@@ -11,6 +11,17 @@
 # Predictions (written and committed BEFORE the run, 17:27):
 #   P1 Every steel gives 104.5-106.0 V per 1000 rpm (within +-0.7 % of 105.2): the steel cannot explain an 18 % excess.
 #   P2 Js 2.05 gives the lowest value (more flux through the bridges); every point check passes; 45-75 min.
+#
+# Results (run 20261123-172758, 17:27-19:12; VERIFICATION PASS), back-EMF line to line per 1000 rpm against the
+# baseline 105.16 V (M330-35A, Js 2.0; run 20261123-141642) and ORNL's 89.38 V:
+#   M250-35A        105.31 V (+0.14 %; +17.8 % on ORNL)
+#   M330-35A Js2.05 104.79 V (-0.35 %; +17.2 %)
+#   190Y390         105.29 V (+0.12 %; +17.8 %)
+#   P1 HELD: all within 104.5-106.0 V; the spread is -0.35 to +0.14 %, inside the hand estimate's +-0.5 %. The bridges'
+#      steel cannot explain the 18 % excess.
+#   P2 PARTLY: Js 2.05 is the lowest, and every point check passes; the time MISSED: 33-37 min per steel, 105 min in
+#      all against 45-75 (three FEMM solves in sequence at fineness 8, each like the 35-min baseline; I estimated the
+#      whole case from one point's time).
 
 [case]
 name = "motor_prius_rev5_steel"
