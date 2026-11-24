@@ -86,6 +86,12 @@ commit). Rules that bind:
 | Study 12 (O-ring): four evidence cases in parallel, started about 10:06 (`oring_free_lindley`, `oring_free_hertz`, `oring_seal_corners`, `oring_seal_mesh`; predictions P1-P6 in each header) | `runs/*_oring_*` (`oring_runs.log`, session 8f53debf) | about 10:35 | Score P1-P6; portfolio page (new, number 25) and the PORTFOLIO / README rows; BACKLOG row 12. |
 
 ### Next (in order)
+0b. **User's decisions 2026-11-24, after 10:25 (all as recommended):** study 11 framing APPROVED as drafted (enclosure:
+   sealed aluminium box 200 x 150 x 60 mm, 15 W board, 40 C ambient; REQ-D1 hottest component <= 85 C, REQ-D2 mean
+   internal air <= 60 C, REQ-D3 verdict stated at emissivity 0.1 and 0.9; stages: de Vahl Davis cavity Ra 1e3-1e6,
+   grey-surface radiation against two-surface exchange, then the enclosure); FSI3 time-step study START NOW; ORNL
+   Fig. 13 (TM-2004/137, teardown data) USE IT NOW for the magnetisation hypothesis; study 7 to CLOSE with open items
+   (final client-style report, the client questions listed).
 0a. **Done 2026-11-24 07:38-10:06 (this session):** FSI2 level-c crash diagnosed (mechanism 1, mesh motion: a period-2
    oscillation made in the motion solve; the current diffusivity is ill-posed, solver-dependent) and fixed by a frozen
    1 / d diffusivity (offline moveMesh test), all three FSI2 levels rerunning; the motor table refinement scored (the
