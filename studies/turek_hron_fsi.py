@@ -280,8 +280,24 @@ class PreciceFSI(Backend):
                     + sorted(fl.glob("postProcessing/*/0/*.dat"))
                     + [so / "flag.inp", so / "config.yml", so / "flag.sta"] + sorted(so.glob("*.log"))
                     + [case / "precice-config.xml", case / "versions.txt"])
-            return {str(f.relative_to(case)).replace("\\", "/"): f for f in keep
-                    if f.is_file() and f.stat().st_size < 20e6}
+            out = {str(f.relative_to(case)).replace("\\", "/"): f for f in keep
+                   if f.is_file() and f.stat().st_size < 20e6}
+            # dense writing (crash diagnosis): the last time directories written and the base mesh, whole, so
+            # the state before the crash can be read offline (checkMesh -time, the fields); not for committing
+            if (fl / "dense_write_from_s").is_file():
+                t0 = float((fl / "dense_write_from_s").read_text().strip())
+                times = []
+                for p in fl.iterdir():
+                    try:
+                        times.append((float(p.name), p))
+                    except ValueError:
+                        pass
+                dense = [p for t, p in sorted(times) if t >= t0][-int(numerics.get("dense_write_keep", 12)):]
+                for f in [fl / "log.denseWrite", fl / "dense_write_from_s"] + sorted(
+                        (fl / "constant/polyMesh").glob("*")) + [x for p in dense for x in sorted(p.rglob("*"))]:
+                    if f.is_file():
+                        out[str(f.relative_to(case)).replace("\\", "/")] = f
+            return out
 
         g = subprocess.run([str(self.gmsh), "mesh.geo", "-3", "-format", "msh22", "-o", "mesh.msh"], cwd=fl,
                            capture_output=True, text=True, timeout=3600)

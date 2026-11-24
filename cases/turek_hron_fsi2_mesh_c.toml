@@ -47,6 +47,9 @@
 # P1 MISSED for level c. The FSI2 mesh study has two levels (a vs b: 0.1-0.7 % on every quantity), so no three-level
 # GCI. Next, one change per rerun, chosen to separate the two: nOuterCorrectors 3 (PIMPLE) at the same dt fixes (2)
 # but not (1); a stiffer mesh motion fixes (1) but not (2). Each is a 6-10 h run; the user's call on compute time.
+# User's decision (2026-11-24, after 03:35): accept two levels for the FSI2 mesh study for now (a vs b), and
+# diagnose first: cases/turek_hron_fsi2_mesh_c_diag.toml reruns this case unchanged with every step written from
+# 8.8 s. A fix chosen from it goes to all three levels, or the levels stop being comparable.
 
 [case]
 name = "turek_hron_fsi2_mesh_c"

@@ -200,3 +200,20 @@ def test_periodic_mesh_study_converges_the_periodic_metrics_not_the_snapshot():
     checks, d = T.STUDY.verify_run_level(case, {"points": pts}, None)
     assert set(d) - {"meshes_used"} == set(T.PERIODIC_GCI_METRICS)
     assert {c["metric"] for c in checks} == {f"{m}_deviation_pct" for m in T.PERIODIC_GCI_METRICS}
+
+
+def test_dense_writing_adds_only_a_function_object(tmp_path):
+    """Crash diagnosis: writeObjects from a set time; without it the controlDict is unchanged, and the main write
+    control is never touched (re-reading it mid-run resets the end time the preCICE adapter extends)."""
+    W.write_case(FSI1, {"solid_alpha": -0.3}, tmp_path / "plain")
+    W.write_case(FSI1, {"solid_alpha": -0.3, "dense_write_from_s": 0.8}, tmp_path / "dense")
+    plain = (tmp_path / "plain/fluid/system/controlDict").read_text()
+    dense = (tmp_path / "dense/fluid/system/controlDict").read_text()
+    assert "writeObjects" not in plain and "runTimeModifiable" not in plain
+    assert not (tmp_path / "plain/fluid/dense_write_from_s").exists()
+    assert re.search(r"type\s+writeObjects;", dense) and re.search(r"timeStart\s+0\.8;", dense)
+    assert "pointDisplacement" in dense and "runTimeModifiable" not in dense
+    assert float((tmp_path / "dense/fluid/dense_write_from_s").read_text()) == 0.8
+    # everything outside the function object is identical
+    fo = dense[dense.index("    denseWrite"):dense.index("    }\n", dense.index("    denseWrite")) + 6]
+    assert dense.replace(fo, "") == plain

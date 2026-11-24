@@ -90,6 +90,25 @@ def write_fluid(params: dict, numerics: dict, d: Path) -> None:
     if abs(t_end / write_every - round(t_end / write_every)) > 1e-9:
         # OpenFOAM writes only at whole write intervals: the final state must be one of them
         raise ValueError(f"end time {t_end} is not a whole number of write intervals ({write_every})")
+    # dense writing for a crash diagnosis (FSI2 mesh c): a writeObjects function object writes the fields every
+    # time step from this time on; the mesh is the base points plus pointDisplacement. Not by switching the main
+    # write in a re-read controlDict: that also resets the end time the preCICE adapter extends, and the fluid
+    # then quits one coupling iteration early in the last window (tested 2026-11-24). The solve is unchanged.
+    dense = numerics.get("dense_write_from_s")
+    dense_fo = ""
+    if dense is not None:
+        _w(d / "dense_write_from_s", f"{float(dense)!r}\n")
+        dense_fo = f"""    denseWrite
+    {{
+        type            writeObjects;
+        libs            ("libutilityFunctionObjects.so");
+        timeStart       {float(dense)!r};
+        writeControl    timeStep;
+        writeInterval   1;
+        writeOption     anyWrite;
+        objects         (U p phi pointDisplacement cellDisplacement);
+    }}
+"""
     _foam(d / "system/controlDict", "dictionary", "controlDict", f"""
 application     pimpleFoam;
 startFrom       startTime;
@@ -135,7 +154,7 @@ functions
         CofR            ({XC!r} {YC!r} 0);
         log             false;
     }}
-}}
+{dense_fo}}}
 """)
     _foam(d / "system/fvSchemes", "dictionary", "fvSchemes", """
 ddtSchemes      { default backward; }
