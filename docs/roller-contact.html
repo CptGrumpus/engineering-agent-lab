@@ -21,7 +21,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
-<link rel="stylesheet" href="assets/site.css?v=3a47ebee4c">
+<link rel="stylesheet" href="assets/site.css?v=6ba0ba0b9b">
 </head>
 <body>
 <nav class="topbar" aria-label="Site">
@@ -57,9 +57,14 @@
     <header class="study-hero">
       <p class="eyebrow">Study 10 · Gmsh and CalculiX, nonlinear contact</p>
       <h1>Roller-on-Plate Contact, Nonlinear FEA</h1>
+      <p class="study-q"><span class="k">The question</span>Does a 100 mm steel roller carrying 500 N per millimetre stay within its limits on contact pressure and on shear below the surface?</p>
+    </header>
+    <figure class="study-setup"><a class="plate" href="v2/dwg_contact.webp" title="Open the drawing full size"><img src="v2/dwg_contact.webp" alt="The roller on its plate, with the contact strip enlarged in a circle"></a><figcaption><b>The setup.</b> The roller on its plate. The contact is too small to see at this scale, so it's enlarged on the right.</figcaption></figure>
+    <div class="study-answer">
+      <p class="k">The answer</p>
       <span class="v v-pass">Passes</span>
       <p class="study-lede">A track roller carrying 500 N/mm. The contact pressure peaks at 609 MPa against a 650 MPa limit, and the shear under the surface reaches 184 MPa against 200. The CalculiX model lands within 0.4 % of the exact Hertz solution.</p>
-    </header>
+    </div>
     <div class="vp" id="vp" role="region" aria-label="Result viewer">
       <div class="legend">
         <div class="legend-title" id="lg-title"></div>
@@ -93,9 +98,6 @@
       <div class="chips"><span class="chip pass">Peak pressure 609 MPa</span><span class="chip pass">Subsurface shear 184 MPa</span><span class="chip pass">Matches Hertz to 0.4 %</span></div>
       <p><strong>Yes on both.</strong> The peak contact pressure is 609 MPa and the maximum shear below the surface is 184 MPa, about 0.4 mm down. That leaves 6 % and 8 % of margin. The contact patch is 1.05 mm wide.</p>
     </div>
-    <h2 id="why-it-matters">Why It Matters</h2>
-    <p>When a curved part presses on a flat one, they touch over a strip far narrower than either part: here about 1 mm on a 100 mm roller. All of the load passes through that strip, so the local stresses are several times anything else in the part. The highest shear stress isn't at the surface. It sits a fraction of a millimetre below it, which is why rolling-contact fatigue starts as cracks under the surface that later break out as pits.</p>
-    <p>Contact is also where finite-element models stop being linear. The solver doesn't know in advance where the parts touch, so it has to find the contact area as part of the solution. That makes it a good test of whether a nonlinear model can be trusted.</p>
     <h2 id="the-model">The Model</h2>
     <dl class="spec">
       <dt>Parts</dt><dd>A roller of 50 mm radius on a flat block, modelled as two separate bodies that can only touch. Half of each is modelled, about the vertical centre line.</dd>
@@ -106,8 +108,10 @@
       <dt>Analysis</dt><dd>Nonlinear static, plane strain (a long roller, so nothing moves along its axis), in CalculiX 2.22.</dd>
       <dt>What's measured</dt><dd>The contact half-width, the peak contact pressure, and the largest shear stress below the surface and its depth.</dd>
     </dl>
-    <figure class="drawing"><div class="plate"><img src="v2/dwg_contact.webp" alt="The roller on its plate, with the contact strip enlarged in a circle" loading="lazy"></div><figcaption>The roller on its plate. The contact is too small to see at this scale, so it's enlarged on the right.</figcaption></figure>
     <details class="record"><summary>The case file: recorded assumptions, limits and inputs</summary><div class="record-body"><p>This is the study's own record, written before the run and saved with it, in the shorthand of the case file.</p><p class="case"><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/cases/contact_roller_mesh.toml">cases/contact_roller_mesh.toml ↗</a></p><p>Steel roller (R = 50 mm) pressed onto a steel plate in plane strain with CalculiX surface-to-surface penalty contact; contact element size swept 0.08 / 0.04 / 0.02 mm and verified against Hertz line contact.</p><h3>Assumptions, and How Each Is Checked</h3><ul><li>Plane strain (long roller): one-layer hex slab with uz = 0 at every node.</li><li>Frictionless contact; linear elastic, isotropic steel in both bodies.</li><li>Half model about the vertical symmetry plane; the roller is a quarter disc loaded through its flat top face (far from the contact, a/R = 0.01).</li><li>Penalty contact stiffness 50 E / element size; penetration is checked against the approach.</li><li>Hertz assumes half-spaces; the block (60 x 50 mm half) and roller are about 100 contact widths across.</li></ul><h3>Limits</h3><ul><li>Synthetic geometry, load and allowables; not calibrated to a product.</li><li>No friction, surface roughness, residual stress or plasticity; rolling-contact fatigue life is not assessed.</li><li>Checks establish numerical verification against Hertz only; no test data.</li></ul><h3>Inputs</h3><div class="table-wrap"><table><thead><tr><th>Input</th><th>Value</th></tr></thead><tbody><tr><td>roller_radius_mm</td><td>50</td></tr><tr><td>block_half_width_mm</td><td>60</td></tr><tr><td>block_depth_mm</td><td>50</td></tr><tr><td>slab_thickness_mm</td><td>0.5</td></tr><tr><td>approach_mm</td><td>0.015</td></tr><tr><td>youngs_modulus_MPa</td><td>210000</td></tr><tr><td>poisson_ratio</td><td>0.3</td></tr><tr><td>yield_strength_MPa</td><td>1200</td></tr><tr><td>contact_element_size_mm</td><td>0.04</td></tr><tr><td>far_element_size_mm</td><td>4</td></tr><tr><td>penalty_stiffness_factor</td><td>50</td></tr><tr><td>refined_zone_mm</td><td>1.6</td></tr></tbody></table></div></div></details>
+    <h2 id="why-it-matters">Why It Matters</h2>
+    <p>When a curved part presses on a flat one, they touch over a strip far narrower than either part: here about 1 mm on a 100 mm roller. All of the load passes through that strip, so the local stresses are several times anything else in the part. The highest shear stress isn't at the surface. It sits a fraction of a millimetre below it, which is why rolling-contact fatigue starts as cracks under the surface that later break out as pits.</p>
+    <p>Contact is also where finite-element models stop being linear. The solver doesn't know in advance where the parts touch, so it has to find the contact area as part of the solution. That makes it a good test of whether a nonlinear model can be trusted.</p>
     <h2 id="how-it-works">How It Works</h2>
     <p>I push the roller down a set distance and read the force from the reactions, which is more reliable than applying a force before the parts are touching. CalculiX works out where the two surfaces are in contact as it solves.</p>
     <p>The reference is Hertz's solution from 1882, which gives the exact contact width, pressure distribution and stresses underneath for two elastic cylinders. Because the load isn't an input here, the comparison is made at the load the model actually carried.</p>
@@ -139,7 +143,7 @@
     <div class="side-card"><ul class="ev-list"><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/portfolio/10-roller-contact.md">Full write-up on GitHub</a></li></ul><p class="label">Run reports, with every check and the saved inputs</p><ul class="ev-list ev-runs"><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261120-120004_contact_roller_mesh/report.md">contact_roller_mesh · 12:00</a></li><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261120-120243_contact_roller_mesh/report.md">contact_roller_mesh · 12:02</a></li></ul></div>
       </article>
       <aside class="study-side" aria-label="Summary of this study">
-        <div class="side-card"><h2>At a Glance</h2><dl><div><dt>Study</dt><dd>10</dd></div><div><dt>Discipline</dt><dd>Structures and vibration</dd></div><div><dt>Tools</dt><dd>Gmsh · CalculiX</dd></div><div><dt>Verdict</dt><dd><span class="v v-pass">Passes</span></dd></div></dl></div><div class="side-card"><h2>Requirements</h2><ul class="side-reqs"><li><span class="r-what">Peak contact pressure</span><span class="r-num">≤ 650 MPa · 609 MPa</span><span class="chip pass">Met</span></li><li><span class="r-what">Max shear below the surface</span><span class="r-num">≤ 200 MPa · 184 MPa</span><span class="chip pass">Met</span></li></ul></div><div class="side-card side-toc"><h2>On This Page</h2><ul class="toc"><li><a href="#the-question">The question</a></li><li><a href="#the-answer">The answer</a></li><li><a href="#why-it-matters">Why it matters</a></li><li><a href="#the-model">The model</a></li><li><a href="#how-it-works">How it works</a></li><li><a href="#how-i-checked-it">How I checked it</a></li><li><a href="#what-i-caught-along-the-way">What I caught along the way</a></li><li><a href="#limits-and-what-i-d-do-next">Limits, and what I&#x27;d do next</a></li><li><a href="#evidence">Evidence</a></li></ul></div>
+        <div class="side-card"><h2>At a Glance</h2><dl><div><dt>Study</dt><dd>10</dd></div><div><dt>Discipline</dt><dd>Structures and vibration</dd></div><div><dt>Tools</dt><dd>Gmsh · CalculiX</dd></div><div><dt>Verdict</dt><dd><span class="v v-pass">Passes</span></dd></div></dl></div><div class="side-card"><h2>Requirements</h2><ul class="side-reqs"><li><span class="r-what">Peak contact pressure</span><span class="r-num">≤ 650 MPa · 609 MPa</span><span class="chip pass">Met</span></li><li><span class="r-what">Max shear below the surface</span><span class="r-num">≤ 200 MPa · 184 MPa</span><span class="chip pass">Met</span></li></ul></div><div class="side-card side-toc"><h2>On This Page</h2><ul class="toc"><li><a href="#the-question">The question</a></li><li><a href="#the-answer">The answer</a></li><li><a href="#the-model">The model</a></li><li><a href="#why-it-matters">Why it matters</a></li><li><a href="#how-it-works">How it works</a></li><li><a href="#how-i-checked-it">How I checked it</a></li><li><a href="#what-i-caught-along-the-way">What I caught along the way</a></li><li><a href="#limits-and-what-i-d-do-next">Limits, and what I&#x27;d do next</a></li><li><a href="#evidence">Evidence</a></li></ul></div>
       </aside>
     </div>
     <nav class="pager" aria-label="More studies"><a class="prev" href="strut-buckling.html"><small>← Previous study</small><b>Strut Buckling, With an Imperfect Strut</b></a><a class="next" href="cantilever-bracket.html"><small>Next study →</small><b>Cantilever Bracket: Stress Check, Then Optimised</b></a></nav>
@@ -175,7 +179,7 @@
   </div>
 </footer>
 <script>window.VP = [{"id": "contact_detail", "study": "contact", "tab": "Contact", "legend": "S, Mises", "unit": "MPa", "model": "Roller on plate · steel, R = 50 mm, 501 N/mm · section through the contact", "lines": ["Solver: CalculiX 2.22 · surface-to-surface penalty contact", "Peak contact pressure +6.092e+02 · Hertz exact +6.067e+02", "Highest stress 0.41 mm below the surface, where Hertz puts it"], "img": "v2/vp_contact_detail.webp", "bands": ["#3a2d79", "#455ed3", "#458cfd", "#28bceb", "#18e0bd", "#3ff68a", "#84ff51", "#bcf534", "#e5d938", "#fcb336", "#fb7e21", "#e84b0c", "#c82803", "#980e01"], "vmin": 0.0, "vmax": 350.0, "check": "Render check: encloses 59 544.3 mm³ of 59 561.9 design · 100.0 % of pixels on the legend", "card": "contact"}];</script>
-<script src="assets/viewer.js?v=3a47ebee4c"></script>
-<script src="assets/site.js?v=3a47ebee4c"></script>
+<script src="assets/viewer.js?v=6ba0ba0b9b"></script>
+<script src="assets/site.js?v=6ba0ba0b9b"></script>
 </body>
 </html>

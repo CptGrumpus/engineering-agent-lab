@@ -320,9 +320,43 @@ DRAWINGS = {
     "baseline": ("Schematic of a mass on a spring and a damper with a force applied", "The system: one mass on a spring and a damper, pushed by a sudden force."),
     "motor": ("Cross-section of the motor, with one pole enlarged to show the magnets in their pockets, the slots and the air gap", "The motor's cross-section, drawn from the study's machine definition: eight poles of magnets in the rotor and 48 slots of copper in the stator. The magnets are 18.9 × 6.5 mm, from the parts list, centred in 6.80 mm pockets; the thin gap either side is polymer moulding."),
     "step": ("The channel in side view: the step, the inlet duct, the separation bubble behind the step and the reattachment point, with the stretch where skin friction is scored", "The channel as modelled, heights to scale and the length cut short. The flow separates at the step, turns back under the dashed line and reattaches at the dot. Skin friction is scored from 10 to 30 step heights; the pressure recovery from 4 step heights before the step to 30 after it."),
+    "fatigue": ("Plan view of the strap with its hole and the pull at each end, beside a sketch of the load cycling from zero to 5 kN", "The strap from study 2 and its service load: zero to 5 kN and back, about ten million times. Fatigue is judged at the hole edge."),
+    "strap_proof": ("Plan view of the strap with a small yielded zone at the hole edge, beside a sketch of one 15 kN proof load followed by smaller service cycles", "The same strap, pulled once to 15 kN before it goes into service. The hole edge yields in a small zone; the rest stays elastic."),
+    "bracket_uq": ("Side view of the arm on the shaker table, above four small distributions for damping, test level, fatigue strength and thickness", "The shaker test from study 21, with the four inputs that are only known within a range, and the spread assumed for each."),
+    "crack": ("The steel plate in side view, pulled at both ends, with a 2 mm crack at one edge and the 37 mm critical crack dashed, above a sketch of the stress cycle", "The plate, pulled at both ends with a stress that cycles from 15 to 150 MPa. A crack starts at the 2 mm that inspection can find and grows a little every cycle, until it reaches the critical 37 mm."),
     "fan_rotor": ("Side view of the fan rotor: a shaft between two bearings on springs and dampers, a steel disc at mid-span with the unbalance marked, and below it the shaft's bent shape on soft and stiff pedestals", "The model: a centre-hung fan, its impeller between two bearings. The impeller is a steel disc at mid-span and each bearing with its pedestal is a spring and a damper. Below: the first mode on soft and stiff pedestals. On soft ones the ends move too."),
     "random_vib": ("Side view of the arm clamped to a shaker table, with the three shaking directions and the flat input spectrum", "The test: the arm clamped to a shaker table and shaken on one axis at a time. The stress is read on the surface near the clamp and extrapolated to it; the tip clearance is drawn six times larger so it can be seen."),
 }
+# the one-line question each study page opens with, before the setup drawing and the answer
+QUESTION = {
+    "bracket_opt": "How light can a machined aluminium clevis bracket be and still carry its 4.8 kN pin load within 100 MPa and 0.10 mm of movement?",
+    "pv_nozzle": "Can a 200 mm nozzle go into a 1 m pressure vessel at 3.5 MPa without a reinforcing pad, and how thin can the head be?",
+    "bolted_joint": "Does an M8 bolt clamping two steel plates carry a 2 kN side load by friction alone, and stay closed under a 10 kN pull?",
+    "strap": "How big a cable hole can an aluminium strap take, how long will it last in service, and what does a 15 kN proof test do to it?",
+    "strut": "How long can a pinned aluminium strut be and still take twice its 8 kN load before it yields, allowing for a slight bow?",
+    "contact": "Does a 100 mm steel roller carrying 500 N per millimetre stay within its limits on contact pressure and on shear below the surface?",
+    "cantilever_bracket": "Does a 200 mm steel bracket carry 1 kN at its tip within its limits, and how light can it be made once fatigue matters?",
+    "bracket_arm": "How thin can a steel bracket arm near an engine be, does it survive a random vibration test, and how sure is that pass?",
+    "fan_rotor": "Is a 50 mm shaft stiff enough to keep a fan's critical speed out of its 1,000 to 3,000 rpm range, and if not, what is?",
+    "crack": "A 2 mm crack at the edge of a steel plate in cyclic tension: how long until it fails, and how often must the plate be inspected?",
+    "cold_plate": "Does a water-cooled aluminium plate keep the electronics on it under 45 °C, with the coolant and the thermal stress inside their limits?",
+    "turbulent_flow": "Can this CFD setup be trusted for pressure drop and flow layout? Checked against measurements, in a pipe and behind a step.",
+    "cfd": "Does a 1 mm coolant passage stay within its 30 Pa pressure budget and keep enough shear on its walls to limit fouling?",
+    "thermal": "Does the tip of an aluminium heat-sink fin stay above 60 °C, and how sure can I be?",
+    "motor": "Can open-source tools model a production traction motor well enough for design work, judged against its test data?",
+    "suspension": "Which damper rates give a compact car's front corner good ride, enough travel and steady tire load over a bump and a rough road?",
+    "cad": "Which clearance hole size keeps a six-hole aluminium plate under 150 g and leaves enough material at the edges?",
+    "baseline": "How much damping does a mass on a spring need to meet its targets, and does the workflow get a known answer right?",
+}
+# the drawing that opens a page made of several studies: the one that best shows the part
+SETUP = {"cantilever_bracket": "fea", "strap": "strap", "cold_plate": "cold_plate", "bracket_arm": "modal", "turbulent_flow": "pipe"}
+
+
+def setup_key(gk: str):
+    k = SETUP.get(gk, gk)
+    return k if k in DRAWINGS and (HERE / "v2" / f"dwg_{k}.webp").exists() else None
+
+
 HIGHLIGHTS = [("bracket_opt", "Optimised bracket"), ("pv_nozzle", "Pressure vessel"), ("bolted_joint", "Bolted joint slip"),
               ("strut", "Strut buckling"), ("cold_plate", "Cold plate")]
 
@@ -426,12 +460,35 @@ def case_record(key: str) -> str:
             'shorthand of the case file.</p>' + "".join(blocks) + "</div></details>")
 
 
-def study_body(key: str, level: int, prefix: str = "") -> tuple[str, list]:
+def _block_start(body: str, i: int) -> int:
+    """Where the section whose heading starts at i begins: before a wrapper such as <div class="caught"> that opens it."""
+    head = body[:i].rstrip()
+    if head.endswith(">") and re.search(r"<div[^>]*>$", head):
+        return re.search(r"<div[^>]*>$", head).start()
+    return i
+
+
+def model_first(body: str) -> str:
+    """Setup before significance: move "Why it matters" to just after "The model", so the model follows the answer."""
+    hs = [(_block_start(body, m.start()), re.sub(r"<[^>]+>", "", m.group(1)).strip().lower())
+          for m in re.finditer(r"<h3>(.*?)</h3>", body, re.S)]
+    names = [n for _, n in hs]
+    if "why it matters" not in names or "the model" not in names:
+        return body
+    i, j = names.index("why it matters"), names.index("the model")
+    if j < i:
+        return body
+    w0, w1 = hs[i][0], hs[i + 1][0]
+    m1 = hs[j + 1][0] if j + 1 < len(hs) else len(body)
+    return body[:w0] + body[w1:m1] + body[w0:w1] + body[m1:]
+
+
+def study_body(key: str, level: int, prefix: str = "", skip_dwg: bool = False) -> tuple[str, list]:
     """A study's body with its headings at `level` (2 on its own page, 3 as a part of a report), each given an
     id for the page's contents list; the case record goes where the body asks for it ({{CASE}}) or at the end."""
-    body = fragment(key)["body"]
+    body = model_first(fragment(key)["body"])
     rec = case_record(key)
-    if key in DRAWINGS and (HERE / "v2" / f"dwg_{key}.webp").exists():
+    if not skip_dwg and key in DRAWINGS and (HERE / "v2" / f"dwg_{key}.webp").exists():
         alt, cap = DRAWINGS[key]
         rec = (f'<figure class="drawing"><div class="plate"><img src="v2/dwg_{key}.webp" alt="{esc(alt)}" loading="lazy"></div>'
                f'<figcaption>{cap}</figcaption></figure>\n    ' + rec)
@@ -499,13 +556,14 @@ def study_page(gk: str) -> dict:
     key, no, group, d, title, answer, verdict, tools, thumb = GAL[gk]
     parts = GROUPS[gk]["parts"] if gk in GROUPS else [gk]
     entries = [v for v in VP if v["card"] == gk]
+    top = setup_key(gk)
     toc_html = []
     if gk in GROUPS:
         label = GROUPS[gk]["label"]
         chunks = []
         for p in parts:
             fr = fragment(p)
-            body, toc = study_body(p, 3, prefix=f"{p}-")
+            body, toc = study_body(p, 3, prefix=f"{p}-", skip_dwg=(p == top))
             chunks.append(f'      <section class="part" id="{p}" data-part="{p}">\n        <div class="part-head"><span class="label">{fr["label"]}</span>'
                           f'<h2>{fr["title"]}</h2></div>{body}\n      </section>')
             toc_html.append(f'<li class="t-part"><a href="#{p}">{esc(PART_LABEL[p])}</a></li>')
@@ -514,7 +572,7 @@ def study_page(gk: str) -> dict:
     else:
         fr = fragment(gk)
         label = fr["label"]
-        main, toc = study_body(gk, 2)
+        main, toc = study_body(gk, 2, skip_dwg=(gk == top))
         toc_html = [f'<li><a href="#{hid}">{esc(t)}</a></li>' for hid, t in toc]
     i = corder.index(gk)
     prev_, next_ = (GALLERY[i - 1] if i > 0 else None), (GALLERY[i + 1] if i + 1 < len(GALLERY) else None)
@@ -530,14 +588,25 @@ def study_page(gk: str) -> dict:
             f'<div><dt>Verdict</dt><dd><span class="v v-{verdict}">{VERDICT[verdict]}</span></dd></div></dl></div>'
             + side_reqs(parts)
             + f'<div class="side-card side-toc"><h2>On this page</h2><ul class="toc">{"".join(toc_html)}</ul></div>')
+    setup_html = ""
+    if top:
+        alt, cap = DRAWINGS[top]
+        setup_html = (f'    <figure class="study-setup"><a class="plate" href="v2/dwg_{top}.webp" title="Open the drawing full size">'
+                      f'<img src="v2/dwg_{top}.webp" alt="{esc(alt)}"></a>'
+                      f'<figcaption><b>The setup.</b> {cap}</figcaption></figure>')
     body = f'''  <div class="wrap">
     <nav class="crumbs" aria-label="Breadcrumb"><a href="index.html#work">All studies</a><span>/</span><span>{DISC[group]}</span></nav>
     <header class="study-hero">
       <p class="eyebrow">{label}</p>
       <h1>{esc(title)}</h1>
+      <p class="study-q"><span class="k">The question</span>{esc(QUESTION[gk])}</p>
+    </header>
+{setup_html}
+    <div class="study-answer">
+      <p class="k">The answer</p>
       <span class="v v-{verdict}">{VERDICT[verdict]}</span>
       <p class="study-lede">{esc(answer)}</p>
-    </header>
+    </div>
 {viewer_html(entries)}
     <div class="study-layout">
       <article class="study-main">
@@ -555,6 +624,9 @@ def study_page(gk: str) -> dict:
     return {"file": FILE[gk], "title": f"{title} · {AUTHOR}", "og_title": title, "desc": answer, "nav": "index",
             "main": body, "scripts": viewer_scripts(entries), "og": og, "og_alt": f"{title}: result render",
             "viewer": True, "has3d": any(v.get("mesh") for v in entries)}
+
+
+assert set(QUESTION) == set(GAL), "every study page needs its one-line question"
 
 
 def home_page(facts) -> dict:

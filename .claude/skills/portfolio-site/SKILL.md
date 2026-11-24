@@ -47,12 +47,33 @@ Plain, first person, the way an engineer would say it to a colleague. No stock p
 a crutch, no claims a number doesn't back. After a wording change, reread the changed pages and check every
 statement against the runs (a "the problems are made up" line went out after two studies used published data).
 
+## How a study page is ordered
+
+The user's rule (2026-11-23): a reader must see what the thing is before the result. Recruiters give a page under a
+minute, and a verdict about a part they haven't seen means nothing; the drawings used to sit halfway down, after the
+result chart, so every page read as "just results". Every study page runs, top to bottom:
+
+1. Title and a **one-line question** (`QUESTION` in `build_v2.py`, plain words, the part and the decision in one sentence).
+2. **The setup**: the study's drawing from `scripts/make_drawings.py`, captioned. A page made of several studies opens
+   with the drawing that best shows the part (`SETUP`); the other parts keep theirs in their own sections.
+3. **The answer**: the verdict and the one-paragraph answer.
+4. The result viewer (the chart or 3D render).
+5. The write-up: question, answer, **the model** (moved up by the build to follow the answer), why it matters, how it
+   works, the checks, what I caught, the limits, the case record and the evidence.
+
+Every study needs a drawing, so a new study isn't finished without one. The drawing shows the physical setup: the
+part with its main dimensions, the supports and loads, what's modelled (a half or a quarter), the inputs that are
+uncertain, and the load history when it matters (a cycle, a proof load). Read every value from the case file; a result
+shown on a drawing is labelled as the result. Render it and look at it before publishing: leader lines through holes
+and labels crowding the footer only show up there. The build asserts every page has its `QUESTION`.
+
 ## Adding a finished study to the site
 
 A study the study session has written up (`portfolio/NN-*.md`) gets a section on the site, not just an in-progress
 card. The pieces, all in `site/`:
 
 1. `studies/<key>.html`: the hand-written section (same headings as the others, `{{CASE}}` where the case record goes).
+   A drawing in `scripts/make_drawings.py` with its caption in `DRAWINGS`, and the page's line in `QUESTION`.
 2. `build_v2.py`: a `CARDS` row, one `VP` viewer entry (a chart can be the viewer: `"kind": "figure"`), `CASES`, and
    either a `SLUG` of its own or a place in `GROUPS` with a `PART_LABEL` when it's another study of the same part
    (study 21 joined study 4's bracket arm; the step joined study 19). Keep an existing page's slug so shared links work.

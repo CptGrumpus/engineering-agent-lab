@@ -864,8 +864,145 @@ def fan_rotor():
            "dimensions in mm, to scale; bearings and the bend schematic")
 
 
+def _cycle(ax, x0, x1, y0, y1, n=4, lo=0.0, hi=1.0, color=ACC):
+    """A few load cycles between lo and hi (fractions of the box height), drawn in the box x0..x1, y0..y1."""
+    t = np.linspace(0, n, 400)
+    v = lo + (hi - lo) * 0.5 * (1 - np.cos(2 * np.pi * t))
+    ax.plot(x0 + (x1 - x0) * t / n, y0 + (y1 - y0) * v, color=color, lw=1.4, zorder=4)
+    ax.plot([x0, x1], [y0, y0], color=DIMC, lw=0.6, zorder=3)
+
+
+def _strap_plan(ax, L, w, d, x=0.0, y=0.0):
+    rect(ax, x - L / 2, y - w / 2, x + L / 2, y + w / 2)
+    ax.add_patch(Circle((x, y), d / 2, fc=PLATE, ec=INK, lw=1.2, zorder=3))
+    centre(ax, (x - L / 2 - 8, y), (x + L / 2 + 8, y))
+    centre(ax, (x, y - w / 2 - 6), (x, y + w / 2 + 6))
+
+
+def fatigue():
+    p = case("strap_fatigue_load")
+    L, w, d = p["length_mm"], p["width_mm"], p["hole_diameter_mm"]
+    F = p["axial_load_N"] / 1000
+    fig, ax = new(9, (-125, 265), (-54, 44))
+    _strap_plan(ax, L, w, d)
+    for s_ in (-1, 1):
+        force(ax, (s_ * (L / 2 + 2), 0), (s_ * (L / 2 + 26), 0), "", color=ACC)
+    text(ax, 0, w / 2 + 12, f"the strap from study 2: {L:g} × {w:g} × {p['thickness_mm']:g}, Ø{d:g} hole, 6061-T6",
+         fs=7.5, color=INK, box=False)
+    note(ax, (0, -d / 2), (-40, -38), "fatigue is judged at the hole edge,\nwhere the stress is highest", ha="center", va="top")
+    gx0, gx1, gy0, gy1 = 135, 250, -22, 18
+    _cycle(ax, gx0, gx1, gy0, gy1, n=4)
+    text(ax, gx0 - 4, gy1, f"{F:g} kN", ha="right", fs=7.5, color=ACC)
+    text(ax, gx0 - 4, gy0, "0", ha="right", fs=7.5, color=ACC)
+    text(ax, (gx0 + gx1) / 2, gy1 + 10, f"the service load, 0 to {F:g} kN and back", fs=7.5, color=ACC, bold=True, box=False)
+    text(ax, (gx0 + gx1) / 2, gy0 - 8, "about 10 million times; with a scatter\nfactor of 3 the computed life must reach 3 × 10⁷",
+         fs=7, va="top", box=False)
+    finish(fig, "fatigue", "Study 3 · strap fatigue · the part and its load cycle", "dimensions in mm, the load cycle schematic")
+
+
+def strap_proof():
+    p = case("strap_proof_r1")
+    L, w, d = p["length_mm"], p["width_mm"], p["hole_diameter_mm"]
+    F = p["axial_load_N"] / 1000
+    fig, ax = new(9, (-125, 265), (-56, 44))
+    _strap_plan(ax, L, w, d)
+    th = np.radians(np.linspace(55, 125, 30))         # the yielded zone at the hole edge, from the result: 1.8 mm deep
+    for sg in (1, -1):
+        outer = [(9.8 * np.cos(a), sg * (d / 2 + 1.8) * np.sin(a) / np.sin(np.pi / 2)) for a in th]
+        inner = [(d / 2 * np.cos(a), sg * d / 2 * np.sin(a)) for a in th[::-1]]
+        poly(ax, outer + inner, fc=HOT, ec="none", z=3.2)
+    for s_ in (-1, 1):
+        force(ax, (s_ * (L / 2 + 2), 0), (s_ * (L / 2 + 26), 0), "", color=ACC)
+    text(ax, 0, w / 2 + 12, f"the same strap: {L:g} × {w:g} × {p['thickness_mm']:g}, Ø{d:g} hole", fs=7.5, color=INK, box=False)
+    note(ax, (0, -d / 2 - 1.5), (-40, -38), "the hole edge yields in a small zone (1.8 mm deep,\nfrom the result) while the rest stays elastic",
+         ha="center", va="top", color=HOT)
+    gx0, gx1, gy0, gy1 = 135, 250, -22, 18
+    t = np.linspace(0, 1, 100)
+    ax.plot(gx0 + 35 * t, gy0 + (gy1 - gy0) * np.sin(np.pi * t), color=ACC, lw=1.6, zorder=4)
+    _cycle(ax, gx0 + 45, gx1, gy0, gy0 + (gy1 - gy0) / 3, n=4, color=DIMC)
+    ax.plot([gx0, gx0 + 45], [gy0, gy0], color=DIMC, lw=0.6)
+    text(ax, gx0 + 17, gy1 + 6, f"proof test, {F:g} kN once", fs=7.5, color=ACC, bold=True, box=False)
+    text(ax, gx0 + 82, gy0 + (gy1 - gy0) / 3 + 7, "then service, 0 to 5 kN", fs=7.5, color=DIMC, box=False, ha="left")
+    text(ax, (gx0 + gx1) / 2, gy0 - 8, "the test is three times the service load", fs=7, va="top", box=False)
+    finish(fig, "strap_proof", "Study 14 · strap proof test · one overload before service", "dimensions in mm, the loads schematic")
+
+
+def bracket_uq():
+    p = case("bracket_random_uq")
+    L, t_ = p["length_mm"], p["thickness_mm"]
+    fig, ax = new(9.5, (-60, 290), (-92, 44))
+    rect(ax, -34, -14, 0, 24, hatch="////")
+    rect(ax, -50, -24, 60, -14, fc="#d3dceb")
+    text(ax, 5, -19, "shaker table", fs=7, color=INK, box=False)
+    rect(ax, 0, 0, L, t_)
+    text(ax, L / 2, t_ + 5, f"the arm from studies 4 and 21: steel, {L:g} × {p['width_mm']:g} × {t_:g}", fs=7.5, color=INK,
+         box=False, va="bottom")
+    text(ax, 175, 12, "the same shaker test, but four inputs\nare only known within a range:", ha="left", fs=7.5,
+         color=INK, bold=True, box=False)
+    # four small distributions
+    from math import erf  # noqa: F401
+    panels = [
+        ("damping", "median 2 %, 9 in 10\nbetween 1 and 4 %", "logn", (1.0, 4.0)),
+        ("test level", "anywhere within\n±1.5 dB of the spec", "unif", None),
+        ("fatigue strength", "design curve × a factor\nwith 10 % scatter", "logn10", None),
+        ("thickness", "7.0 mm, standard\ndeviation 0.1 mm", "norm", None),
+    ]
+    x = -40
+    for name, sub, kind, _ in panels:
+        bx0, bx1, by0, by1 = x, x + 58, -72, -40
+        u = np.linspace(0, 1, 200)
+        if kind == "logn":
+            z = np.linspace(np.log(0.6), np.log(6.5), 200)
+            yv = np.exp(-0.5 * ((z - np.log(2.0)) / p["damping_sigma_ln"]) ** 2)
+        elif kind == "unif":
+            yv = np.where((u > 0.2) & (u < 0.8), 0.8, 0.0)
+        elif kind == "logn10":
+            yv = np.exp(-0.5 * ((u - 0.5) / 0.12) ** 2)
+        else:
+            yv = np.exp(-0.5 * ((u - 0.5) / 0.13) ** 2)
+        ax.fill_between(bx0 + (bx1 - bx0) * u, by0, by0 + (by1 - by0) * yv, color="#d3dceb", lw=0, zorder=3)
+        ax.plot(bx0 + (bx1 - bx0) * u, by0 + (by1 - by0) * yv, color=ACC, lw=1.3, zorder=4)
+        ax.plot([bx0, bx1], [by0, by0], color=DIMC, lw=0.6, zorder=4)
+        text(ax, (bx0 + bx1) / 2, by1 + 6, name, fs=7.5, color=ACC, bold=True, box=False)
+        text(ax, (bx0 + bx1) / 2, by0 - 3, sub, fs=6.8, va="top", box=False)
+        x += 82
+    finish(fig, "bracket_uq", "Study 22 · bracket arm on a shaker table · the four uncertain inputs",
+           "dimensions in mm; the distributions schematic, their values from the case file")
+
+
+def crack():
+    p = case("edge_crack_mesh_r2")
+    W, H, t_ = p["width_mm"], 2 * p["half_height_mm"], p["thickness_mm"]
+    a0, a_crit = p["initial_crack_mm"], 37.0           # critical crack: the result, run 20261123-164649_edge_crack_mesh_r2
+    smax = p["sigma_max_MPa"]
+    smin = smax * p["stress_ratio"]
+    fig, ax = new(9.5, (-300, 300), (-120, 150))
+    rect(ax, -H / 2, 0, H / 2, W)
+    rect(ax, 0, 0, H / 2, W, fc="#d3dceb", ec="none", z=2.2)
+    text(ax, 100, W - 12, "half modelled (symmetric about the crack)", fs=7, color=INK, box=False)
+    ax.plot([0, 0], [0, a_crit], color=HOT, lw=1.2, ls=(0, (4, 2)), zorder=5)
+    ax.plot([0, 0], [0, a0], color=HOT, lw=3.0, zorder=6, solid_capstyle="butt")
+    note(ax, (0, a0), (-70, 22), f"edge crack, {a0:g} mm: the smallest\ninspection can find (drawn to scale)", ha="right", color=HOT)
+    note(ax, (0, a_crit), (-70, 62), f"critical crack, {a_crit:g} mm (the result):\nwhere the toughness is reached", ha="right", color=HOT)
+    for s_ in (-1, 1):
+        for yy in (15, 50, 85):
+            force(ax, (s_ * (H / 2 + 2), yy), (s_ * (H / 2 + 34), yy), "", color=ACC, lw=1.2)
+    text(ax, H / 2 + 20, W + 16, f"{smin:g} to {smax:g} MPa,\ncycled", fs=7.5, color=ACC, bold=True)
+    text(ax, -H / 2 - 20, W + 16, f"{smin:g} to {smax:g} MPa,\ncycled", fs=7.5, color=ACC, bold=True)
+    dim(ax, (-H / 2, W), (H / 2, W), 14, f"{H:g}, long enough that the ends don't matter")
+    dim(ax, (H / 2 + 40, 0), (H / 2 + 40, W), -12, f"{W:g}")
+    text(ax, -H / 2, -14, f"S355 steel, {t_:g} mm thick; toughness {p['k_mat_MPa_sqrt_m']:g} MPa√m", ha="left", fs=7.5, box=False)
+    gx0, gx1, gy0, gy1 = -60, 80, -105, -40
+    _cycle(ax, gx0, gx1, gy0, gy1, n=4, lo=smin / smax, hi=1.0)
+    text(ax, gx0 - 5, gy1, f"{smax:g}", ha="right", fs=7, color=ACC)
+    text(ax, gx0 - 5, gy0 + (gy1 - gy0) * smin / smax, f"{smin:g}", ha="right", fs=7, color=ACC)
+    text(ax, gx1 + 6, (gy0 + gy1) / 2, "MPa, each cycle;\nthe crack grows a\nlittle every time", ha="left", fs=7, box=False)
+    finish(fig, "crack", "Study 24 · edge-cracked steel plate in cyclic tension", "dimensions in mm, to scale; the load cycle schematic")
+
+
 ALL = {f.__name__: f for f in (fea, cantilever_opt, strap, modal, strut, contact, bolted_joint, pv_nozzle, bracket_opt, cad,
-                               cfd, thermal, heat, cold_plate, pipe, suspension, baseline, motor, step, random_vib, fan_rotor)}
+                               cfd, thermal, heat, cold_plate, pipe, suspension, baseline, motor, step, random_vib, fan_rotor,
+                               fatigue, strap_proof, bracket_uq, crack)}
 
 if __name__ == "__main__":
     for name in sys.argv[1:] or ALL:
