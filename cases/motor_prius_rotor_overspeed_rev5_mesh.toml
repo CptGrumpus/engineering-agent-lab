@@ -19,6 +19,17 @@
 #   P3 At 6000 rpm about 284-292 MPa: elastic in service, as before.
 #   P4 Corner peak grows with refinement as before (about 725-1200 MPa).
 #   P5 Membrane maximum about 117-120 MPa (blind 121.1). A few minutes.
+#
+# Results (run 20261124-063835_motor_prius_rotor_overspeed_rev5_mesh, 06:38-06:39): verification PASS, every point
+# check on every mesh, GCI 1.48 % (limit 3 %); REQ-M4 VERIFIED FAIL: 415.0 MPa against 335 (24 % over yield) on the
+# finest bridge mesh. Magnet force -4.70 % against the blind run (3057 against 3208 N, the BOM mass).
+#   P1 HELD.  P2 HELD: 420.7 / 410.9 / 415.0 MPa at 0.2 / 0.1 / 0.05 mm (the coarsest 0.7 MPa above the 408-417
+#   written), -2.2 % on the blind 424.4 as computed from the magnet's 46 % share of the bridge load.  P3 HELD: 285.3-
+#   292.1 MPa at 6000 rpm, elastic in service.  P4 HELD: corner peak 725 / 909 / 1193 MPa, growing.  P5 HELD: 118.8-
+#   118.9 MPa; about 1 min.
+# Engineering reading: unchanged on client data. The bridges yield at the IEC 1.2 x overspeed with the stand-in
+# grade's 335 MPa (a 412 MPa high-strength grade would just pass at 415); the real grade and corner radii are the
+# open inputs (client questions: lamination grade, Q4).
 
 [case]
 name = "motor_prius_rotor_overspeed_rev5_mesh"

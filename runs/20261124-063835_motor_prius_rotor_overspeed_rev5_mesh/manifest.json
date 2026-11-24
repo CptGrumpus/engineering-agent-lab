@@ -1,0 +1,606 @@
+{
+  "run_id": "20261124-063835_motor_prius_rotor_overspeed_rev5_mesh",
+  "case_name": "motor_prius_rotor_overspeed_rev5_mesh",
+  "model": "pyleecan_gmsh_ccx_rotor",
+  "case_source": "cases/motor_prius_rotor_overspeed_rev5_mesh.toml",
+  "case_sha256": "4ac860c569002e787e7b5666d0773b089f1734517a8fe210565c21ddae1edd3f",
+  "model_sources_sha256": {
+    "models/motor/export_rotor_pole.py": "5718fdfb5aa5d304f50d7757be4d94ef48d425f6c0c171d7c63b73f944c9d434",
+    "models/fea/rotor_ccx.py": "8a7c38c5d139e4bea7cd60954dca101e5c441ecdaeb559a3617440959496f695",
+    "models/motor/Toyota_Prius_ORNL.json": "08a29449d44338aadb57112a8f30dfbd61eb95182aa6128de8adc096b63b3f65",
+    "models/motor/Toyota_Prius_ORNL_M250-35A.json": "10f78e40d3f2935189354945e23e11f68947856bc71662451f852476bdb513d7",
+    "models/motor/Toyota_Prius_ORNL_190Y390.json": "f4010d964fb437a17d9113cfc1a3e6b20b4aa6267453435897aeaccb7574487c",
+    "models/motor/Toyota_Prius_ORNL_M330-35A-Js205.json": "34be9cb1b344605cb061c3d95f86bd6f89514846e4ee2d8617ae76a194d98671",
+    "models/motor/Toyota_Prius_ORNL_Br1p0000.json": "8b964de8e9df0a1bd106bad562f9cecf7d402acc413d890422ba57ff02c1d542",
+    "models/motor/Toyota_Prius_ORNL_Br1p0300.json": "6a324a6ec3623799e2533b394e65886190baf14eabeae5529660ebbdbe9006c7",
+    "models/motor/Toyota_Prius_ORNL_Br1p0600.json": "ef6e218b7e67db6c05c5de631699b5739dbb04b55f7d27c0c1219554586e54cd",
+    "models/motor/Toyota_Prius_ORNL_Br1p0360.json": "f8787ab7e60a0fd39b79eaec31c91adc5b0f2500fde5d72016e69870ee792957",
+    "models/motor/Toyota_Prius_ORNL_mag531outer.json": "9468a92a1ac6ebd3846ed4107e22c6810d2c54555bae53d30bb24b18056c4e98",
+    "models/motor/Toyota_Prius_ORNL_mag531centre.json": "c84b300e5ea544656e37a2aaa176f7617ab72d2b0a99a61b9a7d3ff59274051c",
+    "models/motor/Toyota_Prius_ORNL_mag531inner.json": "0d7c3c90feee6a5b1e67b69635e8ad3824f086b84f4b3ebcd008111d34143f4f",
+    "models/motor/Toyota_Prius_ORNL_Br1p1200_mag531outer.json": "446c6f896b91185c856f758ef61148a0c193ac94526ab17667295697ab55cad3",
+    "models/motor/Toyota_Prius_ORNL_Br1p1200_mag531centre.json": "8801fe77669e2819a588c890fd93863250f97fde42e8adf33c4fad863459b5dc",
+    "models/motor/Toyota_Prius_ORNL_Br1p1200_mag531inner.json": "7e150e9cc0743ee7b42c67f05cf4cfd0df68a53ba3b7371b7ed7cdbc6d86a621",
+    "models/motor/Toyota_Prius_ORNL_rev5centre.json": "26e3b80540d1b4a96b8bd0ab05499c700142fea007c7d0501d4fb849389c954a",
+    "models/motor/Toyota_Prius_ORNL_rev5centre_gap0p730.json": "28a8b8e181b2ad5b855cd712edaf81a9f7407dbc9040373b6cdff221bc2094ab",
+    "models/motor/Toyota_Prius_ORNL_M250-35A_rev5centre.json": "1126fb11911ec62538e0b8eaae2ded1ae9984ed402cdcbbe4fbe3f91d31e69f7",
+    "models/motor/Toyota_Prius_ORNL_M330-35A-Js205_rev5centre.json": "eb60abf49c209ef7139b17f67ec2b5a5ce3569557d2de9aa695cb7b95fc2a10f",
+    "models/motor/Toyota_Prius_ORNL_190Y390_rev5centre.json": "a054bb7ac340705c2acd921fae9e26fc6691b753f358579152752b301d0b54ea"
+  },
+  "rerun_of": null,
+  "started_utc": "2026-11-24T11:38:35+00:00",
+  "environment": {
+    "python": "3.14.10",
+    "python_executable": "<repo>\\.venv\\Scripts\\python.exe",
+    "platform": "Windows-11-10.0.26100-SP0",
+    "machine": "AMD64",
+    "packages": {
+      "numpy": "2.5.5",
+      "scipy": "1.18.1",
+      "matplotlib": "3.11.2",
+      "cadquery": "2.8.0"
+    },
+    "git": {
+      "commit": "823d08a610b766e76c0f2039dbcba8332610b35e",
+      "dirty": false
+    },
+    "tools": {
+      "gmsh": "4.15.0",
+      "CalculiX": "This is Version 2.22"
+    }
+  },
+  "numerics": {
+    "solver_timeout_s": 3600
+  },
+  "points": [
+    {
+      "label": "p00_bridge_element_size_mm-0.2",
+      "parameters": {
+        "machine": "Toyota_Prius_ORNL_rev5centre.json",
+        "magnet_mass_g": 77.0,
+        "speed_rpm": 7200.0,
+        "max_speed_rpm": 6000.0,
+        "yield_strength_MPa": 335.0,
+        "bridge_element_size_mm": 0.2,
+        "far_element_size_mm": 2.0,
+        "refine_distance_mm": 1.0,
+        "scl_count": 41,
+        "scl_points": 61
+      },
+      "status": "completed",
+      "derived": {
+        "speed_ratio_to_max": 1.2
+      },
+      "solver": {
+        "success": true,
+        "message": "half pole 6167 nodes, ring 6120 nodes",
+        "nfev": null
+      },
+      "solver_outputs": {
+        "pole": {
+          "nodes": 6167,
+          "elements": 2960,
+          "xsym_nodes": 42,
+          "sym2_nodes": 27,
+          "seat_nodes": 191,
+          "analysis_thickness_mm": 0.01,
+          "force_scale": 0.00011930326890956811,
+          "omega_rad_s": 753.9822368615503,
+          "sector_area_mm2": 506.6119288435848,
+          "body_force_N": [
+            12171.648611108018,
+            2571.8136806574853
+          ],
+          "magnet_force_N": [
+            3025.6075234130194,
+            439.23861559190334
+          ],
+          "half_angle_rad": 0.39269908169872414,
+          "inter_pole_normal": [
+            -0.3826834323650898,
+            0.9238795325112867
+          ]
+        },
+        "ring": {
+          "nodes": 6120,
+          "omega_rad_s": 753.9822368615503
+        },
+        "reaction_totals_pole": {
+          "XSYM": [
+            0.01099423,
+            -4.736307,
+            -2.719987e-12
+          ],
+          "SYM2": [
+            -1.795102,
+            4.384619,
+            4.935019e-14
+          ]
+        },
+        "reaction_totals_ring": {
+          "XSYM": [
+            0.01620636,
+            -5.020241,
+            -6.748304e-13
+          ],
+          "SYM2": [
+            -1.906666,
+            4.644102,
+            -2.158106e-13
+          ]
+        },
+        "ring_max_rel_error": 0.00038185028639405966,
+        "ring_hoop_bore_MPa": 25.399541288672484,
+        "peak_nodal_vm_MPa": 725.1094866949404,
+        "peak_xy_mm": [
+          75.163571202338,
+          23.453756904836
+        ],
+        "geometry": {
+          "rotor_bore_radius_mm": 55.3212,
+          "rotor_outer_radius_mm": 80.18780000000001,
+          "stack_mm": 83.82000000000001,
+          "poles": 8,
+          "bridge_arc_radius_mm": 78.7378,
+          "seat_half": [
+            69.5378,
+            0.0,
+            75.1897255502725,
+            18.035125105587074
+          ],
+          "magnet_half": {
+            "area_mm2": 122.8499999999999,
+            "centroid_mm": [
+              69.11934873497768,
+              10.034311064482766
+            ]
+          },
+          "lamination": {
+            "name": "M330-35A",
+            "density_kg_m3": 7650.0,
+            "youngs_modulus_MPa": 200000.0,
+            "poisson_ratio": 0.3
+          },
+          "magnet": {
+            "name": "MagnetPrius",
+            "density_kg_m3": 7500.0,
+            "youngs_modulus_MPa": 15500.0,
+            "poisson_ratio": 0.3
+          },
+          "pocket_half": [
+            [
+              "line",
+              63.45966084885872,
+              0.0,
+              64.00321134325901,
+              1.7344533434698617
+            ],
+            [
+              "line",
+              64.00321134325901,
+              1.7344533434698617,
+              63.04897191968296,
+              2.033497023378456
+            ],
+            [
+              "line",
+              63.04897191968296,
+              2.033497023378456,
+              68.70089746995545,
+              20.06862212896553
+            ],
+            [
+              "line",
+              68.70089746995545,
+              20.06862212896553,
+              69.65513689353149,
+              19.769578449056933
+            ],
+            [
+              "line",
+              69.65513689353149,
+              19.769578449056933,
+              70.19741654631133,
+              21.499976574988896
+            ],
+            [
+              "line",
+              70.19741654631133,
+              21.499976574988896,
+              75.13498187680783,
+              23.545183099983745
+            ],
+            [
+              "arc",
+              75.13498187680783,
+              23.545183099983745,
+              75.99445729683185,
+              20.603,
+              78.7378
+            ],
+            [
+              "line",
+              75.99445729683185,
+              20.603,
+              69.5378,
+              0.0
+            ]
+          ]
+        }
+      },
+      "metrics": {
+        "bridge_linearized_vm_MPa": 420.694539492706,
+        "bridge_membrane_vm_MPa": 118.8036142565139,
+        "bridge_linearized_vm_at_max_speed_MPa": 292.14898575882364,
+        "peak_corner_vm_MPa": 725.1094866949404
+      }
+    },
+    {
+      "label": "p01_bridge_element_size_mm-0.1",
+      "parameters": {
+        "machine": "Toyota_Prius_ORNL_rev5centre.json",
+        "magnet_mass_g": 77.0,
+        "speed_rpm": 7200.0,
+        "max_speed_rpm": 6000.0,
+        "yield_strength_MPa": 335.0,
+        "bridge_element_size_mm": 0.1,
+        "far_element_size_mm": 2.0,
+        "refine_distance_mm": 1.0,
+        "scl_count": 41,
+        "scl_points": 61
+      },
+      "status": "completed",
+      "derived": {
+        "speed_ratio_to_max": 1.2
+      },
+      "solver": {
+        "success": true,
+        "message": "half pole 19211 nodes, ring 18891 nodes",
+        "nfev": null
+      },
+      "solver_outputs": {
+        "pole": {
+          "nodes": 19211,
+          "elements": 9400,
+          "xsym_nodes": 56,
+          "sym2_nodes": 27,
+          "seat_nodes": 379,
+          "analysis_thickness_mm": 0.01,
+          "force_scale": 0.00011930326890956811,
+          "omega_rad_s": 753.9822368615503,
+          "sector_area_mm2": 506.6112868748567,
+          "body_force_N": [
+            12171.629912468481,
+            2571.812257095858
+          ],
+          "magnet_force_N": [
+            3025.6075234130208,
+            439.23861559190345
+          ],
+          "half_angle_rad": 0.39269908169872414,
+          "inter_pole_normal": [
+            -0.3826834323650898,
+            0.9238795325112867
+          ]
+        },
+        "ring": {
+          "nodes": 18891,
+          "omega_rad_s": 753.9822368615503
+        },
+        "reaction_totals_pole": {
+          "XSYM": [
+            0.01118985,
+            -4.736352,
+            -2.331744e-13
+          ],
+          "SYM2": [
+            -1.794031,
+            4.385069,
+            3.659399e-13
+          ]
+        },
+        "reaction_totals_ring": {
+          "XSYM": [
+            0.01628552,
+            -5.020241,
+            -2.126302e-13
+          ],
+          "SYM2": [
+            -1.90636,
+            4.644225,
+            -1.62756e-13
+          ]
+        },
+        "ring_max_rel_error": 0.0003588272414557017,
+        "ring_hoop_bore_MPa": 25.399541288672484,
+        "peak_nodal_vm_MPa": 908.4549110275094,
+        "peak_xy_mm": [
+          75.149751547149,
+          23.497999728525
+        ],
+        "geometry": {
+          "rotor_bore_radius_mm": 55.3212,
+          "rotor_outer_radius_mm": 80.18780000000001,
+          "stack_mm": 83.82000000000001,
+          "poles": 8,
+          "bridge_arc_radius_mm": 78.7378,
+          "seat_half": [
+            69.5378,
+            0.0,
+            75.1897255502725,
+            18.035125105587074
+          ],
+          "magnet_half": {
+            "area_mm2": 122.8499999999999,
+            "centroid_mm": [
+              69.11934873497768,
+              10.034311064482766
+            ]
+          },
+          "lamination": {
+            "name": "M330-35A",
+            "density_kg_m3": 7650.0,
+            "youngs_modulus_MPa": 200000.0,
+            "poisson_ratio": 0.3
+          },
+          "magnet": {
+            "name": "MagnetPrius",
+            "density_kg_m3": 7500.0,
+            "youngs_modulus_MPa": 15500.0,
+            "poisson_ratio": 0.3
+          },
+          "pocket_half": [
+            [
+              "line",
+              63.45966084885872,
+              0.0,
+              64.00321134325901,
+              1.7344533434698617
+            ],
+            [
+              "line",
+              64.00321134325901,
+              1.7344533434698617,
+              63.04897191968296,
+              2.033497023378456
+            ],
+            [
+              "line",
+              63.04897191968296,
+              2.033497023378456,
+              68.70089746995545,
+              20.06862212896553
+            ],
+            [
+              "line",
+              68.70089746995545,
+              20.06862212896553,
+              69.65513689353149,
+              19.769578449056933
+            ],
+            [
+              "line",
+              69.65513689353149,
+              19.769578449056933,
+              70.19741654631133,
+              21.499976574988896
+            ],
+            [
+              "line",
+              70.19741654631133,
+              21.499976574988896,
+              75.13498187680783,
+              23.545183099983745
+            ],
+            [
+              "arc",
+              75.13498187680783,
+              23.545183099983745,
+              75.99445729683185,
+              20.603,
+              78.7378
+            ],
+            [
+              "line",
+              75.99445729683185,
+              20.603,
+              69.5378,
+              0.0
+            ]
+          ]
+        }
+      },
+      "metrics": {
+        "bridge_linearized_vm_MPa": 410.89573357722503,
+        "bridge_membrane_vm_MPa": 118.87924040447926,
+        "bridge_linearized_vm_at_max_speed_MPa": 285.3442594286285,
+        "peak_corner_vm_MPa": 908.4549110275094
+      }
+    },
+    {
+      "label": "p02_bridge_element_size_mm-0.05",
+      "parameters": {
+        "machine": "Toyota_Prius_ORNL_rev5centre.json",
+        "magnet_mass_g": 77.0,
+        "speed_rpm": 7200.0,
+        "max_speed_rpm": 6000.0,
+        "yield_strength_MPa": 335.0,
+        "bridge_element_size_mm": 0.05,
+        "far_element_size_mm": 2.0,
+        "refine_distance_mm": 1.0,
+        "scl_count": 41,
+        "scl_points": 61
+      },
+      "status": "completed",
+      "derived": {
+        "speed_ratio_to_max": 1.2
+      },
+      "solver": {
+        "success": true,
+        "message": "half pole 67521 nodes, ring 65820 nodes",
+        "nfev": null
+      },
+      "solver_outputs": {
+        "pole": {
+          "nodes": 67521,
+          "elements": 33392,
+          "xsym_nodes": 80,
+          "sym2_nodes": 27,
+          "seat_nodes": 757,
+          "analysis_thickness_mm": 0.01,
+          "force_scale": 0.00011930326890956811,
+          "omega_rad_s": 753.9822368615503,
+          "sector_area_mm2": 506.61188203224293,
+          "body_force_N": [
+            12171.646832624016,
+            2571.8157404977983
+          ],
+          "magnet_force_N": [
+            3025.60752341302,
+            439.23861559190266
+          ],
+          "half_angle_rad": 0.39269908169872414,
+          "inter_pole_normal": [
+            -0.3826834323650898,
+            0.9238795325112867
+          ]
+        },
+        "ring": {
+          "nodes": 65820,
+          "omega_rad_s": 753.9822368615503
+        },
+        "reaction_totals_pole": {
+          "XSYM": [
+            0.01076982,
+            -4.736376,
+            -5.757271e-13
+          ],
+          "SYM2": [
+            -1.795381,
+            4.384504,
+            -7.354905e-14
+          ]
+        },
+        "reaction_totals_ring": {
+          "XSYM": [
+            0.01570276,
+            -5.020236,
+            4.975542e-14
+          ],
+          "SYM2": [
+            -1.905695,
+            4.644505,
+            -4.684828e-14
+          ]
+        },
+        "ring_max_rel_error": 0.0004796507412869612,
+        "ring_hoop_bore_MPa": 25.399541288672484,
+        "peak_nodal_vm_MPa": 1193.0340105189791,
+        "peak_xy_mm": [
+          75.142370415179,
+          23.521592574228
+        ],
+        "geometry": {
+          "rotor_bore_radius_mm": 55.3212,
+          "rotor_outer_radius_mm": 80.18780000000001,
+          "stack_mm": 83.82000000000001,
+          "poles": 8,
+          "bridge_arc_radius_mm": 78.7378,
+          "seat_half": [
+            69.5378,
+            0.0,
+            75.1897255502725,
+            18.035125105587074
+          ],
+          "magnet_half": {
+            "area_mm2": 122.8499999999999,
+            "centroid_mm": [
+              69.11934873497768,
+              10.034311064482766
+            ]
+          },
+          "lamination": {
+            "name": "M330-35A",
+            "density_kg_m3": 7650.0,
+            "youngs_modulus_MPa": 200000.0,
+            "poisson_ratio": 0.3
+          },
+          "magnet": {
+            "name": "MagnetPrius",
+            "density_kg_m3": 7500.0,
+            "youngs_modulus_MPa": 15500.0,
+            "poisson_ratio": 0.3
+          },
+          "pocket_half": [
+            [
+              "line",
+              63.45966084885872,
+              0.0,
+              64.00321134325901,
+              1.7344533434698617
+            ],
+            [
+              "line",
+              64.00321134325901,
+              1.7344533434698617,
+              63.04897191968296,
+              2.033497023378456
+            ],
+            [
+              "line",
+              63.04897191968296,
+              2.033497023378456,
+              68.70089746995545,
+              20.06862212896553
+            ],
+            [
+              "line",
+              68.70089746995545,
+              20.06862212896553,
+              69.65513689353149,
+              19.769578449056933
+            ],
+            [
+              "line",
+              69.65513689353149,
+              19.769578449056933,
+              70.19741654631133,
+              21.499976574988896
+            ],
+            [
+              "line",
+              70.19741654631133,
+              21.499976574988896,
+              75.13498187680783,
+              23.545183099983745
+            ],
+            [
+              "arc",
+              75.13498187680783,
+              23.545183099983745,
+              75.99445729683185,
+              20.603,
+              78.7378
+            ],
+            [
+              "line",
+              75.99445729683185,
+              20.603,
+              69.5378,
+              0.0
+            ]
+          ]
+        }
+      },
+      "metrics": {
+        "bridge_linearized_vm_MPa": 414.98691105417765,
+        "bridge_membrane_vm_MPa": 118.84763967565478,
+        "bridge_linearized_vm_at_max_speed_MPa": 288.18535489873454,
+        "peak_corner_vm_MPa": 1193.0340105189791
+      }
+    }
+  ],
+  "study": "rotor_stress",
+  "status": "completed",
+  "finished_utc": "2026-11-24T11:39:36+00:00"
+}
