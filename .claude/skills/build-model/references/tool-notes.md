@@ -249,6 +249,16 @@ Traps found while building the studies in this repo, by tool.
   linearized stress along radial lines (`models/fea/rotor_ccx.py` `linearize`, Simpson's rule so a linear stress is
   integrated exactly).
 
+## CalculiX beams in a frame (B32, the steel frame study)
+
+- `*EL FILE, SECTION FORCES` needs `OUTPUT=2D` on the FILE cards; component 3 is the axial force, component 5 the
+  bending moment (nodal values extrapolated: 1.4 % of the root moment showed at a free tip on 10 elements); the shear
+  slot did not match statics.
+- **Not for frame verdicts.** At a corner where members meet at an angle CalculiX makes a rigid knot the size of the
+  expanded section: a portal frame came out 7-9 % stiff in sway with moments 3-5 % off against exact beam theory,
+  unchanged by refinement, and its linear step's vertical reactions summed to 187.6 of 210 kN (NLGEOM balanced). Use
+  an exact plane-frame solver (`validation/frame2d.py`) for member forces; CalculiX beams for single members.
+
 ## CalculiX contact (surface-to-surface, penalty)
 
 - Two bodies that touch at a point: in a Gmsh .geo on the built-in kernel set
