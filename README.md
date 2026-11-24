@@ -48,6 +48,9 @@ The intended user is an automotive engineer with a master's degree in mechanical
 | Pressure vessel nozzle, design by analysis | `cadquery_ccx_vessel` | CadQuery -> Gmsh -> CalculiX, stress linearisation | `pv_nozzle_mesh`, `pv_nozzle_thickness`, `pv_nozzle_crotch_*`, `pv_nozzle_scl_offset` |
 | Head-to-shell junction | `ccx_vessel_head_axi` | Python mesh -> CalculiX CAX8, stress linearisation | `vh_junction_mesh_r1`, `vh_thin_head_mesh_r1`, `vh_head_thickness_r1` |
 | Turbulent pipe friction (RANS) | `openfoam_pipe_rans` | OpenFOAM 14 (in WSL), k-omega SST | `pipe_rans_mesh`, `pipe_rans_mesh_r1`, `pipe_rans_mesh_r2`, `pipe_rans_reynolds`, `pipe_rans_wf_mesh`, `pipe_rans_wf_yplus` |
+| O-ring face seal (squeeze, contact pressure, closing force, fill) | `ccx_oring` | Gmsh (Python API) -> CalculiX, axisymmetric neo-Hookean, node-to-surface contact | `oring_seal_corners`, `oring_seal_mesh`, `oring_free_lindley`, `oring_free_hertz` |
+| Natural convection in a square cavity (de Vahl Davis) | `openfoam_cavity` | OpenFOAM 14 (in WSL), fluid solver, Boussinesq | `cavity_devahldavis`, `cavity_mesh_ra1e6` |
+| Grey-surface radiation between concentric cylinders | `openfoam_annulus_radiation` | OpenFOAM 14, fluid solver with fvDOM | `annulus_angular`, `annulus_emissivity` |
 
 ## Project folders
 
