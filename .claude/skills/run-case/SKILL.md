@@ -155,8 +155,10 @@ Run every command from the repository root.
   being one at a time). Study 7's steel case predicted 45-75 min from one point's 35 min and took 105 min for three.
 - In a coupled (preCICE) run the slower participant sets the pace: a fluid mesh study on a fixed solid mesh does not
   speed up below the solid's cost. Study 6's 3.54 mm FSI2 level took 8.75 h, as long as the 2.5 mm level (8.9 h),
-  against a prediction of 3 h; the solid ran at about 90 % of a core throughout. Time one coupling window per
-  participant before predicting.
+  against a prediction of 3 h; the solid ran at about 90 % of a core throughout. FSI3 repeated it the next night
+  (predicted 4-6 / 9-12 / 22-30 h, took 9.9 / 9.3 / 11.0 h): the time hardly depends on the fluid level at all.
+  Time one coupling window per participant before predicting, and predict a mesh level's time from the slower
+  participant, never by scaling with the fluid cell count.
 - One FEMM at a time; OpenFOAM under `nice -n 19`; several single-core jobs at once are fine on this machine, but
   watch memory more than CPU.
 

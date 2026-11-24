@@ -10,7 +10,7 @@
 
 | | |
 |---|---|
-| **Answer so far** | Both single-physics halves reproduce the published Turek-Hron benchmark before any coupling. Solid, static (CSM1, CSM2): the tip displacement extrapolates to within 0.015 % of the published values. Fluid (CFD1): drag within 0.07 %, lift within 0.6 % on every mesh. Solid, dynamic (CSM3): frequency 1.0946 Hz, 0.09 % from the published band (verified). Fluid at Re 100 (CFD2): drag within 0.014 % when extrapolated, lift within 0.7 % on the finer meshes. Coupled, steady (FSI1): drag and lift verified (0.03 % and 0.18 % from the published values on the finest mesh, mesh uncertainty 0.03 % and 0.3 %); the tip displacement is within 1 % on every mesh, but scatters by about ±0.5 % between meshes, so its mesh uncertainty can't be estimated. Coupled, periodic, one mesh (FSI2, FSI3): the oscillation starts on its own and every published quantity is reproduced, FSI2 within 2.1 % and FSI3 within 9 % (amplitudes 3-6 % low, drag 2 % high, inside the benchmark's own level-to-level spread); not verified, because one check was defective. |
+| **Answer so far** | Both single-physics halves reproduce the published Turek-Hron benchmark before any coupling. Solid, static (CSM1, CSM2): the tip displacement extrapolates to within 0.015 % of the published values. Fluid (CFD1): drag within 0.07 %, lift within 0.6 % on every mesh. Solid, dynamic (CSM3): frequency 1.0946 Hz, 0.09 % from the published band (verified). Fluid at Re 100 (CFD2): drag within 0.014 % when extrapolated, lift within 0.7 % on the finer meshes. Coupled, steady (FSI1): drag and lift verified (0.03 % and 0.18 % from the published values on the finest mesh, mesh uncertainty 0.03 % and 0.3 %); the tip displacement is within 1 % on every mesh, but scatters by about ±0.5 % between meshes, so its mesh uncertainty can't be estimated. Coupled, periodic (FSI2, FSI3): the oscillation starts on its own and every published quantity is reproduced. FSI3 mesh study, three levels: on the finest mesh every requirement passes (tip amplitude -1.1 %); frequency and drag mean verified (mesh uncertainty 0.13 % and 0.9 %), and the tip amplitude extrapolates to 0.02 % from the benchmark (uncertainty 1.45 %). FSI2: within 2.1 % on two mesh levels that agree to 0.7 %; the finest level crashes at 8.8 s (diagnosis open). |
 | **Discipline** | Structures (large deflection, dynamics), fluids, fluid-structure interaction |
 | **Tools** | CalculiX (solid), OpenFOAM 14 with Gmsh (fluid), Python; preCICE 3.4.1 with OpenFOAM v2512 for the coupled stage |
 | **Methods** | Geometrically nonlinear static and dynamic FE, a large-deflection elastica as an independent reference, steady laminar CFD, mesh and time-step refinement with GCI, published benchmark values as the acceptance requirement |
@@ -78,12 +78,34 @@ published results first, and only then are they coupled.
   Every requirement passes (limits from the benchmark's own spread, set before the runs), and every prediction of
   the values landed in its range. The verdicts are marked unverified anyway: see the force-transfer check below.
   FSI3's misses are inside the spread between the benchmark's own mesh levels; whether they are ours needs a mesh and
-  time-step study, which comes with the rerun. **Running (2026-11-23):** both mesh studies, three fluid meshes each
-  (3.54 / 2.5 / 1.77 mm) side by side, with the window-by-window force-transfer check that replaces the defective
-  one; predictions are in the case files. FSI2's 3.54 and 2.5 mm levels are done: every check passes (force transfer
-  2.3e-9), the 2.5 mm level repeats the earlier run in every digit, and the two levels differ by 0.1-0.7 % on every
-  benchmark quantity. The 1.77 mm level crashed at 8.8 s of 15 (the solver's error message was lost); it is being
-  rerun unchanged to capture the error, and the study now keeps the end of every log when a run fails.
+  time-step study.
+- **Mesh studies (FSI2, FSI3), 2026-11-23/24.** Three fluid meshes each (3.54 / 2.5 / 1.77 mm) run side by side,
+  with the window-by-window force-transfer check that replaced the defective one; predictions were committed in the
+  case files before the runs. Every level that finished passes every check (force transfer about 3e-9), and each
+  2.5 mm level repeats its earlier single run to 4 digits or better.
+
+  **FSI3, all three levels:** the finest mesh passes every requirement (tip amplitude -1.1 %, drag mean +1.2 %,
+  lift amplitude +0.2 %), and the coarsest misses only the tip amplitude (-8.4 % against a 5 % limit, the miss
+  predicted as likeliest). So the earlier -3.1 % was the mesh. Across the three levels:
+
+  | | result | extrapolated to zero cell size | benchmark |
+  |---|---|---|---|
+  | frequency | 5.453 / 5.464 / 5.455 Hz, uncertainty 0.13 % | | 5.46 |
+  | drag mean | converges (order 2.2), uncertainty 0.90 % | 462.7 N/m | 460.5 (+0.5 %) |
+  | tip vertical amplitude | converges (order 2.9), uncertainty 1.45 % | 34.997 mm | 34.99 (+0.02 %) |
+  | drag and lift amplitude | change too fast between levels for a clean order (3.6 and 5.3 against 2) | none | |
+  | tip horizontal mean | converges slowly (order 0.9), uncertainty 20 % | | |
+
+  Frequency and drag mean are verified under 1 %. The tip amplitude converges onto the benchmark, but its mesh
+  uncertainty (1.45 %) is just over the 1 % target at these sizes. The force amplitudes are reported, not tuned.
+
+  **FSI2:** the 3.54 and 2.5 mm levels agree within 0.1-0.7 % on every benchmark quantity. The 1.77 mm level
+  crashed twice at the same step (8.836 s of 15). The log ends kept since the first crash show the cause: the
+  largest Courant number, about 2.2 all run, jumped to 5.8 and then 17.9 in two steps before the pressure solver
+  failed. That fits either a mesh cell collapsing as the flag swings through, or the one-pass pressure-velocity
+  solver going unstable; the log alone can't tell which. FSI3's finest mesh ran its full 8 s at a Courant number of
+  2.36 with the same settings, with half the swing. So for now FSI2 has two mesh levels and no three-level
+  uncertainty.
 
 ## How it works
 
@@ -154,7 +176,8 @@ published results first, and only then are they coupled.
 ## Limits
 
 - 2D, as the benchmark defines it.
-- FSI2 and FSI3 are on one fluid mesh and one time step so far, and not verified (the force-transfer check above).
+- FSI3: one time step; the force amplitudes and the horizontal tip mean have no mesh uncertainty (see the mesh
+  study). FSI2: two mesh levels only (the finest crashed), one time step.
 - Laminar, as the benchmark defines it; the transient fluid solver is first order in its mesh motion.
 - The published reference values are themselves numerical, and their rows are not all labelled with the
   time step they used.
@@ -166,6 +189,13 @@ published results first, and only then are they coupled.
 - solid, dynamic: [CSM3, final](../runs/20261121-184353_flag_csm3_dt_r3/report.md) (frequency and ux verified), with the [first run](../runs/20261121-132448_flag_csm3_dt/report.md) (energy drift), [r1](../runs/20261121-142836_flag_csm3_dt_r1/report.md) and [r2](../runs/20261121-164522_flag_csm3_dt_r2/report.md) (the divergence and the wrong diagnosis) kept as evidence
 - coupled, steady: [FSI1 first mesh study](../runs/20261121-203031_turek_hron_fsi1_mesh/report.md) (drag converged; lift noise and the tip drift withheld it); [revision 1](../runs/20261122-125809_turek_hron_fsi1_mesh_r1/report.md) (drag and lift verified; tip within 1 %, its mesh uncertainty not estimable), with its predictions and Results in `cases/turek_hron_fsi1_mesh_r1.toml`
 - coupled, periodic: [FSI2](../runs/20261122-184933_turek_hron_fsi2/report.md), [FSI3](../runs/20261122-185044_turek_hron_fsi3/report.md) (verification FAIL on the defective check; predictions and Results in `cases/turek_hron_fsi2.toml`, `cases/turek_hron_fsi3.toml`)
+- coupled, periodic, mesh studies: FSI3 [3.54 mm](../runs/20261123-161047_turek_hron_fsi3_mesh_a/report.md),
+  [2.5 mm](../runs/20261123-161107_turek_hron_fsi3_mesh_b/report.md),
+  [1.77 mm](../runs/20261123-161128_turek_hron_fsi3_mesh_c/report.md), combined check
+  `validation/turek_hron/fsi3_mesh_study.json`; FSI2 [3.54 mm](../runs/20261123-123332_turek_hron_fsi2_mesh_a/report.md),
+  [2.5 mm](../runs/20261123-123352_turek_hron_fsi2_mesh_b/report.md),
+  [1.77 mm, crashed](../runs/20261123-180658_turek_hron_fsi2_mesh_c/report.md); predictions and Results in
+  `cases/turek_hron_fsi{2,3}_mesh_{a,b,c}.toml`
 - fluid: [CFD1 first mesh study](../runs/20261121-140245_turek_hron_cfd1_mesh/report.md) (lift verified), [CFD1 refined](../runs/20261121-140657_turek_hron_cfd1_mesh_r1/report.md) (drag verified), [CFD2](../runs/20261121-151947_turek_hron_cfd2_mesh/report.md) (drag verified, lift withheld on mesh noise)
 - case files: `cases/flag_csm1_mesh.toml`, `cases/flag_csm2_mesh.toml`, `cases/flag_csm3_dt.toml`,
   `cases/flag_csm3_dt_r1.toml`, `cases/turek_hron_cfd1_mesh.toml`, `cases/turek_hron_cfd1_mesh_r1.toml`,
