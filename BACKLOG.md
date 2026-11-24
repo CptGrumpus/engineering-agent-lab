@@ -95,6 +95,15 @@ Machine elements (study 16) DONE 16:24: page 26; dashboard session told.
 0d. **User's decisions 2026-11-24, after 16:54:** study 11 sizes a passing design with a CONDUCTION PATH from the
    component to the lid (a thermal pad / spreader; size its conductance so the component meets 85 C); a NEW STUDY
    in parallel: a STEEL FRAME to AISC 360-22 (free from AISC; framing first, for the user's approval).
+   **Steel frame framing APPROVED (after 17:04, as drafted):** a synthetic client's equipment platform frame: single-bay
+   portal, fixed bases, rigid knees; columns W10x33, 4.0 m; beam W14x30, 6.0 m span; A992 (Fy 345 MPa). Factored LRFD
+   loads given by the client (no ASCE 7): beam UDL 35 kN/m, lateral 15 kN at beam level; service live 12 kN/m, service
+   lateral 10 kN. REQ-A1 every member's H1-1 ratio <= 1.0 by the Direct Analysis Method (CalculiX second-order, 0.8
+   stiffness reduction, notional loads); REQ-A2 beam live-load deflection <= L/360; REQ-A3 service drift <= H/400.
+   Checks: AISC Design Examples (E/F/G/H formulas), the Commentary's second-order benchmarks, closed-form first-order
+   portal, B1/B2 beside the DAM, equilibrium, segment convergence. The USER downloads the AISC PDFs (Cloudflare blocks
+   automated fetches) into `references/aisc/` (gitignored: copyrighted): 360-22 with Commentary, Design Examples v16.0,
+   Shapes Database v16.0.
 0c. **User's decisions 2026-11-24, after 12:09:** study 11's enclosure verdict BRACKETED in board conductivity (5 and
    20 W/mK, each at internal emissivity 0.1 and 0.9: four corners, verdict at each); a NEW STUDY in parallel: machine
    elements (a shaft with a shoulder fillet under bending and torsion, fatigue safety by DIN 743 against FE notch
