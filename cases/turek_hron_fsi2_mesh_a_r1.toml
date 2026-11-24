@@ -28,6 +28,12 @@
 #   P5 About 7-10 h side by side (level c alone reached 8.8 s in 4.1 h on a free CPU; the motion solve adds a few
 #      percent; the solid sets the pace).
 # This file: level a, 3.54 mm.
+#
+# Crash (run 20261124-082453_turek_hron_fsi2_mesh_a_r1): the CalculiX solid (ccx_preCICE, adapter 2.20.2) died of heap corruption ("corrupted double-linked
+# list", SIGABRT) at t = 14.01 s (16:06); its abort handler never exited, so the dead process held a core and the fluid
+# waited until preCICE's socket closed. Found 17:36, killed 17:57 with the user's go-ahead; run failed (exit 30). Not a
+# numerical failure: the fluid and solid residuals were normal to the last step, and the same case had run cleanly
+# before (FSI2 level b ran all 15 s). Rerun unchanged (user's decision 17:56).
 
 [case]
 name = "turek_hron_fsi2_mesh_a_r1"

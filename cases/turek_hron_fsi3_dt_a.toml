@@ -14,6 +14,12 @@
 #   P3 Every requirement passes on the two new levels (as level b).
 #   P4 About 4-6 h at 0.001 s and 16-22 h at 0.00025 s (the solid sets the pace; steps double per halving).
 # This file: dt 0.001 s.
+#
+# Crash (run 20261124-103347_turek_hron_fsi3_dt_a): the CalculiX solid (ccx_preCICE, adapter 2.20.2) died of heap corruption ("corrupted double-linked
+# list", SIGABRT) at t = 6.90 s (14:15); its abort handler never exited, so the dead process held a core and the fluid
+# waited until preCICE's socket closed. Found 17:36, killed 17:57 with the user's go-ahead; run failed (exit 30). Not a
+# numerical failure: the fluid and solid residuals were normal to the last step, and the same case had run cleanly
+# before (FSI2 level b ran all 15 s). Rerun unchanged (user's decision 17:56).
 
 [case]
 name = "turek_hron_fsi3_dt_a"
