@@ -2,7 +2,7 @@
 
 [Portfolio index](../PORTFOLIO.md) · Electric machines
 
-> **Closed 2026-11-24 with open items** (final report: `validation/motor_ornl/FINAL_REPORT.md`; updated 10:57). The study began as a blind test: every prediction was written before any of Oak
+> **Closed 2026-11-24 with open items** (final report: `validation/motor_ornl/FINAL_REPORT.md`; updated 10:56). The study began as a blind test: every prediction was written before any of Oak
 > Ridge National Laboratory's (ORNL's) measurements was opened, and the blind comparison **missed all three limits**.
 > Since then it has run as a regular client project: everything a client would hand over is collected and used, and
 > nothing is fitted (see "Run as a client project"). The current state is at the top of the table below; the earlier
