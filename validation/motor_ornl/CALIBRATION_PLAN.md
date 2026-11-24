@@ -588,3 +588,28 @@ Predictions:
      which pushes the ratio up).
   P3 If P1 fails (the model's plateau wider or narrower than ORNL's by more than a slot pitch, or an asymmetry), the
      excess is not uniform, and the magnetisation hypothesis is weakened in favour of geometry or leakage: reported.
+
+### Result of step 5, ORNL Fig. 13 (2026-11-24 11:00; scripts/motor_fig13.py -> validation/motor_ornl/fig13/)
+
+ORNL 2004 series (from the PDF's vector markers, gauss, slots 1-13): 59, -6583, -7308, -7428, -7428, -3441, 0, 5134,
+7490, 7490, 7126, 3019, 0. Model (revision 5, 20 C, radial B 0.06 mm inside the bore, where the meshed gap air is;
+Pyleecan's air-gap element leaves no mesh at mid-gap): -7, -6036, -8472, -8465, -8464, -3045, 7, 6036, 8472, 8465,
+8464, 3045, -7.
+Method change, after the first result and recorded here: the planned zero-crossing alignment was degenerate (the
+model's field stays near zero over about two slot pitches between poles, so "zeros at slots 1, 7, 13" does not fix the
+angle: it placed slot 2 in that band). The rotor angle is now fitted by least squares on the shapes, each normalised by
+its own plateau (still one parameter; the amplitude is not fitted). The zero-crossing attempt is kept in the JSON
+(plateau ratio 1.141 there).
+  P2 HELD: the model's plateau is 1.148 x ORNL's (1.141 with the first alignment), inside 1.12-1.24.
+  P1 MISSED as written, HELD where it is testable: on the six plateau slots (3-5, 9-11) the normalised shapes agree
+     within 0.034; on the two flank slots 2 and 6 they differ by 0.18 and 0.11. The flanks are where a degree of probe
+     or rotor position moves the reading most, and ORNL's own two half-poles, which antiperiodicity makes equal and
+     opposite, disagree there by up to 0.20 (slot 2: -6583 against slot 8: +5134; slot 6: -3441 against slot 12:
+     +3019). The flank differences sit inside the measurement's own asymmetry.
+  P3 not triggered: the plateau is neither wider nor narrower by a slot pitch.
+Reading: where the field is level, the model's air-gap field is ORNL's scaled by 1.148, uniformly. That is what a
+magnetisation shortfall (an effective remanence about 13-15 % below the re-saturated sample's) would do, and not what
+a geometry or leakage error would (those change the plateau's width or level unevenly). The 2D gap field at mid-stack
+excludes end effects, which the back-EMF includes (1.3-3.7 %, step 3): 14.8 % + about 2-3 % accounts for the 18 % in
+back-EMF. Not proven: a uniform scaling fits any cause that scales the whole magnet flux (which is what "effective
+remanence" means); a fluxmeter test on one magnet out of the rotor (client question 1) would settle it.
