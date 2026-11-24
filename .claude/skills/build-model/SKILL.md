@@ -112,6 +112,10 @@ per problem type:
    Tool-specific traps are in [references/tool-notes.md](references/tool-notes.md).
 5. **Backend and study.** Register the study. Parse results from the tool's own
    files where possible.
+   Every case parameter that names an input (a machine file, a mesh, a table run) must
+   be read from the case, never from a module constant: study 7's rotor study loaded
+   its first machine file whatever the case named, unnoticed for two days because
+   every case named that file. Check that changing the parameter changes the run.
 6. **Smoke test into the scratchpad**, never into `runs/`:
    `run_case(Path("<scratch>/case.toml"), runs_root=Path("<scratch>/runs"))` with
    the sweep cut to the coarsest point, then `verify_run`. Look at every check

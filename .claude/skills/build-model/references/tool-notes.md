@@ -505,6 +505,13 @@ Traps found while building the studies in this repo, by tool.
 - **The dq torque equation drifts at low iq deep in field weakening:** at iq 6.25-12.5 A and id -175 to -300 A the
   mean torque is 33-70 N m with 18-27 N m of ripple, and 3 p (phi_d iq - phi_q id) from the mean fluxes missed FEMM's
   torque by up to 1 % (0.3 N m). Interpolate FEMM's torque for the map; the dq fluxes are for the voltage limit.
+- **A loss-temperature iteration over a discrete loss search can have no fixed point:** study 7's thermal
+  network picks the minimum-loss operating point at each iterate's magnet temperature; at 5500 rpm, 34 N m
+  (revision 5, jacket h 1000) the chosen point jumps from id -46 to -39 A between 105 and 106 C (total loss
+  -16 % for 1 K, in the low-iq field-weakening rows), and the iteration cycles between two states (8.8 K)
+  for all 200 iterations. The coupling-convergence check caught it. Diagnose by scanning the operating point
+  against the coupled temperature: a jump means the fixed point does not exist, so report it; relaxation
+  would only hide it.
 
 - **Pyleecan overwrites FEMM's solution per machine name** (`<pyleecan>/Results/em/Femm/<machine>_model.ans`): the
   next run of the same machine replaces it, so revision 5's open-circuit solution was lost to its torque run. The
