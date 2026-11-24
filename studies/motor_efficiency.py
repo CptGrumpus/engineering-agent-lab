@@ -42,7 +42,13 @@ def _load(path: Path, name: str):
 
 
 def phase_resistance_20C(p) -> float:
-    """DC phase resistance at 20 C: rho N_series (2 L_stack + 2 L_end) / A_turn (one parallel path)."""
+    """DC phase resistance at 20 C. With the optional phase_resistance_measured_ohm (> 0) and
+    phase_resistance_measured_at_C, the client's measured value referred to 20 C with copper_alpha_per_K (study 7:
+    69 mOhm at 21 C, ORNL/TM-2010/253 Table 2.7; leads, joints and insulation build make the geometric value 14 % low);
+    otherwise rho N_series (2 L_stack + 2 L_end) / A_turn (one parallel path)."""
+    r_meas = float(p.get("phase_resistance_measured_ohm", 0) or 0)
+    if r_meas > 0:
+        return r_meas / (1 + float(p["copper_alpha_per_K"]) * (float(p["phase_resistance_measured_at_C"]) - 20))
     turn = 2 * float(p["stack_length_m"]) + 2 * float(p["end_connection_length_m"])
     return float(p["copper_resistivity_20C_ohm_m"]) * float(p["series_turns_per_phase"]) * turn / (
         float(p["turn_copper_area_mm2"]) * 1e-6)

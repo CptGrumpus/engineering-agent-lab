@@ -65,6 +65,15 @@ def test_phase_resistance_from_geometry():
     assert em.resistance(1.0, 100.0) == pytest.approx(1 + 0.00393 * 80)
 
 
+def test_phase_resistance_measured_referred_to_20C():
+    p = {"stack_length_m": 0.08382, "end_connection_length_m": 0.118, "copper_resistivity_20C_ohm_m": 1.72e-8,
+         "series_turns_per_phase": 72, "turn_copper_area_mm2": 8.492, "copper_alpha_per_K": 0.00393,
+         "phase_resistance_measured_ohm": 0.069, "phase_resistance_measured_at_C": 21.0}
+    assert phase_resistance_20C(p) == pytest.approx(0.069 / (1 + 0.00393))
+    p["phase_resistance_measured_ohm"] = 0.0           # 0 means: not given, use the geometry
+    assert phase_resistance_20C(p) == pytest.approx(1.72e-8 * 72 * (2 * 0.08382 + 2 * 0.118) / 8.492e-6)
+
+
 def _fake_run(root, name, ids, iqs, magnet_T=20.0, bump=0.0):
     """A motor_lut run on disk from the synthetic machine: one point per d-axis current, lut.csv per point."""
     import csv
