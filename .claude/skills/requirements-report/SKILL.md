@@ -35,6 +35,11 @@ marked *unverified*.
 
 - Report failed requirements and failed checks as plainly as passes. Do not hide them as
   "minor".
+- A write-up's headline (a portfolio page's Answer, a summary line) carries the verification
+  status too, not only the requirement verdicts: "passes every requirement" over runs whose
+  verification FAILed on a cross-check misleads (study 12, page 25: two narrow misses were
+  in the case files but not in the Answer). Quote each check's number from the run's
+  checks.json for every point, not one point's value as "or better".
 - Keep these separate: **numerical error** (the verification checks), **modeling assumptions**
   (the `assumptions` list in the case file), and **physical uncertainty** (not quantified for
   synthetic cases).
