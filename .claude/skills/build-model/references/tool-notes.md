@@ -447,6 +447,14 @@ Traps found while building the studies in this repo, by tool.
   ("libradiationModels.so"); } }`; without it `radiationProperties` is silently ignored. fvDOM's wall emissivity
   is set in `IDefault`'s `greyDiffusiveRadiation` condition (`emissivityMode lookup`). The `viewFactor` model and its
   `faceAgglomerate` / `viewFactorsGen` utilities exist in v14 but no tutorial uses them.
+- **Conjugate heat transfer (`foamMultiRun`, regions from `splitMeshRegions -cellZones all`; v14 takes `all`, not
+  `-overwrite`)**: a hollow board with fixed surface fluxes overheated its component (154 C: no spreading), so the board
+  is a solid region with `heatSource` fvModels (q in W/m3) and `coupledTemperature` interfaces (`qr qr` on the fluid
+  side, `qrNbr qr` on the solid). A steady coupled SIMPLE solve looked converged for thousands of iterations, then
+  diverged (continuity errors, FPE in the pressure solve) at 9,246: run it transient to a settled state, as the CHT
+  tutorials do, and judge steadiness from the heat balance and the temperature history.
+- **Perfect gas needs absolute pressure**: p = 0 with `perfectGas` gives rho = 0 and an FPE in nu = mu / rho at the first
+  step; p 1e5, p_rgh 0 and `constant/pRef` 1e5, as the tutorials have.
 
 ## Partitioned coupling (OpenFOAM <-> CalculiX, cold-plate chain)
 
