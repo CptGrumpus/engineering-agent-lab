@@ -12,7 +12,8 @@ Reference: equilibrium (the clamp's reaction moment against the applied), the ap
            (half model), beam theory in the small section far from the fillet, the published Kt fits (Pilkey 2nd ed.),
            the peak off the plane (cos-corrected for bending) against the on-plane peak.
 Run-level: GCI on Kt, Kts and every requirement metric when the sweep is the fillet element size; when the sweep is
-           the fillet radius, the smallest radius meeting each requirement (interpolated) in the run detail.
+           the fillet radius (or scenarios that size the step by d), the smallest radius (or d) meeting each requirement
+           (interpolated) in the run detail.
 """
 
 from __future__ import annotations
@@ -124,7 +125,8 @@ class CalculiXShaft(Backend):
         on_fillet = W.fillet_surface_mask(X, p) & (X[:, 0] > 0)
         plane = on_fillet & (np.abs(X[:, 1]) < 1e-6 * g["D"])
         band = on_fillet & (np.abs(X[:, 1]) > 0.5) & (np.abs(X[:, 1]) < 3.0)
-        cth = X[:, 0] / np.hypot(X[:, 0], X[:, 1])
+        rho_xy = np.hypot(X[:, 0], X[:, 1])
+        cth = np.divide(X[:, 0], rho_xy, out=np.ones_like(rho_xy), where=rho_xy > 0)   # nodes on the axis: unused
         if load == "bending":
             v, nom = ev[:, 2], s_nom
             v_off = (ev[:, 2] / cth)[band]                     # sigma ~ cos(theta) around the shaft
@@ -209,8 +211,9 @@ class ShaftFilletStudy(Study):
                                 abs(o["reaction_moment_Nmm"] - o["applied_moment_Nmm"]) / abs(o["applied_moment_Nmm"]),
                                 tol["equilibrium_rel_tol"]))
             checks.append(check(f"end_load_{load}", f"|applied end moment (consistent nodal forces) - half the "
-                                f"{'moment' if load == 'bending' else 'torque'}| / half ({load}, half model)",
-                                abs(o["applied_moment_Nmm"] - o["target_moment_Nmm"]) / o["target_moment_Nmm"],
+                                f"{'moment' if load == 'bending' else 'torque'}| / half ({load}, half model; "
+                                "magnitudes: the torsion tractions turn the end in the negative sense)",
+                                abs(abs(o["applied_moment_Nmm"]) - o["target_moment_Nmm"]) / o["target_moment_Nmm"],
                                 tol["end_load_rel_tol"]))
             checks.append(check(f"beam_theory_{load}", f"max |surface stress / beam theory - 1| in the small section "
                                 f"(30-70 % of its length, plane y = 0, {o['beam_nodes']} nodes; {load})",
@@ -248,10 +251,11 @@ class ShaftFilletStudy(Study):
                 checks.append(check(f"discretization_{metric}", f"relative discretization uncertainty of {metric}, "
                                     f"{describe(u)}", u["uncertainty"], tol["gci_max"]) | {"metric": metric})
             return checks, detail
-        if sweep == "fillet_radius_mm":
-            done = sorted(done, key=lambda pt: pt["parameters"]["fillet_radius_mm"])
-            r = np.array([pt["parameters"]["fillet_radius_mm"] for pt in done])
-            detail = {"radius_mm": r.tolist()}
+        if sweep in ("fillet_radius_mm", "scenario"):
+            key = "fillet_radius_mm" if sweep == "fillet_radius_mm" else "d_mm"   # scenarios: the step's size
+            done = sorted(done, key=lambda pt: float(pt["parameters"][key]))
+            r = np.array([float(pt["parameters"][key]) for pt in done])
+            detail = {key: r.tolist()}
             for req in case["requirements"]:
                 v = np.array([pt["metrics"][req["metric"]] for pt in done])
                 detail[req["metric"]] = v.tolist()
@@ -263,7 +267,7 @@ class ShaftFilletStudy(Study):
                 else:
                     i = int(np.flatnonzero(ok)[0])
                     rmin = float(np.interp(req["limit"], [v[i - 1], v[i]], [r[i - 1], r[i]])) if i else float(r[0])
-                detail[f"min_radius_{req['id']}_mm"] = rmin
+                detail[f"min_{key}_{req['id']}"] = rmin
             return [], detail
         return [], {}
 

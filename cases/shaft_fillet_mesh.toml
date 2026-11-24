@@ -61,6 +61,21 @@
 #      mm, about 1.77-1.92) and PASSES from about 2.5 mm (minimum about 2.4-2.5 mm).
 #   P5 FE Kt 5-7 % above the Pilkey fit in bending at every radius, Kts 2-4 % below it.
 #   P6 About 1 min per point at 0.14 mm.
+#
+# Results (run 20261124-151223_shaft_fillet_mesh, 15:12-15:16): at 0.28 / 0.2 / 0.14 mm: Kt 2.1457 / 2.1400 / 2.1361,
+# Kts 1.5460 / 1.5481 / 1.5483; Goodman 1.1852 / 1.1870 / 1.1886, elliptic 1.4356 / 1.4384 / 1.4405, yield 1.8238 /
+# 1.8246 / 1.8260. Verification FAIL, two causes, both in the checks, not the model:
+#   - end_load_torsion 2.00 at every level: my tractions turn the end in the negative sense (-T / 2 about z) and the check
+#     compared signed values against +T / 2; equilibrium_torsion passed (the clamp reacts exactly). Setup bug: the check
+#     now compares magnitudes. Every other point check passed (off-plane 1.28 / 1.11 / 0.68 % bending, 0.39 / 0.36 /
+#     0.23 % torsion; Kt fit +6.6 / +6.3 / +6.1 %, Kts fit -2.8 / -2.6 / -2.6 %).
+#   - discretization_static_safety "divergent" (increments 8.5e-4 then 1.3e-3, spread 0.12 %): Kt falls and Kts rises
+#     with refinement, so the yield safety (which weighs Kfs more than the Goodman factor does) is not yet in the
+#     asymptotic range although both inputs are (GCI Kt 0.42 %, Kts 2e-5, Goodman 0.50 %). Not loosened: a fourth level
+#     (0.1 mm) in shaft_fillet_mesh_r1 so the three finest decide.
+#   P2 HELD for Kt (2.136, in 2.13-2.14) and Kts (1.548); GCI under 1 % on Kt, Kts and the fatigue safety; the yield
+#   safety's GCI could not be estimated. P3 HELD (Goodman 1.189, elliptic 1.440, yield 1.826: REQ-S1 and S2 FAIL).
+#   P1 MISSED (the sign of the end-load check). P6 HELD (about 1 min per level).
 
 [case]
 name = "shaft_fillet_mesh"
