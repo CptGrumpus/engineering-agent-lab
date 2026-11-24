@@ -1,0 +1,610 @@
+{
+  "run_id": "20261124-152828_shaft_fillet_radius",
+  "case_name": "shaft_fillet_radius",
+  "model": "ccx_shaft_fillet",
+  "case_source": "cases/shaft_fillet_radius.toml",
+  "case_sha256": "d3a4fa6265a54a2c3ee10964395f6b2cc5d2d14079b80ac048f51499b1921849",
+  "model_sources_sha256": {
+    "models/fea/shaft_fillet_ccx.py": "714985a0802851aa6e67b3425d497486e68111bbf20266b49a1c4a4e375988b3"
+  },
+  "rerun_of": null,
+  "started_utc": "2026-11-24T20:28:28+00:00",
+  "environment": {
+    "python": "3.14.10",
+    "python_executable": "<repo>\\.venv\\Scripts\\python.exe",
+    "platform": "Windows-11-10.0.26100-SP0",
+    "machine": "AMD64",
+    "packages": {
+      "numpy": "2.5.5",
+      "scipy": "1.18.1",
+      "matplotlib": "3.11.2",
+      "cadquery": "2.8.0"
+    },
+    "git": {
+      "commit": "162e627783fad9a4f206e24d7e7358b17584c619",
+      "dirty": true
+    },
+    "tools": {
+      "CalculiX": "This is Version 2.22",
+      "gmsh": "4.15.0"
+    }
+  },
+  "numerics": {
+    "solver_timeout_s": 3600
+  },
+  "points": [
+    {
+      "label": "p00_fillet_radius_mm-1.4",
+      "parameters": {
+        "D_mm": 40.0,
+        "d_mm": 32.0,
+        "fillet_radius_mm": 1.4,
+        "small_length_mm": 80.0,
+        "large_length_mm": 80.0,
+        "bending_moment_Nm": 300.0,
+        "torque_Nm": 500.0,
+        "youngs_modulus_MPa": 210000.0,
+        "poisson_ratio": 0.3,
+        "ultimate_MPa": 1000.0,
+        "yield_MPa": 750.0,
+        "overload_factor": 1.5,
+        "element_size_fillet_mm": 0.14,
+        "element_size_far_mm": 4.0,
+        "refine_radius_mm": 0.5,
+        "refine_halfwidth_mm": 3.0,
+        "mesh_growth": 0.25
+      },
+      "status": "completed",
+      "derived": {
+        "h_over_r": 2.857142857142857,
+        "r_over_d": 0.04375,
+        "kt_bending_fit": 2.095736939901353,
+        "kt_torsion_fit": 1.6417433122903675,
+        "fatigue_safety_hand": 1.1931182811384686,
+        "static_safety_hand": 1.7911570412825142
+      },
+      "solver": {
+        "success": true,
+        "message": "CalculiX: 59940 nodes, Kt 2.2325, Kts 1.5989",
+        "nfev": null
+      },
+      "solver_outputs": {
+        "sigma_nom_MPa": 93.25484946790743,
+        "tau_nom_MPa": 77.71237455658952,
+        "volume_mm3": 82456.94710389026,
+        "bending": {
+          "kt": 2.2324971512755725,
+          "peak_angle_deg": 16.875252526702837,
+          "peak_xyz": [
+            16.0603,
+            0.0,
+            79.0064
+          ],
+          "kt_off_plane": 2.2456625858829473,
+          "off_plane_nodes": 1355,
+          "plane_nodes": 33,
+          "beam_ratio_min": 0.9973551030395228,
+          "beam_ratio_max": 1.0047005655426362,
+          "beam_nodes": 32,
+          "applied_moment_Nmm": 149997.8719346134,
+          "target_moment_Nmm": 150000.0,
+          "reaction_moment_Nmm": 149997.881334014,
+          "nodes": 59940,
+          "elements": 40073
+        },
+        "torsion": {
+          "kt": 1.5988521561889746,
+          "peak_angle_deg": 16.875252526702837,
+          "peak_xyz": [
+            16.0603,
+            0.0,
+            79.0064
+          ],
+          "kt_off_plane": 1.6005325415005662,
+          "off_plane_nodes": 1355,
+          "plane_nodes": 33,
+          "beam_ratio_min": 0.9987727236893237,
+          "beam_ratio_max": 1.0052478906985864,
+          "beam_nodes": 32,
+          "applied_moment_Nmm": -249996.45322435402,
+          "target_moment_Nmm": 250000.0,
+          "reaction_moment_Nmm": -249996.4937674839,
+          "nodes": 59940,
+          "elements": 40073
+        },
+        "nodes": 59940
+      },
+      "metrics": {
+        "kt_bending": 2.2324971512755725,
+        "kt_torsion": 1.5988521561889746,
+        "fatigue_safety": 1.1479398479705694,
+        "fatigue_safety_elliptic": 1.3900385418089993,
+        "static_safety": 1.7685640583696056
+      }
+    },
+    {
+      "label": "p01_fillet_radius_mm-1.6",
+      "parameters": {
+        "D_mm": 40.0,
+        "d_mm": 32.0,
+        "fillet_radius_mm": 1.6,
+        "small_length_mm": 80.0,
+        "large_length_mm": 80.0,
+        "bending_moment_Nm": 300.0,
+        "torque_Nm": 500.0,
+        "youngs_modulus_MPa": 210000.0,
+        "poisson_ratio": 0.3,
+        "ultimate_MPa": 1000.0,
+        "yield_MPa": 750.0,
+        "overload_factor": 1.5,
+        "element_size_fillet_mm": 0.14,
+        "element_size_far_mm": 4.0,
+        "refine_radius_mm": 0.5,
+        "refine_halfwidth_mm": 3.0,
+        "mesh_growth": 0.25
+      },
+      "status": "completed",
+      "derived": {
+        "h_over_r": 2.5,
+        "r_over_d": 0.05,
+        "kt_bending_fit": 2.0130774008072194,
+        "kt_torsion_fit": 1.5897167091755355,
+        "fatigue_safety_hand": 1.2318935228675818,
+        "static_safety_hand": 1.8458101703312542
+      },
+      "solver": {
+        "success": true,
+        "message": "CalculiX: 62948 nodes, Kt 2.1361, Kts 1.5483",
+        "nfev": null
+      },
+      "solver_outputs": {
+        "sigma_nom_MPa": 93.25484946790743,
+        "tau_nom_MPa": 77.71237455658952,
+        "volume_mm3": 82463.62294423759,
+        "bending": {
+          "kt": 2.13611327317959,
+          "peak_angle_deg": 17.499507438187585,
+          "peak_xyz": [
+            16.0741,
+            0.0,
+            78.8811
+          ],
+          "kt_off_plane": 2.1507120450193002,
+          "off_plane_nodes": 1521,
+          "plane_nodes": 37,
+          "beam_ratio_min": 0.9975449055012819,
+          "beam_ratio_max": 1.0041547494237917,
+          "beam_nodes": 32,
+          "applied_moment_Nmm": 149997.87193461342,
+          "target_moment_Nmm": 150000.0,
+          "reaction_moment_Nmm": 149997.8778306321,
+          "nodes": 62948,
+          "elements": 42106
+        },
+        "torsion": {
+          "kt": 1.5483153580039648,
+          "peak_angle_deg": 17.499507438187585,
+          "peak_xyz": [
+            16.0741,
+            0.0,
+            78.8811
+          ],
+          "kt_off_plane": 1.5518148800732774,
+          "off_plane_nodes": 1521,
+          "plane_nodes": 37,
+          "beam_ratio_min": 0.9987830180594295,
+          "beam_ratio_max": 1.0040989331463692,
+          "beam_nodes": 32,
+          "applied_moment_Nmm": -249996.45322435393,
+          "target_moment_Nmm": 250000.0,
+          "reaction_moment_Nmm": -249996.49299901348,
+          "nodes": 62948,
+          "elements": 42106
+        },
+        "nodes": 62948
+      },
+      "metrics": {
+        "kt_bending": 2.13611327317959,
+        "kt_torsion": 1.5483153580039648,
+        "fatigue_safety": 1.1885595033792449,
+        "fatigue_safety_elliptic": 1.440462912949964,
+        "static_safety": 1.8259535647731466
+      }
+    },
+    {
+      "label": "p02_fillet_radius_mm-2",
+      "parameters": {
+        "D_mm": 40.0,
+        "d_mm": 32.0,
+        "fillet_radius_mm": 2.0,
+        "small_length_mm": 80.0,
+        "large_length_mm": 80.0,
+        "bending_moment_Nm": 300.0,
+        "torque_Nm": 500.0,
+        "youngs_modulus_MPa": 210000.0,
+        "poisson_ratio": 0.3,
+        "ultimate_MPa": 1000.0,
+        "yield_MPa": 750.0,
+        "overload_factor": 1.5,
+        "element_size_fillet_mm": 0.14,
+        "element_size_far_mm": 4.0,
+        "refine_radius_mm": 0.5,
+        "refine_halfwidth_mm": 3.0,
+        "mesh_growth": 0.25
+      },
+      "status": "completed",
+      "derived": {
+        "h_over_r": 2.0,
+        "r_over_d": 0.0625,
+        "kt_bending_fit": 1.882878805245926,
+        "kt_torsion_fit": 1.5107726087259885,
+        "fatigue_safety_hand": 1.2994440797085491,
+        "static_safety_hand": 1.9390879045979075
+      },
+      "solver": {
+        "success": true,
+        "message": "CalculiX: 68510 nodes, Kt 1.9882, Kts 1.4745",
+        "nfev": null
+      },
+      "solver_outputs": {
+        "sigma_nom_MPa": 93.25484946790743,
+        "tau_nom_MPa": 77.71237455658952,
+        "volume_mm3": 82479.74423183025,
+        "bending": {
+          "kt": 1.9881957547976827,
+          "peak_angle_deg": 15.652619290438622,
+          "peak_xyz": [
+            16.0742,
+            0.0,
+            78.5396
+          ],
+          "kt_off_plane": 2.0016243813681047,
+          "off_plane_nodes": 1902,
+          "plane_nodes": 47,
+          "beam_ratio_min": 0.9979566803335733,
+          "beam_ratio_max": 1.0037483362429624,
+          "beam_nodes": 32,
+          "applied_moment_Nmm": 149997.87193461345,
+          "target_moment_Nmm": 150000.0,
+          "reaction_moment_Nmm": 149997.88561406502,
+          "nodes": 68510,
+          "elements": 45932
+        },
+        "torsion": {
+          "kt": 1.474542384540302,
+          "peak_angle_deg": 15.652619290438622,
+          "peak_xyz": [
+            16.0742,
+            0.0,
+            78.5396
+          ],
+          "kt_off_plane": 1.4772868704881468,
+          "off_plane_nodes": 1902,
+          "plane_nodes": 47,
+          "beam_ratio_min": 0.9988911089541221,
+          "beam_ratio_max": 1.0037655696270638,
+          "beam_nodes": 32,
+          "applied_moment_Nmm": -249996.453224354,
+          "target_moment_Nmm": 250000.0,
+          "reaction_moment_Nmm": -249996.50333353036,
+          "nodes": 68510,
+          "elements": 45932
+        },
+        "nodes": 68510
+      },
+      "metrics": {
+        "kt_bending": 1.9881957547976827,
+        "kt_torsion": 1.474542384540302,
+        "fatigue_safety": 1.2576359028804187,
+        "fatigue_safety_elliptic": 1.5267464708256724,
+        "static_safety": 1.9210847338197443
+      }
+    },
+    {
+      "label": "p03_fillet_radius_mm-2.5",
+      "parameters": {
+        "D_mm": 40.0,
+        "d_mm": 32.0,
+        "fillet_radius_mm": 2.5,
+        "small_length_mm": 80.0,
+        "large_length_mm": 80.0,
+        "bending_moment_Nm": 300.0,
+        "torque_Nm": 500.0,
+        "youngs_modulus_MPa": 210000.0,
+        "poisson_ratio": 0.3,
+        "ultimate_MPa": 1000.0,
+        "yield_MPa": 750.0,
+        "overload_factor": 1.5,
+        "element_size_fillet_mm": 0.14,
+        "element_size_far_mm": 4.0,
+        "refine_radius_mm": 0.5,
+        "refine_halfwidth_mm": 3.0,
+        "mesh_growth": 0.25
+      },
+      "status": "completed",
+      "derived": {
+        "h_over_r": 1.6,
+        "r_over_d": 0.078125,
+        "kt_bending_fit": 1.7822905268215583,
+        "kt_torsion_fit": 1.440784567340428,
+        "fatigue_safety_hand": 1.3595343640407815,
+        "static_safety_hand": 2.0255070198485234
+      },
+      "solver": {
+        "success": true,
+        "message": "CalculiX: 75228 nodes, Kt 1.8583, Kts 1.4086",
+        "nfev": null
+      },
+      "solver_outputs": {
+        "sigma_nom_MPa": 93.25484946790743,
+        "tau_nom_MPa": 77.71237455658952,
+        "volume_mm3": 82505.16339767977,
+        "bending": {
+          "kt": 1.8583274285977553,
+          "peak_angle_deg": 13.964538318393322,
+          "peak_xyz": [
+            16.0739,
+            0.0,
+            78.1033
+          ],
+          "kt_off_plane": 1.8663608754977494,
+          "off_plane_nodes": 2360,
+          "plane_nodes": 59,
+          "beam_ratio_min": 0.9978869788645657,
+          "beam_ratio_max": 1.0029237142480874,
+          "beam_nodes": 32,
+          "applied_moment_Nmm": 149997.8719346134,
+          "target_moment_Nmm": 150000.0,
+          "reaction_moment_Nmm": 149997.85605176192,
+          "nodes": 75228,
+          "elements": 50603
+        },
+        "torsion": {
+          "kt": 1.4085943835547785,
+          "peak_angle_deg": 12.41296942897502,
+          "peak_xyz": [
+            16.0584,
+            0.0,
+            78.0374
+          ],
+          "kt_off_plane": 1.4099776237506598,
+          "off_plane_nodes": 2360,
+          "plane_nodes": 59,
+          "beam_ratio_min": 0.9990957095705645,
+          "beam_ratio_max": 1.003194271682082,
+          "beam_nodes": 32,
+          "applied_moment_Nmm": -249996.45322435384,
+          "target_moment_Nmm": 250000.0,
+          "reaction_moment_Nmm": -249996.47779790036,
+          "nodes": 75228,
+          "elements": 50603
+        },
+        "nodes": 75228
+      },
+      "metrics": {
+        "kt_bending": 1.8583274285977553,
+        "kt_torsion": 1.4085943835547785,
+        "fatigue_safety": 1.3271396563977296,
+        "fatigue_safety_elliptic": 1.613688007297053,
+        "static_safety": 2.015965472976425
+      }
+    },
+    {
+      "label": "p04_fillet_radius_mm-3",
+      "parameters": {
+        "D_mm": 40.0,
+        "d_mm": 32.0,
+        "fillet_radius_mm": 3.0,
+        "small_length_mm": 80.0,
+        "large_length_mm": 80.0,
+        "bending_moment_Nm": 300.0,
+        "torque_Nm": 500.0,
+        "youngs_modulus_MPa": 210000.0,
+        "poisson_ratio": 0.3,
+        "ultimate_MPa": 1000.0,
+        "yield_MPa": 750.0,
+        "overload_factor": 1.5,
+        "element_size_fillet_mm": 0.14,
+        "element_size_far_mm": 4.0,
+        "refine_radius_mm": 0.5,
+        "refine_halfwidth_mm": 3.0,
+        "mesh_growth": 0.25
+      },
+      "status": "completed",
+      "derived": {
+        "h_over_r": 1.3333333333333333,
+        "r_over_d": 0.09375,
+        "kt_bending_fit": 1.7088321659346724,
+        "kt_torsion_fit": 1.3894981603142784,
+        "fatigue_safety_hand": 1.4080338054117483,
+        "static_safety_hand": 2.095053024462196
+      },
+      "solver": {
+        "success": true,
+        "message": "CalculiX: 79511 nodes, Kt 1.7631, Kts 1.3609",
+        "nfev": null
+      },
+      "solver_outputs": {
+        "sigma_nom_MPa": 93.25484946790743,
+        "tau_nom_MPa": 77.71237455658952,
+        "volume_mm3": 82536.54081887231,
+        "bending": {
+          "kt": 1.763051961087733,
+          "peak_angle_deg": 13.23625494049237,
+          "peak_xyz": [
+            16.0797,
+            0.0,
+            77.6869
+          ],
+          "kt_off_plane": 1.7704048541936646,
+          "off_plane_nodes": 2838,
+          "plane_nodes": 69,
+          "beam_ratio_min": 0.9974301661599925,
+          "beam_ratio_max": 1.0043177436282402,
+          "beam_nodes": 33,
+          "applied_moment_Nmm": 149997.87193461342,
+          "target_moment_Nmm": 150000.0,
+          "reaction_moment_Nmm": 149997.85920227753,
+          "nodes": 79511,
+          "elements": 53477
+        },
+        "torsion": {
+          "kt": 1.3608586519944472,
+          "peak_angle_deg": 13.23625494049237,
+          "peak_xyz": [
+            16.0797,
+            0.0,
+            77.6869
+          ],
+          "kt_off_plane": 1.3618045434998907,
+          "off_plane_nodes": 2838,
+          "plane_nodes": 69,
+          "beam_ratio_min": 0.9984304358570611,
+          "beam_ratio_max": 1.004490048410066,
+          "beam_nodes": 33,
+          "applied_moment_Nmm": -249996.453224354,
+          "target_moment_Nmm": 250000.0,
+          "reaction_moment_Nmm": -249996.44713735883,
+          "nodes": 79511,
+          "elements": 53477
+        },
+        "nodes": 79511
+      },
+      "metrics": {
+        "kt_bending": 1.763051961087733,
+        "kt_torsion": 1.3608586519944472,
+        "fatigue_safety": 1.3842265988318931,
+        "fatigue_safety_elliptic": 1.6853385046405276,
+        "static_safety": 2.0925800247659097
+      }
+    },
+    {
+      "label": "p05_fillet_radius_mm-3.5",
+      "parameters": {
+        "D_mm": 40.0,
+        "d_mm": 32.0,
+        "fillet_radius_mm": 3.5,
+        "small_length_mm": 80.0,
+        "large_length_mm": 80.0,
+        "bending_moment_Nm": 300.0,
+        "torque_Nm": 500.0,
+        "youngs_modulus_MPa": 210000.0,
+        "poisson_ratio": 0.3,
+        "ultimate_MPa": 1000.0,
+        "yield_MPa": 750.0,
+        "overload_factor": 1.5,
+        "element_size_fillet_mm": 0.14,
+        "element_size_far_mm": 4.0,
+        "refine_radius_mm": 0.5,
+        "refine_halfwidth_mm": 3.0,
+        "mesh_growth": 0.25
+      },
+      "status": "completed",
+      "derived": {
+        "h_over_r": 1.1428571428571428,
+        "r_over_d": 0.109375,
+        "kt_bending_fit": 1.6522054201274166,
+        "kt_torsion_fit": 1.3498593077936751,
+        "fatigue_safety_hand": 1.44847317394274,
+        "static_safety_hand": 2.152901464512472
+      },
+      "solver": {
+        "success": true,
+        "message": "CalculiX: 83288 nodes, Kt 1.6896, Kts 1.3245",
+        "nfev": null
+      },
+      "solver_outputs": {
+        "sigma_nom_MPa": 93.25484946790743,
+        "tau_nom_MPa": 77.71237455658952,
+        "volume_mm3": 82573.9894399911,
+        "bending": {
+          "kt": 1.689573115515306,
+          "peak_angle_deg": 12.375219130296003,
+          "peak_xyz": [
+            16.0813,
+            0.0,
+            77.2501
+          ],
+          "kt_off_plane": 1.692924753599885,
+          "off_plane_nodes": 3286,
+          "plane_nodes": 81,
+          "beam_ratio_min": 0.996990510740098,
+          "beam_ratio_max": 1.0044185426757282,
+          "beam_nodes": 33,
+          "applied_moment_Nmm": 149997.87193461336,
+          "target_moment_Nmm": 150000.0,
+          "reaction_moment_Nmm": 149997.85466009082,
+          "nodes": 83288,
+          "elements": 56116
+        },
+        "torsion": {
+          "kt": 1.3245477199348943,
+          "peak_angle_deg": 11.249895901466514,
+          "peak_xyz": [
+            16.0673,
+            0.0,
+            77.1828
+          ],
+          "kt_off_plane": 1.325118174804914,
+          "off_plane_nodes": 3286,
+          "plane_nodes": 81,
+          "beam_ratio_min": 0.9987945992322386,
+          "beam_ratio_max": 1.004539130277066,
+          "beam_nodes": 33,
+          "applied_moment_Nmm": -249996.45322435393,
+          "target_moment_Nmm": 250000.0,
+          "reaction_moment_Nmm": -249996.44817106883,
+          "nodes": 83288,
+          "elements": 56116
+        },
+        "nodes": 83288
+      },
+      "metrics": {
+        "kt_bending": 1.689573115515306,
+        "kt_torsion": 1.3245477199348943,
+        "fatigue_safety": 1.4323247763198146,
+        "fatigue_safety_elliptic": 1.7458811205693072,
+        "static_safety": 2.1561426146698723
+      }
+    },
+    {
+      "label": "p06_fillet_radius_mm-3.9",
+      "parameters": {
+        "D_mm": 40.0,
+        "d_mm": 32.0,
+        "fillet_radius_mm": 3.9,
+        "small_length_mm": 80.0,
+        "large_length_mm": 80.0,
+        "bending_moment_Nm": 300.0,
+        "torque_Nm": 500.0,
+        "youngs_modulus_MPa": 210000.0,
+        "poisson_ratio": 0.3,
+        "ultimate_MPa": 1000.0,
+        "yield_MPa": 750.0,
+        "overload_factor": 1.5,
+        "element_size_fillet_mm": 0.14,
+        "element_size_far_mm": 4.0,
+        "refine_radius_mm": 0.5,
+        "refine_halfwidth_mm": 3.0,
+        "mesh_growth": 0.25
+      },
+      "status": "failed",
+      "derived": {
+        "h_over_r": 1.0256410256410258,
+        "r_over_d": 0.121875,
+        "kt_bending_fit": 1.6152034592652755,
+        "kt_torsion_fit": 1.3239080037840056,
+        "fatigue_safety_hand": 1.476490902979069,
+        "static_safety_hand": 2.1929059738194376
+      },
+      "solver": {
+        "success": false,
+        "message": "CalculiX bending failed (exit 201); see ccx.log",
+        "nfev": null
+      }
+    }
+  ],
+  "study": "shaft_fillet",
+  "status": "partial",
+  "finished_utc": "2026-11-24T20:51:15+00:00"
+}

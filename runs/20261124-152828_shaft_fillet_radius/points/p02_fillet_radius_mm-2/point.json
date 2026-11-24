@@ -1,0 +1,89 @@
+{
+  "label": "p02_fillet_radius_mm-2",
+  "parameters": {
+    "D_mm": 40.0,
+    "d_mm": 32.0,
+    "fillet_radius_mm": 2.0,
+    "small_length_mm": 80.0,
+    "large_length_mm": 80.0,
+    "bending_moment_Nm": 300.0,
+    "torque_Nm": 500.0,
+    "youngs_modulus_MPa": 210000.0,
+    "poisson_ratio": 0.3,
+    "ultimate_MPa": 1000.0,
+    "yield_MPa": 750.0,
+    "overload_factor": 1.5,
+    "element_size_fillet_mm": 0.14,
+    "element_size_far_mm": 4.0,
+    "refine_radius_mm": 0.5,
+    "refine_halfwidth_mm": 3.0,
+    "mesh_growth": 0.25
+  },
+  "status": "completed",
+  "derived": {
+    "h_over_r": 2.0,
+    "r_over_d": 0.0625,
+    "kt_bending_fit": 1.882878805245926,
+    "kt_torsion_fit": 1.5107726087259885,
+    "fatigue_safety_hand": 1.2994440797085491,
+    "static_safety_hand": 1.9390879045979075
+  },
+  "solver": {
+    "success": true,
+    "message": "CalculiX: 68510 nodes, Kt 1.9882, Kts 1.4745",
+    "nfev": null
+  },
+  "solver_outputs": {
+    "sigma_nom_MPa": 93.25484946790743,
+    "tau_nom_MPa": 77.71237455658952,
+    "volume_mm3": 82479.74423183025,
+    "bending": {
+      "kt": 1.9881957547976827,
+      "peak_angle_deg": 15.652619290438622,
+      "peak_xyz": [
+        16.0742,
+        0.0,
+        78.5396
+      ],
+      "kt_off_plane": 2.0016243813681047,
+      "off_plane_nodes": 1902,
+      "plane_nodes": 47,
+      "beam_ratio_min": 0.9979566803335733,
+      "beam_ratio_max": 1.0037483362429624,
+      "beam_nodes": 32,
+      "applied_moment_Nmm": 149997.87193461345,
+      "target_moment_Nmm": 150000.0,
+      "reaction_moment_Nmm": 149997.88561406502,
+      "nodes": 68510,
+      "elements": 45932
+    },
+    "torsion": {
+      "kt": 1.474542384540302,
+      "peak_angle_deg": 15.652619290438622,
+      "peak_xyz": [
+        16.0742,
+        0.0,
+        78.5396
+      ],
+      "kt_off_plane": 1.4772868704881468,
+      "off_plane_nodes": 1902,
+      "plane_nodes": 47,
+      "beam_ratio_min": 0.9988911089541221,
+      "beam_ratio_max": 1.0037655696270638,
+      "beam_nodes": 32,
+      "applied_moment_Nmm": -249996.453224354,
+      "target_moment_Nmm": 250000.0,
+      "reaction_moment_Nmm": -249996.50333353036,
+      "nodes": 68510,
+      "elements": 45932
+    },
+    "nodes": 68510
+  },
+  "metrics": {
+    "kt_bending": 1.9881957547976827,
+    "kt_torsion": 1.474542384540302,
+    "fatigue_safety": 1.2576359028804187,
+    "fatigue_safety_elliptic": 1.5267464708256724,
+    "static_safety": 1.9210847338197443
+  }
+}

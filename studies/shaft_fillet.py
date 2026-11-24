@@ -28,6 +28,7 @@ import numpy as np
 
 from harness.backend_base import Backend, failed
 from harness.calculix import read_frd
+from harness.case import sweep_name
 from harness.checks import check
 from harness.convergence import describe, discretization_uncertainty
 from harness.study import Study
@@ -241,7 +242,7 @@ class ShaftFilletStudy(Study):
         return checks
 
     def verify_run_level(self, case, manifest, points):
-        sweep = case.get("sweep", {}).get("parameter")
+        sweep = sweep_name(case)          # the swept parameter, or "scenario"
         tol = case["verification"]
         done = [pt for pt in manifest["points"] if pt["status"] == "completed"]
         if sweep == "element_size_fillet_mm":
