@@ -5,6 +5,12 @@
 # Predictions (written BEFORE the run, 2026-11-23 21:58):
 #   P1 As the cold low-iq table: every check passes except, possibly, the dq-torque check in some columns.
 #   P2 About 55 min.
+#
+# Results (run 20261124-031723_motor_prius_lut_hot_lowiq_rev5, 03:17-04:12): verification FAIL, the dq torque check in
+# six columns (id -300 to -175 A: 0.63-1.30 % against 0.5 %), every one at iq 6.25 A (mean torque 32.5-35.5 N m,
+# ripple 13-21 N m peak to peak, absolute miss 0.22-0.42 N m), the mechanism of the cold low-iq table. Every other
+# check passes on every point.  P1 HELD as written.  P2 HELD (55 min).
+# The efficiency map interpolates FEMM's torque, not the dq product; the table is used, with this FAIL reported.
 
 [case]
 name = "motor_prius_lut_hot_lowiq_rev5"
