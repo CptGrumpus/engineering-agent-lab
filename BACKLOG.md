@@ -79,14 +79,17 @@ commit). Rules that bind:
   `*.inp`, `*.dat`, `__pycache__`, files > 600 kB, then `tests/test_privacy.py`; never two FEMM cases at once; check
   free RAM on long runs.
 
-### Running at 16:00, 2026-11-24 (scratchpads under `%LOCALAPPDATA%/Temp/claude/cb67dd1e648f8970/<session>/scratchpad/`)
+### Running at 16:25, 2026-11-24 (scratchpads under `%LOCALAPPDATA%/Temp/claude/cb67dd1e648f8970/<session>/scratchpad/`)
 
 | Job | Run dir (log) | Done about | When it finishes |
 |---|---|---|---|
-| Study 6: FSI2 mesh study revision 1, levels a / b / c (`cases/turek_hron_fsi2_mesh_{a,b,c}_r1.toml`, frozen 1 / d mesh motion), started 08:24; at 15:13 a, b past 13 s, c past 10 s of 15 | `runs/*_turek_hron_fsi2_mesh_*_r1` (`fsi2_r1_{a,b,c}.log`, session 8f53debf) | a, b about 16:00; c about 18:30 | Score P1-P5 (headers); `scripts/combine_mesh_levels.py` over the three r1 runs; page 17 (drop 'draft' if c passes); skill lines. |
-| Study 6: FSI3 time-step study (`turek_hron_fsi3_dt_{a,c}`, dt 0.001 / 0.00025; the middle level is run 20261123-161107), started 10:33; at 15:13 a at 6 s, c at 2 s of 8 | `runs/*_turek_hron_fsi3_dt_*` (`fsi3_dt_{a,c}.log`) | a about 16:30; c late evening | Score; `combine_mesh_levels.py --parameter time_step_s` with 20261123-161107; page 17. |
-| Study 11: enclosure corners (`enclosure_k{5,20}_eps{0p1,0p9}`), started 14:40 | `runs/*_enclosure_*` (`enclosure_*.log`) | eps 0.9 about 16:15; eps 0.1 about 20:30-21:00 (the low-emissivity radiation solve takes 18 sweeps a step) | Score P1-P5; commit; study 11 page; README row; BACKLOG row 11. |
-| Machine elements (updated 16:00): mesh study done twice (`shaft_fillet_mesh` FAIL: an end-load sign check, fixed; `shaft_fillet_mesh_r1`: point checks pass, Kts / yield GCI fail at the nodal-stress noise scale); now `shaft_fillet_noise` (perturbed meshes, the floor), `shaft_fillet_radius`, then `shaft_fillet_size` (user's decision after 15:15: size a passing step); predictions in each header | `runs/*_shaft_fillet_*` (`shaft_fillet_*.log`) | about 16:15 | Put the measured floor into `shaft_fillet_mesh_r2` (new, predictions first) and run it; score all; page 26; README / PORTFOLIO rows; BACKLOG row. |
+| Study 6: FSI2 r1 level a (frozen motion), started 08:24; level b DONE 16:22 (scored, committed 1964b81) | `runs/*_turek_hron_fsi2_mesh_a_r1` (`fsi2_r1_a.log`) | about 16:45 | Score P1-P2 in its header (b's results are there). |
+| Study 6: FSI2 r1 level c, at about 11 of 15 s at 16:11 | `runs/*_turek_hron_fsi2_mesh_c_r1` (`fsi2_r1_c.log`) | about 20:00-21:00 | Score P1-P5; `scripts/combine_mesh_levels.py` over the three r1 runs; page 17 (drop 'draft' if c passes); skills. |
+| Study 6: FSI3 time-step study (`turek_hron_fsi3_dt_{a,c}`), started 10:33 | `runs/*_turek_hron_fsi3_dt_*` (`fsi3_dt_{a,c}.log`) | a about 17:00-18:00; c late evening | Score; `combine_mesh_levels.py --parameter time_step_s` with 20261123-161107 as the middle level; page 17. |
+| Study 11: enclosure eps 0.1 corners (`enclosure_k{5,20}_eps0p1`), started 14:40; the eps 0.9 corners DONE (1106522) | `runs/*_enclosure_*_eps0p1` | about 19:00 | Score P1-P5 (P3 = these); commit; study 11 page (27); README row; BACKLOG row 11. |
+| Study 11: mesh check on 1 mm cells (`enclosure_k20_eps0p9_mesh1mm`, predictions in the header), started 16:18 | `runs/*_enclosure_k20_eps0p9_mesh1mm` (`enclosure_mesh1mm.log`) | tomorrow early morning (about 13 h) | Compare with the 2 mm run (20261124-144021): difference as the mesh error; page 27. |
+
+Machine elements (study 16) DONE 16:24: page 26; dashboard session told.
 
 ### Next (in order)
 0c. **User's decisions 2026-11-24, after 12:09:** study 11's enclosure verdict BRACKETED in board conductivity (5 and
