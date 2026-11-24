@@ -4,7 +4,7 @@
 
 Reads the FEMM solution exported by scripts/export_femm_field.py (build/render/motor_rev5_centre/field.npz and
 field.json: one pole, 45 degrees, anti-periodic) and writes site/v2/fig_motor_field.webp. The export is revision 5, the
-client-data model, open circuit, magnets at 20 C, the drawing's 0.775 mm gap: the last step of run RUN, point POINT. The
+client-data model, open circuit, magnets at the run's temperature (25 C), the drawing's 0.775 mm gap: the last step of run RUN, point POINT. The
 full section is the solved pole rotated by k x 45 degrees; |B| doesn't change with the anti-periodic sign flip.
 
 Before drawing, it runs the gate itself rather than trusting a record: the export's circuit fluxes (Wb per metre of
@@ -42,6 +42,8 @@ COIL, AIRGAP, STATOR_AIR, ROTOR, VOID, MAG_A, MAG_B, STATOR = 11, 0, 15, 20, 26,
 
 def main():
     meta = json.loads((SRC / "field.json").read_text(encoding="utf-8"))
+    man = json.loads((RUN / "manifest.json").read_text(encoding="utf-8"))
+    t_mag = [p for p in man["points"] if p["label"] == POINT][0]["parameters"]["magnet_temperature_C"]
     rows = (RUN / "points" / POINT / "flux_linkage.csv").read_text(encoding="utf-8").strip().splitlines()
     assert rows[0].split(",") == ["time_s", "phi_a_Wb", "phi_b_Wb", "phi_c_Wb"], rows[0]
     run_phi = np.array([float(v) for v in rows[-1].split(",")[1:]])
@@ -68,7 +70,7 @@ def main():
 
     fig = plt.figure(figsize=(fk.FULL, 4.9), dpi=220)
     fk.heading(fig, "The magnets' field at open circuit: the thin bridges above the magnets saturate, near 2.3 T",
-               "The client-data model, magnets at 20 °C, FEMM 2D magnetostatics, one pole solved and repeated; flux density |B| in tesla")
+               f"The client-data model, magnets at {t_mag:g} °C, FEMM 2D magnetostatics, one pole solved and repeated; flux density |B| in tesla")
     axL = fig.add_axes([0.0, 0.08, 0.47, 0.80])
     axR = fig.add_axes([0.45, 0.08, 0.47, 0.80])
     for ax in (axL, axR):

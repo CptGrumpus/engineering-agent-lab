@@ -88,6 +88,10 @@ When the export moves to a new model revision, re-check every label against the 
 "non-magnetic shell" label landed inside revision 5's magnet, and a label placed past the view's edge is clipped
 without warning.
 
+Read the run's conditions (temperatures, speed, current) from its `manifest.json` point parameters and format them
+into the subtitle; don't type them. The motor field map said "magnets at 20 °C" for a run at 25 °C, and the page
+caption copied it.
+
 ## Before it ships
 
 - [ ] No code names, case labels or metric names on the figure
