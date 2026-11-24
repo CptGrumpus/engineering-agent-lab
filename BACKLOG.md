@@ -98,10 +98,11 @@ commit). Rules that bind:
    made (client question 6); no run until then. The MDPI Machines 2019 7(4) 75 PDF can be read only if the user saves it (its server blocks fetches).
 2. FSI2 / FSI3 mesh results and combined GCIs; page 17. FSI2 levels a and b done 21:18 / 21:28 and scored (case
    headers: P1 held on both, P2 held, b repeats turek_hron_fsi2 exactly, P3 held on a, P5 missed; a vs b 0.1-0.7 %);
-   FSI2 level c's rerun FAILED again at t = 8.836 s (00:02): a cell collapsing under the mesh motion (max Courant
-   2.2 -> 5.8 -> 17.9 in two steps, then a floating point exception in GAMG; case header). Next for c: confirm the
-   collapse offline (deform the 1.77 mm mesh with the flag's shape at 8.836 s, check cell quality), then change
-   only the mesh motion and rerun (~6 h). Until then FSI2 has two levels (a vs b 0.1-0.7 %), no three-level GCI.
+   FSI2 level c's rerun FAILED again at t = 8.836 s (00:02; max Courant 2.2 -> 5.8 -> 17.9 in two steps, then a
+   floating point exception in GAMG): a mesh-motion cell collapse or a local PISO instability; the tail cannot
+   separate them (case header). Next for c, the user's call on compute (6-10 h): nOuterCorrectors 3 at the same dt
+   (fixes only the instability) or a stiffer mesh motion (fixes only the collapse). Until then FSI2 has two
+   levels (a vs b 0.1-0.7 %), no three-level GCI.
 3. Motor field render for the site: re-export from a revision-5 solution (`scripts/export_femm_field.py`; copy the
    evidence run's .ans to build/ first, Pyleecan overwrites it); the revision-4 export in `build/render/motor_rev4_centre`
    has the wrong magnet. Refresh `reports/motor/` after the 18 % is explained.

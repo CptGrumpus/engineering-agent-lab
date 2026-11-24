@@ -37,13 +37,16 @@
 # Rerun (20261123-180658, 18:06-00:02, unchanged settings): FAILED again, at the same step, t = 8.836 s: the solve is
 # deterministic and the cause is real. The kept log tails (log.pimpleFoam.tail, log.ccx.tail) show it: the maximum
 # Courant number, about 2.2 for the whole run, jumped to 5.8 at 8.835 s and 17.9 at 8.836 s, then a floating point
-# exception inside the pressure solver (GAMG scale). A tenfold jump in two steps is a cell collapsing under the mesh
-# motion (displacementLaplacian, quadratic inverseDistance from flag and cylinder), not the flow: the flag tip was
-# passing about -58 mm at speed. The 2.5 mm level ran 15 s with the same motion settings; at 1.77 mm the cells next to
-# the flag are smaller and the same displacement squeezes one to nothing. The solid participant aborted only because
-# the fluid died. P1 MISSED for level c. The FSI2 mesh study has two levels (a vs b: 0.1-0.7 % on every quantity), so
-# no three-level GCI. Next, one change at a time: confirm the collapse offline (deform the level-c mesh with the flag's
-# shape at 8.836 s and check the cell quality; minutes, not 6 h), then change only the mesh motion and rerun.
+# exception inside the pressure solver (GAMG scale). The solid participant aborted only because the fluid died.
+# Two mechanisms fit a jump of several times per step, and the tail cannot separate them (no fields at the crash):
+# (1) a cell collapsing under the mesh motion (displacementLaplacian, quadratic inverseDistance from flag and
+# cylinder) as the flag passes; (2) a local instability of PISO (one outer corrector) at Courant numbers about 2,
+# growing with the swing (tip speed 0.71 m/s at the crash; the swing was still growing, -62.4 / +72.3 mm in the last
+# cycles). Against (1) alone: the tip already crossed -58 mm going down at 8.347 s without trouble (the flag's shape
+# and speed differ between passes, so this does not rule it out). The 2.5 mm level ran 15 s with the same settings.
+# P1 MISSED for level c. The FSI2 mesh study has two levels (a vs b: 0.1-0.7 % on every quantity), so no three-level
+# GCI. Next, one change per rerun, chosen to separate the two: nOuterCorrectors 3 (PIMPLE) at the same dt fixes (2)
+# but not (1); a stiffer mesh motion fixes (1) but not (2). Each is a 6-10 h run; the user's call on compute time.
 
 [case]
 name = "turek_hron_fsi2_mesh_c"
