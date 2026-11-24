@@ -47,3 +47,13 @@ anything. Each row below happened in this repo.
   difference picks up the regenerated mesh's noise (2 % of a = 0.04 mm at a 2 mm crack, about one tip element:
   0.2 % K scatter), and (b) small against the scale on which K changes, or truncation enters (10 % of a = 4.5 mm at
   45 mm: +1.2 % on K). A fixed absolute step of a few tip elements (0.2 mm here) satisfies both; check it by halving.
+
+## Machine-elements shaft: peak nodal stress on tetrahedra has a noise floor too
+
+- A peak read from nodal stresses (extrapolated and averaged C3D10 values) moves by about 0.1-0.2 % from mesh to mesh as
+  the peak node shifts along the fillet: Kts 1.5481 / 1.5483 / 1.5502 at 0.2 / 0.14 / 0.1 mm read as "divergent", and
+  a safety factor built from Kt and Kts (which converge in opposite directions) as "oscillating, growing", while every
+  point check passed and the off-plane check showed the same 0.1-0.7 % scatter. Adding a finer level did not help (it
+  added another noisy sample). Measure the floor (perturbed meshes at one size, `shaft_fillet_noise`) before the GCI,
+  as study F did; for a new peak-stress study, run the noise case with the mesh study, not after it.
+
