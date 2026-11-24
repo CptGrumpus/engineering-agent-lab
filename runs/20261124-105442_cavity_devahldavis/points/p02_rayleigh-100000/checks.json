@@ -1,0 +1,33 @@
+{
+  "label": "p02_rayleigh-100000",
+  "status": "PASS",
+  "checks": [
+    {
+      "id": "energy_balance",
+      "description": "|hot-wall Nu - cold-wall Nu| / hot-wall Nu (steady: the heat in leaves)",
+      "kind": "numerical",
+      "value": 0.00046769321614673336,
+      "tolerance": 0.002,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "converged",
+      "description": "largest final initial residual of U and h",
+      "kind": "numerical",
+      "value": 9.99229523251e-08,
+      "tolerance": 1e-05,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "boussinesq",
+      "description": "beta x temperature difference (OpenFOAM's Boussinesq density enters every term; validity)",
+      "kind": "validity",
+      "value": 0.0003333333333333334,
+      "tolerance": 0.001,
+      "comparison": "<=",
+      "status": "PASS"
+    }
+  ]
+}

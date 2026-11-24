@@ -1,0 +1,331 @@
+{
+  "points": [
+    {
+      "label": "p00_rayleigh-1000",
+      "parameters": {
+        "rayleigh": 1000.0,
+        "prandtl": 0.71,
+        "cells": 72,
+        "wall_grading": 4.0,
+        "side_m": 0.1,
+        "delta_T_K": 0.1,
+        "max_iterations": 20000
+      },
+      "derived": {
+        "g_m_per_s2": 1.369014084507042
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "energy_balance",
+          "description": "|hot-wall Nu - cold-wall Nu| / hot-wall Nu (steady: the heat in leaves)",
+          "kind": "numerical",
+          "value": 0.00016750100015704665,
+          "tolerance": 0.002,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "converged",
+          "description": "largest final initial residual of U and h",
+          "kind": "numerical",
+          "value": 7.10217363864e-07,
+          "tolerance": 1e-05,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "boussinesq",
+          "description": "beta x temperature difference (OpenFOAM's Boussinesq density enters every term; validity)",
+          "kind": "validity",
+          "value": 0.0003333333333333334,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-V1",
+          "text": "Validation: the hot wall's average Nusselt number shall be within 1 % of de Vahl Davis (1983) Table V (Nu_0).",
+          "metric": "Nu_deviation_pct",
+          "operator": "<=",
+          "limit": 1.0,
+          "units": "%",
+          "value": 0.04629397634676703,
+          "margin": 0.953706023653233,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-V2",
+          "text": "Validation: the largest horizontal velocity on the vertical mid-plane shall be within 2 % of the bench mark's u_max.",
+          "metric": "u_max_deviation_pct",
+          "operator": "<=",
+          "limit": 2.0,
+          "units": "%",
+          "value": 0.07715532182873563,
+          "margin": 1.9228446781712645,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-V3",
+          "text": "Validation: the largest vertical velocity on the horizontal mid-plane shall be within 2 % of the bench mark's w_max.",
+          "metric": "w_max_deviation_pct",
+          "operator": "<=",
+          "limit": 2.0,
+          "units": "%",
+          "value": 0.0761504863810793,
+          "margin": 1.9238495136189206,
+          "verdict": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p01_rayleigh-10000",
+      "parameters": {
+        "rayleigh": 10000.0,
+        "prandtl": 0.71,
+        "cells": 72,
+        "wall_grading": 4.0,
+        "side_m": 0.1,
+        "delta_T_K": 0.1,
+        "max_iterations": 20000
+      },
+      "derived": {
+        "g_m_per_s2": 13.690140845070417
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "energy_balance",
+          "description": "|hot-wall Nu - cold-wall Nu| / hot-wall Nu (steady: the heat in leaves)",
+          "kind": "numerical",
+          "value": 0.00016774438645426133,
+          "tolerance": 0.002,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "converged",
+          "description": "largest final initial residual of U and h",
+          "kind": "numerical",
+          "value": 8.96378455227e-08,
+          "tolerance": 1e-05,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "boussinesq",
+          "description": "beta x temperature difference (OpenFOAM's Boussinesq density enters every term; validity)",
+          "kind": "validity",
+          "value": 0.0003333333333333334,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-V1",
+          "text": "Validation: the hot wall's average Nusselt number shall be within 1 % of de Vahl Davis (1983) Table V (Nu_0).",
+          "metric": "Nu_deviation_pct",
+          "operator": "<=",
+          "limit": 1.0,
+          "units": "%",
+          "value": 0.2839835408413023,
+          "margin": 0.7160164591586977,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-V2",
+          "text": "Validation: the largest horizontal velocity on the vertical mid-plane shall be within 2 % of the bench mark's u_max.",
+          "metric": "u_max_deviation_pct",
+          "operator": "<=",
+          "limit": 2.0,
+          "units": "%",
+          "value": 0.03631116785918319,
+          "margin": 1.9636888321408168,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-V3",
+          "text": "Validation: the largest vertical velocity on the horizontal mid-plane shall be within 2 % of the bench mark's w_max.",
+          "metric": "w_max_deviation_pct",
+          "operator": "<=",
+          "limit": 2.0,
+          "units": "%",
+          "value": 0.002103819297730007,
+          "margin": 1.99789618070227,
+          "verdict": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p02_rayleigh-100000",
+      "parameters": {
+        "rayleigh": 100000.0,
+        "prandtl": 0.71,
+        "cells": 72,
+        "wall_grading": 4.0,
+        "side_m": 0.1,
+        "delta_T_K": 0.1,
+        "max_iterations": 20000
+      },
+      "derived": {
+        "g_m_per_s2": 136.9014084507042
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "energy_balance",
+          "description": "|hot-wall Nu - cold-wall Nu| / hot-wall Nu (steady: the heat in leaves)",
+          "kind": "numerical",
+          "value": 0.00046769321614673336,
+          "tolerance": 0.002,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "converged",
+          "description": "largest final initial residual of U and h",
+          "kind": "numerical",
+          "value": 9.99229523251e-08,
+          "tolerance": 1e-05,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "boussinesq",
+          "description": "beta x temperature difference (OpenFOAM's Boussinesq density enters every term; validity)",
+          "kind": "validity",
+          "value": 0.0003333333333333334,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-V1",
+          "text": "Validation: the hot wall's average Nusselt number shall be within 1 % of de Vahl Davis (1983) Table V (Nu_0).",
+          "metric": "Nu_deviation_pct",
+          "operator": "<=",
+          "limit": 1.0,
+          "units": "%",
+          "value": 0.3509410838387001,
+          "margin": 0.6490589161612998,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-V2",
+          "text": "Validation: the largest horizontal velocity on the vertical mid-plane shall be within 2 % of the bench mark's u_max.",
+          "metric": "u_max_deviation_pct",
+          "operator": "<=",
+          "limit": 2.0,
+          "units": "%",
+          "value": 0.26493553834718314,
+          "margin": 1.7350644616528168,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-V3",
+          "text": "Validation: the largest vertical velocity on the horizontal mid-plane shall be within 2 % of the bench mark's w_max.",
+          "metric": "w_max_deviation_pct",
+          "operator": "<=",
+          "limit": 2.0,
+          "units": "%",
+          "value": 0.050551210240367024,
+          "margin": 1.9494487897596329,
+          "verdict": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p03_rayleigh-1e+06",
+      "parameters": {
+        "rayleigh": 1000000.0,
+        "prandtl": 0.71,
+        "cells": 72,
+        "wall_grading": 4.0,
+        "side_m": 0.1,
+        "delta_T_K": 0.1,
+        "max_iterations": 20000
+      },
+      "derived": {
+        "g_m_per_s2": 1369.0140845070418
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "energy_balance",
+          "description": "|hot-wall Nu - cold-wall Nu| / hot-wall Nu (steady: the heat in leaves)",
+          "kind": "numerical",
+          "value": 0.0003697718166990356,
+          "tolerance": 0.002,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "converged",
+          "description": "largest final initial residual of U and h",
+          "kind": "numerical",
+          "value": 9.99958673863e-08,
+          "tolerance": 1e-05,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "boussinesq",
+          "description": "beta x temperature difference (OpenFOAM's Boussinesq density enters every term; validity)",
+          "kind": "validity",
+          "value": 0.0003333333333333334,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-V1",
+          "text": "Validation: the hot wall's average Nusselt number shall be within 1 % of de Vahl Davis (1983) Table V (Nu_0).",
+          "metric": "Nu_deviation_pct",
+          "operator": "<=",
+          "limit": 1.0,
+          "units": "%",
+          "value": 0.5726277383833797,
+          "margin": 0.42737226161662034,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-V2",
+          "text": "Validation: the largest horizontal velocity on the vertical mid-plane shall be within 2 % of the bench mark's u_max.",
+          "metric": "u_max_deviation_pct",
+          "operator": "<=",
+          "limit": 2.0,
+          "units": "%",
+          "value": 0.5646452366246015,
+          "margin": 1.4353547633753985,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-V3",
+          "text": "Validation: the largest vertical velocity on the horizontal mid-plane shall be within 2 % of the bench mark's w_max.",
+          "metric": "w_max_deviation_pct",
+          "operator": "<=",
+          "limit": 2.0,
+          "units": "%",
+          "value": 0.6247728001332,
+          "margin": 1.3752271998668,
+          "verdict": "PASS"
+        }
+      ]
+    }
+  ],
+  "run_id": "20261124-105442_cavity_devahldavis",
+  "generated_utc": "2026-11-24T16:57:12+00:00",
+  "verification_status": "PASS"
+}

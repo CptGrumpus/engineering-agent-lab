@@ -1,0 +1,58 @@
+/*---------------------------------------------------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Version:  14
+     \\/     M anipulation  |
+\*---------------------------------------------------------------------------*/
+Build  : 14-a4867fc914c1
+Exec   : foamPostProcess -solver fluid -func wallHeatFlux -latestTime
+Date   : Nov 24 2026
+Time   : 11:44:14
+Host   : "DESKTOP-ABJ862H"
+PID    : 2697790
+I/O    : uncollated
+Case   : ~/AppData/Local/Temp/cavity_21kqxau_/case
+nProcs : 1
+sigFpe : Enabling floating point exception trapping (FOAM_SIGFPE).
+fileModificationChecking : Monitoring run-time modified files using timeStampMaster (fileModificationSkew 10)
+allowSystemOperations : Allowing user-supplied system call operations
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+Create time
+
+Create mesh for time = 20000
+
+
+Constructing functionObjects from system/functions
+    Selecting wallHeatFlux with name wallHeatFlux
+        processing all wall patches
+Time = 20000s
+
+Selecting solver fluid
+
+Selecting thermodynamics package 
+{
+    type            heRhoThermo;
+    mixture         pureMixture;
+    transport       const;
+    thermo          hConst;
+    equationOfState Boussinesq;
+    specie          specie;
+    energy          sensibleEnthalpy;
+}
+
+Selecting momentum transport model type laminar
+    Selecting laminar stress model Stokes
+
+Selecting thermophysical transport type laminar
+    Selecting default laminar thermophysical transport model unityLewisFourier
+wallHeatFlux wallHeatFlux write:
+    writing object wallHeatFlux
+    min, max, Q [W], q [W/m^2] for patch hot = 0.0197621911087, 0.119397261796, 1.05375706877e-05, 0.0758705089516
+    min, max, Q [W], q [W/m^2] for patch cold = -0.119396871402, -0.0197606637796, -1.05375717223e-05, -0.0758705164003
+    min, max, Q [W], q [W/m^2] for patch adiabatic = -0.000347081172834, 0.000347115879873, 5.38334211759e-13, 1.93800316233e-09
+
+
+End
+
