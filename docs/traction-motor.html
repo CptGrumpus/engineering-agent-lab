@@ -21,7 +21,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
-<link rel="stylesheet" href="assets/site.css?v=1effdf38ba">
+<link rel="stylesheet" href="assets/site.css?v=5476f6fe9b">
 </head>
 <body>
 <nav class="topbar" aria-label="Site">
@@ -119,7 +119,6 @@
           <tr><td>Back-EMF per 1,000 rpm</td><td>within 5 %</td><td>105.2 V against 89.4 V: 17.7 % high (18.7 % at the parts list's smaller air gap)</td><td rowspan="2"><span class="chip warn">Fails: one cause, about 18 % magnet flux, traced to the magnets</span></td></tr>
           <tr><td>Locked-rotor torque, 50 to 250 A</td><td>within 10 %</td><td>17 to 19 % high at five of seven currents; 12 % at 125 A, 22 % at 250 A</td></tr>
           <tr><td>Air-gap field with no current, by slot</td><td>a diagnostic, no goal</td><td>14.8 % high where the field is level, the same shape within 3.4 %</td><td><span class="chip note">Points to the magnets' magnetisation</span></td></tr>
-          <tr><td>Air-gap field with no current, by slot</td><td>a diagnostic, no goal</td><td>14.8 % high where the field is level, the same shape within 3.4 %</td><td><span class="chip note">Points to the magnets' magnetisation</span></td></tr>
           <tr><td>Motor efficiency at 393 test points</td><td>within 2 points</td><td>4.4 points high at the median; 2.8 to 7.1 for 80 % of points</td><td><span class="chip fail">Fails: mostly losses the model leaves out</span></td></tr>
           <tr><td>Static inductances</td><td>no limit set</td><td>Ld 1.72 mH against 1.92, 11 % low; Lq 5.50 mH against 5.0, 10 % high</td><td><span class="chip note">For diagnosis</span></td></tr>
         </tbody>
@@ -203,7 +202,7 @@
         <div class="side-card"><h2>At a Glance</h2><dl><div><dt>Study</dt><dd>20</dd></div><div><dt>Discipline</dt><dd>Electric machines</dd></div><div><dt>Tools</dt><dd>Pyleecan · FEMM · ElmerFEM · CalculiX</dd></div><div><dt>Verdict</dt><dd><span class="v v-closed">Closed, with client questions</span></dd></div></dl></div><div class="side-card"><h2>Requirements</h2><ul class="side-reqs"><li><span class="r-what">Model against the test: magnet flux (back-EMF and locked-rotor torque)</span><span class="r-num">within 5 % and 10 % · about 18 % high in both (back-EMF 17.7 %, torque 17 to 19 %); one cause; steel, end effects and the solver ruled out; magnets on the drawing&#x27;s stops as modelled; magnetisation level leads, a question for the client; nothing tuned</span><span class="chip warn">Open</span></li><li><span class="r-what">Design finding: voltage at 6,000 rpm if the inverter stops switching</span><span class="r-num">≤ 500 V · 850 V measured, about 1,000 V in the model: the motor fails, as the model predicted</span><span class="chip note">Finding, confirmed by test</span></li><li><span class="r-what">Design finding: rotor bridge stress at 7,200 rpm overspeed</span><span class="r-num">≤ 335 MPa · 415 MPa: past yield for the stand-in M330-35A; a stronger grade such as M250-35A would pass</span><span class="chip warn">Depends on steel grade</span></li><li><span class="r-what">Model against the test: efficiency at 393 measured points</span><span class="r-num">within 2 points · 4.4 points high at the median, mostly losses a motor-only model leaves out (friction, windage, eddy currents in the magnets)</span><span class="chip fail">Not met</span></li><li><span class="r-what">Rated 400 N m within the copper&#x27;s current limit</span><span class="r-num">≤ 212 A · 171 A (177 A hot)</span><span class="chip pass">Met</span></li><li><span class="r-what">Rated 50 kW to 6,000 rpm within the 500 V supply</span><span class="r-num">≥ 50 kW · 51.6 kW hot, 55.9 kW cold; it rides on the flux: 44.5 to 48.0 kW with the flux scaled down to the test</span><span class="chip warn">Met; depends on the flux</span></li><li><span class="r-what">Continuous power from 1,250 to 6,000 rpm, with a 65 °C coolant jacket assumed</span><span class="r-num">≥ 25 kW · 27.7 kW; 24.0 kW with the loosest fit between the stator and its housing</span><span class="chip warn">Met at the nominal fit</span></li></ul></div><div class="side-card side-toc"><h2>On This Page</h2><ul class="toc"><li><a href="#the-question">The question</a></li><li><a href="#the-answer-so-far">The answer so far</a></li><li><a href="#model-against-the-test">Model against the test</a></li><li><a href="#design-findings-about-the-motor">Design findings about the motor</a></li><li><a href="#the-model">The model</a></li><li><a href="#why-it-matters">Why it matters</a></li><li><a href="#how-it-works">How it works</a></li><li><a href="#how-i-checked-it">How I checked it</a></li><li><a href="#what-i-caught-along-the-way">What I caught along the way</a></li><li><a href="#limits-and-what-i-d-do-next">Limits, and what I&#x27;d do next</a></li><li><a href="#evidence">Evidence</a></li></ul></div>
       </aside>
     </div>
-    <nav class="pager" aria-label="More studies"><a class="prev" href="heat-sink-fin.html"><small>← Previous study</small><b>Heat-Sink Fin Temperature</b></a><a class="next" href="quarter-car.html"><small>Next study →</small><b>Quarter Car, Ride and Road Holding</b></a></nav>
+    <nav class="pager" aria-label="More studies"><a class="next" href="bracket-optimisation.html"><small>Next study →</small><b>Bracket Optimisation Loop, Driven by the Agent</b></a></nav>
   </div>
 
 </main>
@@ -235,8 +234,8 @@
     </div>
   </div>
 </footer>
-<script>window.VP = [{"id": "motor", "study": "motor", "kind": "figure", "img": "v2/fig_motor_comparison.svg", "model": "2004 Toyota Prius traction motor · the client-data model against Oak Ridge National Laboratory's test", "lines": ["Model: FEMM 4.2 magnetostatics through Pyleecan · drawing, parts list and measured magnet material as inputs, nothing tuned", "Left: back-EMF against speed. Right: locked-rotor torque against current, the largest over shaft angle, as the test reports it", "Back-EMF +17.7 %, torque 17 to 19 % high at most currents · about 18 % too much magnet flux, cause being tested"], "check": "", "card": "motor"}];</script>
-<script src="assets/viewer.js?v=1effdf38ba"></script>
-<script src="assets/site.js?v=1effdf38ba"></script>
+<script>window.VP = [{"id": "motor", "study": "motor", "kind": "figure", "img": "v2/fig_motor_comparison.svg", "model": "2004 Toyota Prius traction motor · the client-data model against Oak Ridge National Laboratory's test", "lines": ["Model: FEMM 4.2 magnetostatics through Pyleecan · drawing, parts list and measured magnet material as inputs, nothing tuned", "Left: back-EMF against speed. Right: locked-rotor torque against current, the largest over shaft angle, as the test reports it", "Back-EMF +17.7 %, torque 17 to 19 % high at most currents · about 18 % too much magnet flux, traced to the magnets"], "check": "", "card": "motor"}];</script>
+<script src="assets/viewer.js?v=5476f6fe9b"></script>
+<script src="assets/site.js?v=5476f6fe9b"></script>
 </body>
 </html>

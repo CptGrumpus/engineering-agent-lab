@@ -141,7 +141,7 @@ VP += [
      "model": "2004 Toyota Prius traction motor · the client-data model against Oak Ridge National Laboratory's test",
      "lines": ["Model: FEMM 4.2 magnetostatics through Pyleecan · drawing, parts list and measured magnet material as inputs, nothing tuned",
                "Left: back-EMF against speed. Right: locked-rotor torque against current, the largest over shaft angle, as the test reports it",
-               "Back-EMF +17.7 %, torque 17 to 19 % high at most currents · about 18 % too much magnet flux, cause being tested"]},
+               "Back-EMF +17.7 %, torque 17 to 19 % high at most currents · about 18 % too much magnet flux, traced to the magnets"]},
     {"id": "suspension", "study": "suspension", "kind": "figure", "img": "img/anim_quarter_car.webp",
      "model": "Quarter car over a bump · SciPy and OpenModelica",
      "lines": ["Drawn from the simulation at 36 km/h and 600 N·s/m, with the tire load and body acceleration",
@@ -258,7 +258,7 @@ PART_LABEL = {"fea": "01 · Stress check", "cantilever_opt": "01b · Optimised",
               "heat": "11 · Coolant channel", "cold_plate": "15 · Full thermal chain",
               "modal": "04 · Modal analysis", "random_vib": "21 · Random vibration", "bracket_uq": "22 · How robust the pass is",
               "pipe": "19 · Pipe friction", "step": "19, part 2 · Flow over a step"}
-WIDE = {"bracket_opt", "pv_nozzle", "strap", "cold_plate"}
+WIDE = {"motor", "bracket_opt", "pv_nozzle", "strap", "cold_plate"}
 
 GALLERY, _seen = [], set()        # (key, no, group, d, title, answer, verdict, tools, thumb key)
 for k, n, g, d, title, a, v, tools in CARDS:
@@ -365,8 +365,20 @@ def setup_key(gk: str):
     return k if k in DRAWINGS and (HERE / "v2" / f"dwg_{k}.webp").exists() else None
 
 
-HIGHLIGHTS = [("bracket_opt", "Optimised bracket"), ("pv_nozzle", "Pressure vessel"), ("bolted_joint", "Bolted joint slip"),
-              ("strut", "Strut buckling"), ("cold_plate", "Cold plate")]
+# the home page leads with the strongest studies (the user, 2026-11-24): the viewer's tabs, and the card order below
+HIGHLIGHTS = [("motor", "Traction motor"), ("bracket_opt", "Optimised bracket"), ("pv_nozzle", "Pressure vessel"),
+              ("bolted_joint", "Bolted joint slip"), ("cold_plate", "Cold plate")]
+# a highlight can show a different picture from its study page's viewer: the motor's field map catches the eye, and
+# its lines tell the diagnosis
+HIGHLIGHT_VIEW = {"motor": {
+    "img": "v2/fig_motor_field.webp",
+    "model": "2004 Toyota Prius traction motor · modelled from its drawings and parts list, checked against Oak Ridge National Laboratory's test",
+    "lines": ["FEMM 4.2 magnetostatics through Pyleecan · the field the magnets drive with no current in the winding, magnets at 25 °C",
+              "Back-EMF 17.7 % above the test, torque 17 to 19 % · nothing tuned; causes ruled out one at a time, each with a prediction first",
+              "Air-gap field: the test's shape within 3.4 %, 14.8 % stronger · the magnets, very likely not fully magnetised"]}}
+# card order on the home page and through the pager: these first, the rest as listed in CARDS
+FRONT = ["motor", "bracket_opt", "turbulent_flow", "pv_nozzle", "bracket_arm", "cold_plate", "fan_rotor", "oring",
+         "crack", "bolted_joint"]
 
 import tomllib
 
@@ -387,6 +399,8 @@ for v in VP:
     if v["study"] in PART_OF:
         v["part"] = PART_LABEL[v["study"]]
         v["main"] = GROUPS[v["card"]]["main"] == v["study"]
+assert set(FRONT) <= {c[0] for c in GALLERY}, set(FRONT) - {c[0] for c in GALLERY}
+GALLERY.sort(key=lambda c: FRONT.index(c[0]) if c[0] in FRONT else len(FRONT))     # stable: the rest keep CARDS order
 corder = [c[0] for c in GALLERY]
 VP.sort(key=lambda v: (corder.index(v["card"]),
                        GROUPS[v["card"]]["parts"].index(v["study"]) if v["card"] in GROUPS else 0))
@@ -702,6 +716,7 @@ def home_page(facts) -> dict:
     entries = []
     for i, (study, label) in enumerate(HIGHLIGHTS):
         v = dict(next(x for x in VP if x["study"] == study))
+        v.update(HIGHLIGHT_VIEW.get(study, {}))
         v.update(part=label, main=i == 0, href=STUDY_URL[study])
         entries.append(v)
     n_req = sum(len(items) for _, _, _, items in extras.REQS)

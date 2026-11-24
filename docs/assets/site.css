@@ -156,6 +156,8 @@ code { font-family: var(--font-data); font-size: 0.85em; }
 .vp.is-3d .stage img, .vp.is-3d .triad { visibility: hidden; }
 .vp.is-figure .legend, .vp.is-plain .legend, .vp.is-figure .triad, .vp.is-plain .triad { display: none; }
 .vp.is-figure .stage, .vp.is-plain .stage { grid-column: 1 / -1; padding: 20px 24px 12px; }
+/* a chart among the home page's tabs: keep it below the tab row, which floats over the stage on wide screens */
+@media (min-width: 721px) { .vp.is-figure .stage:has(.vp-parts:not([hidden])), .vp.is-plain .stage:has(.vp-parts:not([hidden])) { padding-top: 58px; } }
 .vp.is-figure .stage img { background: var(--plate); border-radius: 4px; padding: 10px; filter: none; max-height: clamp(260px, 40vw, 480px); }
 .vp { scroll-margin-top: 64px; }
 .vp-scrub { grid-column: 1 / -1; position: relative; z-index: 2; display: flex; align-items: center; gap: 12px; padding: 8px 20px; border-top: 1px solid var(--vp-line); background: rgba(8, 14, 26, 0.18); }

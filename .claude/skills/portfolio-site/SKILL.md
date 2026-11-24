@@ -75,6 +75,13 @@ a crop through a block of notes leaves half-words at the edge. The setup-first r
 2026-11-23; applying it to the cards was asked again a day later, so apply it to every new place a study is shown
 rather than asking.
 
+The home page leads with the strongest studies (user, 2026-11-24): the hero lede's examples, the viewer's tabs
+(`HIGHLIGHTS`, first tab shown first) and the cards (`FRONT` in `build_v2.py`, which also sets the pager's order).
+Strongest means what a hiring client values most: real hardware or measured data, a cause traced, several physics,
+a design decision. The traction motor leads, with its field map and the diagnosis in the viewer lines
+(`HIGHLIGHT_VIEW`). When a study lands, decide where it goes in `FRONT` rather than letting it fall to the end; when
+a highlighted study's result changes, check its `HIGHLIGHT_VIEW` lines and the lede too.
+
 Every study needs a drawing, so a new study isn't finished without one. The drawing shows the physical setup: the
 part with its main dimensions, the supports and loads, what's modelled (a half or a quarter), the inputs that are
 uncertain, and the load history when it matters (a cycle, a proof load). Read every value from the case file; a result
@@ -130,8 +137,9 @@ day stale before anyone noticed. Say "recently" or give the date.
   a chart label on 2026-11-23. No heredocs for Python at all.
 - Make a patch script safe to run twice. Check for the whole new text, not just the old: when the old text is a
   prefix of the new (adding entries after a line), a second run inserts them again. The build's
-  one-viewer-entry-per-study assert caught that once. A dict entry inserted twice isn't caught by anything (study
-  25's `QUESTION` line sat there twice): check for the new line itself, not for the old one being gone.
+  one-viewer-entry-per-study assert caught that once. A line inserted twice isn't caught by anything (study 25's
+  `QUESTION` line and the motor's air-gap table row both published twice): check for the new line itself, not for
+  the old one being gone.
 
 ## Building and publishing
 
