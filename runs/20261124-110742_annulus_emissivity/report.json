@@ -1,0 +1,199 @@
+{
+  "points": [
+    {
+      "label": "p00_eps_0p1",
+      "parameters": {
+        "r_inner_m": 0.02,
+        "r_outer_m": 0.05,
+        "T_inner_K": 400.0,
+        "T_outer_K": 300.0,
+        "eps_inner": 0.1,
+        "eps_outer": 0.1,
+        "cells_radial": 20,
+        "cells_per_quarter": 20,
+        "n_phi": 8,
+        "max_iterations": 3000,
+        "scenario": "eps_0p1"
+      },
+      "derived": {
+        "radiation": 9.168973994473328,
+        "conduction": 17.38444102193931
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "radiation_balance",
+          "description": "|radiation leaving the inner wall - reaching the outer| / leaving",
+          "kind": "numerical",
+          "value": 1.5103070221352148e-08,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "conduction_exact",
+          "description": "|conducted heat - 2 pi k dT / ln(r2 / r1)| / exact (no flow, transparent gas)",
+          "kind": "numerical",
+          "value": 0.00048047536265716185,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "converged",
+          "description": "final initial residual of h",
+          "kind": "numerical",
+          "value": 8.93873993141e-10,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-V4",
+          "text": "Validation: the radiated heat between the cylinders shall be within 1 % of the exact two-surface exchange for grey diffuse walls.",
+          "metric": "radiation_deviation_pct",
+          "operator": "<=",
+          "limit": 1.0,
+          "units": "%",
+          "value": 0.1126825598447307,
+          "margin": 0.8873174401552693,
+          "verdict": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p01_eps_0p5_0p8",
+      "parameters": {
+        "r_inner_m": 0.02,
+        "r_outer_m": 0.05,
+        "T_inner_K": 400.0,
+        "T_outer_K": 300.0,
+        "eps_inner": 0.5,
+        "eps_outer": 0.8,
+        "cells_radial": 20,
+        "cells_per_quarter": 20,
+        "n_phi": 8,
+        "max_iterations": 3000,
+        "scenario": "eps_0p5_0p8"
+      },
+      "derived": {
+        "radiation": 59.380022059446304,
+        "conduction": 17.38444102193931
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "radiation_balance",
+          "description": "|radiation leaving the inner wall - reaching the outer| / leaving",
+          "kind": "numerical",
+          "value": 1.3579820366590473e-10,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "conduction_exact",
+          "description": "|conducted heat - 2 pi k dT / ln(r2 / r1)| / exact (no flow, transparent gas)",
+          "kind": "numerical",
+          "value": 0.00048047536265716185,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "converged",
+          "description": "final initial residual of h",
+          "kind": "numerical",
+          "value": 8.93873993141e-10,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-V4",
+          "text": "Validation: the radiated heat between the cylinders shall be within 1 % of the exact two-surface exchange for grey diffuse walls.",
+          "metric": "radiation_deviation_pct",
+          "operator": "<=",
+          "limit": 1.0,
+          "units": "%",
+          "value": 0.20495224883845792,
+          "margin": 0.7950477511615421,
+          "verdict": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p02_eps_0p9",
+      "parameters": {
+        "r_inner_m": 0.02,
+        "r_outer_m": 0.05,
+        "T_inner_K": 400.0,
+        "T_outer_K": 300.0,
+        "eps_inner": 0.9,
+        "eps_outer": 0.9,
+        "cells_radial": 20,
+        "cells_per_quarter": 20,
+        "n_phi": 8,
+        "max_iterations": 3000,
+        "scenario": "eps_0p9"
+      },
+      "derived": {
+        "radiation": 107.91177085803223,
+        "conduction": 17.38444102193931
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "radiation_balance",
+          "description": "|radiation leaving the inner wall - reaching the outer| / leaving",
+          "kind": "numerical",
+          "value": 4.1556668235492313e-13,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "conduction_exact",
+          "description": "|conducted heat - 2 pi k dT / ln(r2 / r1)| / exact (no flow, transparent gas)",
+          "kind": "numerical",
+          "value": 0.00048047536265716185,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "converged",
+          "description": "final initial residual of h",
+          "kind": "numerical",
+          "value": 8.93873993141e-10,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-V4",
+          "text": "Validation: the radiated heat between the cylinders shall be within 1 % of the exact two-surface exchange for grey diffuse walls.",
+          "metric": "radiation_deviation_pct",
+          "operator": "<=",
+          "limit": 1.0,
+          "units": "%",
+          "value": 0.14747257955142515,
+          "margin": 0.8525274204485749,
+          "verdict": "PASS"
+        }
+      ]
+    }
+  ],
+  "run_id": "20261124-110742_annulus_emissivity",
+  "generated_utc": "2026-11-24T16:10:31+00:00",
+  "verification_status": "PASS"
+}

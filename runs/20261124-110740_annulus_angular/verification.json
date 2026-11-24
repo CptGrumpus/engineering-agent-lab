@@ -1,0 +1,144 @@
+{
+  "run_id": "20261124-110740_annulus_angular",
+  "verified_utc": "2026-11-24T16:10:35+00:00",
+  "tolerances": {
+    "balance_rel_tol": 0.001,
+    "conduction_rel_tol": 0.01,
+    "residual_max": 1e-06,
+    "gci_max": 0.01
+  },
+  "points": [
+    {
+      "label": "p00_n_phi-4",
+      "status": "PASS",
+      "checks": [
+        {
+          "id": "radiation_balance",
+          "description": "|radiation leaving the inner wall - reaching the outer| / leaving",
+          "kind": "numerical",
+          "value": 3.5136333968471944e-11,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "conduction_exact",
+          "description": "|conducted heat - 2 pi k dT / ln(r2 / r1)| / exact (no flow, transparent gas)",
+          "kind": "numerical",
+          "value": 0.00048047536265716185,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "converged",
+          "description": "final initial residual of h",
+          "kind": "numerical",
+          "value": 8.93873993141e-10,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p01_n_phi-8",
+      "status": "PASS",
+      "checks": [
+        {
+          "id": "radiation_balance",
+          "description": "|radiation leaving the inner wall - reaching the outer| / leaving",
+          "kind": "numerical",
+          "value": 1.3579820366590473e-10,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "conduction_exact",
+          "description": "|conducted heat - 2 pi k dT / ln(r2 / r1)| / exact (no flow, transparent gas)",
+          "kind": "numerical",
+          "value": 0.00048047536265716185,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "converged",
+          "description": "final initial residual of h",
+          "kind": "numerical",
+          "value": 8.93873993141e-10,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p02_n_phi-16",
+      "status": "PASS",
+      "checks": [
+        {
+          "id": "radiation_balance",
+          "description": "|radiation leaving the inner wall - reaching the outer| / leaving",
+          "kind": "numerical",
+          "value": 8.806543284000147e-10,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "conduction_exact",
+          "description": "|conducted heat - 2 pi k dT / ln(r2 / r1)| / exact (no flow, transparent gas)",
+          "kind": "numerical",
+          "value": 0.00048047536265716185,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "converged",
+          "description": "final initial residual of h",
+          "kind": "numerical",
+          "value": 8.93873993141e-10,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ]
+    }
+  ],
+  "run_checks": [
+    {
+      "id": "discretization_radiation",
+      "description": "angular discretization uncertainty of the radiated heat, monotone (R = 0.215): GCI_fine, observed order 2.22, extrapolated 59.3749",
+      "kind": "numerical",
+      "value": 0.0005286181016299057,
+      "tolerance": 0.01,
+      "comparison": "<=",
+      "status": "PASS",
+      "metric": "radiation_deviation_pct"
+    }
+  ],
+  "run_check_detail": {
+    "meshes_used": [
+      "p02_n_phi-16",
+      "p01_n_phi-8",
+      "p00_n_phi-4"
+    ],
+    "radiation_W_per_m": {
+      "regime": "monotone",
+      "uncertainty": 0.0005286181016299057,
+      "converged_exactly": false,
+      "order": 2.215980578467954,
+      "extrapolated": 59.37492930945085,
+      "rel_error_fine": 0.0015418615998814495,
+      "rel_error_extrapolated": 0.0004227157171600247,
+      "gci_fine": 0.0005286181016299057,
+      "convergence_ratio": 0.21524019462445657,
+      "r21": 2.0,
+      "r32": 2.0
+    }
+  },
+  "status": "PASS"
+}

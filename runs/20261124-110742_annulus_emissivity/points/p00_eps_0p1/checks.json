@@ -1,0 +1,33 @@
+{
+  "label": "p00_eps_0p1",
+  "status": "PASS",
+  "checks": [
+    {
+      "id": "radiation_balance",
+      "description": "|radiation leaving the inner wall - reaching the outer| / leaving",
+      "kind": "numerical",
+      "value": 1.5103070221352148e-08,
+      "tolerance": 0.001,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "conduction_exact",
+      "description": "|conducted heat - 2 pi k dT / ln(r2 / r1)| / exact (no flow, transparent gas)",
+      "kind": "numerical",
+      "value": 0.00048047536265716185,
+      "tolerance": 0.01,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "converged",
+      "description": "final initial residual of h",
+      "kind": "numerical",
+      "value": 8.93873993141e-10,
+      "tolerance": 1e-06,
+      "comparison": "<=",
+      "status": "PASS"
+    }
+  ]
+}

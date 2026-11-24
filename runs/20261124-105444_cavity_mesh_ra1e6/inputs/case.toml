@@ -1,0 +1,88 @@
+# Study 11, stage 1: natural convection of air in a differentially heated square cavity against the de Vahl Davis (1983)
+# bench mark (validation/natural_convection.py, Table V; read from the paper, checked against the page image). Framing
+# approved by the user 2026-11-24, after 10:25 (stage 1 of three: cavity, grey-surface radiation, then the sealed
+# electronics enclosure, REQ-D1 to D3).
+#
+# Model (models/cfd/cavity_openfoam.py, studies/cavity_convection.py): OpenFOAM 14 foamRun -solver fluid, steady, laminar,
+# Boussinesq equation of state (rho0 1, beta 1/300, dT 0.1 K: beta dT 3.3e-4; OpenFOAM's Boussinesq density enters every
+# term), Pr 0.71, Ra set through g, 2D graded blockMesh (wall-to-centre cell ratio 4), linearUpwind, SIMPLE.
+# Found while building (prototype, scratch, 2026-11-24 10:38-11:00): OpenFOAM's wallHeatFlux reports a conductivity
+# 1.33 x mu Cp / Pr for this thermo setup (its Nu read 1.49 at Ra 1e3 against 1.117), while the temperature field gives
+# 1.117 and Ra 1e4's Nu (2.245) shows the solver's diffusivity is the intended one; the Nusselt number is taken from the
+# field (second-order wall gradient). Prototype on 40 x 40: Nu within 0.03 / 0.34 / 0.83 %, u_max 0.25 / 0.05 / 0.84 %
+# (u_max position fixed to the signed peak after the prototype), w_max 0.19 / 0.13 / 0.06 % at Ra 1e3 / 1e4 / 1e5.
+#
+# Verification tolerances, fixed before the evidence runs:
+#   energy_balance_rel_tol 2e-3  hot against cold wall (prototype 3-4e-4).
+#   residual_max 1e-5            final initial residual of U and h (a converged steady state).
+#   beta_dT_max 1e-3             Boussinesq validity.
+#   gci_max 0.01                 mesh uncertainty on Nu, u_max, w_max at Ra 1e6 (the bench mark itself claims 1 % there).
+#
+# Predictions (written BEFORE the evidence runs, 2026-11-24 10:53):
+#   P1 Every point check passes.
+#   P2 cavity_devahldavis (72 cells): Nu within 0.3 % at Ra 1e3-1e5 and within 1 % at 1e6; u_max and w_max within 1 % at
+#      1e3-1e5 and within 2 % at 1e6: every REQ-V passes (1e6 is the likeliest miss).
+#   P3 cavity_mesh_ra1e6 (48 / 72 / 108): monotone convergence of Nu, u_max, w_max with order 1.5-2.5, GCI under 1 % on
+#      the finest; the extrapolated values within the bench mark's own 1 %.
+#   P4 About 10-40 min per point (iterations grow with the cell count and Ra).
+# This file: the mesh study at Ra 1e6 (P3).
+
+[case]
+name = "cavity_mesh_ra1e6"
+model = "openfoam_cavity"
+description = "Square cavity, air, Ra 1e6, 48 / 72 / 108 cells (graded): the mesh study for Nu, u_max and w_max."
+assumptions = [
+  "2D, laminar, steady; Boussinesq (beta dT 3.3e-4; checked); constant properties; Pr 0.71.",
+  "Top and bottom adiabatic, vertical walls isothermal, no slip (the bench mark's problem).",
+]
+limitations = [
+  "The bench mark is itself numerical (Richardson-extrapolated finite differences), stated accurate to 0.1-1 %.",
+  "No physical test data in this stage.",
+]
+
+[parameters]
+rayleigh = 1e6
+prandtl = 0.71
+cells = 72
+wall_grading = 4.0
+side_m = 0.1
+delta_T_K = 0.1
+max_iterations = 20000
+
+[sweep]
+parameter = "cells"
+values = [48, 72, 108]
+
+[numerics]
+residual_tolerance = 1e-7
+solver_timeout_s = 21600
+
+[verification]
+energy_balance_rel_tol = 2e-3
+residual_max = 1e-5
+beta_dT_max = 1e-3
+gci_max = 0.01
+
+[[requirements]]
+id = "REQ-V1"
+text = "Validation: the hot wall's average Nusselt number shall be within 1 % of de Vahl Davis (1983) Table V (Nu_0)."
+metric = "Nu_deviation_pct"
+operator = "<="
+limit = 1.0
+units = "%"
+
+[[requirements]]
+id = "REQ-V2"
+text = "Validation: the largest horizontal velocity on the vertical mid-plane shall be within 2 % of the bench mark's u_max."
+metric = "u_max_deviation_pct"
+operator = "<="
+limit = 2.0
+units = "%"
+
+[[requirements]]
+id = "REQ-V3"
+text = "Validation: the largest vertical velocity on the horizontal mid-plane shall be within 2 % of the bench mark's w_max."
+metric = "w_max_deviation_pct"
+operator = "<="
+limit = 2.0
+units = "%"

@@ -1,0 +1,85 @@
+# Study 11, stage 2: grey-surface radiation between two long concentric cylinders through a transparent, still gas
+# (OpenFOAM 14 fluid solver with the fvDOM radiation model, no gravity), against the exact two-surface exchange
+# (validation/natural_convection.py); the conduction through the gas against the exact 2 pi k dT / ln(r2 / r1).
+# Framing approved by the user 2026-11-24, after 10:25 (stage 2 of three). r1 20 mm, r2 50 mm, 400 K inside, 300 K out.
+#
+# Found while building (prototype and smoke tests, scratch, 2026-11-24 10:58-11:07):
+#   - radiation runs only when switched on as an fvModel (constant/fvModels), as in OpenFOAM 11 and later.
+#   - OpenFOAM's Boussinesq density enters the energy equation's diffusion term: over the 100 K span the conducted
+#     temperature missed the exact log profile by up to 3 K; with constant density (rhoConst, no gravity here) it
+#     matches to about 0.15 K. (The cavity cases use dT 0.1 K, so their density varies by 3e-4 only.)
+#   - the solver's wall gradient is first order: the conducted heat is read as its conserved flux across the face
+#     between the two mid-gap rings (0.05 % from exact on the 20 x 80 mesh).
+#   - fvDOM with 4 directions per quarter (16 rays): radiation 0.92 % below the exact exchange, the two walls in balance.
+#
+# Verification tolerances, fixed before the evidence runs:
+#   balance_rel_tol 1e-3      radiation leaving the inner wall against reaching the outer (smoke 3.5e-11).
+#   conduction_rel_tol 0.01   conduction against exact (smoke 0.05 %).
+#   residual_max 1e-6         final initial residual of h.
+#   gci_max 0.01              angular discretization uncertainty of the radiated heat.
+#
+# Predictions (written BEFORE the evidence runs, 2026-11-24 11:07):
+#   P1 Every point check passes.
+#   P2 annulus_angular (n_phi 4 / 8 / 16): the radiation error falls with the number of directions: 0.9 / about 0.3 /
+#      about 0.1 %, monotone, the angular uncertainty under 1 %; REQ-V4 passes at every level.
+#   P3 annulus_emissivity (n_phi 8; emissivities 0.1 / 0.5-0.8 / 0.9): within 1 % of exact at all three (REQ-V4).
+#   P4 Under a minute per point at n_phi 4-8, a few minutes at 16.
+# This file: the emissivity sweep (P3).
+
+[case]
+name = "annulus_emissivity"
+model = "openfoam_annulus_radiation"
+description = "Radiation between concentric cylinders, fvDOM with 8 directions per quarter, emissivities 0.1 / 0.1, 0.5 / 0.8, 0.9 / 0.9: against the exact two-surface exchange."
+assumptions = [
+  "2D (long cylinders), grey diffuse walls, transparent still gas (absorptivity 0, no gravity).",
+  "Constant density and properties (rhoConst; see the header for why not Boussinesq here).",
+]
+limitations = [
+  "fvDOM in 2D: in-plane directions only, as the 2D problem needs; ray effects shrink with the number of directions.",
+  "No physical test data in this stage.",
+]
+
+[parameters]
+r_inner_m = 0.02
+r_outer_m = 0.05
+T_inner_K = 400.0
+T_outer_K = 300.0
+eps_inner = 0.5
+eps_outer = 0.8
+cells_radial = 20
+cells_per_quarter = 20
+n_phi = 8
+max_iterations = 3000
+
+[sweep]
+parameter = "scenario"
+
+[[sweep.scenarios]]
+name = "eps_0p1"
+eps_inner = 0.1
+eps_outer = 0.1
+
+[[sweep.scenarios]]
+name = "eps_0p5_0p8"
+
+[[sweep.scenarios]]
+name = "eps_0p9"
+eps_inner = 0.9
+eps_outer = 0.9
+
+[numerics]
+solver_timeout_s = 7200
+
+[verification]
+balance_rel_tol = 1e-3
+conduction_rel_tol = 0.01
+residual_max = 1e-6
+gci_max = 0.01
+
+[[requirements]]
+id = "REQ-V4"
+text = "Validation: the radiated heat between the cylinders shall be within 1 % of the exact two-surface exchange for grey diffuse walls."
+metric = "radiation_deviation_pct"
+operator = "<="
+limit = 1.0
+units = "%"

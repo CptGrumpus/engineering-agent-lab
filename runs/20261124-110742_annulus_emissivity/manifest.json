@@ -1,0 +1,164 @@
+{
+  "run_id": "20261124-110742_annulus_emissivity",
+  "case_name": "annulus_emissivity",
+  "model": "openfoam_annulus_radiation",
+  "case_source": "cases/annulus_emissivity.toml",
+  "case_sha256": "d37a3e4edb0c839ccb130d1f4a6937e803dcd7c4f0b2a0299350def26116b29f",
+  "model_sources_sha256": {
+    "models/cfd/annulus_radiation_openfoam.py": "27b21eec1d1a1918d2350715f7f6b5f380f6a6c62cd852d97fb1119fb701c432",
+    "models/cfd/run_annulus.sh": "303bb2c1df30559240be87588b14ac53410c0349fc8448a1519c584ec1db4c50"
+  },
+  "rerun_of": null,
+  "started_utc": "2026-11-24T16:07:42+00:00",
+  "environment": {
+    "python": "3.14.10",
+    "python_executable": "<repo>\\.venv\\Scripts\\python.exe",
+    "platform": "Windows-11-10.0.26100-SP0",
+    "machine": "AMD64",
+    "packages": {
+      "numpy": "2.5.5",
+      "scipy": "1.18.1",
+      "matplotlib": "3.11.2",
+      "cadquery": "2.8.0"
+    },
+    "git": {
+      "commit": "a92bb36c10e32399d8e4172cd9a3b8025accc7bb",
+      "dirty": false
+    },
+    "tools": {}
+  },
+  "numerics": {
+    "solver_timeout_s": 7200
+  },
+  "points": [
+    {
+      "label": "p00_eps_0p1",
+      "parameters": {
+        "r_inner_m": 0.02,
+        "r_outer_m": 0.05,
+        "T_inner_K": 400.0,
+        "T_outer_K": 300.0,
+        "eps_inner": 0.1,
+        "eps_outer": 0.1,
+        "cells_radial": 20,
+        "cells_per_quarter": 20,
+        "n_phi": 8,
+        "max_iterations": 3000,
+        "scenario": "eps_0p1"
+      },
+      "status": "completed",
+      "derived": {
+        "radiation": 9.168973994473328,
+        "conduction": 17.38444102193931
+      },
+      "solver": {
+        "success": true,
+        "message": "annulus: radiation 9.159 W/m",
+        "nfev": null
+      },
+      "solver_outputs": {
+        "cells": 1600,
+        "depth_m": 0.0015707963267948967,
+        "conductivity_W_per_mK": 0.025352112676056342,
+        "radiation_inner_W_per_m": 9.158642159864858,
+        "radiation_outer_W_per_m": 9.158642021541242,
+        "conduction_W_per_m": 17.3760882263347,
+        "qr_inner_spread": 0.030103733732891956,
+        "h_final_residual": 8.93873993141e-10
+      },
+      "metrics": {
+        "radiation_W_per_m": 9.158642159864858,
+        "conduction_W_per_m": 17.3760882263347,
+        "radiation_deviation_pct": 0.1126825598447307,
+        "conduction_deviation_pct": 0.04804753626571619
+      }
+    },
+    {
+      "label": "p01_eps_0p5_0p8",
+      "parameters": {
+        "r_inner_m": 0.02,
+        "r_outer_m": 0.05,
+        "T_inner_K": 400.0,
+        "T_outer_K": 300.0,
+        "eps_inner": 0.5,
+        "eps_outer": 0.8,
+        "cells_radial": 20,
+        "cells_per_quarter": 20,
+        "n_phi": 8,
+        "max_iterations": 3000,
+        "scenario": "eps_0p5_0p8"
+      },
+      "status": "completed",
+      "derived": {
+        "radiation": 59.380022059446304,
+        "conduction": 17.38444102193931
+      },
+      "solver": {
+        "success": true,
+        "message": "annulus: radiation 59.258 W/m",
+        "nfev": null
+      },
+      "solver_outputs": {
+        "cells": 1600,
+        "depth_m": 0.0015707963267948967,
+        "conductivity_W_per_mK": 0.025352112676056342,
+        "radiation_inner_W_per_m": 59.2583213688747,
+        "radiation_outer_W_per_m": 59.25832136082752,
+        "conduction_W_per_m": 17.3760882263347,
+        "qr_inner_spread": 0.004705872147981552,
+        "h_final_residual": 8.93873993141e-10
+      },
+      "metrics": {
+        "radiation_W_per_m": 59.2583213688747,
+        "conduction_W_per_m": 17.3760882263347,
+        "radiation_deviation_pct": 0.20495224883845792,
+        "conduction_deviation_pct": 0.04804753626571619
+      }
+    },
+    {
+      "label": "p02_eps_0p9",
+      "parameters": {
+        "r_inner_m": 0.02,
+        "r_outer_m": 0.05,
+        "T_inner_K": 400.0,
+        "T_outer_K": 300.0,
+        "eps_inner": 0.9,
+        "eps_outer": 0.9,
+        "cells_radial": 20,
+        "cells_per_quarter": 20,
+        "n_phi": 8,
+        "max_iterations": 3000,
+        "scenario": "eps_0p9"
+      },
+      "status": "completed",
+      "derived": {
+        "radiation": 107.91177085803223,
+        "conduction": 17.38444102193931
+      },
+      "solver": {
+        "success": true,
+        "message": "annulus: radiation 107.753 W/m",
+        "nfev": null
+      },
+      "solver_outputs": {
+        "cells": 1600,
+        "depth_m": 0.0015707963267948967,
+        "conductivity_W_per_mK": 0.025352112676056342,
+        "radiation_inner_W_per_m": 107.75263058590826,
+        "radiation_outer_W_per_m": 107.75263058595304,
+        "conduction_W_per_m": 17.3760882263347,
+        "qr_inner_spread": 0.0032100409086675864,
+        "h_final_residual": 8.93873993141e-10
+      },
+      "metrics": {
+        "radiation_W_per_m": 107.75263058590826,
+        "conduction_W_per_m": 17.3760882263347,
+        "radiation_deviation_pct": 0.14747257955142515,
+        "conduction_deviation_pct": 0.04804753626571619
+      }
+    }
+  ],
+  "study": "annulus_radiation",
+  "status": "completed",
+  "finished_utc": "2026-11-24T16:10:31+00:00"
+}

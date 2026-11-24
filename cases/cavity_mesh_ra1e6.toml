@@ -26,6 +26,16 @@
 #      the finest; the extrapolated values within the bench mark's own 1 %.
 #   P4 About 10-40 min per point (iterations grow with the cell count and Ra).
 # This file: the mesh study at Ra 1e6 (P3).
+#
+# Results (run 20261124-105444_cavity_mesh_ra1e6): Ra 1e6 on 48 / 72 / 108 cells: Nu 8.929 / 8.867 / 8.842 (bench
+# 8.817), u_max 65.12 / 64.99 / 64.91 (64.63), w_max 221.3 / 220.7 / 220.6 (219.36); every REQ-V passes on 72 and 108
+# (Nu 0.57 / 0.28 %, u 0.56 / 0.43 %, w 0.62 / 0.56 %). Run-level: Nu order 2.17, GCI 0.26 %, extrapolated 8.8235
+# (+0.07 % on the bench mark); u_max order 0.80, GCI 0.44 %, extrapolated 64.675 (+0.07 %); w_max ANOMALOUS (order 3.77,
+# no estimate): verification FAIL on that check alone.
+#   P1 MISSED (the w_max run-level check).  P3 HELD for Nu and u_max, MISSED for w_max: its three values approach the
+#   bench mark (within 0.9 %, 0.6 %, 0.6 %) but the step ratio (0.22) gives an order far above 2; w_max is the peak of
+#   the mid-plane velocity read from cell centres with a parabola, whose sub-cell position adds noise at this level.
+#   Reported, not retuned.  P4 HELD roughly (about 20-40 min per point).
 
 [case]
 name = "cavity_mesh_ra1e6"

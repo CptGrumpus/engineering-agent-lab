@@ -1,0 +1,191 @@
+{
+  "run_id": "20261124-105444_cavity_mesh_ra1e6",
+  "verified_utc": "2026-11-24T16:29:57+00:00",
+  "tolerances": {
+    "energy_balance_rel_tol": 0.002,
+    "residual_max": 1e-05,
+    "beta_dT_max": 0.001,
+    "gci_max": 0.01
+  },
+  "points": [
+    {
+      "label": "p00_cells-48",
+      "status": "PASS",
+      "checks": [
+        {
+          "id": "energy_balance",
+          "description": "|hot-wall Nu - cold-wall Nu| / hot-wall Nu (steady: the heat in leaves)",
+          "kind": "numerical",
+          "value": 0.000326893322886356,
+          "tolerance": 0.002,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "converged",
+          "description": "largest final initial residual of U and h",
+          "kind": "numerical",
+          "value": 9.95704333918e-08,
+          "tolerance": 1e-05,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "boussinesq",
+          "description": "beta x temperature difference (OpenFOAM's Boussinesq density enters every term; validity)",
+          "kind": "validity",
+          "value": 0.0003333333333333334,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p01_cells-72",
+      "status": "PASS",
+      "checks": [
+        {
+          "id": "energy_balance",
+          "description": "|hot-wall Nu - cold-wall Nu| / hot-wall Nu (steady: the heat in leaves)",
+          "kind": "numerical",
+          "value": 0.0003697718166990356,
+          "tolerance": 0.002,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "converged",
+          "description": "largest final initial residual of U and h",
+          "kind": "numerical",
+          "value": 9.99958673863e-08,
+          "tolerance": 1e-05,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "boussinesq",
+          "description": "beta x temperature difference (OpenFOAM's Boussinesq density enters every term; validity)",
+          "kind": "validity",
+          "value": 0.0003333333333333334,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p02_cells-108",
+      "status": "PASS",
+      "checks": [
+        {
+          "id": "energy_balance",
+          "description": "|hot-wall Nu - cold-wall Nu| / hot-wall Nu (steady: the heat in leaves)",
+          "kind": "numerical",
+          "value": 0.0004679868136557472,
+          "tolerance": 0.002,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "converged",
+          "description": "largest final initial residual of U and h",
+          "kind": "numerical",
+          "value": 9.99074594549e-08,
+          "tolerance": 1e-05,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "boussinesq",
+          "description": "beta x temperature difference (OpenFOAM's Boussinesq density enters every term; validity)",
+          "kind": "validity",
+          "value": 0.0003333333333333334,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ]
+    }
+  ],
+  "run_checks": [
+    {
+      "id": "discretization_Nu_hot",
+      "description": "relative discretization uncertainty of Nu_hot, monotone (R = 0.415): GCI_fine, observed order 2.17, extrapolated 8.82351",
+      "kind": "numerical",
+      "value": 0.002581071270238382,
+      "tolerance": 0.01,
+      "comparison": "<=",
+      "status": "PASS",
+      "metric": "Nu_deviation_pct"
+    },
+    {
+      "id": "discretization_u_max",
+      "description": "relative discretization uncertainty of u_max, monotone (R = 0.722): GCI_fine, observed order 0.80, extrapolated 64.6752",
+      "kind": "numerical",
+      "value": 0.004446024531322576,
+      "tolerance": 0.01,
+      "comparison": "<=",
+      "status": "PASS",
+      "metric": "u_max_deviation_pct"
+    },
+    {
+      "id": "discretization_w_max",
+      "description": "relative discretization uncertainty of w_max, anomalous: observed order 3.77 is far above the design order 2, so the solutions are not in the asymptotic range (singularity or coincidence); no estimate",
+      "kind": "numerical",
+      "value": Infinity,
+      "tolerance": 0.01,
+      "comparison": "<=",
+      "status": "FAIL",
+      "metric": "w_max_deviation_pct"
+    }
+  ],
+  "run_check_detail": {
+    "meshes_used": [
+      "p02_cells-108",
+      "p01_cells-72",
+      "p00_cells-48"
+    ],
+    "Nu_hot": {
+      "regime": "monotone",
+      "uncertainty": 0.002581071270238382,
+      "converged_exactly": false,
+      "order": 2.1684988034826724,
+      "extrapolated": 8.82350582269359,
+      "rel_error_fine": 0.0029095769288612445,
+      "rel_error_extrapolated": 0.002069129472699893,
+      "gci_fine": 0.002581071270238382,
+      "convergence_ratio": 0.41509386575423535,
+      "r21": 1.5,
+      "r32": 1.5
+    },
+    "u_max": {
+      "regime": "monotone",
+      "uncertainty": 0.004446024531322576,
+      "converged_exactly": false,
+      "order": 0.8032990869660297,
+      "extrapolated": 64.67518729031138,
+      "rel_error_fine": 0.0013694229040026806,
+      "rel_error_extrapolated": 0.0035695157487250174,
+      "gci_fine": 0.004446024531322576,
+      "convergence_ratio": 0.7220147209715676,
+      "r21": 1.5,
+      "r32": 1.5
+    },
+    "w_max": {
+      "converged_exactly": false,
+      "order": 3.7660956567882007,
+      "extrapolated": 220.56275064487977,
+      "rel_error_fine": 0.0005952810263932629,
+      "rel_error_extrapolated": 0.0001651795747238255,
+      "gci_fine": 0.00020644036867239614,
+      "convergence_ratio": 0.21718182292276308,
+      "r21": 1.5,
+      "r32": 1.5,
+      "regime": "anomalous order",
+      "uncertainty": Infinity,
+      "design_order": 2
+    }
+  },
+  "status": "FAIL"
+}
