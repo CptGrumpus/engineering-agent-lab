@@ -1,0 +1,113 @@
+{
+  "run_id": "20261124-105309_oring_free_lindley",
+  "verified_utc": "2026-11-24T16:23:32+00:00",
+  "tolerances": {
+    "volume_rel_tol": 0.001,
+    "force_balance_rel_tol": 0.03,
+    "equilibrium_rel_tol": 0.001,
+    "penetration_max_fraction": 0.02,
+    "fill_rel_tol": 0.01,
+    "in_groove_tol_mm": 0.03,
+    "gci_max": 0.05,
+    "lindley_rel_tol": 0.15
+  },
+  "points": [
+    {
+      "label": "p00_baseline",
+      "status": "PASS",
+      "checks": [
+        {
+          "id": "volume_conservation",
+          "description": "|deformed / initial ring volume - 1| (near-incompressible: J about 1)",
+          "kind": "numerical",
+          "value": 0.00029864750756747327,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "contact_force_balance",
+          "description": "|integral of the contact pressure over the cover / cover reaction - 1|",
+          "kind": "numerical",
+          "value": 0.015608289863887626,
+          "tolerance": 0.03,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "equilibrium",
+          "description": "|cover reaction - symmetry-plane reaction| / cover reaction (walls frictionless)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "penalty_penetration",
+          "description": "max overclosure of the ring into the cover / cover travel",
+          "kind": "numerical",
+          "value": 0.0050330166178671944,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "lindley_10pct",
+          "description": "|FE force - Lindley| / Lindley at 10 % squeeze (unrestrained ring)",
+          "kind": "numerical",
+          "value": 0.10628488234895812,
+          "tolerance": 0.15,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "parker_band_10pct",
+          "description": "FE force outside Parker's 70 Shore A band at 10 % (0.356-2.524 N/mm; 0 = inside)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "lindley_20pct",
+          "description": "|FE force - Lindley| / Lindley at 20 % squeeze (unrestrained ring)",
+          "kind": "numerical",
+          "value": 0.0004884473311744169,
+          "tolerance": 0.15,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "parker_band_20pct",
+          "description": "FE force outside Parker's 70 Shore A band at 20 % (0.793-5.119 N/mm; 0 = inside)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "lindley_30pct",
+          "description": "|FE force - Lindley| / Lindley at 30 % squeeze (unrestrained ring)",
+          "kind": "numerical",
+          "value": 0.08087521938814009,
+          "tolerance": 0.15,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "parker_band_30pct",
+          "description": "FE force outside Parker's 70 Shore A band at 30 % (1.891-12.999 N/mm; 0 = inside)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ]
+    }
+  ],
+  "status": "PASS"
+}
