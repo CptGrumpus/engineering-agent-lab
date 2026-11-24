@@ -78,13 +78,20 @@ commit). Rules that bind:
   `*.inp`, `*.dat`, `__pycache__`, files > 600 kB, then `tests/test_privacy.py`; never two FEMM cases at once; check
   free RAM on long runs.
 
-### Running at 20:52 (scratchpads under `%LOCALAPPDATA%/Temp/claude/cb67dd1e648f8970/<session>/scratchpad/`)
+### Running at 06:43, 2026-11-24 (scratchpads under `%LOCALAPPDATA%/Temp/claude/cb67dd1e648f8970/<session>/scratchpad/`)
 
 | Job | Run dir (log) | Done about | When it finishes |
 |---|---|---|---|
-| Study 7, revision-5 efficiency chain, queued 21:59 (one FEMM at a time): (0) done 22:34: `harness rerun` of the revision-5 open-circuit run, REPRODUCIBILITY PASS (run 20261123-215502), its FEMM solution copied to `build/render/motor_rev5_centre/` (export it once FEMM is free, after the chain: one FEMM at a time); then `motor_prius_rev5_oc_f2`, `motor_prius_rev5_torque_ref`, `motor_prius_lut_{cold,cold_lowiq,hot,hot_lowiq}_rev5` | `rev5_chain.log` and one log per case (session 8f53debf) | references done 22:35 / 23:06 (105.84 V; 247.68 / 449.11 N m; scored); tables started 23:06, done ~04:30-05:00; **cold table done 00:47, scored (P1-P4 held: back-EMF +0.003 %, MTPA -0.05 % against the references; commit 02cd2cd)**, **cold_lowiq done 01:45: FAIL on the dq-torque check at iq 6.25 A in six columns, as predicted (b82fead)**; hot started 01:45 (~03:25), hot_lowiq after (~04:25) | Score each case's predictions (headers). `motor_prius_efficiency_rev5.toml` is written with its predictions (23:07): **replace the four `PENDING_<case>` lut_run names with the tables' run dirs**, run it (seconds), score P1-P5, score against ORNL (as `scripts/motor_calibration.py` did for the calibrated map); export the field (`scripts/export_femm_field.py`, gate: phase fluxes match the rerun) and tell the dashboard session. |
+| Study 6: FSI2 level-c crash diagnosis (`cases/turek_hron_fsi2_mesh_c_diag.toml`; user's option B), started 03:55; 7.02 s at 06:43 (the CPU is free now: about 0.6 s per 20 min) | `runs/*_turek_hron_fsi2_mesh_c_diag` (`fsi2_c_diag.log`, session 8f53debf) | crash expected at 8.836 s, about 07:30 | Score P1-P4 (header). Rebuild the mesh at every kept step (constant/polyMesh/points + pointDisplacement), checkMesh-style measures and the cell Courant number where it peaks at 8.834-8.835 s; decide mechanism (1) or (2) by the header's criteria; then one fix for all three levels (user's call on compute). |
 
 ### Next (in order)
+0. **Done 2026-11-24 00:47-06:42 (this session):** FSI3 mesh study (all three levels, combined check, page 17);
+   study 7 revision-5 chain finished and scored: four dq tables (cold / hot PASS; both low-iq FAIL the dq-torque check
+   at iq 6.25 A, as predicted), the efficiency map (ORNL gap 4.37 points; REQ-M2, M5 pass), the field export for the
+   site (gate passed; the dashboard session published it), thermal (27.7 kW; a hot-corner state without a fixed point
+   diagnosed) and rotor overspeed (415 MPa, fail; the rotor study now loads the case's machine and reads drawn
+   pockets); page 20 and STATUS updated, dashboard session told. User's choices: FSI2 option A now, B running;
+   parallel work = motor rotor + thermal on revision 5 only (not FSI3 dt, not new studies 11/12).
 1. **Study 7, the 18 % flux excess: step 4** (`validation/motor_ornl/CALIBRATION_PLAN.md`, "step 4"; questions for the
    client in `CLIENT_QUESTIONS.md`). Ruled out: the solver (independent ElmerFEM model, +0.10 %), the steel (at most
    0.35 %), the measurement side; bounded: end effects 1.3-3.7 %. Done 21:23: the drawing's magnet stops measured (`scripts/motor_drawing_stops.py`): revision 5 already puts
