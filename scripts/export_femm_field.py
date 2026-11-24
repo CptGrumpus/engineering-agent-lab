@@ -4,7 +4,9 @@ flux_linkage.csv. Runs in the Pyleecan environment; FEMM must be free (one FEMM 
 
     ~/.venvs/pyleecan/Scripts/python.exe scripts/export_femm_field.py <solution.ans> <out.npz>
 
-Pyleecan overwrites its .ans per machine name on every run: copy the evidence run's .ans to build/ first.
+Pyleecan overwrites its .ans per machine name on every run. Runs made after 2026-11-23 21:55 keep it as
+points/<label>/solver/femm_last_step.ans (the last operating point's last time step); for older runs copy the
+evidence run's .ans to build/ first, before anything else runs that machine.
 """
 import sys, json, math, femm, numpy as np
 ans, out = sys.argv[1], sys.argv[2]

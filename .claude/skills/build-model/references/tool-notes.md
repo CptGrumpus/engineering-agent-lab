@@ -506,6 +506,10 @@ Traps found while building the studies in this repo, by tool.
   mean torque is 33-70 N m with 18-27 N m of ripple, and 3 p (phi_d iq - phi_q id) from the mean fluxes missed FEMM's
   torque by up to 1 % (0.3 N m). Interpolate FEMM's torque for the map; the dq fluxes are for the voltage limit.
 
+- **Pyleecan overwrites FEMM's solution per machine name** (`<pyleecan>/Results/em/Femm/<machine>_model.ans`): the
+  next run of the same machine replaces it, so revision 5's open-circuit solution was lost to its torque run. The
+  backend now copies it into each point as `solver/femm_last_step.ans` (the last operating point's last time step).
+
 ## ElmerFEM 2D magnetostatics (the independent motor model, study 7)
 
 Install: the official Windows zip (`ElmerFEM-nogui-nompi-Windows-AMD64-rel26.1.zip`, CSC mirror

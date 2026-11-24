@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import json
 import os
+import shutil
 import subprocess
 import tempfile
 from pathlib import Path
@@ -114,6 +115,14 @@ class PyleecanFEMM(Backend):
             return failed(f"Pyleecan/FEMM runner failed (exit {r.returncode}): {r.stderr.strip()[-300:]}") | {
                 "files": files, "cleanup": work}
         d = json.loads((work / "out.json").read_text(encoding="utf-8"))
+        # keep FEMM's own solution (the last operating point's last time step) with the run: Pyleecan writes it per
+        # machine name and the next run of the same machine overwrites it (study 7 lost revision 5's open-circuit
+        # solution to its torque run). About 9 MB: kept in the run dir, not committed (the 600 kB rule).
+        femm_dir = Path(self.python).parents[1] / "Lib/site-packages/pyleecan/Results/em/Femm"
+        ans = femm_dir / (Path(run_params["machine"]).stem + "_model.ans")
+        if ans.exists() and ans.stat().st_mtime >= (work / "params.json").stat().st_mtime:
+            shutil.copyfile(ans, work / "femm_last_step.ans")
+            files["femm_last_step.ans"] = work / "femm_last_step.ans"
         t, P = np.array(d["time_s"]), np.array(d["phi_Wb"])
         series = {"time_s": t, "phi_a_Wb": P[:, 0], "phi_b_Wb": P[:, 1], "phi_c_Wb": P[:, 2]}
         outputs = {k: d[k] for k in ("gap_radius_m", "stack_length_m", "pole_pairs", "series_turns_per_phase",
