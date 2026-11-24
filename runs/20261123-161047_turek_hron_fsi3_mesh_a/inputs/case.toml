@@ -1,0 +1,129 @@
+# Turek-Hron FSI3 mesh study (study 6): three fluid levels, 3.54 / 2.5 / 1.77 mm, run as three single-point cases side
+# by side, the same design as the FSI2 mesh study (cases/turek_hron_fsi2_mesh_a.toml; user's go-ahead 2026-11-23 ~16:10,
+# "Start FSI3 now", before FSI2's combined check has been proven: the combine step runs afterwards and can be fixed
+# without rerunning). Physics, benchmark and requirements from cases/turek_hron_fsi3.toml (read it); dt 0.0005 s, 8 s
+# (the single FSI3 run was periodic by 4.7 s). Since that run: window-by-window force transfer (1e-3), the flag-cell
+# check (140 deg), the periodic run-level metrics; scripts/combine_mesh_levels.py applies the run-level check.
+#
+# Predictions, written and committed BEFORE any of the three runs (16:10; FSI2's mesh runs have produced nothing final):
+#   P1 Every point check passes on all three levels (force transfer per window at 1e-3, flag cells under 140 deg);
+#      each level periodic by 8 s.
+#   P2 Level b (2.5 mm) repeats turek_hron_fsi3 to 4 digits (same mesh, dt, solver): uy amplitude 3.391e-2, frequency
+#      5.464 Hz, drag mean 469.8, drag amplitude 25.3, lift amplitude 153.4, ux mean -2.70e-3.
+#   P3 Level a (3.54 mm): uy amplitude 3.20-3.45e-2, drag mean 465-485; level c (1.77 mm): uy amplitude 3.40-3.52e-2,
+#      drag mean 458-472; frequencies 5.42-5.50 Hz on all levels. Every requirement passes on b and c; level a's uy
+#      amplitude may miss its 5 % limit (the likeliest FAIL).
+#   P4 Frequency and drag mean converge (GCI under 1 %); amplitudes may classify oscillating or divergent (mesh
+#      regeneration noise, as FSI1 and FSI2), reported, not tuned.
+#   P5 About 4-6 h / 9-12 h / 22-30 h side by side (sharing the CPU with FSI2 until about 20:30 and the motor run).
+# This file: level a, 3.54 mm.
+
+[case]
+name = "turek_hron_fsi3_mesh_a"
+model = "openfoam_ccx_precice_fsi"
+description = "Turek-Hron FSI3: self-excited periodic oscillation of the elastic flag behind the cylinder (Re 200, density ratio 1); OpenFOAM v2512 (moving mesh) coupled to CalculiX through preCICE; fluid 3.54 mm at the body (mesh study level a), solid 2.5 mm, dt 0.0005 s to 8 s; mean, amplitude and frequency of the tip displacements, drag and lift over the last periods against the published benchmark."
+assumptions = [
+  "2D: one cell deep in the fluid, plane strain in the solid (one element layer, as deep as the fluid).",
+  "St. Venant-Kirchhoff solid (CalculiX *ELASTIC under NLGEOM), no gravity, as the FSI tests define it.",
+  "No numerical damping in the solid (HHT alpha 0).",
+  "Inflow: the benchmark's parabola with its (1 - cos) ramp over 2 s.",
+  "Statistics from the last whole periods (benchmark definition); the oscillation is periodic (checked: last two periods).",
+]
+limitations = [
+  "One level of a three-level mesh study run as separate cases side by side (scripts/combine_mesh_levels.py applies the study's run-level check to the three runs).",
+  "The fluid mesh is regenerated per size (FSI1: about +-0.5 % mesh-to-mesh scatter on the tip displacement).",
+]
+
+[parameters]
+solid_density_kg_per_m3 = 1000.0
+shear_modulus_Pa = 2000000.0
+poisson_ratio = 0.4
+fluid_density_kg_per_m3 = 1000.0
+kinematic_viscosity_m2_per_s = 0.001
+mean_velocity_m_per_s = 2.0
+fluid_cell_size_m = 0.0035355339
+solid_element_size_mm = 2.5
+time_step_s = 0.0005
+end_time_s = 8.0
+# steady-case benchmark keys (required by the study; unused in periodic mode): the periodic means
+benchmark_ux_A_m = -2.88e-3
+benchmark_uy_A_m = 1.47e-3
+benchmark_drag_N_per_m = 460.5
+benchmark_lift_N_per_m = 2.50
+benchmark_ux_A_mean = -2.88e-3
+benchmark_ux_A_amp = 2.72e-3
+benchmark_ux_A_freq_Hz = 10.93
+benchmark_uy_A_mean = 1.47e-3
+benchmark_uy_A_amp = 3.499e-2
+benchmark_uy_A_freq_Hz = 5.46
+benchmark_drag_mean = 460.5
+benchmark_drag_amp = 27.74
+benchmark_drag_freq_Hz = 10.93
+benchmark_lift_mean = 2.50
+benchmark_lift_amp = 153.91
+benchmark_lift_freq_Hz = 5.46
+
+[numerics]
+periodic_periods = 4
+solid_alpha = 0.0
+write_interval_s = 1.0
+ramp_time_s = 2.0
+coupling_rel_tol = 1e-5
+coupling_max_iterations = 100
+rbf_support_radius_m = 0.05
+solver_timeout_s = 43200
+
+[verification]
+periodic_rel_tol = 0.02           # last two periods: uy amplitude and drag mean agree within 2 % (a settled cycle)
+force_transfer_rel_tol = 1e-3     # window by window (preCICE watch-integrals, fixed in FSI1 r2): no inertia involved
+flag_cell_max_angle_deg = 140.0   # the corner-wrap check from FSI1's noise study
+profile_rel_tol = 1e-6
+gci_max = 0.01
+
+[[requirements]]
+id = "REQ-FSI3-1"
+text = "The coupled model shall reproduce the FSI3 amplitude of the tip's vertical displacement within 5 %."
+metric = "uy_A_amp_deviation_pct"
+operator = "<="
+limit = 5.0
+units = "%"
+
+[[requirements]]
+id = "REQ-FSI3-2"
+text = "It shall reproduce the FSI3 oscillation frequency (uy of point A) within 3 %."
+metric = "uy_A_freq_Hz_deviation_pct"
+operator = "<="
+limit = 3.0
+units = "%"
+
+[[requirements]]
+id = "REQ-FSI3-3"
+text = "It shall reproduce the FSI3 mean drag within 5 %."
+metric = "drag_mean_deviation_pct"
+operator = "<="
+limit = 5.0
+units = "%"
+
+[[requirements]]
+id = "REQ-FSI3-4"
+text = "It shall reproduce the FSI3 drag amplitude within 25 % (the benchmark's own tables spread about 40 %)."
+metric = "drag_amp_deviation_pct"
+operator = "<="
+limit = 25.0
+units = "%"
+
+[[requirements]]
+id = "REQ-FSI3-5"
+text = "It shall reproduce the FSI3 lift amplitude within 10 %."
+metric = "lift_amp_deviation_pct"
+operator = "<="
+limit = 10.0
+units = "%"
+
+[[requirements]]
+id = "REQ-FSI3-6"
+text = "It shall reproduce the FSI3 mean horizontal tip displacement within 15 % (second order; the benchmark spreads 12 %)."
+metric = "ux_A_mean_deviation_pct"
+operator = "<="
+limit = 15.0
+units = "%"
