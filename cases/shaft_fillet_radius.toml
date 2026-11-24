@@ -1,0 +1,135 @@
+# Machine-elements study: a gearbox intermediate shaft's shoulder fillet (synthetic client: a two-stage industrial
+# gearbox). Framing approved by the user 2026-11-24, after 13:48 (BACKLOG item 0c, "Machine-elements framing APPROVED").
+# Requirements, loads and limits are synthetic, set in the framing before any model existed; the material values are
+# catalogue values for 42CrMo4 quenched and tempered (Rm 1000, Re 750 MPa).
+#
+# Decision: at the shoulder (D 40 -> d 32 mm, fillet r 1.6 mm +0.4 / -0.2) under rotating bending M 300 N m and a steady
+# torque T 500 N m, (REQ-S1) is the fatigue safety at least 1.5 (Shigley: Marin factors, Neuber notch sensitivity,
+# modified Goodman; ASME elliptic reported), (REQ-S2) is the first-cycle yield safety at a 1.5 x overload at least 2.0,
+# (REQ-S3) what is the smallest fillet radius meeting REQ-S1?
+#
+# Method (validation/shaft_fatigue.py; sources fetched 2026-11-24 and read, none quoted from memory):
+#   Kt fits for a shoulder fillet in a stepped round bar: Pilkey, Formulas for Stress, Strain, and Structural Matrices,
+#   2nd ed. (via amesweb.info); the polynomial form and h = (D - d) / 2 confirmed by Rogers (ASEE Midwest 2025), who
+#   quotes Roark's 8th ed. Shigley 11th ed. chapter 6 (as the Oakland ME4300 solutions manual applies it): Se' = 0.5 Sut;
+#   ka = 3.04 Sut^-0.217 (machined; the 10th edition's 4.51 Sut^-0.265 gives 6.5 % more, reported as a sensitivity);
+#   kb = 1.24 d^-0.107; Neuber's constant for steels (eqs 6-35, 6-36) and q = 1 / (1 + sqrt(a) / sqrt(r)); Kf =
+#   1 + q (Kt - 1); von Mises alternating and mean stresses with Kf and Kfs; yield check with Kf applied to the
+#   overload stresses (Shigley chapter 7's conservative form). DIN 743 is a paid standard and is not used.
+# Hand values (Pilkey Kt): Kt 2.013, Kts 1.590, q 0.876 / 0.898, Kf 1.888, Kfs 1.530, Se 290.5 MPa; Goodman 1.23 (REQ-S1
+# FAIL by hand), elliptic 1.50, yield 1.85 (REQ-S2 FAIL by hand); no radius below the 4 mm shoulder height meets S1 by
+# hand (1.48 at 4 mm).
+#
+# Model (models/fea/shaft_fillet_ccx.py, studies/shaft_fillet.py): CalculiX, half of the shaft (the profile revolved by
+# 180 degrees; y = 0 a plane through the axis), C3D10 from Gmsh, refined along the fillet in y = 0 at x > 0 (both peaks
+# lie there: bending in the x-z plane, torsion the same all round) and in a band 3 mm around the shaft (for the
+# off-plane check). Two linear load cases on one mesh: bending (u_y = 0 on y = 0) and torsion (u_x = u_z = 0 on y = 0);
+# the large end clamped 80 mm past the shoulder; on the loaded end 80 mm before it, the exact beam tractions as
+# consistent nodal forces (isoparametric 6-node faces, 7-point rule). Kt from nodal stresses on the fillet in y = 0.
+#
+# Found while building (prototype, scratch, 2026-11-24 14:55-15:08; no evidence run yet):
+#   - numpy floats written with repr ("np.float64(...)") broke the deck; written as float now.
+#   - straight-sided end faces lost 1.8 % of the moment (the polygon under the circle); isoparametric faces: 1.4e-5.
+#   - the peak over every fillet node picked nodes 1.6-1.9 mm off the plane that read 0.9 % above the on-plane peak,
+#     which bending's cos(theta) forbids: nodal-stress extrapolation scatter. The peak is taken on the plane; the
+#     off-plane maximum (cos-corrected) is a check. It converges from above: gap 1.1 / 0.7 / 0.35 % at 0.2 / 0.14 / 0.1 mm.
+#   - prototype values on the plane (3 mm band): Kt 2.140 / 2.136 / 2.139, Kts 1.548 / 1.548 / 1.550 at 0.2 / 0.14 /
+#     0.1 mm: Kt 6 % above the Pilkey fit, Kts 2.6 % below. Peak at 15-17 degrees up the fillet from the small cylinder.
+#   - the clamp's reaction about the loaded axis matched the applied moment (bending 150.00 of 150 N m, torsion 250.00 of
+#     250 N m on the half); the other reaction components are the half model's symmetry-plane couples (expected).
+#   - beam theory at mid small section: 0.1-0.4 % (nodal stress at 4 mm far elements).
+#
+# Verification tolerances, fixed before the evidence runs:
+#   equilibrium_rel_tol 1e-3   clamp reaction moment against the applied end moment (prototype 1e-5).
+#   end_load_rel_tol 1e-3      applied end moment against M / 2, T / 2 (prototype 1.4e-5: the faces' circle).
+#   beam_rel_tol 0.01          surface stress against beam theory in the small section (prototype 0.4 %).
+#   off_plane_rel_tol 0.02     off-plane peak against the on-plane peak (prototype 1.1 % at 0.2 mm).
+#   kt_fit_rel_tol 0.10        FE Kt against the Pilkey fit: the fits come from Peterson's charts, which recent FE work
+#                              finds up to 15 % low in bending (Oda, Takahata, Yamashita, Noda, J. Japan Soc. Design
+#                              Eng. 61(3) 2026, abstract) and Peterson's equations up to 24 % low (Tipton, Sorem,
+#                              Schmidt, SAE 2011-01-0486, abstract); a miss is reported, the FE value is used.
+#   gci_max 0.02               mesh uncertainty on Kt, Kts and the safety factors.
+#
+# Predictions (written BEFORE the evidence runs, 2026-11-24 15:10; from the prototype and the hand values):
+#   P1 Every point check passes in both cases (the off-plane check under 1.5 % at 0.2 mm and finer).
+#   P2 Mesh study (this file, r 1.6, 0.28 / 0.2 / 0.14 mm): Kt 2.13-2.14, Kts 1.545-1.550; GCI under 1 % on every metric
+#      (possibly oscillatory: the peak node moves along the arc).
+#   P3 Nominal r 1.6: Goodman fatigue safety 1.18-1.20 (REQ-S1 FAIL), elliptic 1.43-1.45, yield safety 1.82-1.83 (REQ-S2
+#      FAIL).
+#   P4 Radius sweep (shaft_fillet_radius): REQ-S1 FAILS at every radius up to 3.9 mm (Goodman about 1.15 at 1.4 mm to
+#      1.43 at 3.9 mm): REQ-S3 has no answer below the shoulder height. REQ-S2 FAILS across the tolerance band (1.4-2.0
+#      mm, about 1.77-1.92) and PASSES from about 2.5 mm (minimum about 2.4-2.5 mm).
+#   P5 FE Kt 5-7 % above the Pilkey fit in bending at every radius, Kts 2-4 % below it.
+#   P6 About 1 min per point at 0.14 mm.
+# This file: the radius sweep at 0.14 mm (P1, P4, P5); the tolerance band is 1.4 / 1.6 / 2.0 mm. REQ-S3 is read from the
+# run-level detail (the smallest radius meeting each requirement, interpolated between swept radii).
+
+[case]
+name = "shaft_fillet_radius"
+model = "ccx_shaft_fillet"
+description = "Gearbox intermediate shaft, 42CrMo4 Q&T, shoulder D 40 -> d 32 mm, rotating bending 300 N m and steady torque 500 N m: fillet radius 1.4 / 1.6 / 2.0 mm (the tolerance band) and 2.5 to 3.9 mm (below the 4 mm shoulder height) for REQ-S3, the smallest radius meeting REQ-S1; fillet elements 0.14 mm."
+assumptions = [
+  "Linear elastic steel (E 210 GPa, nu 0.3); the stress concentration factors are elastic, from a half model (the profile revolved by 180 degrees) with symmetry for bending and antisymmetry for torsion.",
+  "Rotating bending is fully reversed at the fillet; the torque is steady (no torsional alternation); no axial load.",
+  "Shigley's endurance limit: machined surface (ka, 11th edition), size factor from d, kc = 1 with von Mises combined stresses, no temperature or reliability factor (kd = ke = 1: the mean endurance limit).",
+  "Notch sensitivity from Neuber's constant for steels (Shigley's curve fits, eqs 6-35 and 6-36), at the fillet radius.",
+  "The yield check applies Kf and Kfs to the 1.5 x overload stresses (Shigley chapter 7's conservative form); the overload scales both the moment and the torque.",
+  "Material values are catalogue values (Rm 1000, Re 750 MPa), not test certificates.",
+]
+limitations = [
+  "No DIN 743 assessment (a paid standard); Shigley's method is the agreed basis.",
+  "No residual stresses, surface treatment (rolling, shot peening) or corrosion; no fretting or press-fit stress from a hub or bearing seated at the shoulder.",
+  "The Kt fits come from Peterson's charts (photoelastic data), which recent finite-element work finds low in bending; the FE value is used for the verdicts and the fit is a cross-check.",
+  "Neuber's constant and the Marin factors are empirical curve fits with scatter; the 10th-edition surface factor gives a 6.5 % higher endurance limit (reported).",
+  "No physical test data.",
+]
+
+[parameters]
+D_mm = 40.0
+d_mm = 32.0
+fillet_radius_mm = 1.6
+small_length_mm = 80.0
+large_length_mm = 80.0
+bending_moment_Nm = 300.0
+torque_Nm = 500.0
+youngs_modulus_MPa = 210000.0
+poisson_ratio = 0.3
+ultimate_MPa = 1000.0
+yield_MPa = 750.0
+overload_factor = 1.5
+element_size_fillet_mm = 0.14
+element_size_far_mm = 4.0
+refine_radius_mm = 0.5
+refine_halfwidth_mm = 3.0
+mesh_growth = 0.25
+
+[sweep]
+parameter = "fillet_radius_mm"
+values = [1.4, 1.6, 2.0, 2.5, 3.0, 3.5, 3.9]
+
+[numerics]
+solver_timeout_s = 3600
+
+[verification]
+equilibrium_rel_tol = 1e-3
+end_load_rel_tol = 1e-3
+beam_rel_tol = 0.01
+off_plane_rel_tol = 0.02
+kt_fit_rel_tol = 0.10
+gci_max = 0.02
+
+[[requirements]]
+id = "REQ-S1"
+text = "The fatigue safety at the shoulder fillet (modified Goodman, Shigley's method) shall be at least 1.5."
+metric = "fatigue_safety"
+operator = ">="
+limit = 1.5
+units = "-"
+
+[[requirements]]
+id = "REQ-S2"
+text = "The first-cycle yield safety at a 1.5 x overload of moment and torque shall be at least 2.0."
+metric = "static_safety"
+operator = ">="
+limit = 2.0
+units = "-"
