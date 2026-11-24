@@ -1,0 +1,167 @@
+{
+  "run_id": "20261124-082457_turek_hron_fsi2_mesh_b_r1",
+  "case_name": "turek_hron_fsi2_mesh_b_r1",
+  "model": "openfoam_ccx_precice_fsi",
+  "case_source": "cases/turek_hron_fsi2_mesh_b_r1.toml",
+  "case_sha256": "156f4107b130067ca503f38cfec4dd038cec3d9a74a26bb62c7369ed9cf0b05f",
+  "model_sources_sha256": {
+    "models/fsi/turek_hron_fsi.py": "44935422842646833e961e81a25064dc98a6b2a8e6bd6c9b2686fbdbe7420494",
+    "models/fsi/run_turek_hron_fsi.sh": "902fc9d0efa20c06540045fe5b210c41c095894a5d0ab235502b91e7fad37559",
+    "models/fea/flag_ccx.py": "4ae65080b525535565e09d6a52c1bcc2e9a24e979816b465613b402f59884bd1",
+    "models/fsi/frozen_motion_diffusivity.py": "7aac3090f220b55bba23e37131611bccb67bbd46325ce48ed6a815299cf42da7"
+  },
+  "rerun_of": null,
+  "started_utc": "2026-11-24T13:24:57+00:00",
+  "environment": {
+    "python": "3.14.10",
+    "python_executable": "<repo>\\.venv\\Scripts\\python.exe",
+    "platform": "Windows-11-10.0.26100-SP0",
+    "machine": "AMD64",
+    "packages": {
+      "numpy": "2.5.5",
+      "scipy": "1.18.1",
+      "matplotlib": "3.11.2",
+      "cadquery": "2.8.0"
+    },
+    "git": {
+      "commit": "fe32b536a783353236472c39383f8ce595e30a0b",
+      "dirty": false
+    },
+    "tools": {
+      "openfoam_bashrc": "/usr/lib/openfoam/openfoam2512/etc/bashrc",
+      "gmsh": "4.15.0",
+      "openfoam_version": "v2512",
+      "openfoam_package": "openfoam2512 2512.0-2",
+      "precice": "3.4.1",
+      "calculix_precice": "2.20.2-1",
+      "linux": "Ubuntu 22.04.5 LTS"
+    }
+  },
+  "numerics": {
+    "periodic_periods": 4,
+    "solid_alpha": 0.0,
+    "write_interval_s": 1.0,
+    "ramp_time_s": 2.0,
+    "coupling_rel_tol": 1e-05,
+    "coupling_max_iterations": 100,
+    "rbf_support_radius_m": 0.05,
+    "solver_timeout_s": 64800,
+    "mesh_motion": "frozen",
+    "mesh_motion_exponent": 1.0
+  },
+  "points": [
+    {
+      "label": "p00_baseline",
+      "parameters": {
+        "solid_density_kg_per_m3": 10000.0,
+        "shear_modulus_Pa": 500000.0,
+        "poisson_ratio": 0.4,
+        "fluid_density_kg_per_m3": 1000.0,
+        "kinematic_viscosity_m2_per_s": 0.001,
+        "mean_velocity_m_per_s": 1.0,
+        "fluid_cell_size_m": 0.0025,
+        "solid_element_size_mm": 2.5,
+        "time_step_s": 0.001,
+        "end_time_s": 15.0,
+        "benchmark_ux_A_m": -0.01485,
+        "benchmark_uy_A_m": 0.0013,
+        "benchmark_drag_N_per_m": 215.06,
+        "benchmark_lift_N_per_m": 0.61,
+        "benchmark_ux_A_mean": -0.01485,
+        "benchmark_ux_A_amp": 0.0127,
+        "benchmark_ux_A_freq_Hz": 3.86,
+        "benchmark_uy_A_mean": 0.0013,
+        "benchmark_uy_A_amp": 0.0816,
+        "benchmark_uy_A_freq_Hz": 1.93,
+        "benchmark_drag_mean": 215.06,
+        "benchmark_drag_amp": 77.65,
+        "benchmark_drag_freq_Hz": 3.86,
+        "benchmark_lift_mean": 0.61,
+        "benchmark_lift_amp": 237.8,
+        "benchmark_lift_freq_Hz": 1.93
+      },
+      "status": "completed",
+      "derived": {
+        "reynolds_D": 100.0,
+        "mass_ratio": 10.0
+      },
+      "solver": {
+        "success": true,
+        "message": "uy(A) -15.8828 mm, drag 153.508 N/m (15000 windows, 7.2 iterations each)",
+        "nfev": 107400
+      },
+      "solver_outputs": {
+        "solid_divisions": [
+          140,
+          8
+        ],
+        "solid_nodes": 2538,
+        "wet_nodes": 574,
+        "point_a_node": 705,
+        "depth_m": 0.01,
+        "flag_cell_max_angle_deg": 122.63748739834053,
+        "flag_cell_max_angle_at_m": [
+          0.3454513900863913,
+          0.21102360617452331
+        ],
+        "cells": 13047,
+        "mesh_ok": true,
+        "windows": 15000,
+        "windows_not_converged": 0,
+        "coupling_iterations_mean": 7.16,
+        "coupling_iterations_max": 14,
+        "flag_fluid_force_N": [
+          0.07076661048,
+          1.5061272839209998
+        ],
+        "clamp_reaction_N": [
+          -0.7765045,
+          0.6284418
+        ],
+        "inlet_profile_error_max": 4.730023780060341e-10,
+        "transfer_mapping_max_rel": 0.0,
+        "transfer_fluid_max_rel": 2.327169765554735e-09,
+        "transfer_windows": 2070,
+        "transfer_from_s": 12.656694026779103,
+        "transfer_to_s": 14.726688688609148
+      },
+      "metrics": {
+        "ux_A_mean": -0.01508507538,
+        "ux_A_amp": 0.01286786112,
+        "ux_A_freq_Hz": 3.86500443248725,
+        "uy_A_mean": 0.0012362024500000013,
+        "uy_A_amp": 0.08238288375,
+        "uy_A_freq_Hz": 1.9331393428157626,
+        "drag_mean": 217.9020068655,
+        "drag_amp": 78.8375756495,
+        "drag_freq_Hz": 3.8647261062479012,
+        "lift_mean": 0.8234693785000076,
+        "lift_amp": 243.4621181165,
+        "lift_freq_Hz": 1.931896877073722,
+        "ux_A_m": -0.00546483188,
+        "uy_A_m": -0.0158828239,
+        "drag_N_per_m": 153.507971688,
+        "lift_N_per_m": 187.77070351279997,
+        "ux_A_mean_deviation_pct": 1.5829991919191901,
+        "ux_A_amp_deviation_pct": 1.321741102362215,
+        "ux_A_freq_Hz_deviation_pct": 0.12964851003238398,
+        "uy_A_mean_deviation_pct": 0.07818327205882188,
+        "uy_A_amp_deviation_pct": 0.9594163602941063,
+        "uy_A_freq_Hz_deviation_pct": 0.16266024952138183,
+        "drag_mean_deviation_pct": 1.3214948691062942,
+        "drag_amp_deviation_pct": 1.5293955563425505,
+        "drag_freq_Hz_deviation_pct": 0.12243798569692678,
+        "lift_mean_deviation_pct": 0.08976845185029754,
+        "lift_amp_deviation_pct": 2.3810421011354004,
+        "lift_freq_Hz_deviation_pct": 0.09828378620321203,
+        "ux_A_deviation_pct": NaN,
+        "uy_A_deviation_pct": NaN,
+        "drag_deviation_pct": NaN,
+        "lift_deviation_pct": NaN
+      }
+    }
+  ],
+  "study": "turek_hron_fsi",
+  "status": "completed",
+  "finished_utc": "2026-11-24T21:22:22+00:00"
+}

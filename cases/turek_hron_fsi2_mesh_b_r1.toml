@@ -28,6 +28,15 @@
 #   P5 About 7-10 h side by side (level c alone reached 8.8 s in 4.1 h on a free CPU; the motion solve adds a few
 #      percent; the solid sets the pace).
 # This file: level b, 2.5 mm.
+#
+# Results, level b (run 20261124-082457_turek_hron_fsi2_mesh_b_r1, 08:24-16:22): reached 15 s; verification PASS (every
+# point check: flag cells 122.6 deg, periodic 1e-4, force transfer 2e-9, coupling); every requirement PASSES (uy amplitude
+# -0.96 % from the benchmark, frequency 0.16 %, drag mean 1.32 %, drag amplitude 1.53 %, lift amplitude 2.38 %, ux mean
+# 1.58 %). Against the earlier level-b run (20261123-123352, the old mesh motion): uy amplitude +0.30 %, frequency
+# +0.086 %, drag mean +0.23 %, lift amplitude +0.30 %, ux mean -0.47 %, ux amplitude +0.63 %, drag amplitude +1.08 %
+# (the lift mean, 0.2 against 0.8 N beside a 243 N amplitude, is not a relative quantity).
+# P2 for b: HELD for the frequency (0.086 %) and most quantities; MISSED for the ux amplitude (0.63 %) and the drag
+# amplitude (1.08 %): the mesh motion changes the peak forces more than I expected. Levels a and c: below when done.
 
 [case]
 name = "turek_hron_fsi2_mesh_b_r1"
