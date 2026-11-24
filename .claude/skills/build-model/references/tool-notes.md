@@ -431,6 +431,23 @@ Traps found while building the studies in this repo, by tool.
 - An exact case run through the same deck writer and solver (uniform temperature, homogeneous
   strain) is what exposed it; the beam-theory comparison at 1 % never would have.
 
+### Buoyancy and radiation with the `fluid` solver (study 11)
+
+- **OpenFOAM's `Boussinesq` equation of state is not the Boussinesq approximation**: rho = rho0 (1 - beta (T - T0))
+  enters every term, including the energy equation's diffusion. Over a 100 K span a pure-conduction annulus missed the
+  exact log profile by 3 K; keep beta dT small (3e-4 in the cavity: Ra set through g) or, with no gravity, use
+  `rhoConst`.
+- **`wallHeatFlux` reported a conductivity 1.33 x mu Cp / Pr** for `heRhoThermo` + `hConst` + Boussinesq (Nu 1.49 at
+  Ra 1e3 against 1.117, a constant factor at every Ra), while the temperature field gives the bench mark and Ra 1e4
+  shows the solver's diffusivity is the intended one. Take heat fluxes from the field, not from `wallHeatFlux`.
+- **The wall gradient in the solver is first order**: a wall-gradient readout (even a second-order one-sided fit) was
+  2-5 % off on a 20-cell annulus; with no source the flux is conserved, so read it across an interior face (central,
+  second order): 0.05 %.
+- **Radiation is an fvModel** (OpenFOAM 11+): `constant/fvModels { radiation { type radiation; libs
+  ("libradiationModels.so"); } }`; without it `radiationProperties` is silently ignored. fvDOM's wall emissivity
+  is set in `IDefault`'s `greyDiffusiveRadiation` condition (`emissivityMode lookup`). The `viewFactor` model and its
+  `faceAgglomerate` / `viewFactorsGen` utilities exist in v14 but no tutorial uses them.
+
 ## Partitioned coupling (OpenFOAM <-> CalculiX, cold-plate chain)
 
 - Match the meshes at the interface one to one (same cell size along the wall), so heat passes
