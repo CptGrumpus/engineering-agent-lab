@@ -78,14 +78,20 @@ commit). Rules that bind:
   `*.inp`, `*.dat`, `__pycache__`, files > 600 kB, then `tests/test_privacy.py`; never two FEMM cases at once; check
   free RAM on long runs.
 
-### Running at 08:25, 2026-11-24 (scratchpads under `%LOCALAPPDATA%/Temp/claude/cb67dd1e648f8970/<session>/scratchpad/`)
+### Running at 10:08, 2026-11-24 (scratchpads under `%LOCALAPPDATA%/Temp/claude/cb67dd1e648f8970/<session>/scratchpad/`)
 
 | Job | Run dir (log) | Done about | When it finishes |
 |---|---|---|---|
 | Study 6: FSI2 mesh study revision 1, levels a / b / c side by side (`cases/turek_hron_fsi2_mesh_{a,b,c}_r1.toml`: frozen 1 / d mesh motion, the fix chosen from the level-c diagnosis, done 08:12, and an offline moveMesh test), started 08:24 | `runs/*_turek_hron_fsi2_mesh_*_r1` (`fsi2_r1_{a,b,c}.log`, session 8f53debf) | about 15:30-18:30 | Score P1-P5 (headers); `scripts/combine_mesh_levels.py` over the three r1 runs; page 17 (drop 'draft' if c passes); run-case / tool-notes skill lines. |
-| Study 7: revision-5 table refinement (`motor_prius_lut_{cold,hot}_refine_rev5`), cold done 08:23 (dq-torque FAIL on the new low rows at id -100 to -300 A, wider than P1's -175 to -300), hot running | `refine_chain.log` (session 8f53debf) | about 08:55 | Score P1-P4; rerun the revision-5 efficiency and thermal cases on the merged tables (new cases, predictions first): does the 5500 rpm hot corner converge? |
+| Study 12 (O-ring): four evidence cases in parallel, started about 10:06 (`oring_free_lindley`, `oring_free_hertz`, `oring_seal_corners`, `oring_seal_mesh`; predictions P1-P6 in each header) | `runs/*_oring_*` (`oring_runs.log`, session 8f53debf) | about 10:35 | Score P1-P6; portfolio page (new, number 25) and the PORTFOLIO / README rows; BACKLOG row 12. |
 
 ### Next (in order)
+0a. **Done 2026-11-24 07:38-10:08 (this session):** FSI2 level-c crash diagnosed (mechanism 1, mesh motion: a period-2
+   oscillation made in the motion solve; the current diffusivity is ill-posed, solver-dependent) and fixed by a frozen
+   1 / d diffusivity (offline moveMesh test), all three FSI2 levels rerunning; the motor table refinement scored (the
+   tables were not coarse; the thermal hot-corner switch is real; the light-load map row was a half-table artefact;
+   a half-table bug fixed); cleanup (page 17 banner, PORTFOLIO, README, BACKLOG rows, `reports/motor/` refreshed, the
+   revision-4 render deleted on the dashboard session's OK); study 12 framed (approved), built and smoke-tested.
 0. **Done 2026-11-24 00:47-06:42 (this session):** FSI3 mesh study (all three levels, combined check, page 17);
    study 7 revision-5 chain finished and scored: four dq tables (cold / hot PASS; both low-iq FAIL the dq-torque check
    at iq 6.25 A, as predicted), the efficiency map (ORNL gap 4.37 points; REQ-M2, M5 pass), the field export for the
