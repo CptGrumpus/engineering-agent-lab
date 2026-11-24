@@ -1,6 +1,6 @@
 # Study 7 (2004 Prius motor against ORNL's tests): where it stands
 
-Updated 2026-11-23 17:13 (time from `date`). Since about 13:50 the study runs as a **regular client project**
+Updated 2026-11-24 06:42 (time from `date`). Since about 13:50 the study runs as a **regular client project**
 (user's decision): every piece of information a client would hand over is collected in `CLIENT_DATA.md` and used as
 input; what the job must predict (torque, efficiency) stays a validation target. The record of earlier steps:
 `RESULTS.md` (the blind pass), `CALIBRATION_PLAN.md` (revisions 1-4, predictions before each run), `DRAWING_AUDIT.md`.
@@ -50,6 +50,25 @@ measurement side, and every client input already used. Bounded: 3D end effects, 
 (CALIBRATION_PLAN step 4): the drawing's magnet stops were measured at 21:23 and the model already puts every
 magnet on them (pockets within 0.075 mm), so the leading hypothesis is the magnetisation level in the assembled
 rotor (88-90 % of the re-saturated sample; settled by a fluxmeter test on one magnet). Questions for the client: `CLIENT_QUESTIONS.md`.
+
+## Design checks and efficiency on the client-data model (2026-11-24)
+
+All on revision 5, uncalibrated, with the measured phase resistance (69 mOhm at 21 C). Predictions in each case header.
+
+| Check | Revision 5 | Earlier (blind / calibrated) | Case, run |
+|---|---|---|---|
+| Efficiency map, peak | 97.22 % cold, 96.87 % hot | 97.41 / 97.05 blind | `motor_prius_efficiency_rev5`, 20261124-062847 |
+| Against ORNL Table B-1 (393 points), median hot minus ORNL | **+4.37 points** (p10-p90 2.8-7.1), limit 2 | +5.21 blind, +4.50 calibrated | `scripts/motor_rev5_vs_ornl.py` |
+| REQ-M2, current for 400 N m | 171 A cold, 177 A hot (limit 212): pass | 168 A blind | merged tables |
+| REQ-M5, rated power to 6000 rpm | 55.85 kW cold (verified), 51.65 kW hot: pass | 58.6 / 48.0 kW | efficiency run |
+| REQ-TH1, continuous rating | 27.70 kW nominal: pass (unverified, section check 5.3 %); 23.99 kW at the 0.08 mm fit: fail (verified) | 30.2 / 28.1 kW | `motor_prius_thermal_rev5`, 20261124-063338 |
+| REQ-M4, bridges at 7200 rpm | **415.0 MPa** against 335: fail, verified (GCI 1.5 %) | 424.4 MPa | `motor_prius_rotor_overspeed_rev5_mesh`, 20261124-063835 |
+
+The efficiency gap barely moves with the flux (blind +24 % flux: 5.2 points; calibrated: 4.5; client data +18 %:
+4.4): it is mostly the losses the motor-only model leaves out (mechanical, magnet eddy current, AC copper) and the
+torque per ampere. Known weak spots, reported: the dq tables' lowest q-axis row (iq 6.25 A) fails the dq-torque
+check in six columns; the hot map's light-load row above 4000 rpm fails the half-table check; the thermal network's
+hot-corner state at 5500 rpm in one cooling scenario has no fixed point (operating point discontinuous there).
 
 ## Next steps (no calibration)
 
