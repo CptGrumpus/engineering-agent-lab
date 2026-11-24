@@ -45,6 +45,7 @@ from studies.strut_buckling import read_dat_blocks
 WRITER = "models/fsi/turek_hron_fsi.py"
 RUNNER = "models/fsi/run_turek_hron_fsi.sh"
 FLAG_WRITER = "models/fea/flag_ccx.py"
+FROZEN_DIFFUSIVITY = "models/fsi/frozen_motion_diffusivity.py"   # run by the runner, next to it
 BENCH = ("benchmark_ux_A_m", "benchmark_uy_A_m", "benchmark_drag_N_per_m", "benchmark_lift_N_per_m")
 METRICS = ("ux_A_m", "uy_A_m", "drag_N_per_m", "lift_N_per_m")
 PERIODIC_Q = {"ux_A": "ux_A_m", "uy_A": "uy_A_m", "drag": "drag_N_per_m", "lift": "lift_N_per_m"}
@@ -243,7 +244,7 @@ def read_iterations(path: Path) -> np.ndarray:
 
 
 class PreciceFSI(Backend):
-    sources = (WRITER, RUNNER, FLAG_WRITER)
+    sources = (WRITER, RUNNER, FLAG_WRITER, FROZEN_DIFFUSIVITY)
 
     def __init__(self):
         from studies.cantilever import find_freecadcmd

@@ -21,6 +21,7 @@ not where; the periodic cases (FSI2, FSI3) must use ALPHA = 0.
 from __future__ import annotations
 
 import importlib.util
+import json
 from pathlib import Path
 
 PARAMS = ("solid_density_kg_per_m3", "shear_modulus_Pa", "poisson_ratio", "fluid_density_kg_per_m3",
@@ -169,6 +170,15 @@ laplacianSchemes     { default Gauss linear corrected; }
 interpolationSchemes { default linear; }
 snGradSchemes        { default corrected; }
 """)
+    # mesh motion (numerics mesh_motion): "inverse_distance" (default, every case before 2026-11-24): OpenFOAM's
+    # quadratic inverseDistance, recomputed on the moved mesh each step, two Gauss-Seidel sweeps; "frozen": 1 / d^p on
+    # the base mesh with the exact distance to the body (models/fsi/frozen_motion_diffusivity.py, run by the runner
+    # after gmshToFoam), solved to convergence with GAMG. Why: FSI2 mesh level c (turek_hron_fsi2_mesh_c_diag).
+    frozen = str(numerics.get("mesh_motion", "inverse_distance")) == "frozen"
+    if not frozen and str(numerics.get("mesh_motion", "inverse_distance")) != "inverse_distance":
+        raise ValueError(f"unknown mesh_motion {numerics.get('mesh_motion')!r}")
+    motion_solver = ('    "cellDisplacement.*" { solver GAMG; smoother GaussSeidel; tolerance 1e-10; relTol 0; '
+                     'maxIter 1000; }\n') if frozen else ""
     _foam(d / "system/fvSolution", "dictionary", "fvSolution", """
 solvers
 {
@@ -179,7 +189,7 @@ solvers
     Phi { $p; }
     "(U|cellDisplacement)" { solver smoothSolver; smoother symGaussSeidel; tolerance 1e-10; relTol 1e-4; minIter 2; }
     "(U|cellDisplacement)Final" { $U; relTol 0; }
-}
+""" + motion_solver + """}
 PIMPLE
 {
     nCorrectors 3;
@@ -218,8 +228,13 @@ FSI
 dynamicFvMesh dynamicMotionSolverFvMesh;
 motionSolverLibs ("libfvMotionSolvers.so");
 solver      displacementLaplacian;
-displacementLaplacianCoeffs { diffusivity quadratic inverseDistance (flag cylinder); }
-""")
+displacementLaplacianCoeffs { diffusivity %s; }
+""" % ("file motionDiffusivity" if frozen else "quadratic inverseDistance (flag cylinder)"))
+    if frozen:
+        _w(d / "frozen_diffusivity.json", json.dumps({
+            "xc": XC, "yc": YC, "r": R, "flag_x0": XC + (R ** 2 - (FLAG_H / 2) ** 2) ** 0.5, "flag_x1": XC + R + FLAG_L,
+            "flag_y0": YC - FLAG_H / 2, "flag_y1": YC + FLAG_H / 2,
+            "exponent": float(numerics.get("mesh_motion_exponent", 1.0))}))
     ramp = float(numerics.get("ramp_time_s", 2.0))
     _foam(d / "0/U", "volVectorField", "U", f"""
 dimensions      [0 1 -1 0 0 0 0];

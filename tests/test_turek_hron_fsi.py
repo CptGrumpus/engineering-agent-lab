@@ -217,3 +217,25 @@ def test_dense_writing_adds_only_a_function_object(tmp_path):
     # everything outside the function object is identical
     fo = dense[dense.index("    denseWrite"):dense.index("    }\n", dense.index("    denseWrite")) + 6]
     assert dense.replace(fo, "") == plain
+
+
+def test_frozen_motion_diffusivity_distance_and_floor():
+    """Exact distance to the cylinder and the flag rectangle; faces on the body take half their cell's distance."""
+    spec = importlib.util.spec_from_file_location("fmd", ROOT / "models/fsi/frozen_motion_diffusivity.py")
+    F = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(F)
+    g = {"xc": 0.2, "yc": 0.2, "r": 0.05, "flag_x0": 0.249, "flag_x1": 0.6, "flag_y0": 0.19, "flag_y1": 0.21,
+         "exponent": 1.0}
+    P = np.array([[0.2, 0.3, 0.0],      # above the cylinder: 0.1 - 0.05
+                  [0.7, 0.2, 0.0],      # beyond the tip: 0.1
+                  [0.4, 0.25, 0.0],     # above the flag: 0.04
+                  [0.63, 0.25, 0.0],    # off the tip corner: hypot(0.03, 0.04)
+                  [0.4, 0.2, 0.0]])     # inside the flag: 0
+    assert F.body_distance(P, g) == pytest.approx([0.05, 0.1, 0.04, 0.05, 0.0])
+    # one square cell above the flag (x 0.40-0.41, y 0.21-0.22): its bottom face lies on the flag
+    pts = np.array([[0.40, 0.21, 0], [0.41, 0.21, 0], [0.41, 0.22, 0], [0.40, 0.22, 0]], float)
+    faces = [[0, 1], [1, 2], [2, 3], [3, 0]]
+    gam = F.diffusivity(pts, faces, np.zeros(4, int), g)
+    d_cell = 0.005                                           # mean of the face centres: y = 0.215
+    assert gam[0] == pytest.approx(1 / (0.5 * d_cell))       # on the flag: floored
+    assert gam[2] == pytest.approx(1 / 0.01)                 # the top face, 0.01 from the flag
