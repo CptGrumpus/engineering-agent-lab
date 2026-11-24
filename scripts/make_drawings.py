@@ -802,8 +802,70 @@ def random_vib():
            "dimensions in mm, the clamp and table schematic")
 
 
+def fan_rotor():
+    p = case("rotor_fan_design")
+    L = p["bearing_span_m"] * 1000
+    R, W = p["disc_diameter_m"] * 500, p["disc_width_m"] * 1000
+    d = 50.0                                               # as drawn; 60 and 65 are the sweep's other shafts
+    rho, E = p["density_kg_per_m3"], p["youngs_modulus_Pa"]
+    m_disc = rho * np.pi * ((R / 1000) ** 2 - (d / 2000) ** 2) * W / 1000
+    fig, ax = new(9.5, (-170, 1170), (-610, 290))
+    # shaft, impeller, centre line
+    centre(ax, (-60, 0), (L + 60, 0))
+    rect(ax, 0, -d / 2, L, d / 2)
+    rect(ax, L / 2 - W / 2, -R, L / 2 + W / 2, R, hatch="////")
+    note(ax, (L / 2 - W / 2, 120), (250, 165), f"impeller: a steel disc, about {m_disc:.0f} kg,\nwith the blades lumped in", ha="right")
+    note(ax, (300, d / 2), (300, 85), "shaft Ø50 as drawn;\nØ60 and Ø65 also run", ha="center", va="bottom")
+    # the unbalance on the disc
+    ax.add_patch(Circle((L / 2, R - 22), 9, fc=HOT, ec="none", zorder=6))
+    text(ax, L / 2 + 30, R - 22, "unbalance 84 to 106 g·mm\n(API 684's standard amount)", ha="left", fs=7.5, color=HOT)
+    # bearings on their pedestals: a spring and a damper to ground at each end
+    for x in (0, L):
+        rect(ax, x - 32, -d / 2 - 22, x + 32, d / 2 + 22, fc="#d3dceb")
+        spring(ax, (x - 16, -d / 2 - 22), (x - 16, -195), n=5, w=11)
+        damper(ax, (x + 16, -d / 2 - 22), (x + 16, -195), w=9)
+        wall(ax, (x - 48, -195), (x + 48, -195), side=-1)
+    text(ax, 55, -125, "bearing and pedestal:\nspring 10⁷ to 10⁸ N/m (not known well),\ndamper 500 N·s/m", ha="left", fs=7.5)
+    # rotation, seen side-on
+    cx = L + 75
+    ax.add_patch(Arc((cx, 0), 34, 120, theta1=40, theta2=320, color=ACC, lw=1.2, zorder=5))
+    t2 = np.radians(320)
+    ax.annotate("", (cx + 17 * np.cos(t2) + 4, 60 * np.sin(t2) + 6), (cx + 17 * np.cos(t2), 60 * np.sin(t2)),
+                arrowprops=dict(arrowstyle="-|>", color=ACC, lw=1.2, mutation_scale=9), zorder=5)
+    text(ax, cx, 85, "1,000 to\n3,000 rpm", fs=7.5, color=ACC, bold=True, va="bottom")
+    # dimensions
+    dim(ax, (0, -215), (L, -215), -30)
+    dim(ax, (0, R), (L / 2 - W / 2, R), 35, f"{L / 2 - W / 2:g}")
+    dim(ax, (L / 2 + W / 2, -R), (L / 2 + W / 2, R), -150, f"Ø{2 * R:g}", tshift=-110)
+    dim(ax, (L / 2 - W / 2, -R), (L / 2 + W / 2, -R), -22, f"{W:g}", outside=True)
+    # inset: the bent shape under the disc's weight, near enough the first mode's shape, for the 65 mm shaft
+    I = np.pi * 0.065 ** 4 / 64
+    xs = np.linspace(0, L, 201) / 1000
+    Lm = L / 1000
+    xm = np.minimum(xs, Lm - xs)
+    bend = xm * (3 * Lm ** 2 - 4 * xm ** 2) / (48 * E * I)         # per newton at mid-span
+    y0, A, x0 = -470, 95, 0
+    centre(ax, (-40, y0), (L + 40, y0))
+    text(ax, -150, y0 + 120, "How the 65 mm shaft bends in its first mode (approximately; drawn exaggerated):",
+         ha="left", fs=7.5, color=INK, bold=True, box=False)
+    for i, (k, col, ls, lab) in enumerate(((1e7, ACC, "-", "soft pedestals, 10⁷ N/m"), (1e8, DIMC, (0, (5, 3)), "stiff pedestals, 10⁸ N/m"))):
+        end = 1 / (2 * k)
+        y = (bend + end) / (bend.max() + end)
+        ax.plot(x0 + xs * 1000, y0 - A * y, color=col, lw=1.6, ls=ls, zorder=5)
+        f = end / (bend.max() + end)
+        ky = y0 + 75 - 32 * i                              # a key above the curves
+        ax.plot([0, 60], [ky, ky], color=col, lw=1.6, ls=ls, zorder=5)
+        text(ax, 75, ky, f"{lab}: the ends move {100 * f:.0f} % as much as the middle", ha="left", fs=7.5, color=col, box=False)
+    for x in (0, L):
+        ax.plot([x], [y0], marker="^", ms=6, color=INK, zorder=6)
+    text(ax, L / 2, y0 - A - 30, "On soft pedestals the whole shaft moves, so more of its mass takes part and the critical speed drops.",
+         fs=7, va="top", box=False)
+    finish(fig, "fan_rotor", "Study 23 · centre-hung fan rotor · the model: shaft, impeller and two bearings on springs",
+           "dimensions in mm, to scale; bearings and the bend schematic")
+
+
 ALL = {f.__name__: f for f in (fea, cantilever_opt, strap, modal, strut, contact, bolted_joint, pv_nozzle, bracket_opt, cad,
-                               cfd, thermal, heat, cold_plate, pipe, suspension, baseline, motor, step, random_vib)}
+                               cfd, thermal, heat, cold_plate, pipe, suspension, baseline, motor, step, random_vib, fan_rotor)}
 
 if __name__ == "__main__":
     for name in sys.argv[1:] or ALL:
