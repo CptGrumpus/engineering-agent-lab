@@ -36,7 +36,7 @@ STUDY_DOCS = {
     "bolted_joint": "16-bolted-joint-slip", "pv_nozzle": "18-pressure-vessel-nozzle",
     "pipe": "19-turbulent-pipe-friction", "motor": "20-prius-traction-motor", "step": "19-turbulent-pipe-friction",
     "random_vib": "21-bracket-random-vibration", "bracket_uq": "22-bracket-random-uncertainty",
-    "fan_rotor": "23-fan-rotor-critical-speeds", "crack": "24-cracked-plate-growth",
+    "fan_rotor": "23-fan-rotor-critical-speeds", "crack": "24-cracked-plate-growth", "oring": "25-oring-face-seal", "oring": "25-oring-face-seal",
 }
 RUN_PREFIX = {"pipe": "pipe_", "step": "step_"}
 # studies whose page cites a chosen set of runs instead of every run its write-up mentions, and links no write-up
@@ -542,6 +542,11 @@ REQS = [
     ("crack", "24", "Cracked plate", [
         ("Stress intensity at the detectable 2 mm crack", "≤ 50 MPa√m", "13.4 MPa√m", "met"),
         ("Crack growth life from 2 mm to critical", "≥ 80,000 cycles", "about 92,000 cycles, ±0.2 %; critical crack 37.0 mm", "met")]),
+    ("oring", "25", "O-ring face seal", [
+        ("Squeeze at every corner of the tolerance stack", "15 to 30 %", "17.2 % at the loosest, 24.5 % at the tightest", "met"),
+        ("Peak contact pressure on the cover, loosest corner", "≥ 0.6 MPa (2 × 3 bar)", "1.50 MPa", "met"),
+        ("Closing force, tightest corner", "≤ 12 N/mm", "5.94 N/mm (mesh uncertainty 1.1 %)", "met"),
+        ("Groove fill, tightest corner", "≤ 85 %", "80.4 %; the hand cross-check differs by 1.05 %, just over its 1 %", "met")]),
     ("cfd", "05", "Coolant channel", [
         ("Supply pressure", "≤ 30 Pa", "33.4 Pa nominal, 28–42 Pa over tolerances", "fail"),
         ("Wall shear stress", "≥ 0.5 Pa", "0.43 Pa with warm coolant", "fail"),
@@ -726,6 +731,7 @@ CAPS = """<div class="table-wrap">
         <tbody>
           <tr><td>Structural FEA with 3D solids and plane stress, including mesh convergence and telling real stress peaks from singularities</td><td>FreeCAD, Gmsh, CalculiX</td><td><a href="#fea">1</a>, <a href="#strap">2</a></td></tr>
           <tr><td>Contact between separate parts, with the contact pressure and the stress below the surface checked against Hertz</td><td>Gmsh, CalculiX</td><td><a href="#contact">10</a></td></tr>
+          <tr><td>Elastomer seals: nearly incompressible rubber at large strain in contact, across a tolerance stack, checked against Hertz, Lindley's force-squeeze relation and Parker's measured loads</td><td>Gmsh, CalculiX, Python</td><td><a href="#oring">25</a></td></tr>
           <tr><td>Friction contact and preloaded bolted joints, checked against the VDI 2230 joint diagram</td><td>CalculiX</td><td><a href="#bolted_joint">16</a></td></tr>
           <tr><td>Pressure equipment: design by analysis with stress linearisation on classification lines, in the manner of ASME VIII-2 Part 5, against a design-by-rule check</td><td>CadQuery, Gmsh, CalculiX</td><td><a href="#pv_nozzle">18</a></td></tr>
           <tr><td>Buckling: linear eigenvalue and geometrically nonlinear with imperfections, checked against Euler, Southwell and Perry-Robertson</td><td>CalculiX</td><td><a href="#strut">13</a></td></tr>

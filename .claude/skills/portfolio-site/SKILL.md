@@ -41,6 +41,12 @@ Check any summary number against the data before it goes in a caption. The motor
 ≤ 0.8 T"; the data says 95 % of the stator is under 0.9 T and the tooth tips reach 1.76 T. A one-line percentile
 check is cheap; a wrong number on the page isn't.
 
+The same goes for a finished write-up. Before a study's page goes up, read each run's report status and its
+`checks.json`: the O-ring write-up said "passes every requirement" and "volume conserved to 3e-4", but its runs'
+reports said verification FAIL (two cross-checks just over tolerance, one not in the write-up) and the volume check
+read 5e-4. A miss that doesn't touch a verdict still goes on the page, with a verdict that says so
+(`"checkmiss"`: "Passes; two cross-checks just missed").
+
 ## Wording
 
 Plain, first person, the way an engineer would say it to a colleague. No stock phrases or filler, no em dashes as

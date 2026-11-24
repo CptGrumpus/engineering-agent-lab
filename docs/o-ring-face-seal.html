@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>O-Ring Face Seal Across Its Tolerance Stack · Justin Smith</title>
+<meta name="description" content="Passes at all three corners: 1.50 MPa of sealing pressure at the loosest against 0.6 needed, and 5.94 N/mm to close at the tightest against a 12 N/mm budget. A squeezed ring grows in diameter, and the groove wall that stops it adds 40 % to the force.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://cptgrumpus.github.io/engineering-agent-lab/o-ring-face-seal.html">
+<meta property="og:title" content="O-Ring Face Seal Across Its Tolerance Stack">
+<meta property="og:description" content="Passes at all three corners: 1.50 MPa of sealing pressure at the loosest against 0.6 needed, and 5.94 N/mm to close at the tightest against a 12 N/mm budget. A squeezed ring grows in diameter, and the groove wall that stops it adds 40 % to the force.">
+<meta property="og:image" content="https://cptgrumpus.github.io/engineering-agent-lab/v2/og_o-ring-face-seal.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="O-ring face seal across its tolerance stack: result render">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://cptgrumpus.github.io/engineering-agent-lab/o-ring-face-seal.html">
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#141b24" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3CclipPath id='c'%3E%3Crect width='24' height='24' rx='5'/%3E%3C/clipPath%3E%3Cg clip-path='url(%23c)'%3E%3Crect width='4' height='24' fill='%2330123b'/%3E%3Crect x='4' width='4' height='24' fill='%234686fb'/%3E%3Crect x='8' width='4' height='24' fill='%231ae4b6'/%3E%3Crect x='12' width='4' height='24' fill='%23a2fc3c'/%3E%3Crect x='16' width='4' height='24' fill='%23fb8022'/%3E%3Crect x='20' width='4' height='24' fill='%237a0403'/%3E%3C/g%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="assets/site.css?v=1b92e7be77">
+</head>
+<body>
+<nav class="topbar" aria-label="Site">
+  <div class="wrap">
+    <a class="brand" href="index.html"><span class="brand-mark" aria-hidden="true"><i style="background:#30123b"></i><i style="background:#4686fb"></i><i style="background:#1ae4b6"></i><i style="background:#a2fc3c"></i><i style="background:#fb8022"></i><i style="background:#7a0403"></i></span>Justin Smith <small>Simulation Portfolio</small></a>
+    <div class="navgroup">
+      <div class="topnav">
+        <a href="index.html#work" aria-current="page">Studies</a>
+        <a href="how-i-work.html">How I Work</a>
+        <a href="grading.html">Grading</a>
+        <a href="in-progress.html">In Progress</a>
+        <a href="requirements.html">Requirements</a>
+      </div>
+      <a class="nav-contact" href="#contact">Contact</a>
+      <details class="menu">
+        <summary>Menu</summary>
+        <div class="menu-panel">
+        <a href="index.html#work" aria-current="page">Studies</a>
+        <a href="how-i-work.html">How I Work</a>
+        <a href="grading.html">Grading</a>
+        <a href="in-progress.html">In Progress</a>
+        <a href="requirements.html">Requirements</a>
+          <a href="#contact">Contact</a>
+        </div>
+      </details>
+    </div>
+  </div>
+</nav>
+
+<main id="top">
+  <div class="wrap">
+    <nav class="crumbs" aria-label="Breadcrumb"><a href="index.html#work">All studies</a><span>/</span><span>Structures and vibration</span></nav>
+    <header class="study-hero">
+      <p class="eyebrow">Study 25 · Gmsh, CalculiX and Python, elastomer seals</p>
+      <h1>O-Ring Face Seal Across Its Tolerance Stack</h1>
+      <p class="study-q"><span class="k">The question</span>Does an O-ring seal a 3 bar coolant-pump cover at every corner of its tolerance stack, within the bolts&#x27; force and the groove&#x27;s room?</p>
+    </header>
+    <figure class="study-setup"><a class="plate" href="v2/dwg_oring.webp" title="Open the drawing full size"><img src="v2/dwg_oring.webp" alt="Section through the cover&#x27;s face groove as the cover lands: the O-ring against the groove&#x27;s outer wall, the 0.74 mm still to close, the coolant pressure from inside, and the tolerance stack"></a><figcaption><b>The setup.</b> The seal as the cover lands, to scale: the ring sits against the groove's outer wall and stands 0.74 mm proud, which the cover squeezes out. Coolant reaches it from the inside. The lighter upper half of the ring is what's modelled, axisymmetric about the pump's axis.</figcaption></figure>
+    <div class="study-answer">
+      <p class="k">The answer</p>
+      <span class="v v-checkmiss">Passes; two cross-checks just missed</span>
+      <p class="study-lede">Passes at all three corners: 1.50 MPa of sealing pressure at the loosest against 0.6 needed, and 5.94 N/mm to close at the tightest against a 12 N/mm budget. A squeezed ring grows in diameter, and the groove wall that stops it adds 40 % to the force.</p>
+    </div>
+    <div class="vp" id="vp" role="region" aria-label="Result viewer">
+      <div class="legend">
+        <div class="legend-title" id="lg-title"></div>
+        <div class="legend-body"><div class="swatches" id="lg-sw"></div><div class="ticks" id="lg-ticks"></div></div>
+      </div>
+      <div class="stage"><div class="vp-parts" id="vp-parts" role="group" aria-label="Results on this page" hidden></div><button class="vp-3d" id="vp-3d" type="button" aria-pressed="false" hidden>Rotate in 3D</button>
+      <p class="vp-hint" id="vp-hint" hidden><span class="long">Same surface and colour bands as the render · </span>Drag to turn · <span class="long">scroll or </span>pinch to zoom<span class="long"> · double-click to reset</span></p>
+      <img id="vp-img" src="v2/fig_oring_seal.svg" alt="O-ring face seal, 3.53 mm NBR 70 in a 2.79 × 4.80 mm groove · coolant at 3 bar · three tolerance corners">
+      <svg class="triad" viewBox="0 0 54 54" aria-hidden="true">
+        <g stroke-width="1.6" fill="none" stroke-linecap="round">
+          <line x1="14" y1="40" x2="44" y2="46" stroke="#ff8f6b"/><line x1="14" y1="40" x2="34" y2="28" stroke="#8fe3a8"/><line x1="14" y1="40" x2="14" y2="8" stroke="#8fb4ff"/>
+        </g>
+        <g font-family="JetBrains Mono, monospace" font-size="8" fill="#edf1f8"><text x="46" y="50">X</text><text x="36" y="27">Y</text><text x="11" y="6">Z</text></g>
+      </svg>
+      </div>
+      <div class="vp-scrub" id="vp-scrub" hidden>
+        <button type="button" class="vp-play" id="vp-play" aria-label="Play the analysis step by step">▶</button>
+        <input type="range" id="vp-range" min="0" max="0" step="1" value="0" aria-label="Load step">
+        <output id="vp-step" for="vp-range"></output>
+      </div>
+      <div class="status" id="vp-status" aria-live="polite"></div>
+    </div>
+
+    <div class="study-layout">
+      <article class="study-main">
+
+    <h2 id="the-question">The Question</h2>
+    <p>An aluminium cover seals a coolant pump, water-glycol at up to 3 bar, with a nitrile (NBR) O-ring in a face groove. Every dimension has a tolerance: the ring's cross-section is 3.53 ± 0.10 mm, the groove 2.79 ± 0.05 mm deep and 4.80 ± 0.05 mm wide, and the rubber 70 ± 5 Shore A. At every corner of that stack, does the ring stay within 15 to 30 % squeeze, press on the cover at the peak with at least twice the sealed pressure, close with no more than the bolts' 12 N per millimetre of seal, and fill no more than 85 % of the groove? The client, the limits and the compound are made up; the relation from hardness to stiffness, the force-squeeze reference and the measured force band are published.</p>
+    <h2 id="the-answer">The Answer</h2>
+    <div class="answer">
+      <div class="chips"><span class="chip pass">Sealing pressure 1.50 MPa at the loosest, need 0.6</span><span class="chip pass">Closing force 5.94 N/mm at the tightest, budget 12</span><span class="chip pass">Groove fill 80.4 % at most, limit 85</span><span class="chip pass">Squeeze 17.2 to 24.5 %, allowed 15 to 30</span><span class="chip warn">Two cross-checks just missed their tolerance</span></div>
+      <p><strong>Yes, at all three corners, with margin.</strong> The loosest stack, a thin ring in a deep groove in the softest rubber, still presses on the cover at 1.50 MPa, 2.5 times the 0.6 MPa needed. The tightest, a thick ring in a shallow groove in the hardest rubber, needs 5.94 N per millimetre to close, half the bolts' budget. The closest margin is the fill: 80.4 % against 85 at the tightest corner.</p>
+      <p><strong>A squeezed O-ring grows in diameter.</strong> Rubber barely changes volume, so squeezing the section spreads it round the ring as well as across it. With nothing holding it, the model's ring drifted 1.7 to 2.0 mm outward. The groove's outer wall stops it, and that adds 40 % to the closing force compared with a free ring. A flat 2D section would miss this; the model is axisymmetric, so it sees the ring's hoop.</p>
+      <p><strong>Two cross-checks missed by a hair, and I left them as misses.</strong> At the tightest corner the hand estimate of the fill differs from the model's by 1.05 %, against the 1 % I set before the runs. The hand estimate assumes the ring's section keeps its area, but the outer wall pushes the ring inward to a smaller radius, so with its volume unchanged the section grows by about 1 %. The model's fill is the better number. And in the Hertz reference case, the contact pressure added up to the closing force within 3.08 %, against a 3 % tolerance. Neither touches a verdict: every margin is a factor of two or more.</p>
+    </div>
+    <h2 id="the-model">The Model</h2>
+    <dl class="spec">
+      <dt>Part</dt><dd>One cross-section of the ring in its groove, axisymmetric about the pump's axis. The groove bottom and the cover are flat and the contact frictionless, so the mid-plane is a plane of symmetry and the upper half of the section is modelled. The ring sits against the groove's outer wall, as it should for pressure from the inside.</dd>
+      <dt>Material</dt><dd>Neo-Hookean rubber, nearly incompressible (bulk modulus 1,000 times the shear modulus). The stiffness comes from the hardness by Gent's relation: 4.43, 5.52 and 7.05 MPa at 65, 70 and 75 Shore A. The cover and the groove walls are steel, effectively rigid against the rubber.</dd>
+      <dt>Contact</dt><dd>Node-to-surface penalty contact, frictionless. The cover moves down by half the squeeze.</dd>
+      <dt>Mesh</dt><dd>Quadratic elements from Gmsh, 0.05 mm where the contact grows; 0.1, 0.07 and 0.05 mm for the mesh study at the tightest corner.</dd>
+    </dl>
+    <details class="record"><summary>The case file: recorded assumptions, limits and inputs</summary><div class="record-body"><p>This is the study's own record, written before the run and saved with it, in the shorthand of the case file.</p><p class="case"><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/cases/oring_seal_corners.toml">cases/oring_seal_corners.toml ↗</a></p><p>O-ring face seal, 3.53 mm NBR in a 2.79 x 4.80 mm groove against its outer wall, squeezed by a cover: the loosest, nominal and tightest corners of the tolerance stack (cross-section, groove depth and width, hardness 65 / 70 / 75 Shore A) against squeeze, contact pressure, closing force and fill requirements.</p><h3>Assumptions, and How Each Is Checked</h3><ul><li>Axisymmetric; the mid-plane is a symmetry plane (flat groove bottom and cover, frictionless contact, quasi-static), so the upper half of the cross-section is modelled.</li><li>Neo-Hookean rubber, E from Shore A by Gent&#x27;s relation (synthetic compound; the hardness tolerance carries the material uncertainty), near-incompressible (K = 1000 G; checked: volume conservation).</li><li>Steel cover and groove walls (E 200 GPa, effectively rigid against the rubber).</li><li>Installed against the groove&#x27;s outer wall (internal pressure); the ring&#x27;s ID follows the cross-section so its OD equals the groove OD at every corner.</li><li>Unpressurised installation: the 0.3 MPa sealed pressure enters only through REQ-E2&#x27;s 2 x rule, not as a load.</li></ul><h3>Limits</h3><ul><li>No friction, no compression set or stress relaxation over time, no temperature effects on the compound.</li><li>Lindley&#x27;s relation is empirical and its exponents are not yet confirmed from a second source; Parker&#x27;s band is wide (a factor of about 6.6).</li><li>No physical test data.</li></ul><h3>Inputs</h3><div class="table-wrap"><table><thead><tr><th>Input</th><th>Value</th></tr></thead><tbody><tr><td>cross_section_mm</td><td>3.53</td></tr><tr><td>ring_inner_diameter_mm</td><td>50</td></tr><tr><td>groove_depth_mm</td><td>2.79</td></tr><tr><td>groove_width_mm</td><td>4.8</td></tr><tr><td>groove_outer_diameter_mm</td><td>57.06</td></tr><tr><td>groove_walls</td><td>1</td></tr><tr><td>shore_a</td><td>70</td></tr><tr><td>bulk_to_shear</td><td>1000</td></tr><tr><td>contact_element_size_mm</td><td>0.05</td></tr><tr><td>far_element_size_mm</td><td>0.2</td></tr><tr><td>penalty_factor</td><td>10</td></tr></tbody></table></div></div></details>
+    <h2 id="why-it-matters">Why It Matters</h2>
+    <p>An O-ring groove is usually sized from a handbook table at nominal dimensions. Whether a seal leaks or needs too much bolt force is decided at the corners of the tolerance stack: the loosest one for sealing, the tightest for force and fill. A model at the corners gives the margins against each requirement, and the contact pressure on the cover, which a handbook table doesn't give.</p>
+    <h2 id="how-it-works">How It Works</h2>
+    <p>CalculiX squeezes the ring in steps and records the closing force at each one, the pressure along the cover at the end, and the ring's deformed area, which gives the fill. The same model runs at the three corners of the stack:</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Corner</th><th>Squeeze</th><th>Closing force</th><th>Peak pressure</th><th>Groove fill</th></tr></thead>
+        <tbody>
+          <tr><td>Loosest: 3.43 mm ring, 2.84 mm deep, 65 Shore A</td><td>17.2 %</td><td>1.89 N/mm</td><td><strong>1.50 MPa</strong></td><td>67.5 %</td></tr>
+          <tr><td>Nominal: 3.53 mm, 2.79 mm, 70 Shore A</td><td>21.0 %</td><td>3.39 N/mm</td><td>2.34 MPa</td><td>73.7 %</td></tr>
+          <tr><td>Tightest: 3.63 mm, 2.74 mm, 75 Shore A</td><td>24.5 %</td><td><strong>5.94 N/mm</strong></td><td>3.52 MPa</td><td><strong>80.4 %</strong></td></tr>
+          <tr><td>Requirement</td><td>15 to 30 %</td><td>≤ 12 N/mm</td><td>≥ 0.6 MPa</td><td>≤ 85 %</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <h2 id="how-i-checked-it">How I Checked It</h2>
+    <ul class="proof">
+      <li><strong>Hertz line contact</strong> at a light 5 % squeeze, where the theory holds: at the model's own force, the peak pressure agrees within 1.6 % and the contact width within 0.3 %.</li>
+      <li><strong>Lindley's force-squeeze relation</strong> for a ring with nothing holding it sideways, which is his test case, so the model runs without the groove walls: within 10.6, 0.05 and 8.1 % at 10, 20 and 30 % squeeze, against the 15 % I allowed for an empirical fit.</li>
+      <li><strong>Parker's measured force band</strong> for this cross-section and hardness (O-Ring Handbook ORD 5700, Fig. 2-6, read from the PDF's vector lines): the free ring's force is inside it at every squeeze. The band is wide, a factor of about 6.6, so it's a sanity check rather than a tight one.</li>
+      <li><strong>The physics adds up:</strong> the ring's volume is conserved to 5 × 10⁻⁴ or better, and the contact pressure integrates to the closing force within 2 % at every corner.</li>
+      <li><strong>Mesh study</strong> at the tightest corner: the mesh uncertainty is 1.1 % on the closing force, 0.04 % on the peak pressure and 0.02 % on the fill.</li>
+    </ul>
+    <div class="caught">
+      <h2 id="what-i-caught-along-the-way">What I Caught Along the Way</h2>
+      <ul>
+        <li><strong>A ring that wandered off.</strong> Centred in the groove with nothing holding it, the squeezed ring drifted 1.7 to 2.0 mm outward. That's real physics, the ring growing in diameter, and it's why the groove walls are in the design model.</li>
+        <li><strong>A contact setting borrowed from the steel models.</strong> The tension the contact law allows at small gaps, copied from my steel contact models, let the rubber's edges pull on the cover, and the pressure missed the force by up to 47 %. Fixed before any evidence run.</li>
+        <li><strong>Pressures that alternate node to node.</strong> CalculiX gives the corner and mid-side nodes of a quadratic face equal areas, so their pressures alternate by about 30 %. I report the average of neighbouring nodes, and the force balance confirms it. What's left shows as the small ripple at the top of each pressure curve.</li>
+        <li><strong>A reference run that stopped halfway.</strong> The free ring, held sideways only by its own hoop stiffness, went numerically singular at 26.5 % squeeze. Smaller load steps fixed it, and the failed run is kept.</li>
+      </ul>
+    </div>
+    <h2 id="limits">Limits</h2>
+    <ul>
+      <li>Frictionless and quasi-static. No compression set or stress relaxation over time, no temperature effect on the rubber, and no extrusion under pressure: the 3 bar enters only through the twice-the-pressure rule.</li>
+      <li>The rubber's stiffness comes from its hardness alone. A client's compound data would replace it.</li>
+      <li>Lindley's exponents come from a copy whose text is garbled, so they aren't confirmed from a second source.</li>
+      <li>No physical test of this seal.</li>
+    </ul>
+    <h2 id="evidence">Evidence</h2>
+    <div class="side-card"><ul class="ev-list"><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/portfolio/25-oring-face-seal.md">Full write-up on GitHub</a></li></ul><p class="label">Run reports, with every check and the saved inputs</p><ul class="ev-list ev-runs"><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261124-100614_oring_free_lindley/report.md">oring_free_lindley · 10:06</a></li><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261124-100617_oring_free_hertz/report.md">oring_free_hertz</a></li><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261124-100619_oring_seal_corners/report.md">oring_seal_corners</a></li><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261124-100621_oring_seal_mesh/report.md">oring_seal_mesh</a></li><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261124-105309_oring_free_lindley/report.md">oring_free_lindley · 10:53</a></li></ul></div>
+      </article>
+      <aside class="study-side" aria-label="Summary of this study">
+        <div class="side-card"><h2>At a Glance</h2><dl><div><dt>Study</dt><dd>25</dd></div><div><dt>Discipline</dt><dd>Structures and vibration</dd></div><div><dt>Tools</dt><dd>Gmsh · CalculiX</dd></div><div><dt>Verdict</dt><dd><span class="v v-checkmiss">Passes; two cross-checks just missed</span></dd></div></dl></div><div class="side-card"><h2>Requirements</h2><ul class="side-reqs"><li><span class="r-what">Squeeze at every corner of the tolerance stack</span><span class="r-num">15 to 30 % · 17.2 % at the loosest, 24.5 % at the tightest</span><span class="chip pass">Met</span></li><li><span class="r-what">Peak contact pressure on the cover, loosest corner</span><span class="r-num">≥ 0.6 MPa (2 × 3 bar) · 1.50 MPa</span><span class="chip pass">Met</span></li><li><span class="r-what">Closing force, tightest corner</span><span class="r-num">≤ 12 N/mm · 5.94 N/mm (mesh uncertainty 1.1 %)</span><span class="chip pass">Met</span></li><li><span class="r-what">Groove fill, tightest corner</span><span class="r-num">≤ 85 % · 80.4 %; the hand cross-check differs by 1.05 %, just over its 1 %</span><span class="chip pass">Met</span></li></ul></div><div class="side-card side-toc"><h2>On This Page</h2><ul class="toc"><li><a href="#the-question">The Question</a></li><li><a href="#the-answer">The Answer</a></li><li><a href="#the-model">The Model</a></li><li><a href="#why-it-matters">Why It Matters</a></li><li><a href="#how-it-works">How It Works</a></li><li><a href="#how-i-checked-it">How I Checked It</a></li><li><a href="#what-i-caught-along-the-way">What I Caught Along the Way</a></li><li><a href="#limits">Limits</a></li><li><a href="#evidence">Evidence</a></li></ul></div>
+      </aside>
+    </div>
+    <nav class="pager" aria-label="More studies"><a class="prev" href="cracked-plate.html"><small>← Previous study</small><b>Cracked Steel Plate: Critical Crack and Fatigue Crack Growth</b></a><a class="next" href="cold-plate.html"><small>Next study →</small><b>Cold Plate: The Coolant Channel, Then the Full Thermal Chain</b></a></nav>
+  </div>
+
+</main>
+
+<footer class="site-foot">
+  <div class="wrap">
+    <section class="contact" id="contact" aria-labelledby="contact-title">
+      <div class="band-head">
+        <p class="eyebrow">Contact</p>
+        <h2 id="contact-title">Get in Touch</h2>
+        <p class="contact-name"><b>Justin Smith</b>, mechanical engineer (MS), with a background in automotive.</p>
+        <p>If something here is close to what you need, or you have a model that needs building or checking, send me a note and tell me about it. I'm available for remote contract work.</p>
+      </div>
+      <div class="contact-actions">
+        <!-- the address is stored reversed and base64-encoded so scrapers reading the page or the repository don't pick it up; site.js decodes it -->
+        <a class="cta" id="contact-mail" href="#contact" data-m="bW9jLmxpYW1nQDg1MW5pdHN1amh0aW1z">Email me</a>
+        <button class="cta-2" id="contact-show" type="button">Show the address</button>
+        <span class="contact-addr" id="contact-addr" hidden></span>
+      </div>
+    </section>
+    <div class="foot-nav">
+      <a href="index.html#work">All studies</a>
+      <a href="requirements.html">Every requirement</a>
+      <a href="how-i-work.html">How I work</a>
+      <a href="grading.html">Grading tasks</a>
+      <a href="in-progress.html">In progress</a>
+      <a href="https://github.com/CptGrumpus/engineering-agent-lab">Source on GitHub ↗</a>
+      <span>Open-source tools throughout: CalculiX, OpenFOAM, Gmsh, CadQuery, OpenModelica, Blender.</span>
+    </div>
+  </div>
+</footer>
+<script>window.VP = [{"id": "oring", "study": "oring", "kind": "figure", "img": "v2/fig_oring_seal.svg", "model": "O-ring face seal, 3.53 mm NBR 70 in a 2.79 × 4.80 mm groove · coolant at 3 bar · three tolerance corners", "lines": ["CalculiX, axisymmetric, the upper half of the ring · neo-Hookean rubber, stiffness from hardness (Gent)", "Left: pressure on the cover. Middle: closing force as the cover comes down (hollow dot: a cross-check missed). Right: groove fill", "Loosest 1.50 MPa (need 0.6) · tightest 5.94 N/mm (budget 12) · fill at most 80.4 % (limit 85)"], "check": "", "card": "oring"}];</script>
+<script src="assets/viewer.js?v=1b92e7be77"></script>
+<script src="assets/site.js?v=1b92e7be77"></script>
+</body>
+</html>

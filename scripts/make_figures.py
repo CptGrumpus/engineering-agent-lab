@@ -1321,6 +1321,88 @@ def motor_airgap():
     print(f"fig motor_airgap (slot-1 angle recovered to {err:.2%} of the plateau)")
 
 
+def oring_seal():
+    """The O-ring face seal at the three corners of its tolerance stack: the contact pressure across the cover, the
+    closing force as the cover comes down, and the groove fill, each against its requirement. Gated on the saved
+    profile and force history reproducing the recorded peak pressure and closing force."""
+    import matplotlib
+
+    run, case = "20261124-100619_oring_seal_corners", "oring_seal_corners"
+    L = limits(case)
+    ok = verified(run)
+    names = [("p00_loosest", "loosest"), ("p01_nominal", "nominal"), ("p02_tightest", "tightest")]
+    blues = matplotlib.colormaps[fk.SEQ]
+    cols = [blues(0.45), blues(0.68), blues(0.92)]
+    recs = []
+    for lab, nm in names:
+        r = point(run, lab)
+        a = np.loadtxt(RUNS / run / "points" / lab / "contact_profile.csv", delimiter=",", skiprows=1)
+        fh = r["solver_outputs"]["force_history"]
+        m = r["metrics"]
+        assert abs(a[:, 1].max() - m["peak_contact_pressure_MPa"]) < 1e-9
+        assert abs(fh["force_N_per_mm"][-1] - m["force_per_length_N_per_mm"]) < 1e-9
+        recs.append((nm, r, a, fh, m))
+    fig, gs = fk.new(FULL, 4.3, 1, 3, wspace=0.42, top=0.80, width_ratios=[1.25, 1.1, 0.85])
+
+    ax = fig.add_subplot(gs[0, 0])
+    fk.style(ax)
+    ax.set_xlim(22.4, 29.0)
+    ax.set_ylim(0, 4.0)
+    fk.limit(ax, L["peak_contact_pressure_MPa"][1], f"{L['peak_contact_pressure_MPa'][1]:g} MPa needed", bad="below", axis="y", at=0.02)
+    r_out = recs[0][1]["solver_outputs"]["groove"]["r_out"]
+    ax.axvline(r_out, color=INK, linewidth=1.6, zorder=2)
+    fk.label(ax, r_out, 3.85, "groove's\nouter wall", dx=-4, ha="right", va="top", color=INK2, size=8.5)
+    for (nm, r, a, fh, m), c in zip(recs, cols):
+        ax.plot(a[:, 0], a[:, 1], color=c, linewidth=1.8, zorder=3)
+        fk.label(ax, 22.55, m["peak_contact_pressure_MPa"], f"{nm} {m['peak_contact_pressure_MPa']:.2f}",
+                 color=INK, size=8.5, bold=nm == "loosest")
+    ax.set_xlabel("radius, mm")
+    ax.set_ylabel("contact pressure on the cover, MPa")
+    fk.panel(ax, "Sealing pressure: the loosest governs")
+
+    ax = fig.add_subplot(gs[0, 1])
+    fk.style(ax)
+    ax.set_xlim(0, 32)
+    ax.set_ylim(0, 13.5)
+    req = {q["id"]: q["limit"] for q in tomllib.loads((REPO / "cases" / f"{case}.toml").read_text(encoding="utf-8"))["requirements"]}
+    lo, hi = req["REQ-E1a"], req["REQ-E1b"]        # both squeeze limits share one metric, so limits() keeps only one
+    ax.axvspan(lo, hi, color=MODEL, alpha=0.08, linewidth=0, zorder=0.5)
+    fk.label(ax, (lo + hi) / 2, 9.3, "squeeze\nallowed", ha="center", color=INK2, size=8.5)
+    fk.limit(ax, L["force_per_length_N_per_mm"][1], "bolt budget, 12 N/mm", bad="above", axis="y", at=0.97)
+    for (nm, r, a, fh, m), c in zip(recs, cols):
+        s = 100 * np.array(fh["squeeze"])
+        ax.plot(s, fh["force_N_per_mm"], color=c, linewidth=1.8, zorder=3)
+        fk.status_dot(ax, s[-1], fh["force_N_per_mm"][-1], "meets" if ok[[l for l, n in names if n == nm][0]] else "held", size=40)
+        fk.label(ax, s[-1], fh["force_N_per_mm"][-1], f"{m['force_per_length_N_per_mm']:.2f}", dx=7, color=INK, size=8.5,
+                 bold=nm == "tightest")
+    ax.set_xlabel("squeeze, % of the cross-section")
+    ax.set_ylabel("closing force, N per mm of seal")
+    fk.panel(ax, "Closing force: the tightest governs")
+
+    ax = fig.add_subplot(gs[0, 2])
+    fk.style(ax, grid="x")
+    fills = [m["groove_fill_pct"] for nm, r, a, fh, m in recs]
+    y = np.arange(3)[::-1]
+    ax.barh(y, fills, color=cols, height=0.56, zorder=2)
+    ax.set_xlim(0, 100)
+    ax.set_ylim(-0.6, 2.9)
+    fk.limit(ax, L["groove_fill_pct"][1], "", bad="above", axis="x")
+    fk.label(ax, L["groove_fill_pct"][1], 2.75, f"limit {L['groove_fill_pct'][1]:g} %", dx=-4, ha="right", color=INK2, size=8.5)
+    for yy, f_ in zip(y, fills):
+        fk.label(ax, f_, yy, f"{f_:.1f} %", dx=-4, ha="right", color=SURFACE, size=8.5, bold=True)
+    ax.set_yticks(y, [nm for nm, *_ in recs])
+    ax.tick_params(axis="y", length=0)
+    ax.set_xlabel("groove fill, %")
+    fk.panel(ax, "Groove fill")
+    thumb(fig, fig.axes[0], "oring")
+    fk.heading(fig, "The seal passes at all three corners of its tolerance stack",
+               "O-ring face seal, 3.53 mm NBR 70 in a 2.79 × 4.80 mm groove, coolant at 3 bar; CalculiX, axisymmetric, "
+               "the ring's upper half")
+    fig.savefig(fk.OUT / "fig_oring_seal.svg", format="svg", dpi=300, metadata={"Date": None, "Creator": None})
+    fk.plt.close(fig)
+    print("fig oring_seal")
+
+
 def motor_thermal():
     """The continuous rating from the thermal network, and the temperatures along it."""
     rec = point("20261122-174925_motor_prius_thermal_r1", "p00_nominal")
@@ -1878,7 +1960,7 @@ ALL = {f.__name__: f for f in (cfd_tolerance, cfd_duct, cfd_response, cfd_field,
                                fatigue_sn, fin_response, fin_h_sweep, qc_bump_sweep, cad_sweep, heat_response,
                                qc_liftoff, qc_iso, coldplate_response, pipe_friction, motor_comparison,
                                motor_rotor, pv_nozzle, step_comparison, random_vibration, bracket_uncertainty,
-                               fan_rotor, fan_rotor_campbell, crack_growth, motor_efficiency, motor_airgap)}
+                               fan_rotor, fan_rotor_campbell, crack_growth, motor_efficiency, motor_airgap, oring_seal)}
 # not on the site (the earlier model's thermal result): motor_thermal
 
 if __name__ == "__main__":

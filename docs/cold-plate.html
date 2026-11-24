@@ -21,7 +21,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
-<link rel="stylesheet" href="assets/site.css?v=a9326a2e51">
+<link rel="stylesheet" href="assets/site.css?v=1b92e7be77">
 </head>
 <body>
 <nav class="topbar" aria-label="Site">
@@ -204,7 +204,7 @@
         <div class="side-card"><h2>At a Glance</h2><dl><div><dt>Study</dt><dd>11 · 15</dd></div><div><dt>Discipline</dt><dd>Thermal and fluids</dd></div><div><dt>Tools</dt><dd>OpenFOAM · CalculiX</dd></div><div><dt>Verdict</dt><dd><span class="v v-pass">Passes</span></dd></div></dl></div><div class="side-card"><h2>Requirements</h2><ul class="side-reqs"><li class="r-study"><a href="#heat">11 · Coolant channel</a></li><li><span class="r-what">Coolant temperature rise</span><span class="r-num">≤ 10 K · 7.2 K</span><span class="chip pass">Met</span></li><li><span class="r-what">Peak wall temperature</span><span class="r-num">≤ 45 °C · 44.03 °C, mesh uncertainty 0.23 % of the rise</span><span class="chip pass">Met</span></li><li class="r-study"><a href="#cold_plate">15 · Full thermal chain</a></li><li><span class="r-what">Component face temperature</span><span class="r-num">≤ 45 °C · 40.99 °C</span><span class="chip pass">Met</span></li><li><span class="r-what">Coolant temperature rise</span><span class="r-num">≤ 10 K · 7.20 K</span><span class="chip pass">Met</span></li><li><span class="r-what">Thermal stress away from the supports</span><span class="r-num">≤ 60 MPa · 46.8 MPa</span><span class="chip pass">Met</span></li></ul></div><div class="side-card side-toc"><h2>On This Page</h2><ul class="toc"><li class="t-part"><a href="#heat">11 · Coolant channel</a></li><li class="t-sub"><a href="#heat-the-question">The question</a></li><li class="t-sub"><a href="#heat-the-answer">The answer</a></li><li class="t-sub"><a href="#heat-the-model">The model</a></li><li class="t-sub"><a href="#heat-why-it-matters">Why it matters</a></li><li class="t-sub"><a href="#heat-how-it-works">How it works</a></li><li class="t-sub"><a href="#heat-how-i-checked-it">How I checked it</a></li><li class="t-sub"><a href="#heat-what-i-caught-along-the-way">What I caught along the way</a></li><li class="t-sub"><a href="#heat-limits-and-what-i-d-do-next">Limits, and what I&#x27;d do next</a></li><li class="t-sub"><a href="#heat-evidence">Evidence</a></li><li class="t-part"><a href="#cold_plate">15 · Full thermal chain</a></li><li class="t-sub"><a href="#cold_plate-the-question">The question</a></li><li class="t-sub"><a href="#cold_plate-the-answer">The answer</a></li><li class="t-sub"><a href="#cold_plate-the-model">The model</a></li><li class="t-sub"><a href="#cold_plate-why-it-matters">Why it matters</a></li><li class="t-sub"><a href="#cold_plate-how-it-works">How it works</a></li><li class="t-sub"><a href="#cold_plate-how-i-checked-it">How I checked it</a></li><li class="t-sub"><a href="#cold_plate-what-i-caught-along-the-way">What I caught along the way</a></li><li class="t-sub"><a href="#cold_plate-limits-and-what-i-d-do-next">Limits, and what I&#x27;d do next</a></li><li class="t-sub"><a href="#cold_plate-evidence">Evidence</a></li></ul></div>
       </aside>
     </div>
-    <nav class="pager" aria-label="More studies"><a class="prev" href="cracked-plate.html"><small>← Previous study</small><b>Cracked Steel Plate: Critical Crack and Fatigue Crack Growth</b></a><a class="next" href="turbulent-pipe-friction.html"><small>Next study →</small><b>Turbulent Flow: Pipe Friction, Then Flow Over a Step</b></a></nav>
+    <nav class="pager" aria-label="More studies"><a class="prev" href="o-ring-face-seal.html"><small>← Previous study</small><b>O-Ring Face Seal Across Its Tolerance Stack</b></a><a class="next" href="turbulent-pipe-friction.html"><small>Next study →</small><b>Turbulent Flow: Pipe Friction, Then Flow Over a Step</b></a></nav>
   </div>
 
 </main>
@@ -237,8 +237,8 @@
   </div>
 </footer>
 <script>window.VP = [{"id": "heat", "study": "heat", "kind": "figure", "img": "v2/fig_heat_response.svg", "model": "Cold-plate channel · water in a 1 mm gap, 30 kW/m² on both walls", "lines": ["Solver: OpenFOAM 14 · laminar flow with heat transfer", "Wall and bulk temperature, and the local Nusselt number, against the Graetz thermal-entry solution", "Wall peak 44.03 °C against 45 · coolant rise 7.2 K"], "check": "", "card": "cold_plate", "part": "11 · Coolant channel", "main": false}, {"id": "cold_plate", "study": "cold_plate", "tab": "Cold plate", "legend": "NT11", "unit": "°C", "model": "Cold plate · 3 mm 6061-T6 on a 1 mm water channel, 30 kW/m²", "lines": ["Solver: OpenFOAM 14 → CalculiX 2.22 · coupled, 28 passes", "A 30 mm slice of the plane-strain section · coolant left to right · the 3D view keeps every fourth node through the thickness", "Component face 40.99 °C against 45 · coolant rise 7.20 K"], "mesh": "v2/m3d_cold_plate.bin", "mesh_kb": 537, "elev": 30, "azim": -62, "img": "v2/vp_cold_plate.webp", "bands": ["#3c3286", "#4771e9", "#33adf7", "#18dec0", "#4ef97d", "#a4fc3c", "#dde037", "#fcb136", "#f76f1a", "#d63506", "#9e1001"], "vmin": 30.5, "vmax": 41.5, "check": "Render check: encloses 5 400.0 mm³ of 5 400.0 design · 100.0 % of pixels on the legend", "card": "cold_plate", "part": "15 · Full thermal chain", "main": true}];</script>
-<script src="assets/viewer.js?v=a9326a2e51"></script>
-<script src="assets/viewer3d.js?v=a9326a2e51"></script>
-<script src="assets/site.js?v=a9326a2e51"></script>
+<script src="assets/viewer.js?v=1b92e7be77"></script>
+<script src="assets/viewer3d.js?v=1b92e7be77"></script>
+<script src="assets/site.js?v=1b92e7be77"></script>
 </body>
 </html>

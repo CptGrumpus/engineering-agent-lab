@@ -1004,6 +1004,65 @@ def crack():
     finish(fig, "crack", "Study 24 · edge-cracked steel plate in cyclic tension", "dimensions in mm, to scale; the load cycle schematic")
 
 
+def oring():
+    # study 25 (study 12 in the repo): the face groove and the ring to scale, as the cover lands, with the tolerance stack
+    from matplotlib.patches import Wedge
+    c = tomllib.loads((REPO / "cases" / "oring_seal_corners.toml").read_text(encoding="utf-8"))
+    p = c["parameters"]
+    sc = {s["name"]: {**p, **s} for s in c["sweep"]["scenarios"]}
+    d, h, w = p["cross_section_mm"], p["groove_depth_mm"], p["groove_width_mm"]
+    r_out = p["groove_outer_diameter_mm"] / 2
+    r_in = r_out - w
+    assert abs(p["ring_inner_diameter_mm"] - (2 * r_out - 2 * d)) < 1e-9   # installed against the outer wall
+    cx, cy = r_out - d / 2, -h + d / 2
+    gap = d - h
+    req = {r["id"]: r["limit"] for r in c["requirements"]}
+    fig, ax = new(9.5, (13.5, 51), (-9.6, 7.7))
+    body = [(16, -7), (35, -7), (35, 0), (r_out, 0), (r_out, -h), (r_in, -h), (r_in, 0), (16, 0)]
+    poly(ax, body, fc=FILL, hatch="////")
+    rect(ax, 16, gap, 35, gap + 3.4, fc=FILL, hatch="\\\\\\\\")
+    text(ax, 18.5, -5.6, "pump body, aluminium", ha="left", fs=7.5, color=INK)
+    text(ax, 18.5, gap + 2.4, "cover, aluminium", ha="left", fs=7.5, color=INK)
+    ax.add_patch(Circle((cx, cy), d / 2, fc=FILL, ec="none", zorder=3))
+    ax.add_patch(Wedge((cx, cy), d / 2, 0, 180, fc="#d3dceb", ec="none", zorder=3.1))
+    ax.add_patch(Circle((cx, cy), d / 2, fc="none", ec=INK, lw=1.4, zorder=3.2))
+    ax.plot([cx - d / 2 - 0.6, cx + d / 2 + 0.6], [cy, cy], color=ACC, lw=0.7, ls=(0, (6, 2, 1, 2)), zorder=3.3)
+    note(ax, (cx + 1.2, cy + 0.9), (36.4, 1.2), "modelled: the upper half of the ring's section\n(the mid-plane is a plane of "
+         "symmetry), axisymmetric\nabout the pump's axis", color=ACC)
+    dim(ax, (16.6, 0), (16.6, gap), 0, f"{gap:.2f} to close:\nthe squeeze", outside=True, fs=7)
+    dim(ax, (r_in, -h), (r_out, -h), -1.1, f"{w:.2f}")
+    dim(ax, (r_in, 0), (r_in, -h), -1.0, f"{h:.2f}")
+    dim(ax, (cx - d / 2, cy - 0.05), (cx + d / 2, cy - 0.05), 0, f"Ø{d:.2f}", fs=7, tshift=0)
+    for x in np.linspace(19, 33, 5):
+        force(ax, (x, gap + 3.4 + 2.2), (x, gap + 3.4 + 0.2), "", color=ACC, lw=1.1)
+    text(ax, 26, gap + 3.4 + 3.1, f"the bolts close the cover: budget {req['REQ-E3']:g} N per mm of seal", fs=7.5, color=ACC, bold=True)
+    force(ax, (17.4, gap / 2), (r_in - 0.3, gap / 2), "", color=HOT, lw=1.1)
+    for y in (cy, cy - 0.9):
+        xr = cx - np.sqrt((d / 2) ** 2 - (y - cy) ** 2)
+        force(ax, (r_in + 0.15, y), (xr - 0.12, y), "", color=HOT, lw=1.1)
+    note(ax, (19.5, gap / 2), (18.5, -2.6), "coolant, up to 3 bar,\nreaches the ring from inside", color=HOT)
+    text(ax, 34.6, -4.2, "outside", ha="right", fs=7.5, color=DIMC)
+    note(ax, (r_out, cy), (36.4, -1.5), "the groove's outer wall: a squeezed ring grows\nin diameter, and the wall "
+         "stops it (found by\nthe model: 40 % more closing force than a free ring)", color=HOT)
+    text(ax, 16, -8.3, f"← to the pump's axis: ring ID {p['ring_inner_diameter_mm']:.2f}, groove OD {2 * r_out:.2f}",
+         ha="left", fs=7, box=False)
+    # the tolerance stack, read from the case's corners
+    tx, ty = 36.4, -3.9
+    text(ax, tx, ty, "The tolerance stack", ha="left", fs=8, color=INK, bold=True, box=False)
+    rows = [("cross-section", "cross_section_mm", "{:.2f} ± {:.2f} mm"), ("groove depth", "groove_depth_mm", "{:.2f} ± {:.2f} mm"),
+            ("groove width", "groove_width_mm", "{:.2f} ± {:.2f} mm"), ("hardness, NBR", "shore_a", "{:g} ± {:g} Shore A")]
+    for i, (name, k, fmt) in enumerate(rows):
+        tol = abs(sc["loosest"][k] - p[k])
+        assert abs(abs(sc["tightest"][k] - p[k]) - tol) < 1e-9          # the stack is symmetric
+        text(ax, tx, ty - 0.85 * (i + 1), name, ha="left", fs=7.2, box=False)
+        text(ax, tx + 5.0, ty - 0.85 * (i + 1), fmt.format(p[k], tol), ha="left", fs=7.2, color=INK, box=False)
+    sq = {k: 100 * (v["cross_section_mm"] - v["groove_depth_mm"]) / v["cross_section_mm"] for k, v in sc.items()}
+    text(ax, tx, ty - 0.85 * 5.3, f"squeeze {sq['loosest']:.1f} % loosest, {sq['nominal']:.1f} % nominal,\n"
+         f"{sq['tightest']:.1f} % tightest; the limits allow {req['REQ-E1a']:g} to {req['REQ-E1b']:g} %", ha="left", va="top", fs=7.2, color=INK, box=False)
+    finish(fig, "oring", "Study 25 · O-ring face seal on a coolant-pump cover · section through the groove as the cover lands",
+           "dimensions in mm, to scale")
+
+
 def motor_stops():
     # study 20 (study 7 in the repo): the model's pockets and magnets on the client's lamination drawing, one pole.
     # The drawing's traced lines, its scale (an ellipse fit to the 6.314 in rotor) and the stop gaps are the study's
@@ -1206,7 +1265,7 @@ def flag():
 
 ALL = {f.__name__: f for f in (fea, cantilever_opt, strap, modal, strut, contact, bolted_joint, pv_nozzle, bracket_opt, cad,
                                cfd, thermal, heat, cold_plate, pipe, suspension, baseline, motor, step, random_vib, fan_rotor,
-                               fatigue, strap_proof, bracket_uq, crack, flag, motor_stops)}
+                               fatigue, strap_proof, bracket_uq, crack, flag, motor_stops, oring)}
 
 if __name__ == "__main__":
     for name in sys.argv[1:] or ALL:

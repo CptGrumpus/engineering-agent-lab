@@ -1,0 +1,62 @@
+  <section class="study" id="oring">
+    <div class="study-head">
+      <span class="label">Study 25 · Gmsh, CalculiX and Python, elastomer seals</span>
+      <h2>O-Ring Face Seal Across Its Tolerance Stack</h2>
+    </div>
+    <h3>The Question</h3>
+    <p>An aluminium cover seals a coolant pump, water-glycol at up to 3 bar, with a nitrile (NBR) O-ring in a face groove. Every dimension has a tolerance: the ring's cross-section is 3.53 ± 0.10 mm, the groove 2.79 ± 0.05 mm deep and 4.80 ± 0.05 mm wide, and the rubber 70 ± 5 Shore A. At every corner of that stack, does the ring stay within 15 to 30 % squeeze, press on the cover at the peak with at least twice the sealed pressure, close with no more than the bolts' 12 N per millimetre of seal, and fill no more than 85 % of the groove? The client, the limits and the compound are made up; the relation from hardness to stiffness, the force-squeeze reference and the measured force band are published.</p>
+    <h3>The Answer</h3>
+    <div class="answer">
+      <div class="chips"><span class="chip pass">Sealing pressure 1.50 MPa at the loosest, need 0.6</span><span class="chip pass">Closing force 5.94 N/mm at the tightest, budget 12</span><span class="chip pass">Groove fill 80.4 % at most, limit 85</span><span class="chip pass">Squeeze 17.2 to 24.5 %, allowed 15 to 30</span><span class="chip warn">Two cross-checks just missed their tolerance</span></div>
+      <p><strong>Yes, at all three corners, with margin.</strong> The loosest stack, a thin ring in a deep groove in the softest rubber, still presses on the cover at 1.50 MPa, 2.5 times the 0.6 MPa needed. The tightest, a thick ring in a shallow groove in the hardest rubber, needs 5.94 N per millimetre to close, half the bolts' budget. The closest margin is the fill: 80.4 % against 85 at the tightest corner.</p>
+      <p><strong>A squeezed O-ring grows in diameter.</strong> Rubber barely changes volume, so squeezing the section spreads it round the ring as well as across it. With nothing holding it, the model's ring drifted 1.7 to 2.0 mm outward. The groove's outer wall stops it, and that adds 40 % to the closing force compared with a free ring. A flat 2D section would miss this; the model is axisymmetric, so it sees the ring's hoop.</p>
+      <p><strong>Two cross-checks missed by a hair, and I left them as misses.</strong> At the tightest corner the hand estimate of the fill differs from the model's by 1.05 %, against the 1 % I set before the runs. The hand estimate assumes the ring's section keeps its area, but the outer wall pushes the ring inward to a smaller radius, so with its volume unchanged the section grows by about 1 %. The model's fill is the better number. And in the Hertz reference case, the contact pressure added up to the closing force within 3.08 %, against a 3 % tolerance. Neither touches a verdict: every margin is a factor of two or more.</p>
+    </div>
+    <h3>Why It Matters</h3>
+    <p>An O-ring groove is usually sized from a handbook table at nominal dimensions. Whether a seal leaks or needs too much bolt force is decided at the corners of the tolerance stack: the loosest one for sealing, the tightest for force and fill. A model at the corners gives the margins against each requirement, and the contact pressure on the cover, which a handbook table doesn't give.</p>
+    <h3>The Model</h3>
+    <dl class="spec">
+      <dt>Part</dt><dd>One cross-section of the ring in its groove, axisymmetric about the pump's axis. The groove bottom and the cover are flat and the contact frictionless, so the mid-plane is a plane of symmetry and the upper half of the section is modelled. The ring sits against the groove's outer wall, as it should for pressure from the inside.</dd>
+      <dt>Material</dt><dd>Neo-Hookean rubber, nearly incompressible (bulk modulus 1,000 times the shear modulus). The stiffness comes from the hardness by Gent's relation: 4.43, 5.52 and 7.05 MPa at 65, 70 and 75 Shore A. The cover and the groove walls are steel, effectively rigid against the rubber.</dd>
+      <dt>Contact</dt><dd>Node-to-surface penalty contact, frictionless. The cover moves down by half the squeeze.</dd>
+      <dt>Mesh</dt><dd>Quadratic elements from Gmsh, 0.05 mm where the contact grows; 0.1, 0.07 and 0.05 mm for the mesh study at the tightest corner.</dd>
+    </dl>
+    {{CASE}}
+    <h3>How It Works</h3>
+    <p>CalculiX squeezes the ring in steps and records the closing force at each one, the pressure along the cover at the end, and the ring's deformed area, which gives the fill. The same model runs at the three corners of the stack:</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Corner</th><th>Squeeze</th><th>Closing force</th><th>Peak pressure</th><th>Groove fill</th></tr></thead>
+        <tbody>
+          <tr><td>Loosest: 3.43 mm ring, 2.84 mm deep, 65 Shore A</td><td>17.2 %</td><td>1.89 N/mm</td><td><strong>1.50 MPa</strong></td><td>67.5 %</td></tr>
+          <tr><td>Nominal: 3.53 mm, 2.79 mm, 70 Shore A</td><td>21.0 %</td><td>3.39 N/mm</td><td>2.34 MPa</td><td>73.7 %</td></tr>
+          <tr><td>Tightest: 3.63 mm, 2.74 mm, 75 Shore A</td><td>24.5 %</td><td><strong>5.94 N/mm</strong></td><td>3.52 MPa</td><td><strong>80.4 %</strong></td></tr>
+          <tr><td>Requirement</td><td>15 to 30 %</td><td>≤ 12 N/mm</td><td>≥ 0.6 MPa</td><td>≤ 85 %</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <h3>How I Checked It</h3>
+    <ul class="proof">
+      <li><strong>Hertz line contact</strong> at a light 5 % squeeze, where the theory holds: at the model's own force, the peak pressure agrees within 1.6 % and the contact width within 0.3 %.</li>
+      <li><strong>Lindley's force-squeeze relation</strong> for a ring with nothing holding it sideways, which is his test case, so the model runs without the groove walls: within 10.6, 0.05 and 8.1 % at 10, 20 and 30 % squeeze, against the 15 % I allowed for an empirical fit.</li>
+      <li><strong>Parker's measured force band</strong> for this cross-section and hardness (O-Ring Handbook ORD 5700, Fig. 2-6, read from the PDF's vector lines): the free ring's force is inside it at every squeeze. The band is wide, a factor of about 6.6, so it's a sanity check rather than a tight one.</li>
+      <li><strong>The physics adds up:</strong> the ring's volume is conserved to 5 × 10⁻⁴ or better, and the contact pressure integrates to the closing force within 2 % at every corner.</li>
+      <li><strong>Mesh study</strong> at the tightest corner: the mesh uncertainty is 1.1 % on the closing force, 0.04 % on the peak pressure and 0.02 % on the fill.</li>
+    </ul>
+    <div class="caught">
+      <h3>What I Caught Along the Way</h3>
+      <ul>
+        <li><strong>A ring that wandered off.</strong> Centred in the groove with nothing holding it, the squeezed ring drifted 1.7 to 2.0 mm outward. That's real physics, the ring growing in diameter, and it's why the groove walls are in the design model.</li>
+        <li><strong>A contact setting borrowed from the steel models.</strong> The tension the contact law allows at small gaps, copied from my steel contact models, let the rubber's edges pull on the cover, and the pressure missed the force by up to 47 %. Fixed before any evidence run.</li>
+        <li><strong>Pressures that alternate node to node.</strong> CalculiX gives the corner and mid-side nodes of a quadratic face equal areas, so their pressures alternate by about 30 %. I report the average of neighbouring nodes, and the force balance confirms it. What's left shows as the small ripple at the top of each pressure curve.</li>
+        <li><strong>A reference run that stopped halfway.</strong> The free ring, held sideways only by its own hoop stiffness, went numerically singular at 26.5 % squeeze. Smaller load steps fixed it, and the failed run is kept.</li>
+      </ul>
+    </div>
+    <h3>Limits</h3>
+    <ul>
+      <li>Frictionless and quasi-static. No compression set or stress relaxation over time, no temperature effect on the rubber, and no extrusion under pressure: the 3 bar enters only through the twice-the-pressure rule.</li>
+      <li>The rubber's stiffness comes from its hardness alone. A client's compound data would replace it.</li>
+      <li>Lindley's exponents come from a copy whose text is garbled, so they aren't confirmed from a second source.</li>
+      <li>No physical test of this seal.</li>
+    </ul>
+  </section>

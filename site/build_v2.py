@@ -106,6 +106,11 @@ VP = [
      "lines": ["CalculiX plane strain · K by energy release and by crack opening · finest tip mesh 0.025 mm",
                "Left: stress intensity against Tada's handbook. Right: crack growth from 2 mm to critical",
                "Critical crack 37.0 mm · life about 92,000 cycles · inspect at least every 46,000"]},
+    {"id": "oring", "study": "oring", "kind": "figure", "img": "v2/fig_oring_seal.svg",
+     "model": "O-ring face seal, 3.53 mm NBR 70 in a 2.79 × 4.80 mm groove · coolant at 3 bar · three tolerance corners",
+     "lines": ["CalculiX, axisymmetric, the upper half of the ring · neo-Hookean rubber, stiffness from hardness (Gent)",
+               "Left: pressure on the cover. Middle: closing force as the cover comes down (hollow dot: a cross-check missed). Right: groove fill",
+               "Loosest 1.50 MPa (need 0.6) · tightest 5.94 N/mm (budget 12) · fill at most 80.4 % (limit 85)"]},
 ]
 VP += [
     {"id": "strap_detail", "study": "strap", "legend": "S11", "unit": "MPa",
@@ -190,6 +195,7 @@ CARDS = [
     ("bracket_uq", "22", "struct", "New · Uncertainty", "How robust is the bracket arm's pass?", "With damping, test level, fatigue strength and thickness uncertain, the chance of failing is about 2 in a million against a 1-in-1,000 limit. Damping drives the spread: measure it first.", "pass", "CalculiX · Python"),
     ("fan_rotor", "23", "struct", "New · Rotordynamics", "Fan rotor: critical speeds and unbalance response", "The drawn 50 mm shaft runs through its first critical speed inside the 1,000 to 3,000 rpm range, and 60 mm fails on soft bearings. A 65 mm shaft clears the range by at least 23.8 % on any bearing in the band, with the impeller's vibration under 5 µm.", "fix", "ROSS · Python"),
     ("crack", "24", "struct", "New · Fracture mechanics", "Cracked steel plate: critical crack and fatigue crack growth", "A 2 mm edge crack, the smallest inspection finds, grows to the critical 37.0 mm in about 92,000 cycles. Inspect at least every 46,000 cycles; the planned 40,000 has margin. Stress intensity checked against the handbook to 0.66 %.", "pass", "Gmsh · CalculiX · Python"),
+    ("oring", "25", "struct", "New · Elastomer seals", "O-ring face seal across its tolerance stack", "Passes at all three corners: 1.50 MPa of sealing pressure at the loosest against 0.6 needed, and 5.94 N/mm to close at the tightest against a 12 N/mm budget. A squeezed ring grows in diameter, and the groove wall that stops it adds 40 % to the force.", "checkmiss", "Gmsh · CalculiX"),
     ("cold_plate", "15", "fluid", "New · Multiphysics", "Cold plate, the full thermal chain", "Passes on all three counts, from the coolant flow through the plate's conduction to its thermal stress: 40.99 °C, a 7.20 K coolant rise and 46.8 MPa.", "pass", "OpenFOAM · CalculiX"),
     ("pipe", "19", "fluid", "New · Turbulence", "Turbulent pipe friction, against measured data", "Passes: extrapolated to zero cell size, the turbulence model lands 2.4 % above Prandtl's law against a 5 % limit. The first mesh agreed to 0.9 %, with the wrong sign. Wall functions sit 5 % low on every mesh.", "pass", "OpenFOAM"),
     ("step", "19", "fluid", "New · Measured data", "Flow over a backward-facing step, against measurements", "Two of three agreed limits pass: reattachment 2.3 % long and skin friction 7.0 % rms. The pressure recovers 0.023 too far against a 0.02 limit, most likely because a 2D model has no tunnel side walls.", "most", "OpenFOAM"),
@@ -202,7 +208,7 @@ CARDS = [
     ("baseline", "09", "workflow", "Workflow", "Mass-spring-damper baseline", "All 72 checks pass, and the two tools agree to a few parts per million.", "pass", "SciPy · OpenModelica"),
 ]
 VERDICT = {"pass": "Passes", "fail": "Fails", "mixed": "Depends on speed", "held": "One result on hold",
-           "wip": "In progress", "closed": "Closed, with client questions", "fix": "Fails as drawn; fix found", "line": "Depends on one judgement call", "most": "Passes, with one miss"}
+           "wip": "In progress", "closed": "Closed, with client questions", "checkmiss": "Passes; two cross-checks just missed", "checkmiss": "Passes; two cross-checks just missed", "fix": "Fails as drawn; fix found", "line": "Depends on one judgement call", "most": "Passes, with one miss"}
 
 # studies of the same part, shown as one card and one panel; each study keeps its own write-up, viewer
 # result, requirements rows and evidence, and links to a study land on its part of the panel
@@ -276,7 +282,7 @@ SLUG = {"bracket_opt": "bracket-optimisation", "pv_nozzle": "pressure-vessel-noz
         "cantilever_bracket": "cantilever-bracket", "bracket_arm": "bracket-modal", "cold_plate": "cold-plate",
         "turbulent_flow": "turbulent-pipe-friction", "cfd": "coolant-channel", "thermal": "heat-sink-fin",
         "suspension": "quarter-car", "cad": "mounting-plate", "baseline": "mass-spring-damper",
-        "motor": "traction-motor", "fan_rotor": "fan-rotor", "crack": "cracked-plate"}
+        "motor": "traction-motor", "fan_rotor": "fan-rotor", "crack": "cracked-plate", "oring": "o-ring-face-seal"}
 assert set(SLUG) == {c[0] for c in GALLERY}, "every gallery card needs a page name"
 FILE = {k: f"{s}.html" for k, s in SLUG.items()}
 DISC = {"struct": "Structures and vibration", "fluid": "Thermal and fluids", "vehicle": "Vehicle dynamics",
@@ -297,7 +303,7 @@ CASES = {"fea": ["cantilever_tet10"], "cantilever_opt": ["bracket_opt"], "strap"
          "pv_nozzle": ["pv_nozzle_mesh", "pv_nozzle_crotch_mesh_r1"], "bracket_opt": ["clevis_opt_r2"], "cfd": ["channel_header_tolerance", "duct_side_walls"],
          "thermal": ["fin_tolerance"], "heat": ["heated_channel_mesh_r2"], "cold_plate": ["cold_plate_mesh_r1"],
          "pipe": ["pipe_rans_mesh_r3"], "step": ["step_mesh"], "random_vib": ["bracket_random_mesh"], "bracket_uq": ["bracket_random_uq"],
-         "fan_rotor": ["rotor_fan_design"], "crack": ["edge_crack_mesh_r2"], "suspension": ["qc_speed_bump", "qc_bump_liftoff"], "cad": ["mounting_plate"],
+         "fan_rotor": ["rotor_fan_design"], "crack": ["edge_crack_mesh_r2"], "oring": ["oring_seal_corners"], "suspension": ["qc_speed_bump", "qc_bump_liftoff"], "cad": ["mounting_plate"],
          "baseline": ["msd_step"], "motor": ["motor_prius_rev5_torque"]}
 # drawings from scripts/make_drawings.py (site/v2/dwg_<key>.webp), shown in each study's model section
 DRAWINGS = {
@@ -324,6 +330,7 @@ DRAWINGS = {
     "strap_proof": ("Plan view of the strap with a small yielded zone at the hole edge, beside a sketch of one 15 kN proof load followed by smaller service cycles", "The same strap, pulled once to 15 kN before it goes into service. The hole edge yields in a small zone; the rest stays elastic."),
     "bracket_uq": ("Side view of the arm on the shaker table, above four small distributions for damping, test level, fatigue strength and thickness", "The shaker test from study 21, with the four inputs that are only known within a range, and the spread assumed for each."),
     "crack": ("The steel plate in side view, pulled at both ends, with a 2 mm crack at one edge and the 37 mm critical crack dashed, above a sketch of the stress cycle", "The plate, pulled at both ends with a stress that cycles from 15 to 150 MPa. A crack starts at the 2 mm that inspection can find and grows a little every cycle, until it reaches the critical 37 mm."),
+    "oring": ("Section through the cover's face groove as the cover lands: the O-ring against the groove's outer wall, the 0.74 mm still to close, the coolant pressure from inside, and the tolerance stack", "The seal as the cover lands, to scale: the ring sits against the groove's outer wall and stands 0.74 mm proud, which the cover squeezes out. Coolant reaches it from the inside. The lighter upper half of the ring is what's modelled, axisymmetric about the pump's axis."),
     "fan_rotor": ("Side view of the fan rotor: a shaft between two bearings on springs and dampers, a steel disc at mid-span with the unbalance marked, and below it the shaft's bent shape on soft and stiff pedestals", "The model: a centre-hung fan, its impeller between two bearings. The impeller is a steel disc at mid-span and each bearing with its pedestal is a spring and a damper. Below: the 65 mm shaft's first mode, from the rotor model, on soft and stiff pedestals. On soft ones the ends move a third as much as the middle, so the critical speed drops."),
     "random_vib": ("Side view of the arm clamped to a shaker table, with the three shaking directions and the flat input spectrum", "The test: the arm clamped to a shaker table and shaken on one axis at a time. The stress is read on the surface near the clamp and extrapolated to it; the tip clearance is drawn six times larger so it can be seen."),
 }
@@ -339,6 +346,8 @@ QUESTION = {
     "bracket_arm": "How thin can a steel bracket arm near an engine be, does it survive a random vibration test, and how sure is that pass?",
     "fan_rotor": "Is a 50 mm shaft stiff enough to keep a fan's critical speed out of its 1,000 to 3,000 rpm range, and if not, what is?",
     "crack": "A 2 mm crack at the edge of a steel plate in cyclic tension: how long until it fails, and how often must the plate be inspected?",
+    "oring": "Does an O-ring seal a 3 bar coolant-pump cover at every corner of its tolerance stack, within the bolts' force and the groove's room?",
+    "oring": "Does an O-ring seal a 3 bar coolant-pump cover at every corner of its tolerance stack, within the bolts' force and the groove's room?",
     "cold_plate": "Does a water-cooled aluminium plate keep the electronics on it under 45 °C, with the coolant and the thermal stress inside their limits?",
     "turbulent_flow": "Can this CFD setup be trusted for pressure drop and flow layout? Checked against measurements, in a pipe and behind a step.",
     "cfd": "Does a 1 mm coolant passage stay within its 30 Pa pressure budget and keep enough shear on its walls to limit fouling?",
