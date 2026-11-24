@@ -33,6 +33,17 @@
 # Courant numbers measured 18:20 from the live logs of the other levels (max per simulated second): FSI2 a 1.24, b 1.36
 # rising to 1.43 by 8 s; FSI3 a 1.17, b 1.35, c 2.36, flat after the 1 s inflow ramp. Level c here, scaled from b,
 # about 1.9-2.0 under PISO (nOuterCorrectors 1): a likely risk factor, not shown to be the trigger (it ran 7 s at it).
+#
+# Rerun (20261123-180658, 18:06-00:02, unchanged settings): FAILED again, at the same step, t = 8.836 s: the solve is
+# deterministic and the cause is real. The kept log tails (log.pimpleFoam.tail, log.ccx.tail) show it: the maximum
+# Courant number, about 2.2 for the whole run, jumped to 5.8 at 8.835 s and 17.9 at 8.836 s, then a floating point
+# exception inside the pressure solver (GAMG scale). A tenfold jump in two steps is a cell collapsing under the mesh
+# motion (displacementLaplacian, quadratic inverseDistance from flag and cylinder), not the flow: the flag tip was
+# passing about -58 mm at speed. The 2.5 mm level ran 15 s with the same motion settings; at 1.77 mm the cells next to
+# the flag are smaller and the same displacement squeezes one to nothing. The solid participant aborted only because
+# the fluid died. P1 MISSED for level c. The FSI2 mesh study has two levels (a vs b: 0.1-0.7 % on every quantity), so
+# no three-level GCI. Next, one change at a time: confirm the collapse offline (deform the level-c mesh with the flag's
+# shape at 8.836 s and check the cell quality; minutes, not 6 h), then change only the mesh motion and rerun.
 
 [case]
 name = "turek_hron_fsi2_mesh_c"

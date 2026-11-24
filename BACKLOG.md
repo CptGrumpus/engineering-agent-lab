@@ -82,7 +82,6 @@ commit). Rules that bind:
 
 | Job | Run dir (log) | Done about | When it finishes |
 |---|---|---|---|
-| Study 6: FSI2 mesh level c (1.77 mm), **rerun** with unchanged settings after the first run failed at 8.835 s (18:05, floating point exception in pimpleFoam, log lost; case header); started 18:06; 3.13 s at 19:43 | `runs/*_turek_hron_fsi2_mesh_c` (newest; `fsi2_mesh_c_rerun.log`, session 8f53debf) | 5.28 s at 21:24: fails again ~23:30-00:10 or ends ~03:00-05:00 | Read `points/p00_baseline/solver/fluid/log.pimpleFoam.tail` (or `fsi_tails/fsi2_c_rerun.tail`) before changing anything; one change per rerun. Started with `harness run`: afterwards run `harness verify` and `harness report` on its run dir. |
 | Study 6: FSI3 mesh levels a / b / c (3.54 / 2.5 / 1.77 mm, dt 0.0005 s, 8 s), started 16:10-16:11; 4.27 / 4.23 / 3.40 s at 19:43. Max Courant number a 1.17, b 1.35, **c 2.36** (c carries FSI2 c's risk) | `runs/*_turek_hron_fsi3_mesh_{a,b,c}` (`fsi3_mesh_{a,b,c}.log`, session cd9b49cb) | 5.25 / 5.21 / 4.19 s at 21:24 (slowed to about half speed while the Elmer check ran): ~00:30-02:00 / same / ~03:00-05:30 | Results per case (P1-P5 in `turek_hron_fsi3_mesh_a.toml`; b should repeat `turek_hron_fsi3` to 4 digits); combined GCI; page 17. |
 | Study 7, revision-5 efficiency chain, queued 21:59 (one FEMM at a time): (0) done 22:34: `harness rerun` of the revision-5 open-circuit run, REPRODUCIBILITY PASS (run 20261123-215502), its FEMM solution copied to `build/render/motor_rev5_centre/` (export it once FEMM is free, after the chain: one FEMM at a time); then `motor_prius_rev5_oc_f2`, `motor_prius_rev5_torque_ref`, `motor_prius_lut_{cold,cold_lowiq,hot,hot_lowiq}_rev5` | `rev5_chain.log` and one log per case (session 8f53debf) | references done 22:35 / 23:06 (105.84 V; 247.68 / 449.11 N m; scored); tables started 23:06, done ~04:30-05:00 | Score each case's predictions (headers). `motor_prius_efficiency_rev5.toml` is written with its predictions (23:07): **replace the four `PENDING_<case>` lut_run names with the tables' run dirs**, run it (seconds), score P1-P5, score against ORNL (as `scripts/motor_calibration.py` did for the calibrated map); export the field (`scripts/export_femm_field.py`, gate: phase fluxes match the rerun) and tell the dashboard session. |
 | Watcher: rolling 400-line tails of the six FSI fluid logs, every minute (the five older runs predate the harness's failure-tail fix) | `fsi_tails/<case>.tail` (session 8f53debf) | stops when the FSI work dirs are gone | Read the tail of any FSI run that crashes. |
@@ -99,7 +98,10 @@ commit). Rules that bind:
    made (client question 6); no run until then. The MDPI Machines 2019 7(4) 75 PDF can be read only if the user saves it (its server blocks fetches).
 2. FSI2 / FSI3 mesh results and combined GCIs; page 17. FSI2 levels a and b done 21:18 / 21:28 and scored (case
    headers: P1 held on both, P2 held, b repeats turek_hron_fsi2 exactly, P3 held on a, P5 missed; a vs b 0.1-0.7 %);
-   the combined GCI waits for c's rerun.
+   FSI2 level c's rerun FAILED again at t = 8.836 s (00:02): a cell collapsing under the mesh motion (max Courant
+   2.2 -> 5.8 -> 17.9 in two steps, then a floating point exception in GAMG; case header). Next for c: confirm the
+   collapse offline (deform the 1.77 mm mesh with the flag's shape at 8.836 s, check cell quality), then change
+   only the mesh motion and rerun (~6 h). Until then FSI2 has two levels (a vs b 0.1-0.7 %), no three-level GCI.
 3. Motor field render for the site: re-export from a revision-5 solution (`scripts/export_femm_field.py`; copy the
    evidence run's .ans to build/ first, Pyleecan overwrites it); the revision-4 export in `build/render/motor_rev4_centre`
    has the wrong magnet. Refresh `reports/motor/` after the 18 % is explained.
