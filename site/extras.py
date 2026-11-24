@@ -579,7 +579,7 @@ REQS = [
         ("Pressure recovery to 30 step heights", "within 0.02", "0.153 against 0.131 measured: 0.023 high", "fail"),
         ("Design use: flow reattached before the heated surface at 8 step heights", "≤ 8 H", "6.40 H", "met")]),
     ("motor", "20", "Traction motor", [
-        ("Model against the test: magnet flux (back-EMF and locked-rotor torque)", "within 5 % and 10 %", "about 18 % high in both (back-EMF 17.7 %, torque 17 to 19 %); one cause, being isolated; nothing tuned", "open"),
+        ("Model against the test: magnet flux (back-EMF and locked-rotor torque)", "within 5 % and 10 %", "about 18 % high in both (back-EMF 17.7 %, torque 17 to 19 %); one cause; steel, end effects and the solver ruled out; magnetisation level leads, a question for the client; nothing tuned", "open"),
         ("Design finding: voltage at 6,000 rpm if the inverter stops switching", "≤ 500 V", "850 V measured, about 1,000 V in the model: the motor fails, as the model predicted", "finding"),
         ("Design finding: rotor bridge stress at 7,200 rpm overspeed", "≤ 335 MPa", "424 MPa: past yield for the stand-in M330-35A; a stronger grade such as M250-35A would pass", "cond"),
         ("Efficiency, rated torque within the copper limit, rated and continuous power", "within 2 points; ≤ 212 A; ≥ 50 kW; ≥ 25 kW", "withheld until the flux is explained", "held")]),
