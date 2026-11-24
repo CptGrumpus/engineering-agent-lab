@@ -522,7 +522,7 @@ elements, probabilistic uncertainty). Each with its tools and independent refere
 - **E. O-ring compression.** Hyperelastic (Neo-Hookean / Mooney-Rivlin, CalculiX *HYPERELASTIC), axisymmetric ring
   squeezed between plates with contact and self-contact; force against squeeze from a published correlation (source to
   fetch); checks: near-incompressibility (J about 1), contact pressure integral against the reaction, mesh convergence.
-  **Framing DRAFT for study 12 (2026-11-24 07:58; started on the user's word "start study 12"; awaiting the user's
+  **Framing DRAFT for study 12 (2026-11-24 07:59; started on the user's word "start study 12"; awaiting the user's
   approval of the decision, application and limits before anything is built):**
   - Decision: a static face-seal O-ring in a cover's groove (synthetic client: an aluminium coolant-pump cover, water-
     glycol at up to 3 bar, NBR 70 Shore A, cross-section 3.53 mm, a 50 mm class ring). Across the stack of tolerances
