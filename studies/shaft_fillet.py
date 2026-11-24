@@ -37,6 +37,7 @@ WRITER = "models/fea/shaft_fillet_ccx.py"
 PARAMS = ("D_mm", "d_mm", "fillet_radius_mm", "small_length_mm", "large_length_mm", "bending_moment_Nm",
           "torque_Nm", "youngs_modulus_MPa", "poisson_ratio", "ultimate_MPa", "yield_MPa", "overload_factor",
           "element_size_fillet_mm", "element_size_far_mm", "refine_radius_mm", "refine_halfwidth_mm", "mesh_growth")
+# optional: high_order_optimize (0 / 1)
 
 
 def _load_writer(path: Path):
@@ -94,7 +95,7 @@ class CalculiXShaft(Backend):
         log = []
         try:
             mesh = W.build_mesh(p, work / "mesh.inp")
-            out["volume_mm3"] = mesh["volume_mm3"]
+            out.update(mesh)
             for load in ("bending", "torsion"):
                 info = W.write_deck(p, work / "mesh.inp", work / f"{load}.inp", load)
                 c = subprocess.run([str(self.ccx), "-i", load], cwd=work, capture_output=True, text=True,
@@ -222,6 +223,11 @@ class ShaftFilletStudy(Study):
             checks.append(check(f"peak_off_plane_{load}", f"|peak off the plane y = 0 (y 0.5-3 mm"
                                 f"{', cos-corrected' if load == 'bending' else ''}) / peak on it - 1| ({load}; "
                                 "nodal-stress scatter)", abs(o["kt_off_plane"] / o["kt"] - 1), tol["off_plane_rel_tol"]))
+        if "min_scaled_jacobian" in tol and "min_scaled_jacobian" in out:
+            checks.append(check("element_quality", "elements below the minimum scaled Jacobian (validity; the "
+                                f"mesh's minimum {out['min_scaled_jacobian']:.3f}, 1 = ideal, <= 0 inverted)",
+                                float(max(0.0, tol["min_scaled_jacobian"] - out["min_scaled_jacobian"])), 0.0,
+                                kind="validity"))
         hr = (D - d) / 2 / r
         try:
             kb_fit, kt_fit = ref.kt_bending(D, d, r), ref.kt_torsion(D, d, r)

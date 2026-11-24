@@ -14,7 +14,8 @@ Load cases (one deck each, linear elastic, the same mesh):
            y = 0 (u_x = u_z = 0: pure torsion of a solid of revolution has only a hoop displacement);
   both     the far end of the large section clamped (u = 0). The applied end tractions are the exact beam stress
            fields, so the small section is in the beam state from the loaded end on.
-Outputs: nodal stresses (CalculiX's extrapolation, averaged), clamp reactions per node.
+Outputs: nodal stresses (CalculiX's extrapolation, averaged), clamp reactions per node; the mesh's minimum scaled
+Jacobian (optional `high_order_optimize`: Gmsh's elastic untangling of curved elements, off by default).
 
 Must not import from validation/.
 """
@@ -97,11 +98,17 @@ def build_mesh(p: dict, inp: Path) -> dict:
         gmsh.option.setNumber("Mesh.Optimize", 1)
         gmsh.option.setNumber("Mesh.SaveAll", 0)
         gmsh.model.mesh.generate(3)
+        if int(p.get("high_order_optimize", 0)):
+            # curved second-order tetrahedra can invert on a sliver face (fillet radius near the shoulder height:
+            # 14 elements at r 3.9 of h 4); Gmsh's elastic high-order optimisation untangles them
+            gmsh.model.mesh.optimize("HighOrderElastic")
+        etags = gmsh.model.mesh.getElementsByType(11)[0]
+        sj = np.asarray(gmsh.model.mesh.getElementQualities(etags, "minSJ"))
         gmsh.write(str(inp))
         vol = o.getMass(3, vols[0])
     finally:
         gmsh.finalize()
-    return {"volume_mm3": float(vol)}
+    return {"volume_mm3": float(vol), "min_scaled_jacobian": float(sj.min()), "inverted_elements": int((sj <= 0).sum())}
 
 
 def read_mesh(mesh_inp: Path):

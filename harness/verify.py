@@ -78,7 +78,7 @@ def verify_run(run_dir: str | Path) -> dict:
         run_checks, detail = [{"id": "run_level_error", "description": f"{type(e).__name__}: {e}",
                                "kind": "numerical", "value": float("inf"), "tolerance": 0.0,
                                "comparison": "<=", "status": "FAIL"}], {}
-    if run_checks:
+    if run_checks or detail:   # detail without checks (e.g. a sweep's interpolated limits) is kept too
         summary["run_checks"] = run_checks
         summary["run_check_detail"] = detail
         for c in run_checks:

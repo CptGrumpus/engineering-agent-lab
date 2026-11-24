@@ -67,6 +67,18 @@
 # A first attempt started about 15:16, after the mesh case, and was stopped by me at 15:27 before it finished (the
 # end-load sign check, see shaft_fillet_mesh Results, would have failed every point); the partial run is not evidence. Rerun with the corrected check, no other
 # change.
+#
+# Results (run 20261124-152828_shaft_fillet_radius, 15:28-15:51): r 1.4 / 1.6 / 2.0 / 2.5 / 3.0 / 3.5 mm: Kt 2.232 /
+# 2.136 / 1.988 / 1.858 / 1.763 / 1.690, Kts 1.599 / 1.548 / 1.475 / 1.409 / 1.361 / 1.325; Goodman 1.148 / 1.189 /
+# 1.258 / 1.327 / 1.384 / 1.432; yield 1.769 / 1.826 / 1.921 / 2.016 / 2.093 / 2.156. Every check passes at those six.
+# r 3.9 FAILED to solve: 14 curved second-order tetrahedra inverted on the 0.1 mm sliver of shoulder face (CalculiX:
+# nonpositive Jacobian). A mesh limit, not physics: Gmsh's elastic high-order optimisation untangles them (scratch test:
+# minimum scaled Jacobian -2.84 -> 0.43, CalculiX solves); shaft_fillet_radius_r1 reruns 3.5 / 3.7 / 3.9 mm with it.
+# Verification FAIL (the failed point). The run-level detail was not saved (the harness kept detail only with checks;
+# fixed in harness/verify.py).
+# P4: REQ-S1 FAILS at every solved radius (1.148-1.432), REQ-S2 FAILS at 1.4 / 1.6 / 2.0 and PASSES from 2.5 mm
+# (minimum about 2.42 mm, interpolated): HELD. P5: Kt +6.5 % to +2.3 % over the fit (the excess falls as r grows),
+# Kts -2.6 % to -1.9 %: MISSED in part (predicted +5-7 % at every radius; at 3.0 and 3.5 mm it is +3.2 / +2.3 %).
 
 [case]
 name = "shaft_fillet_radius"
