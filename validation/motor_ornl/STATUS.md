@@ -25,7 +25,7 @@ Line-to-line, V rms per 1000 rpm, fundamental. ORNL's test: 89.78 V full wavefor
 | Revision 1 | fills the pocket | 1.036 T (fitted) | 89.4 | 0 % by construction | calibration; withdrawn as a model |
 | Revision 4, centred | 19.24 x 5.31 mm + 1.5 mm non-magnetic layer | 1.243 T | 82.4 | -7.8 % | **overturned**: the magnet is 6.5 mm thick |
 | Revision 4 at 1.12 T | same | 1.12 T | 72.6 | -18.8 % | 1.12 T is the magnet at about 125 C |
-| **Revision 5 (client data)** | 18.9 x 6.5 mm centred, 0.15 mm polymer each side | 1.255 T at 20 C, magnet at 25 C | **105.2** (gap 0.775) / 106.1 (gap 0.730) | **+17.7 / +18.7 %** | the client's dimensions, masses, magnet data and tests in the model (the drawing's magnet stops not yet); predicted to 0.1 V |
+| **Revision 5 (client data)** | 18.9 x 6.5 mm centred, 0.15 mm polymer each side | 1.255 T at 20 C, magnet at 25 C | **105.2** (gap 0.775) / 106.1 (gap 0.730) | **+17.7 / +18.7 %** | the client's dimensions, masses, magnet data and tests in the model; predicted to 0.1 V |
 
 ## What the client data settled (2026-11-23 13:55)
 
@@ -47,9 +47,9 @@ this motor's back-EMF.
 
 Ruled out: the solver (an independent ElmerFEM model agrees to 0.1 %), the lamination steel (at most 0.35 %), the
 measurement side, and every client input already used. Bounded: 3D end effects, 1.3-3.7 %. Left, in order
-(CALIBRATION_PLAN step 4): the magnet's position along the arm and the pocket-end stops on the client's drawing
-(not yet measured; next), then the magnetisation level in the assembled rotor (hypothesis: 88-90 % of the
-re-saturated sample; settled by a fluxmeter test on one magnet). Questions for the client: `CLIENT_QUESTIONS.md`.
+(CALIBRATION_PLAN step 4): the drawing's magnet stops were measured at 21:23 and the model already puts every
+magnet on them (pockets within 0.075 mm), so the leading hypothesis is the magnetisation level in the assembled
+rotor (88-90 % of the re-saturated sample; settled by a fluxmeter test on one magnet). Questions for the client: `CLIENT_QUESTIONS.md`.
 
 ## Next steps (no calibration)
 

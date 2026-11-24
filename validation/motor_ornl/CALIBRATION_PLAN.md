@@ -523,7 +523,14 @@ Bounded: 3D end effects, -1.3 to -3.7 % (step 3). What remains is shared by both
    bridge. Where the stops really put the magnet changes the leakage at the pocket ends. This is client data not yet
    used, so it comes before any hypothesis about manufacturing: measure the stops on the drawing's vector outline
    (as the pocket thickness was), hand-estimate the effect, then one revision. Size not yet estimated.
-2. **Magnetisation level in the assembled rotor** (hypothesis, never fitted). TM-2004/137: the rotor is magnetised
+   **Result (21:23, `scripts/motor_drawing_stops.py`, `drawing_stops/`): closed by measurement, no revision needed.**
+   The drawing's outline (aspect corrected, x/y 1.0114) and revision 5's pockets agree to 0.075 mm (median distance)
+   with no rotation, and every magnet already sits on the drawn stops: at one end the nearest drawn line is 0.09 mm
+   inside the magnet end (median of 16; -0.18 to +0.42), at the other 0.40 mm beyond it (median; -0.10 to +0.42).
+   The drawn seat is about 19.2 mm for an 18.9 mm magnet, so a magnet can sit at most about 0.4 mm away from where
+   the model puts it; the 1.5-5 mm of air beyond each stop is the drawn flux barrier, which the model has. The
+   DRAWING_AUDIT rows on the stops described revision 4's template pocket, not revision 5's traced one.
+2. **Magnetisation level in the assembled rotor** (hypothesis, never fitted; with item 1 closed, the leading one). TM-2004/137: the rotor is magnetised
    after assembly; in-rotor magnetising of high-coercivity NdFeB through the pole pieces and bridges may leave parts
    of each magnet short of saturation, and a hysteresisgraph re-saturates its sample, so the BOM's 1.255 T is an upper
    bound. With the end effects, an effective remanence of 1.10-1.12 T (88-90 % of 1.249 T at 25 C) would account for
@@ -531,7 +538,7 @@ Bounded: 3D end effects, -1.3 to -3.7 % (step 3). What remains is shared by both
    study used 1.12 T, "BrT", read earlier as the 20 C value at about 125 C: a coincidence of numbers, not evidence.)
    **The client test that settles it:** take one magnet out of a production rotor, measure its moment in a Helmholtz
    coil with a fluxmeter, re-saturate it in a pulse magnetiser, measure again. Predicted ratio if this is the cause:
-   0.88-0.90 (after any step-1 correction, recomputed). A ratio near 1.0 rejects it.
+   0.88-0.90. A ratio near 1.0 rejects it.
    **A cheaper check needs the user's decision:** ORNL's measured no-load air-gap flux density (TM-2004/137 Fig. 13)
    would separate "less magnet flux" from "different leakage" directly, but it is teardown-only data, held back since
    the blind pass under the realistic-information rule; on a real job the client could measure the same with a Hall

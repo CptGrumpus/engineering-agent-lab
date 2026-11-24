@@ -90,9 +90,9 @@ commit). Rules that bind:
 ### Next (in order)
 1. **Study 7, the 18 % flux excess: step 4** (`validation/motor_ornl/CALIBRATION_PLAN.md`, "step 4"; questions for the
    client in `CLIENT_QUESTIONS.md`). Ruled out: the solver (independent ElmerFEM model, +0.10 %), the steel (at most
-   0.35 %), the measurement side; bounded: end effects 1.3-3.7 %. **Next: measure the magnet stops at the pocket ends
-   on the drawing's vector outline** (DRAWING_AUDIT "differs, not measured": the model leaves 1.5-5 mm of air between
-   magnet and bridge), hand-estimate, predictions, one revision. Then the magnetisation level is reported as the leading
+   0.35 %), the measurement side; bounded: end effects 1.3-3.7 %. Done 21:23: the drawing's magnet stops measured (`scripts/motor_drawing_stops.py`): revision 5 already puts
+   every magnet on its stop (pockets within 0.075 mm; at most 0.4 mm of play), no revision needed. So the magnetisation
+   level is reported as the leading
    hypothesis (effective remanence 1.10-1.12 T, 88-90 %) with the fluxmeter test that settles it, never fitted. Open
    for the user: ORNL's measured air-gap flux (TM-2004/137 Fig. 13) would separate the two directly but is
    teardown-only data held back under the realistic-information rule. Then the inductance mismatch (Ld -10.6 %,
