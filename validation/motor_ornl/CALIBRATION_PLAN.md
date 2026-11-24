@@ -544,3 +544,25 @@ Bounded: 3D end effects, -1.3 to -3.7 % (step 3). What remains is shared by both
    the blind pass under the realistic-information rule; on a real job the client could measure the same with a Hall
    probe in a day.
 3. Separate, after these: the inductance mismatch (Ld -10.6 %, Lq +10 %), which the magnet flux does not explain.
+
+### The inductance mismatch, step 1: framing (2026-11-23 21:51; no runs; scripts/motor_inductance_frame.py)
+Revision 5: Ld 1.72 mH (-10.6 %), Lq 5.50 mH (+10 %) against ORNL's "static measurements" (TM-2006/423 p. 51: "5 mH and
+1.92 mH"; no method, frequency, current, rotor positioning or terminal configuration in any client document searched:
+TM-2006/423, TM-2004/247, TM-2004/185, TM-2004/137, TM-2010/253).
+- **Not a convention:** the usual line-to-line method (L_ab / 2 with the rotor aligned) equals the model's per-phase dq
+  inductance, and any other convention scales both axes by one factor; ORNL / model is 1.116 on d and 0.909 on q.
+- **Split:** the mean (Ld + Lq) / 2 is +4.3 % (3.61 against 3.46 mH); the saliency term (Lq - Ld) / 2 is **+22.7 %**
+  (1.89 against 1.54 mH). The mismatch is mostly that the test shows less saliency than the model.
+- **What the 2D model leaves out or defines differently, hand estimates:** end-winding leakage 0.04-0.10 mH per phase
+  (lambda_w 0.2-0.5, turn length 408.8 mm), on both axes: Ld to -8.4 / -5.3 %, Lq to +10.8 / +12.0 %; small-signal
+  slope at zero current against the secant: Ld 1.74 mH (-9.2 %), Lq 5.54 mH (+10.7 %). Neither touches the saliency
+  term; together they move the mean further from the test.
+- **What the test could do:** a static LCR test reads L_ab / 2 at a rotor position set by hand. A misalignment of 13.3
+  deg electrical (3.3 deg mechanical) would read the model's Ld as ORNL's 1.92 mH and its Lq as 5.30 mH (+6 %); an AC
+  test frequency lets eddy currents in the laminations lower the iron-dominated Lq more than Ld. Both reduce the
+  apparent saliency; neither can be sized without the test's definition.
+- **Result:** the model-side candidates are bounded and small; the mismatch is decided by how the test was made, which
+  is a client question (CLIENT_QUESTIONS.md, question 6), not a model revision. No FEMM run until it is answered. The
+  inductances do not depend on the magnet strength in the model (the blind model at 1.243 T and the calibrated one at
+  1.036 T both gave Ld 1.70 mH), so this mismatch is independent of the 18 % flux excess.
+

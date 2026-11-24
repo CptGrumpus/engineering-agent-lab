@@ -70,6 +70,9 @@ rotor (88-90 % of the re-saturated sample; settled by a fluxmeter test on one ma
    is right; the excess is in the shared inputs or in what 2D leaves out); (d) the bridges' lamination steel (done 19:12, run 20261123-172758:
    three grades within -0.35 to +0.14 % of 105.16 V: not the cause).
 3. Done 15:10: **static inductances** on revision 5: Ld 1.72 mH (-10.6 % on ORNL's 1.92), Lq 5.50 mH (+10 % on 5.0),
-   saliency 3.2 against 2.6, as predicted: the client data does not fix them.
+   saliency 3.2 against 2.6, as predicted: the client data does not fix them. Framed 21:51
+   (scripts/motor_inductance_frame.py, CALIBRATION_PLAN): not a convention; the mean is +4.3 %, the saliency term
+   +22.7 %; end-winding leakage and the small-signal slope do not touch the saliency; a 3 deg rotor misalignment or
+   eddy currents at the test frequency would. Decided by how the test was made: client question 6, no run until then.
 4. Done 17:09 (torque, revision 5) and 17:13 (locked-rotor emulation): torque 17-19 % high like for like. Then efficiency (with the measured resistance) and the design verdicts; then refresh
    `reports/motor/`.

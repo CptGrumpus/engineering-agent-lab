@@ -139,6 +139,10 @@ prediction is written into a case file.
   and its emulated maximum +17.5 %; comparing the mean with the maximum also produced a false "ORNL's tests disagree"
   diagnosis (study 7, 2026-11-23, withdrawn). Emulate the test's procedure from the model's saved data
   (scripts/motor_locked_rotor.py) before reading any difference.
+- When paired quantities miss in opposite directions (study 7: Ld -10.6 %, Lq +10 %), no convention or scale factor
+  can be the cause; split them into the mean and the difference (mean +4.3 %, saliency term +22.7 %) and ask what
+  changes only the difference. If the answer is in how the test was made and the client documents do not say, it is
+  a client question, not a model revision (scripts/motor_inductance_frame.py).
 - Check that a hand estimate's simplifications hold across the whole band, not only at its nominal point. Study G's
   Rayleigh estimate (17/35 of the shaft mass at mid-span, the factor for a simply supported mode shape) matched ROSS
   within 0.2 % on stiff bearings but ran 2 % high on soft ones: with soft bearings the shaft also translates, so more

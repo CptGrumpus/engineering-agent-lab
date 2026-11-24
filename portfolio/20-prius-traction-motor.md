@@ -186,7 +186,9 @@ model's flux linkage, waveform and gap field, so the 2D field is right); the mag
 (measured on the drawing: every magnet sits on its stop, as modelled, with at most 0.4 mm of play); and the magnets'
 magnetisation level in the assembled rotor, which a client's
 production engineer could answer or a half-day fluxmeter test on one magnet would settle. The inductance mismatch is a
-separate effect, still open.
+separate effect: the model's average inductance is within 4.3 % of the test, but its saliency (Lq - Ld) is 23 %
+larger, which no model-side omission explains; how the static test was made (rotor positioning, test frequency) would,
+and is a question for the client.
 
 ## How it works
 

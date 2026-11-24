@@ -93,8 +93,9 @@ commit). Rules that bind:
    every magnet on its stop (pockets within 0.075 mm; at most 0.4 mm of play), no revision needed. So the magnetisation
    level is reported as the leading
    hypothesis (effective remanence 1.10-1.12 T, 88-90 %) with the fluxmeter test that settles it, never fitted. ORNL's measured air-gap flux (TM-2004/137 Fig. 13) would separate the two
-   directly; the user decided to leave it for now (item 4). Then the inductance mismatch (Ld -10.6 %,
-   Lq +10 %). The MDPI Machines 2019 7(4) 75 PDF can be read only if the user saves it (its server blocks fetches).
+   directly; the user decided to leave it for now (item 4). The inductance mismatch is framed (21:51,
+   `scripts/motor_inductance_frame.py`): mean +4.3 %, saliency term +22.7 %, decided by how ORNL's static test was
+   made (client question 6); no run until then. The MDPI Machines 2019 7(4) 75 PDF can be read only if the user saves it (its server blocks fetches).
 2. FSI2 / FSI3 mesh results and combined GCIs; page 17. FSI2 levels a and b done 21:18 / 21:28 and scored (case
    headers: P1 held on both, P2 held, b repeats turek_hron_fsi2 exactly, P3 held on a, P5 missed; a vs b 0.1-0.7 %);
    the combined GCI waits for c's rerun.
