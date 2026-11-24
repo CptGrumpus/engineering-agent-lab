@@ -58,7 +58,7 @@ each part on its own: CSM1 to CSM3 (solid only, CalculiX, nothing new needed), C
 only, OpenFOAM 14, nothing new needed), then FSI1 to FSI3 coupled through preCICE. Each part is
 verified before the coupled run, as in study 2.
 
-## Session handoff (2026-11-23, 17:48; first written 2026-11-21, 23:10)
+## Session handoff (2026-11-23, 20:52; first written 2026-11-21, 23:10)
 
 Read this first. Files under site/, docs/, DASHBOARD.md, `scripts/make_study_renders.py`, `scripts/make_figures.py`,
 `scripts/make_drawings.py`, `scripts/figkit.py` and `.claude/skills/publication-figures/` belong to the dashboard
@@ -78,35 +78,50 @@ commit). Rules that bind:
   `*.inp`, `*.dat`, `__pycache__`, files > 600 kB, then `tests/test_privacy.py`; never two FEMM cases at once; check
   free RAM on long runs.
 
-### Running at 17:48 (logs in session cd9b49cb's scratchpad unless stated)
+### Running at 20:52 (scratchpads under `%LOCALAPPDATA%/Temp/claude/cb67dd1e648f8970/<session>/scratchpad/`)
 
 | Job | Run dir (log) | Done about | When it finishes |
 |---|---|---|---|
-| Study 6: FSI2 mesh study a / b / c (3.54 / 2.5 / 1.77 mm, 15 s); simulated 11.1 / 10.8 / 8.6 s at 17:48. **Level c's first run FAILED at 8.835 s (18:05, floating point exception in pimpleFoam, log lost; see its case header); rerun with the same settings started 18:06 to capture the error** | `runs/*_turek_hron_fsi2_mesh_{a,b}` (`fsi2_mesh_{a,b}.log` in session e47de8ef's scratchpad); c's rerun log `fsi2_mesh_c_rerun.log` in session 8f53debf's scratchpad | ~20:45 / ~20:45 / c fails again ~23:30 or ends ~04:00 | Results per case (P1-P5 in `turek_hron_fsi2_mesh_a.toml`); `scripts/combine_mesh_levels.py <out.json> <a> <b> <c>` for the run-level GCI; page 17. If c fails again, read `log.pimpleFoam.tail` before changing anything (one change per rerun). c's rerun was started with `harness run`, not `pipeline`: afterwards run `harness verify` and `harness report` on its run dir. The other five FSI runs started before the log-tail fix: a watcher (started 18:56) copies the last 400 lines of every live fluid log each minute to `fsi_tails/<case>.tail` in session 8f53debf's scratchpad; read those if one of them crashes. | Results per case (P1-P5 in `turek_hron_fsi2_mesh_a.toml`); `scripts/combine_mesh_levels.py <out.json> <a> <b> <c>` for the run-level GCI; page 17. |
-| Study 6: FSI3 mesh study a / b / c (3.54 / 2.5 / 1.77 mm, dt 0.0005 s, 8 s; user's go-ahead 16:05), started 16:10-16:11. Max Courant number measured from the live logs at 18:20: a 1.17, b 1.35, **c 2.36** (flat after the 1 s ramp; FSI2's a / b 1.24 / 1.43): c carries the same risk as FSI2's crashed level c | `runs/*_turek_hron_fsi3_mesh_{a,b,c}` (`fsi3_mesh_{a,b,c}.log`) | ~21:30-22:00 / same / after midnight | Results per case (P1-P5 in `turek_hron_fsi3_mesh_a.toml`; level b should repeat `turek_hron_fsi3` to 4 digits); combined GCI; page 17. |
+| Study 6: FSI2 mesh levels a / b (3.54 / 2.5 mm, 15 s); 13.4 / 13.3 s simulated at 19:43 | `runs/*_turek_hron_fsi2_mesh_{a,b}` (`fsi2_mesh_{a,b}.log`, session e47de8ef) | ~20:35-21:00 | Results per case (P1-P5 in `turek_hron_fsi2_mesh_a.toml`); combined GCI once c exists (`scripts/combine_mesh_levels.py <out.json> <a> <b> <c>`); page 17. |
+| Study 6: FSI2 mesh level c (1.77 mm), **rerun** with unchanged settings after the first run failed at 8.835 s (18:05, floating point exception in pimpleFoam, log lost; case header); started 18:06; 3.13 s at 19:43 | `runs/*_turek_hron_fsi2_mesh_c` (newest; `fsi2_mesh_c_rerun.log`, session 8f53debf) | fails again ~23:20 or ends ~03:00 | Read `points/p00_baseline/solver/fluid/log.pimpleFoam.tail` (or `fsi_tails/fsi2_c_rerun.tail`) before changing anything; one change per rerun. Started with `harness run`: afterwards run `harness verify` and `harness report` on its run dir. |
+| Study 6: FSI3 mesh levels a / b / c (3.54 / 2.5 / 1.77 mm, dt 0.0005 s, 8 s), started 16:10-16:11; 4.27 / 4.23 / 3.40 s at 19:43. Max Courant number a 1.17, b 1.35, **c 2.36** (c carries FSI2 c's risk) | `runs/*_turek_hron_fsi3_mesh_{a,b,c}` (`fsi3_mesh_{a,b,c}.log`, session cd9b49cb) | ~22:50 / ~22:55 / ~00:30 | Results per case (P1-P5 in `turek_hron_fsi3_mesh_a.toml`; b should repeat `turek_hron_fsi3` to 4 digits); combined GCI; page 17. |
+| Watcher: rolling 400-line tails of the six FSI fluid logs, every minute (the five older runs predate the harness's failure-tail fix) | `fsi_tails/<case>.tail` (session 8f53debf) | stops when the FSI work dirs are gone | Read the tail of any FSI run that crashes. |
 
 ### Next (in order)
-1. **Study 7, the 18 % flux excess** (STATUS.md "Next steps"; CALIBRATION_PLAN.md from "Revision 5" on). The client-data
-   model reads +17.7 % on back-EMF and +17 to +19 % on locked-rotor torque like for like (`scripts/motor_locked_rotor.py`);
-   ORNL's data are self-consistent. Done: step 1 (literature: no published model with inputs and numbers against ORNL;
-   Chalmers thesis puts 3D end effects at -3.7 %). Running: step 2 (steels). Done 17:57: step 3 end effects, hand
-   estimate (`scripts/motor_end_effects.py`): -1.3 to -2.4 %, -3.7 % from Chalmers' 3D model, below the 5 %
-   threshold, no 3D model; the model would read +13 to +16 %; end clamping piece non-magnetic from TM-2004/137
-   Fig. 9's photo (client question). Done 20:22: the independent ElmerFEM model (`models/motor/elmer_em.py`,
-   `validation/motor_ornl/elmer_check/`) agrees with FEMM to +0.10 % on lambda1, so the 2D field is right. Next:
-   step 4, write up the magnetisation level as the leading hypothesis (effective remanence 1.10-1.12 T, 88-90 %)
-   with the client test that settles it, not fitted; then the inductance mismatch. Elmer 26.1 (official CSC Windows zip, sha256 8ce866cc6ff1) is
-   unpacked in `~/tools/elmer-26.1/` (18:15, with the user's OK). Step 4: the magnetisation
-   level is reported as the leading hypothesis with the client test that settles it (fluxmeter on one magnet before and
-   after re-saturating), never fitted. The inductance mismatch (Ld -10.6 %, Lq +10 %) is separate, after these.
-   The user can save the MDPI Machines 2019 7(4) 75 PDF (MotorAnalysis-PM, "high correlation" with ORNL) into the
-   project if they want it read: its server blocks automated fetches; do not retry it.
+1. **Study 7, the 18 % flux excess: step 4** (`validation/motor_ornl/CALIBRATION_PLAN.md`, "step 4"; questions for the
+   client in `CLIENT_QUESTIONS.md`). Ruled out: the solver (independent ElmerFEM model, +0.10 %), the steel (at most
+   0.35 %), the measurement side; bounded: end effects 1.3-3.7 %. **Next: measure the magnet stops at the pocket ends
+   on the drawing's vector outline** (DRAWING_AUDIT "differs, not measured": the model leaves 1.5-5 mm of air between
+   magnet and bridge), hand-estimate, predictions, one revision. Then the magnetisation level is reported as the leading
+   hypothesis (effective remanence 1.10-1.12 T, 88-90 %) with the fluxmeter test that settles it, never fitted. Open
+   for the user: ORNL's measured air-gap flux (TM-2004/137 Fig. 13) would separate the two directly but is
+   teardown-only data held back under the realistic-information rule. Then the inductance mismatch (Ld -10.6 %,
+   Lq +10 %). The MDPI Machines 2019 7(4) 75 PDF can be read only if the user saves it (its server blocks fetches).
 2. FSI2 / FSI3 mesh results and combined GCIs; page 17.
 3. Motor field render for the site: re-export from a revision-5 solution (`scripts/export_femm_field.py`; copy the
    evidence run's .ans to build/ first, Pyleecan overwrites it); the revision-4 export in `build/render/motor_rev4_centre`
    has the wrong magnet. Refresh `reports/motor/` after the 18 % is explained.
 4. Open for the user: whether the site shows the user's name (earlier notes said email only; the motor page now shows
-   it): ask, don't change.
+   it): ask, don't change. Optional cleanup on the user's OK: four stale temp dirs from stopped runs
+   (`%LOCALAPPDATA%/Temp/fsi_6sulqu6u`, `fsi_z4epbt_3`, `fsi_5c2j0yxa`, `fsi__hcq9h5s`, about 43 MB) and the unpacked
+   Elmer zip (`~/tools/elmer-26.1-dl/`, 124 MB).
+
+### Done 17:48-20:52
+- **Study 7, 18 % diagnosis:** step 3 end effects, hand estimate -1.3 to -2.4 % (`scripts/motor_end_effects.py`;
+  end clamping piece non-magnetic from TM-2004/137 Fig. 9's photo); step 2 steels scored (-0.35 to +0.14 %, not the
+  cause); **step 3b: an independent 2D model in ElmerFEM** (`models/motor/elmer_em.py`, `scripts/export_motor_elmer.py`,
+  `scripts/motor_elmer_check.py`; Elmer 26.1 in `~/tools/elmer-26.1/`, gmsh 4.15 as optional dependency `em`): closed-
+  form magnet check -0.07 %; attempt 1 stopped (ring surfaces meshed as outer + inner area, 10x low; Newton limit cycle
+  on a linear B-H table), fixed with an area-balance check; attempt 2 within **0.10 %** of FEMM (P1-P4 held, P5
+  missed as written); step 4 written; `CLIENT_QUESTIONS.md`.
+- **Study 6:** FSI2 c's first run failed at 8.835 s with its log lost; rerun started; Courant numbers measured per
+  level from the live logs.
+- **Harness:** a failed point keeps the last 400 lines of every log its study did not copy
+  (`points/<label>/solver/failure_tails/`, all studies; tests).
+- **Skills and memory:** run-case (read failure tails first; Courant per level before a fixed-dt mesh study; live
+  logs on long runs; run time as the sum over points), verify-against-reference (what a second solver settles),
+  frame-requirements (read the photos before calling a fact unknown), tool notes (ElmerFEM), skill-table rows for
+  studies F and G; memory: edit files with Edit or Python with asserts, never shell chains.
 
 ### Done 12:40-17:48
 - **Study 7 turned into a client project.** Revision 4 at 1.12 T scored (P5 held; 1.12 T is ORNL's hot design value,

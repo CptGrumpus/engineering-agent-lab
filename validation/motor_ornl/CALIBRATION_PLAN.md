@@ -512,3 +512,28 @@ share (taken from the client's data) or in what a 2D model leaves out. With step
 hypothesis is the magnets' magnetisation level in the assembled rotor (an effective remanence of 1.10-1.12 T, 88-90 %
 of the re-saturated sample's 1.249 T at 25 C, would account for it with the end effects; EMF = 97.5 V/T Br - 16.6 V): step 4 reports it with the client test that settles it, not as a fit. (The Chalmers
 thesis's 30 % between ElmerFEM and Maxwell on "the same" 2D model is therefore not a property of the solvers.)
+
+### The 18 % flux excess, step 4: what is left, and how a client would settle it (2026-11-23 20:51; no runs)
+Ruled out so far: the solver (step 3b, 0.1 %), the lamination steel (step 2, at most 0.35 %), the measurement side
+(CLIENT_DATA: line to line, power meter, 25 C), magnet size and material, winding, stack (all client data, matching).
+Bounded: 3D end effects, -1.3 to -3.7 % (step 3). What remains is shared by both 2D models; in order of what to do:
+1. **Magnet position along the arm and the pocket-end shape** (DRAWING_AUDIT: "differs, not measured"). The client's
+   lamination drawing shows small notches (magnet stops) at each pocket end; the model uses Pyleecan's straight
+   pocket ends with the magnet placed from the V apex, leaving 1.5-5 mm of air between the magnet's outer end and the
+   bridge. Where the stops really put the magnet changes the leakage at the pocket ends. This is client data not yet
+   used, so it comes before any hypothesis about manufacturing: measure the stops on the drawing's vector outline
+   (as the pocket thickness was), hand-estimate the effect, then one revision. Size not yet estimated.
+2. **Magnetisation level in the assembled rotor** (hypothesis, never fitted). TM-2004/137: the rotor is magnetised
+   after assembly; in-rotor magnetising of high-coercivity NdFeB through the pole pieces and bridges may leave parts
+   of each magnet short of saturation, and a hysteresisgraph re-saturates its sample, so the BOM's 1.255 T is an upper
+   bound. With the end effects, an effective remanence of 1.10-1.12 T (88-90 % of 1.249 T at 25 C) would account for
+   ORNL's 89.38 V. In-service irreversible demagnetisation would look the same and is lumped in. (ORNL's own design
+   study used 1.12 T, "BrT", read earlier as the 20 C value at about 125 C: a coincidence of numbers, not evidence.)
+   **The client test that settles it:** take one magnet out of a production rotor, measure its moment in a Helmholtz
+   coil with a fluxmeter, re-saturate it in a pulse magnetiser, measure again. Predicted ratio if this is the cause:
+   0.88-0.90 (after any step-1 correction, recomputed). A ratio near 1.0 rejects it.
+   **A cheaper check needs the user's decision:** ORNL's measured no-load air-gap flux density (TM-2004/137 Fig. 13)
+   would separate "less magnet flux" from "different leakage" directly, but it is teardown-only data, held back since
+   the blind pass under the realistic-information rule; on a real job the client could measure the same with a Hall
+   probe in a day.
+3. Separate, after these: the inductance mismatch (Ld -10.6 %, Lq +10 %), which the magnet flux does not explain.
