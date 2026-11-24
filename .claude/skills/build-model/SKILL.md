@@ -103,6 +103,10 @@ per problem type:
    counted as rotor iron was missing); and for each such gap, read the saved field (flux density in the region)
    before estimating it: unsaturated iron in parallel changes little. Mark which inherited values are used at all
    (Pyleecan's end-winding length is not; the efficiency study computes its own).
+   Each audit row's status belongs to the revision audited: write the revision in the status, and re-audit the
+   "differs" rows when the geometry changes. Study 7 nearly queued a revision for the magnet stops from a row written
+   on revision 4's template pocket; an overlay of revision 5 on the drawing (`scripts/motor_drawing_stops.py`) showed
+   the traced pocket already put every magnet on its stop.
 4. **Run the tool by hand once**, outside the harness, on a coarse setup: does it
    mesh, does the mesh check pass, does it converge, where are the outputs?
    Tool-specific traps are in [references/tool-notes.md](references/tool-notes.md).
