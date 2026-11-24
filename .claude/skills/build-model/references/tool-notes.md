@@ -455,6 +455,13 @@ Traps found while building the studies in this repo, by tool.
   tutorials do, and judge steadiness from the heat balance and the temperature history.
 - **Perfect gas needs absolute pressure**: p = 0 with `perfectGas` gives rho = 0 and an FPE in nu = mu / rho at the first
   step; p 1e5, p_rgh 0 and `constant/pRef` 1e5, as the tutorials have.
+- **A wall as a boundary condition has no lateral conduction.** `externalTemperature` on the air's wall patch loses each
+  face's heat where it arrives. Fine for distributed heating (conservative for hot spots), wrong for any concentrated
+  path into a wall: a 5 W bridge to a 20 mm strip of lid would sit about 110 K above ambient. Model the walls as a thin
+  solid region (study 11's `shell`, an outer ring of blocks with `outside` carrying the external condition) before
+  sizing any conduction path. A region's interfaces come out of `splitMeshRegions` as `<owner>_to_<neighbour>` for
+  each adjacent pair; generate the boundary entries from the block adjacency (explicit names, never two regex keys).
+  Inertia grows with the shell (2 mm aluminium about doubles the time constant): lengthen the settling run.
 
 ## Partitioned coupling (OpenFOAM <-> CalculiX, cold-plate chain)
 
