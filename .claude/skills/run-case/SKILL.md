@@ -146,6 +146,8 @@ Run every command from the repository root.
   number per simulated second and the coupling iterations per window, from the log's tail (FSI / CFD studies:
   `%LOCALAPPDATA%/Temp/fsi_*/case/fluid/log.pimpleFoam`). A rising trend is the warning a crash otherwise gives
   only after hours.
+- Predict a case's run time as the sum over its points: a sweep's scenarios run one after another (FEMM always,
+  being one at a time). Study 7's steel case predicted 45-75 min from one point's 35 min and took 105 min for three.
 - One FEMM at a time; OpenFOAM under `nice -n 19`; several single-core jobs at once are fine on this machine, but
   watch memory more than CPU.
 
