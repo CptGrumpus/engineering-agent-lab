@@ -92,6 +92,9 @@ commit). Rules that bind:
 Machine elements (study 16) DONE 16:24: page 26; dashboard session told.
 
 ### Next (in order)
+00. **User's instruction 2026-11-24 18:59: queue NO new runs** (the user needs the computer; CPU about 87 %). The
+   running jobs continue at normal priority (user's choice: leave it). Score and commit results as they land; ask
+   before starting anything (including reruns or the AISC frame cases).
 0d. **User's decisions 2026-11-24, after 16:54:** study 11 sizes a passing design with a CONDUCTION PATH from the
    component to the lid (a thermal pad / spreader; size its conductance so the component meets 85 C); a NEW STUDY
    in parallel: a STEEL FRAME to AISC 360-22 (free from AISC; framing first, for the user's approval).
