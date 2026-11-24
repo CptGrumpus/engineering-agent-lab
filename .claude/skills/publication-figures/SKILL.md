@@ -81,6 +81,13 @@ gates the shapes on the run's frequencies, to 0.01 %). Then the figure shows the
 Say so in the figure's line or the drawing's footer, and give `finish(..., source=...)` the true source when a
 drawing isn't drawn only from the case file (a traced client drawing).
 
+The same goes for a field export handed over by the study session (`build/render/*/field.npz`): the drawing script
+runs the gate itself against the run's own output, not a "gate passed" note in the export's JSON, which a newer
+export may not carry (`scripts/make_field_map.py` checks the circuit fluxes against the run's `flux_linkage.csv`).
+When the export moves to a new model revision, re-check every label against the new geometry: revision 4's
+"non-magnetic shell" label landed inside revision 5's magnet, and a label placed past the view's edge is clipped
+without warning.
+
 ## Before it ships
 
 - [ ] No code names, case labels or metric names on the figure
