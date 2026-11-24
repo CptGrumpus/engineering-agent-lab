@@ -566,3 +566,25 @@ TM-2006/423, TM-2004/247, TM-2004/185, TM-2004/137, TM-2010/253).
   inductances do not depend on the magnet strength in the model (the blind model at 1.243 T and the calibrated one at
   1.036 T both gave Ld 1.70 mH), so this mismatch is independent of the 18 % flux excess.
 
+
+### The 18 % flux excess, step 5: ORNL's measured air-gap flux density (predictions 2026-11-24 10:46, before comparing)
+
+User's go-ahead 2026-11-24, after 10:25 (teardown data under the realistic-information rule). ORNL/TM-2004/137
+(Pub57348.pdf, sha256 32469ab008f7) Fig. 13: "Prius 2003 and 2004 no-load air-gap flux density comparison", measured
+radial flux density in gauss at slots 1-13 (one pole pair = 12 slots; the 2004 series peaks near 7,500 G and crosses
+zero at slots 1, 7 and 13). How it was measured (probe, radius, rotor fixed or turning) is not stated: a probe in the
+0.73-0.775 mm gap reads near the stator bore, and a reading per slot samples the field at one point per slot pitch.
+
+Method (scripts/motor_fig13.py): the 2004 series from the PDF's vector drawing (marker positions against the axis
+ticks); the model's radial flux density at the gap's mid-radius from the saved revision-5 open-circuit solution
+(build/render/motor_rev5_centre, run 20261123-215502, 20 C), sampled at the slot pitch. One free parameter, the rotor
+angle relative to slot 1 (not stated by ORNL), fitted on the zero crossings only; the amplitude is not fitted.
+
+Predictions:
+  P1 Shape: after the angle fit, the model's curve normalised by its own plateau agrees with ORNL's normalised curve
+     within 0.08 (of the plateau) at every slot: the excess is a uniform scaling, as a magnetisation shortfall would be.
+  P2 Amplitude: the model's plateau (the mean of its three highest slots, each half-pole) is 1.12-1.24 x ORNL's
+     (back-EMF says 1.18; the probe reads near the bore, where the gap field is a few percent lower than mid-gap,
+     which pushes the ratio up).
+  P3 If P1 fails (the model's plateau wider or narrower than ORNL's by more than a slot pitch, or an asymmetry), the
+     excess is not uniform, and the magnetisation hypothesis is weakened in favour of geometry or leakage: reported.
