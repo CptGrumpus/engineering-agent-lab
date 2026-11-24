@@ -104,6 +104,13 @@ Machine elements (study 16) DONE 16:24: page 26; dashboard session told.
    portal, B1/B2 beside the DAM, equilibrium, segment convergence. The USER downloads the AISC PDFs (Cloudflare blocks
    automated fetches) into `references/aisc/` (gitignored: copyrighted): 360-22 with Commentary, Design Examples v16.0,
    Shapes Database v16.0.
+   Prototype notes (scratch, 17:16-17:20): CalculiX B32 + NLGEOM gives P-delta (cantilever root moment 109.4 against
+   100 first order at P = 5 kN, the right size by hand); `*EL FILE, SECTION FORCES` needs `OUTPUT=2D` on both FILE
+   cards; component 5 (the SYZ slot) is the bending moment (linear test: root 1.006e6 against 1e6 N mm, but 1.46e4 at a
+   free tip: nodal extrapolation, so refine members and check joint equilibrium); component 3 the axial force; the
+   SYY slot does NOT match the shear (2,770 against 1,000 N): take shears from statics, check the manual. Sections:
+   an equivalent RECT matching A and Ix (in-plane frame). Next: section properties from the Shapes Database once in
+   `references/aisc/`, then validation/aisc_frame.py (E3, F2, G2, H1 against the Design Examples), model, cases.
 0c. **User's decisions 2026-11-24, after 12:09:** study 11's enclosure verdict BRACKETED in board conductivity (5 and
    20 W/mK, each at internal emissivity 0.1 and 0.9: four corners, verdict at each); a NEW STUDY in parallel: machine
    elements (a shaft with a shoulder fillet under bending and torsion, fatigue safety by DIN 743 against FE notch
