@@ -27,7 +27,7 @@ def main() -> int:
     pages = sorted(DOCS.glob("*.html"))
     for page in pages:
         text = page.read_text(encoding="utf-8")
-        refs |= set(re.findall(r'(?:src|href|data-loop)="((?:img|v2)/[^"#?]+)"', text))
+        refs |= set(re.findall(r'(?:src|href|data-loop|data-hover)="((?:img|v2)/[^"#?]+)"', text))
         refs |= set(re.findall(r'"(?:img|mesh)": "((?:img|v2)/[^"]+)"', text))
         # preview cards are referenced by absolute address in the head
         refs |= set(re.findall(r'content="' + re.escape(SITE_URL) + r'((?:img|v2)/[^"]+)"', text))

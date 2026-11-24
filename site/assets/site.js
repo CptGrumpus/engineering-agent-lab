@@ -17,11 +17,12 @@
     const f = b.dataset.f;
     cards.forEach(c => { c.hidden = !(f === "all" || c.dataset.group === f); });
   }));
-  if (!reduce()) cards.forEach(c => {
-    const im = c.querySelector("img[data-loop]");
-    if (!im) return;
-    const still = im.getAttribute("src");
-    const on = () => { im.src = im.dataset.loop; }, off = () => { im.src = still; };
+  // a card opens with the study's setup drawing; on hover it shows the result: an animation, or the result chart
+  cards.forEach(c => {
+    const im = c.querySelector("img[data-loop], img[data-hover]");
+    if (!im || (im.dataset.loop && reduce())) return;
+    const still = im.getAttribute("src"), alt = im.dataset.loop || im.dataset.hover;
+    const on = () => { im.src = alt; }, off = () => { im.src = still; };
     c.addEventListener("mouseenter", on); c.addEventListener("focus", on);
     c.addEventListener("mouseleave", off); c.addEventListener("blur", off);
   });

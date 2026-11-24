@@ -67,6 +67,14 @@ result chart, so every page read as "just results". Every study page runs, top t
 5. The write-up: question, answer, **the model** (moved up by the build to follow the answer), why it matters, how it
    works, the checks, what I caught, the limits, the case record and the evidence.
 
+The home cards follow the same rule: each card's picture is the study's setup drawing, and the verdict sits right
+under it. The build cuts `v2/tc_<study>.webp` from the drawing itself (title block off, trimmed, fitted to 16:10), so
+a redrawn part updates its card. Hover shows the result: the animation if `loops.json` has one, otherwise the result
+chart. When a drawing carries a table or a second plot beside the part, add a `CARD_CROP` entry and look at the card:
+a crop through a block of notes leaves half-words at the edge. The setup-first rule was settled for the pages on
+2026-11-23; applying it to the cards was asked again a day later, so apply it to every new place a study is shown
+rather than asking.
+
 Every study needs a drawing, so a new study isn't finished without one. The drawing shows the physical setup: the
 part with its main dimensions, the supports and loads, what's modelled (a half or a quarter), the inputs that are
 uncertain, and the load history when it matters (a cycle, a proof load). Read every value from the case file; a result
@@ -122,7 +130,8 @@ day stale before anyone noticed. Say "recently" or give the date.
   a chart label on 2026-11-23. No heredocs for Python at all.
 - Make a patch script safe to run twice. Check for the whole new text, not just the old: when the old text is a
   prefix of the new (adding entries after a line), a second run inserts them again. The build's
-  one-viewer-entry-per-study assert caught that once.
+  one-viewer-entry-per-study assert caught that once. A dict entry inserted twice isn't caught by anything (study
+  25's `QUESTION` line sat there twice): check for the new line itself, not for the old one being gone.
 
 ## Building and publishing
 

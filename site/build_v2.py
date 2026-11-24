@@ -347,7 +347,6 @@ QUESTION = {
     "fan_rotor": "Is a 50 mm shaft stiff enough to keep a fan's critical speed out of its 1,000 to 3,000 rpm range, and if not, what is?",
     "crack": "A 2 mm crack at the edge of a steel plate in cyclic tension: how long until it fails, and how often must the plate be inspected?",
     "oring": "Does an O-ring seal a 3 bar coolant-pump cover at every corner of its tolerance stack, within the bolts' force and the groove's room?",
-    "oring": "Does an O-ring seal a 3 bar coolant-pump cover at every corner of its tolerance stack, within the bolts' force and the groove's room?",
     "cold_plate": "Does a water-cooled aluminium plate keep the electronics on it under 45 °C, with the coolant and the thermal stress inside their limits?",
     "turbulent_flow": "Can this CFD setup be trusted for pressure drop and flow layout? Checked against measurements, in a pipe and behind a step.",
     "cfd": "Does a 1 mm coolant passage stay within its 30 Pa pressure budget and keep enough shear on its walls to limit fouling?",
@@ -401,6 +400,58 @@ if not th_heat.exists():
     canvas = Image.new("RGB", (800, 500), (252, 252, 251))
     canvas.paste(src, ((800 - src.width) // 2, (500 - src.height) // 2))
     canvas.save(th_heat, "WEBP", quality=88)
+
+# home cards open with the setup, the user's rule for every study (2026-11-23): the part first, then the result. Each
+# card's picture is cut from the study's drawing as the build runs, so it changes with the drawing; the result chart
+# (or its animation) shows on hover, and the verdict sits right under the picture.
+CARD_CROP = {"oring": (0, 0, 0.655, 1), "fan_rotor": (0, 0, 1, 0.56)}     # study: (x0, y0, x1, y1) as fractions of the drawing's content, where the part is only part of it
+
+
+def card_thumb(gk: str):
+    """v2/tc_<gk>.webp from the study's setup drawing: title block cut off, trimmed to the drawing, fitted to 16:10."""
+    import numpy as np
+    from PIL import Image
+    dk = setup_key(gk)
+    if dk is None:
+        return None
+    im = Image.open(HERE / "v2" / f"dwg_{dk}.webp").convert("RGB")
+    bg = im.getpixel((2, 2))
+    ink = np.abs(np.asarray(im, dtype=int) - np.array(bg)).sum(axis=2) > 24
+    h = ink.shape[0]
+    rules = [r for r in np.where(ink.mean(axis=1) > 0.8)[0] if r > 0.7 * h]
+    assert rules, f"no title-block rule found in dwg_{dk}"
+    r = max(rules)                       # the title block's rule is the lowest long line (a road or a floor can be long too)
+    while r - 1 in rules:
+        r -= 1
+    body = ink[: r - 6]
+    ys, xs = np.where(body)
+    x0, x1, y0, y1 = xs.min(), xs.max() + 1, ys.min(), ys.max() + 1
+    if gk in CARD_CROP:
+        f = CARD_CROP[gk]
+        w, hh = x1 - x0, y1 - y0
+        x0, y0, x1, y1 = (round(x0 + f[0] * w), round(y0 + f[1] * hh), round(x0 + f[2] * w), round(y0 + f[3] * hh))
+    im = im.crop((x0, y0, x1, y1))       # only the drawing: padding to 16:10 can't bring back the title block or cut notes
+    x0, y0, x1, y1 = 0, 0, x1 - x0, y1 - y0
+    m = 0.04 * max(x1 - x0, y1 - y0)
+    x0, y0, x1, y1 = x0 - m, y0 - m, x1 + m, y1 + m
+    w, hh = x1 - x0, y1 - y0
+    if w / hh > 1.6:
+        cy, hh = (y0 + y1) / 2, w / 1.6
+        y0, y1 = cy - hh / 2, cy + hh / 2
+    else:
+        cx, w = (x0 + x1) / 2, hh * 1.6
+        x0, x1 = cx - w / 2, cx + w / 2
+    canvas = Image.new("RGB", (round(w), round(hh)), bg)
+    canvas.paste(im, (round(-x0), round(-y0)))
+    canvas = canvas.resize((1200, 750), Image.LANCZOS)
+    out = HERE / "v2" / f"tc_{gk}.webp"
+    canvas.save(out, "WEBP", quality=90)
+    return out.name
+
+
+CARD_IMG = {g[0]: card_thumb(g[0]) or f"th_{g[8]}.webp" for g in GALLERY}
+# on hover: the study's animation if it has one, otherwise its result chart
+CARD_HOVER = {g[0]: LOOPS.get(g[8]) or (f"v2/th_{g[8]}.webp" if CARD_IMG[g[0]].startswith("tc_") else None) for g in GALLERY}
 
 esc = html.escape
 CARD = {c[0]: c for c in CARDS}
@@ -641,7 +692,7 @@ assert set(QUESTION) == set(GAL), "every study page needs its one-line question"
 def home_page(facts) -> dict:
     cards = "\n".join(
         f'''      <a class="card{' wide' if k in WIDE else ''}" href="{FILE[k]}" data-study="{k}" data-group="{g}">
-        <span class="thumb"><img src="v2/th_{th}.webp" alt="" loading="lazy" width="800" height="500"{f' data-loop="{LOOPS[th]}"' if th in LOOPS else ""}></span>
+        <span class="thumb"><img src="v2/{CARD_IMG[k]}" alt="" loading="lazy" width="800" height="500"{f' data-{"loop" if CARD_HOVER[k] == LOOPS.get(th) else "hover"}="{CARD_HOVER[k]}"' if CARD_HOVER[k] else ""}></span>
         <span class="card-body">
           <span class="meta"><span class="no">{n}</span><span>{esc(d.replace("New · ", "").replace("Featured · ", ""))}</span></span>
           <span class="card-title">{esc(t)}</span>
