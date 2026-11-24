@@ -2,10 +2,14 @@
 
     .venv\\Scripts\\python.exe scripts\\make_field_map.py
 
-Reads the FEMM solution exported by scripts/export_femm_field.py (build/render/motor_rev4_centre/field.npz and
-field.json: one pole, 45 degrees, anti-periodic) and writes site/v2/fig_motor_field.webp. The full section is the solved
-pole rotated by k x 45 degrees; |B| doesn't change with the anti-periodic sign flip. Before drawing, it checks the export's
-own gate (phase fluxes against the run's flux_linkage.csv) passed, and that the drawn field's peak is the export's.
+Reads the FEMM solution exported by scripts/export_femm_field.py (build/render/motor_rev5_centre/field.npz and
+field.json: one pole, 45 degrees, anti-periodic) and writes site/v2/fig_motor_field.webp. The export is revision 5, the
+client-data model, open circuit, magnets at 20 C, the drawing's 0.775 mm gap: the last step of run RUN, point POINT. The
+full section is the solved pole rotated by k x 45 degrees; |B| doesn't change with the anti-periodic sign flip.
+
+Before drawing, it runs the gate itself rather than trusting a record: the export's circuit fluxes (Wb per metre of
+depth, one pole), times -(8 poles x the 83.82 mm stack) (FEMM's sign is opposite), must equal the run's own
+flux_linkage.csv last row in all three phases. It also checks the drawn field's peak is the export's.
 
 The bands are the site's render bands (site/v2/scenes.json), 12 of 0.2 T from 0 to 2.4 T, so the saturated bridges
 (about 2.3 T) get the top bands. The winding carries no current at open circuit; it's drawn flat, not banded.
@@ -27,7 +31,10 @@ REPO = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO / "scripts"))
 import figkit as fk  # noqa: E402
 
-SRC = REPO / "build" / "render" / "motor_rev4_centre"
+SRC = REPO / "build" / "render" / "motor_rev5_centre"
+RUN = REPO / "runs" / "20261123-215502_motor_prius_rev5_oc"
+POINT = "p00_gap0775"
+POLES, STACK_M = 8, 0.08382
 OUT = REPO / "site" / "v2" / "fig_motor_field.webp"
 VMAX, NB = 2.4, 12
 COIL, AIRGAP, STATOR_AIR, ROTOR, VOID, MAG_A, MAG_B, STATOR = 11, 0, 15, 20, 26, 220, 221, 10
@@ -35,7 +42,13 @@ COIL, AIRGAP, STATOR_AIR, ROTOR, VOID, MAG_A, MAG_B, STATOR = 11, 0, 15, 20, 26,
 
 def main():
     meta = json.loads((SRC / "field.json").read_text(encoding="utf-8"))
-    assert meta["gate"]["result"].startswith("match"), "the export's flux gate did not pass"
+    rows = (RUN / "points" / POINT / "flux_linkage.csv").read_text(encoding="utf-8").strip().splitlines()
+    assert rows[0].split(",") == ["time_s", "phi_a_Wb", "phi_b_Wb", "phi_c_Wb"], rows[0]
+    run_phi = np.array([float(v) for v in rows[-1].split(",")[1:]])
+    exp_phi = -POLES * STACK_M * np.array([meta["circuit_flux_Wb_per_m"][f"Circs{i}"] for i in range(3)])
+    gap = np.abs(exp_phi - run_phi).max() / np.abs(run_phi).max()
+    assert gap < 1e-6, f"the export is not the run's solution: phase fluxes {exp_phi} against {run_phi}"
+    print(f"gate: phase fluxes match {RUN.name}/{POINT} to {gap:.1e}")
     d = np.load(SRC / "field.npz")
     xy, tri, b, grp = d["nodes_m"] * 1000, d["tri"], d["bmag_T"], d["group"]
     assert abs(b.max() - meta["bmag_max_T"]) < 1e-9 and b.max() < VMAX
@@ -55,7 +68,7 @@ def main():
 
     fig = plt.figure(figsize=(fk.FULL, 4.9), dpi=220)
     fk.heading(fig, "The magnets' field at open circuit: the thin bridges above the magnets saturate, near 2.3 T",
-               "Revision 4 (magnet as drawn, centred), FEMM 2D magnetostatics, one pole solved and repeated; flux density |B| in tesla")
+               "The client-data model, magnets at 20 °C, FEMM 2D magnetostatics, one pole solved and repeated; flux density |B| in tesla")
     axL = fig.add_axes([0.0, 0.08, 0.47, 0.80])
     axR = fig.add_axes([0.45, 0.08, 0.47, 0.80])
     for ax in (axL, axR):
@@ -105,13 +118,12 @@ def main():
     mag_l, mag_r = (MAG_A, MAG_B) if cen[g == MAG_A][:, 0].mean() < 0 else (MAG_B, MAG_A)
     m = cen[g == mag_l].mean(axis=0)
     lab(axR, m, "magnet", (m[0] - 10, m[1] - 14), ha="right")
+    # the flux barrier: the non-magnetic end of the right-hand pocket, past the magnet's outer end
     v = cen[(g == VOID) & (cen[:, 0] > 0)]
-    mb = cen[g == mag_r].mean(axis=0)
-    vv = v[np.argmin(np.hypot(*(v - mb).T))]
-    lab(axR, vv, "non-magnetic shell", (vv[0] + 8, vv[1] - 16), ha="left")
-    c = cen[g == COIL]
-    cc = c[np.argmax(c[:, 1])]
-    lab(axR, cc, "winding, no current", (cc[0] + 10, cc[1] + 1), ha="left")
+    vv = v[np.hypot(*(v - v[np.argmax(v[:, 0])]).T) < 2.5].mean(axis=0)
+    lab(axR, vv, "flux barrier", (vv[0] - 3, vv[1] - 18), ha="center")
+    fig.text(0.02, 0.035, "Beige: the winding, which carries no current here. Black outlines: the magnets and the "
+             "flux barriers at their pockets' ends.", fontsize=8, color=fk.INK2)
     # the key: the 12 bands, 0 to 2.4 T
     kx = fig.add_axes([0.935, 0.16, 0.018, 0.62])
     kx.imshow(cols[:, None, :], origin="lower", aspect="auto", extent=(0, 1, 0, VMAX))
