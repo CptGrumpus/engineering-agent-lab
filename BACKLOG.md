@@ -522,6 +522,26 @@ elements, probabilistic uncertainty). Each with its tools and independent refere
 - **E. O-ring compression.** Hyperelastic (Neo-Hookean / Mooney-Rivlin, CalculiX *HYPERELASTIC), axisymmetric ring
   squeezed between plates with contact and self-contact; force against squeeze from a published correlation (source to
   fetch); checks: near-incompressibility (J about 1), contact pressure integral against the reaction, mesh convergence.
+  **Framing DRAFT for study 12 (2026-11-24 07:58; started on the user's word "start study 12"; awaiting the user's
+  approval of the decision, application and limits before anything is built):**
+  - Decision: a static face-seal O-ring in a cover's groove (synthetic client: an aluminium coolant-pump cover, water-
+    glycol at up to 3 bar, NBR 70 Shore A, cross-section 3.53 mm, a 50 mm class ring). Across the stack of tolerances
+    (cross-section +-0.10 mm, groove depth +-0.05 mm, hardness +-5 Shore A), does the seal (a) keep enough contact
+    pressure at the loosest stack to seal, (b) need no more closing force at the tightest stack than the cover's bolts
+    supply, (c) fit its groove (fill), (d) stay within the squeeze the elastomer tolerates?
+  - Requirements (all synthetic, to approve): REQ-E1 squeeze 15-30 % over the stack (hand calculation, checked by FE
+    geometry); REQ-E2 peak contact pressure at the loosest stack >= 2 x the 0.3 MPa sealed pressure; REQ-E3 closing
+    force at the tightest stack (hardest compound) <= 12 N per mm of seal length (bolt budget); REQ-E4 groove fill
+    <= 85 % (deformed area / groove area).
+  - Model: CalculiX, axisymmetric (CAX), Mooney-Rivlin or neo-Hookean, near-incompressible, rigid plates and groove
+    walls by penalty contact, squeeze applied by displacement; a plane-strain twin as a cross-check.
+  - Independent checks: Lindley's force-compression relation (J. Inst. Rubber Ind. 1967; seen via El Bahloul et al.
+    2022, Int. J. Fluid Power 23(2), whose text extraction garbles it: F = pi D d E (1.25 c^1.5 + 50 c^6); confirm the
+    exponents from a second source before use); Hertz line contact (incompressible, E* = 4E/3) as the exact small-
+    squeeze limit (2-5 %); volume ratio J about 1; the contact-pressure integral against the reaction; GCI on force
+    and peak pressure. Material: E from Shore A by a published relation (Gent; fetch, do not quote) and its
+    tolerance; a published NBR Mooney-Rivlin pair as a second material form.
+  - Effort: about half a day to build and verify; runs are minutes each.
 - **F. Fracture.** Edge- or centre-cracked plate, stress intensity factor from the energy release rate (two runs with
   a small crack extension, G = -dPi/da, K = sqrt(E' G)) and from crack-opening displacement near the tip; against the
   handbook solutions (Tada, Paris and Irwin); then Paris-law crack-growth life by integration.
