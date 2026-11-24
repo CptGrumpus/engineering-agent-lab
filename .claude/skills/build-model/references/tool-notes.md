@@ -535,6 +535,12 @@ Traps found while building the studies in this repo, by tool.
   would only hide it.
   Confirmed real (not interpolation) on tables refined at the jump's cell: the cycle survived unchanged (8.83 K).
 
+- **FEMM returns B = 0 inside Pyleecan's air-gap element** (about 80.3-80.8 mm of the Prius's 0.775 mm gap): it has no
+  mesh there. Sample the meshed air between it and the bore (or the rotor side), and say which radius.
+- **Aligning a measured air-gap field by its zero crossings is degenerate for an IPM rotor**: the model's field stays
+  near zero over about two slot pitches between poles, so "zeros at slots 1, 7, 13" fits a range of angles. Fit the
+  angle by least squares on the normalised shapes (one parameter, amplitude free), and compare on the plateau: the
+  flank slots move most with a degree of position error (ORNL's own half-poles disagree there by up to 20 %).
 - **Pyleecan overwrites FEMM's solution per machine name** (`<pyleecan>/Results/em/Femm/<machine>_model.ans`): the
   next run of the same machine replaces it, so revision 5's open-circuit solution was lost to its torque run. The
   backend now copies it into each point as `solver/femm_last_step.ans` (the last operating point's last time step).

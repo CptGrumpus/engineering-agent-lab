@@ -589,7 +589,7 @@ Predictions:
   P3 If P1 fails (the model's plateau wider or narrower than ORNL's by more than a slot pitch, or an asymmetry), the
      excess is not uniform, and the magnetisation hypothesis is weakened in favour of geometry or leakage: reported.
 
-### Result of step 5, ORNL Fig. 13 (2026-11-24 11:00; scripts/motor_fig13.py -> validation/motor_ornl/fig13/)
+### Result of step 5, ORNL Fig. 13 (2026-11-24 10:50; scripts/motor_fig13.py -> validation/motor_ornl/fig13/)
 
 ORNL 2004 series (from the PDF's vector markers, gauss, slots 1-13): 59, -6583, -7308, -7428, -7428, -3441, 0, 5134,
 7490, 7490, 7126, 3019, 0. Model (revision 5, 20 C, radial B 0.06 mm inside the bore, where the meshed gap air is;
