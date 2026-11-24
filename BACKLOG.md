@@ -78,11 +78,12 @@ commit). Rules that bind:
   `*.inp`, `*.dat`, `__pycache__`, files > 600 kB, then `tests/test_privacy.py`; never two FEMM cases at once; check
   free RAM on long runs.
 
-### Running at 06:43, 2026-11-24 (scratchpads under `%LOCALAPPDATA%/Temp/claude/cb67dd1e648f8970/<session>/scratchpad/`)
+### Running at 08:25, 2026-11-24 (scratchpads under `%LOCALAPPDATA%/Temp/claude/cb67dd1e648f8970/<session>/scratchpad/`)
 
 | Job | Run dir (log) | Done about | When it finishes |
 |---|---|---|---|
-| Study 6: FSI2 level-c crash diagnosis (`cases/turek_hron_fsi2_mesh_c_diag.toml`; user's option B), started 03:55; 7.02 s at 06:43 (the CPU is free now: about 0.6 s per 20 min) | `runs/*_turek_hron_fsi2_mesh_c_diag` (`fsi2_c_diag.log`, session 8f53debf) | crash expected at 8.836 s, about 07:30 | Score P1-P4 (header). Rebuild the mesh at every kept step (constant/polyMesh/points + pointDisplacement), checkMesh-style measures and the cell Courant number where it peaks at 8.834-8.835 s; decide mechanism (1) or (2) by the header's criteria; then one fix for all three levels (user's call on compute). |
+| Study 6: FSI2 mesh study revision 1, levels a / b / c side by side (`cases/turek_hron_fsi2_mesh_{a,b,c}_r1.toml`: frozen 1 / d mesh motion, the fix chosen from the level-c diagnosis, done 08:12, and an offline moveMesh test), started 08:24 | `runs/*_turek_hron_fsi2_mesh_*_r1` (`fsi2_r1_{a,b,c}.log`, session 8f53debf) | about 15:30-18:30 | Score P1-P5 (headers); `scripts/combine_mesh_levels.py` over the three r1 runs; page 17 (drop 'draft' if c passes); run-case / tool-notes skill lines. |
+| Study 7: revision-5 table refinement (`motor_prius_lut_{cold,hot}_refine_rev5`), cold done 08:23 (dq-torque FAIL on the new low rows at id -100 to -300 A, wider than P1's -175 to -300), hot running | `refine_chain.log` (session 8f53debf) | about 08:55 | Score P1-P4; rerun the revision-5 efficiency and thermal cases on the merged tables (new cases, predictions first): does the 5500 rpm hot corner converge? |
 
 ### Next (in order)
 0. **Done 2026-11-24 00:47-06:42 (this session):** FSI3 mesh study (all three levels, combined check, page 17);
