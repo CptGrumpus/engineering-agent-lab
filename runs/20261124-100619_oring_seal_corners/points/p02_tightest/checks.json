@@ -1,0 +1,60 @@
+{
+  "label": "p02_tightest",
+  "status": "FAIL",
+  "checks": [
+    {
+      "id": "volume_conservation",
+      "description": "|deformed / initial ring volume - 1| (near-incompressible: J about 1)",
+      "kind": "numerical",
+      "value": 0.0004959864831083349,
+      "tolerance": 0.001,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "contact_force_balance",
+      "description": "|integral of the contact pressure over the cover / cover reaction - 1|",
+      "kind": "numerical",
+      "value": 0.014415536170425236,
+      "tolerance": 0.03,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "equilibrium",
+      "description": "|cover reaction - symmetry-plane reaction| / cover reaction (walls frictionless)",
+      "kind": "numerical",
+      "value": 0.0,
+      "tolerance": 0.001,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "penalty_penetration",
+      "description": "max overclosure of the ring into the cover / cover travel",
+      "kind": "numerical",
+      "value": 0.006819212327809001,
+      "tolerance": 0.02,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "groove_fill_hand",
+      "description": "|groove fill from the deformed area - hand fill (volume conserved, ring against the outer wall)| / hand",
+      "kind": "numerical",
+      "value": 0.010507589562384512,
+      "tolerance": 0.01,
+      "comparison": "<=",
+      "status": "FAIL"
+    },
+    {
+      "id": "in_groove",
+      "description": "ring beyond the groove walls (mm, inner or outer; penalty overclosure allowed up to the tolerance; validity)",
+      "kind": "validity",
+      "value": 0.009027889999998706,
+      "tolerance": 0.03,
+      "comparison": "<=",
+      "status": "PASS"
+    }
+  ]
+}

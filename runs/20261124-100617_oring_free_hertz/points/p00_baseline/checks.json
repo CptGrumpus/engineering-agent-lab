@@ -1,0 +1,60 @@
+{
+  "label": "p00_baseline",
+  "status": "FAIL",
+  "checks": [
+    {
+      "id": "volume_conservation",
+      "description": "|deformed / initial ring volume - 1| (near-incompressible: J about 1)",
+      "kind": "numerical",
+      "value": 2.8103625203446114e-05,
+      "tolerance": 0.001,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "contact_force_balance",
+      "description": "|integral of the contact pressure over the cover / cover reaction - 1|",
+      "kind": "numerical",
+      "value": 0.030844473457662724,
+      "tolerance": 0.03,
+      "comparison": "<=",
+      "status": "FAIL"
+    },
+    {
+      "id": "equilibrium",
+      "description": "|cover reaction - symmetry-plane reaction| / cover reaction (walls frictionless)",
+      "kind": "numerical",
+      "value": 0.0,
+      "tolerance": 0.001,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "penalty_penetration",
+      "description": "max overclosure of the ring into the cover / cover travel",
+      "kind": "numerical",
+      "value": 0.0046571719966828524,
+      "tolerance": 0.02,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "hertz_peak_pressure",
+      "description": "|peak contact pressure - Hertz p0 at the FE's force| / p0",
+      "kind": "numerical",
+      "value": 0.015771557774383334,
+      "tolerance": 0.1,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "hertz_contact_width",
+      "description": "|contact width - Hertz 2b at the FE's force| / 2b",
+      "kind": "numerical",
+      "value": 0.0033642873799754496,
+      "tolerance": 0.1,
+      "comparison": "<=",
+      "status": "PASS"
+    }
+  ]
+}

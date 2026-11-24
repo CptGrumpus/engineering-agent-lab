@@ -1,0 +1,418 @@
+{
+  "points": [
+    {
+      "label": "p00_loosest",
+      "parameters": {
+        "cross_section_mm": 3.43,
+        "ring_inner_diameter_mm": 50.2,
+        "groove_depth_mm": 2.84,
+        "groove_width_mm": 4.85,
+        "groove_outer_diameter_mm": 57.06,
+        "groove_walls": 1,
+        "shore_a": 65.0,
+        "bulk_to_shear": 1000.0,
+        "contact_element_size_mm": 0.05,
+        "far_element_size_mm": 0.2,
+        "penalty_factor": 10.0,
+        "scenario": "loosest"
+      },
+      "derived": {
+        "squeeze": 0.17201166180758026,
+        "youngs_modulus_MPa": 4.425973019326549,
+        "groove_fill_hand": 0.6708385982688136
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "volume_conservation",
+          "description": "|deformed / initial ring volume - 1| (near-incompressible: J about 1)",
+          "kind": "numerical",
+          "value": 0.0002859539216604201,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "contact_force_balance",
+          "description": "|integral of the contact pressure over the cover / cover reaction - 1|",
+          "kind": "numerical",
+          "value": 0.02003826456645208,
+          "tolerance": 0.03,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "equilibrium",
+          "description": "|cover reaction - symmetry-plane reaction| / cover reaction (walls frictionless)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "penalty_penetration",
+          "description": "max overclosure of the ring into the cover / cover travel",
+          "kind": "numerical",
+          "value": 0.00743595849959352,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "groove_fill_hand",
+          "description": "|groove fill from the deformed area - hand fill (volume conserved, ring against the outer wall)| / hand",
+          "kind": "numerical",
+          "value": 0.0058832350493813745,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "in_groove",
+          "description": "ring beyond the groove walls (mm, inner or outer; penalty overclosure allowed up to the tolerance; validity)",
+          "kind": "validity",
+          "value": 0.006386790000000531,
+          "tolerance": 0.03,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-E1a",
+          "text": "The squeeze shall be at least 15 % at the loosest stack (cross-section and groove depth tolerances).",
+          "metric": "squeeze_pct",
+          "operator": ">=",
+          "limit": 15.0,
+          "units": "%",
+          "value": 17.201166180758026,
+          "margin": 2.201166180758026,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-E1b",
+          "text": "The squeeze shall not exceed 30 % at the tightest stack.",
+          "metric": "squeeze_pct",
+          "operator": "<=",
+          "limit": 30.0,
+          "units": "%",
+          "value": 17.201166180758026,
+          "margin": 12.798833819241974,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-E2",
+          "text": "The peak contact pressure on the cover shall be at least 2 x the 0.3 MPa sealed pressure (0.6 MPa) at every stack (the loosest governs).",
+          "metric": "peak_contact_pressure_MPa",
+          "operator": ">=",
+          "limit": 0.6,
+          "units": "MPa",
+          "value": 1.498460858818632,
+          "margin": 0.8984608588186319,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-E3",
+          "text": "The closing force shall not exceed the cover's bolt budget of 12 N per mm of seal length at every stack (the tightest governs).",
+          "metric": "force_per_length_N_per_mm",
+          "operator": "<=",
+          "limit": 12.0,
+          "units": "N/mm",
+          "value": 1.8866155137040315,
+          "margin": 10.113384486295969,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-E4",
+          "text": "The installed ring shall fill no more than 85 % of the groove's cross-section (deformed area over groove area) at every stack.",
+          "metric": "groove_fill_pct",
+          "operator": "<=",
+          "limit": 85.0,
+          "units": "%",
+          "value": 67.47852994226267,
+          "margin": 17.521470057737332,
+          "verdict": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p01_nominal",
+      "parameters": {
+        "cross_section_mm": 3.53,
+        "ring_inner_diameter_mm": 50.0,
+        "groove_depth_mm": 2.79,
+        "groove_width_mm": 4.8,
+        "groove_outer_diameter_mm": 57.06,
+        "groove_walls": 1,
+        "shore_a": 70.0,
+        "bulk_to_shear": 1000.0,
+        "contact_element_size_mm": 0.05,
+        "far_element_size_mm": 0.2,
+        "penalty_factor": 10.0,
+        "scenario": "nominal"
+      },
+      "derived": {
+        "squeeze": 0.20963172804532573,
+        "youngs_modulus_MPa": 5.520506781857898,
+        "groove_fill_hand": 0.7307921127747359
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "volume_conservation",
+          "description": "|deformed / initial ring volume - 1| (near-incompressible: J about 1)",
+          "kind": "numerical",
+          "value": 0.00038227470114593487,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "contact_force_balance",
+          "description": "|integral of the contact pressure over the cover / cover reaction - 1|",
+          "kind": "numerical",
+          "value": 0.016446990275493567,
+          "tolerance": 0.03,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "equilibrium",
+          "description": "|cover reaction - symmetry-plane reaction| / cover reaction (walls frictionless)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "penalty_penetration",
+          "description": "max overclosure of the ring into the cover / cover travel",
+          "kind": "numerical",
+          "value": 0.006905650850924801,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "groove_fill_hand",
+          "description": "|groove fill from the deformed area - hand fill (volume conserved, ring against the outer wall)| / hand",
+          "kind": "numerical",
+          "value": 0.007860434358839319,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "in_groove",
+          "description": "ring beyond the groove walls (mm, inner or outer; penalty overclosure allowed up to the tolerance; validity)",
+          "kind": "validity",
+          "value": 0.007653465355254241,
+          "tolerance": 0.03,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-E1a",
+          "text": "The squeeze shall be at least 15 % at the loosest stack (cross-section and groove depth tolerances).",
+          "metric": "squeeze_pct",
+          "operator": ">=",
+          "limit": 15.0,
+          "units": "%",
+          "value": 20.963172804532572,
+          "margin": 5.963172804532572,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-E1b",
+          "text": "The squeeze shall not exceed 30 % at the tightest stack.",
+          "metric": "squeeze_pct",
+          "operator": "<=",
+          "limit": 30.0,
+          "units": "%",
+          "value": 20.963172804532572,
+          "margin": 9.036827195467428,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-E2",
+          "text": "The peak contact pressure on the cover shall be at least 2 x the 0.3 MPa sealed pressure (0.6 MPa) at every stack (the loosest governs).",
+          "metric": "peak_contact_pressure_MPa",
+          "operator": ">=",
+          "limit": 0.6,
+          "units": "MPa",
+          "value": 2.337993168177478,
+          "margin": 1.737993168177478,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-E3",
+          "text": "The closing force shall not exceed the cover's bolt budget of 12 N per mm of seal length at every stack (the tightest governs).",
+          "metric": "force_per_length_N_per_mm",
+          "operator": "<=",
+          "limit": 12.0,
+          "units": "N/mm",
+          "value": 3.3858733790733377,
+          "margin": 8.614126620926662,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-E4",
+          "text": "The installed ring shall fill no more than 85 % of the groove's cross-section (deformed area over groove area) at every stack.",
+          "metric": "groove_fill_pct",
+          "operator": "<=",
+          "limit": 85.0,
+          "units": "%",
+          "value": 73.65364562071592,
+          "margin": 11.34635437928408,
+          "verdict": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p02_tightest",
+      "parameters": {
+        "cross_section_mm": 3.63,
+        "ring_inner_diameter_mm": 49.8,
+        "groove_depth_mm": 2.74,
+        "groove_width_mm": 4.75,
+        "groove_outer_diameter_mm": 57.06,
+        "groove_walls": 1,
+        "shore_a": 75.0,
+        "bulk_to_shear": 1000.0,
+        "contact_element_size_mm": 0.05,
+        "far_element_size_mm": 0.2,
+        "penalty_factor": 10.0,
+        "scenario": "tightest"
+      },
+      "derived": {
+        "squeeze": 0.24517906336088147,
+        "youngs_modulus_MPa": 7.052854049401784,
+        "groove_fill_hand": 0.7951681182690615
+      },
+      "simulation_status": "completed",
+      "verification_status": "FAIL",
+      "checks": [
+        {
+          "id": "volume_conservation",
+          "description": "|deformed / initial ring volume - 1| (near-incompressible: J about 1)",
+          "kind": "numerical",
+          "value": 0.0004959864831083349,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "contact_force_balance",
+          "description": "|integral of the contact pressure over the cover / cover reaction - 1|",
+          "kind": "numerical",
+          "value": 0.014415536170425236,
+          "tolerance": 0.03,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "equilibrium",
+          "description": "|cover reaction - symmetry-plane reaction| / cover reaction (walls frictionless)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "penalty_penetration",
+          "description": "max overclosure of the ring into the cover / cover travel",
+          "kind": "numerical",
+          "value": 0.006819212327809001,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "groove_fill_hand",
+          "description": "|groove fill from the deformed area - hand fill (volume conserved, ring against the outer wall)| / hand",
+          "kind": "numerical",
+          "value": 0.010507589562384512,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "FAIL"
+        },
+        {
+          "id": "in_groove",
+          "description": "ring beyond the groove walls (mm, inner or outer; penalty overclosure allowed up to the tolerance; validity)",
+          "kind": "validity",
+          "value": 0.009027889999998706,
+          "tolerance": 0.03,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-E1a",
+          "text": "The squeeze shall be at least 15 % at the loosest stack (cross-section and groove depth tolerances).",
+          "metric": "squeeze_pct",
+          "operator": ">=",
+          "limit": 15.0,
+          "units": "%",
+          "value": 24.517906336088146,
+          "margin": 9.517906336088146,
+          "verdict": "PASS (unverified)"
+        },
+        {
+          "id": "REQ-E1b",
+          "text": "The squeeze shall not exceed 30 % at the tightest stack.",
+          "metric": "squeeze_pct",
+          "operator": "<=",
+          "limit": 30.0,
+          "units": "%",
+          "value": 24.517906336088146,
+          "margin": 5.482093663911854,
+          "verdict": "PASS (unverified)"
+        },
+        {
+          "id": "REQ-E2",
+          "text": "The peak contact pressure on the cover shall be at least 2 x the 0.3 MPa sealed pressure (0.6 MPa) at every stack (the loosest governs).",
+          "metric": "peak_contact_pressure_MPa",
+          "operator": ">=",
+          "limit": 0.6,
+          "units": "MPa",
+          "value": 3.524103724645931,
+          "margin": 2.924103724645931,
+          "verdict": "PASS (unverified)"
+        },
+        {
+          "id": "REQ-E3",
+          "text": "The closing force shall not exceed the cover's bolt budget of 12 N per mm of seal length at every stack (the tightest governs).",
+          "metric": "force_per_length_N_per_mm",
+          "operator": "<=",
+          "limit": 12.0,
+          "units": "N/mm",
+          "value": 5.939243186468598,
+          "margin": 6.060756813531402,
+          "verdict": "PASS (unverified)"
+        },
+        {
+          "id": "REQ-E4",
+          "text": "The installed ring shall fill no more than 85 % of the groove's cross-section (deformed area over groove area) at every stack.",
+          "metric": "groove_fill_pct",
+          "operator": "<=",
+          "limit": 85.0,
+          "units": "%",
+          "value": 80.35234184889265,
+          "margin": 4.6476581511073505,
+          "verdict": "PASS (unverified)"
+        }
+      ]
+    }
+  ],
+  "run_id": "20261124-100619_oring_seal_corners",
+  "generated_utc": "2026-11-24T15:38:16+00:00",
+  "verification_status": "FAIL"
+}

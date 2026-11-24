@@ -58,6 +58,19 @@
 #      pressure under 5 %, possibly oscillatory (the corner / mid-side alternation).
 #   P6 About 1.5 / 3.5 / 7 min per run at 0.1 / 0.07 / 0.05 mm.
 # This file: the design verdict at the three corners of the stack (P4).
+#
+# Results (run 20261124-100619_oring_seal_corners, 10:06-10:38): every requirement PASSES at all three corners.
+#   loosest  squeeze 17.2 %, F' 1.887 N/mm, peak 1.498 MPa (REQ-E2: 2.5 x the 0.6 MPa), fill 67.5 %
+#   nominal  squeeze 21.0 %, F' 3.386 N/mm, peak 2.338 MPa, fill 73.7 %
+#   tightest squeeze 24.5 %, F' 5.939 N/mm (REQ-E3: 2.0 x under 12), peak 3.524 MPa, fill 80.4 % (REQ-E4: 4.6 points under)
+# Verification FAIL on one check: groove_fill_hand at the tightest corner, 1.05 % against 1 % (loosest and nominal pass).
+# Why (model form of the hand reference, not the model): the hand fill assumes the section area is unchanged; the outer
+# wall stops the ring's diameter growth and moves its centroid inward, and with the volume conserved (Pappus) the
+# section area grows by about that ratio. The FE fill is the better number; reported, the tolerance not changed.
+#   P1 MISSED (this check; the Hertz case's contact integral 3.08 % against 3 %; the free-ring run crashed, below).
+#   P4 HELD: loosest F' in 1.8-2.4, peak in 1.4-2.0; nominal F' in 3.3-3.4, peak in 2.1-2.4; tightest F' in 5.0-6.5;
+#      fill 80.4 % (written "about 79-80"); REQ-E1 to E4 PASS everywhere.
+#   P6 HELD in the order of magnitude: 10-11 min per point at 0.05 mm with four cases sharing the CPU.
 
 [case]
 name = "oring_seal_corners"

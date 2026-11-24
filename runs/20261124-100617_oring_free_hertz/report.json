@@ -1,0 +1,110 @@
+{
+  "points": [
+    {
+      "label": "p00_baseline",
+      "parameters": {
+        "cross_section_mm": 3.53,
+        "ring_inner_diameter_mm": 50.0,
+        "groove_depth_mm": 3.3535,
+        "groove_width_mm": 4.8,
+        "groove_outer_diameter_mm": 57.06,
+        "groove_walls": 0,
+        "shore_a": 70.0,
+        "bulk_to_shear": 1000.0,
+        "contact_element_size_mm": 0.025,
+        "far_element_size_mm": 0.15,
+        "penalty_factor": 10.0
+      },
+      "derived": {
+        "squeeze": 0.04999999999999997,
+        "youngs_modulus_MPa": 5.520506781857898,
+        "groove_fill_hand": 0.6079946308756563
+      },
+      "simulation_status": "completed",
+      "verification_status": "FAIL",
+      "checks": [
+        {
+          "id": "volume_conservation",
+          "description": "|deformed / initial ring volume - 1| (near-incompressible: J about 1)",
+          "kind": "numerical",
+          "value": 2.8103625203446114e-05,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "contact_force_balance",
+          "description": "|integral of the contact pressure over the cover / cover reaction - 1|",
+          "kind": "numerical",
+          "value": 0.030844473457662724,
+          "tolerance": 0.03,
+          "comparison": "<=",
+          "status": "FAIL"
+        },
+        {
+          "id": "equilibrium",
+          "description": "|cover reaction - symmetry-plane reaction| / cover reaction (walls frictionless)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "penalty_penetration",
+          "description": "max overclosure of the ring into the cover / cover travel",
+          "kind": "numerical",
+          "value": 0.0046571719966828524,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "hertz_peak_pressure",
+          "description": "|peak contact pressure - Hertz p0 at the FE's force| / p0",
+          "kind": "numerical",
+          "value": 0.015771557774383334,
+          "tolerance": 0.1,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "hertz_contact_width",
+          "description": "|contact width - Hertz 2b at the FE's force| / 2b",
+          "kind": "numerical",
+          "value": 0.0033642873799754496,
+          "tolerance": 0.1,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-R1a",
+          "text": "Validation: the closing force at 5 % squeeze shall be at least the lower end of Parker's measured 70 Shore A band for the 0.139 in cross-section (ORD 5700 Fig. 2-6; 0.169 N/mm).",
+          "metric": "force_per_length_N_per_mm",
+          "operator": ">=",
+          "limit": 0.169,
+          "units": "N/mm",
+          "value": 0.3557176307083645,
+          "margin": 0.18671763070836447,
+          "verdict": "PASS (unverified)"
+        },
+        {
+          "id": "REQ-R1b",
+          "text": "Validation: the closing force at 5 % squeeze shall not exceed the upper end of that band (1.113 N/mm).",
+          "metric": "force_per_length_N_per_mm",
+          "operator": "<=",
+          "limit": 1.113,
+          "units": "N/mm",
+          "value": 0.3557176307083645,
+          "margin": 0.7572823692916355,
+          "verdict": "PASS (unverified)"
+        }
+      ]
+    }
+  ],
+  "run_id": "20261124-100617_oring_free_hertz",
+  "generated_utc": "2026-11-24T15:43:38+00:00",
+  "verification_status": "FAIL"
+}
