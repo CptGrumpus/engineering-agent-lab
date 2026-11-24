@@ -1403,6 +1403,116 @@ def oring_seal():
     print("fig oring_seal")
 
 
+def shaft_fillet():
+    """The gearbox shaft's shoulder: fatigue and yield safety against the fillet radius on the drawn step, against
+    the shaft's size when the step is scaled, and the stress along the fillet. Each point's dot is its verdict
+    (hollow: that point's checks failed). Gated on each saved fillet profile reproducing the recorded Kt and Kts."""
+    import matplotlib
+
+    case = "shaft_fillet_radius"
+    L = limits(case)
+    s1, s2 = L["fatigue_safety"][1], L["static_safety"][1]
+    runs = {"radius": "20261124-152828_shaft_fillet_radius", "radius_r1": "20261124-160916_shaft_fillet_radius_r1",
+            "size": "20261124-155125_shaft_fillet_size"}
+    ok = {k: verified(v) for k, v in runs.items()}
+
+    def rec(key, lab):
+        r = point(runs[key], lab)
+        a = np.loadtxt(RUNS / runs[key] / "points" / lab / "fillet_stress.csv", delimiter=",", skiprows=1)
+        m = r["metrics"]
+        assert abs(a[:, 1].max() - m["kt_bending"]) < 1e-9 and abs(a[:, 3].max() - m["kt_torsion"]) < 1e-9
+        return r, a, m, ok[key][lab]
+
+    rad = [rec("radius", f"p0{i}_fillet_radius_mm-{v:g}") for i, v in enumerate([1.4, 1.6, 2.0, 2.5, 3.0, 3.5])]
+    rad += [rec("radius_r1", f"p0{i}_fillet_radius_mm-{v:g}") for i, v in ((1, 3.7), (2, 3.9))]
+    same = rec("radius_r1", "p00_fillet_radius_mm-3.5")[2]["fatigue_safety"]
+    assert abs(same / rad[5][2]["fatigue_safety"] - 1) < 1e-3           # the re-meshed 3.5 mm point agrees
+    siz = [rec("size", lab) for lab in ("p00_d32", "p01_d34", "p02_d35", "p03_d36", "p04_d38")]
+    blues = matplotlib.colormaps[fk.SEQ]
+    c_fat, c_yld = blues(0.92), blues(0.55)
+
+    def safety_panel(ax, x, recs):
+        for metric, lim, col in (("fatigue_safety", s1, c_fat), ("static_safety", s2, c_yld)):
+            y = [m[metric] for _, _, m, _ in recs]
+            ax.plot(x, y, color=col, linewidth=1.8, zorder=3)
+            for xx, yy, (_, _, _, good) in zip(x, y, recs):
+                fk.status_dot(ax, xx, yy, "held" if not good else ("meets" if yy >= lim else "misses"), size=34)
+        for lim, txt in ((s1, f"fatigue needs {s1:g}"), (s2, f"yield needs {s2:g}")):
+            ax.axhline(lim, color=INK2, linewidth=1.0, linestyle=(0, (4, 2)), zorder=1)
+
+    D, d = rad[0][0]["parameters"]["D_mm"], rad[0][0]["parameters"]["d_mm"]
+    h = (D - d) / 2
+    fig, gs = fk.new(FULL, 4.3, 1, 3, wspace=0.45, top=0.80, width_ratios=[1.15, 1.0, 1.0])
+
+    ax = fig.add_subplot(gs[0, 0])
+    fk.style(ax)
+    x = [r["parameters"]["fillet_radius_mm"] for r, *_ in rad]
+    ax.set_xlim(1.0, 4.4)
+    ax.set_ylim(1.0, 3.1)
+    sw = tomllib.loads((REPO / "cases" / f"{case}.toml").read_text(encoding="utf-8"))
+    lo, nom, hi = sw["sweep"]["values"][:3]
+    assert nom == sw["parameters"]["fillet_radius_mm"] and "tolerance band" in sw["case"]["description"]
+    ax.axvspan(lo, hi, color=MODEL, alpha=0.08, linewidth=0, zorder=0.5)
+    fk.label(ax, (lo + hi) / 2, 2.98, f"as drawn,\n{nom:g} +{hi - nom:.1f} / -{nom - lo:.1f}", ha="center", va="top",
+             color=INK2, size=8)
+    ax.axvline(h, color=INK, linewidth=1.6, zorder=2)
+    fk.label(ax, h, 2.98, f"shoulder\nheight {h:g}", dx=-4, ha="right", va="top", color=INK2, size=8)
+    safety_panel(ax, x, rad)
+    fk.label(ax, 2.25, s1, f"fatigue needs {s1:g}", dy=6, color=INK2, size=8)
+    fk.label(ax, 2.95, s2, f"yield needs {s2:g}", dy=-8, va="top", color=INK2, size=8)
+    fk.label(ax, x[-1], rad[-1][2]["fatigue_safety"], f"best that fits:\n{rad[-1][2]['fatigue_safety']:.2f}", dx=-4,
+             dy=-12, ha="right", va="top", color=INK, size=8.5, bold=True)
+    fk.label(ax, x[1], rad[1][2]["static_safety"], "yield", dx=-2, dy=10, ha="right", color=INK, size=8.5)
+    fk.label(ax, x[1], rad[1][2]["fatigue_safety"], "fatigue", dx=-2, dy=-10, ha="right", color=INK, size=8.5)
+    ax.set_xlabel(f"fillet radius, mm (D {D:g} / d {d:g})")
+    ax.set_ylabel("safety factor")
+    fk.panel(ax, "As drawn: no fillet that fits reaches 1.5")
+
+    ax = fig.add_subplot(gs[0, 1])
+    fk.style(ax)
+    x = [r["parameters"]["d_mm"] for r, *_ in siz]
+    ax.set_xlim(31.2, 38.8)
+    ax.set_ylim(1.0, 3.1)
+    safety_panel(ax, x, siz)
+    y = np.array([m["fatigue_safety"] for _, _, m, _ in siz])
+    d_min = float(np.interp(s1, y, x))
+    ax.axvline(d_min, color=INK2, linewidth=0.8, zorder=1)
+    fk.label(ax, d_min, 3.0, f"fatigue reaches {s1:g}\nat d {d_min:.1f}", dx=-4, ha="right", va="top", color=INK2, size=8)
+    r36, _, m36, _ = siz[3]
+    assert r36["parameters"]["d_mm"] == 36           # the panel's title names it
+    fk.label(ax, 36, m36["fatigue_safety"], f"{m36['fatigue_safety']:.2f}", dx=8, dy=-2, color=INK, size=8.5, bold=True)
+    fk.label(ax, 36, m36["static_safety"], f"{m36['static_safety']:.2f}", dx=8, dy=-2, color=INK, size=8.5, bold=True)
+    fk.label(ax, x[0], siz[0][2]["static_safety"], "yield", dx=2, dy=10, va="bottom", color=INK, size=8.5)
+    fk.label(ax, x[0], siz[0][2]["fatigue_safety"], "fatigue", dx=6, dy=-6, va="top", color=INK, size=8.5)
+    ax.set_xlabel("small diameter d, mm (D = 1.25 d)")
+    fk.panel(ax, "Scaled up: a 36 mm seat passes")
+
+    ax = fig.add_subplot(gs[0, 2])
+    fk.style(ax)
+    r16, a, m, _ = rad[1]
+    ax.plot(a[:, 0], a[:, 1], color=c_fat, linewidth=1.8, zorder=3)
+    ax.plot(a[:, 2], a[:, 3], color=c_yld, linewidth=1.8, zorder=3)
+    i = int(np.argmax(a[:, 1]))
+    fk.dots(ax, [a[i, 0]], [a[i, 1]], color=c_fat, size=34)
+    fk.label(ax, a[i, 0], a[i, 1], f"bending, peak Kt {m['kt_bending']:.2f}\nat {a[i, 0]:.0f}°", dx=6, dy=8, va="bottom",
+             color=INK, size=8.5)
+    k62 = int(np.argmin(abs(a[:, 2] - 62)))
+    fk.label(ax, a[k62, 2], a[k62, 3], f"torsion,\npeak Kts {m['kt_torsion']:.2f}", dx=4, dy=10, va="bottom", color=INK, size=8.5)
+    ax.set_xlim(0, 90)
+    ax.set_xticks([0, 30, 60, 90])
+    ax.set_ylim(0, 2.75)
+    ax.set_xlabel("along the fillet, ° (0 = small diameter)")
+    ax.set_ylabel("stress / nominal stress")
+    fk.panel(ax, f"Where it peaks, R{r16['parameters']['fillet_radius_mm']:g} as drawn")
+    thumb(fig, fig.axes[0], "shaft")
+    fk.heading(fig, "The shaft fails as drawn; a 36 mm seat with a 45 mm shoulder passes",
+               f"Gearbox shaft, 42CrMo4: rotating bending {rad[0][0]['parameters']['bending_moment_Nm']:g} N m, steady torque "
+               f"{rad[0][0]['parameters']['torque_Nm']:g} N m · CalculiX and Shigley's method · hollow: point unverified")
+    fig.savefig(fk.OUT / "fig_shaft_fillet.svg", format="svg", dpi=300, metadata={"Date": None, "Creator": None})
+    fk.plt.close(fig)
+    print("fig shaft_fillet")
+
+
 def motor_thermal():
     """The continuous rating from the thermal network, and the temperatures along it."""
     rec = point("20261122-174925_motor_prius_thermal_r1", "p00_nominal")
@@ -1960,7 +2070,7 @@ ALL = {f.__name__: f for f in (cfd_tolerance, cfd_duct, cfd_response, cfd_field,
                                fatigue_sn, fin_response, fin_h_sweep, qc_bump_sweep, cad_sweep, heat_response,
                                qc_liftoff, qc_iso, coldplate_response, pipe_friction, motor_comparison,
                                motor_rotor, pv_nozzle, step_comparison, random_vibration, bracket_uncertainty,
-                               fan_rotor, fan_rotor_campbell, crack_growth, motor_efficiency, motor_airgap, oring_seal)}
+                               fan_rotor, fan_rotor_campbell, crack_growth, motor_efficiency, motor_airgap, oring_seal, shaft_fillet)}
 # not on the site (the earlier model's thermal result): motor_thermal
 
 if __name__ == "__main__":

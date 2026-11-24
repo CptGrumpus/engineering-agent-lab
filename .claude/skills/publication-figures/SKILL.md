@@ -100,3 +100,6 @@ caption copied it.
 - [ ] Readable at 400 px wide
 - [ ] An unverified result is marked as such
 - [ ] Looked at, not just generated
+- [ ] The card thumbnail looked at too: `thumb()` cuts the panel with its title, so a title wider than its axes pulls
+      in the next panel's tick labels (the shaft chart's first cut did; more `wspace` fixed it)
+- [ ] Three panels side by side: axis titles kept short, or they run into each other (the shaft chart's first draft)

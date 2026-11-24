@@ -1263,9 +1263,95 @@ def flag():
            "dimensions in mm, to scale")
 
 
+def shaft():
+    # study 26: the gearbox shaft's shoulder, to scale, with its loads and clamp, and the fillet enlarged
+    from matplotlib.patches import Arc as _Arc
+    c = tomllib.loads((REPO / "cases" / "shaft_fillet_radius.toml").read_text(encoding="utf-8"))
+    p = c["parameters"]
+    req = {r["id"]: r["limit"] for r in c["requirements"]}
+    D, d, r = p["D_mm"], p["d_mm"], p["fillet_radius_mm"]
+    Ls, Ll = p["small_length_mm"], p["large_length_mm"]
+    lo, hi = c["sweep"]["values"][0], c["sweep"]["values"][2]
+    assert lo < r < hi and "tolerance band" in c["case"]["description"]
+    size = tomllib.loads((REPO / "cases" / "shaft_fillet_size.toml").read_text(encoding="utf-8"))
+    fix = next(s for s in size["sweep"]["scenarios"] if s["name"] == "d36")
+    run = REPO / "runs" / "20261124-152828_shaft_fillet_radius" / "points" / "p01_fillet_radius_mm-1.6"
+    pt = json.loads((run / "point.json").read_text(encoding="utf-8"))
+    assert pt["parameters"]["fillet_radius_mm"] == r
+    a = np.loadtxt(run / "fillet_stress.csv", delimiter=",", skiprows=1)
+    assert abs(a[:, 1].max() - pt["metrics"]["kt_bending"]) < 1e-9
+    th_peak = float(a[np.argmax(a[:, 1]), 0])
+    rs, rl, xs = d / 2, D / 2, Ls
+
+    def profile(rad, n=24):
+        t_ = np.radians(np.linspace(0, 90, n))
+        return [(xs - rad + rad * np.sin(q), rs + rad - rad * np.cos(q)) for q in t_]
+
+    fig, ax = new(9.5, (-78, 262), (-62, 50))
+    top = [(0, rs)] + profile(r) + [(xs, rl), (xs + Ll, rl)]
+    outline = top + [(x, -y) for x, y in reversed(top)]
+    poly(ax, outline, fc=FILL, lw=1.3)
+    centre(ax, (-70, 0), (xs + Ll + 8, 0))
+    wall(ax, (xs + Ll, -rl - 6), (xs + Ll, rl + 6), side=-1)
+    text(ax, xs + Ll - 3, rl + 3, f"clamped {Ll:g} mm past the shoulder", ha="right", va="bottom", fs=7.2)
+    # the loads, on the small end: bending as a turning arrow in the plane, the torque as a moment vector on the axis
+    R_ = 21
+    ax.add_patch(_Arc((0, 0), 2 * R_, 2 * R_, theta1=112, theta2=248, color=ACC, lw=1.3, zorder=5))
+    t2 = np.radians(248)
+    ax.annotate("", (R_ * np.cos(t2) + 3.0, R_ * np.sin(t2) - 1.3), (R_ * np.cos(t2), R_ * np.sin(t2)),
+                arrowprops=dict(arrowstyle="-|>", color=ACC, lw=1.3, mutation_scale=10), zorder=5)
+    text(ax, -10, 25, f"rotating bending {p['bending_moment_Nm']:g} N m: the shaft\nturns, so the fillet sees it fully reversed",
+         ha="right", va="bottom", fs=7.5, color=ACC, bold=True)
+    for x0 in (-66, -61):
+        ax.annotate("", (x0 + 30, 0), (x0, 0), arrowprops=dict(arrowstyle="-|>", color=HOT, lw=1.3, mutation_scale=10), zorder=6)
+    text(ax, -50, -7, f"steady torque {p['torque_Nm']:g} N m", fs=7.5, color=HOT, bold=True, va="top")
+    text(ax, -50, -14, "(double arrow: a moment\nabout the shaft's axis)", va="top", fs=6.8)
+    # what's modelled
+    note(ax, (30, rs - 5), (14, 40), "modelled: half the shaft, cut through its axis (a plane of symmetry for\n"
+         "bending, of antisymmetry for torsion); the end loads applied as exact beam stresses", color=ACC)
+    # dimensions
+    dim(ax, (40, -rs), (40, rs), 0, f"Ø{d:g}")
+    dim(ax, (120, -rl), (120, rl), 0, f"Ø{D:g}")
+    dim(ax, (0, -rl - 1), (xs, -rl - 1), -6, f"{Ls:g}")
+    dim(ax, (xs, -rl - 1), (xs + Ll, -rl - 1), -6, f"{Ll:g}")
+    # detail A: the fillet, 6 : 1
+    k, cx, cy, ox, oy = 6.0, xs, rs, 222.0, -6.0
+    T = lambda q: (ox + k * (q[0] - cx), oy + k * (q[1] - cy))
+    ax.add_patch(Circle((xs, rs), 5.5, fc="none", ec=DIMC, lw=0.7, ls=(0, (3, 2)), zorder=6))
+    text(ax, xs - 6.5, rs + 6.5, "A", fs=8, color=INK, bold=True)
+    x_a, x_b, y_a, y_b = cx - 6.5, cx + 5.5, cy - 5.5, rl + 2.6
+    mat = [(x_a, y_a), (x_a, rs)] + profile(r) + [(xs, rl), (x_b, rl), (x_b, y_a)]
+    poly(ax, [T(q) for q in mat], fc=FILL, hatch="////", lw=1.3)
+    for rad in (lo, hi):
+        ax.plot(*zip(*[T(q) for q in profile(rad)]), color=ACC, lw=0.8, ls=(0, (3, 2)), zorder=4)
+    q = np.radians(th_peak)
+    pk = T((xs - r + r * np.sin(q), rs + r - r * np.cos(q)))
+    ax.add_patch(Circle(pk, 1.3, fc=HOT, ec=PLATE, lw=0.6, zorder=7))
+    note(ax, pk, (ox - 42, oy - 51), f"peak stress, {th_peak:.0f}° up the fillet\nfrom the small diameter (the model's result)",
+         color=HOT)
+    cr = T((xs - r, rs + r))
+    note(ax, T((xs - r + r * np.sin(np.radians(55)), rs + r - r * np.cos(np.radians(55)))), (ox - 40, oy + 26),
+         f"fillet R{r:g} +{hi - r:.1f} / -{r - lo:.1f}\n(dashed: R{lo:g} and R{hi:g})", color=ACC)
+    dim(ax, T((xs, rs)), T((xs, rl)), -7 * 1.0, f"{(D - d) / 2:g}", outside=False)
+    text(ax, T((xs, rl))[0] + 2, T((xs, rl))[1] + 6, f"the shoulder: no fillet\nunder it can exceed {(D - d) / 2:g} mm", ha="left",
+         va="bottom", fs=7.0)
+    text(ax, ox + 33, oy - 40, "detail A, 6 : 1", fs=7.5, color=INK, bold=True, box=False)
+    # material, requirements, and the result
+    by = -40
+    text(ax, -70, by, f"42CrMo4, quenched and tempered: Rm {p['ultimate_MPa']:,.0f} MPa, Re {p['yield_MPa']:g} MPa, machined",
+         ha="left", fs=7.3, color=INK, box=False)
+    text(ax, -70, by - 6, f"needs: fatigue safety ≥ {req['REQ-S1']:g} (modified Goodman) · yield safety ≥ {req['REQ-S2']:g} "
+         f"at a {p['overload_factor']:g} × overload", ha="left", fs=7.3, color=INK, box=False)
+    text(ax, -70, by - 12, f"the fix the study found: d {fix['d_mm']:g} / D {fix['D_mm']:g} mm, fillet "
+         f"{fix['fillet_radius_mm'] + (r - lo):.1f} mm, passes across its tolerance (the result)", ha="left", fs=7.3, color=HOT,
+         box=False)
+    finish(fig, "shaft", "Study 26 · gearbox shaft, the shoulder fillet as drawn · side view and detail",
+           "dimensions in mm, to scale")
+
+
 ALL = {f.__name__: f for f in (fea, cantilever_opt, strap, modal, strut, contact, bolted_joint, pv_nozzle, bracket_opt, cad,
                                cfd, thermal, heat, cold_plate, pipe, suspension, baseline, motor, step, random_vib, fan_rotor,
-                               fatigue, strap_proof, bracket_uq, crack, flag, motor_stops, oring)}
+                               fatigue, strap_proof, bracket_uq, crack, flag, motor_stops, oring, shaft)}
 
 if __name__ == "__main__":
     for name in sys.argv[1:] or ALL:

@@ -1,0 +1,71 @@
+  <section class="study" id="shaft">
+    <div class="study-head">
+      <span class="label">Study 26 · Gmsh, CalculiX and Python, machine elements</span>
+      <h2>Gearbox Shaft Shoulder: Fatigue at the Fillet</h2>
+    </div>
+    <h3>The Question</h3>
+    <p>A two-stage gearbox's intermediate shaft steps from a 40 mm shoulder down to a 32 mm seat through a 1.6 mm fillet, toleranced +0.4 / -0.2 mm. The shaft is 42CrMo4, quenched and tempered, machined. It turns under a bending moment of 300 N m, so the fillet sees that bending fully reversed every revolution, and it carries a steady torque of 500 N m. Is the fatigue safety at the fillet at least 1.5? Is the safety against yield at least 2.0 under a 1.5 × overload? And what is the smallest fillet that meets the fatigue limit? The client, the loads and the limits are made up; the material values are catalogue values, and every fatigue relation comes from a published source.</p>
+    <h3>The Answer</h3>
+    <div class="answer">
+      <div class="chips"><span class="chip fail">Fatigue safety 1.19 as drawn, need 1.5</span><span class="chip fail">Yield safety 1.83 at the overload, need 2.0</span><span class="chip fail">No fillet that fits under the shoulder reaches 1.5</span><span class="chip pass">d 36 / D 45 mm passes: 1.62 and 2.52</span><span class="chip warn">Two checks fail, neither on a verdict</span></div>
+      <p><strong>No, the shaft fails as drawn, on both counts.</strong> At the nominal 1.6 mm fillet the fatigue safety is 1.19 against the 1.5 required, and 1.15 at the fillet's lower tolerance. The safety against yield under the 1.5 × overload is 1.83 against 2.0, and 1.77 at the lower tolerance.</p>
+      <p><strong>A bigger fillet isn't enough.</strong> The shoulder is only 4 mm high, so that's the largest fillet that can fit under it. Even at 3.9 mm the fatigue safety only reaches 1.47. Yield would pass from about a 2.4 mm fillet, but fatigue never does, so the fillet question has no answer on this step.</p>
+      <p><strong>What passes: a 36 mm seat with a 45 mm shoulder.</strong> I scaled the whole step with its diameter, keeping the drawing's proportions and its 0.2 mm machining tolerance, with the same loads and steel. The smallest seat that meets both limits is 35.1 mm, so I recommend 36 mm with a 45 mm shoulder and a 1.8 mm fillet. At its lower tolerance that gives a fatigue safety of 1.62 and a yield safety of 2.52. A stronger steel or a rolled fillet are the other ways out, and I didn't assess them.</p>
+      <p><strong>Two checks failed, and neither touches a verdict.</strong> In the mesh study the torsion stress factor crept up by 0.12 % at the finest mesh, just above the 0.11 % noise I measured in the mesh itself. No requirement uses that factor directly, and the margins on the verdicts are 9 to 23 %. And at a 3.7 mm fillet one element came out badly shaped (quality 0.065 against a 0.1 floor), so that point is reported as unverified; its neighbours at 3.5 and 3.9 mm pass.</p>
+    </div>
+    <h3>Why It Matters</h3>
+    <p>Shaft shoulders are where gearbox shafts break, and the fillet radius is usually set by whatever the bearing or the gear's chamfer allows. A handbook chart gives the stress concentration at one radius; it doesn't say whether any radius that fits will do. Here none does, and the useful answer for the client is the step size that passes across the whole tolerance, not a bigger fillet.</p>
+    <h3>The Model</h3>
+    <dl class="spec">
+      <dt>Part</dt><dd>The stepped shaft, 80 mm either side of the shoulder, clamped at the large end. Half the shaft is modelled, cut through its axis: the cut is a plane of symmetry for bending and of antisymmetry for torsion, so one mesh carries both load cases.</dd>
+      <dt>Loads</dt><dd>The bending moment and the torque go on the small end as the exact beam stresses, so the shoulder sees a clean field from the beam theory side.</dd>
+      <dt>Mesh</dt><dd>10-node tetrahedra from Gmsh, 0.14 mm along the fillet; 0.28, 0.2, 0.14 and 0.1 mm for the mesh study.</dd>
+      <dt>Fatigue</dt><dd>The stress concentration factors Kt (bending) and Kts (torsion) come from the model. Shigley's stress-life method (Mechanical Engineering Design, 11th ed., chapter 6) turns them into fatigue factors: endurance limit from the strength, machined surface and size factors, Neuber's notch sensitivity, combined stresses by von Mises, and modified Goodman for the safety factor.</dd>
+      <dt>Material</dt><dd>42CrMo4, quenched and tempered: 1,000 MPa ultimate strength, 750 MPa yield, catalogue values.</dd>
+    </dl>
+    {{CASE}}
+    <h3>How It Works</h3>
+    <p>CalculiX solves the two load cases on one mesh and reads the peak stress along the fillet. Both peaks sit about 17° up the fillet from the small diameter. The same model runs across the fillet radii on the drawn step, then across five scaled steps:</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Step</th><th>Fillet</th><th>Kt</th><th>Fatigue safety</th><th>Yield safety</th></tr></thead>
+        <tbody>
+          <tr><td>As drawn, D 40 / d 32</td><td>1.4 mm (lower tolerance)</td><td>2.23</td><td>1.15</td><td>1.77</td></tr>
+          <tr><td>As drawn</td><td><strong>1.6 mm (nominal)</strong></td><td>2.14</td><td><strong>1.19</strong></td><td><strong>1.83</strong></td></tr>
+          <tr><td>As drawn</td><td>2.0 mm (upper tolerance)</td><td>1.99</td><td>1.26</td><td>1.92</td></tr>
+          <tr><td>As drawn</td><td>3.9 mm (0.1 mm under the shoulder)</td><td>1.64</td><td>1.47</td><td>2.20</td></tr>
+          <tr><td>D 43.75 / d 35</td><td>1.55 mm (lower tolerance)</td><td>2.22</td><td>1.49</td><td>2.32</td></tr>
+          <tr><td><strong>D 45 / d 36</strong></td><td>1.6 mm (lower tolerance)</td><td>2.23</td><td><strong>1.62</strong></td><td><strong>2.52</strong></td></tr>
+          <tr><td>Requirement</td><td></td><td></td><td>≥ 1.5</td><td>≥ 2.0</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <h3>How I Checked It</h3>
+    <ul class="proof">
+      <li><strong>Equilibrium and loading:</strong> the clamp's reaction moment matches the applied moment to 1e-7 or better in both load cases, and the applied end stresses add up to half the moment and half the torque on the half model within about 1e-5.</li>
+      <li><strong>Beam theory</strong> in the small section, away from the fillet: within 0.6 % at every point.</li>
+      <li><strong>Published stress concentration charts:</strong> the model's Kt sits up to 6.7 % above Pilkey's fit of Peterson's charts and its Kts up to 2.7 % below. Recent finite-element work finds Peterson's bending values up to 15 % low, so that's the expected direction, and the verdicts use the model's values. Two published fits of the same charts differ by up to 2.2 % between themselves.</li>
+      <li><strong>Mesh study with a measured noise floor:</strong> four fillet mesh sizes, and five slightly perturbed meshes at 0.14 mm to measure how much a peak nodal stress wanders from mesh to mesh (0.11 to 0.23 %). Kt and both safety factors converge within that noise; Kts crept 0.12 % at the finest mesh, over its 0.11 % floor, the check that failed.</li>
+      <li><strong>The peak away from the cut plane</strong> agrees with the peak on it within 0.8 % for bending and 0.3 % for torsion.</li>
+      <li><strong>The fatigue relations</strong> are unit-tested against the textbook's own worked numbers: notch sensitivity, fatigue factors, surface and size factors and the endurance limit.</li>
+    </ul>
+    <div class="caught">
+      <h3>What I Caught Along the Way</h3>
+      <ul>
+        <li><strong>A sign, not a stress.</strong> The first mesh run failed its end-load check by exactly 200 % in torsion: the applied stresses turn the end the other way and the check compared signed values. Equilibrium passed; the check now compares magnitudes. The run is kept.</li>
+        <li><strong>Mesh noise read as divergence.</strong> Kts and the yield safety moved 0.1 to 0.2 % between fine meshes, and the convergence index called them divergent. A finer mesh didn't settle it; measuring the noise with perturbed meshes did, as in the cracked-plate study.</li>
+        <li><strong>The highest node isn't the peak.</strong> Taking the maximum over every fillet node picked nodes off the cut plane that read 0.9 % high, which bending's variation around the shaft rules out. The peak is read on the plane, and the off-plane maximum became a check.</li>
+        <li><strong>Flat end faces lost 1.8 % of the moment,</strong> the polygon under the circle. Applying the loads on the curved element faces closed it to about 1e-5.</li>
+        <li><strong>A sliver turned the mesh inside out.</strong> At a 3.9 mm fillet the shoulder face left is 0.1 mm wide and 14 curved elements inverted. Gmsh's high-order optimisation untangles them, and a new element-quality check guards it. That check then flagged the 3.7 mm point.</li>
+        <li><strong>The textbook's editions differ.</strong> Shigley's 11th edition lowered the machined surface factor; the 10th would give a fatigue safety of about 1.25 as drawn, still a fail. And one worked value in the solutions manual has an arithmetic slip, caught because every relation was tested against more than one worked example.</li>
+      </ul>
+    </div>
+    <h3>Limits</h3>
+    <ul>
+      <li>Shigley's stress-life method with catalogue material values: no test certificates, no reliability factor (it's the mean endurance limit), no residual stresses, rolling or peening.</li>
+      <li>No fretting or press-fit stress from a gear or bearing seated at the shoulder, and no alternating torque.</li>
+      <li>The stress concentration is elastic, and the yield check applies the fatigue notch factors to the overload, which is conservative.</li>
+      <li>DIN 743, the usual German standard for shafts, is a paid standard and wasn't used.</li>
+      <li>No physical test of this shaft.</li>
+    </ul>
+  </section>

@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Gearbox Shaft Shoulder: Fatigue at the Fillet · Justin Smith</title>
+<meta name="description" content="Fails as drawn: fatigue safety 1.19 against 1.5 and yield safety 1.83 against 2.0, and no fillet that fits under the 4 mm shoulder reaches 1.5. A 36 mm seat with a 45 mm shoulder passes at 1.62 and 2.52.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://cptgrumpus.github.io/engineering-agent-lab/shaft-shoulder-fatigue.html">
+<meta property="og:title" content="Gearbox Shaft Shoulder: Fatigue at the Fillet">
+<meta property="og:description" content="Fails as drawn: fatigue safety 1.19 against 1.5 and yield safety 1.83 against 2.0, and no fillet that fits under the 4 mm shoulder reaches 1.5. A 36 mm seat with a 45 mm shoulder passes at 1.62 and 2.52.">
+<meta property="og:image" content="https://cptgrumpus.github.io/engineering-agent-lab/v2/og_shaft-shoulder-fatigue.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Gearbox shaft shoulder: fatigue at the fillet: result render">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://cptgrumpus.github.io/engineering-agent-lab/shaft-shoulder-fatigue.html">
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#141b24" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3CclipPath id='c'%3E%3Crect width='24' height='24' rx='5'/%3E%3C/clipPath%3E%3Cg clip-path='url(%23c)'%3E%3Crect width='4' height='24' fill='%2330123b'/%3E%3Crect x='4' width='4' height='24' fill='%234686fb'/%3E%3Crect x='8' width='4' height='24' fill='%231ae4b6'/%3E%3Crect x='12' width='4' height='24' fill='%23a2fc3c'/%3E%3Crect x='16' width='4' height='24' fill='%23fb8022'/%3E%3Crect x='20' width='4' height='24' fill='%237a0403'/%3E%3C/g%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="assets/site.css?v=5476f6fe9b">
+</head>
+<body>
+<nav class="topbar" aria-label="Site">
+  <div class="wrap">
+    <a class="brand" href="index.html"><span class="brand-mark" aria-hidden="true"><i style="background:#30123b"></i><i style="background:#4686fb"></i><i style="background:#1ae4b6"></i><i style="background:#a2fc3c"></i><i style="background:#fb8022"></i><i style="background:#7a0403"></i></span>Justin Smith <small>Simulation Portfolio</small></a>
+    <div class="navgroup">
+      <div class="topnav">
+        <a href="index.html#work" aria-current="page">Studies</a>
+        <a href="how-i-work.html">How I Work</a>
+        <a href="grading.html">Grading</a>
+        <a href="in-progress.html">In Progress</a>
+        <a href="requirements.html">Requirements</a>
+      </div>
+      <a class="nav-contact" href="#contact">Contact</a>
+      <details class="menu">
+        <summary>Menu</summary>
+        <div class="menu-panel">
+        <a href="index.html#work" aria-current="page">Studies</a>
+        <a href="how-i-work.html">How I Work</a>
+        <a href="grading.html">Grading</a>
+        <a href="in-progress.html">In Progress</a>
+        <a href="requirements.html">Requirements</a>
+          <a href="#contact">Contact</a>
+        </div>
+      </details>
+    </div>
+  </div>
+</nav>
+
+<main id="top">
+  <div class="wrap">
+    <nav class="crumbs" aria-label="Breadcrumb"><a href="index.html#work">All studies</a><span>/</span><span>Structures and vibration</span></nav>
+    <header class="study-hero">
+      <p class="eyebrow">Study 26 · Gmsh, CalculiX and Python, machine elements</p>
+      <h1>Gearbox Shaft Shoulder: Fatigue at the Fillet</h1>
+      <p class="study-q"><span class="k">The question</span>Does a gearbox shaft&#x27;s shoulder fillet survive rotating bending and a 1.5 × overload, and if not, what step does?</p>
+    </header>
+    <figure class="study-setup"><a class="plate" href="v2/dwg_shaft.webp" title="Open the drawing full size"><img src="v2/dwg_shaft.webp" alt="Side view of the stepped gearbox shaft, 32 mm stepping up to 40 mm, clamped at the large end with rotating bending and a steady torque on the small end, and the 1.6 mm fillet enlarged with its tolerance and the peak-stress point"></a><figcaption><b>The setup.</b> The shaft as drawn, to scale: the loads on the small end, the clamp 80 mm past the shoulder, and the fillet enlarged six times with its tolerance. The peak-stress point is the model's result, as is the fix in the last line.</figcaption></figure>
+    <div class="study-answer">
+      <p class="k">The answer</p>
+      <span class="v v-fix">Fails as drawn; fix found</span>
+      <p class="study-lede">Fails as drawn: fatigue safety 1.19 against 1.5 and yield safety 1.83 against 2.0, and no fillet that fits under the 4 mm shoulder reaches 1.5. A 36 mm seat with a 45 mm shoulder passes at 1.62 and 2.52.</p>
+    </div>
+    <div class="vp" id="vp" role="region" aria-label="Result viewer">
+      <div class="legend">
+        <div class="legend-title" id="lg-title"></div>
+        <div class="legend-body"><div class="swatches" id="lg-sw"></div><div class="ticks" id="lg-ticks"></div></div>
+      </div>
+      <div class="stage"><div class="vp-parts" id="vp-parts" role="group" aria-label="Results on this page" hidden></div><button class="vp-3d" id="vp-3d" type="button" aria-pressed="false" hidden>Rotate in 3D</button>
+      <p class="vp-hint" id="vp-hint" hidden><span class="long">Same surface and colour bands as the render · </span>Drag to turn · <span class="long">scroll or </span>pinch to zoom<span class="long"> · double-click to reset</span></p>
+      <img id="vp-img" src="v2/fig_shaft_fillet.svg" alt="Gearbox shaft shoulder, 42CrMo4, D 40 → d 32 mm, fillet 1.6 +0.4 / -0.2 · rotating bending 300 N m, steady torque 500 N m">
+      <svg class="triad" viewBox="0 0 54 54" aria-hidden="true">
+        <g stroke-width="1.6" fill="none" stroke-linecap="round">
+          <line x1="14" y1="40" x2="44" y2="46" stroke="#ff8f6b"/><line x1="14" y1="40" x2="34" y2="28" stroke="#8fe3a8"/><line x1="14" y1="40" x2="14" y2="8" stroke="#8fb4ff"/>
+        </g>
+        <g font-family="JetBrains Mono, monospace" font-size="8" fill="#edf1f8"><text x="46" y="50">X</text><text x="36" y="27">Y</text><text x="11" y="6">Z</text></g>
+      </svg>
+      </div>
+      <div class="vp-scrub" id="vp-scrub" hidden>
+        <button type="button" class="vp-play" id="vp-play" aria-label="Play the analysis step by step">▶</button>
+        <input type="range" id="vp-range" min="0" max="0" step="1" value="0" aria-label="Load step">
+        <output id="vp-step" for="vp-range"></output>
+      </div>
+      <div class="status" id="vp-status" aria-live="polite"></div>
+    </div>
+
+    <div class="study-layout">
+      <article class="study-main">
+
+    <h2 id="the-question">The Question</h2>
+    <p>A two-stage gearbox's intermediate shaft steps from a 40 mm shoulder down to a 32 mm seat through a 1.6 mm fillet, toleranced +0.4 / -0.2 mm. The shaft is 42CrMo4, quenched and tempered, machined. It turns under a bending moment of 300 N m, so the fillet sees that bending fully reversed every revolution, and it carries a steady torque of 500 N m. Is the fatigue safety at the fillet at least 1.5? Is the safety against yield at least 2.0 under a 1.5 × overload? And what is the smallest fillet that meets the fatigue limit? The client, the loads and the limits are made up; the material values are catalogue values, and every fatigue relation comes from a published source.</p>
+    <h2 id="the-answer">The Answer</h2>
+    <div class="answer">
+      <div class="chips"><span class="chip fail">Fatigue safety 1.19 as drawn, need 1.5</span><span class="chip fail">Yield safety 1.83 at the overload, need 2.0</span><span class="chip fail">No fillet that fits under the shoulder reaches 1.5</span><span class="chip pass">d 36 / D 45 mm passes: 1.62 and 2.52</span><span class="chip warn">Two checks fail, neither on a verdict</span></div>
+      <p><strong>No, the shaft fails as drawn, on both counts.</strong> At the nominal 1.6 mm fillet the fatigue safety is 1.19 against the 1.5 required, and 1.15 at the fillet's lower tolerance. The safety against yield under the 1.5 × overload is 1.83 against 2.0, and 1.77 at the lower tolerance.</p>
+      <p><strong>A bigger fillet isn't enough.</strong> The shoulder is only 4 mm high, so that's the largest fillet that can fit under it. Even at 3.9 mm the fatigue safety only reaches 1.47. Yield would pass from about a 2.4 mm fillet, but fatigue never does, so the fillet question has no answer on this step.</p>
+      <p><strong>What passes: a 36 mm seat with a 45 mm shoulder.</strong> I scaled the whole step with its diameter, keeping the drawing's proportions and its 0.2 mm machining tolerance, with the same loads and steel. The smallest seat that meets both limits is 35.1 mm, so I recommend 36 mm with a 45 mm shoulder and a 1.8 mm fillet. At its lower tolerance that gives a fatigue safety of 1.62 and a yield safety of 2.52. A stronger steel or a rolled fillet are the other ways out, and I didn't assess them.</p>
+      <p><strong>Two checks failed, and neither touches a verdict.</strong> In the mesh study the torsion stress factor crept up by 0.12 % at the finest mesh, just above the 0.11 % noise I measured in the mesh itself. No requirement uses that factor directly, and the margins on the verdicts are 9 to 23 %. And at a 3.7 mm fillet one element came out badly shaped (quality 0.065 against a 0.1 floor), so that point is reported as unverified; its neighbours at 3.5 and 3.9 mm pass.</p>
+    </div>
+    <h2 id="the-model">The Model</h2>
+    <dl class="spec">
+      <dt>Part</dt><dd>The stepped shaft, 80 mm either side of the shoulder, clamped at the large end. Half the shaft is modelled, cut through its axis: the cut is a plane of symmetry for bending and of antisymmetry for torsion, so one mesh carries both load cases.</dd>
+      <dt>Loads</dt><dd>The bending moment and the torque go on the small end as the exact beam stresses, so the shoulder sees a clean field from the beam theory side.</dd>
+      <dt>Mesh</dt><dd>10-node tetrahedra from Gmsh, 0.14 mm along the fillet; 0.28, 0.2, 0.14 and 0.1 mm for the mesh study.</dd>
+      <dt>Fatigue</dt><dd>The stress concentration factors Kt (bending) and Kts (torsion) come from the model. Shigley's stress-life method (Mechanical Engineering Design, 11th ed., chapter 6) turns them into fatigue factors: endurance limit from the strength, machined surface and size factors, Neuber's notch sensitivity, combined stresses by von Mises, and modified Goodman for the safety factor.</dd>
+      <dt>Material</dt><dd>42CrMo4, quenched and tempered: 1,000 MPa ultimate strength, 750 MPa yield, catalogue values.</dd>
+    </dl>
+    <details class="record"><summary>The case file: recorded assumptions, limits and inputs</summary><div class="record-body"><p>This is the study's own record, written before the run and saved with it, in the shorthand of the case file.</p><p class="case"><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/cases/shaft_fillet_radius.toml">cases/shaft_fillet_radius.toml ↗</a></p><p>Gearbox intermediate shaft, 42CrMo4 Q&amp;T, shoulder D 40 -&gt; d 32 mm, rotating bending 300 N m and steady torque 500 N m: fillet radius 1.4 / 1.6 / 2.0 mm (the tolerance band) and 2.5 to 3.9 mm (below the 4 mm shoulder height) for REQ-S3, the smallest radius meeting REQ-S1; fillet elements 0.14 mm.</p><h3>Assumptions, and How Each Is Checked</h3><ul><li>Linear elastic steel (E 210 GPa, nu 0.3); the stress concentration factors are elastic, from a half model (the profile revolved by 180 degrees) with symmetry for bending and antisymmetry for torsion.</li><li>Rotating bending is fully reversed at the fillet; the torque is steady (no torsional alternation); no axial load.</li><li>Shigley&#x27;s endurance limit: machined surface (ka, 11th edition), size factor from d, kc = 1 with von Mises combined stresses, no temperature or reliability factor (kd = ke = 1: the mean endurance limit).</li><li>Notch sensitivity from Neuber&#x27;s constant for steels (Shigley&#x27;s curve fits, eqs 6-35 and 6-36), at the fillet radius.</li><li>The yield check applies Kf and Kfs to the 1.5 x overload stresses (Shigley chapter 7&#x27;s conservative form); the overload scales both the moment and the torque.</li><li>Material values are catalogue values (Rm 1000, Re 750 MPa), not test certificates.</li></ul><h3>Limits</h3><ul><li>No DIN 743 assessment (a paid standard); Shigley&#x27;s method is the agreed basis.</li><li>No residual stresses, surface treatment (rolling, shot peening) or corrosion; no fretting or press-fit stress from a hub or bearing seated at the shoulder.</li><li>The Kt fits come from Peterson&#x27;s charts (photoelastic data), which recent finite-element work finds low in bending; the FE value is used for the verdicts and the fit is a cross-check.</li><li>Neuber&#x27;s constant and the Marin factors are empirical curve fits with scatter; the 10th-edition surface factor gives a 6.5 % higher endurance limit (reported).</li><li>No physical test data.</li></ul><h3>Inputs</h3><div class="table-wrap"><table><thead><tr><th>Input</th><th>Value</th></tr></thead><tbody><tr><td>D_mm</td><td>40</td></tr><tr><td>d_mm</td><td>32</td></tr><tr><td>fillet_radius_mm</td><td>1.6</td></tr><tr><td>small_length_mm</td><td>80</td></tr><tr><td>large_length_mm</td><td>80</td></tr><tr><td>bending_moment_Nm</td><td>300</td></tr><tr><td>torque_Nm</td><td>500</td></tr><tr><td>youngs_modulus_MPa</td><td>210000</td></tr><tr><td>poisson_ratio</td><td>0.3</td></tr><tr><td>ultimate_MPa</td><td>1000</td></tr><tr><td>yield_MPa</td><td>750</td></tr><tr><td>overload_factor</td><td>1.5</td></tr><tr><td>element_size_fillet_mm</td><td>0.14</td></tr><tr><td>element_size_far_mm</td><td>4</td></tr><tr><td>refine_radius_mm</td><td>0.5</td></tr><tr><td>refine_halfwidth_mm</td><td>3</td></tr><tr><td>mesh_growth</td><td>0.25</td></tr></tbody></table></div><p class="case"><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/cases/shaft_fillet_size.toml">cases/shaft_fillet_size.toml ↗</a></p><p>Sizing the step for the client: gearbox intermediate shaft, 42CrMo4 Q&amp;T, rotating bending 300 N m and steady torque 500 N m; the step scaled with the small diameter d (D = 1.25 d) and the fillet at its lower tolerance (0.05 d - 0.2 mm), d 32 / 34 / 35 / 36 / 38 mm; the smallest d meeting REQ-S1 and REQ-S2.</p><h3>Assumptions, and How Each Is Checked</h3><ul><li>Linear elastic steel (E 210 GPa, nu 0.3); the stress concentration factors are elastic, from a half model (the profile revolved by 180 degrees) with symmetry for bending and antisymmetry for torsion.</li><li>Rotating bending is fully reversed at the fillet; the torque is steady (no torsional alternation); no axial load.</li><li>Shigley&#x27;s endurance limit: machined surface (ka, 11th edition), size factor from d, kc = 1 with von Mises combined stresses, no temperature or reliability factor (kd = ke = 1: the mean endurance limit).</li><li>Notch sensitivity from Neuber&#x27;s constant for steels (Shigley&#x27;s curve fits, eqs 6-35 and 6-36), at the fillet radius.</li><li>The yield check applies Kf and Kfs to the 1.5 x overload stresses (Shigley chapter 7&#x27;s conservative form); the overload scales both the moment and the torque.</li><li>Material values are catalogue values (Rm 1000, Re 750 MPa), not test certificates.</li></ul><h3>Limits</h3><ul><li>No DIN 743 assessment (a paid standard); Shigley&#x27;s method is the agreed basis.</li><li>No residual stresses, surface treatment (rolling, shot peening) or corrosion; no fretting or press-fit stress from a hub or bearing seated at the shoulder.</li><li>The Kt fits come from Peterson&#x27;s charts (photoelastic data), which recent finite-element work finds low in bending; the FE value is used for the verdicts and the fit is a cross-check.</li><li>Neuber&#x27;s constant and the Marin factors are empirical curve fits with scatter; the 10th-edition surface factor gives a 6.5 % higher endurance limit (reported).</li><li>No physical test data.</li></ul><h3>Inputs</h3><div class="table-wrap"><table><thead><tr><th>Input</th><th>Value</th></tr></thead><tbody><tr><td>D_mm</td><td>40</td></tr><tr><td>d_mm</td><td>32</td></tr><tr><td>fillet_radius_mm</td><td>1.6</td></tr><tr><td>small_length_mm</td><td>80</td></tr><tr><td>large_length_mm</td><td>80</td></tr><tr><td>bending_moment_Nm</td><td>300</td></tr><tr><td>torque_Nm</td><td>500</td></tr><tr><td>youngs_modulus_MPa</td><td>210000</td></tr><tr><td>poisson_ratio</td><td>0.3</td></tr><tr><td>ultimate_MPa</td><td>1000</td></tr><tr><td>yield_MPa</td><td>750</td></tr><tr><td>overload_factor</td><td>1.5</td></tr><tr><td>element_size_fillet_mm</td><td>0.14</td></tr><tr><td>element_size_far_mm</td><td>4</td></tr><tr><td>refine_radius_mm</td><td>0.5</td></tr><tr><td>refine_halfwidth_mm</td><td>3</td></tr><tr><td>mesh_growth</td><td>0.25</td></tr></tbody></table></div></div></details>
+    <h2 id="why-it-matters">Why It Matters</h2>
+    <p>Shaft shoulders are where gearbox shafts break, and the fillet radius is usually set by whatever the bearing or the gear's chamfer allows. A handbook chart gives the stress concentration at one radius; it doesn't say whether any radius that fits will do. Here none does, and the useful answer for the client is the step size that passes across the whole tolerance, not a bigger fillet.</p>
+    <h2 id="how-it-works">How It Works</h2>
+    <p>CalculiX solves the two load cases on one mesh and reads the peak stress along the fillet. Both peaks sit about 17° up the fillet from the small diameter. The same model runs across the fillet radii on the drawn step, then across five scaled steps:</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Step</th><th>Fillet</th><th>Kt</th><th>Fatigue safety</th><th>Yield safety</th></tr></thead>
+        <tbody>
+          <tr><td>As drawn, D 40 / d 32</td><td>1.4 mm (lower tolerance)</td><td>2.23</td><td>1.15</td><td>1.77</td></tr>
+          <tr><td>As drawn</td><td><strong>1.6 mm (nominal)</strong></td><td>2.14</td><td><strong>1.19</strong></td><td><strong>1.83</strong></td></tr>
+          <tr><td>As drawn</td><td>2.0 mm (upper tolerance)</td><td>1.99</td><td>1.26</td><td>1.92</td></tr>
+          <tr><td>As drawn</td><td>3.9 mm (0.1 mm under the shoulder)</td><td>1.64</td><td>1.47</td><td>2.20</td></tr>
+          <tr><td>D 43.75 / d 35</td><td>1.55 mm (lower tolerance)</td><td>2.22</td><td>1.49</td><td>2.32</td></tr>
+          <tr><td><strong>D 45 / d 36</strong></td><td>1.6 mm (lower tolerance)</td><td>2.23</td><td><strong>1.62</strong></td><td><strong>2.52</strong></td></tr>
+          <tr><td>Requirement</td><td></td><td></td><td>≥ 1.5</td><td>≥ 2.0</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <h2 id="how-i-checked-it">How I Checked It</h2>
+    <ul class="proof">
+      <li><strong>Equilibrium and loading:</strong> the clamp's reaction moment matches the applied moment to 1e-7 or better in both load cases, and the applied end stresses add up to half the moment and half the torque on the half model within about 1e-5.</li>
+      <li><strong>Beam theory</strong> in the small section, away from the fillet: within 0.6 % at every point.</li>
+      <li><strong>Published stress concentration charts:</strong> the model's Kt sits up to 6.7 % above Pilkey's fit of Peterson's charts and its Kts up to 2.7 % below. Recent finite-element work finds Peterson's bending values up to 15 % low, so that's the expected direction, and the verdicts use the model's values. Two published fits of the same charts differ by up to 2.2 % between themselves.</li>
+      <li><strong>Mesh study with a measured noise floor:</strong> four fillet mesh sizes, and five slightly perturbed meshes at 0.14 mm to measure how much a peak nodal stress wanders from mesh to mesh (0.11 to 0.23 %). Kt and both safety factors converge within that noise; Kts crept 0.12 % at the finest mesh, over its 0.11 % floor, the check that failed.</li>
+      <li><strong>The peak away from the cut plane</strong> agrees with the peak on it within 0.8 % for bending and 0.3 % for torsion.</li>
+      <li><strong>The fatigue relations</strong> are unit-tested against the textbook's own worked numbers: notch sensitivity, fatigue factors, surface and size factors and the endurance limit.</li>
+    </ul>
+    <div class="caught">
+      <h2 id="what-i-caught-along-the-way">What I Caught Along the Way</h2>
+      <ul>
+        <li><strong>A sign, not a stress.</strong> The first mesh run failed its end-load check by exactly 200 % in torsion: the applied stresses turn the end the other way and the check compared signed values. Equilibrium passed; the check now compares magnitudes. The run is kept.</li>
+        <li><strong>Mesh noise read as divergence.</strong> Kts and the yield safety moved 0.1 to 0.2 % between fine meshes, and the convergence index called them divergent. A finer mesh didn't settle it; measuring the noise with perturbed meshes did, as in the cracked-plate study.</li>
+        <li><strong>The highest node isn't the peak.</strong> Taking the maximum over every fillet node picked nodes off the cut plane that read 0.9 % high, which bending's variation around the shaft rules out. The peak is read on the plane, and the off-plane maximum became a check.</li>
+        <li><strong>Flat end faces lost 1.8 % of the moment,</strong> the polygon under the circle. Applying the loads on the curved element faces closed it to about 1e-5.</li>
+        <li><strong>A sliver turned the mesh inside out.</strong> At a 3.9 mm fillet the shoulder face left is 0.1 mm wide and 14 curved elements inverted. Gmsh's high-order optimisation untangles them, and a new element-quality check guards it. That check then flagged the 3.7 mm point.</li>
+        <li><strong>The textbook's editions differ.</strong> Shigley's 11th edition lowered the machined surface factor; the 10th would give a fatigue safety of about 1.25 as drawn, still a fail. And one worked value in the solutions manual has an arithmetic slip, caught because every relation was tested against more than one worked example.</li>
+      </ul>
+    </div>
+    <h2 id="limits">Limits</h2>
+    <ul>
+      <li>Shigley's stress-life method with catalogue material values: no test certificates, no reliability factor (it's the mean endurance limit), no residual stresses, rolling or peening.</li>
+      <li>No fretting or press-fit stress from a gear or bearing seated at the shoulder, and no alternating torque.</li>
+      <li>The stress concentration is elastic, and the yield check applies the fatigue notch factors to the overload, which is conservative.</li>
+      <li>DIN 743, the usual German standard for shafts, is a paid standard and wasn't used.</li>
+      <li>No physical test of this shaft.</li>
+    </ul>
+    <h2 id="evidence">Evidence</h2>
+    <div class="side-card"><ul class="ev-list"><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/portfolio/26-shaft-shoulder-fatigue.md">Full write-up on GitHub</a></li></ul><p class="label">Run reports, with every check and the saved inputs</p><ul class="ev-list ev-runs"><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261124-151223_shaft_fillet_mesh/report.md">shaft_fillet_mesh</a></li><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261124-152823_shaft_fillet_mesh_r1/report.md">shaft_fillet_mesh_r1</a></li><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261124-152828_shaft_fillet_radius/report.md">shaft_fillet_radius</a></li><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261124-154527_shaft_fillet_noise/report.md">shaft_fillet_noise</a></li><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261124-155125_shaft_fillet_size/report.md">shaft_fillet_size</a></li><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261124-160912_shaft_fillet_mesh_r2/report.md">shaft_fillet_mesh_r2</a></li><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261124-160916_shaft_fillet_radius_r1/report.md">shaft_fillet_radius_r1</a></li></ul></div>
+      </article>
+      <aside class="study-side" aria-label="Summary of this study">
+        <div class="side-card"><h2>At a Glance</h2><dl><div><dt>Study</dt><dd>26</dd></div><div><dt>Discipline</dt><dd>Structures and vibration</dd></div><div><dt>Tools</dt><dd>Gmsh · CalculiX · Python</dd></div><div><dt>Verdict</dt><dd><span class="v v-fix">Fails as drawn; fix found</span></dd></div></dl></div><div class="side-card"><h2>Requirements</h2><ul class="side-reqs"><li><span class="r-what">Fatigue safety at the fillet, as drawn (fillet 1.4 to 2.0 mm)</span><span class="r-num">≥ 1.5 · 1.15 to 1.26; 1.19 at the nominal 1.6 mm</span><span class="chip fail">Not met</span></li><li><span class="r-what">Yield safety at a 1.5 × overload, as drawn</span><span class="r-num">≥ 2.0 · 1.77 to 1.92; 1.83 at the nominal</span><span class="chip fail">Not met</span></li><li><span class="r-what">Smallest fillet meeting the fatigue limit</span><span class="r-num">under the 4 mm shoulder · none: 1.47 at 3.9 mm</span><span class="chip fail">Not met</span></li><li><span class="r-what">The fix: d 36 / D 45 mm, fillet 1.8 mm, at its lower tolerance</span><span class="r-num">≥ 1.5 and ≥ 2.0 · fatigue 1.62, yield 2.52</span><span class="chip pass">Met</span></li></ul></div><div class="side-card side-toc"><h2>On This Page</h2><ul class="toc"><li><a href="#the-question">The Question</a></li><li><a href="#the-answer">The Answer</a></li><li><a href="#the-model">The Model</a></li><li><a href="#why-it-matters">Why It Matters</a></li><li><a href="#how-it-works">How It Works</a></li><li><a href="#how-i-checked-it">How I Checked It</a></li><li><a href="#what-i-caught-along-the-way">What I Caught Along the Way</a></li><li><a href="#limits">Limits</a></li><li><a href="#evidence">Evidence</a></li></ul></div>
+      </aside>
+    </div>
+    <nav class="pager" aria-label="More studies"><a class="prev" href="fan-rotor.html"><small>← Previous study</small><b>Fan Rotor: Critical Speeds and Unbalance Response</b></a><a class="next" href="o-ring-face-seal.html"><small>Next study →</small><b>O-Ring Face Seal Across Its Tolerance Stack</b></a></nav>
+  </div>
+
+</main>
+
+<footer class="site-foot">
+  <div class="wrap">
+    <section class="contact" id="contact" aria-labelledby="contact-title">
+      <div class="band-head">
+        <p class="eyebrow">Contact</p>
+        <h2 id="contact-title">Get in Touch</h2>
+        <p class="contact-name"><b>Justin Smith</b>, mechanical engineer (MS), with a background in automotive.</p>
+        <p>If something here is close to what you need, or you have a model that needs building or checking, send me a note and tell me about it. I'm available for remote contract work.</p>
+      </div>
+      <div class="contact-actions">
+        <!-- the address is stored reversed and base64-encoded so scrapers reading the page or the repository don't pick it up; site.js decodes it -->
+        <a class="cta" id="contact-mail" href="#contact" data-m="bW9jLmxpYW1nQDg1MW5pdHN1amh0aW1z">Email me</a>
+        <button class="cta-2" id="contact-show" type="button">Show the address</button>
+        <span class="contact-addr" id="contact-addr" hidden></span>
+      </div>
+    </section>
+    <div class="foot-nav">
+      <a href="index.html#work">All studies</a>
+      <a href="requirements.html">Every requirement</a>
+      <a href="how-i-work.html">How I work</a>
+      <a href="grading.html">Grading tasks</a>
+      <a href="in-progress.html">In progress</a>
+      <a href="https://github.com/CptGrumpus/engineering-agent-lab">Source on GitHub ↗</a>
+      <span>Open-source tools throughout: CalculiX, OpenFOAM, Gmsh, CadQuery, OpenModelica, Blender.</span>
+    </div>
+  </div>
+</footer>
+<script>window.VP = [{"id": "shaft", "study": "shaft", "kind": "figure", "img": "v2/fig_shaft_fillet.svg", "model": "Gearbox shaft shoulder, 42CrMo4, D 40 → d 32 mm, fillet 1.6 +0.4 / -0.2 · rotating bending 300 N m, steady torque 500 N m", "lines": ["CalculiX, half the shaft in 10-node tetrahedra, 0.14 mm on the fillet · Kt and Kts from the model, fatigue by Shigley's method", "Left: safety against fillet radius as drawn. Middle: the step scaled up. Right: stress along the drawn fillet", "As drawn 1.19 (need 1.5), yield 1.83 (need 2.0) · best fillet that fits 1.47 · d 36 / D 45: 1.62 and 2.52 · hollow dot: unverified"], "check": "", "card": "shaft"}];</script>
+<script src="assets/viewer.js?v=5476f6fe9b"></script>
+<script src="assets/site.js?v=5476f6fe9b"></script>
+</body>
+</html>

@@ -71,7 +71,8 @@ The home cards follow the same rule: each card's picture is the study's setup dr
 under it. The build cuts `v2/tc_<study>.webp` from the drawing itself (title block off, trimmed, fitted to 16:10), so
 a redrawn part updates its card. Hover shows the result: the animation if `loops.json` has one, otherwise the result
 chart. When a drawing carries a table or a second plot beside the part, add a `CARD_CROP` entry and look at the card:
-a crop through a block of notes leaves half-words at the edge. The setup-first rule was settled for the pages on
+a crop through a block of notes leaves half-words at the edge. A long part (the shaft is 3.5 times wider than
+tall) shrinks to a strip on the card: crop to the part itself and leave the detail views and text blocks for the page. The setup-first rule was settled for the pages on
 2026-11-23; applying it to the cards was asked again a day later, so apply it to every new place a study is shown
 rather than asking.
 
