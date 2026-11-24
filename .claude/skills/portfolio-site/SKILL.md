@@ -102,6 +102,13 @@ text was updated); its `CARDS` blurb; its In progress card; and the run IDs its 
 discrepancy gets its own `REQS` status that doesn't count as met (the motor's rated power, which rides on the
 18 % flux, is "provisional").
 
+A study closed with open items (the motor: no client to answer its last questions) isn't in progress any more. Give
+its card a verdict that says so (`"closed"`: "Closed, with client questions"), take it off the In progress page, drop
+any "where it stands day to day" link to it, and reword limits that said data "isn't used" if the closing step used it.
+
+Don't write "today" or "now" into page copy: the site is static, so "Finished today" on the In progress page was a
+day stale before anyone noticed. Say "recently" or give the date.
+
 ## Editing the source safely
 
 - Write patch scripts with the Write tool, not a Git Bash heredoc: the heredoc turns `\\n` into a real newline

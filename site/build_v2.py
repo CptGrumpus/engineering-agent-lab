@@ -196,13 +196,13 @@ CARDS = [
     ("cfd", "05", "fluid", "CFD", "Coolant channel pressure budget", "Fails. It needs 33.4 Pa against a 30 Pa budget, and no gap size fixes it.", "fail", "OpenFOAM"),
     ("thermal", "06", "fluid", "Heat transfer", "Heat-sink fin temperature", "The tip sits at 73.2 °C, and still 65.9 °C with every input at its worst.", "pass", "CalculiX"),
     ("heat", "11", "fluid", "Heat transfer", "Cold-plate channel heat transfer", "Passes, verified: the wall peaks at 44.03 °C against 45, and the coolant warms 7.2 K. A finer mesh study was needed to settle the peak.", "pass", "OpenFOAM"),
-    ("motor", "20", "em", "In progress · Electric machines", "Traction motor, modelled from client data and checked against test", "The 2004 Prius motor, modelled from the drawings, parts list and measured magnet material, with nothing tuned. Against the laboratory's test it reads about 18 % high on both back-EMF and torque, so the model carries too much magnet flux. Every client input matches the hardware, a second solver agrees to 0.1 %, and steel and end effects are ruled out; the leading explanation is how fully the magnets are magnetised. Efficiency reads 4.4 points above the test, mostly losses a motor-only model leaves out, and the top-speed voltage exceeds the supply, as the test confirms.", "wip", "Pyleecan · FEMM · ElmerFEM · CalculiX"),
+    ("motor", "20", "em", "Electric machines", "Traction motor, modelled from client data and checked against test", "The 2004 Prius motor, modelled from the drawings, parts list and measured magnet material, with nothing tuned. Against the laboratory's test it reads about 18 % high on both back-EMF and torque. I traced that to the magnets: the measured air-gap field is the model's scaled down by 14.8 % with the same shape, and one test on one magnet would confirm it. Rated torque and power pass; the rotor bridges at overspeed and the top-speed voltage fail.", "closed", "Pyleecan · FEMM · ElmerFEM · CalculiX"),
     ("suspension", "07", "vehicle", "Vehicle dynamics", "Quarter car, ride and road holding", "600 to 1000 N·s/m works at 18 km/h. At 36 km/h the wheel leaves the road.", "mixed", "SciPy · OpenModelica"),
     ("cad", "08", "geom", "Geometry", "Parametric mounting plate", "Only the 9 mm (M8 clearance) hole meets both the weight and edge-distance rules.", "pass", "CadQuery"),
     ("baseline", "09", "workflow", "Workflow", "Mass-spring-damper baseline", "All 72 checks pass, and the two tools agree to a few parts per million.", "pass", "SciPy · OpenModelica"),
 ]
 VERDICT = {"pass": "Passes", "fail": "Fails", "mixed": "Depends on speed", "held": "One result on hold",
-           "wip": "In progress", "fix": "Fails as drawn; fix found", "line": "Depends on one judgement call", "most": "Passes, with one miss"}
+           "wip": "In progress", "closed": "Closed, with client questions", "fix": "Fails as drawn; fix found", "line": "Depends on one judgement call", "most": "Passes, with one miss"}
 
 # studies of the same part, shown as one card and one panel; each study keeps its own write-up, viewer
 # result, requirements rows and evidence, and links to a study land on its part of the panel
@@ -726,8 +726,7 @@ pages = [home_page(facts)] + [study_page(c[0]) for c in GALLERY] + [
               "grading", {"{{GRADER}}": grader_body, "{{TASK_COUNT_WORD}}": TASK_WORDS[len(gdata)]},
               scripts=f"<script>\n{grader_js}\n</script>"),
     text_page("in-progress.html", "progress.html", "In progress", "Studies in progress",
-              "The traction motor against its test data and a flexible flag behind a cylinder (fluid-structure "
-              "interaction).", "in-progress", {}),
+              "A flexible flag behind a cylinder (fluid-structure interaction).", "in-progress", {}),
     reqs_page(),
 ]
 

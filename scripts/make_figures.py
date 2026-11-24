@@ -1272,6 +1272,55 @@ def motor_efficiency():
     print("fig motor_efficiency")
 
 
+def motor_airgap():
+    """ORNL's measured no-load air-gap flux density (TM-2004/137 Fig. 13) against the client-data model, by stator slot,
+    from scripts/motor_fig13.py's output. The slot-1 angle isn't stored relative to the saved profile, so it is
+    recovered here and gated: the profile sampled at the slots must give the study's 13 model values back."""
+    d = json.loads((REPO / "validation" / "motor_ornl" / "fig13" / "fig13_comparison.json").read_text(encoding="utf-8"))
+    g, s = np.array(d["ornl_2004_gauss"]), np.array(d["model_gauss"])
+    prof = d["model_profile_one_pole_pair"]
+    pa, pb = np.array(prof["angle_deg"]), np.array(prof["br_T"]) * 1e4
+    period, pitch = pa[-1], 360.0 / 48
+    f = lambda t: np.interp(np.mod(t, period), pa, pb)  # noqa: E731
+    cand = np.linspace(0, period, 7201)
+    z = float(cand[int(np.argmin([np.abs(f(c + pitch * np.arange(13)) - s).max() for c in cand]))])
+    err = np.abs(f(z + pitch * np.arange(13)) - s).max() / d["plateau_model_gauss"]
+    assert err < 0.01, f"the saved profile doesn't reproduce the study's slot values ({err:.3%})"
+    ratio = d["plateau_ratio_model_over_ornl"]
+    assert abs(d["plateau_model_gauss"] / d["plateau_ornl_gauss"] - ratio) < 1e-9
+    plateau_slots = [2, 3, 4, 8, 9, 10]          # 0-based: the level part of each half, slots 3-5 and 9-11
+    assert max(abs(d["normalised_difference_by_slot"][i]) for i in plateau_slots) < 0.035
+    slot = np.linspace(1, 13, 1201)
+    ang = z + (slot - 1) * pitch
+    fig, gs = fk.new(FULL, 4.0, 1, 1, top=0.80)
+    ax = fig.add_subplot(gs[0, 0])
+    fk.style(ax)
+    ax.axhline(0, color=GRID, linewidth=0.8, zorder=1)
+    k = np.arange(1, 14)
+    ax.plot(slot, f(ang) / 1e4, color=MODEL, linewidth=0.8, alpha=0.28, zorder=2)
+    ax.plot(k, s / 1e4, color=MODEL, linewidth=1.8, zorder=3)
+    ax.scatter(k, s / 1e4, s=34, facecolor=SURFACE, edgecolor=MODEL, linewidth=1.5, zorder=4)
+    ax.plot(k, s / ratio / 1e4, color=MODEL, linewidth=1.3, linestyle=(0, (4, 2.5)), zorder=3)
+    ax.scatter(k, g / 1e4, marker="s", s=46, color=REF, edgecolor=SURFACE, linewidth=1.0, zorder=5)
+    fk.label(ax, 9.5, s[8] / 1e4, "the model", dy=11, ha="center", color=INK, size=9, bold=True)
+    fk.label(ax, 9.5, g[8] / 1e4, f"the test (squares), and the\nmodel ÷ {ratio:.3f} (dashed)", dy=-20, ha="center", va="top",
+             color=INK, size=9, bold=True)
+    fk.label(ax, 13.2, -0.22, f"where the field is level:\nmodel {d['plateau_model_gauss'] / 1e4:.3f} T,"
+             f" test {d['plateau_ornl_gauss'] / 1e4:.3f} T;\nsame shape within 3.4 %", ha="right", va="top", color=INK2, size=8.5)
+    fk.label(ax, 0.75, 0.93, "faint line: the model's full field,\nwith a dip at each slot opening", va="top", color=INK2, size=8)
+    ax.set_xlim(0.6, 13.4)
+    ax.set_xticks(k)
+    ax.set_ylim(-1.05, 1.05)
+    ax.set_xlabel("stator slot (one pair of poles)")
+    ax.set_ylabel("radial flux density, T")
+    fk.heading(fig, f"The model's air-gap field has the test's shape, {100 * (ratio - 1):.1f} % stronger",
+               "No current in the winding; flux density at the stator bore; Oak Ridge National Laboratory's test "
+               "against the client-data model")
+    fig.savefig(fk.OUT / "fig_motor_airgap.svg", format="svg", dpi=300, metadata={"Date": None, "Creator": None})
+    fk.plt.close(fig)
+    print(f"fig motor_airgap (slot-1 angle recovered to {err:.2%} of the plateau)")
+
+
 def motor_thermal():
     """The continuous rating from the thermal network, and the temperatures along it."""
     rec = point("20261122-174925_motor_prius_thermal_r1", "p00_nominal")
@@ -1829,7 +1878,7 @@ ALL = {f.__name__: f for f in (cfd_tolerance, cfd_duct, cfd_response, cfd_field,
                                fatigue_sn, fin_response, fin_h_sweep, qc_bump_sweep, cad_sweep, heat_response,
                                qc_liftoff, qc_iso, coldplate_response, pipe_friction, motor_comparison,
                                motor_rotor, pv_nozzle, step_comparison, random_vibration, bracket_uncertainty,
-                               fan_rotor, fan_rotor_campbell, crack_growth, motor_efficiency)}
+                               fan_rotor, fan_rotor_campbell, crack_growth, motor_efficiency, motor_airgap)}
 # not on the site (the earlier model's thermal result): motor_thermal
 
 if __name__ == "__main__":
