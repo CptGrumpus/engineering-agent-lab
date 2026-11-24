@@ -1,0 +1,351 @@
+{
+  "run_id": "20261124-160916_shaft_fillet_radius_r1",
+  "verified_utc": "2026-11-24T21:22:24+00:00",
+  "tolerances": {
+    "equilibrium_rel_tol": 0.001,
+    "end_load_rel_tol": 0.001,
+    "beam_rel_tol": 0.01,
+    "off_plane_rel_tol": 0.02,
+    "kt_fit_rel_tol": 0.1,
+    "gci_max": 0.02,
+    "min_scaled_jacobian": 0.1
+  },
+  "points": [
+    {
+      "label": "p00_fillet_radius_mm-3.5",
+      "status": "PASS",
+      "checks": [
+        {
+          "id": "equilibrium_bending",
+          "description": "|clamp reaction moment - applied| / applied (bending)",
+          "kind": "numerical",
+          "value": 8.245625944162378e-08,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "end_load_bending",
+          "description": "|applied end moment (consistent nodal forces) - half the moment| / half (bending, half model; magnitudes: the torsion tractions turn the end in the negative sense)",
+          "kind": "numerical",
+          "value": 1.4187102577610251e-05,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "beam_theory_bending",
+          "description": "max |surface stress / beam theory - 1| in the small section (30-70 % of its length, plane y = 0, 33 nodes; bending)",
+          "kind": "numerical",
+          "value": 0.003557461450910848,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "peak_off_plane_bending",
+          "description": "|peak off the plane y = 0 (y 0.5-3 mm, cos-corrected) / peak on it - 1| (bending; nodal-stress scatter)",
+          "kind": "numerical",
+          "value": 0.0020253967759673586,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "equilibrium_torsion",
+          "description": "|clamp reaction moment - applied| / applied (torsion)",
+          "kind": "numerical",
+          "value": 9.954651600726836e-09,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "end_load_torsion",
+          "description": "|applied end moment (consistent nodal forces) - half the torque| / half (torsion, half model; magnitudes: the torsion tractions turn the end in the negative sense)",
+          "kind": "numerical",
+          "value": 1.418710258428473e-05,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "beam_theory_torsion",
+          "description": "max |surface stress / beam theory - 1| in the small section (30-70 % of its length, plane y = 0, 33 nodes; torsion)",
+          "kind": "numerical",
+          "value": 0.003497944463756175,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "peak_off_plane_torsion",
+          "description": "|peak off the plane y = 0 (y 0.5-3 mm) / peak on it - 1| (torsion; nodal-stress scatter)",
+          "kind": "numerical",
+          "value": 0.0004287843359533916,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "element_quality",
+          "description": "elements below the minimum scaled Jacobian (validity; the mesh's minimum 0.226, 1 = ideal, <= 0 inverted)",
+          "kind": "validity",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "kt_fit_bending",
+          "description": "|FE Kt - Pilkey fit 1.652| / fit (h/r = 1.14)",
+          "kind": "numerical",
+          "value": 0.022600791428126054,
+          "tolerance": 0.1,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "kt_fit_torsion",
+          "description": "|FE Kts - Pilkey fit 1.350| / fit (h/r = 1.14)",
+          "kind": "numerical",
+          "value": 0.018758765715929878,
+          "tolerance": 0.1,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p01_fillet_radius_mm-3.7",
+      "status": "FAIL",
+      "checks": [
+        {
+          "id": "equilibrium_bending",
+          "description": "|clamp reaction moment - applied| / applied (bending)",
+          "kind": "numerical",
+          "value": 1.1433676045807419e-07,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "end_load_bending",
+          "description": "|applied end moment (consistent nodal forces) - half the moment| / half (bending, half model; magnitudes: the torsion tractions turn the end in the negative sense)",
+          "kind": "numerical",
+          "value": 1.4187102577610251e-05,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "beam_theory_bending",
+          "description": "max |surface stress / beam theory - 1| in the small section (30-70 % of its length, plane y = 0, 33 nodes; bending)",
+          "kind": "numerical",
+          "value": 0.0038941731627322174,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "peak_off_plane_bending",
+          "description": "|peak off the plane y = 0 (y 0.5-3 mm, cos-corrected) / peak on it - 1| (bending; nodal-stress scatter)",
+          "kind": "numerical",
+          "value": 0.002180087253796703,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "equilibrium_torsion",
+          "description": "|clamp reaction moment - applied| / applied (torsion)",
+          "kind": "numerical",
+          "value": 1.6518946597658217e-07,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "end_load_torsion",
+          "description": "|applied end moment (consistent nodal forces) - half the torque| / half (torsion, half model; magnitudes: the torsion tractions turn the end in the negative sense)",
+          "kind": "numerical",
+          "value": 1.41871025840519e-05,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "beam_theory_torsion",
+          "description": "max |surface stress / beam theory - 1| in the small section (30-70 % of its length, plane y = 0, 33 nodes; torsion)",
+          "kind": "numerical",
+          "value": 0.003634241345582989,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "peak_off_plane_torsion",
+          "description": "|peak off the plane y = 0 (y 0.5-3 mm) / peak on it - 1| (torsion; nodal-stress scatter)",
+          "kind": "numerical",
+          "value": 0.00027425822454629767,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "element_quality",
+          "description": "elements below the minimum scaled Jacobian (validity; the mesh's minimum 0.065, 1 = ideal, <= 0 inverted)",
+          "kind": "validity",
+          "value": 0.03504106935594872,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "FAIL"
+        },
+        {
+          "id": "kt_fit_bending",
+          "description": "|FE Kt - Pilkey fit 1.633| / fit (h/r = 1.08)",
+          "kind": "numerical",
+          "value": 0.01914304864613104,
+          "tolerance": 0.1,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "kt_fit_torsion",
+          "description": "|FE Kts - Pilkey fit 1.336| / fit (h/r = 1.08)",
+          "kind": "numerical",
+          "value": 0.01810170097542748,
+          "tolerance": 0.1,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p02_fillet_radius_mm-3.9",
+      "status": "PASS",
+      "checks": [
+        {
+          "id": "equilibrium_bending",
+          "description": "|clamp reaction moment - applied| / applied (bending)",
+          "kind": "numerical",
+          "value": 2.05708989988783e-08,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "end_load_bending",
+          "description": "|applied end moment (consistent nodal forces) - half the moment| / half (bending, half model; magnitudes: the torsion tractions turn the end in the negative sense)",
+          "kind": "numerical",
+          "value": 1.4187102577416226e-05,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "beam_theory_bending",
+          "description": "max |surface stress / beam theory - 1| in the small section (30-70 % of its length, plane y = 0, 33 nodes; bending)",
+          "kind": "numerical",
+          "value": 0.004071107660982509,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "peak_off_plane_bending",
+          "description": "|peak off the plane y = 0 (y 0.5-3 mm, cos-corrected) / peak on it - 1| (bending; nodal-stress scatter)",
+          "kind": "numerical",
+          "value": 0.0023126434854989775,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "equilibrium_torsion",
+          "description": "|clamp reaction moment - applied| / applied (torsion)",
+          "kind": "numerical",
+          "value": 1.5220505367780374e-07,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "end_load_torsion",
+          "description": "|applied end moment (consistent nodal forces) - half the torque| / half (torsion, half model; magnitudes: the torsion tractions turn the end in the negative sense)",
+          "kind": "numerical",
+          "value": 1.41871025840519e-05,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "beam_theory_torsion",
+          "description": "max |surface stress / beam theory - 1| in the small section (30-70 % of its length, plane y = 0, 33 nodes; torsion)",
+          "kind": "numerical",
+          "value": 0.003572474332574016,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "peak_off_plane_torsion",
+          "description": "|peak off the plane y = 0 (y 0.5-3 mm) / peak on it - 1| (torsion; nodal-stress scatter)",
+          "kind": "numerical",
+          "value": 0.0005006142006400705,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "element_quality",
+          "description": "elements below the minimum scaled Jacobian (validity; the mesh's minimum 0.435, 1 = ideal, <= 0 inverted)",
+          "kind": "validity",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "kt_fit_bending",
+          "description": "|FE Kt - Pilkey fit 1.615| / fit (h/r = 1.03)",
+          "kind": "numerical",
+          "value": 0.015401762462578475,
+          "tolerance": 0.1,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "kt_fit_torsion",
+          "description": "|FE Kts - Pilkey fit 1.324| / fit (h/r = 1.03)",
+          "kind": "numerical",
+          "value": 0.017753375176796603,
+          "tolerance": 0.1,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ]
+    }
+  ],
+  "run_checks": [],
+  "run_check_detail": {
+    "fillet_radius_mm": [
+      3.5,
+      3.7,
+      3.9
+    ],
+    "fatigue_safety": [
+      1.4323433236986403,
+      1.4498573969315016,
+      1.4670195884254382
+    ],
+    "min_fillet_radius_mm_REQ-S1": null,
+    "static_safety": [
+      2.156165255639931,
+      2.1790586520295347,
+      2.201388597765859
+    ],
+    "min_fillet_radius_mm_REQ-S2": 3.5
+  },
+  "status": "FAIL"
+}

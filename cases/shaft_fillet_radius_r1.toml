@@ -88,6 +88,13 @@
 #   P2q r 3.5: within the noise floor of the first run (Kt 1.690, Kts 1.325, Goodman 1.432; 0.1-0.25 %).
 #   P3q r 3.9: Goodman 1.45-1.48 (REQ-S1 FAIL), yield about 2.2 (REQ-S2 PASS). So no fillet below the 4 mm shoulder
 #       height meets REQ-S1: REQ-S3 has no answer on this step (the sizing case answers the client's question instead).
+#
+# Results r1 (run 20261124-160916_shaft_fillet_radius_r1, 16:09-16:22): r 3.5 / 3.7 / 3.9 mm: Kt 1.690 / 1.664 / 1.640,
+# Kts 1.325 / 1.312 / 1.300, Goodman 1.432 / 1.450 / 1.467, yield 2.156 / 2.179 / 2.201. Minimum scaled Jacobian 0.226 /
+# 0.065 / 0.435: element_quality FAILS at 3.7 mm (0.065 against 0.1; no element inverted), so that point is
+# unverified; 3.5 and 3.9 pass every check. Verification FAIL (the 3.7 mm point). P1q MISSED (3.7 mm's quality);
+# P2q HELD (3.5 mm: Kt 1.6895 against 1.690 unoptimised, Goodman 1.4323 against 1.432); P3q HELD (3.9 mm: Goodman 1.467,
+# yield 2.20). REQ-S3: no fillet radius up to 3.9 mm (shoulder height 4 mm) meets REQ-S1.
 
 [case]
 name = "shaft_fillet_radius_r1"
