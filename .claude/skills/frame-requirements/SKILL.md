@@ -164,6 +164,11 @@ prediction is written into a case file.
   rated-power requirement (50 kW to 6000 rpm) passed with the blind model (58.6 kW) and failed with the calibrated
   magnets (48.0 kW): less magnet flux, less field-weakening torque per ampere. I had predicted the opposite from
   voltage headroom; check the sign with the torque equation, not intuition.
+- In field weakening the voltage limit, not the magnets, sets the stator flux, so a weaker magnet barely changes the
+  iron loss there. Study 7's revision 5 (back-EMF 4.6 % lower) was predicted to gain up to 0.3 point at light load
+  above 3000 rpm from less iron loss; iron loss moved 0.1-1 %, and the 15 % higher measured resistance plus 2-4 %
+  more current won (-0.04 to -0.40 point). Predict a map change from its loss split (copper against iron at that
+  point, and which one the change touches), not from the flux alone.
 - Transcribe a test table before reasoning from it: run-together PDF text puts a frequency column where the voltage
   should be (study 7, caught before scoring).
 - Audit every column of a transcription, not only the ones being scored: check each row against identities in the
