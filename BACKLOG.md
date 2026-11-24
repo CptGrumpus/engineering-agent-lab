@@ -82,7 +82,6 @@ commit). Rules that bind:
 
 | Job | Run dir (log) | Done about | When it finishes |
 |---|---|---|---|
-| Study 7, 18 % diagnosis step 3b: the independent ElmerFEM model against FEMM (mesh study at one position, then 48 positions; `scripts/motor_elmer_check.py`), started 18:47 | `validation/motor_ornl/elmer_check/` (`elmer_check.log` in session 8f53debf's scratchpad) | ~20:00-21:00 (not timed yet) | Score P1-P5 (CALIBRATION_PLAN step 3b: lambda1 within +-2 % of FEMM's 0.20499 Wb); STATUS 2(c) and page 20 "running"; commit `validation/motor_ornl/elmer_check/`. (Step 2, the steels, finished 19:12: not the cause.) |
 | Study 6: FSI2 mesh study a / b / c (3.54 / 2.5 / 1.77 mm, 15 s); simulated 11.1 / 10.8 / 8.6 s at 17:48. **Level c's first run FAILED at 8.835 s (18:05, floating point exception in pimpleFoam, log lost; see its case header); rerun with the same settings started 18:06 to capture the error** | `runs/*_turek_hron_fsi2_mesh_{a,b}` (`fsi2_mesh_{a,b}.log` in session e47de8ef's scratchpad); c's rerun log `fsi2_mesh_c_rerun.log` in session 8f53debf's scratchpad | ~20:45 / ~20:45 / c fails again ~23:30 or ends ~04:00 | Results per case (P1-P5 in `turek_hron_fsi2_mesh_a.toml`); `scripts/combine_mesh_levels.py <out.json> <a> <b> <c>` for the run-level GCI; page 17. If c fails again, read `log.pimpleFoam.tail` before changing anything (one change per rerun). c's rerun was started with `harness run`, not `pipeline`: afterwards run `harness verify` and `harness report` on its run dir. The other five FSI runs started before the log-tail fix: a watcher (started 18:56) copies the last 400 lines of every live fluid log each minute to `fsi_tails/<case>.tail` in session 8f53debf's scratchpad; read those if one of them crashes. | Results per case (P1-P5 in `turek_hron_fsi2_mesh_a.toml`); `scripts/combine_mesh_levels.py <out.json> <a> <b> <c>` for the run-level GCI; page 17. |
 | Study 6: FSI3 mesh study a / b / c (3.54 / 2.5 / 1.77 mm, dt 0.0005 s, 8 s; user's go-ahead 16:05), started 16:10-16:11. Max Courant number measured from the live logs at 18:20: a 1.17, b 1.35, **c 2.36** (flat after the 1 s ramp; FSI2's a / b 1.24 / 1.43): c carries the same risk as FSI2's crashed level c | `runs/*_turek_hron_fsi3_mesh_{a,b,c}` (`fsi3_mesh_{a,b,c}.log`) | ~21:30-22:00 / same / after midnight | Results per case (P1-P5 in `turek_hron_fsi3_mesh_a.toml`; level b should repeat `turek_hron_fsi3` to 4 digits); combined GCI; page 17. |
 
@@ -93,10 +92,11 @@ commit). Rules that bind:
    Chalmers thesis puts 3D end effects at -3.7 %). Running: step 2 (steels). Done 17:57: step 3 end effects, hand
    estimate (`scripts/motor_end_effects.py`): -1.3 to -2.4 %, -3.7 % from Chalmers' 3D model, below the 5 %
    threshold, no 3D model; the model would read +13 to +16 %; end clamping piece non-magnetic from TM-2004/137
-   Fig. 9's photo (client question). Next: an independent second 2D model (ElmerFEM, open source) on the same
-   geometry to check our field. Elmer 26.1 Windows zip (nogui, nompi, official CSC mirror, sha256 8ce866cc6ff1)
-   downloaded to `~/tools/elmer-26.1-dl/`; unpacking and running it was blocked by the auto-mode classifier at
-   18:00: needs the user's OK; step 4 magnetisation
+   Fig. 9's photo (client question). Done 20:22: the independent ElmerFEM model (`models/motor/elmer_em.py`,
+   `validation/motor_ornl/elmer_check/`) agrees with FEMM to +0.10 % on lambda1, so the 2D field is right. Next:
+   step 4, write up the magnetisation level as the leading hypothesis (effective remanence 1.10-1.12 T, 88-90 %)
+   with the client test that settles it, not fitted; then the inductance mismatch. Elmer 26.1 (official CSC Windows zip, sha256 8ce866cc6ff1) is
+   unpacked in `~/tools/elmer-26.1/` (18:15, with the user's OK). Step 4: the magnetisation
    level is reported as the leading hypothesis with the client test that settles it (fluxmeter on one magnet before and
    after re-saturating), never fitted. The inductance mismatch (Ld -10.6 %, Lq +10 %) is separate, after these.
    The user can save the MDPI Machines 2019 7(4) 75 PDF (MotorAnalysis-PM, "high correlation" with ORNL) into the

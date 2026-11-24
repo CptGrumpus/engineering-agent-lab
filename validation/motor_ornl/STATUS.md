@@ -57,8 +57,9 @@ this motor's back-EMF.
    (done 17:57, hand estimate, scripts/motor_end_effects.py: -1.3 to -2.4 %, -3.7 % from the Chalmers 3D model;
    below the 5 % threshold, no 3D model; the model would read +13 to +16 %. End clamping piece non-magnetic from
    TM-2004/137 Fig. 9's photo: a client question);
-   (c) a check of the 2D field with an independent solver on the same geometry (ElmerFEM, running since 18:47;
-   predictions in CALIBRATION_PLAN step 3b); (d) the bridges' lamination steel (done 19:12, run 20261123-172758:
+   (c) a check of the 2D field with an independent solver on the same geometry (done 20:22, ElmerFEM,
+   models/motor/elmer_em.py: lambda1 +0.10 % on FEMM's, waveform within 0.13 %, gap field +0.09 %: the 2D field
+   is right; the excess is in the shared inputs or in what 2D leaves out); (d) the bridges' lamination steel (done 19:12, run 20261123-172758:
    three grades within -0.35 to +0.14 % of 105.16 V: not the cause).
 3. Done 15:10: **static inductances** on revision 5: Ld 1.72 mH (-10.6 % on ORNL's 1.92), Lq 5.50 mH (+10 % on 5.0),
    saliency 3.2 against 2.6, as predicted: the client data does not fix them.

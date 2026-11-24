@@ -491,3 +491,24 @@ change still stalls at 1.43e-3 (some small region alternates), but the flux link
 and 120 iterations (refinement 0.7, rotor at 22.5 deg): the run uses 30 iterations, and P5's criterion as written is
 expected to be scored MISSED with that measured stability beside it. The mesh-size note under P2 described the faulty
 mesh (690,000 nodes at 0.5); the fixed mesh has 90,000 / 162,000 nodes at 1.0 / 0.7.
+
+### Result of step 3b, the independent Elmer model (2026-11-23 20:22; attempt 2, started 19:39; elmer_check/)
+Elmer's lambda1 0.205192 Wb against FEMM's 0.204987 Wb: **+0.10 %** (105.27 against 105.16 V per 1000 rpm), on the
+same geometry and materials with a different mesher, element order, gap treatment, domain (full machine against one
+anti-periodic pole) and nonlinear method.
+- P1 HELD: +0.10 %, inside +-2 %.
+- P2 HELD: the largest phase change between refinements 1.0 / 0.7 / 0.5 (90,486 / 161,858 / 298,366 nodes) is 8.0e-6
+  and 1.0e-5 of the amplitude.
+- P3 HELD: phase balance 2.3e-7, anti-periodicity 2.2e-6.
+- P4 HELD: the phase-a waveform, aligned by the fundamental's phase, differs from FEMM's by at most 0.13 % of lambda1 at
+  any of the 48 positions; the gap's radial flux density fundamental 0.8752 T against FEMM's 0.8744 T (+0.09 %).
+- P5 MISSED as written: 191-228 s per solve (four in parallel on a loaded machine), and Elmer's relative-change norm
+  stalls at 1.4e-3; the flux linkage itself is stable to 1e-9 Wb between 30 and 120 iterations (measured above).
+- Closed-form magnet check -0.07 %. Phase offset between the two models' rotor angle origins: 150 deg electrical.
+**Reading:** the 2D field is right: two independent solvers agree to 0.1 % on the flux linkage, the waveform and the
+gap field. The 18 % excess is not a FEMM artefact or a setup error in the 2D model; it is in the inputs both models
+share (taken from the client's data) or in what a 2D model leaves out. With step 2 (steel, at most 0.35 %) and step 3
+(end effects, 1.3-3.7 %), the model would still read about +13 to +16 % with end effects included. The leading
+hypothesis is the magnets' magnetisation level in the assembled rotor (an effective remanence of 1.10-1.12 T, 88-90 %
+of the re-saturated sample's 1.249 T at 25 C, would account for it with the end effects; EMF = 97.5 V/T Br - 16.6 V): step 4 reports it with the client test that settles it, not as a fit. (The Chalmers
+thesis's 30 % between ElmerFEM and Maxwell on "the same" 2D model is therefore not a property of the solvers.)
