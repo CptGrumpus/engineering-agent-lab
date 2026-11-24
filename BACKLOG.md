@@ -90,6 +90,13 @@ commit). Rules that bind:
    20 W/mK, each at internal emissivity 0.1 and 0.9: four corners, verdict at each); a NEW STUDY in parallel: machine
    elements (a shaft with a shoulder fillet under bending and torsion, fatigue safety by DIN 743 against FE notch
    stresses; framing first, for the user's approval).
+   **Machine-elements framing APPROVED (after 13:48, as drafted):** a gearbox intermediate shaft, 42CrMo4 Q&T (Rm 1000,
+   Re 750 MPa, catalogue values), D 40 -> d 32 mm with a shoulder fillet r 1.6 mm (+0.4 / -0.2); rotating bending
+   M 300 N m, steady torque T 500 N m. REQ-S1 fatigue safety >= 1.5 at the fillet (Shigley: Marin factors,
+   Peterson / Neuber notch sensitivity, modified Goodman; ASME-elliptic reported); REQ-S2 static safety >= 2.0 against
+   yield at a 1.5 x overload; REQ-S3 the minimum fillet radius meeting S1. CalculiX 3D half model; Kt (bending,
+   torsion) from FE against published curve fits (fetched); beam theory far from the fillet; mesh GCI; equilibrium.
+   DIN 743 is a paid standard, not quoted.
 0b. **User's decisions 2026-11-24, after 10:25 (all as recommended):** study 11 framing APPROVED as drafted (enclosure:
    sealed aluminium box 200 x 150 x 60 mm, 15 W board, 40 C ambient; REQ-D1 hottest component <= 85 C, REQ-D2 mean
    internal air <= 60 C, REQ-D3 verdict stated at emissivity 0.1 and 0.9; stages: de Vahl Davis cavity Ra 1e3-1e6,
