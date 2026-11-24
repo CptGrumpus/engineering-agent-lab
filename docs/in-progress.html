@@ -56,7 +56,7 @@
 
     <div class="page-head">
       <p class="eyebrow">Now working on</p>
-      <h1>Two Studies Running</h1>
+      <h1>Two Studies in Progress</h1>
       <p>The traction motor against its test data, and the coupled flag benchmark. As with every study, I pick the independent check before I start modelling, and I write down my predictions before each run. Finished today and now on their own pages: <a href="turbulent-pipe-friction.html#step">flow over a backward-facing step</a>, <a href="bracket-modal.html#random_vib">the bracket arm under random vibration</a> and <a href="bracket-modal.html#bracket_uq">how robust its pass is</a>, <a href="fan-rotor.html">a fan rotor's critical speeds</a> and <a href="cracked-plate.html">crack growth in a steel plate</a>.</p>
     </div>
     <div class="skills plan now">
@@ -72,7 +72,8 @@
         <span class="plan-meta"><span class="no">Study 17 · Fluid-structure interaction</span><span class="plan-tag">In progress</span></span>
         <b>Flexible Flag Behind a Cylinder</b>
         <p><b>Why it's harder</b>Two-way fluid-structure interaction, where the flow bends the flag and the bent flag changes the flow.</p>
-        <p><b>So far</b>Each half reproduced the published Turek-Hron benchmark on its own before the two were coupled. Coupled and steady, drag and lift are verified at 0.03 % and 0.18 % from the published values. In the two cases where the flag swings by itself, every published quantity comes out within 2.1 % and 9 % on one mesh, inside the benchmark's own spread between meshes. Those aren't verified yet: the check on the force passed between the two solvers turned out to be defective, so I've replaced it, and both swinging cases are now running on three meshes each, side by side.</p>
+        <p><b>So far</b>Each half reproduced the published Turek-Hron benchmark on its own before the two were coupled. Coupled and steady, drag and lift are verified at 0.03 % and 0.18 % from the published values. Where the flag swings by itself, the check on the force passed between the two solvers turned out to be defective, so I replaced it and reran both swinging cases on three meshes each. In the faster swing (FSI3), the finest mesh passes every published quantity, the tip's swing within 1.1 %. Across the three meshes, the frequency and the mean drag are verified to within 1 %, and the tip's swing converges onto the published 34.99 mm: extrapolated to a fine mesh, it lands 0.02 % away. The swing of the forces changes too fast between meshes to give a clean estimate, so I report it as it is.</p>
+        <p><b>Open</b>In the slower, larger swing (FSI2), the two coarser meshes agree within 0.7 %, but the finest crashed twice at the same moment, 8.8 s into a 15 s run. The kept log shows the flow's Courant number jumping from 2.2 to 18 in two time steps: either a cell collapsing as the mesh follows the flag, or the pressure solver going unstable. The log can't tell which, so for now FSI2 stands on two meshes. Any fix has to go to all three meshes, or they're no longer comparable.</p>
         <p><b>Caught on the way</b>One regenerated mesh wrapped a single cell around the flag's tip corner and read the tip deflection 28 % low, with every other check passing. There's now a check on the cells next to the flag, and 24 earlier meshes were scanned with it. Only that one was affected.</p>
         <p class="plan-link"><a href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/portfolio/17-fsi-flag-turek-hron.md">Read the draft write-up</a></p>
         <span class="tools">OpenFOAM · CalculiX · preCICE</span>
