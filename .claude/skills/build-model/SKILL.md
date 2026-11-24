@@ -137,7 +137,9 @@ per problem type:
     `verify-against-reference`, the README studies table, and PORTFOLIO if it is a
     portfolio piece.
 13. **Commit curated evidence** with `git add -f`, leaving out bulky result CSVs,
-    long solver logs, and `__pycache__`.
+    long solver logs, and `__pycache__`. Always keep `manifest.json`, even over the
+    size limit (a 13-point dq table's is 2-3.5 MB): `harness rerun` and `verify`
+    need it. Check it for local paths first.
 
 ## Human judgment needed
 
