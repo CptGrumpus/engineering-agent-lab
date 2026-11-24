@@ -40,6 +40,10 @@ marked *unverified*.
   verification FAILed on a cross-check misleads (study 12, page 25: two narrow misses were
   in the case files but not in the Answer). Quote each check's number from the run's
   checks.json for every point, not one point's value as "or better".
+- Take every headline number from one named evidence mesh, and every range over all evidence runs, computed from
+  their checks.json, not from memory of one run. Page 26 said yield safety 1.82 (the 0.1 mm mesh) in the Answer and
+  1.83 (the 0.14 mm evidence mesh) in the table, and its Kt-fit range left out two runs (the dashboard session caught
+  both).
 - Keep these separate: **numerical error** (the verification checks), **modeling assumptions**
   (the `assumptions` list in the case file), and **physical uncertainty** (not quantified for
   synthetic cases).
