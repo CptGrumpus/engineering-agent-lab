@@ -1,0 +1,92 @@
+# Study 11, stage 3: the sealed electronics enclosure (synthetic client): a 2D section 150 x 60 mm of an aluminium box
+# 200 mm deep, a 100 x 2 mm board at mid-height carrying 10 W with a 20 mm component carrying 5 W (15 W in all), 40 C
+# ambient outside. Framing approved 2026-11-24 after 10:25 (REQ-D1 hottest component <= 85 C, REQ-D2 mean internal air
+# <= 60 C, REQ-D3 verdict at internal emissivity 0.1 and 0.9); the user's choice after 12:09: bracket the board's
+# effective in-plane conductivity at 5 and 20 W/mK (four corners, one case each, run side by side).
+#
+# Model (models/cfd/enclosure_openfoam.py, studies/enclosure_thermal.py): OpenFOAM 14 foamMultiRun, conjugate heat
+# transfer: air (perfect gas, laminar natural convection, fvDOM radiation, 4 directions per quarter, transparent),
+# solid board and component (heat sources), the walls' outside: h_ext 5 W/m2K (synthetic) and emissivity 0.85
+# (synthetic, painted or anodised) to 40 C; transient to a settled state (2400 s; time constant about 250 s), 2 mm cells.
+# Its parts are verified in stages 1 and 2 (cavity convection against de Vahl Davis; radiation against the exact
+# two-surface exchange). The 2D section leaves out the box's end walls (less wall area: conservative).
+#
+# Found while building (prototypes, scratch, 2026-11-24 11:10-14:36): a hollow board with fixed surface fluxes put the
+# component at 154 C (no spreading), so the board is solid; the steady coupled solve diverged after 9,246 iterations,
+# so the run is transient; perfect gas needs absolute pressure; and with two regex keys in the solids' boundary
+# conditions the general one took the fluid interface, so the board never lost its radiated heat and energy was
+# created (walls shedding 671 W/m2 against 178.6 in, still heating): explicit patch names fixed it (heat balance then
+# converging: 171.2 of 178.6 W/m2 at 600 s). That test (board 10 W/mK, emissivity 0.9) was settling towards about 96 C
+# at the component and 67 C mean air.
+#
+# Verification tolerances, fixed before the evidence runs:
+#   heat_balance_rel_tol 0.01  heat leaving the walls against the input, at the end (settled).
+#   settled_K 0.3              the component's maximum over the last tenth of the run.
+#
+# Predictions (written BEFORE the evidence runs, 2026-11-24 14:38):
+#   P1 Every point check passes (settled, heat balance within 1 %).
+#   P2 Emissivity 0.9: component 93-100 C, mean air 65-69 C: REQ-D1 and REQ-D2 FAIL at both board conductivities.
+#   P3 Emissivity 0.1: hotter (less radiation from board to walls): component 105-125 C, mean air 68-80 C: both FAIL.
+#   P4 Board conductivity matters little: the component sits 1-2 K above the board's hottest point, so 5 against
+#      20 W/mK moves it by under 3 K; the bottleneck is air to walls to ambient.
+#   P5 About 1.5-2 h per case side by side.
+# This file: board 5 W/mK, internal emissivity 0.9.
+
+[case]
+name = "enclosure_k5_eps0p9"
+model = "openfoam_enclosure_cht"
+description = "Sealed enclosure, 2D section: 15 W board (5 W component), board conductivity 5 W/mK, internal emissivity 0.9, 40 C ambient; hottest component and mean air against the limits."
+assumptions = [
+  "2D section (per unit depth of the 200 mm box); the box's end walls are left out (conservative).",
+  "Laminar natural convection (Rayleigh number about 1e5-1e6 on the box height), air as a perfect gas.",
+  "Grey diffuse internal surfaces (emissivity the corner's value), transparent air.",
+  "Walls: thin aluminium, no conduction resistance and no lateral spreading in the wall (each face loses heat locally: conservative for hot spots); outside h 5 W/m2K and emissivity 0.85 to 40 C (synthetic).",
+  "Board: isotropic effective conductivity (the corner's value; synthetic bracket for FR4 with copper planes); the component a solid block of the board's material.",
+]
+limitations = [
+  "2D: no heat path through the box's end walls and no 3D flow.",
+  "Steady operation only (a transient run to a settled state).",
+  "No physical test data.",
+]
+
+[parameters]
+width_mm = 150.0
+height_mm = 60.0
+box_depth_mm = 200.0
+board_length_mm = 100.0
+board_thickness_mm = 2.0
+component_length_mm = 20.0
+power_component_W = 5.0
+power_board_W = 10.0
+board_k_W_mK = 5.0
+ambient_C = 40.0
+h_ext_W_m2K = 5.0
+eps_ext = 0.85
+eps_int = 0.9
+cell_mm = 2.0
+n_phi = 4
+max_iterations = 1
+
+[numerics]
+transient_end_s = 2400.0
+solver_timeout_s = 36000
+
+[verification]
+heat_balance_rel_tol = 0.01
+settled_K = 0.3
+
+[[requirements]]
+id = "REQ-D1"
+text = "The hottest component shall stay at or below 85 C at 40 C ambient."
+metric = "component_max_C"
+operator = "<="
+limit = 85.0
+units = "C"
+
+[[requirements]]
+id = "REQ-D2"
+text = "The mean internal air temperature shall stay at or below 60 C at 40 C ambient."
+metric = "air_mean_C"
+operator = "<="
+limit = 60.0
+units = "C"
