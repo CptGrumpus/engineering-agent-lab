@@ -539,7 +539,7 @@ Bounded: 3D end effects, -1.3 to -3.7 % (step 3). What remains is shared by both
    **The client test that settles it:** take one magnet out of a production rotor, measure its moment in a Helmholtz
    coil with a fluxmeter, re-saturate it in a pulse magnetiser, measure again. Predicted ratio if this is the cause:
    0.88-0.90. A ratio near 1.0 rejects it.
-   **A cheaper check needs the user's decision:** ORNL's measured no-load air-gap flux density (TM-2004/137 Fig. 13)
+   **A cheaper check, left for later (user, 2026-11-23):** ORNL's measured no-load air-gap flux density (TM-2004/137 Fig. 13)
    would separate "less magnet flux" from "different leakage" directly, but it is teardown-only data, held back since
    the blind pass under the realistic-information rule; on a real job the client could measure the same with a Hall
    probe in a day.

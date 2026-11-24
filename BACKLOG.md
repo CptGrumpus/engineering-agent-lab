@@ -92,9 +92,8 @@ commit). Rules that bind:
    0.35 %), the measurement side; bounded: end effects 1.3-3.7 %. Done 21:23: the drawing's magnet stops measured (`scripts/motor_drawing_stops.py`): revision 5 already puts
    every magnet on its stop (pockets within 0.075 mm; at most 0.4 mm of play), no revision needed. So the magnetisation
    level is reported as the leading
-   hypothesis (effective remanence 1.10-1.12 T, 88-90 %) with the fluxmeter test that settles it, never fitted. Open
-   for the user: ORNL's measured air-gap flux (TM-2004/137 Fig. 13) would separate the two directly but is
-   teardown-only data held back under the realistic-information rule. Then the inductance mismatch (Ld -10.6 %,
+   hypothesis (effective remanence 1.10-1.12 T, 88-90 %) with the fluxmeter test that settles it, never fitted. ORNL's measured air-gap flux (TM-2004/137 Fig. 13) would separate the two
+   directly; the user decided to leave it for now (item 4). Then the inductance mismatch (Ld -10.6 %,
    Lq +10 %). The MDPI Machines 2019 7(4) 75 PDF can be read only if the user saves it (its server blocks fetches).
 2. FSI2 / FSI3 mesh results and combined GCIs; page 17. FSI2 levels a and b done 21:18 / 21:28 and scored (case
    headers: P1 held on both, P2 held, b repeats turek_hron_fsi2 exactly, P3 held on a, P5 missed; a vs b 0.1-0.7 %);
@@ -102,10 +101,10 @@ commit). Rules that bind:
 3. Motor field render for the site: re-export from a revision-5 solution (`scripts/export_femm_field.py`; copy the
    evidence run's .ans to build/ first, Pyleecan overwrites it); the revision-4 export in `build/render/motor_rev4_centre`
    has the wrong magnet. Refresh `reports/motor/` after the 18 % is explained.
-4. Open for the user: whether the site shows the user's name (earlier notes said email only; the motor page now shows
-   it): ask, don't change. Optional cleanup on the user's OK: four stale temp dirs from stopped runs
-   (`%LOCALAPPDATA%/Temp/fsi_6sulqu6u`, `fsi_z4epbt_3`, `fsi_5c2j0yxa`, `fsi__hcq9h5s`, about 43 MB) and the unpacked
-   Elmer zip (`~/tools/elmer-26.1-dl/`, 124 MB).
+4. Future, to consider (user, 2026-11-23: leave for now): ORNL's measured air-gap flux map (TM-2004/137 Fig. 13) as a
+   direct check of the magnetisation hypothesis; teardown-only data, so it needs the user's go-ahead under the
+   realistic-information rule. (Settled: the site shows the user's name, memory `public-contact`; the stale temp dirs
+   and the Elmer zip were deleted 2026-11-23 on the user's OK.)
 
 ### Done 17:48-20:52
 - **Study 7, 18 % diagnosis:** step 3 end effects, hand estimate -1.3 to -2.4 % (`scripts/motor_end_effects.py`;
