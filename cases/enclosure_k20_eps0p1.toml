@@ -31,6 +31,16 @@
 #      20 W/mK moves it by under 3 K; the bottleneck is air to walls to ambient.
 #   P5 About 1.5-2 h per case side by side.
 # This file: board 20 W/mK, internal emissivity 0.1.
+#
+# Results (run 20261124-144017_enclosure_k20_eps0p1, 14:40-17:42): component maximum 156.26 C (REQ-D1 FAIL, limit 85), mean air 84.14 C
+# (REQ-D2 FAIL, limit 60), walls 55.31 C mean, radiation 22.5 % of the walls' inside heat (75 % at emissivity 0.9).
+# Verification FAIL: heat balance PASSES (0.74 %), SETTLED FAILS (0.61 K over the last tenth against 0.3): at low
+# emissivity the component relies on convection alone and settles slowly; the run was 4.5 time constants
+# long, not enough. The verdicts are therefore '(unverified)'; neither can change (both requirements miss by about 70 K
+# and 24 K). Not rerun longer: the margin makes the settling irrelevant to the verdict; the redesign runs are where
+# settling matters.
+# P1 MISSED (settled); P3 MISSED (component 105-125 C and air 68-80 C predicted: the low-emissivity board sheds far less
+# heat than I estimated); P5 MISSED (3 h, not 1.5-2; the radiation solve's 18 sweeps a step).
 
 [case]
 name = "enclosure_k20_eps0p1"
