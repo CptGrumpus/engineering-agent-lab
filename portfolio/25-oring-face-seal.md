@@ -1,0 +1,86 @@
+# O-ring face seal: squeeze, sealing pressure, closing force and groove fill across the tolerance stack
+
+[Portfolio index](../PORTFOLIO.md) · Structures and vibration
+
+| | |
+|---|---|
+| **Answer** | A 3.53 mm NBR 70 O-ring in a 2.79 x 4.80 mm face-seal groove (a coolant-pump cover, 3 bar) **passes every requirement at every corner of the tolerance stack**: squeeze 17.2-24.5 % (limit 15-30 %), peak contact pressure at the loosest corner **1.50 MPa** (2.5 x the 0.6 MPa needed), closing force at the tightest **5.94 N per mm of seal** (2.0 x under the 12 N/mm bolt budget), groove fill at most **80.4 %** (limit 85 %). The client, the limits and the compound are synthetic; the hardness-to-modulus relation, the force-squeeze reference and the measured force band are published. |
+| **Discipline** | Elastomer seals: hyperelastic large strain with contact |
+| **Tools** | Gmsh (Python API), CalculiX, Python |
+| **Methods** | Axisymmetric neo-Hookean model with penalty contact, tolerance-stack corners, mesh study (GCI), Hertz line contact, Lindley's force-squeeze relation, Parker's measured load bands |
+
+![Contact pressure across the cover and closing force against squeeze, tightest corner](../runs/20261124-100619_oring_seal_corners/points/p02_tightest/response.png)
+
+## The question
+
+A cover seals a water-glycol coolant pump at up to 3 bar with an O-ring in a face groove. Across the stack of
+tolerances (cross-section 3.53 ± 0.10 mm, groove depth 2.79 ± 0.05 mm, width 4.80 ± 0.05 mm, hardness 70 ± 5 Shore
+A), does the ring stay within 15-30 % squeeze (REQ-E1), keep a peak contact pressure of at least twice the sealed
+pressure at the loosest stack (REQ-E2), close with no more than the bolts' 12 N per mm of seal at the tightest
+(REQ-E3), and fill no more than 85 % of the groove (REQ-E4)?
+
+## The answer
+
+| Corner | Squeeze | Closing force | Peak contact pressure | Groove fill |
+|---|---|---|---|---|
+| Loosest (3.43 mm ring, 2.84 mm deep, 65 Shore A) | 17.2 % | 1.89 N/mm | **1.50 MPa** | 67.5 % |
+| Nominal (70 Shore A) | 21.0 % | 3.39 N/mm | 2.34 MPa | 73.7 % |
+| Tightest (3.63 mm ring, 2.74 mm deep, 75 Shore A) | 24.5 % | **5.94 N/mm** | 3.52 MPa | **80.4 %** |
+
+Every requirement passes with margin; the closest is the fill, 4.6 points under 85 %.
+
+## How it works
+
+CalculiX solves the upper half of the ring's cross-section, axisymmetric: the groove bottom and the cover are flat and
+the contact frictionless, so the mid-plane is a plane of symmetry. The rubber is neo-Hookean, near-incompressible
+(bulk modulus 1000 x shear), with Young's modulus from the Shore hardness by Gent's relation (Rubber Chem. Technol.
+1958; 4.43 / 5.52 / 7.05 MPa at 65 / 70 / 75). A steel cover moves down by half the squeeze; steel blocks are the
+groove's walls, the ring installed against the outer one, as for internal pressure. Node-to-surface penalty contact;
+quadratic elements meshed by Gmsh, refined where the contact grows.
+
+## How I know it's right
+
+- **Volume conserved** to 3e-4 or better (the near-incompressible rubber).
+- **The contact pressure adds up to the closing force** within 1.6 %, and the cover's reaction balances the symmetry
+  plane's exactly.
+- **Hertz line contact** at 5 % squeeze, at the model's own force: peak pressure within 1.6 %, contact width within
+  0.3 %.
+- **Lindley's relation** for a laterally free ring (the model with the groove walls removed, his test case): within
+  10.6 / 0.05 / 8.1 % at 10 / 20 / 30 % squeeze, and **inside Parker's measured band** for this cross-section and
+  hardness (O-Ring Handbook ORD 5700 Fig. 2-6, read from the PDF's vector lines) at every squeeze.
+- **Mesh study** at the tightest corner (contact elements 0.1 / 0.07 / 0.05 mm): uncertainty 1.1 % on the force,
+  0.04 % on the peak pressure, 0.02 % on the fill.
+
+## What the checks caught
+
+- **A squeezed O-ring grows in diameter.** The incompressible squeeze spreads into the hoop as well as across the
+  section; a ring with nothing holding it radially drifted 1.7-2.0 mm outward. A flat 2D model hides this. The groove
+  wall that stops it is modelled, and it adds 40 % to the closing force against the free ring.
+- **A contact setting borrowed from the steel models** (the tension the penalty law allows at small gaps) let the
+  edges of the rubber contact pull: the pressure integral missed the force by up to 47 %. Corrected before the
+  evidence runs.
+- **CalculiX's node-to-surface contact on quadratic faces lumps equal areas per node**, so corner and mid-side
+  pressures alternate by about 30 %; the reported pressure is the two-node average, which the force balance confirms.
+- **The hand fill check was too simple.** It assumes the section area does not change; the outer wall moves the ring's
+  centroid inward, so by Pappus the area grows about 1 %, and at the tightest corner the check missed its 1 %
+  tolerance (1.05 %). Reported as a miss, not retuned: the FE fill is the better number.
+- **The free ring went numerically singular** at 26.5 % squeeze on the fine mesh (held radially only by its own hoop
+  stiffness); smaller load steps fixed it, recorded in the case.
+
+## Limits
+
+- Frictionless contact, quasi-static; no compression set or stress relaxation over time, no temperature effect on the
+  compound, no extrusion under pressure (the sealed pressure enters only through the 2 x rule).
+- The compound's modulus comes from its hardness alone (Gent); a client's compound data would replace it.
+- Lindley's exponents come from a copy whose text extraction is garbled; Parker's band is wide (a factor of about 6.6).
+- No physical test data.
+
+## Evidence
+
+- Corners [`oring_seal_corners`](../runs/20261124-100619_oring_seal_corners/report.md), mesh study
+  [`oring_seal_mesh`](../runs/20261124-100621_oring_seal_mesh/report.md), Hertz
+  [`oring_free_hertz`](../runs/20261124-100617_oring_free_hertz/report.md), Lindley and Parker
+  [`oring_free_lindley`](../runs/20261124-105309_oring_free_lindley/report.md) (the first attempt, which went singular,
+  is kept: `runs/20261124-100614_oring_free_lindley`)
+- Cases with predictions and results: `cases/oring_*.toml`; model `models/fea/oring_ccx.py`, study
+  `studies/oring_seal.py`, references `validation/oring.py`
