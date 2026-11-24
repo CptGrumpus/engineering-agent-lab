@@ -80,7 +80,10 @@ published results first, and only then are they coupled.
   FSI3's misses are inside the spread between the benchmark's own mesh levels; whether they are ours needs a mesh and
   time-step study, which comes with the rerun. **Running (2026-11-23):** both mesh studies, three fluid meshes each
   (3.54 / 2.5 / 1.77 mm) side by side, with the window-by-window force-transfer check that replaces the defective
-  one; predictions are in the case files.
+  one; predictions are in the case files. FSI2's 3.54 and 2.5 mm levels are done: every check passes (force transfer
+  2.3e-9), the 2.5 mm level repeats the earlier run in every digit, and the two levels differ by 0.1-0.7 % on every
+  benchmark quantity. The 1.77 mm level crashed at 8.8 s of 15 (the solver's error message was lost); it is being
+  rerun unchanged to capture the error, and the study now keeps the end of every log when a run fails.
 
 ## How it works
 
