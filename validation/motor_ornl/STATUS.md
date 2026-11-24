@@ -51,6 +51,12 @@ measurement side, and every client input already used. Bounded: 3D end effects, 
 magnet on them (pockets within 0.075 mm), so the leading hypothesis is the magnetisation level in the assembled
 rotor (88-90 % of the re-saturated sample; settled by a fluxmeter test on one magnet). Questions for the client: `CLIENT_QUESTIONS.md`.
 
+## Closed (2026-11-24): final report `FINAL_REPORT.md`
+
+The study is closed with open items (the user's decision). ORNL's measured no-load air-gap field (TM-2004/137 Fig. 13,
+step 5 of the plan) is the model's scaled uniformly by 1.148 on the plateau: the 18 % is a magnetisation shortfall in
+all likelihood (14.8 % in the 2D gap field plus 1.3-3.7 % end effects), to be settled by the client's fluxmeter test.
+
 ## Design checks and efficiency on the client-data model (2026-11-24)
 
 All on revision 5, uncalibrated, with the measured phase resistance (69 mOhm at 21 C). Predictions in each case header.
