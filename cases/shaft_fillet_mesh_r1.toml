@@ -86,6 +86,18 @@
 #       monotone, its spread about 0.1 %).
 #   P3r Verdicts unchanged: Goodman about 1.19 (REQ-S1 FAIL), yield about 1.83 (REQ-S2 FAIL), now verified.
 #   P4r About 5-10 min for the 0.1 mm level (117,000 nodes).
+#
+# Results r1 (run 20261124-152823_shaft_fillet_mesh_r1, 15:28-15:44): every point check PASSES at all four levels
+# (equilibrium 1e-7, end load 1.4e-5, beam 0.4-0.6 %, off-plane 1.28 / 1.11 / 0.68 / 0.35 % bending, 0.39-0.09 %
+# torsion, fit +6.6 to +6.1 % / -2.8 to -2.5 %). At 0.1 mm: Kt 2.1388, Kts 1.5502, Goodman 1.1872, elliptic 1.4388,
+# yield 1.8238. Run level FAIL: Kt oscillatory, GCI 0.11 %; Goodman oscillatory 0.08 %; Kts "divergent" (1.5481 /
+# 1.5483 / 1.5502) and yield "oscillating, growing" (1.8246 / 1.8260 / 1.8238). The finest three move by 0.12-0.14 %, at
+# the scale of the nodal-stress scatter that the off-plane check measures (0.1-0.7 %), so the GCI's default noise floor
+# (1e-5) treats noise as divergence: the edge-crack study's lesson (a noise floor must be measured). P1r HELD; P2r HELD
+# for the values (Kt 2.139, Kts 1.550), MISSED for the GCI on Kts and the yield safety; P3r HELD for the verdicts (still
+# unverified on S2); P4r HELD (about 6 min at 0.1 mm).
+# Next: shaft_fillet_noise (perturbed meshes at 0.14 mm) measures the floor; shaft_fillet_mesh_r2 reruns this study with
+# it.
 
 [case]
 name = "shaft_fillet_mesh_r1"

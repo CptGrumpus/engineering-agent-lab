@@ -246,11 +246,21 @@ class ShaftFilletStudy(Study):
             hs = tuple(float(pt["parameters"]["element_size_fillet_mm"]) for pt in fine)
             checks, detail = [], {"meshes_used": [pt["label"] for pt in fine]}
             for metric in ("kt_bending", "kt_torsion", *sorted({r["metric"] for r in case["requirements"]})):
-                u = discretization_uncertainty(hs, tuple(pt["metrics"][metric] for pt in fine))
+                nf = tol.get("mesh_noise_rel", 1e-5)      # one value, or a table per metric (measured: the noise case)
+                u = discretization_uncertainty(hs, tuple(pt["metrics"][metric] for pt in fine),
+                                               noise_floor=float(nf[metric] if isinstance(nf, dict) else nf))
                 detail[metric] = u
                 checks.append(check(f"discretization_{metric}", f"relative discretization uncertainty of {metric}, "
                                     f"{describe(u)}", u["uncertainty"], tol["gci_max"]) | {"metric": metric})
             return checks, detail
+        if sweep in ("refine_radius_mm", "refine_halfwidth_mm"):
+            # the noise case: perturbed meshes at one fillet element size; the peak-to-peak relative spread per metric
+            # is the mesh noise floor for the mesh study
+            detail = {"meshes": [pt["label"] for pt in done]}
+            for metric in sorted(self.metrics):
+                v = np.array([pt["metrics"][metric] for pt in done])
+                detail[metric] = {"values": v.tolist(), "spread_rel": float((v.max() - v.min()) / abs(v.mean()))}
+            return [], detail
         if sweep in ("fillet_radius_mm", "scenario"):
             key = "fillet_radius_mm" if sweep == "fillet_radius_mm" else "d_mm"   # scenarios: the step's size
             done = sorted(done, key=lambda pt: float(pt["parameters"][key]))
