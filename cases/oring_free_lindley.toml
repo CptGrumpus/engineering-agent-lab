@@ -1,0 +1,119 @@
+# Study 12: O-ring face seal (synthetic client: an aluminium coolant-pump cover, water-glycol at up to 3 bar, NBR 70 Shore A,
+# 3.53 mm cross-section, about 50 mm ID). Framing approved by the user 2026-11-24, after 08:25 (BACKLOG "Framing ... study
+# 12"). Requirements and limits are synthetic, set in the framing before any model existed.
+#
+# Decision: across the tolerance stack (cross-section 3.53 +- 0.10 mm, groove depth 2.79 +- 0.05 mm, width 4.80 +- 0.05 mm,
+# hardness 70 +- 5 Shore A), does the seal (REQ-E1) stay within 15-30 % squeeze, (REQ-E2) keep a peak contact pressure of
+# at least 2 x the 0.3 MPa sealed pressure at the loosest stack, (REQ-E3) need no more than 12 N per mm of seal to close
+# at the tightest, (REQ-E4) fill no more than 85 % of the groove?
+# Hand values (validation/oring.py): squeeze 17.2 / 21.0 / 24.5 %, fill at most 79.5 %: REQ-E1 and E4 pass by hand.
+#
+# Model (models/fea/oring_ccx.py, studies/oring_seal.py): CalculiX, the upper half of the cross-section (mid-plane
+# symmetry: flat groove bottom and cover, frictionless), neo-Hookean with E from Shore A by Gent's relation
+# (Rubber Chem. Technol. 31(4), 1958; 4.43 / 5.52 / 7.05 MPa at 65 / 70 / 75), K = 1000 G, a steel cover moved down by half
+# the squeeze, the groove walls as steel blocks, node-to-surface penalty contact (k = 10 E / contact element size,
+# tension at large clearance 0.01 MPa). The ring sits against the groove's outer wall (the rule for internal pressure:
+# groove OD = ring OD = 57.06 mm, the ring's ID taken as 57.06 - 2 d at each corner).
+# References: Lindley (J. Inst. Rubber Ind. 1(4) 1967, as El Bahloul et al. 2022 print it; exponents unconfirmed),
+# Parker ORD 5700 Fig. 2-6 (measured, 0.139 in, 70 Shore A band, from the PDF's vector lines), Hertz line contact.
+#
+# Found while building (prototype and smoke tests, scratch, 2026-11-24 08:39-10:00; no evidence run yet):
+#   - surface-to-surface contact did not converge (too many cutbacks in the first increment); node-to-surface does.
+#   - a laterally free ring GROWS IN DIAMETER under squeeze (the incompressible squeeze spreads into the hoop as well):
+#     centred in the groove it drifted 1.7-2.0 mm outward, so the groove walls are modelled for the design cases. The
+#     free ring is exactly Lindley's case ("laterally-unrestrained O-rings") and the reference runs keep it free.
+#   - CalculiX lumps about equal areas per slave node in node-to-surface contact on quadratic faces (corner and mid-side
+#     pressures alternate by about 30 %); the trapezoid rule over the nodes reproduces the reaction (1.6 %), so the
+#     pressure is reported as the two-node moving average, and the contact integral uses the trapezoid rule.
+#   - the contact law's tension at large clearance: 1.0 MPa (copied from the Hertz model) made the pressure integral miss
+#     the reaction by up to 47 %; 0.01 MPa closes it.
+#   - smoke values at 0.1 mm contact elements: walls, nominal: F' 3.36 N/mm, peak 2.22 MPa, fill 73.6 %, every check
+#     passing; free ring: FE against Lindley +10.0 / +0.6 / -8.6 % at 10 / 20 / 30 % squeeze, inside Parker's band at
+#     all three.
+#
+# Verification tolerances, fixed before the evidence runs:
+#   volume_rel_tol 1e-3        J about 1 with K = 1000 G (smoke: 4-5e-4).
+#   force_balance_rel_tol 0.03 the contact-pressure integral against the cover's reaction (smoke 1.6 %).
+#   equilibrium_rel_tol 1e-3   cover against symmetry plane; frictionless walls carry only radial force.
+#   penetration_max_fraction 0.02  penalty overclosure into the cover against its travel.
+#   fill_rel_tol 0.01          FE fill against the hand fill (volume conserved; walls only).
+#   in_groove_tol_mm 0.03      penalty overclosure into a wall (smoke 0.015 mm; a 0.03 mm excursion is no extrusion).
+#   lindley_rel_tol 0.15       Lindley is an empirical fit, its exponents read from a garbled source; the smoke test showed
+#                              10 % at 10 % squeeze on the coarse mesh. Set with that in view; a miss is reported.
+#   hertz_rel_tol 0.10         small-strain limit at 5 % squeeze (contact half-width about 0.17 R), on the FE's own
+#                              force (about 20 elements across the contact).
+# The reference cases carry Parker's measured band at their squeeze as requirements (REQ-R1): validation targets.
+#   gci_max 0.05               mesh uncertainty on the requirement metrics (the margins are 2-4 x).
+#
+# Predictions (written BEFORE the evidence runs, 2026-11-24 10:02; from the smoke tests and hand values):
+#   P1 Every point check passes in every case.
+#   P2 Free ring (oring_free_lindley): FE within 15 % of Lindley at 10 / 20 / 30 % (about +10 / +1 / -9 %), inside
+#      Parker's 70 Shore A band at all three.
+#   P3 Hertz (oring_free_hertz, 5 % squeeze): peak pressure and contact width within 10 % of Hertz at the FE's force;
+#      the force inside Parker's 5 % band (0.169-1.113 N/mm).
+#   P4 Corners (oring_seal_corners): loosest (17.2 %, 65 Shore A) F' about 1.8-2.4 N/mm, peak pressure about 1.4-2.0 MPa
+#      (REQ-E2 PASS, margin over 2 x); nominal F' about 3.3-3.4 N/mm, peak 2.1-2.4 MPa; tightest (24.5 %, 75 Shore A)
+#      F' about 5.0-6.5 N/mm (REQ-E3 PASS, margin about 2 x), fill about 79-80 % (REQ-E4 PASS); REQ-E1 PASS at all three.
+#   P5 Mesh study (oring_seal_mesh, tightest, 0.1 / 0.07 / 0.05 mm): force and fill converge (GCI under 2 %); the peak
+#      pressure under 5 %, possibly oscillatory (the corner / mid-side alternation).
+#   P6 About 1.5 / 3.5 / 7 min per run at 0.1 / 0.07 / 0.05 mm.
+# This file: the free-ring reference against Lindley and Parker (P2).
+
+[case]
+name = "oring_free_lindley"
+model = "ccx_oring"
+description = "O-ring 3.53 mm, 70 Shore A, laterally unrestrained (no groove walls) between flat plates to 30 % squeeze; force against squeeze over the run against Lindley's relation and Parker's measured band (reference case)."
+assumptions = [
+  "Axisymmetric; the mid-plane is a symmetry plane (flat groove bottom and cover, frictionless contact, quasi-static), so the upper half of the cross-section is modelled.",
+  "Neo-Hookean rubber, E from Shore A by Gent's relation (synthetic compound; the hardness tolerance carries the material uncertainty), near-incompressible (K = 1000 G; checked: volume conservation).",
+  "Steel cover and groove walls (E 200 GPa, effectively rigid against the rubber).",
+  "Installed against the groove's outer wall (internal pressure); the ring's ID follows the cross-section so its OD equals the groove OD at every corner.",
+  "Unpressurised installation: the 0.3 MPa sealed pressure enters only through REQ-E2's 2 x rule, not as a load.",
+]
+limitations = [
+  "No friction, no compression set or stress relaxation over time, no temperature effects on the compound.",
+  "Lindley's relation is empirical and its exponents are not yet confirmed from a second source; Parker's band is wide (a factor of about 6.6).",
+  "No physical test data.",
+]
+
+[parameters]
+cross_section_mm = 3.53
+ring_inner_diameter_mm = 50.0
+groove_depth_mm = 2.471
+groove_width_mm = 4.80
+groove_outer_diameter_mm = 57.06
+groove_walls = 0
+shore_a = 70.0
+bulk_to_shear = 1000.0
+contact_element_size_mm = 0.05
+far_element_size_mm = 0.2
+penalty_factor = 10.0
+
+[numerics]
+solver_timeout_s = 7200
+
+[verification]
+volume_rel_tol = 1e-3
+force_balance_rel_tol = 0.03
+equilibrium_rel_tol = 1e-3
+penetration_max_fraction = 0.02
+fill_rel_tol = 0.01
+in_groove_tol_mm = 0.03
+gci_max = 0.05
+lindley_rel_tol = 0.15
+
+[[requirements]]
+id = "REQ-R1a"
+text = "Validation: the closing force at 30 % squeeze shall be at least the lower end of Parker's measured 70 Shore A band for the 0.139 in cross-section (ORD 5700 Fig. 2-6; 1.891 N/mm)."
+metric = "force_per_length_N_per_mm"
+operator = ">="
+limit = 1.891
+units = "N/mm"
+
+[[requirements]]
+id = "REQ-R1b"
+text = "Validation: the closing force at 30 % squeeze shall not exceed the upper end of that band (12.999 N/mm)."
+metric = "force_per_length_N_per_mm"
+operator = "<="
+limit = 12.999
+units = "N/mm"

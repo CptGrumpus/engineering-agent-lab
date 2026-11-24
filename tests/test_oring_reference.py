@@ -42,3 +42,17 @@ def test_stack_corners():
     assert s["squeeze_min"] == pytest.approx((3.43 - 2.84) / 3.43)
     assert s["squeeze_max"] == pytest.approx((3.63 - 2.74) / 3.63)
     assert s["fill_max"] == pytest.approx(math.pi * 3.63 ** 2 / 4 / (2.74 * 4.75))
+
+
+def test_study_inputs_to_model():
+    """Physical inputs -> squeeze, Gent modulus, ring and groove radii (ring against the outer wall)."""
+    from studies.oring_seal import model_params
+    p = {"cross_section_mm": 3.53, "ring_inner_diameter_mm": 50.0, "groove_depth_mm": 2.79, "groove_width_mm": 4.80,
+         "groove_outer_diameter_mm": 57.06, "groove_walls": 1, "shore_a": 70.0, "bulk_to_shear": 1000.0,
+         "contact_element_size_mm": 0.05, "far_element_size_mm": 0.2, "penalty_factor": 10.0}
+    m = model_params(p)
+    assert m["squeeze"] == pytest.approx((3.53 - 2.79) / 3.53)
+    assert m["youngs_modulus_MPa"] == pytest.approx(O.gent_youngs_modulus_MPa(70))
+    assert m["mean_radius_mm"] + 3.53 / 2 == pytest.approx(57.06 / 2)          # ring OD on the groove OD
+    assert m["groove_inner_radius_mm"] == pytest.approx(57.06 / 2 - 4.80)
+    assert "groove_inner_radius_mm" not in model_params(p | {"groove_walls": 0})

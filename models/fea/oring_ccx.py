@@ -150,6 +150,19 @@ def faces_on(elems, nodes, test):
     return out
 
 
+def arc_edges(mesh: dict) -> list[tuple[int, int, int]]:
+    """(corner, mid-side, corner) node triples of the ring's element edges on the arc (the contact surface)."""
+    nodes, a, Rc = mesh["nodes"], mesh["a"], mesh["Rc"]
+    on = lambda n: abs(math.hypot(nodes[n][0] - Rc, nodes[n][1]) - a) < 1e-5 * a and nodes[n][1] > 1e-6 * a  # noqa: E731
+    out = []
+    for _, t, c in mesh["elems"]["RING"]:
+        faces, mid0 = (QUAD_FACES, 4) if t == "CAX8R" else (TRI_FACES, 3)
+        for k, (i, j) in enumerate(faces):
+            if on(c[i]) and on(c[j]):
+                out.append((c[i], c[mid0 + k], c[j]))
+    return out
+
+
 def write_deck(mesh: dict, params: dict, deck: Path) -> dict:
     nodes, elems, a, Rc = mesh["nodes"], mesh["elems"], mesh["a"], mesh["Rc"]
     E = float(params["youngs_modulus_MPa"])
@@ -205,7 +218,7 @@ def write_deck(mesh: dict, params: dict, deck: Path) -> dict:
         + f"*BOUNDARY\nCTOP, 2, 2, {-delta!r}\n"
         + "*NODE FILE, FREQUENCY=10000\nU\n*EL FILE, FREQUENCY=10000\nS, E\n"
         + "*CONTACT FILE, FREQUENCY=10000\nCSTR, CDIS\n"
-        + "*NODE PRINT, NSET=CTOP, TOTALS=ONLY, FREQUENCY=1\nRF\n"
+        + "*NODE PRINT, NSET=CTOP, TOTALS=ONLY, FREQUENCY=1\nRF\n*NODE PRINT, NSET=SYM, TOTALS=ONLY\nRF\n"
         + ("*NODE PRINT, NSET=NWALL, TOTALS=ONLY\nRF\n" if wall_nodes else "") + "*END STEP\n", encoding="utf-8")
     return {"nodes": len(nodes), "ring_elements": len(elems["RING"]), "cover_elements": len(elems["COVER"]),
             "slave_faces": len(slave), "master_faces": len(master), "penalty_MPa_per_mm": k_pen,
