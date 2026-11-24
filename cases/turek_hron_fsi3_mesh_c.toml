@@ -17,6 +17,25 @@
 #      regeneration noise, as FSI1 and FSI2), reported, not tuned.
 #   P5 About 4-6 h / 9-12 h / 22-30 h side by side (sharing the CPU with FSI2 until about 20:30 and the motor run).
 # This file: level c, 1.77 mm.
+#
+# Result (20261123-161128, 16:11-03:12, 11.0 h): VERIFICATION PASS, 7/7 checks (flag cells 122.3 deg, force transfer
+# 3.1e-9, periodic 9.4e-6), every requirement PASS: uy amplitude 3.460e-2 (-1.1 %), frequency 5.455 Hz, drag mean
+# 466.0 (+1.2 %), drag amplitude 26.12 (-5.8 %), lift amplitude 154.3 (+0.2 %), ux mean -2.862e-3 (-0.6 %). It ran the
+# full 8 s at a maximum Courant number of 2.36 under PISO, with the same mesh motion as FSI2 c (which failed at 8.836 s
+# with a swing about twice FSI3's 35 mm): Courant number about 2 alone does not break this setup; it does not tell
+# the two FSI2 c mechanisms apart (both grow with the swing).
+#   P1 HELD on all three levels.  P2 HELD (level b).  P3 HELD: c uy amplitude 3.460e-2 in 3.40-3.52e-2, drag mean in
+#   458-472, frequencies 5.453 / 5.464 / 5.455 Hz; every requirement passes on b and c, a fails uy amplitude as named.
+#   P5 MISSED: 9.9 / 9.3 / 11.0 h, not 4-6 / 9-12 / 22-30 h; the 2.5 mm solid sets the coupled pace on every level.
+#
+# Combined mesh check (scripts/combine_mesh_levels.py -> validation/turek_hron/fsi3_mesh_study.json, 03:13):
+#   uy frequency  oscillatory, uncertainty 0.13 %                           PASS (under 1 %)
+#   drag mean     monotone, order 2.21, GCI 0.90 %, extrapolated 462.66   PASS (benchmark 460.5: +0.47 %)
+#   uy amplitude  monotone, order 2.87, GCI 1.45 %, extrapolated 3.4997e-2 FAIL at 1 % (benchmark 3.499e-2: +0.02 %)
+#   drag / lift amplitude  anomalous order (3.61 / 5.32, design 2): no estimate     FAIL
+#   ux mean       monotone, order 0.89, GCI 19.6 %, extrapolated -3.31e-3  FAIL (benchmark -2.88e-3; level c -0.6 %)
+#   P4 HELD: frequency and drag mean converge under 1 %; the amplitudes do not all give a clean order (reported, not
+#   tuned). The uy amplitude converges cleanly onto the benchmark, only slower than the 1 % limit at these sizes.
 
 [case]
 name = "turek_hron_fsi3_mesh_c"

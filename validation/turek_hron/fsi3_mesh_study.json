@@ -1,0 +1,154 @@
+{
+ "runs": [
+  "20261123-161047_turek_hron_fsi3_mesh_a",
+  "20261123-161107_turek_hron_fsi3_mesh_b",
+  "20261123-161128_turek_hron_fsi3_mesh_c"
+ ],
+ "parameter": "fluid_cell_size_m",
+ "values": [
+  0.0035355339,
+  0.0025,
+  0.001767767
+ ],
+ "checks": [
+  {
+   "id": "discretization_uy_A_amp",
+   "description": "relative discretization uncertainty of uy_A_amp, monotone (R = 0.370): GCI_fine, observed order 2.87, extrapolated 0.0349972",
+   "kind": "numerical",
+   "value": 0.014529982713632894,
+   "tolerance": 0.01,
+   "comparison": "<=",
+   "status": "FAIL",
+   "metric": "uy_A_amp_deviation_pct"
+  },
+  {
+   "id": "discretization_uy_A_freq_Hz",
+   "description": "relative discretization uncertainty of uy_A_freq_Hz, oscillatory (R = -0.814): 1.25 x half-range of the 3 finest solutions",
+   "kind": "numerical",
+   "value": 0.001252735225820149,
+   "tolerance": 0.01,
+   "comparison": "<=",
+   "status": "PASS",
+   "metric": "uy_A_freq_Hz_deviation_pct"
+  },
+  {
+   "id": "discretization_drag_mean",
+   "description": "relative discretization uncertainty of drag_mean, monotone (R = 0.466): GCI_fine, observed order 2.21, extrapolated 462.66",
+   "kind": "numerical",
+   "value": 0.0089799434713476,
+   "tolerance": 0.01,
+   "comparison": "<=",
+   "status": "PASS",
+   "metric": "drag_mean_deviation_pct"
+  },
+  {
+   "id": "discretization_drag_amp",
+   "description": "relative discretization uncertainty of drag_amp, anomalous: observed order 3.61 is far above the design order 2, so the solutions are not in the asymptotic range (singularity or coincidence); no estimate",
+   "kind": "numerical",
+   "value": Infinity,
+   "tolerance": 0.01,
+   "comparison": "<=",
+   "status": "FAIL",
+   "metric": "drag_amp_deviation_pct"
+  },
+  {
+   "id": "discretization_lift_amp",
+   "description": "relative discretization uncertainty of lift_amp, anomalous: observed order 5.32 is far above the design order 2, so the solutions are not in the asymptotic range (singularity or coincidence); no estimate",
+   "kind": "numerical",
+   "value": Infinity,
+   "tolerance": 0.01,
+   "comparison": "<=",
+   "status": "FAIL",
+   "metric": "lift_amp_deviation_pct"
+  },
+  {
+   "id": "discretization_ux_A_mean",
+   "description": "relative discretization uncertainty of ux_A_mean, monotone (R = 0.735): GCI_fine, observed order 0.89, extrapolated -0.00330926",
+   "kind": "numerical",
+   "value": 0.19554974349638132,
+   "tolerance": 0.01,
+   "comparison": "<=",
+   "status": "FAIL",
+   "metric": "ux_A_mean_deviation_pct"
+  }
+ ],
+ "detail": {
+  "meshes_used": [
+   "20261123-161128_turek_hron_fsi3_mesh_c/p00_baseline",
+   "20261123-161107_turek_hron_fsi3_mesh_b/p00_baseline",
+   "20261123-161047_turek_hron_fsi3_mesh_a/p00_baseline"
+  ],
+  "uy_A_amp": {
+   "regime": "monotone",
+   "uncertainty": 0.014529982713632894,
+   "converged_exactly": false,
+   "order": 2.8693622353194446,
+   "extrapolated": 0.03499719603970563,
+   "rel_error_fine": 0.019798250984566182,
+   "rel_error_extrapolated": 0.011490421668335728,
+   "gci_fine": 0.014529982713632894,
+   "convergence_ratio": 0.36992862073423527,
+   "r21": 1.414213524746191,
+   "r32": 1.4142135599999999
+  },
+  "uy_A_freq_Hz": {
+   "regime": "oscillatory",
+   "convergence_ratio": -0.8144571274323622,
+   "uncertainty": 0.001252735225820149
+  },
+  "drag_mean": {
+   "regime": "monotone",
+   "uncertainty": 0.0089799434713476,
+   "converged_exactly": false,
+   "order": 2.2052941336366496,
+   "extrapolated": 462.65967516326964,
+   "rel_error_fine": 0.00824346888259663,
+   "rel_error_extrapolated": 0.007235937424304202,
+   "gci_fine": 0.0089799434713476,
+   "convergence_ratio": 0.46566129228393066,
+   "r21": 1.414213524746191,
+   "r32": 1.4142135599999999
+  },
+  "drag_amp": {
+   "converged_exactly": false,
+   "order": 3.6093743951538557,
+   "extrapolated": 26.45662776178209,
+   "rel_error_fine": 0.03233701647276112,
+   "rel_error_extrapolated": 0.012802324443304133,
+   "gci_fine": 0.01621043682574085,
+   "convergence_ratio": 0.28624308751632405,
+   "r21": 1.414213524746191,
+   "r32": 1.4142135599999999,
+   "regime": "anomalous order",
+   "uncertainty": Infinity,
+   "design_order": 2
+  },
+  "lift_amp": {
+   "converged_exactly": false,
+   "order": 5.319307787303793,
+   "extrapolated": 154.43748351010197,
+   "rel_error_fine": 0.005457021724463733,
+   "rel_error_extrapolated": 0.001024933215398054,
+   "gci_fine": 0.001282480976598646,
+   "convergence_ratio": 0.15825753356029554,
+   "r21": 1.414213524746191,
+   "r32": 1.4142135599999999,
+   "regime": "anomalous order",
+   "uncertainty": Infinity,
+   "design_order": 2
+  },
+  "ux_A_mean": {
+   "regime": "monotone",
+   "uncertainty": 0.19554974349638132,
+   "converged_exactly": false,
+   "order": 0.8866690934353585,
+   "extrapolated": -0.003309264558426147,
+   "rel_error_fine": 0.05627819687168428,
+   "rel_error_extrapolated": 0.1352770766804614,
+   "gci_fine": 0.19554974349638132,
+   "convergence_ratio": 0.7354327694623994,
+   "r21": 1.414213524746191,
+   "r32": 1.4142135599999999
+  }
+ }
+}
