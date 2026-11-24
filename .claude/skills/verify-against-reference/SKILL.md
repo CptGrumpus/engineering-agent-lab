@@ -103,6 +103,16 @@ The two tools agreeing does not replace the analytical check. It adds evidence t
 implementation has a set-up error, such as a sign, units, or parameter-mapping slip, that the
 other lacks.
 
+When a model disagrees with test data, a second solver answers one question only: is the field
+solve right? Make it differ in everything but the inputs (mesher, element order, domain, gap or
+interface treatment, nonlinear method), verify it on its own closed form first, and check that
+its regions tile the domain exactly once. Agreement then moves the search to the shared inputs
+and to what both models leave out. Study 7: ElmerFEM matched the FEMM motor model to 0.1 %, so
+the 18 % back-EMF excess is not a solver artefact. Its first attempt meshed the steel twice over
+the bore and read 10x low while its own mesh study converged; only the area balance caught it.
+Predict convergence on the reported quantity, not the solver's residual norm (Elmer's stalled at
+1.4e-3 while the flux linkage was stable to 1e-9 Wb).
+
 ## Rules
 
 - A solver success message or a plausible plot is not verification.
