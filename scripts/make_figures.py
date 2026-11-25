@@ -2065,12 +2065,192 @@ def crack_growth():
     fk.save(fig, "crack_growth")
 
 
+def enclosure_fix():
+    """The sealed enclosure: the hottest component and the mean air against the bridge's conductivity, at both
+    interior finishes, with the as-drawn corners beside them; and the two benchmark stages the model's parts were
+    checked on. A redesign run's marker is the grey hollow 'not verified' one when the box had not settled as the run
+    stopped: the heat leaving it, summed over the exact face areas, more than the case's tolerance from the heat put in. Gated on that total
+    and on the settled-state extrapolation reproducing the values recorded in each case header."""
+    import re
+
+    import matplotlib
+
+    corner = {(5.0, 0.9): "20261124-144014_enclosure_k5_eps0p9", (20.0, 0.9): "20261124-144021_enclosure_k20_eps0p9",
+              (5.0, 0.1): "20261124-144011_enclosure_k5_eps0p1", (20.0, 0.1): "20261124-144017_enclosure_k20_eps0p1"}
+    fix = {(0.1, 0.0): "20261124-171515_enclosure_fix_k5_eps0p1_shell", (0.1, 1.0): "20261124-171458_enclosure_fix_k5_eps0p1_br1",
+           (0.1, 2.0): "20261124-171503_enclosure_fix_k5_eps0p1_br2", (0.1, 5.0): "20261124-171511_enclosure_fix_k5_eps0p1_br5",
+           (0.1, 20.0): "20261124-171507_enclosure_fix_k5_eps0p1_br20",
+           (0.9, 0.0): "20261124-171537_enclosure_fix_k5_eps0p9_shell", (0.9, 1.0): "20261124-171520_enclosure_fix_k5_eps0p9_br1",
+           (0.9, 2.0): "20261124-171524_enclosure_fix_k5_eps0p9_br2", (0.9, 5.0): "20261124-171532_enclosure_fix_k5_eps0p9_br5",
+           (0.9, 20.0): "20261124-171528_enclosure_fix_k5_eps0p9_br20"}
+    L = limits("enclosure_fix_k5_eps0p9_br5")
+    lim_c, lim_a = L["component_max_C"][1], L["air_mean_C"][1]
+
+    def aitken(a, b, c):
+        return c - (c - b) ** 2 / ((c - b) - (b - a))
+
+    cor = {}
+    for (kb, eps), run in corner.items():
+        r = point(run, "p00_baseline")
+        assert r["parameters"]["board_k_W_mK"] == kb and r["parameters"]["eps_int"] == eps
+        assert limits(run.split("_", 1)[1]) == L
+        cor[(kb, eps)] = dict(comp=r["metrics"]["component_max_C"], air=r["metrics"]["air_mean_C"],
+                              ok=verified(run)["p00_baseline"])
+    red = {}
+    for (eps, kbr), run in fix.items():
+        name = run.split("_", 1)[1]
+        r = point(run, "p00_baseline")
+        p, h = r["parameters"], r["solver_outputs"]["history"]
+        assert p["eps_int"] == eps and p["bridge_k_W_mK"] == kbr and p["board_k_W_mK"] == 5.0 and limits(name) == L
+        case = tomllib.loads((REPO / "cases" / f"{name}.toml").read_text(encoding="utf-8"))
+        tol = case["verification"]["heat_balance_rel_tol"]
+        # the shell's outside perimeter: as the study summed it (whole cells of the nominal size) and as meshed
+        ts, cell = p["shell_thickness_mm"], p["cell_mm"]
+        xs = [ts, (p["width_mm"] - p["board_length_mm"]) / 2, (p["board_length_mm"] - p["component_length_mm"]) / 2,
+              p["component_length_mm"], (p["board_length_mm"] - p["component_length_mm"]) / 2,
+              (p["width_mm"] - p["board_length_mm"]) / 2, ts]
+        ys = [ts, (p["height_mm"] - p["board_thickness_mm"]) / 2, p["board_thickness_mm"],
+              (p["height_mm"] - p["board_thickness_mm"]) / 2, ts]
+        counted = 2 * cell * sum(max(1, round(d / cell)) for d in xs + ys)
+        true = 2 * (sum(xs) + sum(ys))
+        power = p["power_component_W"] + p["power_board_W"]
+        q = [row["Q_out_W"] * true / counted for row in h[-3:]]
+        head = " ".join(ln.lstrip("# ") for ln in (REPO / "cases" / f"{name}.toml").read_text(encoding="utf-8").split("[case]")[0].splitlines())
+        m = re.search(r"heat out ([\d.]+) W against 15 W at 3,600 s \(([+-][\d.]+) %\)", head)
+        assert m and abs(q[-1] - float(m.group(1))) < 0.006, (name, q[-1], m and m.group(1))
+        assert f"counted {counted:g} mm of its {true:g} mm perimeter" in head, (counted, true)
+        m = re.search(r"Extrapolated to the settled state.*?component ([\d.]+) C, air ([\d.]+) C, heat out ([\d.]+) W", head)
+        comp_s = aitken(*[row["component_max_C"] for row in h[-3:]])
+        air_s = aitken(*[row["air_mean_C"] for row in h[-3:]])
+        q_s = aitken(*q)
+        assert m and abs(comp_s - float(m.group(1))) < 0.02 and abs(air_s - float(m.group(2))) < 0.02 \
+            and abs(q_s - float(m.group(3))) < 0.02, (name, comp_s, air_s, q_s, m and m.groups())
+        f = r["solver_outputs"]["final"]
+        checks = json.loads((RUNS / run / "points" / "p00_baseline" / "checks.json").read_text(encoding="utf-8"))
+        settled_ok = next(c for c in checks["checks"] if c["id"] == "settled")["status"] == "PASS"
+        red[(eps, kbr)] = dict(comp=f["component_max_C"], air=f["air_mean_C"], board=f["board_max_C"], comp_s=comp_s,
+                               air_s=air_s, off=q[-1] / power - 1, off_s=q_s / power - 1,
+                               ok=abs(q[-1] / power - 1) <= tol and settled_ok, recorded=checks["status"])
+    assert all((v["comp_s"] <= lim_c) == (v["comp"] <= lim_c) and (v["air_s"] <= lim_a) == (v["air"] <= lim_a)
+               for v in red.values())                                   # settling changes no verdict
+    for (eps, kbr), v in sorted(red.items()):
+        print(f"   eps {eps:g} bridge {kbr:>4g}: component {v['comp']:.2f} (settled {v['comp_s']:.2f}), air {v['air']:.2f} "
+              f"({v['air_s']:.2f}), board {v['board']:.2f}, heat out {100 * v['off']:+.2f} % ({100 * v['off_s']:+.2f} % settled), "
+              f"{'settled' if v['ok'] else 'NOT settled'}; recorded {v['recorded']}")
+    print(f"   settling moves the component by at most {max(abs(v['comp'] - v['comp_s']) for v in red.values()):.2f} K, "
+          f"the air by {max(abs(v['air'] - v['air_s']) for v in red.values()):.2f} K; "
+          f"settled heat balance {min(abs(v['off_s']) for v in red.values()) * 100:.2f} to "
+          f"{max(abs(v['off_s']) for v in red.values()) * 100:.2f} %; "
+          f"{sum(v['ok'] for v in red.values())} of {len(red)} settled at the end")
+
+    blues = matplotlib.colormaps[fk.SEQ]
+    col = {0.1: blues(0.92), 0.9: blues(0.55)}
+    ks = [0.0, 1.0, 2.0, 5.0, 20.0]
+    xk = {k: 1.45 + i for i, k in enumerate(ks)}
+    fig, gs = fk.new(FULL, 4.5, 1, 3, wspace=0.40, top=0.80, width_ratios=[1.22, 1.0, 0.92])
+    gs.update(bottom=0.74 / 4.5)                    # two-line tick labels and the axis title under them
+
+    def panel(ax, metric, lim, ylim, where):
+        fk.style(ax)
+        ax.set_xlim(-0.55, xk[20.0] + 0.5)
+        ax.set_ylim(*ylim)
+        fk.limit(ax, lim, f"limit {lim:g} °C", "above", axis="y", at=where)
+        for eps in (0.1, 0.9):
+            lo, hi = sorted(cor[(kb, eps)][metric] for kb in (5.0, 20.0))
+            ax.plot([0, 0], [lo, hi], color=col[eps], linewidth=1.8, zorder=3)
+            for kb in (5.0, 20.0):
+                c = cor[(kb, eps)]
+                fk.status_dot(ax, 0, c[metric], "held" if not c["ok"] else ("meets" if c[metric] <= lim else "misses"), size=30)
+            y = [red[(eps, k)][metric] for k in ks]
+            ax.plot([xk[k] for k in ks], y, color=col[eps], linewidth=1.8, zorder=3)
+            for k, yy in zip(ks, y):
+                fk.status_dot(ax, xk[k], yy, "held" if not red[(eps, k)]["ok"] else ("meets" if yy <= lim else "misses"), size=34)
+        ax.set_xticks([0] + [xk[k] for k in ks])
+        ax.set_xticklabels(["as\ndrawn", "none"] + [f"{k:g}" for k in ks[1:]])
+        ax.set_xlabel("bridge to the lid, W/mK", x=0.62)
+
+    ax = fig.add_subplot(gs[0, 0])
+    panel(ax, "comp", lim_c, (52, 176), 0.985)
+    ax.set_ylabel("hottest component, °C")
+    fk.label(ax, 0, cor[(5.0, 0.1)]["comp"], f"{cor[(20.0, 0.1)]['comp']:.0f} to {cor[(5.0, 0.1)]['comp']:.0f}", dx=8, dy=2, color=INK, size=8.5)
+    fk.label(ax, 0, (cor[(20.0, 0.9)]["comp"] + cor[(5.0, 0.9)]["comp"]) / 2,
+             f"{cor[(20.0, 0.9)]['comp']:.0f} to {cor[(5.0, 0.9)]['comp']:.0f}", dx=-9, dy=-14, color=INK, size=8.5)
+    fk.label(ax, xk[1.0], red[(0.1, 1.0)]["comp"], "bare metal inside,\nemissivity 0.1", dx=10, dy=14, va="bottom", color=INK, size=8.5)
+    fk.callout(ax, ((xk[0.0] + xk[1.0]) / 2, (red[(0.9, 0.0)]["comp"] + red[(0.9, 1.0)]["comp"]) / 2), (-16, -34),
+               "painted, 0.9", ha="right")
+    fk.label(ax, xk[5.0], red[(0.1, 5.0)]["comp"], f"{red[(0.1, 5.0)]['comp']:.1f}", dx=8, dy=6, color=INK, size=8.5, bold=True)
+    fk.label(ax, xk[5.0], red[(0.9, 5.0)]["comp"], f"{red[(0.9, 5.0)]['comp']:.1f}", dx=-7, dy=-9, ha="right", color=INK,
+             size=8.5, bold=True)
+    fk.panel(ax, "Component: 5 W/mK passes")
+    first = ax
+
+    ax = fig.add_subplot(gs[0, 1])
+    panel(ax, "air", lim_a, (56.5, 88), 0.03)
+    ax.set_ylabel("mean air inside, °C")
+    for eps, dy in ((0.1, 11), (0.9, -11)):
+        fk.label(ax, xk[5.0], red[(eps, 5.0)]["air"], f"{red[(eps, 5.0)]['air']:.1f}", dx=0, dy=dy, ha="center", color=INK,
+                 size=8.5, bold=True)
+    fk.label(ax, xk[1.0], red[(0.1, 1.0)]["air"], "bare", dx=6, dy=8, va="bottom", color=INK, size=8.5)
+    fk.label(ax, xk[0.0], red[(0.9, 0.0)]["air"], "painted", dx=4, dy=9, va="bottom", color=INK, size=8.5)
+    fk.panel(ax, "Air: over 60 °C throughout")
+
+    # the benchmark stages: each requirement's recorded deviation from the known answer
+    def devs(run, req):
+        rep = json.loads((RUNS / run / "report.json").read_text(encoding="utf-8"))
+        assert rep["verification_status"] == "PASS"
+        out = []
+        for pt in rep["points"]:
+            q = next(x for x in pt["requirements"] if x["id"] == req)
+            assert q["units"] == "%" and q["operator"] == "<="
+            out.append((pt["parameters"], q["value"], q["limit"], q["verdict"] == "PASS"))
+        return out
+
+    cav = devs("20261124-105442_cavity_devahldavis", "REQ-V1")
+    ann = devs("20261124-110740_annulus_angular", "REQ-V4")
+    used = point(fix[(0.9, 5.0)], "p00_baseline")["parameters"]["n_phi"]
+    assert all(point(r, "p00_baseline")["parameters"]["n_phi"] == used for r in list(fix.values()) + list(corner.values()))
+    assert {a[0]["n_phi"] for a in ann} >= {used} and all(a[2] == cav[0][2] for a in cav + ann)
+    ax = fig.add_subplot(gs[0, 2])
+    fk.style(ax, grid="x")
+    rows = [(f"Ra 10{'⁰¹²³⁴⁵⁶'[round(np.log10(pr['rayleigh']))]}", v, ok, False) for pr, v, _, ok in cav]
+    rows += [(f"{4 * pr['n_phi']:g} rays" + (",\nas used" if pr["n_phi"] == used else ""), v, ok, pr["n_phi"] == used)
+             for pr, v, _, ok in ann]
+    ypos = [7.6, 6.6, 5.6, 4.6, 2.4, 1.4, 0.4]
+    ax.set_xlim(0, 1.32)
+    ax.set_ylim(-0.4, 9.2)
+    ax.axvspan(cav[0][2], 1.32, color=fk.FAIL, alpha=0.07, linewidth=0, zorder=0.5)
+    ax.axvline(cav[0][2], color=INK2, linewidth=1.1, zorder=1)
+    ax.text((cav[0][2] + 1.32) / 2, 4.5, f"limit {cav[0][2]:g} %", rotation=90, ha="center", va="center", fontsize=8.5,
+            color=INK2)
+    for (name, v, ok, mine), y in zip(rows, ypos):
+        ax.plot([0, v], [y, y], color=GRID, linewidth=3, zorder=2, solid_capstyle="butt")
+        fk.status_dot(ax, v, y, "meets" if ok else "misses", size=34)
+        if mine:
+            fk.label(ax, v, y, f"{v:.2f}", dx=2, dy=11, ha="right", color=INK, size=8.5, bold=True)
+        else:
+            fk.label(ax, v, y, f"{v:.2f}", dx=8, color=INK, size=8.5)
+    ax.set_yticks(ypos)
+    ax.set_yticklabels([r[0] for r in rows])
+    fk.label(ax, 0.02, 8.55, "convection in a square cavity", color=INK2, size=8.5)
+    fk.label(ax, 0.02, 3.35, "radiation between cylinders", color=INK2, size=8.5)
+    ax.set_xlabel("off the known answer, %")
+    fk.panel(ax, "The parts, checked first")
+    thumb(fig, first, "enclosure")
+    fk.heading(fig, "The box overheats as drawn; a bridge to the lid fixes the component, not the air",
+               "15 W inside, 40 °C outside · OpenFOAM · diamond: over the limit · grey ring: not verified, the run stopped "
+               "before the box settled")
+    fig.savefig(fk.OUT / "fig_enclosure_fix.svg", format="svg", dpi=300, metadata={"Date": None, "Creator": None})
+    fk.plt.close(fig)
+    print("fig enclosure_fix")
+
+
 ALL = {f.__name__: f for f in (cfd_tolerance, cfd_duct, cfd_response, cfd_field, fea_tet4, strap_sweep, fatigue_sweep,
                                strut_sweep, strut_response, proof_response, joint_response, contact_response, fea_response, strap_response,
                                fatigue_sn, fin_response, fin_h_sweep, qc_bump_sweep, cad_sweep, heat_response,
                                qc_liftoff, qc_iso, coldplate_response, pipe_friction, motor_comparison,
                                motor_rotor, pv_nozzle, step_comparison, random_vibration, bracket_uncertainty,
-                               fan_rotor, fan_rotor_campbell, crack_growth, motor_efficiency, motor_airgap, oring_seal, shaft_fillet)}
+                               fan_rotor, fan_rotor_campbell, crack_growth, motor_efficiency, motor_airgap, oring_seal, shaft_fillet,
+                               enclosure_fix)}
 # not on the site (the earlier model's thermal result): motor_thermal
 
 if __name__ == "__main__":

@@ -37,8 +37,11 @@ STUDY_DOCS = {
     "pipe": "19-turbulent-pipe-friction", "motor": "20-prius-traction-motor", "step": "19-turbulent-pipe-friction",
     "random_vib": "21-bracket-random-vibration", "bracket_uq": "22-bracket-random-uncertainty",
     "fan_rotor": "23-fan-rotor-critical-speeds", "crack": "24-cracked-plate-growth", "oring": "25-oring-face-seal", "shaft": "26-shaft-shoulder-fatigue",
+    "enclosure": "27-sealed-enclosure-thermal",
 }
 RUN_PREFIX = {"pipe": "pipe_", "step": "step_"}
+# runs a write-up cites by a pattern instead of one by one: listed with the ones it names
+RUN_GLOB = {"enclosure": ["*_enclosure_fix_k5_eps0p*"]}
 # studies whose page cites a chosen set of runs instead of every run its write-up mentions, and links no write-up
 # until it's rewritten to match the page (the motor: the page shows the client-data model; user, 2026-11-23)
 RUN_LIST = {"motor": ["20261123-141642_motor_prius_rev5_oc", "20261123-150432_motor_prius_rev5_inductance",
@@ -71,6 +74,7 @@ def evidence(key: str) -> dict | None:
         links = [(r.split("_", 1)[1], gh(f"runs/{r}/report.md")) for r in runs]
         return {"doc": None, "memo": None, "runs": links}
     runs = sorted(set(m.group(1) for m in _RUN.finditer((REPO / doc).read_text(encoding="utf-8"))))
+    runs = sorted(set(runs) | {p.name for g in RUN_GLOB.get(key, []) for p in (REPO / "runs").glob(g)})
     runs = [r for r in runs if tracked(f"runs/{r}/report.md")]
     if key in RUN_PREFIX:                       # two parts share one write-up: each lists its own runs
         runs = [r for r in runs if r.split("_", 1)[1].startswith(RUN_PREFIX[key])]
@@ -552,6 +556,11 @@ REQS = [
         ("Yield safety at a 1.5 × overload, as drawn", "≥ 2.0", "1.77 to 1.92; 1.83 at the nominal", "fail"),
         ("Smallest fillet meeting the fatigue limit", "under the 4 mm shoulder", "none: 1.47 at 3.9 mm", "fail"),
         ("The fix: d 36 / D 45 mm, fillet 1.8 mm, at its lower tolerance", "≥ 1.5 and ≥ 2.0", "fatigue 1.62, yield 2.52", "met")]),
+    ("enclosure", "27", "Sealed enclosure", [
+        ("Hottest component as drawn, bare or painted inside", "≤ 85 °C", "94 to 98 °C painted, 156 to 163 °C bare", "fail"),
+        ("Mean air inside, as drawn", "≤ 60 °C", "67 °C painted, 84 °C bare", "fail"),
+        ("Hottest component with a 5 W/mK bridge to the lid", "≤ 85 °C", "70.0 °C painted, 76.1 °C bare when the runs stopped, still cooling; 0.5 to 0.6 K lower once settled, by extrapolation", "unsettled"),
+        ("Mean air inside with that bridge", "≤ 60 °C", "62.3 °C painted, 66.2 °C bare; over the limit with every bridge tried", "fail")]),
     ("cfd", "05", "Coolant channel", [
         ("Supply pressure", "≤ 30 Pa", "33.4 Pa nominal, 28–42 Pa over tolerances", "fail"),
         ("Wall shear stress", "≥ 0.5 Pa", "0.43 Pa with warm coolant", "fail"),
@@ -611,9 +620,10 @@ REQS = [
 ]
 CHIP = {"met": ("pass", "Met"), "fail": ("fail", "Not met"), "held": ("warn", "Withheld"),
         "open": ("warn", "Open"), "finding": ("note", "Finding, confirmed by test"), "cond": ("warn", "Depends on steel grade"),
-        "provisional": ("warn", "Met; depends on the flux"), "nominal": ("warn", "Met at the nominal fit")}
+        "provisional": ("warn", "Met; depends on the flux"), "nominal": ("warn", "Met at the nominal fit"),
+        "unsettled": ("warn", "Met; run not settled")}
 # how each status counts in the summary line: a design finding is still a requirement the design doesn't meet
-COUNT_AS = {"met": "met", "fail": "fail", "held": "held", "open": "held", "finding": "fail", "cond": "fail", "provisional": "held", "nominal": "met"}
+COUNT_AS = {"met": "met", "fail": "fail", "held": "held", "open": "held", "finding": "fail", "cond": "fail", "provisional": "held", "nominal": "met", "unsettled": "held"}
 
 
 def reqs_html() -> str:
@@ -752,6 +762,7 @@ CAPS = """<div class="table-wrap">
           <tr><td>Internal laminar flow and pressure budgets, in 2D and 3D</td><td>OpenFOAM</td><td><a href="#cfd">5</a></td></tr>
           <tr><td>Turbulent flow (RANS, k-omega SST) with resolved and wall-function wall treatments, checked against measured pipe friction</td><td>OpenFOAM</td><td><a href="#pipe">19</a></td></tr>
           <tr><td>Heat transfer, from conduction with surface convection to convection in a heated coolant channel</td><td>CalculiX, OpenFOAM</td><td><a href="#thermal">6</a>, <a href="#heat">11</a></td></tr>
+          <tr><td>Electronics cooling in a sealed enclosure: natural convection, conduction and surface radiation solved together, with the convection and the radiation each checked against a known answer first</td><td>OpenFOAM, Python</td><td><a href="#enclosure">27</a></td></tr>
           <tr><td>Ride, road holding and frequency response, including ISO 2631 comfort weighting</td><td>Python (SciPy), OpenModelica</td><td><a href="#suspension">7</a>, <a href="#baseline">9</a></td></tr>
           <tr><td>Renders of FE results and CAD parts in Blender, with the legend colours and geometry checked automatically</td><td>Blender (Cycles), Python</td><td><a href="#fea">1</a>, <a href="#strap">2</a>, <a href="#modal">4</a>, <a href="#thermal">6</a>, <a href="#cad">8</a>, <a href="#bracket_opt">12</a>, <a href="#strut">13</a>, <a href="#strap_proof">14</a>, <a href="#cold_plate">15</a>, <a href="#bolted_joint">16</a></td></tr>
           <tr><td>Verification against exact and handbook solutions, the Grid Convergence Index, and tolerance and sensitivity studies</td><td>Python</td><td>All</td></tr>

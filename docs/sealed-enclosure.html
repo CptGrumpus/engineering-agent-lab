@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sealed Electronics Enclosure: The Hot Component and Its Fix · Justin Smith</title>
+<meta name="description" content="Overheats as drawn at every corner: the component reaches 94 to 163 °C against a limit of 85, depending on the inside finish. A 5 W/mK bridge from the component to the lid brings it to 70 to 76 °C. The air inside stays over its 60 °C limit with every bridge, so the board needs a heat path of its own.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://cptgrumpus.github.io/engineering-agent-lab/sealed-enclosure.html">
+<meta property="og:title" content="Sealed Electronics Enclosure: The Hot Component and Its Fix">
+<meta property="og:description" content="Overheats as drawn at every corner: the component reaches 94 to 163 °C against a limit of 85, depending on the inside finish. A 5 W/mK bridge from the component to the lid brings it to 70 to 76 °C. The air inside stays over its 60 °C limit with every bridge, so the board needs a heat path of its own.">
+<meta property="og:image" content="https://cptgrumpus.github.io/engineering-agent-lab/v2/og_sealed-enclosure.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Sealed electronics enclosure: the hot component and its fix: result render">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://cptgrumpus.github.io/engineering-agent-lab/sealed-enclosure.html">
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#141b24" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3CclipPath id='c'%3E%3Crect width='24' height='24' rx='5'/%3E%3C/clipPath%3E%3Cg clip-path='url(%23c)'%3E%3Crect width='4' height='24' fill='%2330123b'/%3E%3Crect x='4' width='4' height='24' fill='%234686fb'/%3E%3Crect x='8' width='4' height='24' fill='%231ae4b6'/%3E%3Crect x='12' width='4' height='24' fill='%23a2fc3c'/%3E%3Crect x='16' width='4' height='24' fill='%23fb8022'/%3E%3Crect x='20' width='4' height='24' fill='%237a0403'/%3E%3C/g%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="assets/site.css?v=3164e19820">
+</head>
+<body>
+<nav class="topbar" aria-label="Site">
+  <div class="wrap">
+    <a class="brand" href="index.html"><span class="brand-mark" aria-hidden="true"><i style="background:#30123b"></i><i style="background:#4686fb"></i><i style="background:#1ae4b6"></i><i style="background:#a2fc3c"></i><i style="background:#fb8022"></i><i style="background:#7a0403"></i></span>Justin Smith <small>Simulation Portfolio</small></a>
+    <div class="navgroup">
+      <div class="topnav">
+        <a href="index.html#work" aria-current="page">Studies</a>
+        <a href="how-i-work.html">How I Work</a>
+        <a href="grading.html">Grading</a>
+        <a href="in-progress.html">In Progress</a>
+        <a href="requirements.html">Requirements</a>
+      </div>
+      <a class="nav-contact" href="#contact">Contact</a>
+      <details class="menu">
+        <summary>Menu</summary>
+        <div class="menu-panel">
+        <a href="index.html#work" aria-current="page">Studies</a>
+        <a href="how-i-work.html">How I Work</a>
+        <a href="grading.html">Grading</a>
+        <a href="in-progress.html">In Progress</a>
+        <a href="requirements.html">Requirements</a>
+          <a href="#contact">Contact</a>
+        </div>
+      </details>
+    </div>
+  </div>
+</nav>
+
+<main id="top">
+  <div class="wrap">
+    <nav class="crumbs" aria-label="Breadcrumb"><a href="index.html#work">All studies</a><span>/</span><span>Thermal and fluids</span></nav>
+    <header class="study-hero">
+      <p class="eyebrow">Study 27 · OpenFOAM and Python, electronics cooling</p>
+      <h1>Sealed Electronics Enclosure: The Hot Component and Its Fix</h1>
+      <p class="study-q"><span class="k">The question</span>Does a sealed electronics box keep its hottest component under 85 °C and its air under 60 °C, bare or painted inside, and if not, what fixes it?</p>
+    </header>
+    <figure class="study-setup"><a class="plate" href="v2/dwg_enclosure.webp" title="Open the drawing full size"><img src="v2/dwg_enclosure.webp" alt="Section through the sealed box: aluminium walls around still air, a circuit board at mid-height with the component at its middle, the redesign&#x27;s bridge from the component up to the lid, and heat leaving through the walls to the air outside"></a><figcaption><b>The setup.</b> The box in section, to scale. The board hangs in the air with a gap at each edge, so as drawn its heat leaves only through the air and by radiation. The hatched block is the redesign: a bridge from the component to the lid. On the right, what isn't known and the two limits.</figcaption></figure>
+    <div class="study-answer">
+      <p class="k">The answer</p>
+      <span class="v v-partfix">Fails; the fix covers one limit of two</span>
+      <p class="study-lede">Overheats as drawn at every corner: the component reaches 94 to 163 °C against a limit of 85, depending on the inside finish. A 5 W/mK bridge from the component to the lid brings it to 70 to 76 °C. The air inside stays over its 60 °C limit with every bridge, so the board needs a heat path of its own.</p>
+    </div>
+    <div class="vp" id="vp" role="region" aria-label="Result viewer">
+      <div class="legend">
+        <div class="legend-title" id="lg-title"></div>
+        <div class="legend-body"><div class="swatches" id="lg-sw"></div><div class="ticks" id="lg-ticks"></div></div>
+      </div>
+      <div class="stage"><div class="vp-parts" id="vp-parts" role="group" aria-label="Results on this page" hidden></div><button class="vp-3d" id="vp-3d" type="button" aria-pressed="false" hidden>Rotate in 3D</button>
+      <p class="vp-hint" id="vp-hint" hidden><span class="long">Same surface and colour bands as the render · </span>Drag to turn · <span class="long">scroll or </span>pinch to zoom<span class="long"> · double-click to reset</span></p>
+      <img id="vp-img" src="v2/fig_enclosure_fix.svg" alt="Sealed aluminium enclosure, 150 × 60 mm section · 15 W inside, still air at 40 °C outside · bare or painted inside">
+      <svg class="triad" viewBox="0 0 54 54" aria-hidden="true">
+        <g stroke-width="1.6" fill="none" stroke-linecap="round">
+          <line x1="14" y1="40" x2="44" y2="46" stroke="#ff8f6b"/><line x1="14" y1="40" x2="34" y2="28" stroke="#8fe3a8"/><line x1="14" y1="40" x2="14" y2="8" stroke="#8fb4ff"/>
+        </g>
+        <g font-family="JetBrains Mono, monospace" font-size="8" fill="#edf1f8"><text x="46" y="50">X</text><text x="36" y="27">Y</text><text x="11" y="6">Z</text></g>
+      </svg>
+      </div>
+      <div class="vp-scrub" id="vp-scrub" hidden>
+        <button type="button" class="vp-play" id="vp-play" aria-label="Play the analysis step by step">▶</button>
+        <input type="range" id="vp-range" min="0" max="0" step="1" value="0" aria-label="Load step">
+        <output id="vp-step" for="vp-range"></output>
+      </div>
+      <div class="status" id="vp-status" aria-live="polite"></div>
+    </div>
+
+    <div class="study-layout">
+      <article class="study-main">
+
+    <h2 id="the-question">The Question</h2>
+    <p>A sealed aluminium box, 150 × 60 mm in section and 200 mm deep, holds a circuit board at mid-height. The board gives off 10 W, and one component on it another 5 W. Outside is still air at 40 °C. Does the hottest component stay at or below 85 °C, and the air inside at or below 60 °C on average, whether the inside of the box is bare metal (emissivity 0.1) or painted (0.9)? The board's copper layers make its in-plane conductivity uncertain, so I bracketed it at 5 and 20 W/mK. And if the box fails, what fixes it? The client, the powers and the limits are made up.</p>
+    <h2 id="the-answer">The Answer</h2>
+    <div class="answer">
+      <div class="chips"><span class="chip fail">Component 94 to 163 °C as drawn, limit 85</span><span class="chip fail">Air inside 67 to 84 °C as drawn, limit 60</span><span class="chip warn">With a 5 W/mK bridge to the lid: component 70 to 76 °C, on runs not yet settled</span><span class="chip fail">Air still 62 to 66 °C with that bridge</span><span class="chip warn">The board itself reaches 98 °C; no limit was set for it</span></div>
+      <p><strong>No. As drawn it overheats on both counts, at every corner.</strong> With a painted interior the component reaches 94 to 98 °C and the air 67 °C. With bare metal inside it's far worse, 156 to 163 °C and 84 °C. A bare surface radiates very little, so the board is left with the air alone: radiation carries about 75 % of the heat to the walls when the inside is painted and 22 % when it's bare. The board's conductivity moves the component by 4 to 7 K, which changes no verdict.</p>
+      <p><strong>A heat path from the component to the lid fixes the component.</strong> I added a bridge between the component and the lid, a pillar with a gap pad, and modelled the walls as 2 mm of aluminium so the lid can spread what the bridge delivers. With a bridge worth 5 W/mK the component sits at 70.0 °C with a painted interior and 76.1 °C with a bare one, 9 K under the limit at the worse finish. A 2 W/mK bridge passes only when the inside is painted (78.0 against 91.1 °C). At 1 W/mK the painted box reads 84.8 °C, 0.2 K under the limit, which is too close to call a pass.</p>
+      <p><strong>The air still fails, with every bridge.</strong> At 5 W/mK it's 62.3 °C painted and 66.2 °C bare, and even 20 W/mK leaves it at 61.1 and 64.0 °C. The bridge takes the component's 5 W out, but the board's own 10 W still goes into the air. Meeting the air limit needs a second path, such as clamping the board's edges to the walls or a pad under the whole board, or a looser limit. I didn't assess either.</p>
+      <p><strong>Something the requirement doesn't cover: the board.</strong> Once the bridge cools the component, the hottest point is on the board itself: 79.7 °C painted and 98.4 °C bare with the 5 W/mK bridge. The requirement names the component, so the verdict above stands, but anything else mounted on that board would see those temperatures. The second path the air needs would deal with this too.</p>
+      <p><strong>The redesign runs stopped before the box had settled.</strong> The shell and the bridge make the box about five times slower to settle than the box as drawn, which I hadn't allowed for. When the runs stopped, after an hour of simulated time, eight of the ten were still off balance: seven were shedding 1 to 4 % more heat than the 15 W going in, and one was still 1 % short. Extrapolated to the settled state, the heat balance closes to 0.3 % or better and the component moves by less than 0.7 K. The 5 W/mK runs were still cooling, so their settled temperatures are 0.5 to 0.6 K lower than the ones above. No verdict changes, but the redesign's pass stays unverified until a longer run confirms it.</p>
+    </div>
+    <h2 id="the-model">The Model</h2>
+    <dl class="spec">
+      <dt>Section</dt><dd>A 2D section through the box, 150 × 60 mm inside. The box's end walls are left out, so the model has less wall to lose heat through and errs on the hot side.</dd>
+      <dt>Board</dt><dd>A solid 100 × 2 mm strip at mid-height, with the component as its middle 20 mm. Heat is generated inside both: 5 W in the component and 10 W over the rest. The board is solid so that it spreads the component's heat sideways; a first prototype with a hollow board and fixed surface fluxes couldn't, and read far too hot.</dd>
+      <dt>Air</dt><dd>Laminar natural convection, the air as a perfect gas, with radiation between the inside surfaces: grey and diffuse, the air transparent, 16 ray directions.</dd>
+      <dt>Outside</dt><dd>Convection at 5 W/m²K and radiation from a painted surface, emissivity 0.85, to still air at 40 °C.</dd>
+      <dt>Solver</dt><dd>OpenFOAM 14, the air and the solids solved together (conjugate heat transfer) and marched in time until the temperatures stop moving. 2 mm cells.</dd>
+      <dt>Redesign</dt><dd>The walls become a 2 mm aluminium shell, 200 W/mK, and a 20 × 29 mm bridge joins the component to the lid. One effective conductivity stands for the pillar and its pad: 5 W/mK is 1.45 K/W through the box's depth.</dd>
+    </dl>
+    <details class="record"><summary>The case file: recorded assumptions, limits and inputs</summary><div class="record-body"><p>This is the study's own record, written before the run and saved with it, in the shorthand of the case file.</p><p class="case"><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/cases/enclosure_k5_eps0p1.toml">cases/enclosure_k5_eps0p1.toml ↗</a></p><p>Sealed enclosure, 2D section: 15 W board (5 W component), board conductivity 5 W/mK, internal emissivity 0.1, 40 C ambient; hottest component and mean air against the limits.</p><h3>Assumptions, and How Each Is Checked</h3><ul><li>2D section (per unit depth of the 200 mm box); the box&#x27;s end walls are left out (conservative).</li><li>Laminar natural convection (Rayleigh number about 1e5-1e6 on the box height), air as a perfect gas.</li><li>Grey diffuse internal surfaces (emissivity the corner&#x27;s value), transparent air.</li><li>Walls: thin aluminium, no conduction resistance and no lateral spreading in the wall (each face loses heat locally: conservative for hot spots); outside h 5 W/m2K and emissivity 0.85 to 40 C (synthetic).</li><li>Board: isotropic effective conductivity (the corner&#x27;s value; synthetic bracket for FR4 with copper planes); the component a solid block of the board&#x27;s material.</li></ul><h3>Limits</h3><ul><li>2D: no heat path through the box&#x27;s end walls and no 3D flow.</li><li>Steady operation only (a transient run to a settled state).</li><li>No physical test data.</li></ul><h3>Inputs</h3><div class="table-wrap"><table><thead><tr><th>Input</th><th>Value</th></tr></thead><tbody><tr><td>width_mm</td><td>150</td></tr><tr><td>height_mm</td><td>60</td></tr><tr><td>box_depth_mm</td><td>200</td></tr><tr><td>board_length_mm</td><td>100</td></tr><tr><td>board_thickness_mm</td><td>2</td></tr><tr><td>component_length_mm</td><td>20</td></tr><tr><td>power_component_W</td><td>5</td></tr><tr><td>power_board_W</td><td>10</td></tr><tr><td>board_k_W_mK</td><td>5</td></tr><tr><td>ambient_C</td><td>40</td></tr><tr><td>h_ext_W_m2K</td><td>5</td></tr><tr><td>eps_ext</td><td>0.85</td></tr><tr><td>eps_int</td><td>0.1</td></tr><tr><td>cell_mm</td><td>2</td></tr><tr><td>n_phi</td><td>4</td></tr><tr><td>max_iterations</td><td>1</td></tr></tbody></table></div><p class="case"><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/cases/enclosure_fix_k5_eps0p1_br5.toml">cases/enclosure_fix_k5_eps0p1_br5.toml ↗</a></p><p>Sealed enclosure redesign: board 5 W/mK, emissivity 0.1, shell and a bridge of 5 W/mK; aluminium shell 2 mm, 200 W/mK; hottest component and mean air against the limits.</p><h3>Assumptions, and How Each Is Checked</h3><ul><li>2D section (per unit depth of the 200 mm box); the box&#x27;s end walls are left out (conservative).</li><li>Laminar natural convection (Rayleigh number about 1e5-1e6 on the box height), air as a perfect gas.</li><li>Grey diffuse internal surfaces (emissivity the corner&#x27;s value), transparent air.</li><li>Walls: a 2 mm aluminium shell (200 W/mK) conducting along the walls; outside h 5 W/m2K and emissivity 0.85 to 40 C (synthetic).</li><li>Bridge: a solid block the component&#x27;s width from its top to the lid, one effective conductivity for a pillar and its gap pad; perfect contact at both ends.</li><li>Board: isotropic effective conductivity (the corner&#x27;s value; synthetic bracket for FR4 with copper planes); the component a solid block of the board&#x27;s material.</li></ul><h3>Limits</h3><ul><li>2D: no heat path through the box&#x27;s end walls and no 3D flow.</li><li>Steady operation only (a transient run to a settled state).</li><li>No physical test data.</li></ul><h3>Inputs</h3><div class="table-wrap"><table><thead><tr><th>Input</th><th>Value</th></tr></thead><tbody><tr><td>width_mm</td><td>150</td></tr><tr><td>height_mm</td><td>60</td></tr><tr><td>box_depth_mm</td><td>200</td></tr><tr><td>board_length_mm</td><td>100</td></tr><tr><td>board_thickness_mm</td><td>2</td></tr><tr><td>component_length_mm</td><td>20</td></tr><tr><td>power_component_W</td><td>5</td></tr><tr><td>power_board_W</td><td>10</td></tr><tr><td>board_k_W_mK</td><td>5</td></tr><tr><td>ambient_C</td><td>40</td></tr><tr><td>h_ext_W_m2K</td><td>5</td></tr><tr><td>eps_ext</td><td>0.85</td></tr><tr><td>eps_int</td><td>0.1</td></tr><tr><td>cell_mm</td><td>2</td></tr><tr><td>n_phi</td><td>4</td></tr><tr><td>max_iterations</td><td>1</td></tr><tr><td>shell_thickness_mm</td><td>2</td></tr><tr><td>shell_k_W_mK</td><td>200</td></tr><tr><td>bridge_k_W_mK</td><td>5</td></tr></tbody></table></div></div></details>
+    <h2 id="why-it-matters">Why It Matters</h2>
+    <p>A sealed box has no fan and no vents, so everything leaves through the walls, and inside it the heat has only weak paths: slow natural convection and radiation. Which of the two carries the load depends on the surface finish, something a drawing often leaves open. Here the finish alone moves the component by more than 60 K. What the client needs is a change that works at either finish, and a plain statement of what that change doesn't fix.</p>
+    <h2 id="how-it-works">How It Works</h2>
+    <p>The same model runs at the four corners of what isn't known, the board's conductivity and the inside finish:</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Board</th><th>Inside finish</th><th>Hottest component</th><th>Mean air</th><th>Reaches the walls by radiation</th></tr></thead>
+        <tbody>
+          <tr><td>5 W/mK</td><td>painted, 0.9</td><td>98.4 °C</td><td>66.9 °C</td><td>75 %</td></tr>
+          <tr><td>20 W/mK</td><td>painted, 0.9</td><td>94.2 °C</td><td>67.0 °C</td><td>76 %</td></tr>
+          <tr><td>5 W/mK</td><td>bare, 0.1</td><td>163.2 °C</td><td>83.9 °C</td><td>22 %</td></tr>
+          <tr><td>20 W/mK</td><td>bare, 0.1</td><td>156.3 °C</td><td>84.1 °C</td><td>22 %</td></tr>
+          <tr><td>Limit</td><td></td><td>≤ 85 °C</td><td>≤ 60 °C</td><td></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>Then the redesign, on the worse board (5 W/mK), with the walls modelled and the bridge's conductivity stepped up. Each cell reads painted / bare:</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Bridge</th><th>Hottest component</th><th>Board's hottest point</th><th>Mean air</th></tr></thead>
+        <tbody>
+          <tr><td>None, walls modelled</td><td>95.7 / 154.6 °C</td><td>93.7 / 152.7 °C</td><td>65.9 / 80.8 °C</td></tr>
+          <tr><td>1 W/mK</td><td>84.8 / 106.6 °C</td><td>85.2 / 116.3 °C</td><td>64.5 / 71.9 °C</td></tr>
+          <tr><td>2 W/mK</td><td>78.0 / 91.1 °C</td><td>82.5 / 107.3 °C</td><td>63.5 / 69.1 °C</td></tr>
+          <tr><td><strong>5 W/mK</strong></td><td><strong>70.0 / 76.1 °C</strong></td><td>79.7 / 98.4 °C</td><td>62.3 / 66.2 °C</td></tr>
+          <tr><td>20 W/mK</td><td>63.3 / 65.8 °C</td><td>77.5 / 92.2 °C</td><td>61.1 / 64.0 °C</td></tr>
+          <tr><td>Limit</td><td>≤ 85 °C</td><td>none set</td><td>≤ 60 °C</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>These are the values when each run stopped. Modelling the walls alone helps a little, 3 K painted and 9 K bare, because the aluminium evens out the wall temperature.</p>
+    <h2 id="how-i-checked-it">How I Checked It</h2>
+    <ul class="proof">
+      <li><strong>Natural convection against a published benchmark,</strong> before the box was modelled: the square cavity with one hot and one cold wall (de Vahl Davis, 1983), at four Rayleigh numbers from 10³ to 10⁶. The heat crossing the cavity lands within 0.05 to 0.57 % of the published values, and the peak air speeds within 0.62 %. A three-mesh study at the highest Rayleigh number extrapolates the heat transfer to within 0.07 % of the benchmark. One of the two peak speeds converged faster than the method allows, so its uncertainty can't be estimated, and that mesh study is recorded as failing verification.</li>
+      <li><strong>Radiation against an exact answer:</strong> the heat exchanged between two concentric cylinders, where the two-surface formula is exact. With the 16 ray directions the box runs use, the model is 0.92 % under it, inside the 1 % I set but only just. With 32 directions it's 0.20 %, and 64 give 0.05 %. At 32 directions it stays within 0.21 % for emissivities from 0.1 to 0.9.</li>
+      <li><strong>Heat balance:</strong> the heat leaving the walls against the 15 W put in, within 0.46 to 0.74 % at the four corners as drawn.</li>
+      <li><strong>Mesh:</strong> one corner, painted with the 20 W/mK board, rerun on 1 mm cells. The component moves 0.05 K and the air 0.13 K, against margins of 9 and 7 K. Two mesh sizes give a difference, not a convergence study.</li>
+      <li><strong>Settling:</strong> each run has to stop changing, under 0.3 K at the component over its last tenth. The two bare corners missed that (0.6 K) and stopped about 1 K short of where they settle. They fail by more than 70 K, so I didn't rerun them.</li>
+    </ul>
+    <div class="caught">
+      <h2 id="what-i-caught-along-the-way">What I Caught Along the Way</h2>
+      <ul>
+        <li><strong>Energy made by a name pattern.</strong> Two patterns matched the solids' boundary names, and the general one also caught the air's side. The board never lost the heat it radiated, and the walls were shedding 671 W/m² against 179 put in. The heat balance caught it, and explicit names fixed it.</li>
+        <li><strong>A boundary condition can't spread heat.</strong> As drawn, the walls are a boundary: each face loses its heat where it arrives. That's fine until a bridge puts 5 W into 20 mm of lid, which would then sit about 110 K above ambient. So the redesign models the walls as solid aluminium.</li>
+        <li><strong>An accounting error that hid an unsettled run.</strong> Six of the ten redesign runs failed the 1 % heat balance. My totals multiplied each wall flux by a nominal 2 mm face, but the mesher rounds each block to whole cells, so some faces are 2.07 or 2.08 mm and the perimeter came out 1.9 % short. With the exact areas, read from the mesh, the picture changed: eight runs were out, not six, because the shell and bridge give the box a slow drift with a time constant near 20 minutes. My settling check on the component had passed all ten. It's too weak for a drift that slow, and the heat balance is now the settling test.</li>
+        <li><strong>A steady solve that only looked converged.</strong> The steady version of the coupled solve ran 9,246 iterations and then diverged, so every run marches in time instead.</li>
+        <li><strong>My hand estimates missed where it mattered.</strong> I expected the 1 W/mK bridge to leave the component near 100 °C, and it ran 15 K cooler. I expected a bare interior to cost a few kelvin once a bridge was in, and it cost 2.5 to 22 K. Each miss is written into the case file beside the prediction.</li>
+      </ul>
+    </div>
+    <h2 id="limits">Limits</h2>
+    <ul>
+      <li>A 2D section: no end walls and no 3D flow. A 3D model would credit the end walls, so the real box should run cooler than this.</li>
+      <li>The redesign's verdicts rest on runs stopped about one time constant early, plus extrapolation. Runs about two and a half times longer would verify them directly, and they haven't been run.</li>
+      <li>The redesign was run on the worse board only, and the mesh check is on one corner of the box as drawn.</li>
+      <li>Radiation with 16 directions is 0.9 % off on the benchmark, close to its 1 % limit, and radiation carries about three quarters of the heat when the inside is painted.</li>
+      <li>The bridge is one effective conductivity with perfect contact. A real pad's contact resistance has to come out of the same 1.45 K/W.</li>
+      <li>Laminar flow, grey diffuse surfaces and transparent air.</li>
+      <li>No physical test. The powers, the limits and the outside conditions are made up.</li>
+    </ul>
+    <h2 id="evidence">Evidence</h2>
+    <div class="side-card"><ul class="ev-list"><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/portfolio/27-sealed-enclosure-thermal.md">Full write-up on GitHub</a></li></ul><p class="label">Run reports, with every check and the saved inputs</p><ul class="ev-list ev-runs"><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261124-105442_cavity_devahldavis/report.md">cavity_devahldavis</a></li><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261124-105444_cavity_mesh_ra1e6/report.md">cavity_mesh_ra1e6</a></li><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261124-110740_annulus_angular/report.md">annulus_angular</a></li><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261124-110742_annulus_emissivity/report.md">annulus_emissivity</a></li><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261124-144011_enclosure_k5_eps0p1/report.md">enclosure_k5_eps0p1</a></li><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261124-144014_enclosure_k5_eps0p9/report.md">enclosure_k5_eps0p9</a></li><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261124-144017_enclosure_k20_eps0p1/report.md">enclosure_k20_eps0p1</a></li><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261124-144021_enclosure_k20_eps0p9/report.md">enclosure_k20_eps0p9</a></li><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261124-161733_enclosure_k20_eps0p9_mesh1mm/report.md">enclosure_k20_eps0p9_mesh1mm</a></li><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261124-171458_enclosure_fix_k5_eps0p1_br1/report.md">enclosure_fix_k5_eps0p1_br1</a></li><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261124-171503_enclosure_fix_k5_eps0p1_br2/report.md">enclosure_fix_k5_eps0p1_br2</a></li><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261124-171507_enclosure_fix_k5_eps0p1_br20/report.md">enclosure_fix_k5_eps0p1_br20</a></li><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261124-171511_enclosure_fix_k5_eps0p1_br5/report.md">enclosure_fix_k5_eps0p1_br5</a></li><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261124-171515_enclosure_fix_k5_eps0p1_shell/report.md">enclosure_fix_k5_eps0p1_shell</a></li><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261124-171520_enclosure_fix_k5_eps0p9_br1/report.md">enclosure_fix_k5_eps0p9_br1</a></li><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261124-171524_enclosure_fix_k5_eps0p9_br2/report.md">enclosure_fix_k5_eps0p9_br2</a></li><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261124-171528_enclosure_fix_k5_eps0p9_br20/report.md">enclosure_fix_k5_eps0p9_br20</a></li><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261124-171532_enclosure_fix_k5_eps0p9_br5/report.md">enclosure_fix_k5_eps0p9_br5</a></li><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261124-171537_enclosure_fix_k5_eps0p9_shell/report.md">enclosure_fix_k5_eps0p9_shell</a></li></ul></div>
+      </article>
+      <aside class="study-side" aria-label="Summary of this study">
+        <div class="side-card"><h2>At a Glance</h2><dl><div><dt>Study</dt><dd>27</dd></div><div><dt>Discipline</dt><dd>Thermal and fluids</dd></div><div><dt>Tools</dt><dd>OpenFOAM · Python</dd></div><div><dt>Verdict</dt><dd><span class="v v-partfix">Fails; the fix covers one limit of two</span></dd></div></dl></div><div class="side-card"><h2>Requirements</h2><ul class="side-reqs"><li><span class="r-what">Hottest component as drawn, bare or painted inside</span><span class="r-num">≤ 85 °C · 94 to 98 °C painted, 156 to 163 °C bare</span><span class="chip fail">Not met</span></li><li><span class="r-what">Mean air inside, as drawn</span><span class="r-num">≤ 60 °C · 67 °C painted, 84 °C bare</span><span class="chip fail">Not met</span></li><li><span class="r-what">Hottest component with a 5 W/mK bridge to the lid</span><span class="r-num">≤ 85 °C · 70.0 °C painted, 76.1 °C bare when the runs stopped, still cooling; 0.5 to 0.6 K lower once settled, by extrapolation</span><span class="chip warn">Met; run not settled</span></li><li><span class="r-what">Mean air inside with that bridge</span><span class="r-num">≤ 60 °C · 62.3 °C painted, 66.2 °C bare; over the limit with every bridge tried</span><span class="chip fail">Not met</span></li></ul></div><div class="side-card side-toc"><h2>On This Page</h2><ul class="toc"><li><a href="#the-question">The Question</a></li><li><a href="#the-answer">The Answer</a></li><li><a href="#the-model">The Model</a></li><li><a href="#why-it-matters">Why It Matters</a></li><li><a href="#how-it-works">How It Works</a></li><li><a href="#how-i-checked-it">How I Checked It</a></li><li><a href="#what-i-caught-along-the-way">What I Caught Along the Way</a></li><li><a href="#limits">Limits</a></li><li><a href="#evidence">Evidence</a></li></ul></div>
+      </aside>
+    </div>
+    <nav class="pager" aria-label="More studies"><a class="prev" href="cold-plate.html"><small>← Previous study</small><b>Cold Plate: The Coolant Channel, Then the Full Thermal Chain</b></a><a class="next" href="fan-rotor.html"><small>Next study →</small><b>Fan Rotor: Critical Speeds and Unbalance Response</b></a></nav>
+  </div>
+
+</main>
+
+<footer class="site-foot">
+  <div class="wrap">
+    <section class="contact" id="contact" aria-labelledby="contact-title">
+      <div class="band-head">
+        <p class="eyebrow">Contact</p>
+        <h2 id="contact-title">Get in Touch</h2>
+        <p class="contact-name"><b>Justin Smith</b>, mechanical engineer (MS), with a background in automotive.</p>
+        <p>If something here is close to what you need, or you have a model that needs building or checking, send me a note and tell me about it. I'm available for remote contract work.</p>
+      </div>
+      <div class="contact-actions">
+        <!-- the address is stored reversed and base64-encoded so scrapers reading the page or the repository don't pick it up; site.js decodes it -->
+        <a class="cta" id="contact-mail" href="#contact" data-m="bW9jLmxpYW1nQDg1MW5pdHN1amh0aW1z">Email me</a>
+        <button class="cta-2" id="contact-show" type="button">Show the address</button>
+        <span class="contact-addr" id="contact-addr" hidden></span>
+      </div>
+    </section>
+    <div class="foot-nav">
+      <a href="index.html#work">All studies</a>
+      <a href="requirements.html">Every requirement</a>
+      <a href="how-i-work.html">How I work</a>
+      <a href="grading.html">Grading tasks</a>
+      <a href="in-progress.html">In progress</a>
+      <a href="https://github.com/CptGrumpus/engineering-agent-lab">Source on GitHub ↗</a>
+      <span>Open-source tools throughout: CalculiX, OpenFOAM, Gmsh, CadQuery, OpenModelica, Blender.</span>
+    </div>
+  </div>
+</footer>
+<script>window.VP = [{"id": "enclosure", "study": "enclosure", "kind": "figure", "img": "v2/fig_enclosure_fix.svg", "model": "Sealed aluminium enclosure, 150 × 60 mm section · 15 W inside, still air at 40 °C outside · bare or painted inside", "lines": ["OpenFOAM 14, the air and the solids solved together: natural convection, conduction and surface radiation, marched to a settled state", "Left: the component against the bridge's conductivity. Middle: the air inside. Right: the model's parts against known answers", "As drawn 94 to 163 °C (limit 85) · 5 W/mK bridge: 70.0 and 76.1 °C · air 62.3 and 66.2 °C (limit 60) · hollow: the run stopped before the box settled"], "check": "", "card": "enclosure"}];</script>
+<script src="assets/viewer.js?v=3164e19820"></script>
+<script src="assets/site.js?v=3164e19820"></script>
+</body>
+</html>

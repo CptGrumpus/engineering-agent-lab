@@ -21,7 +21,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
-<link rel="stylesheet" href="assets/site.css?v=5476f6fe9b">
+<link rel="stylesheet" href="assets/site.css?v=3164e19820">
 </head>
 <body>
 <nav class="topbar" aria-label="Site">
@@ -57,7 +57,7 @@
     <div class="page-head">
       <p class="eyebrow">Now working on</p>
       <h1>One Study in Progress</h1>
-      <p>The coupled flag benchmark. As with every study, I pick the independent check before I start modelling, and I write down my predictions before each run. Recently finished, each now on its own page: <a href="o-ring-face-seal.html">an O-ring face seal across its tolerance stack</a>, <a href="traction-motor.html">the traction motor against its test data</a>, <a href="turbulent-pipe-friction.html#step">flow over a backward-facing step</a>, <a href="bracket-modal.html#random_vib">the bracket arm under random vibration</a> and <a href="bracket-modal.html#bracket_uq">how robust its pass is</a>, <a href="fan-rotor.html">a fan rotor's critical speeds</a> and <a href="cracked-plate.html">crack growth in a steel plate</a>.</p>
+      <p>The coupled flag benchmark. As with every study, I pick the independent check before I start modelling, and I write down my predictions before each run. Recently finished, each now on its own page: <a href="sealed-enclosure.html">a sealed electronics enclosure that overheats</a>, <a href="shaft-shoulder-fatigue.html">a gearbox shaft's shoulder fillet</a>, <a href="o-ring-face-seal.html">an O-ring face seal across its tolerance stack</a>, <a href="traction-motor.html">the traction motor against its test data</a>, <a href="turbulent-pipe-friction.html#step">flow over a backward-facing step</a>, <a href="bracket-modal.html#random_vib">the bracket arm under random vibration</a> and <a href="bracket-modal.html#bracket_uq">how robust its pass is</a>, <a href="fan-rotor.html">a fan rotor's critical speeds</a> and <a href="cracked-plate.html">crack growth in a steel plate</a>.</p>
     </div>
     <div class="skills plan now">
       <article class="skill">
@@ -65,9 +65,10 @@
         <b>Flexible Flag Behind a Cylinder</b>
         <figure class="plan-fig"><a class="plate" href="v2/dwg_flag.webp" title="Open the drawing full size"><img src="v2/dwg_flag.webp" alt="The benchmark's 2.5 m channel with a parabolic inflow, a rigid cylinder and a 350 by 20 mm elastic flag behind it; enlarged, the flag's tip paths from the runs trace figure eights, 82 mm either way in FSI2 and 35 mm in FSI3; and a table of the three coupled cases" loading="lazy"></a></figure>
         <p><b>Why it's harder</b>Two-way fluid-structure interaction, where the flow bends the flag and the bent flag changes the flow.</p>
-        <p><b>So far</b>Each half reproduced the published Turek-Hron benchmark on its own before the two were coupled. Coupled and steady, drag and lift are verified at 0.03 % and 0.18 % from the published values. Where the flag swings by itself, the check on the force passed between the two solvers turned out to be defective, so I replaced it and reran both swinging cases on three meshes each. In the faster swing (FSI3), the finest mesh passes every published quantity, the tip's swing within 1.1 %. Across the three meshes, the frequency and the mean drag are verified to within 1 %, and the tip's swing converges onto the published 34.99 mm: extrapolated to a fine mesh, it lands 0.02 % away. The swing of the forces changes too fast between meshes to give a clean estimate, so I report it as it is.</p>
-        <p><b>Open</b>In the slower, larger swing (FSI2), the two coarser meshes agree within 0.7 %, but the finest crashed twice at the same moment, 8.8 s into a 15 s run. The kept log shows the flow's Courant number jumping from 2.2 to 18 in two time steps: either a cell collapsing as the mesh follows the flag, or the pressure solver going unstable. The log can't tell which, so for now FSI2 stands on two meshes. Any fix has to go to all three meshes, or they're no longer comparable.</p>
-        <p><b>Caught on the way</b>One regenerated mesh wrapped a single cell around the flag's tip corner and read the tip deflection 28 % low, with every other check passing. There's now a check on the cells next to the flag, and 24 earlier meshes were scanned with it. Only that one was affected.</p>
+        <p><b>So far</b>Each half reproduced the published Turek-Hron benchmark on its own before the two were coupled. Coupled and steady, drag and lift are verified at 0.03 % and 0.18 % from the published values. Where the flag swings by itself, the check on the force passed between the two solvers turned out to be defective, so I replaced it and reran both swinging cases on three meshes each. In the faster swing (FSI3), the finest mesh passes every published quantity, the tip's swing within 1.1 %. Across the three meshes, the frequency and the mean drag are verified to within 1 %, and the tip's swing converges onto the published 34.99 mm: extrapolated to a fine mesh, it lands 0.02 % away. The swing of the forces changes too fast between meshes to give a clean estimate, so I report it as it is. A time-step study on the middle mesh, at 1, 0.5 and 0.25 ms, converges the tip's swing, its frequency and its mean position to within 0.75 %.</p>
+        <p>In the slower, larger swing (FSI2), the finest mesh used to crash 8.8 s into a 15 s run. A rerun that saved every step before the crash showed why: a cell under the flag's tip collapsed, through an oscillation made inside the mesh-motion solve itself. Freezing that solve's stiffness field on the starting mesh cured it, and I reran all three meshes with that one change. All three now reproduce every published quantity within 3.4 %.</p>
+        <p><b>Open</b>FSI2's mesh study fails verification. The frequency converges, to 0.07 %, but the swing of the tip and of the forces creeps away from the benchmark as the mesh gets finer. Five of the six scored quantities miss the 1 % target, and two don't converge in order at all. The benchmark's own values come from finer meshes and another code, so I report this as it is. Two of the three reruns also lost their solid solver just before the end, to a memory fault in the coupling software 14.0 s into the 15, and an unchanged rerun died at the same instant. All three are scored over the same 14 s. In FSI3's time-step study the drag and lift can't be compared, because the finest step's force record wasn't kept, and the coarsest step's solid solver died at 6.9 s, twice and identically, so the three steps are scored to there.</p>
+        <p><b>Caught on the way</b>One regenerated mesh wrapped a single cell around the flag's tip corner and read the tip deflection 28 % low, with every other check passing. There's now a check on the cells next to the flag, and 24 earlier meshes were scanned with it. Only that one was affected. And the mesh-motion solve that crashed FSI2 gave different answers with different linear solvers: one turned 572 cells inside out, another none, and both reported convergence.</p>
         <p class="plan-link"><a href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/portfolio/17-fsi-flag-turek-hron.md">Read the draft write-up</a></p>
         <span class="tools">OpenFOAM · CalculiX · preCICE</span>
       </article>
@@ -104,6 +105,6 @@
   </div>
 </footer>
 
-<script src="assets/site.js?v=5476f6fe9b"></script>
+<script src="assets/site.js?v=3164e19820"></script>
 </body>
 </html>
