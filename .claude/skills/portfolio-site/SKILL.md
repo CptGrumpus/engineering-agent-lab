@@ -177,3 +177,8 @@ would move the study session onto the branch and its commits with it. The redesi
 `../engineering-agent-lab-ui` on `ui-redesign` (2026-11-24); run its scripts with this clone's `.venv`. Design
 mock-ups there are filled from `build_v2.py`'s own data by `site/proposals/build_proposals.py`, so a mock-up never
 shows a number the site doesn't.
+
+A study lands on `main` first (the live site's source) and is then merged into the branch and rebuilt there; the
+built pages in `docs/` conflict on every merge, so take either side and rebuild. Build only after the resolved
+files are staged: while a file is still unmerged, `git ls-files` lists it three times, and the method page's line
+and file counts came out 2,000 lines and two files too high (2026-11-25).
