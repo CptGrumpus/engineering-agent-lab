@@ -19,6 +19,21 @@
 # the last periods to 8 s differ from the cut-at-6.9 s scoring by under 1 % (the oscillation is settled). P5 about 5-7
 # h beside the ten enclosure runs. If P1 holds, the same option goes to FSI2 r1 levels a and c and FSI3 dt_c (forces,
 # now kept), with the user's go-ahead already given.
+#
+# Results (run 20261125-113046_turek_hron_fsi3_dt_a_r1, 11:30-16:00; user's go-ahead to kill the hung ccx_preCICE,
+# killed just before 16:00): CRASHED at 6.911 s, nine windows past the old crash. P1 MISSED: it passed 6.902 s but not
+# 8 s. P2 HELD: the watch-point record is byte-identical to 20261124-103347 for all 6,903 lines (to 6.902 s). P3 HELD:
+# the old crash window (6,903) converged in 7 coupling iterations, the solid's first iterate in 14 Newton iterations
+# (within 8-25). P4 NOT EVALUABLE (no data past 6.911 s). P5 MISSED (faster): 4.5 h to the crash. The new crash is a
+# different failure: in window 6,911 the COUPLING itself stopped converging (preCICE's relative residual 1.00, 1.19,
+# 1.37, 0.58, 0.44, 0.38, 0.41 over seven iterations, where every window before it falls to 1e-5 in 6-8; the quasi-
+# Newton history held 68-70 columns: IQN-ILS with up to 100 iterations from 15 reused windows, QR2 filter 1e-2), the
+# solid was handed a displacement increment of 0.27 m (the flag's amplitude is 0.035 m), ran its 40 Newton iterations
+# without converging, stopped, and the adapter died in 'malloc(): unsorted double linked list corrupted' with ccx hung
+# in the abort handler as before. So the solid iteration limit carried the run past the solid's own hard window, and
+# the next limit is the coupling's quasi-Newton acceleration (IQN-ILS), not the solid. Not run: a coupling-side change
+# (fewer reused time windows or a stronger QR filter) is a new revision and needs the user's go-ahead. FSI2 r1 a / c
+# and FSI3 dt_c keep their cut-window scorings; the conditional reruns are not started (P1 failed).
 
 [case]
 name = "turek_hron_fsi3_dt_a_r1"

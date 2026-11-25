@@ -16,6 +16,18 @@
 # if it is far smaller (under 0.3 %), the lift is still changing with the mesh and the study needs a finer level
 # instead. P3 about 5-20 min each (the mesh study's 1.25 mm level took 981-1266 SIMPLE iterations on 52k cells), the
 # eight side by side beside the running jobs.
+#
+# Results (run 20261125-154331_turek_hron_cfd1_noise_c, 2026-11-25 15:43-15:51): VERIFICATION PASS, every point check;
+# lift 1.11753, drag 14.29773 N/m, 50639 cells, 1057 iterations, flag cells 130.8 deg. Together (a-d and the mesh
+# study's 1.25 mm point, 1.11275 / 14.29797): lift 0.82 % peak to peak over the mean (sample standard deviation 0.31
+# %), drag 0.020 % (0.008 %). P1 HELD (every check, flag_cells 121.6-130.8 deg). P2 HELD in size (lift 0.82 % in the
+# 0.5-1.5 % band, drag under 0.1 %), but the decision it set is MIXED: 0.82 % is neither 'at least 1.14 %' nor 'under
+# 0.3 %'. Most of the 1.14 % move between the mesh study's 1.25 and 0.625 mm levels is the scatter of one regenerated
+# mesh; declaring 0.82 % as the noise floor would still leave that 1.14 % spread above it, so a revision with the same
+# three levels would not verify the lift either. Reading: the lift is known to about +-0.3 % (one standard deviation
+# of the mesh scatter) and every mesh so far lies 0.3-0.6 % under the benchmark, inside REQ-F2's 2 %; the formal GCI
+# stays unverifiable on regenerated meshes (nested structured meshes would remove the scatter). P3 HELD: 8 min for all
+# eight side by side (15:43-15:51).
 
 [case]
 name = "turek_hron_cfd1_noise_c"

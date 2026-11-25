@@ -16,6 +16,18 @@
 # if the scatter is under 0.3 %, lift is mesh-converging and the noise explanation is wrong. P3 about 5-20 min each
 # (the mesh study's 1.25 mm level took 981-1266 SIMPLE iterations on 52k cells), the eight side by side beside the
 # running jobs.
+#
+# Results (run 20261125-154338_turek_hron_cfd2_noise_a, 2026-11-25 15:43-15:51): VERIFICATION PASS, every point check;
+# lift 10.73341, drag 137.08126 N/m, 55978 cells, 1027 iterations, flag cells 128.5 deg. Together (a-d and the mesh
+# study's 1.25 mm point, 10.57247 / 137.12438): lift 2.45 % peak to peak over the mean (sample standard deviation 0.97
+# %), drag 0.044 % (0.017 %). P1 HELD (every check, flag_cells 121.6-130.8 deg). P2 MISSED for lift: 2.45 % against
+# 0.5-1.5 % predicted, three times CFD1's scatter at Re 100 (drag held, under 0.1 %). The mesh study's whole lift
+# spread (10.852 / 10.573 / 10.606, 2.6 %) is the size of this scatter, so it cannot separate a mesh trend from noise;
+# declaring 2.45 % would pass the three-level spread as 'within noise' while one mesh's lift is only known to about
+# +-1 % (1 sd). The honest statement: lift 0.4-2.9 % from the benchmark over five meshes at 1.25 mm, scatter +-1 % (1
+# sd); REQ-F2 (2 %) is passed by the finest mesh (0.68 %) but not verifiable on regenerated meshes. The planned 1.25 /
+# 0.884 / 0.625 mm revision would not change that and is NOT run; nested structured meshes would. P3 HELD: 8 min for
+# all eight side by side (15:43-15:51).
 
 [case]
 name = "turek_hron_cfd2_noise_a"

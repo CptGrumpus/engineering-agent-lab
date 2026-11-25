@@ -1,0 +1,98 @@
+{
+  "run_id": "20261125-154331_turek_hron_cfd1_noise_c",
+  "case_name": "turek_hron_cfd1_noise_c",
+  "model": "openfoam_turek_hron",
+  "case_source": "cases/turek_hron_cfd1_noise_c.toml",
+  "case_sha256": "14f673e800c508cc1b18a4d4029310290529f393e19a53f2e741e7c60cd6d279",
+  "model_sources_sha256": {
+    "models/cfd/turek_hron_openfoam.py": "e28c2bf47edac45001fe323bc875563b5cb7eb7a67f0cc4ea5f62e8e0f4ddbb8",
+    "models/cfd/run_turek_hron.sh": "b16457572203279ff053586beb83b59d25755c9a0882bbeba35ea469549fa855"
+  },
+  "rerun_of": null,
+  "started_utc": "2026-11-25T20:43:31+00:00",
+  "environment": {
+    "python": "3.14.10",
+    "python_executable": "<repo>\\.venv\\Scripts\\python.exe",
+    "platform": "Windows-11-10.0.26100-SP0",
+    "machine": "AMD64",
+    "packages": {
+      "numpy": "2.5.5",
+      "scipy": "1.18.1",
+      "matplotlib": "3.11.2",
+      "cadquery": "2.8.0"
+    },
+    "git": {
+      "commit": "dc930377fa9314cb6ed84402976429a373558690",
+      "dirty": true
+    },
+    "tools": {
+      "openfoam_bashrc": "/opt/openfoam14/etc/bashrc",
+      "gmsh": "4.15.0",
+      "openfoam_version": "14",
+      "openfoam_package": "openfoam14 20261008",
+      "linux": "Ubuntu 22.04.5 LTS"
+    }
+  },
+  "numerics": {
+    "max_iterations": 20000,
+    "residual_p": 1e-10,
+    "residual_U": 1e-11
+  },
+  "points": [
+    {
+      "label": "p00_baseline",
+      "parameters": {
+        "mean_velocity_m_per_s": 0.2,
+        "kinematic_viscosity_m2_per_s": 0.001,
+        "density_kg_per_m3": 1000.0,
+        "flag_length_m": 0.35,
+        "cell_size_m": 0.00127,
+        "benchmark_drag_N_per_m": 14.2929,
+        "benchmark_lift_N_per_m": 1.11905
+      },
+      "status": "completed",
+      "derived": {
+        "reynolds_D": 20.000000000000004,
+        "dynamic_pressure_times_D_N_per_m": 2.0000000000000004
+      },
+      "solver": {
+        "success": true,
+        "message": "drag 14.29773, lift 1.11753 N/m (50639 cells, 1057 iterations)",
+        "nfev": 1057
+      },
+      "solver_outputs": {
+        "cells": 50639,
+        "mesh_ok": true,
+        "simple_converged": true,
+        "iterations": 1057,
+        "final_initial_residuals": {
+          "Ux": 6.76169037123e-12,
+          "Uy": 9.86205577294e-12,
+          "p": 5.46357507591e-13
+        },
+        "inlet_flow_m3_per_s": 0.0008200630910087651,
+        "outlet_flow_m3_per_s": 0.000820063091008943,
+        "imposed_flow_m3_per_s": 0.0008200000000000001,
+        "inlet_profile_error_max": 6.249368541174268e-08,
+        "inlet_faces": 82,
+        "pressure_drag_N_per_m": 7.487514408246,
+        "viscous_drag_N_per_m": 6.810219017475,
+        "domain_area_m2": 1.010139311116558,
+        "flag_cell_max_angle_deg": 130.75102291536828,
+        "flag_cell_max_angle_at_m": [
+          0.46581335386020295,
+          0.2107058203427844
+        ]
+      },
+      "metrics": {
+        "drag_N_per_m": 14.297733425720999,
+        "lift_N_per_m": 1.1175263829176498,
+        "drag_deviation_pct": 0.03381697011103016,
+        "lift_deviation_pct": 0.13615272618294716
+      }
+    }
+  ],
+  "study": "turek_hron_cfd",
+  "status": "completed",
+  "finished_utc": "2026-11-25T20:50:13+00:00"
+}
