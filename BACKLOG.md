@@ -79,7 +79,7 @@ commit). Rules that bind:
   `*.inp`, `*.dat`, `__pycache__`, files > 600 kB, then `tests/test_privacy.py`; never two FEMM cases at once; check
   free RAM on long runs.
 
-### Running at 10:31, 2026-11-25: NOTHING (every run has ended; no new runs without the user's go-ahead)
+### Running at 10:29, 2026-11-25: NOTHING (every run has ended; no new runs without the user's go-ahead)
 
 DONE the morning of 2026-11-25 (f84e573): FSI3 time-step study scored to 6.9 s (tip motion converges in dt; dt_c's
 forces lost, the FSI study now keeps one force row per time); FSI3 dt_a and FSI2 r1 level a reruns crashed at the
