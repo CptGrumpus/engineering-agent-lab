@@ -79,7 +79,7 @@ commit). Rules that bind:
   `*.inp`, `*.dat`, `__pycache__`, files > 600 kB, then `tests/test_privacy.py`; never two FEMM cases at once; check
   free RAM on long runs.
 
-### Running at 22:45, 2026-11-24 (scratchpads under `%LOCALAPPDATA%/Temp/claude/cb67dd1e648f8970/<session>/scratchpad/`)
+### Running at 22:38, 2026-11-24 (scratchpads under `%LOCALAPPDATA%/Temp/claude/cb67dd1e648f8970/<session>/scratchpad/`)
 
 | Job | Run dir (log) | Done about | When it finishes |
 |---|---|---|---|
