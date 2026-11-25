@@ -6,7 +6,9 @@ Model:     openfoam_turek_hron (models/cfd/turek_hron_openfoam.py, run_turek_hro
 Reference: the published benchmark drag and lift (the requirement); Schaefer-Turek 2D-1 (cylinder alone,
            Re 20) through the same pipeline as an independent check of the pipeline itself; mass
            conservation, the imposed flow rate and the parabolic inflow
-Run-level: GCI on drag and lift when the sweep is cell_size_m
+Run-level: GCI on drag and lift when the sweep is cell_size_m; verification.mesh_noise_rel (one number or a
+           table by metric) declares the measured regenerated-mesh scatter at one nominal size, as in
+           studies/turek_hron_fsi.py (2026-11-25: turek_hron_cfd1_noise_*, turek_hron_cfd2_noise_*)
 """
 
 from __future__ import annotations
@@ -89,6 +91,14 @@ class OpenFOAMTurekHron(Backend):
         (case / "log.gmsh").write_text(g.stdout + g.stderr, encoding="utf-8")
         if g.returncode != 0 or not (case / "mesh.msh").exists():
             return failed("Gmsh failed") | {"files": files(), "cleanup": work}
+        quality = {}
+        flag = _p(params, "flag_length_m")
+        if flag > 0:   # the fluid-cell check at the flag that caught turek_hron_fsi1_noise_a (2026-11-25 here)
+            from studies.turek_hron_fsi import flag_cell_quality, read_msh22_base
+            W = self.writer
+            quality = flag_cell_quality(*read_msh22_base(case / "mesh.msh"),
+                                        W.XC + (W.R ** 2 - (W.FLAG_H / 2) ** 2) ** 0.5, W.XC + W.R + flag,
+                                        W.YC - W.FLAG_H / 2, W.YC + W.FLAG_H / 2)
         r = subprocess.run(of.wsl_command("bash", of.to_wsl_path(self.runner), of.to_wsl_path(case), self.bashrc),
                            capture_output=True, text=True, timeout=7200)
         (case / "mesh.msh").unlink(missing_ok=True)
@@ -119,7 +129,7 @@ class OpenFOAMTurekHron(Backend):
                    "inlet_profile_error_max": float(np.max(np.abs(u_in[:, 0] - parabola)) / (1.5 * U)),
                    "inlet_faces": int(len(y_in)),
                    "pressure_drag_N_per_m": float(F[-1, 1] / d), "viscous_drag_N_per_m": float(F[-1, 3] / d),
-                   "domain_area_m2": _domain_area(params)}
+                   "domain_area_m2": _domain_area(params), **quality}
         return {"success": True, "message": f"drag {drag[-1]:.5f}, lift {lift[-1]:.5f} N/m ({cells} cells, "
                 f"{log['iterations']} iterations)", "nfev": log["iterations"], "series": series,
                 "outputs": outputs, "files": files(), "cleanup": work}
@@ -168,6 +178,10 @@ class TurekHronCFDStudy(Study):
         settle = max(np.ptp(drag[k:]) / abs(drag[-1]), np.ptp(lift[k:]) / max(abs(lift[-1]), 1e-30))
         checks = [
             check("mesh", "checkMesh reports Mesh OK (1 = failed)", 0.0 if out["mesh_ok"] else 1.0, 0.5),
+            *([check("flag_cells", "largest interior angle (deg) of the fluid cells touching the flag, at "
+                     f"({out['flag_cell_max_angle_at_m'][0]:.4f}, {out['flag_cell_max_angle_at_m'][1]:.4f}) m (a "
+                     "cell wrapped around a tip corner reads near 180)", out["flag_cell_max_angle_deg"],
+                     tol.get("flag_cell_max_angle_deg", 140.0))] if "flag_cell_max_angle_deg" in out else []),
             check("converged", "SIMPLE met its residual targets (1 = stopped at the iteration limit)",
                   0.0 if out["simple_converged"] else 1.0, 0.5),
             check("forces_settled", "max over drag and lift of the spread over the last 10 % of iterations / "
@@ -198,8 +212,11 @@ class TurekHronCFDStudy(Study):
         fine = done[:3]
         hs = tuple(np.sqrt(pt["solver_outputs"]["domain_area_m2"] / pt["solver_outputs"]["cells"]) for pt in fine)
         checks, detail = [], {"meshes_used": [pt["label"] for pt in fine], "representative_sizes_m": hs}
+        noise = tol.get("mesh_noise_rel", 1e-5)
         for metric, req in (("drag_N_per_m", "drag_deviation_pct"), ("lift_N_per_m", "lift_deviation_pct")):
-            u = discretization_uncertainty(hs, tuple(pt["metrics"][metric] for pt in fine), design_order=2)
+            floor = float(noise.get(metric, 1e-5) if isinstance(noise, dict) else noise)
+            u = discretization_uncertainty(hs, tuple(pt["metrics"][metric] for pt in fine), design_order=2,
+                                           noise_floor=floor)
             detail[metric] = u
             checks.append(check(f"discretization_{metric}", f"relative discretization uncertainty of {metric}, "
                                 f"{describe(u)}", u["uncertainty"], tol["gci_max"]) | {"metric": req})
