@@ -418,10 +418,10 @@ def write_precice(params: dict, numerics: dict, path: Path) -> None:
     <acceleration:IQN-ILS>
       <data name="Displacement" mesh="Solid-Mesh" />
       <data name="Force" mesh="Solid-Mesh" />
-      <filter type="QR2" limit="1e-2" />
-      <initial-relaxation value="0.5" />
-      <max-used-iterations value="100" />
-      <time-windows-reused value="15" />
+      <filter type="QR2" limit="{float(numerics.get("coupling_filter_limit", 1e-2))!r}" />
+      <initial-relaxation value="{float(numerics.get("coupling_initial_relaxation", 0.5))!r}" />
+      <max-used-iterations value="{int(numerics.get("coupling_max_used_iterations", 100))}" />
+      <time-windows-reused value="{int(numerics.get("coupling_time_windows_reused", 15))}" />
     </acceleration:IQN-ILS>
   </coupling-scheme:parallel-implicit>
 </precice-configuration>
