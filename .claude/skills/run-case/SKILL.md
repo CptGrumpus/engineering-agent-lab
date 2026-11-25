@@ -189,7 +189,9 @@ the grid check.
 - If a solver fails, report it. Changing `method`, `rtol`, or `atol` is an engineering decision
   for the user to make.
 - **A coupled run can die without ending.** `ccx_preCICE` (adapter 2.20.2) crashed twice on 2026-11-24 with heap
-  corruption ("corrupted double-linked list") at random times (6.9 s and 14.0 s, while a sibling ran 15 s cleanly);
+  corruption ("corrupted double-linked list") at 6.9 s and 14.0 s, while a sibling ran 15 s cleanly. It is NOT
+  random: the unchanged rerun of FSI3 dt_a died again at 6.902 s, so a plain rerun repeats it (do not spend hours on
+  one; cut-and-score below, or change something in the solid's setup, with the user's decision);
   its abort handler never exits, so the dead process holds a core and the harness waits forever. Check long coupled
   runs by the age of their solver logs, not only the newest time directory: a log untouched for longer than a few
   write intervals while `ps` still lists both participants (or only one) means a hang. Killing a process needs the
