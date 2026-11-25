@@ -79,7 +79,13 @@ commit). Rules that bind:
   `*.inp`, `*.dat`, `__pycache__`, files > 600 kB, then `tests/test_privacy.py`; never two FEMM cases at once; check
   free RAM on long runs.
 
-### Running at 10:29, 2026-11-25: NOTHING (every run has ended; no new runs without the user's go-ahead)
+### Running at 11:30, 2026-11-25 (user's go-ahead 2026-11-25: "run whatever is still pending")
+
+| Job | Run dir (log) | Done about | When it finishes |
+|---|---|---|---|
+| Study 11: redesign verification set, ten cases `enclosure_fix_k5_*_long` (9,000 s), started 11:22 | `runs/*_enclosure_fix_k5_*_long` (`enclosure_fix_k5_*_long.log`) | eps 0.9 about 17:30-20:30; eps 0.1 about 21:30-01:30 | Score P1-P4 against each header; replace the extrapolated verdicts on page 27 (and tell the dashboard session: final T fields are kept now). |
+| Study 6: FSI3 `turek_hron_fsi3_dt_a_r1` (the crash fix under test: solid_iteration_limit 40), started 11:30 | `runs/*_turek_hron_fsi3_dt_a_r1` (`fsi3_dt_a_r1.log`) | about 16:30-18:30 (passes 6.902 s at about 16:00) | Check P2 (byte-identical to 6.901 s) and whether it passes 6.902 s; if it reaches 8 s: the same option for FSI2 r1 a and c and FSI3 dt_c (forces now kept), then the end-of-run zero-increment fault. |
+
 
 DONE the morning of 2026-11-25 (f84e573): FSI3 time-step study scored to 6.9 s (tip motion converges in dt; dt_c's
 forces lost, the FSI study now keeps one force row per time); FSI3 dt_a and FSI2 r1 level a reruns crashed at the
