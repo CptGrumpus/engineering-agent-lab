@@ -14,6 +14,14 @@
 # hottest component 65.21 C +- 0.3 K (REQ-D1 PASS), mean air 63.47 C +- 0.3 K (REQ-D2 FAIL), board maximum 91.61 C +-
 # 0.3 K. P3 the same verdicts as the 3,600 s run. P4 about 10-14 h (2.5 x the 3,600 s run's wall time), the ten side
 # by side.
+#
+# Predictions against the client's requirement list, revision B (validation/enclosure/CLIENT_REQUIREMENTS.md, the
+# user's decision 2026-11-25; written 2026-11-25 16:28, while this run was still going and before any of its results
+# were read; the run code is unchanged, so this run is rescored from its kept final board field by
+# scripts/score_client_requirements.py): REQ-E1 U1 at or below 115 C: 65.21 C, PASS; REQ-E2 board at or below 105 C:
+# 91.61 C, PASS; REQ-E4 air at or below 70 C: 63.47 C, PASS (each +-0.3 K, the extrapolated values above); REQ-E3 C1
+# (the board under 5-15 mm from its left end) at or below 70 C: 80-92 C, FAIL. The bridge cools U1 but moves the
+# board's hottest point outward, toward C1.
 
 [case]
 name = "enclosure_fix_k5_eps0p1_br20_long"
