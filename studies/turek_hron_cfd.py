@@ -6,6 +6,8 @@ Model:     openfoam_turek_hron (models/cfd/turek_hron_openfoam.py, run_turek_hro
 Reference: the published benchmark drag and lift (the requirement); Schaefer-Turek 2D-1 (cylinder alone,
            Re 20) through the same pipeline as an independent check of the pipeline itself; mass
            conservation, the imposed flow rate and the parabolic inflow
+Nested:    numerics nested_base_cell_size_m: every level split uniformly from one base mesh (the writer's
+           extrude_msh22), cell_size_m = base / 2^n exactly (2026-11-25: turek_hron_cfd*_nested)
 Run-level: GCI on drag and lift when the sweep is cell_size_m; verification.mesh_noise_rel (one number or a
            table by metric) declares the measured regenerated-mesh scatter at one nominal size, as in
            studies/turek_hron_fsi.py (2026-11-25: turek_hron_cfd1_noise_*, turek_hron_cfd2_noise_*)
@@ -77,7 +79,14 @@ class OpenFOAMTurekHron(Backend):
         work = Path(tempfile.mkdtemp(prefix="of_turek_"))
         case = work / "case"
         info = self.writer.write_case(params, numerics, case)
-        self.writer.write_geo(params, case / "mesh.geo")
+        base = numerics.get("nested_base_cell_size_m")
+        levels = 0
+        if base:
+            ratio = float(base) / _p(params, "cell_size_m")
+            levels = int(round(np.log2(ratio)))
+            if levels < 0 or abs(ratio / 2 ** levels - 1) > 1e-9:
+                return failed(f"cell_size_m must be nested_base_cell_size_m / 2^n (ratio {ratio})")
+        self.writer.write_geo(params, case / "mesh.geo", base_cell_size_m=base, refine_levels=levels)
 
         def files():
             return {str(f.relative_to(case)).replace("\\", "/"): f
@@ -86,17 +95,24 @@ class OpenFOAMTurekHron(Backend):
                     + sorted(case.glob("versions.txt")) + sorted(case.glob("postProcessing/forces/0/*.dat"))
                     if f.is_file()}
 
-        g = subprocess.run([str(self.gmsh), "mesh.geo", "-3", "-format", "msh22", "-o", "mesh.msh"], cwd=case,
-                           capture_output=True, text=True, timeout=3600)
+        if base:
+            g = subprocess.run([str(self.gmsh), "mesh.geo", "-parse_and_exit"], cwd=case,
+                               capture_output=True, text=True, timeout=3600)
+            if g.returncode == 0 and (case / "mesh2d.msh").exists():
+                self.writer.extrude_msh22(case / "mesh2d.msh", case / "mesh.msh")
+                (case / "mesh2d.msh").unlink()
+        else:
+            g = subprocess.run([str(self.gmsh), "mesh.geo", "-3", "-format", "msh22", "-o", "mesh.msh"], cwd=case,
+                               capture_output=True, text=True, timeout=3600)
         (case / "log.gmsh").write_text(g.stdout + g.stderr, encoding="utf-8")
         if g.returncode != 0 or not (case / "mesh.msh").exists():
             return failed("Gmsh failed") | {"files": files(), "cleanup": work}
-        quality = {}
+        quality = {"nested_refine_levels": levels} if base else {}
         flag = _p(params, "flag_length_m")
         if flag > 0:   # the fluid-cell check at the flag that caught turek_hron_fsi1_noise_a (2026-11-25 here)
             from studies.turek_hron_fsi import flag_cell_quality, read_msh22_base
             W = self.writer
-            quality = flag_cell_quality(*read_msh22_base(case / "mesh.msh"),
+            quality |= flag_cell_quality(*read_msh22_base(case / "mesh.msh"),
                                         W.XC + (W.R ** 2 - (W.FLAG_H / 2) ** 2) ** 0.5, W.XC + W.R + flag,
                                         W.YC - W.FLAG_H / 2, W.YC + W.FLAG_H / 2)
         r = subprocess.run(of.wsl_command("bash", of.to_wsl_path(self.runner), of.to_wsl_path(case), self.bashrc),

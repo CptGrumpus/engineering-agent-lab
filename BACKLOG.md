@@ -634,6 +634,15 @@ elements, probabilistic uncertainty). Each with its tools and independent refere
   study (the coolant channel or the cantilever); reliability index and failure probability against a requirement.
 - Also noted: transient conduction (exact series for a slab or cylinder), machine elements (a gear tooth by ISO 6336 or
   AGMA against FE contact; shaft fatigue by DIN 743).
+- **I. Welded joint fatigue** (proposed 2026-11-25; user: "add them to the list", not to start until the current
+  studies are complete and refined). A welded bracket or attachment; weld-toe hot-spot stress from the FE model by
+  surface extrapolation; fatigue against the DNV-RP-C203 S-N curves (free from DNV: check that it downloads before
+  framing; if it is blocked like AISC, the user downloads it). Checks: nominal-stress method beside the hot-spot method,
+  the extrapolation points' mesh dependence, Miner's sum against a closed-form constant-amplitude life.
+- **J. Composite laminate plate** (proposed 2026-11-25, same status). Classical laminate theory (ABD matrix, ply
+  stresses) in Python and a CalculiX layered-shell model (*SHELL SECTION, COMPOSITE); first-ply failure (Tsai-Wu,
+  maximum stress) against a requirement. Checks: CLT closed form against the FE ply stresses, a published textbook
+  worked example, symmetric-laminate decoupling (B = 0), mesh convergence.
 
 ### For the dashboard session (from the study session)
 
