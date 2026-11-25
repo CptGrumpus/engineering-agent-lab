@@ -152,3 +152,9 @@ day stale before anyone noticed. Say "recently" or give the date.
 
 All three must pass. Check changed pages at 360 px wide for sideways overflow. The study session commits in the
 same clone: add and commit only your own paths, in one command, and never leave files staged.
+
+Work on a feature branch goes in a git worktree (a second folder), never a branch switch in this clone: a switch
+would move the study session onto the branch and its commits with it. The redesign lives in
+`../engineering-agent-lab-ui` on `ui-redesign` (2026-11-24); run its scripts with this clone's `.venv`. Design
+mock-ups there are filled from `build_v2.py`'s own data by `site/proposals/build_proposals.py`, so a mock-up never
+shows a number the site doesn't.
