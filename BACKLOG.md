@@ -84,7 +84,7 @@ commit). Rules that bind:
 DONE the morning of 2026-11-25 (f84e573): FSI3 time-step study scored to 6.9 s (tip motion converges in dt; dt_c's
 forces lost, the FSI study now keeps one force row per time); FSI3 dt_a and FSI2 r1 level a reruns crashed at the
 same times with byte-identical records (deterministic); 1 mm enclosure mesh check +0.05 K (8526555); pages 27 and
-17 (6bd544e and after). Open for the user: AISC PDFs into references/aisc/; a 9,000 s enclosure verification set
+17 (6bd544e and after). Open for the user: AISC PDFs into references/aisc/; a 9,000 s enclosure verification set (if approved: keep each region's final T and cell centres for the site's field plot, dashboard session's request)
 and any FSI rerun with a changed solid setup need a go-ahead.
 
 DONE this evening (committed 544b06a): the ten study 11 redesign runs (results, corrected heat balance and settled

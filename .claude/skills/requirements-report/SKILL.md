@@ -44,6 +44,13 @@ marked *unverified*.
   their checks.json, not from memory of one run. Page 26 said yield safety 1.82 (the 0.1 mm mesh) in the Answer and
   1.83 (the 0.14 mm evidence mesh) in the table, and its Kt-fit range left out two runs (the dashboard session caught
   both).
+- Quote a verification test's accuracy at the setting the evidence runs use, not the best setting tested. Page 27
+  said radiation "within 0.05 %" (16 directions per quarter) while every enclosure run used 4 (0.92 %, against a 1 %
+  limit). Count pass/fail lists from checks.json too (page 27 said five failed heat balances; it was six), and round
+  once, from the raw value (98.4456 is 98.4, not 98.45 then 98.5).
+- When a fix cools the part a requirement names, report the other parts' maxima as well: the enclosure's bridge
+  cooled the component and left the board the hottest part (85.2 C at 1 W/mK, over the 85 C limit the component
+  passed). A requirement's scope is the client's call; the write-up must put the question to them.
 - Keep these separate: **numerical error** (the verification checks), **modeling assumptions**
   (the `assumptions` list in the case file), and **physical uncertainty** (not quantified for
   synthetic cases).
