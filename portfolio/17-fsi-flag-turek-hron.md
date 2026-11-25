@@ -136,7 +136,8 @@ published results first, and only then are they coupled.
   | 1.77 mm | 82.87 mm | 1.9329 Hz | 218.52 ± 80.03 | 245.8 |
 
   The frequency converges (uncertainty 0.07 %). The amplitudes move steadily away from the benchmark as the mesh is
-  refined: the tip amplitude's mesh uncertainty is 1.4 %, the drag amplitude's 3.7 %, both over the 1 % target, and the
+  refined: the tip amplitude's mesh uncertainty is 1.4 %, the drag amplitude's 3.7 % and the horizontal tip mean's
+  2.1 %, all over the 1 % target (five of the six run-level checks fail), and the
   drag mean and lift amplitude don't converge in order at all (the drag mean spreads only 0.25 % over the three
   meshes, inside FSI1's measured ±0.5 % mesh-to-mesh scatter, but this case declared no noise floor beforehand, so
   none is applied now). Mesh verification therefore FAILS for FSI2. The benchmark's own values come from finer meshes
