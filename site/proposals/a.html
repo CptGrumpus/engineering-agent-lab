@@ -1,0 +1,316 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Version A · The Ledger</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+:root {
+  --paper: #f3f1ea; --sheet: #fffdf8; --ink: #15181c; --soft: #3b424c; --mute: #68707c; --rule: #cfc9bb; --hair: #e4dfd3;
+  --blue: #1b4b8c; --blue-soft: #e6edf6; --ok: #1d7347; --ok-bg: #e3f1e8; --bad: #b03426; --bad-bg: #f8e4df;
+  --warn: #8a5d00; --warn-bg: #f6ecd0;
+  --sans: "IBM Plex Sans", system-ui, sans-serif; --cond: "IBM Plex Sans Condensed", "IBM Plex Sans", sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, monospace;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: var(--paper); color: var(--ink); font: 16px/1.55 var(--sans); -webkit-font-smoothing: antialiased; }
+a { color: var(--blue); }
+img { max-width: 100%; display: block; }
+.wrap { max-width: 1240px; margin: 0 auto; padding: 0 28px; }
+.mock { background: #15181c; color: #d9dde3; font: 12.5px/1.4 var(--mono); padding: 7px 28px; display: flex; gap: 18px; flex-wrap: wrap; align-items: center; }
+.mock b { color: #fff; } .mock a { color: #9cc3ff; }
+.need { display: inline-block; border: 1.5px dashed #b0792a; color: #7a4f08; background: #fff7e3; font: 500 12px/1 var(--mono); padding: 6px 9px; border-radius: 3px; white-space: nowrap; }
+.mock .need { background: transparent; color: #f2c14e; border-color: #f2c14e; }
+
+/* top bar: who, what, how to reach */
+.top { border-bottom: 1px solid var(--rule); background: var(--sheet); position: sticky; top: 0; z-index: 5; }
+.top .wrap { display: flex; align-items: center; gap: 22px; height: 58px; }
+.who { font: 600 17px/1 var(--cond); letter-spacing: .01em; text-decoration: none; color: var(--ink); white-space: nowrap; }
+.who small { font: 400 13px/1 var(--sans); color: var(--mute); margin-left: 10px; }
+.top nav { margin-left: auto; display: flex; gap: 20px; font: 500 14px/1 var(--sans); }
+.top nav a { color: var(--soft); text-decoration: none; } .top nav a:hover { color: var(--blue); }
+.btn { display: inline-flex; align-items: center; font: 600 14px/1 var(--sans); padding: 11px 16px; border-radius: 3px; text-decoration: none; background: var(--blue); color: #fff; border: 1px solid var(--blue); white-space: nowrap; }
+.btn.line { background: transparent; color: var(--blue); }
+.label { font: 600 12px/1.2 var(--cond); letter-spacing: .12em; text-transform: uppercase; color: var(--mute); margin: 0; }
+
+/* hero: one screen that answers who, what, proof, trust, action */
+.hero { padding: 44px 0 40px; }
+.hero .wrap { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 48px; align-items: start; }
+h1 { font: 700 clamp(34px, 4.3vw, 54px)/1.04 var(--cond); letter-spacing: -.012em; margin: 14px 0 18px; text-wrap: balance; }
+h1 em { font-style: normal; color: var(--blue); }
+.sub { font-size: 19px; line-height: 1.5; color: var(--soft); margin: 0 0 22px; max-width: 36em; }
+.cta { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+.facts { list-style: none; margin: 26px 0 0; padding: 16px 0 0; border-top: 1px solid var(--rule); display: grid; grid-template-columns: repeat(3, auto); gap: 6px 28px; justify-content: start; font-size: 14px; color: var(--soft); }
+.facts b { display: block; font: 600 11.5px/1.5 var(--cond); letter-spacing: .12em; text-transform: uppercase; color: var(--mute); }
+
+/* the scorecard, drawn like a drawing's title block */
+.score { background: var(--sheet); border: 1.5px solid var(--ink); position: relative; }
+.score header { display: flex; justify-content: space-between; align-items: baseline; padding: 10px 16px; border-bottom: 1.5px solid var(--ink); }
+.score header b { font: 600 13px/1 var(--cond); letter-spacing: .12em; text-transform: uppercase; }
+.score header span { font: 12px/1 var(--mono); color: var(--mute); }
+.tally { padding: 18px 16px 16px; border-bottom: 1px solid var(--rule); }
+.tally p { margin: 0 0 12px; font-size: 15px; color: var(--soft); }
+.tally p b { font: 600 34px/1 var(--mono); color: var(--ink); margin-right: 8px; letter-spacing: -.02em; }
+.bar { display: flex; height: 26px; gap: 2px; }
+.bar i { display: block; } .bar .ok { background: var(--ok); } .bar .bad { background: var(--bad); } .bar .warn { background: #c99a2e; }
+.key { display: flex; gap: 18px; margin: 10px 0 0; padding: 0; list-style: none; font: 13px/1.3 var(--sans); color: var(--soft); flex-wrap: wrap; }
+.key b { font: 600 15px/1 var(--mono); color: var(--ink); margin-right: 5px; }
+.key i { display: inline-block; width: 9px; height: 9px; margin-right: 6px; }
+.tally small { display: block; margin-top: 12px; font-size: 13.5px; color: var(--mute); line-height: 1.45; }
+.tiles { display: grid; grid-template-columns: 1fr 1fr; }
+.tiles div { padding: 14px 16px; border-right: 1px solid var(--rule); border-bottom: 1px solid var(--rule); }
+.tiles div:nth-child(2n) { border-right: 0; } .tiles div:nth-last-child(-n+2) { border-bottom: 0; }
+.tiles b { display: block; font: 600 26px/1.1 var(--mono); letter-spacing: -.02em; }
+.tiles span { font-size: 13px; color: var(--mute); line-height: 1.35; display: block; margin-top: 3px; }
+
+/* section heads */
+section { padding: 44px 0; }
+.head { display: flex; align-items: baseline; gap: 16px; border-top: 1.5px solid var(--ink); padding-top: 12px; margin-bottom: 22px; flex-wrap: wrap; }
+.head h2 { font: 700 26px/1.1 var(--cond); margin: 0; letter-spacing: -.005em; }
+.head .label { order: -1; min-width: 74px; color: var(--blue); }
+.head > p:last-child { margin: 0 0 0 auto; font-size: 14px; color: var(--mute); max-width: 34em; text-align: right; }
+
+/* three to start with */
+.leads { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
+.lead { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; background: var(--sheet); border: 1px solid var(--rule); padding: 14px 16px 16px; text-decoration: none; color: inherit; }
+.lead:hover { border-color: var(--ink); }
+.lead img { width: 100%; aspect-ratio: 16/10; object-fit: cover; border: 1px solid var(--hair); margin-bottom: 4px; }
+.tag { font: 600 11.5px/1.2 var(--cond); letter-spacing: .12em; text-transform: uppercase; color: var(--mute); margin: 0; }
+.big { margin: 0; display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.big b { font: 600 32px/1 var(--mono); letter-spacing: -.03em; color: var(--blue); }
+.big span { font-size: 14px; color: var(--soft); }
+.say { margin: 0 0 4px; font-size: 14.5px; color: var(--soft); line-height: 1.5; }
+.chip { display: inline-block; font: 600 12px/1 var(--sans); padding: 5px 8px 5px; border-radius: 2px; white-space: nowrap; }
+.chip.ok { background: var(--ok-bg); color: var(--ok); } .chip.bad { background: var(--bad-bg); color: var(--bad); } .chip.warn { background: var(--warn-bg); color: var(--warn); }
+
+/* the ledger */
+.filters { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; align-items: center; }
+.filters button { font: 500 13px/1 var(--sans); padding: 8px 11px; border: 1px solid var(--rule); background: var(--sheet); color: var(--soft); border-radius: 2px; cursor: pointer; }
+.filters button[aria-pressed=true] { background: var(--ink); color: #fff; border-color: var(--ink); }
+.filters .sep { width: 1px; height: 22px; background: var(--rule); margin: 0 6px; }
+.filters .count { margin-left: auto; font: 13px/1 var(--mono); color: var(--mute); }
+table { width: 100%; border-collapse: collapse; background: var(--sheet); border: 1px solid var(--rule); }
+th { text-align: left; font: 600 11.5px/1 var(--cond); letter-spacing: .12em; text-transform: uppercase; color: var(--mute); padding: 11px 14px; border-bottom: 1.5px solid var(--ink); }
+td { padding: 11px 14px; border-bottom: 1px solid var(--hair); vertical-align: top; font-size: 14px; }
+tr:last-child td { border-bottom: 0; }
+tr[hidden] { display: none !important; }
+tbody tr:hover { background: #faf7ee; }
+.part { display: grid; grid-template-columns: 112px 1fr; gap: 14px; text-decoration: none; color: inherit; align-items: start; }
+.part img { width: 112px; aspect-ratio: 16/10; object-fit: cover; border: 1px solid var(--hair); background: #fff; }
+.part i { font: 500 11.5px/1 var(--mono); color: var(--mute); font-style: normal; display: block; margin-bottom: 4px; }
+.part b { display: block; font: 600 15px/1.3 var(--sans); color: var(--ink); }
+.part:hover b { color: var(--blue); text-decoration: underline; }
+.part em { display: block; font-style: normal; font-size: 13px; line-height: 1.4; color: var(--mute); margin-top: 3px; }
+.c-part { width: 40%; } .c-verdict { width: 15%; } .c-find { color: var(--soft); line-height: 1.45; } .c-tools { width: 13%; font: 12px/1.5 var(--mono); color: var(--mute); }
+.c-verdict .chip { white-space: normal; line-height: 1.25; }
+
+/* what you get */
+.two { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 40px; align-items: start; }
+.svc, .steps, .caught { list-style: none; margin: 0; padding: 0; }
+.svc li { padding: 14px 0; border-bottom: 1px solid var(--rule); display: grid; grid-template-columns: 15em 1fr; gap: 18px; }
+.svc li:first-child { padding-top: 0; }
+.svc b { font: 600 16px/1.3 var(--sans); } .svc span { font-size: 14.5px; color: var(--soft); }
+.steps { counter-reset: s; margin-top: 22px; display: grid; grid-template-columns: 1fr 1fr; gap: 14px 22px; }
+.steps li { counter-increment: s; font-size: 13.5px; color: var(--soft); line-height: 1.45; }
+.steps b { display: block; font: 600 14px/1.3 var(--cond); letter-spacing: .08em; text-transform: uppercase; color: var(--ink); margin-bottom: 3px; }
+.steps b::before { content: counter(s) "  "; font-family: var(--mono); color: var(--blue); white-space: pre; }
+.memo { background: #fff; border: 1px solid var(--rule); box-shadow: 6px 6px 0 var(--hair); padding: 22px 24px 20px; font-size: 13.5px; line-height: 1.5; color: var(--soft); }
+.memo .m-h { font: 600 11.5px/1 var(--cond); letter-spacing: .14em; text-transform: uppercase; color: var(--mute); margin: 0 0 8px; }
+.memo h4 { font: 600 18px/1.25 var(--sans); margin: 0 0 12px; color: var(--ink); }
+.memo dl { display: grid; grid-template-columns: 5em 1fr; gap: 4px 10px; margin: 0 0 14px; padding: 10px 0; border-top: 1px solid var(--hair); border-bottom: 1px solid var(--hair); }
+.memo dt { font: 500 12px/1.6 var(--mono); color: var(--mute); } .memo dd { margin: 0; }
+.memo .m-lead { color: var(--ink); margin: 0 0 8px; } .memo ul { margin: 0; padding-left: 18px; } .memo li { margin-bottom: 6px; }
+.memo b { color: var(--ink); }
+.memo-link { display: inline-block; margin-top: 16px; font: 600 14px/1 var(--sans); }
+
+/* caught by the checks */
+.caught { display: grid; grid-template-columns: 1fr 1fr; gap: 0 40px; }
+.caught li { padding: 14px 0; border-bottom: 1px solid var(--rule); }
+.caught a { text-decoration: none; display: block; }
+.caught i { font: 600 11.5px/1.2 var(--cond); letter-spacing: .12em; text-transform: uppercase; color: var(--mute); font-style: normal; display: block; margin-bottom: 3px; }
+.caught b { font: 600 16px/1.3 var(--sans); color: var(--ink); } .caught a:hover b { color: var(--blue); }
+.caught span { display: block; font-size: 14px; color: var(--soft); margin-top: 4px; line-height: 1.5; }
+
+/* contact */
+.contact { background: var(--ink); color: #e9ecf0; padding: 44px 0 52px; }
+.contact .wrap { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 48px; align-items: start; }
+.contact h2 { font: 700 34px/1.08 var(--cond); margin: 10px 0 12px; }
+.contact p { margin: 0 0 18px; color: #b9c0ca; max-width: 34em; }
+.contact .label { color: #8d97a5; }
+.contact .btn { background: #fff; color: var(--ink); border-color: #fff; }
+.contact .needs { display: flex; flex-wrap: wrap; gap: 8px; }
+.contact .needs .need { background: transparent; color: #f2c14e; border-color: #f2c14e; }
+.contact h3 { font: 600 12px/1.2 var(--cond); letter-spacing: .12em; text-transform: uppercase; color: #8d97a5; margin: 0 0 12px; }
+
+@media (max-width: 900px) {
+  .hero .wrap, .two, .contact .wrap { grid-template-columns: 1fr; gap: 28px; }
+  .leads { grid-template-columns: 1fr; } .caught { grid-template-columns: 1fr; }
+  .top nav { display: none; } .who small { display: none; } .top .wrap { gap: 10px; } .top .btn { margin-left: auto; }
+  .head > p:last-child { margin-left: 0; text-align: left; }
+  .facts { grid-template-columns: 1fr 1fr; }
+  .svc li { grid-template-columns: 1fr; gap: 4px; }
+  table, tbody, tr, td { display: block; width: auto !important; } thead { display: none; }
+  tr { padding: 14px; border-bottom: 1px solid var(--rule); } td { padding: 0; border: 0; }
+  .c-verdict { margin: 10px 0 6px; } .c-tools { margin-top: 6px; }
+  .part { grid-template-columns: 88px 1fr; } .part img { width: 88px; }
+}
+@media (max-width: 520px) { .part em, .c-tools { display: none; } tr { padding: 12px 14px; } .c-find { font-size: 13.5px; } .wrap { padding: 0 16px; } .mock { padding: 7px 16px; } .steps { grid-template-columns: 1fr; } h1 { font-size: 33px; } .sub { font-size: 17px; } }
+</style>
+</head>
+<body>
+<div class="mock"><b>Mock-up A · The Ledger</b><span>Real data from the site's build. Dashed tags mark things only you can supply.</span><span class="need">example</span><a href="b.html">See version B →</a></div>
+
+<div class="top"><div class="wrap">
+  <a class="who" href="#top">Justin Smith<small>Mechanical simulation engineer · remote contract</small></a>
+  <nav><a href="#start">Start here</a><a href="#ledger">All work</a><a href="#offer">What you get</a><a href="#caught">Method</a></nav>
+  <span class="need">CV (PDF)</span>
+  <a class="btn" href="#contact">Email me</a>
+</div></div>
+
+<main id="top">
+<header class="hero"><div class="wrap">
+  <div>
+    <p class="label">Mechanical engineer (MS) · automotive background · available for remote contract work</p>
+    <h1>I answer <span style="white-space:nowrap">pass-or-fail</span> questions about mechanical parts, <em>with the proof attached.</em></h1>
+    <p class="sub">Stress, vibration, fatigue, heat, flow and electric machines. You send the requirement and the drawings. You get a verdict on each requirement, the model behind it and the independent check that backs it.</p>
+    <div class="cta"><a class="btn" href="#contact">Email me</a><a class="btn line" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/portfolio/deliverables/coolant-channel-memo.md">Read a sample client memo</a><a class="btn line" href="#start">See three studies</a></div>
+    <ul class="facts">
+      <li><b>Physics</b>Structures, thermal, fluids, electric machines</li>
+      <li><b>Tools</b>CalculiX, OpenFOAM, FEMM, Gmsh, CadQuery, Python</li>
+      <li><b>Working with AI</b>An agent runs the cases; I review the engineering</li>
+    </ul>
+  </div>
+  <aside class="score" aria-label="Scorecard">
+    <header><b>Scorecard</b><span>27 studies · 20 parts</span></header>
+    <div class="tally">
+      <p><b>70</b>requirements judged</p>
+      <div class="bar" role="img" aria-label="51 met, 17 not met, 2 withheld"><i class="ok" style="flex:51"></i><i class="bad" style="flex:17"></i><i class="warn" style="flex:2"></i></div>
+      <ul class="key"><li><i style="background:var(--ok)"></i><b>51</b>met</li><li><i style="background:var(--bad)"></i><b>17</b>not met</li><li><i style="background:#c99a2e"></i><b>2</b>withheld</li></ul>
+      <small>A fail is a result too. Where a design fails, the study says what would fix it. Where the checks don't support a verdict, I hold it back.</small>
+    </div>
+    <div class="tiles">
+      <div><b>8</b><span>first answers that looked right and the checks overturned</span></div>
+      <div><b>4</b><span>parts that fail as drawn, each with the reason or the fix</span></div>
+      <div><b>6,056</b><span>automated checks in the code behind the studies</span></div>
+      <div><b>188</b><span>saved runs, each repeatable from its inputs</span></div>
+    </div>
+  </aside>
+</div></header>
+
+<section id="start"><div class="wrap">
+  <div class="head"><p class="label">Sheet 1</p><h2>Three to Start With</h2><p>If you read nothing else: a real motor against its test, an AI agent kept honest, and a code check that turns on one judgement.</p></div>
+  <div class="leads">
+<a class="lead" href="../../docs/traction-motor.html"><img src="../v2/tc_motor.webp" alt=""><p class="tag">Electric machines · study 20</p><p class="big"><b>18 %</b><span>above the laboratory&#x27;s test</span></p><p class="say">A production traction motor, modelled from its drawings and parts list with nothing tuned. The model read high on back-EMF and torque, and I traced it, cause by cause, to the magnets.</p><span class="chip warn">Closed, with client questions</span></a>
+<a class="lead" href="../../docs/bracket-optimisation.html"><img src="../v2/tc_bracket_opt.webp" alt=""><p class="tag">Structures and vibration · study 12</p><p class="big"><b>78 designs</b><span>searched by an AI agent</span></p><p class="say">The lightest machined bracket that stays under 100 MPa: 372 g at 98.3 MPa. The checks threw out the agent&#x27;s first two answers before this one stood.</p><span class="chip ok">Passes</span></a>
+<a class="lead" href="../../docs/pressure-vessel-nozzle.html"><img src="../v2/tc_pv_nozzle.webp" alt=""><p class="tag">Structures and vibration · study 18</p><p class="big"><b>24 %</b><span>over the limit, or 0.9 % under</span></p><p class="say">A pressure vessel nozzle that passes its design code on one line and fails on another, on the same converged model. I&#x27;d judge it by the line that fails.</p><span class="chip warn">Depends on one judgement call</span></a>
+  </div>
+</div></section>
+
+<section id="ledger"><div class="wrap">
+  <div class="head"><p class="label">Sheet 2</p><h2>Every Part, Its Question and Its Verdict</h2><p>One row per part. Each opens the full study: the setup, the answer, the model, the checks and the files.</p></div>
+  <div class="filters" id="f-disc" role="group" aria-label="Filter by discipline">
+<button type="button" aria-pressed="true" data-f="all">All</button><button type="button" aria-pressed="false" data-f="struct">Structures and vibration</button><button type="button" aria-pressed="false" data-f="fluid">Thermal and fluids</button><button type="button" aria-pressed="false" data-f="em">Electric machines</button><button type="button" aria-pressed="false" data-f="vehicle">Vehicle dynamics</button><button type="button" aria-pressed="false" data-f="geom">Geometry</button><button type="button" aria-pressed="false" data-f="workflow">Workflow</button>
+    <span class="sep"></span>
+    <button type="button" aria-pressed="false" data-t="ok">Passes</button><button type="button" aria-pressed="false" data-t="bad">Fails</button><button type="button" aria-pressed="false" data-t="warn">Qualified</button>
+    <span class="count" id="count"></span>
+  </div>
+  <table>
+    <thead><tr><th>Part and question</th><th>Verdict</th><th>Finding</th><th>Tools</th></tr></thead>
+    <tbody id="rows">
+<tr data-g="em" data-t="warn"><td class="c-part"><a class="part" href="../../docs/traction-motor.html"><img src="../v2/tc_motor.webp" alt="" loading="lazy"><span><i>20</i><b>Traction motor, modelled from client data and checked against test</b><em>Can open-source tools model a production traction motor well enough for design work, judged against its test data?</em></span></a></td><td class="c-verdict"><span class="chip warn">Closed, with client questions</span></td><td class="c-find">The 2004 Prius motor, modelled from the drawings, parts list and measured magnet material, with nothing tuned.</td><td class="c-tools">Pyleecan · FEMM · ElmerFEM · CalculiX</td></tr>
+<tr data-g="struct" data-t="ok"><td class="c-part"><a class="part" href="../../docs/bracket-optimisation.html"><img src="../v2/tc_bracket_opt.webp" alt="" loading="lazy"><span><i>12</i><b>Bracket optimisation loop, driven by the agent</b><em>How light can a machined aluminium clevis bracket be and still carry its 4.8 kN pin load within 100 MPa and 0.10 mm of movement?</em></span></a></td><td class="c-verdict"><span class="chip ok">Passes</span></td><td class="c-find">The agent searched 78 designs over three runs for the lightest machined clevis bracket that stays under 100 MPa.</td><td class="c-tools">CadQuery · Gmsh · CalculiX · SciPy</td></tr>
+<tr data-g="fluid" data-t="warn"><td class="c-part"><a class="part" href="../../docs/turbulent-pipe-friction.html"><img src="../v2/tc_turbulent_flow.webp" alt="" loading="lazy"><span><i>19</i><b>Turbulent flow: pipe friction, then flow over a step</b><em>Can this CFD setup be trusted for pressure drop and flow layout? Checked against measurements, in a pipe and behind a step.</em></span></a></td><td class="c-verdict"><span class="chip warn">Passes, with one miss</span></td><td class="c-find">Attached flow first: resolved at the wall, the friction factor lands 2.4 % above Prandtl&#x27;s law against a 5 % limit, while wall functions sit 5 % low.</td><td class="c-tools">OpenFOAM</td></tr>
+<tr data-g="struct" data-t="warn"><td class="c-part"><a class="part" href="../../docs/pressure-vessel-nozzle.html"><img src="../v2/tc_pv_nozzle.webp" alt="" loading="lazy"><span><i>18</i><b>Pressure vessel nozzle, design code check</b><em>Can a 200 mm nozzle go into a 1 m pressure vessel at 3.5 MPa without a reinforcing pad, and how thin can the head be?</em></span></a></td><td class="c-verdict"><span class="chip warn">Depends on one judgement call</span></td><td class="c-find">Passes ASME-style design by analysis on lines at the weld toes (205.1 MPa against 207), fails by 24 % on a line through the corner.</td><td class="c-tools">CadQuery · Gmsh · CalculiX</td></tr>
+<tr data-g="struct" data-t="ok"><td class="c-part"><a class="part" href="../../docs/bracket-modal.html"><img src="../v2/tc_bracket_arm.webp" alt="" loading="lazy"><span><i>04 · 21 · 22</i><b>Bracket arm: modal analysis, random vibration and how robust the pass is</b><em>How thin can a steel bracket arm near an engine be, does it survive a random vibration test, and how sure is that pass?</em></span></a></td><td class="c-verdict"><span class="chip ok">Passes</span></td><td class="c-find">7 mm thick puts the first mode at 261.7 Hz and the weight at 206 g. Then the same arm on a shaker table, one hour per axis of random vibration: 38.6 MPa at the clamp against 236.7, fatigue damage 0.0024 against 0.5 and 0.345 mm of tip movement against 1 mm.</td><td class="c-tools">CadQuery · Gmsh · CalculiX · Python</td></tr>
+<tr data-g="fluid" data-t="ok"><td class="c-part"><a class="part" href="../../docs/cold-plate.html"><img src="../v2/tc_cold_plate.webp" alt="" loading="lazy"><span><i>11 · 15</i><b>Cold plate: the coolant channel, then the full thermal chain</b><em>Does a water-cooled aluminium plate keep the electronics on it under 45 °C, with the coolant and the thermal stress inside their limits?</em></span></a></td><td class="c-verdict"><span class="chip ok">Passes</span></td><td class="c-find">First the coolant channel on its own: the wall peaks at 44.03 °C against 45, verified.</td><td class="c-tools">OpenFOAM · CalculiX</td></tr>
+<tr data-g="struct" data-t="bad"><td class="c-part"><a class="part" href="../../docs/fan-rotor.html"><img src="../v2/tc_fan_rotor.webp" alt="" loading="lazy"><span><i>23</i><b>Fan rotor: critical speeds and unbalance response</b><em>Is a 50 mm shaft stiff enough to keep a fan&#x27;s critical speed out of its 1,000 to 3,000 rpm range, and if not, what is?</em></span></a></td><td class="c-verdict"><span class="chip bad">Fails as drawn; fix found</span></td><td class="c-find">The drawn 50 mm shaft runs through its first critical speed inside the 1,000 to 3,000 rpm range, and 60 mm fails on soft bearings.</td><td class="c-tools">ROSS · Python</td></tr>
+<tr data-g="struct" data-t="bad"><td class="c-part"><a class="part" href="../../docs/shaft-shoulder-fatigue.html"><img src="../v2/tc_shaft.webp" alt="" loading="lazy"><span><i>26</i><b>Gearbox shaft shoulder: fatigue at the fillet</b><em>Does a gearbox shaft&#x27;s shoulder fillet survive rotating bending and a 1.5 × overload, and if not, what step does?</em></span></a></td><td class="c-verdict"><span class="chip bad">Fails as drawn; fix found</span></td><td class="c-find">Fails as drawn: fatigue safety 1.19 against 1.5 and yield safety 1.83 against 2.0, and no fillet that fits under the 4 mm shoulder reaches 1.5.</td><td class="c-tools">Gmsh · CalculiX · Python</td></tr>
+<tr data-g="struct" data-t="warn"><td class="c-part"><a class="part" href="../../docs/o-ring-face-seal.html"><img src="../v2/tc_oring.webp" alt="" loading="lazy"><span><i>25</i><b>O-ring face seal across its tolerance stack</b><em>Does an O-ring seal a 3 bar coolant-pump cover at every corner of its tolerance stack, within the bolts&#x27; force and the groove&#x27;s room?</em></span></a></td><td class="c-verdict"><span class="chip warn">Passes; two cross-checks just missed</span></td><td class="c-find">Passes at all three corners: 1.50 MPa of sealing pressure at the loosest against 0.6 needed, and 5.94 N/mm to close at the tightest against a 12 N/mm budget.</td><td class="c-tools">Gmsh · CalculiX</td></tr>
+<tr data-g="struct" data-t="ok"><td class="c-part"><a class="part" href="../../docs/cracked-plate.html"><img src="../v2/tc_crack.webp" alt="" loading="lazy"><span><i>24</i><b>Cracked steel plate: critical crack and fatigue crack growth</b><em>A 2 mm crack at the edge of a steel plate in cyclic tension: how long until it fails, and how often must the plate be inspected?</em></span></a></td><td class="c-verdict"><span class="chip ok">Passes</span></td><td class="c-find">A 2 mm edge crack, the smallest inspection finds, grows to the critical 37.0 mm in about 92,000 cycles.</td><td class="c-tools">Gmsh · CalculiX · Python</td></tr>
+<tr data-g="struct" data-t="bad"><td class="c-part"><a class="part" href="../../docs/bolted-joint.html"><img src="../v2/tc_bolted_joint.webp" alt="" loading="lazy"><span><i>16</i><b>Bolted joint, slip and opening</b><em>Does an M8 bolt clamping two steel plates carry a 2 kN side load by friction alone, and stay closed under a 10 kN pull?</em></span></a></td><td class="c-verdict"><span class="chip bad">Fails</span></td><td class="c-find">Fails narrowly: once the joint settles it slips at 2.39 kN, 4.4 % short of the 2.5 kN it must carry.</td><td class="c-tools">CalculiX</td></tr>
+<tr data-g="struct" data-t="ok"><td class="c-part"><a class="part" href="../../docs/aluminium-strap.html"><img src="../v2/tc_strap.webp" alt="" loading="lazy"><span><i>02 · 03 · 14</i><b>Aluminium strap: cable hole, fatigue life and proof test</b><em>How big a cable hole can an aluminium strap take, how long will it last in service, and what does a 15 kN proof test do to it?</em></span></a></td><td class="c-verdict"><span class="chip ok">Passes</span></td><td class="c-find">One strap, three questions. A 16 mm cable hole passes at 117 MPa against 120.</td><td class="c-tools">CadQuery · Gmsh · CalculiX · Python</td></tr>
+<tr data-g="struct" data-t="ok"><td class="c-part"><a class="part" href="../../docs/strut-buckling.html"><img src="../v2/tc_strut.webp" alt="" loading="lazy"><span><i>13</i><b>Strut buckling, with an imperfect strut</b><em>How long can a pinned aluminium strut be and still take twice its 8 kN load before it yields, allowing for a slight bow?</em></span></a></td><td class="c-verdict"><span class="chip ok">Passes</span></td><td class="c-find">The longest acceptable strut is about 587 mm. The bow costs 4 to 7 % of the buckling load, so a buckling check alone would overstate the capacity.</td><td class="c-tools">CalculiX</td></tr>
+<tr data-g="struct" data-t="ok"><td class="c-part"><a class="part" href="../../docs/roller-contact.html"><img src="../v2/tc_contact.webp" alt="" loading="lazy"><span><i>10</i><b>Roller-on-plate contact, nonlinear FEA</b><em>Does a 100 mm steel roller carrying 500 N per millimetre stay within its limits on contact pressure and on shear below the surface?</em></span></a></td><td class="c-verdict"><span class="chip ok">Passes</span></td><td class="c-find">A track roller carrying 500 N/mm. The contact pressure peaks at 609 MPa against a 650 MPa limit, and the shear under the surface reaches 184 MPa against 200.</td><td class="c-tools">Gmsh · CalculiX</td></tr>
+<tr data-g="struct" data-t="ok"><td class="c-part"><a class="part" href="../../docs/cantilever-bracket.html"><img src="../v2/tc_cantilever_bracket.webp" alt="" loading="lazy"><span><i>01 · 01b</i><b>Cantilever bracket: stress check, then optimised</b><em>Does a 200 mm steel bracket carry 1 kN at its tip within its limits, and how light can it be made once fatigue matters?</em></span></a></td><td class="c-verdict"><span class="chip ok">Passes</span></td><td class="c-find">First the straight steel bar: 0.953 mm and 150 MPa, inside its 213 MPa limit.</td><td class="c-tools">CalculiX · SciPy</td></tr>
+<tr data-g="fluid" data-t="bad"><td class="c-part"><a class="part" href="../../docs/coolant-channel.html"><img src="../v2/tc_cfd.webp" alt="" loading="lazy"><span><i>05</i><b>Coolant channel pressure budget</b><em>Does a 1 mm coolant passage stay within its 30 Pa pressure budget and keep enough shear on its walls to limit fouling?</em></span></a></td><td class="c-verdict"><span class="chip bad">Fails</span></td><td class="c-find">Fails. It needs 33.4 Pa against a 30 Pa budget, and no gap size fixes it.</td><td class="c-tools">OpenFOAM</td></tr>
+<tr data-g="fluid" data-t="ok"><td class="c-part"><a class="part" href="../../docs/heat-sink-fin.html"><img src="../v2/tc_thermal.webp" alt="" loading="lazy"><span><i>06</i><b>Heat-sink fin temperature</b><em>Does the tip of an aluminium heat-sink fin stay above 60 °C, and how sure can I be?</em></span></a></td><td class="c-verdict"><span class="chip ok">Passes</span></td><td class="c-find">The tip sits at 73.2 °C, and still 65.9 °C with every input at its worst.</td><td class="c-tools">CalculiX</td></tr>
+<tr data-g="vehicle" data-t="warn"><td class="c-part"><a class="part" href="../../docs/quarter-car.html"><img src="../v2/tc_suspension.webp" alt="" loading="lazy"><span><i>07</i><b>Quarter car, ride and road holding</b><em>Which damper rates give a compact car&#x27;s front corner good ride, enough travel and steady tire load over a bump and a rough road?</em></span></a></td><td class="c-verdict"><span class="chip warn">Depends on speed</span></td><td class="c-find">600 to 1000 N·s/m works at 18 km/h. At 36 km/h the wheel leaves the road.</td><td class="c-tools">SciPy · OpenModelica</td></tr>
+<tr data-g="geom" data-t="ok"><td class="c-part"><a class="part" href="../../docs/mounting-plate.html"><img src="../v2/tc_cad.webp" alt="" loading="lazy"><span><i>08</i><b>Parametric mounting plate</b><em>Which clearance hole size keeps a six-hole aluminium plate under 150 g and leaves enough material at the edges?</em></span></a></td><td class="c-verdict"><span class="chip ok">Passes</span></td><td class="c-find">Only the 9 mm (M8 clearance) hole meets both the weight and edge-distance rules.</td><td class="c-tools">CadQuery</td></tr>
+<tr data-g="workflow" data-t="ok"><td class="c-part"><a class="part" href="../../docs/mass-spring-damper.html"><img src="../v2/tc_baseline.webp" alt="" loading="lazy"><span><i>09</i><b>Mass-spring-damper baseline</b><em>How much damping does a mass on a spring need to meet its targets, and does the workflow get a known answer right?</em></span></a></td><td class="c-verdict"><span class="chip ok">Passes</span></td><td class="c-find">All 72 checks pass, and the two tools agree to a few parts per million.</td><td class="c-tools">SciPy · OpenModelica</td></tr>
+    </tbody>
+  </table>
+</div></section>
+
+<section id="offer"><div class="wrap">
+  <div class="head"><p class="label">Sheet 3</p><h2>What I Can Take On, and What You Get</h2><p>The deliverable is a memo a design lead can act on, with every number traceable to a saved run.</p></div>
+  <div class="two">
+    <div>
+      <ul class="svc">
+<li><b>Build and check a model</b><span>From your drawings and requirements to a verdict on each requirement, with the model, the independent check behind it and the files to repeat it.</span></li>
+<li><b>Check a result you already have</b><span>An independent second answer to a number someone else produced: a hand calculation, a second tool or a mesh study, and a plain statement of what holds.</span></li>
+<li><b>Automate a repeated analysis</b><span>A sweep or an optimisation loop that an AI agent runs under written procedures, with the same checks on every run.</span></li>
+<li><b>Engineering tasks for AI training</b><span>Requirement-to-verdict tasks with automated graders, like the ones on the grading page.</span></li>
+      </ul>
+      <ol class="steps">
+<li><b>Set up</b><span>Turn the question into requirements I can measure, along with the input ranges, the assumptions that need checking and the acceptance tolerances. All of it goes in a case file.</span></li>
+<li><b>Build</b><span>Write the geometry, mesh, materials, loads and solver inputs as code, using CadQuery, Gmsh, CalculiX, OpenFOAM, SciPy or Modelica.</span></li>
+<li><b>Check</b><span>Compare every number I report with something independent. That might be an exact solution, a conservation law, a handbook value or a second tool, plus a mesh or time-step convergence study.</span></li>
+<li><b>Report</b><span>Link each requirement to its result, the checks behind it and the saved files. If an assumption broke along the way, I hold the verdict back instead of guessing.</span></li>
+      </ol>
+    </div>
+    <div>
+      <div class="memo">
+<p class="m-h">Technical memo</p><h4>Cold-Plate Coolant Passage, Pressure Budget and Wall Shear</h4><dl><dt>Subject</dt><dd>Does the 1 mm coolant passage meet its pressure budget and minimum wall shear across tolerance and temperature?</dd><dt>Status</dt><dd>Analysis complete; recommendation pending your decision on the requirements</dd></dl><p class="m-lead"><b>The passage as specified does not meet its requirements, and no choice of gap alone can fix it.</b></p><ul><li>At nominal conditions (1.00 mm gap, 20 °C) the passage needs <b>33.4 Pa</b> of supply pressure against a <b>30 Pa</b> budget, 11 % over.</li><li>Across the gap tolerance (±0.05 mm) and coolant range (15–40 °C) it needs <b>28–42 Pa</b> at the four verified corners, and warm coolant drops the wall shear to <b>0.43 Pa</b> against a <b>0.5 Pa</b> minimum (0.36 Pa at the warm, wide-gap corner, which is unverified; see below).</li></ul>
+      </div>
+      <a class="memo-link" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/portfolio/deliverables/coolant-channel-memo.md">Read the whole memo →</a>
+    </div>
+  </div>
+</div></section>
+
+<section id="caught"><div class="wrap">
+  <div class="head"><p class="label">Sheet 4</p><h2>What the Checks Caught</h2><p>In 8 studies my first model gave an answer that looked reasonable and was wrong. Four of them:</p></div>
+  <ul class="caught">
+<li><a href="../../docs/bracket-optimisation.html"><i>Bracket optimisation · design automation</i><b>Two answers that failed their own checks</b></a><span>The optimiser's first pick read 94 MPa, but its mesh study put it at 101.7 MPa once the uncertainty was added: a peak in a fillet needs far more margin than a smooth bending stress. The second pick failed because the mesh study wasn't refining the fillet at all. The design on the page passed only once the peak itself was refined.</span></li>
+<li><a href="../../docs/pressure-vessel-nozzle.html"><i>Pressure vessel · design code</i><b>A pass that depended on where one line was drawn</b></a><span>Read on lines at the weld toes, the nozzle passed its design-code limit with 0.9 % to spare, and I recommended a wall on that basis. Measuring the other usual placement, a line through the inner corner, gave 25 % more stress on the same converged model. The verdict flipped and the recommendation was withdrawn.</span></li>
+<li><a href="../../docs/traction-motor.html"><i>Traction motor · electric machines</i><b>A library model that wasn&#x27;t the motor it was named after</b></a><span>The open-source motor library ships a model of the 2004 Prius motor, so the obvious start was to use it. Rebuilt from the laboratory's dimensioned drawing, the real slot is 145 mm², not 218, and the air gap 0.775 mm, not 0.750. The drawing itself turned out to be stretched 1.1 % in one direction. The study uses its own machine definition, checked against the parts list's masses.</span></li>
+<li><a href="../../docs/aluminium-strap.html#strap"><i>Strap · stress concentration</i><b>A model that converged neatly to the wrong answer</b></a><span>The mesh study looked textbook, but it settled 2 % away from the handbook value. Running a case with a known exact answer through the same pipeline showed the problem was in how the solver's elements behaved, which no amount of mesh refinement would have revealed.</span></li>
+  </ul>
+</div></section>
+</main>
+
+<footer class="contact" id="contact"><div class="wrap">
+  <div>
+    <p class="label">Contact</p>
+    <h2>Have a part that needs an answer?</h2>
+    <p>Send me the requirement and whatever drawings or data you have. I'll tell you what I'd model, what I'd check it against and what you'd get back.</p>
+    <a class="btn" href="#contact">Email me</a>
+  </div>
+  <div>
+    <h3>Still needed from you</h3>
+    <div class="needs"><span class="need">CV (PDF)</span><span class="need">LinkedIn</span><span class="need">Location and time zone</span><span class="need">Commercial tools used in industry</span><span class="need">Typical turnaround</span></div>
+  </div>
+</div></footer>
+
+<script>
+(() => {
+  const rows = [...document.querySelectorAll("#rows tr")], count = document.getElementById("count");
+  let g = "all", t = null;
+  const apply = () => {
+    let n = 0;
+    rows.forEach(r => { const on = (g === "all" || r.dataset.g === g) && (!t || r.dataset.t === t); r.hidden = !on; n += on; });
+    count.textContent = n + " of " + rows.length + " parts";
+  };
+  document.querySelectorAll("#f-disc button").forEach(b => b.addEventListener("click", () => {
+    if (b.dataset.f) { g = b.dataset.f; document.querySelectorAll("#f-disc [data-f]").forEach(x => x.setAttribute("aria-pressed", x === b)); }
+    else { t = t === b.dataset.t ? null : b.dataset.t; document.querySelectorAll("#f-disc [data-t]").forEach(x => x.setAttribute("aria-pressed", x.dataset.t === t)); }
+    apply();
+  }));
+  apply();
+})();
+</script>
+</body>
+</html>

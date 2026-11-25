@@ -1,0 +1,286 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Version A · The Ledger</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+:root {
+  --paper: #f3f1ea; --sheet: #fffdf8; --ink: #15181c; --soft: #3b424c; --mute: #68707c; --rule: #cfc9bb; --hair: #e4dfd3;
+  --blue: #1b4b8c; --blue-soft: #e6edf6; --ok: #1d7347; --ok-bg: #e3f1e8; --bad: #b03426; --bad-bg: #f8e4df;
+  --warn: #8a5d00; --warn-bg: #f6ecd0;
+  --sans: "IBM Plex Sans", system-ui, sans-serif; --cond: "IBM Plex Sans Condensed", "IBM Plex Sans", sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, monospace;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: var(--paper); color: var(--ink); font: 16px/1.55 var(--sans); -webkit-font-smoothing: antialiased; }
+a { color: var(--blue); }
+img { max-width: 100%; display: block; }
+.wrap { max-width: 1240px; margin: 0 auto; padding: 0 28px; }
+.mock { background: #15181c; color: #d9dde3; font: 12.5px/1.4 var(--mono); padding: 7px 28px; display: flex; gap: 18px; flex-wrap: wrap; align-items: center; }
+.mock b { color: #fff; } .mock a { color: #9cc3ff; }
+.need { display: inline-block; border: 1.5px dashed #b0792a; color: #7a4f08; background: #fff7e3; font: 500 12px/1 var(--mono); padding: 6px 9px; border-radius: 3px; white-space: nowrap; }
+.mock .need { background: transparent; color: #f2c14e; border-color: #f2c14e; }
+
+/* top bar: who, what, how to reach */
+.top { border-bottom: 1px solid var(--rule); background: var(--sheet); position: sticky; top: 0; z-index: 5; }
+.top .wrap { display: flex; align-items: center; gap: 22px; height: 58px; }
+.who { font: 600 17px/1 var(--cond); letter-spacing: .01em; text-decoration: none; color: var(--ink); white-space: nowrap; }
+.who small { font: 400 13px/1 var(--sans); color: var(--mute); margin-left: 10px; }
+.top nav { margin-left: auto; display: flex; gap: 20px; font: 500 14px/1 var(--sans); }
+.top nav a { color: var(--soft); text-decoration: none; } .top nav a:hover { color: var(--blue); }
+.btn { display: inline-flex; align-items: center; font: 600 14px/1 var(--sans); padding: 11px 16px; border-radius: 3px; text-decoration: none; background: var(--blue); color: #fff; border: 1px solid var(--blue); white-space: nowrap; }
+.btn.line { background: transparent; color: var(--blue); }
+.label { font: 600 12px/1.2 var(--cond); letter-spacing: .12em; text-transform: uppercase; color: var(--mute); margin: 0; }
+
+/* hero: one screen that answers who, what, proof, trust, action */
+.hero { padding: 44px 0 40px; }
+.hero .wrap { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 48px; align-items: start; }
+h1 { font: 700 clamp(34px, 4.3vw, 54px)/1.04 var(--cond); letter-spacing: -.012em; margin: 14px 0 18px; text-wrap: balance; }
+h1 em { font-style: normal; color: var(--blue); }
+.sub { font-size: 19px; line-height: 1.5; color: var(--soft); margin: 0 0 22px; max-width: 36em; }
+.cta { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+.facts { list-style: none; margin: 26px 0 0; padding: 16px 0 0; border-top: 1px solid var(--rule); display: grid; grid-template-columns: repeat(3, auto); gap: 6px 28px; justify-content: start; font-size: 14px; color: var(--soft); }
+.facts b { display: block; font: 600 11.5px/1.5 var(--cond); letter-spacing: .12em; text-transform: uppercase; color: var(--mute); }
+
+/* the scorecard, drawn like a drawing's title block */
+.score { background: var(--sheet); border: 1.5px solid var(--ink); position: relative; }
+.score header { display: flex; justify-content: space-between; align-items: baseline; padding: 10px 16px; border-bottom: 1.5px solid var(--ink); }
+.score header b { font: 600 13px/1 var(--cond); letter-spacing: .12em; text-transform: uppercase; }
+.score header span { font: 12px/1 var(--mono); color: var(--mute); }
+.tally { padding: 18px 16px 16px; border-bottom: 1px solid var(--rule); }
+.tally p { margin: 0 0 12px; font-size: 15px; color: var(--soft); }
+.tally p b { font: 600 34px/1 var(--mono); color: var(--ink); margin-right: 8px; letter-spacing: -.02em; }
+.bar { display: flex; height: 26px; gap: 2px; }
+.bar i { display: block; } .bar .ok { background: var(--ok); } .bar .bad { background: var(--bad); } .bar .warn { background: #c99a2e; }
+.key { display: flex; gap: 18px; margin: 10px 0 0; padding: 0; list-style: none; font: 13px/1.3 var(--sans); color: var(--soft); flex-wrap: wrap; }
+.key b { font: 600 15px/1 var(--mono); color: var(--ink); margin-right: 5px; }
+.key i { display: inline-block; width: 9px; height: 9px; margin-right: 6px; }
+.tally small { display: block; margin-top: 12px; font-size: 13.5px; color: var(--mute); line-height: 1.45; }
+.tiles { display: grid; grid-template-columns: 1fr 1fr; }
+.tiles div { padding: 14px 16px; border-right: 1px solid var(--rule); border-bottom: 1px solid var(--rule); }
+.tiles div:nth-child(2n) { border-right: 0; } .tiles div:nth-last-child(-n+2) { border-bottom: 0; }
+.tiles b { display: block; font: 600 26px/1.1 var(--mono); letter-spacing: -.02em; }
+.tiles span { font-size: 13px; color: var(--mute); line-height: 1.35; display: block; margin-top: 3px; }
+
+/* section heads */
+section { padding: 44px 0; }
+.head { display: flex; align-items: baseline; gap: 16px; border-top: 1.5px solid var(--ink); padding-top: 12px; margin-bottom: 22px; flex-wrap: wrap; }
+.head h2 { font: 700 26px/1.1 var(--cond); margin: 0; letter-spacing: -.005em; }
+.head .label { order: -1; min-width: 74px; color: var(--blue); }
+.head > p:last-child { margin: 0 0 0 auto; font-size: 14px; color: var(--mute); max-width: 34em; text-align: right; }
+
+/* three to start with */
+.leads { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
+.lead { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; background: var(--sheet); border: 1px solid var(--rule); padding: 14px 16px 16px; text-decoration: none; color: inherit; }
+.lead:hover { border-color: var(--ink); }
+.lead img { width: 100%; aspect-ratio: 16/10; object-fit: cover; border: 1px solid var(--hair); margin-bottom: 4px; }
+.tag { font: 600 11.5px/1.2 var(--cond); letter-spacing: .12em; text-transform: uppercase; color: var(--mute); margin: 0; }
+.big { margin: 0; display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.big b { font: 600 32px/1 var(--mono); letter-spacing: -.03em; color: var(--blue); }
+.big span { font-size: 14px; color: var(--soft); }
+.say { margin: 0 0 4px; font-size: 14.5px; color: var(--soft); line-height: 1.5; }
+.chip { display: inline-block; font: 600 12px/1 var(--sans); padding: 5px 8px 5px; border-radius: 2px; white-space: nowrap; }
+.chip.ok { background: var(--ok-bg); color: var(--ok); } .chip.bad { background: var(--bad-bg); color: var(--bad); } .chip.warn { background: var(--warn-bg); color: var(--warn); }
+
+/* the ledger */
+.filters { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; align-items: center; }
+.filters button { font: 500 13px/1 var(--sans); padding: 8px 11px; border: 1px solid var(--rule); background: var(--sheet); color: var(--soft); border-radius: 2px; cursor: pointer; }
+.filters button[aria-pressed=true] { background: var(--ink); color: #fff; border-color: var(--ink); }
+.filters .sep { width: 1px; height: 22px; background: var(--rule); margin: 0 6px; }
+.filters .count { margin-left: auto; font: 13px/1 var(--mono); color: var(--mute); }
+table { width: 100%; border-collapse: collapse; background: var(--sheet); border: 1px solid var(--rule); }
+th { text-align: left; font: 600 11.5px/1 var(--cond); letter-spacing: .12em; text-transform: uppercase; color: var(--mute); padding: 11px 14px; border-bottom: 1.5px solid var(--ink); }
+td { padding: 11px 14px; border-bottom: 1px solid var(--hair); vertical-align: top; font-size: 14px; }
+tr:last-child td { border-bottom: 0; }
+tr[hidden] { display: none !important; }
+tbody tr:hover { background: #faf7ee; }
+.part { display: grid; grid-template-columns: 112px 1fr; gap: 14px; text-decoration: none; color: inherit; align-items: start; }
+.part img { width: 112px; aspect-ratio: 16/10; object-fit: cover; border: 1px solid var(--hair); background: #fff; }
+.part i { font: 500 11.5px/1 var(--mono); color: var(--mute); font-style: normal; display: block; margin-bottom: 4px; }
+.part b { display: block; font: 600 15px/1.3 var(--sans); color: var(--ink); }
+.part:hover b { color: var(--blue); text-decoration: underline; }
+.part em { display: block; font-style: normal; font-size: 13px; line-height: 1.4; color: var(--mute); margin-top: 3px; }
+.c-part { width: 40%; } .c-verdict { width: 15%; } .c-find { color: var(--soft); line-height: 1.45; } .c-tools { width: 13%; font: 12px/1.5 var(--mono); color: var(--mute); }
+.c-verdict .chip { white-space: normal; line-height: 1.25; }
+
+/* what you get */
+.two { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 40px; align-items: start; }
+.svc, .steps, .caught { list-style: none; margin: 0; padding: 0; }
+.svc li { padding: 14px 0; border-bottom: 1px solid var(--rule); display: grid; grid-template-columns: 15em 1fr; gap: 18px; }
+.svc li:first-child { padding-top: 0; }
+.svc b { font: 600 16px/1.3 var(--sans); } .svc span { font-size: 14.5px; color: var(--soft); }
+.steps { counter-reset: s; margin-top: 22px; display: grid; grid-template-columns: 1fr 1fr; gap: 14px 22px; }
+.steps li { counter-increment: s; font-size: 13.5px; color: var(--soft); line-height: 1.45; }
+.steps b { display: block; font: 600 14px/1.3 var(--cond); letter-spacing: .08em; text-transform: uppercase; color: var(--ink); margin-bottom: 3px; }
+.steps b::before { content: counter(s) "  "; font-family: var(--mono); color: var(--blue); white-space: pre; }
+.memo { background: #fff; border: 1px solid var(--rule); box-shadow: 6px 6px 0 var(--hair); padding: 22px 24px 20px; font-size: 13.5px; line-height: 1.5; color: var(--soft); }
+.memo .m-h { font: 600 11.5px/1 var(--cond); letter-spacing: .14em; text-transform: uppercase; color: var(--mute); margin: 0 0 8px; }
+.memo h4 { font: 600 18px/1.25 var(--sans); margin: 0 0 12px; color: var(--ink); }
+.memo dl { display: grid; grid-template-columns: 5em 1fr; gap: 4px 10px; margin: 0 0 14px; padding: 10px 0; border-top: 1px solid var(--hair); border-bottom: 1px solid var(--hair); }
+.memo dt { font: 500 12px/1.6 var(--mono); color: var(--mute); } .memo dd { margin: 0; }
+.memo .m-lead { color: var(--ink); margin: 0 0 8px; } .memo ul { margin: 0; padding-left: 18px; } .memo li { margin-bottom: 6px; }
+.memo b { color: var(--ink); }
+.memo-link { display: inline-block; margin-top: 16px; font: 600 14px/1 var(--sans); }
+
+/* caught by the checks */
+.caught { display: grid; grid-template-columns: 1fr 1fr; gap: 0 40px; }
+.caught li { padding: 14px 0; border-bottom: 1px solid var(--rule); }
+.caught a { text-decoration: none; display: block; }
+.caught i { font: 600 11.5px/1.2 var(--cond); letter-spacing: .12em; text-transform: uppercase; color: var(--mute); font-style: normal; display: block; margin-bottom: 3px; }
+.caught b { font: 600 16px/1.3 var(--sans); color: var(--ink); } .caught a:hover b { color: var(--blue); }
+.caught span { display: block; font-size: 14px; color: var(--soft); margin-top: 4px; line-height: 1.5; }
+
+/* contact */
+.contact { background: var(--ink); color: #e9ecf0; padding: 44px 0 52px; }
+.contact .wrap { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 48px; align-items: start; }
+.contact h2 { font: 700 34px/1.08 var(--cond); margin: 10px 0 12px; }
+.contact p { margin: 0 0 18px; color: #b9c0ca; max-width: 34em; }
+.contact .label { color: #8d97a5; }
+.contact .btn { background: #fff; color: var(--ink); border-color: #fff; }
+.contact .needs { display: flex; flex-wrap: wrap; gap: 8px; }
+.contact .needs .need { background: transparent; color: #f2c14e; border-color: #f2c14e; }
+.contact h3 { font: 600 12px/1.2 var(--cond); letter-spacing: .12em; text-transform: uppercase; color: #8d97a5; margin: 0 0 12px; }
+
+@media (max-width: 900px) {
+  .hero .wrap, .two, .contact .wrap { grid-template-columns: 1fr; gap: 28px; }
+  .leads { grid-template-columns: 1fr; } .caught { grid-template-columns: 1fr; }
+  .top nav { display: none; } .who small { display: none; } .top .wrap { gap: 10px; } .top .btn { margin-left: auto; }
+  .head > p:last-child { margin-left: 0; text-align: left; }
+  .facts { grid-template-columns: 1fr 1fr; }
+  .svc li { grid-template-columns: 1fr; gap: 4px; }
+  table, tbody, tr, td { display: block; width: auto !important; } thead { display: none; }
+  tr { padding: 14px; border-bottom: 1px solid var(--rule); } td { padding: 0; border: 0; }
+  .c-verdict { margin: 10px 0 6px; } .c-tools { margin-top: 6px; }
+  .part { grid-template-columns: 88px 1fr; } .part img { width: 88px; }
+}
+@media (max-width: 520px) { .part em, .c-tools { display: none; } tr { padding: 12px 14px; } .c-find { font-size: 13.5px; } .wrap { padding: 0 16px; } .mock { padding: 7px 16px; } .steps { grid-template-columns: 1fr; } h1 { font-size: 33px; } .sub { font-size: 17px; } }
+</style>
+</head>
+<body>
+<div class="mock"><b>Mock-up A · The Ledger</b><span>Real data from the site's build. Dashed tags mark things only you can supply.</span><span class="need">example</span><a href="b.html">See version B →</a></div>
+
+<div class="top"><div class="wrap">
+  <a class="who" href="#top">Justin Smith<small>Mechanical simulation engineer · remote contract</small></a>
+  <nav><a href="#start">Start here</a><a href="#ledger">All work</a><a href="#offer">What you get</a><a href="#caught">Method</a></nav>
+  <span class="need">CV (PDF)</span>
+  <a class="btn" href="#contact">Email me</a>
+</div></div>
+
+<main id="top">
+<header class="hero"><div class="wrap">
+  <div>
+    <p class="label">Mechanical engineer (MS) · automotive background · available for remote contract work</p>
+    <h1>I answer <span style="white-space:nowrap">pass-or-fail</span> questions about mechanical parts, <em>with the proof attached.</em></h1>
+    <p class="sub">Stress, vibration, fatigue, heat, flow and electric machines. You send the requirement and the drawings. You get a verdict on each requirement, the model behind it and the independent check that backs it.</p>
+    <div class="cta"><a class="btn" href="#contact">Email me</a><a class="btn line" href="{{MEMO_URL}}">Read a sample client memo</a><a class="btn line" href="#start">See three studies</a></div>
+    <ul class="facts">
+      <li><b>Physics</b>Structures, thermal, fluids, electric machines</li>
+      <li><b>Tools</b>CalculiX, OpenFOAM, FEMM, Gmsh, CadQuery, Python</li>
+      <li><b>Working with AI</b>An agent runs the cases; I review the engineering</li>
+    </ul>
+  </div>
+  <aside class="score" aria-label="Scorecard">
+    <header><b>Scorecard</b><span>{{STUDIES}} studies · {{PARTS}} parts</span></header>
+    <div class="tally">
+      <p><b>{{REQ_N}}</b>requirements judged</p>
+      <div class="bar" role="img" aria-label="{{MET}} met, {{NOT}} not met, {{HELD}} withheld"><i class="ok" style="flex:{{MET}}"></i><i class="bad" style="flex:{{NOT}}"></i><i class="warn" style="flex:{{HELD}}"></i></div>
+      <ul class="key"><li><i style="background:var(--ok)"></i><b>{{MET}}</b>met</li><li><i style="background:var(--bad)"></i><b>{{NOT}}</b>not met</li><li><i style="background:#c99a2e"></i><b>{{HELD}}</b>withheld</li></ul>
+      <small>A fail is a result too. Where a design fails, the study says what would fix it. Where the checks don't support a verdict, I hold it back.</small>
+    </div>
+    <div class="tiles">
+      <div><b>{{CAUGHT_N}}</b><span>first answers that looked right and the checks overturned</span></div>
+      <div><b>{{FAILS}}</b><span>parts that fail as drawn, each with the reason or the fix</span></div>
+      <div><b>{{CHECKS}}</b><span>automated checks in the code behind the studies</span></div>
+      <div><b>{{RUNS}}</b><span>saved runs, each repeatable from its inputs</span></div>
+    </div>
+  </aside>
+</div></header>
+
+<section id="start"><div class="wrap">
+  <div class="head"><p class="label">Sheet 1</p><h2>Three to Start With</h2><p>If you read nothing else: a real motor against its test, an AI agent kept honest, and a code check that turns on one judgement.</p></div>
+  <div class="leads">
+{{A_LEADS}}
+  </div>
+</div></section>
+
+<section id="ledger"><div class="wrap">
+  <div class="head"><p class="label">Sheet 2</p><h2>Every Part, Its Question and Its Verdict</h2><p>One row per part. Each opens the full study: the setup, the answer, the model, the checks and the files.</p></div>
+  <div class="filters" id="f-disc" role="group" aria-label="Filter by discipline">
+{{FILTERS}}
+    <span class="sep"></span>
+    <button type="button" aria-pressed="false" data-t="ok">Passes</button><button type="button" aria-pressed="false" data-t="bad">Fails</button><button type="button" aria-pressed="false" data-t="warn">Qualified</button>
+    <span class="count" id="count"></span>
+  </div>
+  <table>
+    <thead><tr><th>Part and question</th><th>Verdict</th><th>Finding</th><th>Tools</th></tr></thead>
+    <tbody id="rows">
+{{A_ROWS}}
+    </tbody>
+  </table>
+</div></section>
+
+<section id="offer"><div class="wrap">
+  <div class="head"><p class="label">Sheet 3</p><h2>What I Can Take On, and What You Get</h2><p>The deliverable is a memo a design lead can act on, with every number traceable to a saved run.</p></div>
+  <div class="two">
+    <div>
+      <ul class="svc">
+{{SERVICES}}
+      </ul>
+      <ol class="steps">
+{{STEPS}}
+      </ol>
+    </div>
+    <div>
+      <div class="memo">
+{{MEMO}}
+      </div>
+      <a class="memo-link" href="{{MEMO_URL}}">Read the whole memo →</a>
+    </div>
+  </div>
+</div></section>
+
+<section id="caught"><div class="wrap">
+  <div class="head"><p class="label">Sheet 4</p><h2>What the Checks Caught</h2><p>In {{CAUGHT_N}} studies my first model gave an answer that looked reasonable and was wrong. Four of them:</p></div>
+  <ul class="caught">
+{{LESSONS4}}
+  </ul>
+</div></section>
+</main>
+
+<footer class="contact" id="contact"><div class="wrap">
+  <div>
+    <p class="label">Contact</p>
+    <h2>Have a part that needs an answer?</h2>
+    <p>Send me the requirement and whatever drawings or data you have. I'll tell you what I'd model, what I'd check it against and what you'd get back.</p>
+    <a class="btn" href="#contact">Email me</a>
+  </div>
+  <div>
+    <h3>Still needed from you</h3>
+    <div class="needs">{{NEED}}</div>
+  </div>
+</div></footer>
+
+<script>
+(() => {
+  const rows = [...document.querySelectorAll("#rows tr")], count = document.getElementById("count");
+  let g = "all", t = null;
+  const apply = () => {
+    let n = 0;
+    rows.forEach(r => { const on = (g === "all" || r.dataset.g === g) && (!t || r.dataset.t === t); r.hidden = !on; n += on; });
+    count.textContent = n + " of " + rows.length + " parts";
+  };
+  document.querySelectorAll("#f-disc button").forEach(b => b.addEventListener("click", () => {
+    if (b.dataset.f) { g = b.dataset.f; document.querySelectorAll("#f-disc [data-f]").forEach(x => x.setAttribute("aria-pressed", x === b)); }
+    else { t = t === b.dataset.t ? null : b.dataset.t; document.querySelectorAll("#f-disc [data-t]").forEach(x => x.setAttribute("aria-pressed", x.dataset.t === t)); }
+    apply();
+  }));
+  apply();
+})();
+</script>
+</body>
+</html>
