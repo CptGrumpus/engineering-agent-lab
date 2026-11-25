@@ -1,0 +1,262 @@
+{
+  "run_id": "20261124-171458_enclosure_fix_k5_eps0p1_br1",
+  "case_name": "enclosure_fix_k5_eps0p1_br1",
+  "model": "openfoam_enclosure_cht",
+  "case_source": "cases/enclosure_fix_k5_eps0p1_br1.toml",
+  "case_sha256": "d42c7176f01501cdf31008381d69207fa37bbedcfe1b169455a01b8bf3feb070",
+  "model_sources_sha256": {
+    "models/cfd/enclosure_openfoam.py": "98473919ce824be3de79e7c65756c36577fd3955b9ec10e810ededcb655b514e",
+    "models/cfd/run_enclosure.sh": "4c86fc5c96d3d39c9068b59ab0ae807a2f527885b29181a1a17cea8e912d1ed5"
+  },
+  "rerun_of": null,
+  "started_utc": "2026-11-24T22:14:58+00:00",
+  "environment": {
+    "python": "3.14.10",
+    "python_executable": "<repo>\\.venv\\Scripts\\python.exe",
+    "platform": "Windows-11-10.0.26100-SP0",
+    "machine": "AMD64",
+    "packages": {
+      "numpy": "2.5.5",
+      "scipy": "1.18.1",
+      "matplotlib": "3.11.2",
+      "cadquery": "2.8.0"
+    },
+    "git": {
+      "commit": "9485f6afa794a8eef679b9c00486c0bd7744726b",
+      "dirty": true
+    },
+    "tools": {}
+  },
+  "numerics": {
+    "transient_end_s": 3600.0,
+    "solver_timeout_s": 86400
+  },
+  "points": [
+    {
+      "label": "p00_baseline",
+      "parameters": {
+        "width_mm": 150.0,
+        "height_mm": 60.0,
+        "box_depth_mm": 200.0,
+        "board_length_mm": 100.0,
+        "board_thickness_mm": 2.0,
+        "component_length_mm": 20.0,
+        "power_component_W": 5.0,
+        "power_board_W": 10.0,
+        "board_k_W_mK": 5.0,
+        "ambient_C": 40.0,
+        "h_ext_W_m2K": 5.0,
+        "eps_ext": 0.85,
+        "eps_int": 0.1,
+        "cell_mm": 2.0,
+        "n_phi": 4,
+        "max_iterations": 1,
+        "shell_thickness_mm": 2.0,
+        "shell_k_W_mK": 200.0,
+        "bridge_k_W_mK": 1.0
+      },
+      "status": "completed",
+      "derived": {},
+      "solver": {
+        "success": true,
+        "message": "enclosure: component 106.57 C",
+        "nfev": null
+      },
+      "solver_outputs": {
+        "q_component_W_m3": 624999.9999999999,
+        "q_board_W_m3": 312499.99999999994,
+        "regions": [
+          "fluid",
+          "board",
+          "bridge",
+          "component",
+          "shell"
+        ],
+        "interfaces": {
+          "fluid": [
+            "board",
+            "bridge",
+            "component",
+            "shell"
+          ],
+          "board": [
+            "component",
+            "fluid"
+          ],
+          "bridge": [
+            "component",
+            "fluid",
+            "shell"
+          ],
+          "component": [
+            "board",
+            "bridge",
+            "fluid"
+          ],
+          "shell": [
+            "bridge",
+            "fluid"
+          ]
+        },
+        "shell_thickness_m": 0.002,
+        "bridge_k_W_mK": 1.0,
+        "q_in_W_m2": 178.57142857142856,
+        "power_W": 15.0,
+        "history": [
+          {
+            "t": 360.0,
+            "component_max_C": 91.589751745,
+            "board_max_C": 102.07495728200001,
+            "air_mean_C": 72.29026573482258,
+            "walls_mean_C": 60.838153954967254,
+            "q_out_W_m2": 240.45116014692485,
+            "qr_walls_W_m2": 12.083869315813777,
+            "Q_out_W": 20.582619308576767,
+            "Q_rad_W": 0.9473753543598001,
+            "walls_max_C": 62.379317094000044,
+            "bridge_max_C": 89.05180623400003
+          },
+          {
+            "t": 720.0,
+            "component_max_C": 99.48042801100001,
+            "board_max_C": 110.382798686,
+            "air_mean_C": 71.56345906875828,
+            "walls_mean_C": 56.7738354062991,
+            "q_out_W_m2": 191.49746003579517,
+            "qr_walls_W_m2": 16.514131947184186,
+            "Q_out_W": 16.392182579064066,
+            "Q_rad_W": 1.2947079446592402,
+            "walls_max_C": 59.17835717000003,
+            "bridge_max_C": 96.83614917700004
+          },
+          {
+            "t": 1080.0,
+            "component_max_C": 102.854608713,
+            "board_max_C": 113.23591672600003,
+            "air_mean_C": 71.28489118743664,
+            "walls_mean_C": 55.287533857602796,
+            "q_out_W_m2": 173.8628191027078,
+            "qr_walls_W_m2": 18.245797999939285,
+            "Q_out_W": 14.882657315191787,
+            "Q_rad_W": 1.4304705631952401,
+            "walls_max_C": 58.079022742999996,
+            "bridge_max_C": 100.22214336100001
+          },
+          {
+            "t": 1440.0,
+            "component_max_C": 104.43726255800004,
+            "board_max_C": 114.498455616,
+            "air_mean_C": 71.30236054243767,
+            "walls_mean_C": 54.81457660278505,
+            "q_out_W_m2": 168.28327204123053,
+            "qr_walls_W_m2": 18.990471706295406,
+            "Q_out_W": 14.405048086729336,
+            "Q_rad_W": 1.4888529817735598,
+            "walls_max_C": 57.77812864700002,
+            "bridge_max_C": 101.81828663500005
+          },
+          {
+            "t": 1800.0,
+            "component_max_C": 105.26566114400003,
+            "board_max_C": 115.17111306800001,
+            "air_mean_C": 71.42232986639829,
+            "walls_mean_C": 54.716449935785135,
+            "q_out_W_m2": 167.12987988161345,
+            "qr_walls_W_m2": 19.343741284548468,
+            "Q_out_W": 14.306317717866111,
+            "Q_rad_W": 1.5165493167086,
+            "walls_max_C": 57.76096386500001,
+            "bridge_max_C": 102.65455614200005
+          },
+          {
+            "t": 2160.0,
+            "component_max_C": 105.75203512900003,
+            "board_max_C": 115.57606592300004,
+            "air_mean_C": 71.55859022995912,
+            "walls_mean_C": 54.745434692939284,
+            "q_out_W_m2": 167.47405281199966,
+            "qr_walls_W_m2": 19.530985030197957,
+            "Q_out_W": 14.335778920707172,
+            "Q_rad_W": 1.53122922636752,
+            "walls_max_C": 57.83185210100004,
+            "bridge_max_C": 103.145422537
+          },
+          {
+            "t": 2520.0,
+            "component_max_C": 106.067573923,
+            "board_max_C": 115.844925676,
+            "air_mean_C": 71.68098250418251,
+            "walls_mean_C": 54.808683641252344,
+            "q_out_W_m2": 168.22163983789227,
+            "qr_walls_W_m2": 19.642216700465816,
+            "Q_out_W": 14.399772370123578,
+            "Q_rad_W": 1.5399497893165202,
+            "walls_max_C": 57.919343430000026,
+            "bridge_max_C": 103.46372333300002
+          },
+          {
+            "t": 2880.0,
+            "component_max_C": 106.28757518000003,
+            "board_max_C": 116.03539357400001,
+            "air_mean_C": 71.78214664405169,
+            "walls_mean_C": 54.873381386850554,
+            "q_out_W_m2": 168.98610697734782,
+            "qr_walls_W_m2": 19.71505826577296,
+            "Q_out_W": 14.465210757260975,
+            "Q_rad_W": 1.5456605680366,
+            "walls_max_C": 57.99957668500002,
+            "bridge_max_C": 103.68556327500005
+          },
+          {
+            "t": 3240.0,
+            "component_max_C": 106.448040263,
+            "board_max_C": 116.17566130700004,
+            "air_mean_C": 71.86273932587937,
+            "walls_mean_C": 54.92944596235054,
+            "q_out_W_m2": 169.64862809746907,
+            "qr_walls_W_m2": 19.76617796472755,
+            "Q_out_W": 14.521922565143353,
+            "Q_rad_W": 1.54966835243464,
+            "walls_max_C": 58.06638291600001,
+            "bridge_max_C": 103.84732652100001
+          },
+          {
+            "t": 3600.0,
+            "component_max_C": 106.56812372900004,
+            "board_max_C": 116.281179361,
+            "air_mean_C": 71.92586372461199,
+            "walls_mean_C": 54.975053057710284,
+            "q_out_W_m2": 170.1876656410788,
+            "qr_walls_W_m2": 19.803618032560717,
+            "Q_out_W": 14.568064178876346,
+            "Q_rad_W": 1.5526036537527603,
+            "walls_max_C": 58.119786386000044,
+            "bridge_max_C": 103.968365737
+          }
+        ],
+        "final": {
+          "t": 3600.0,
+          "component_max_C": 106.56812372900004,
+          "board_max_C": 116.281179361,
+          "air_mean_C": 71.92586372461199,
+          "walls_mean_C": 54.975053057710284,
+          "q_out_W_m2": 170.1876656410788,
+          "qr_walls_W_m2": 19.803618032560717,
+          "Q_out_W": 14.568064178876346,
+          "Q_rad_W": 1.5526036537527603,
+          "walls_max_C": 58.119786386000044,
+          "bridge_max_C": 103.968365737
+        }
+      },
+      "metrics": {
+        "component_max_C": 106.56812372900004,
+        "air_mean_C": 71.92586372461199,
+        "walls_mean_C": 54.975053057710284,
+        "radiation_share_pct": 10.350691025018401
+      }
+    }
+  ],
+  "study": "enclosure_thermal",
+  "status": "completed",
+  "finished_utc": "2026-11-25T02:25:12+00:00"
+}

@@ -28,6 +28,37 @@
 #   P5 About 7-10 h side by side (level c alone reached 8.8 s in 4.1 h on a free CPU; the motion solve adds a few
 #      percent; the solid sets the pace).
 # This file: level c, 1.77 mm.
+#
+# CRASH AND RESULTS (run 20261124-082500_turek_hron_fsi2_mesh_c_r1). The CalculiX solid died of the same heap
+# corruption as levels a (14.01 s) and FSI3 dt_a (6.90 s): 'corrupted double-linked list', SIGABRT, at t = 14.047 of
+# 15 s (20:57); the fluid stopped on the lost socket and the dead solid's abort handler hung, holding a core, until
+# killed at about 22:24 with the user's go-ahead. The harness marks the point failed; its kept files (watch-point,
+# forces, coupling logs, mesh.geo) are complete to 14.047 s. User's decision (after 22:22): score it on the record cut
+# at 14.0 s, and score all three levels on the same window, no new run. Done by scripts/score_truncated_fsi.py (the
+# study's own series, compute_metrics, periodic statistics, force-transfer and run-level functions on records cut at
+# t_end; checked: on level b cut at 15 s it reproduces the harness metrics exactly; cutting b at 14 s moves its
+# metrics by at most 0.1 %). Output: mesh_levels_t14.json in this run. Levels a (run 082453, crashed at 14.009 s), b
+# (082457, finished) and c, each over the last 4 whole periods before 14.0 s: uy(A) amplitude 81.65 / 82.39 / 82.87 mm
+# (benchmark 81.6), frequency 1.9311 / 1.9331 / 1.9329 Hz (1.93), drag 218.16 / 217.98 / 218.52 +- 77.30 / 78.92 /
+# 80.03 N/m (215.06 +- 77.65), lift amplitude 242.4 / 243.8 / 245.8 N/m (237.8), ux(A) mean -14.85 / -15.08 / -15.23
+# mm (-14.85). Every evaluable point check passes on every level (checkMesh, coupling converged in all 14,000 windows,
+# periodic 0.8-2.4e-4, force transfer 2.3e-9); not evaluable for a and c: inflow profile and flag cells (the work
+# dir's time directories and the Gmsh mesh are deleted after a run; b, the same mesh generator and boundary condition,
+# passed both). Every requirement passes on every level (level c: uy amplitude 1.56 %, frequency 0.15 %, drag mean
+# 1.61 %, drag amplitude 3.06 %, lift amplitude 3.37 %, ux mean 2.57 %). Run-level (the study's verify_run_level over
+# the three levels, GCI limit 1 %): FAIL. Frequency converged (GCI 0.07 %, oscillatory within the floor); uy amplitude
+# 1.41 %, drag amplitude 3.71 %, ux mean 2.13 % monotone but above 1 %; drag mean and lift amplitude divergent (the
+# level-to-level change grows on refinement; drag mean spreads only 0.25 % over the three levels, within FSI1's
+# measured +-0.5 % mesh-to-mesh scatter, which this case does not declare as a noise floor, so it is not applied after
+# the fact). The amplitudes move away from the benchmark as the mesh is refined (uy amplitude extrapolates to 83.8 mm,
+# 2.7 % above it): the benchmark values themselves come from finer meshes and a different code, so this is reported,
+# not tuned. Predictions: P1 MISSED (a and c did not reach 15 s; every evaluable check passes). P2 for a (cut at 14 s
+# against the earlier run at 15 s; the windows differ by one second): HELD for frequency (+0.06 %), uy amplitude
+# (-0.40 %), drag mean (-0.27 %) and drag amplitude (-0.48 %); MISSED for lift amplitude (-0.77 %), ux mean (-0.76 %)
+# and ux amplitude (-0.61 %). P3 HELD (level c inside every band; every requirement passes on b and c). P4 MISSED for
+# the drag mean (divergent, though within 0.25 %), HELD for the frequency; the amplitudes classify monotone (two) and
+# divergent (lift), reported. P5 MISSED: c ran 12.5 h to 14 s, sharing the CPU with ten enclosure runs from 17:15. The
+# level a rerun (started 17:59, full 15 s) will show the cut's effect on a directly.
 
 [case]
 name = "turek_hron_fsi2_mesh_c_r1"

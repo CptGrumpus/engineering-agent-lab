@@ -472,6 +472,14 @@ Traps found while building the studies in this repo, by tool.
   sizing any conduction path. A region's interfaces come out of `splitMeshRegions` as `<owner>_to_<neighbour>` for
   each adjacent pair; generate the boundary entries from the block adjacency (explicit names, never two regex keys).
   Inertia grows with the shell (2 mm aluminium about doubles the time constant): lengthen the settling run.
+  Measured (study 11 redesign, 2026-11-24): shell plus bridge settled with a time constant of about 1,200 s (ratio 0.74
+  per 360 s), five times the corners' 242 s; 3,600 s left heat out 1-4 % off the input.
+- **Patch totals need the real face areas.** blockMesh rounds each block's cell count, so a block whose length is not
+  a whole number of cells gets slightly larger cells: at 2 mm cells the enclosure's 25 and 29 mm blocks had 2.083 and
+  2.071 mm faces, and `flux.sum() * cell_mm * depth` came out 1.9 % low, failing a 1 % heat balance in runs that in
+  fact closed to 0.03 % (study 11 redesign). Use `harness.openfoam.patch_face_areas(constant/<region>/polyMesh,
+  patch)` (exact, tested) and `flux @ areas`; a mean flux times the true perimeter is a close fallback for stored
+  results. A mean flux compared with a mean input flux (the corners' check) does not suffer from it.
 
 ## Partitioned coupling (OpenFOAM <-> CalculiX, cold-plate chain)
 

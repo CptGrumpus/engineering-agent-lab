@@ -193,11 +193,21 @@ the grid check.
   its abort handler never exits, so the dead process holds a core and the harness waits forever. Check long coupled
   runs by the age of their solver logs, not only the newest time directory: a log untouched for longer than a few
   write intervals while `ps` still lists both participants (or only one) means a hang. Killing a process needs the
-  user's go-ahead; then rerun unchanged and record the crash in the case header.
+  user's go-ahead; then rerun unchanged and record the crash in the case header. A third crash (FSI2 r1 level c,
+  14.05 of 15 s) was scored instead, with the user's decision: the harness keeps a failed point's watch-point, force
+  and coupling logs, and `scripts/score_truncated_fsi.py OUT.json --t-end T RUN...` applies the study's own metrics,
+  point checks and run-level check to records cut at T, every level on the same window (it reproduces a finished
+  run's harness metrics exactly at its full length). Ask before choosing between that and a rerun.
 - **Settling time depends on the corner, not only the model.** Study 11's emissivity-0.1 corners had a time constant
   of about 534 s against 242 s at 0.9 (radiation carried 22 % of the heat instead of 75 %), so a 2,400 s run sized from
   one prototype corner left them unsettled (0.62 K over the last tenth against 0.3). Size the run length from the
   slowest corner: a short pilot at each extreme, or about 7 time constants of the slowest.
+- **A settled check on one temperature can pass in a run that has not settled.** The redesign runs (shell and bridge)
+  all passed "component change over the last tenth under 0.3 K" while heat out was still 1-4 % off the input: a slow
+  mode of the whole box (time constant about 1,200 s) moves the component only a few tenths of a kelvin per tenth of
+  the run. Judge settling by the heat balance (computed with real face areas) as well, and when a run stops short,
+  estimate the settled values (Aitken over the last three equally spaced samples) and say how far each verdict sits
+  from them, rather than reporting the end values as settled.
 
 ## Human judgment needed
 

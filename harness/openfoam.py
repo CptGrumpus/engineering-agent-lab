@@ -114,6 +114,44 @@ def read_patch_value(path: Path, patch: str, n_faces: int | None = None) -> np.n
     return None
 
 
+def _foam_list_body(text: str) -> str:
+    """The body of the top-level list in an ascii polyMesh file (after the FoamFile header and the count)."""
+    h = text.find("FoamFile")
+    if h >= 0:
+        text = text[text.index("}", h) + 1:]
+    m = re.search(r"\n\s*(\d+)\s*\n\s*\(", text)
+    if not m:
+        raise ValueError("no top-level list")
+    return text[m.end():]
+
+
+def patch_face_areas(mesh_dir: Path, patch: str) -> np.ndarray:
+    """Exact areas (m2) of a patch's faces, in the order of the patch's field values, from an ascii polyMesh
+    (mesh_dir = constant/polyMesh, or constant/<region>/polyMesh after splitMeshRegions). A face's area is the
+    magnitude of its vector area 1/2 sum(p_k x p_k+1), exact for planar polygons.
+
+    Why: summing a patch's flux as `flux.sum() * one face area` assumes equal faces; blockMesh rounds a block's cell
+    count, so blocks whose length is not a whole number of cells get slightly larger cells (enclosure redesign,
+    2026-11-24: 25 and 29 mm blocks at 2 mm cells, faces 2.083 and 2.071 mm; the total came out 1.9 % low)."""
+    mesh_dir = Path(mesh_dir)
+    btxt = (mesh_dir / "boundary").read_text(encoding="utf-8", errors="replace")
+    m = re.compile(rf"\n\s*{re.escape(patch)}\s*\n\s*\{{([^}}]*)\}}").search(btxt)
+    if not m:
+        raise ValueError(f"{mesh_dir}: patch {patch!r} not found in boundary")
+    n = int(re.search(r"\bnFaces\s+(\d+)", m.group(1)).group(1))
+    start = int(re.search(r"\bstartFace\s+(\d+)", m.group(1)).group(1))
+    pts = np.array(re.findall(r"\(\s*([-+0-9.eE]+)\s+([-+0-9.eE]+)\s+([-+0-9.eE]+)\s*\)",
+                              _foam_list_body((mesh_dir / "points").read_text(encoding="utf-8", errors="replace"))),
+                   dtype=float)
+    faces = re.findall(r"\d+\s*\(([\d\s]+)\)",
+                       _foam_list_body((mesh_dir / "faces").read_text(encoding="utf-8", errors="replace")))
+    out = np.empty(n)
+    for k in range(n):
+        p = pts[np.array(faces[start + k].split(), dtype=int)]
+        out[k] = 0.5 * np.linalg.norm(np.cross(p, np.roll(p, -1, axis=0)).sum(axis=0))
+    return out
+
+
 def latest_time_dir(case: Path) -> Path:
     times = []
     for d in Path(case).iterdir():
