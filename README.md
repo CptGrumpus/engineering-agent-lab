@@ -52,6 +52,7 @@ The intended user is an automotive engineer with a master's degree in mechanical
 | Shaft shoulder fillet (Kt, Kts; Shigley fatigue and yield safety; sizing) | `ccx_shaft_fillet` | Gmsh (OCC revolve, C3D10) -> CalculiX, half model, bending and torsion decks | `shaft_fillet_mesh_r2`, `shaft_fillet_noise`, `shaft_fillet_radius`, `shaft_fillet_radius_r1`, `shaft_fillet_size` |
 | Natural convection in a square cavity (de Vahl Davis) | `openfoam_cavity` | OpenFOAM 14 (in WSL), fluid solver, Boussinesq | `cavity_devahldavis`, `cavity_mesh_ra1e6` |
 | Grey-surface radiation between concentric cylinders | `openfoam_annulus_radiation` | OpenFOAM 14, fluid solver with fvDOM | `annulus_angular`, `annulus_emissivity` |
+| Sealed electronics enclosure (conjugate heat transfer, convection and radiation; shell and bridge redesign) | `openfoam_enclosure_cht` | OpenFOAM 14 (in WSL), foamMultiRun: air, board, component, optional aluminium shell and bridge, fvDOM | `enclosure_k{5,20}_eps0p{1,9}`, `enclosure_k20_eps0p9_mesh1mm`, `enclosure_fix_k5_eps0p{1,9}_{shell,br1,br2,br5,br20}` |
 
 ## Project folders
 

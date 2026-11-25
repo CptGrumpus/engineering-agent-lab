@@ -1,0 +1,113 @@
+{
+  "points": [
+    {
+      "label": "p00_baseline",
+      "parameters": {
+        "solid_density_kg_per_m3": 10000.0,
+        "shear_modulus_Pa": 500000.0,
+        "poisson_ratio": 0.4,
+        "fluid_density_kg_per_m3": 1000.0,
+        "kinematic_viscosity_m2_per_s": 0.001,
+        "mean_velocity_m_per_s": 1.0,
+        "fluid_cell_size_m": 0.0035355339,
+        "solid_element_size_mm": 2.5,
+        "time_step_s": 0.001,
+        "end_time_s": 15.0,
+        "benchmark_ux_A_m": -0.01485,
+        "benchmark_uy_A_m": 0.0013,
+        "benchmark_drag_N_per_m": 215.06,
+        "benchmark_lift_N_per_m": 0.61,
+        "benchmark_ux_A_mean": -0.01485,
+        "benchmark_ux_A_amp": 0.0127,
+        "benchmark_ux_A_freq_Hz": 3.86,
+        "benchmark_uy_A_mean": 0.0013,
+        "benchmark_uy_A_amp": 0.0816,
+        "benchmark_uy_A_freq_Hz": 1.93,
+        "benchmark_drag_mean": 215.06,
+        "benchmark_drag_amp": 77.65,
+        "benchmark_drag_freq_Hz": 3.86,
+        "benchmark_lift_mean": 0.61,
+        "benchmark_lift_amp": 237.8,
+        "benchmark_lift_freq_Hz": 1.93
+      },
+      "derived": {
+        "reynolds_D": 100.0,
+        "mass_ratio": 10.0
+      },
+      "simulation_status": "failed",
+      "verification_status": "NOT_RUN",
+      "checks": [],
+      "requirements": [
+        {
+          "id": "REQ-FSI2-1",
+          "text": "The coupled model shall reproduce the FSI2 amplitude of the tip's vertical displacement within 5 %.",
+          "metric": "uy_A_amp_deviation_pct",
+          "operator": "<=",
+          "limit": 5.0,
+          "units": "%",
+          "value": null,
+          "margin": null,
+          "verdict": "NO RESULT"
+        },
+        {
+          "id": "REQ-FSI2-2",
+          "text": "It shall reproduce the FSI2 oscillation frequency (uy of point A) within 3 %.",
+          "metric": "uy_A_freq_Hz_deviation_pct",
+          "operator": "<=",
+          "limit": 3.0,
+          "units": "%",
+          "value": null,
+          "margin": null,
+          "verdict": "NO RESULT"
+        },
+        {
+          "id": "REQ-FSI2-3",
+          "text": "It shall reproduce the FSI2 mean drag within 5 %.",
+          "metric": "drag_mean_deviation_pct",
+          "operator": "<=",
+          "limit": 5.0,
+          "units": "%",
+          "value": null,
+          "margin": null,
+          "verdict": "NO RESULT"
+        },
+        {
+          "id": "REQ-FSI2-4",
+          "text": "It shall reproduce the FSI2 drag amplitude within 15 % (the benchmark's own levels spread 15 %).",
+          "metric": "drag_amp_deviation_pct",
+          "operator": "<=",
+          "limit": 15.0,
+          "units": "%",
+          "value": null,
+          "margin": null,
+          "verdict": "NO RESULT"
+        },
+        {
+          "id": "REQ-FSI2-5",
+          "text": "It shall reproduce the FSI2 lift amplitude within 10 %.",
+          "metric": "lift_amp_deviation_pct",
+          "operator": "<=",
+          "limit": 10.0,
+          "units": "%",
+          "value": null,
+          "margin": null,
+          "verdict": "NO RESULT"
+        },
+        {
+          "id": "REQ-FSI2-6",
+          "text": "It shall reproduce the FSI2 mean horizontal tip displacement within 10 % (second order, as in FSI1).",
+          "metric": "ux_A_mean_deviation_pct",
+          "operator": "<=",
+          "limit": 10.0,
+          "units": "%",
+          "value": null,
+          "margin": null,
+          "verdict": "NO RESULT"
+        }
+      ]
+    }
+  ],
+  "run_id": "20261124-082453_turek_hron_fsi2_mesh_a_r1",
+  "generated_utc": "2026-11-24T22:58:37+00:00",
+  "verification_status": "FAIL"
+}

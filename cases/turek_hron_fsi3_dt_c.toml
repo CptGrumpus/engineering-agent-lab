@@ -15,6 +15,25 @@
 #   P4 About 4-6 h at 0.001 s and 16-22 h at 0.00025 s (the solid sets the pace; steps double per halving).
 # This file: dt 0.00025 s.
 
+#
+# Time-step study scored 2026-11-25 10:27 to t = 6.9 s (user's decision 2026-11-25 morning: score all three levels on
+# the same window after dt_a died at 6.90 s twice), by scripts/score_truncated_fsi.py --t-end 6.9 --parameter
+# time_step_s over dt_a (run 20261124-175934), dt_b (20261123-161107, the mesh study's level b) and dt_c
+# (20261124-103350); output fsi3_dt_t69.json in the dt_c run. Cutting dt_b (8 s) at 6.9 s changes its metrics by under
+# 0.01 %. dt 0.001 / 0.0005 / 0.00025 s: uy(A) amplitude 33.39 / 33.91 / 34.11 mm (benchmark 34.99), frequency 5.415 /
+# 5.464 / 5.482 Hz (5.46), ux(A) mean -2.634 / -2.700 / -2.725 mm (-2.88); drag 468.24 +- 23.86 and 469.86 +- 25.26
+# N/m, lift amplitude 147.7 and 153.4 N/m on dt_a and dt_b. dt_c's force files are LOST: the harness keeps files under
+# 20 MB and at dt 0.00025 s force.dat (a row per coupling sub-iteration) passed it, and the work dir is deleted after
+# a run; its drag and lift, and the force-transfer check, are not evaluable (the displacements come from the preCICE
+# watch-point log, which was kept). Every evaluable point check passes on all three levels (checkMesh, coupling
+# converged, periodic 2e-5-1e-4, force transfer 3e-9 on a and b). Every evaluable requirement passes on all three.
+# Run-level (time step, order 2, limit 1 %): uy amplitude 0.45 %, frequency 0.24 %, ux mean 0.73 %, all monotone:
+# PASS; drag mean, drag amplitude and lift amplitude not evaluable (FAIL as NaN in the output, for lack of dt_c's
+# forces, not a divergence). Predictions: P1 MISSED (dt_a died at 6.90 s twice, dt_c on its very last step, 7.99975 of
+# 8 s, by a segmentation fault at 06:35; both solids then hung until killed 2026-11-25 10:18-10:23 with the user's go-
+# ahead). P2 HELD (frequency 0.24 % under 0.5 %; uy amplitude 0.58 % between 0.0005 and 0.00025 s, the 0.001 s level
+# 1.5 % lower). P3 HELD where evaluable. P4 HELD for dt_c (20 h) and dt_a (4.9 h to 6.9 s on the rerun).
+
 [case]
 name = "turek_hron_fsi3_dt_c"
 model = "openfoam_ccx_precice_fsi"

@@ -103,3 +103,12 @@ caption copied it.
 - [ ] The card thumbnail looked at too: `thumb()` cuts the panel with its title, so a title wider than its axes pulls
       in the next panel's tick labels (the shaft chart's first cut did; more `wspace` fixed it)
 - [ ] Three panels side by side: axis titles kept short, or they run into each other (the shaft chart's first draft)
+- [ ] Two-line tick labels with an axis title under them need more room below the axes (`gs.update(bottom=...)`):
+      the enclosure chart's thumbnail ran past the figure's edge and came out with a black bar
+
+Rule 5 has no exception for a result that sits far from its limit. The enclosure chart's first draft kept the pass
+colour on hollow markers for runs that hadn't settled; an unverified result is the grey hollow circle, whatever side
+of the limit it's on, and the line it sits on still shows where it falls.
+
+To look at a chart without adding preview code to its function, run it through a wrapper that saves a PNG as the
+function closes the figure (patch `figkit.plt.close`, then call `make_figures.ALL[name]()`).

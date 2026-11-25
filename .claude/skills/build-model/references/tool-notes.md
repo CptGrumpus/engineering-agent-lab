@@ -472,6 +472,14 @@ Traps found while building the studies in this repo, by tool.
   sizing any conduction path. A region's interfaces come out of `splitMeshRegions` as `<owner>_to_<neighbour>` for
   each adjacent pair; generate the boundary entries from the block adjacency (explicit names, never two regex keys).
   Inertia grows with the shell (2 mm aluminium about doubles the time constant): lengthen the settling run.
+  Measured (study 11 redesign, 2026-11-24): shell plus bridge settled with a time constant of about 1,200 s (ratio 0.74
+  per 360 s), five times the corners' 242 s; 3,600 s left heat out 1-4 % off the input.
+- **Patch totals need the real face areas.** blockMesh rounds each block's cell count, so a block whose length is not
+  a whole number of cells gets slightly larger cells: at 2 mm cells the enclosure's 25 and 29 mm blocks had 2.083 and
+  2.071 mm faces, and `flux.sum() * cell_mm * depth` came out 1.9 % low, failing a 1 % heat balance in runs that in
+  fact closed to 0.03 % (study 11 redesign). Use `harness.openfoam.patch_face_areas(constant/<region>/polyMesh,
+  patch)` (exact, tested) and `flux @ areas`; a mean flux times the true perimeter is a close fallback for stored
+  results. A mean flux compared with a mean input flux (the corners' check) does not suffer from it.
 
 ## Partitioned coupling (OpenFOAM <-> CalculiX, cold-plate chain)
 
@@ -630,6 +638,14 @@ nic.funet.fi/pub/sci/physics/elmer/bin/windows/rel26.1/) unpacked to `~/tools/el
   definition point (slot width at the shoulder, not where the arrow happens to sit).
 
 ## preCICE coupling (OpenFOAM v2512 + CalculiX, study 6)
+
+- **OpenFOAM function objects write at every coupling sub-iteration** under implicit coupling (FSI3 at dt 0.0005 s:
+  104,426 force rows for 16,001 steps, 18 MB). At dt 0.00025 s force.dat passed the harness's 20 MB keep limit and was
+  lost with the work dir. The FSI study now keeps one row per time, the last (the converged iteration): the metrics
+  are identical to four decimals and the file is 6x smaller.
+- **The coupled runs are deterministic.** Unchanged reruns of FSI3 dt_a and FSI2 r1 level a crashed at the same time
+  as their first runs (6.902 and 14.009 s) with byte-identical watch-point logs; a rerun is a reproducibility check,
+  never a cure for a solver crash.
 
 - The preCICE OpenFOAM adapter (v1.4.0) supports the openfoam.com line v1812 to v2606, not
   openfoam.org v14 (its newest .org branch is OpenFOAM 10). Install openfoam.com v2512 beside v14; its

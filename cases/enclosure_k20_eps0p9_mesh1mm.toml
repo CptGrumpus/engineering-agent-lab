@@ -49,6 +49,16 @@
 #   P1m The point checks pass (heat balance 1 %, settled 0.3 K).
 #   P2m Component within 3 K of 94.25 C and mean air within 1 K of 67.00 C; both requirements still FAIL (the margins
 #       are 9 and 7 K). Direction: probably cooler (thinner thermal boundary layers resolved better), not confident.
+#
+# MESH CHECK RESULTS (run 20261124-161733_enclosure_k20_eps0p9_mesh1mm, 16:17-23:28, scored 23:30): verification PASS
+# (heat balance 0.003 %, settled 0.002 K). On 1 mm cells: component 94.30 C, mean air 67.12 C, walls 55.63 C,
+# radiation share 75.1 %; on 2 mm (run 20261124-144021): 94.25 / 67.00 C, 75.6 %. Differences +0.05 K (component) and
+# +0.12 K (air): the mesh error estimate on 2 mm cells; Richardson with order 2 puts the 1 mm values within 0.02 /
+# 0.04 K of the mesh-independent answer. Both requirements still FAIL by 9.3 and 7.1 K, far beyond the mesh error. The
+# 1 mm mesh is uniform (25, 29 and 65 mm are whole numbers of cells), so the face-area issue found in the redesign
+# runs (2 mm cells) does not touch it, and this study's corner check (mean flux against mean input) is unaffected
+# anyway. Predictions: P1m HELD. P2m HELD (component within 0.05 K, air 0.12 K; both FAIL); the direction guess
+# (cooler) MISSED: both rose slightly. Cost: 7.2 h on a shared CPU, not the 13 h estimated.
 
 [case]
 name = "enclosure_k20_eps0p9_mesh1mm"

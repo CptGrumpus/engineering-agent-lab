@@ -47,6 +47,24 @@ reports said verification FAIL (two cross-checks just over tolerance, one not in
 read 5e-4. A miss that doesn't touch a verdict still goes on the page, with a verdict that says so
 (`"checkmiss"`: "Passes; two cross-checks just missed").
 
+Four more checks, all from the sealed enclosure's write-up (study 27, 2026-11-25):
+
+- **Quote a benchmark stage at the setting the study's own runs use.** The write-up said radiation was "within 0.05 %
+  at the chosen angular resolution"; the box runs used 16 ray directions, where the same stage reads 0.92 % against
+  a 1 % limit. Read the setting from the production case file (`n_phi`) and quote that row.
+- **Round from the data, and count from the reports.** 98.446 had become 98.45 and then 98.5 (it's 98.4), and
+  "five runs failed the heat balance" was six in the `checks.json` files.
+- **Look at what the run saved beside the requirement's metric.** The requirement is on the component; the saved
+  `board_max_C` showed the board hotter than the component once the fix was in (98 °C, with no limit set for it).
+  That goes on the page as a finding the requirement doesn't cover, and back to the study session.
+- **A recorded status can be wrong in both directions.** After the study's own correction to the heat balance, two
+  recorded FAILs were settled runs and four recorded PASSes weren't. Recompute the corrected check in the chart
+  script, gate it on the values the case headers record, and mark the runs from that.
+
+A pass from a run that failed its own settling or balance check is `"unsettled"` in `REQS` ("Met; run not settled"),
+which doesn't count as met. A study whose fix clears only some of its requirements gets the card verdict `"partfix"`
+("Fails; the fix covers one limit of two"), in the fail colour.
+
 ## Wording
 
 Plain, first person, the way an engineer would say it to a colleague. No stock phrases or filler, no em dashes as
@@ -125,7 +143,8 @@ card. The pieces, all in `site/`:
    (study 21 joined study 4's bracket arm; the step joined study 19). Keep an existing page's slug so shared links work.
 3. `extras.py`: `STUDY_DOCS`, its `REQS` rows, and `RUN_PREFIX` when two parts share one write-up, so each part lists
    only its own runs. `RUN_LIST` instead names the exact runs and drops the write-up link, for a page whose write-up
-   tells a different story than the page (the motor, until `portfolio/20` is rewritten).
+   tells a different story than the page (the motor, until `portfolio/20` is rewritten). `RUN_GLOB` adds runs the
+   write-up cites by a pattern (`runs/20261124-1714*_enclosure_fix_*`), which the run-name search doesn't see.
 4. A chart in `scripts/make_figures.py` read from the run and the case file, never copied from the run's PNG. Render
    a PNG preview and look at it before publishing: label collisions and clipped headings only show up there.
    A study with its own card needs a gallery thumbnail, `site/v2/th_<key>.webp`: call `thumb(fig, ax, key)` before
@@ -170,3 +189,9 @@ day stale before anyone noticed. Say "recently" or give the date.
 
 All three must pass. Check changed pages at 360 px wide for sideways overflow. The study session commits in the
 same clone: add and commit only your own paths, in one command, and never leave files staged.
+
+Work on a feature branch goes in a git worktree (a second folder), never a branch switch in this clone: a switch
+would move the study session onto the branch and its commits with it. The redesign lives in
+`../engineering-agent-lab-ui` on `ui-redesign` (2026-11-24); run its scripts with this clone's `.venv`. Design
+mock-ups there are filled from `build_v2.py`'s own data by `site/proposals/build_proposals.py`, so a mock-up never
+shows a number the site doesn't.

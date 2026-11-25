@@ -76,20 +76,27 @@ class OpenFOAMEnclosure(Backend):
             # with a shell region (the redesign) the outside condition sits on the shell's outer faces and the inside
             # radiation on the air's interface with the shell; without it both are the air region's `walls`
             shell = float(params.get("shell_thickness_mm", 0) or 0) > 0
-            face_area = float(params["cell_mm"]) / 1e3 * float(params["box_depth_mm"]) / 1e3   # uniform mesh
+            # exact face areas per unit of the mesh's depth, scaled to the box's depth (blockMesh rounds cell counts, so
+            # the faces are not all cell_mm: a sum times one face area came out 1.9 % low, 2026-11-24)
+            mesh_depth = float(params["cell_mm"]) / 1e3
+            scale = float(params["box_depth_mm"]) / 1e3 / mesh_depth
+            a_out = of.patch_face_areas(case / "constant" / ("shell" if shell else "fluid") / "polyMesh",
+                                        "outside" if shell else "walls") * scale
+            a_rad = of.patch_face_areas(case / "constant" / "fluid" / "polyMesh",
+                                        "fluid_to_shell" if shell else "walls") * scale
             hist = []
             for t in times:
                 Tc = of.read_internal_field(t / "component" / "T")
                 Tb = of.read_internal_field(t / "board" / "T")
                 Tf = of.read_internal_field(t / "fluid" / "T")
                 Tw = of.read_patch_value(t / ("shell" if shell else "fluid") / "T", "outside" if shell else "walls")
-                qout = h * (Tw - Ta) + ee * SIGMA * (Tw ** 4 - Ta ** 4)          # equal wall faces (uniform mesh)
+                qout = h * (Tw - Ta) + ee * SIGMA * (Tw ** 4 - Ta ** 4)
                 qr = of.read_patch_value(t / "fluid" / "qr", "fluid_to_shell" if shell else "walls")
                 row = {"t": float(t.name), "component_max_C": float(Tc.max()) - 273.15,
                        "board_max_C": float(Tb.max()) - 273.15, "air_mean_C": float(Tf.mean()) - 273.15,
                        "walls_mean_C": float(Tw.mean()) - 273.15, "q_out_W_m2": float(qout.mean()),
-                       "qr_walls_W_m2": float(qr.mean()), "Q_out_W": float(qout.sum()) * face_area,
-                       "Q_rad_W": float(qr.sum()) * face_area}
+                       "qr_walls_W_m2": float(qr.mean()), "Q_out_W": float(qout @ a_out),
+                       "Q_rad_W": float(qr @ a_rad)}
                 if shell:
                     row["walls_max_C"] = float(Tw.max()) - 273.15
                 if (t / "bridge" / "T").exists():

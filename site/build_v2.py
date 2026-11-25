@@ -116,6 +116,11 @@ VP = [
      "lines": ["CalculiX, half the shaft in 10-node tetrahedra, 0.14 mm on the fillet · Kt and Kts from the model, fatigue by Shigley's method",
                "Left: safety against fillet radius as drawn. Middle: the step scaled up. Right: stress along the drawn fillet",
                "As drawn 1.19 (need 1.5), yield 1.83 (need 2.0) · best fillet that fits 1.47 · d 36 / D 45: 1.62 and 2.52 · hollow dot: unverified"]},
+    {"id": "enclosure", "study": "enclosure", "kind": "figure", "img": "v2/fig_enclosure_fix.svg",
+     "model": "Sealed aluminium enclosure, 150 × 60 mm section · 15 W inside, still air at 40 °C outside · bare or painted inside",
+     "lines": ["OpenFOAM 14, the air and the solids solved together: natural convection, conduction and surface radiation, marched to a settled state",
+               "Left: the component against the bridge's conductivity. Middle: the air inside. Right: the model's parts against known answers",
+               "As drawn 94 to 163 °C (limit 85) · 5 W/mK bridge: 70.0 and 76.1 °C · air 62.3 and 66.2 °C (limit 60) · hollow: the run stopped before the box settled"]},
 ]
 VP += [
     {"id": "strap_detail", "study": "strap", "legend": "S11", "unit": "MPa",
@@ -202,6 +207,7 @@ CARDS = [
     ("crack", "24", "struct", "New · Fracture mechanics", "Cracked steel plate: critical crack and fatigue crack growth", "A 2 mm edge crack, the smallest inspection finds, grows to the critical 37.0 mm in about 92,000 cycles. Inspect at least every 46,000 cycles; the planned 40,000 has margin. Stress intensity checked against the handbook to 0.66 %.", "pass", "Gmsh · CalculiX · Python"),
     ("oring", "25", "struct", "New · Elastomer seals", "O-ring face seal across its tolerance stack", "Passes at all three corners: 1.50 MPa of sealing pressure at the loosest against 0.6 needed, and 5.94 N/mm to close at the tightest against a 12 N/mm budget. A squeezed ring grows in diameter, and the groove wall that stops it adds 40 % to the force.", "checkmiss", "Gmsh · CalculiX"),
     ("shaft", "26", "struct", "New · Machine elements", "Gearbox shaft shoulder: fatigue at the fillet", "Fails as drawn: fatigue safety 1.19 against 1.5 and yield safety 1.83 against 2.0, and no fillet that fits under the 4 mm shoulder reaches 1.5. A 36 mm seat with a 45 mm shoulder passes at 1.62 and 2.52.", "fix", "Gmsh · CalculiX · Python"),
+    ("enclosure", "27", "fluid", "New · Electronics cooling", "Sealed electronics enclosure: the hot component and its fix", "Overheats as drawn at every corner: the component reaches 94 to 163 °C against a limit of 85, depending on the inside finish. A 5 W/mK bridge from the component to the lid brings it to 70 to 76 °C. The air inside stays over its 60 °C limit with every bridge, so the board needs a heat path of its own.", "partfix", "OpenFOAM · Python"),
     ("cold_plate", "15", "fluid", "New · Multiphysics", "Cold plate, the full thermal chain", "Passes on all three counts, from the coolant flow through the plate's conduction to its thermal stress: 40.99 °C, a 7.20 K coolant rise and 46.8 MPa.", "pass", "OpenFOAM · CalculiX"),
     ("pipe", "19", "fluid", "New · Turbulence", "Turbulent pipe friction, against measured data", "Passes: extrapolated to zero cell size, the turbulence model lands 2.4 % above Prandtl's law against a 5 % limit. The first mesh agreed to 0.9 %, with the wrong sign. Wall functions sit 5 % low on every mesh.", "pass", "OpenFOAM"),
     ("step", "19", "fluid", "New · Measured data", "Flow over a backward-facing step, against measurements", "Two of three agreed limits pass: reattachment 2.3 % long and skin friction 7.0 % rms. The pressure recovers 0.023 too far against a 0.02 limit, most likely because a 2D model has no tunnel side walls.", "most", "OpenFOAM"),
@@ -214,7 +220,7 @@ CARDS = [
     ("baseline", "09", "workflow", "Workflow", "Mass-spring-damper baseline", "All 72 checks pass, and the two tools agree to a few parts per million.", "pass", "SciPy · OpenModelica"),
 ]
 VERDICT = {"pass": "Passes", "fail": "Fails", "mixed": "Depends on speed", "held": "One result on hold",
-           "wip": "In progress", "closed": "Closed, with client questions", "checkmiss": "Passes; two cross-checks just missed", "fix": "Fails as drawn; fix found", "line": "Depends on one judgement call", "most": "Passes, with one miss"}
+           "wip": "In progress", "closed": "Closed, with client questions", "checkmiss": "Passes; two cross-checks just missed", "fix": "Fails as drawn; fix found", "partfix": "Fails; the fix covers one limit of two", "line": "Depends on one judgement call", "most": "Passes, with one miss"}
 
 # studies of the same part, shown as one card and one panel; each study keeps its own write-up, viewer
 # result, requirements rows and evidence, and links to a study land on its part of the panel
@@ -287,7 +293,8 @@ SLUG = {"bracket_opt": "bracket-optimisation", "pv_nozzle": "pressure-vessel-noz
         "cantilever_bracket": "cantilever-bracket", "bracket_arm": "bracket-modal", "cold_plate": "cold-plate",
         "turbulent_flow": "turbulent-pipe-friction", "cfd": "coolant-channel", "thermal": "heat-sink-fin",
         "suspension": "quarter-car", "cad": "mounting-plate", "baseline": "mass-spring-damper",
-        "motor": "traction-motor", "fan_rotor": "fan-rotor", "crack": "cracked-plate", "oring": "o-ring-face-seal", "shaft": "shaft-shoulder-fatigue"}
+        "motor": "traction-motor", "fan_rotor": "fan-rotor", "crack": "cracked-plate", "oring": "o-ring-face-seal", "shaft": "shaft-shoulder-fatigue",
+        "enclosure": "sealed-enclosure"}
 assert set(SLUG) == {c[0] for c in GALLERY}, "every gallery card needs a page name"
 FILE = {k: f"{s}.html" for k, s in SLUG.items()}
 DISC = {"struct": "Structures and vibration", "fluid": "Thermal and fluids", "vehicle": "Vehicle dynamics",
@@ -310,7 +317,7 @@ CASES = {"fea": ["cantilever_tet10"], "cantilever_opt": ["bracket_opt"], "strap"
          "pv_nozzle": ["pv_nozzle_mesh", "pv_nozzle_crotch_mesh_r1"], "bracket_opt": ["clevis_opt_r2"], "cfd": ["channel_header_tolerance", "duct_side_walls"],
          "thermal": ["fin_tolerance"], "heat": ["heated_channel_mesh_r2"], "cold_plate": ["cold_plate_mesh_r1"],
          "pipe": ["pipe_rans_mesh_r3"], "step": ["step_mesh"], "random_vib": ["bracket_random_mesh"], "bracket_uq": ["bracket_random_uq"],
-         "fan_rotor": ["rotor_fan_design"], "crack": ["edge_crack_mesh_r2"], "oring": ["oring_seal_corners"], "shaft": ["shaft_fillet_radius", "shaft_fillet_size"], "suspension": ["qc_speed_bump", "qc_bump_liftoff"], "cad": ["mounting_plate"],
+         "fan_rotor": ["rotor_fan_design"], "crack": ["edge_crack_mesh_r2"], "oring": ["oring_seal_corners"], "shaft": ["shaft_fillet_radius", "shaft_fillet_size"], "enclosure": ["enclosure_k5_eps0p1", "enclosure_fix_k5_eps0p1_br5"], "suspension": ["qc_speed_bump", "qc_bump_liftoff"], "cad": ["mounting_plate"],
          "baseline": ["msd_step"], "motor": ["motor_prius_rev5_torque"]}
 # drawings from scripts/make_drawings.py (site/v2/dwg_<key>.webp), shown in each study's model section
 DRAWINGS = {
@@ -339,6 +346,7 @@ DRAWINGS = {
     "crack": ("The steel plate in side view, pulled at both ends, with a 2 mm crack at one edge and the 37 mm critical crack dashed, above a sketch of the stress cycle", "The plate, pulled at both ends with a stress that cycles from 15 to 150 MPa. A crack starts at the 2 mm that inspection can find and grows a little every cycle, until it reaches the critical 37 mm."),
     "oring": ("Section through the cover's face groove as the cover lands: the O-ring against the groove's outer wall, the 0.74 mm still to close, the coolant pressure from inside, and the tolerance stack", "The seal as the cover lands, to scale: the ring sits against the groove's outer wall and stands 0.74 mm proud, which the cover squeezes out. Coolant reaches it from the inside. The lighter upper half of the ring is what's modelled, axisymmetric about the pump's axis."),
     "shaft": ("Side view of the stepped gearbox shaft, 32 mm stepping up to 40 mm, clamped at the large end with rotating bending and a steady torque on the small end, and the 1.6 mm fillet enlarged with its tolerance and the peak-stress point", "The shaft as drawn, to scale: the loads on the small end, the clamp 80 mm past the shoulder, and the fillet enlarged six times with its tolerance. The peak-stress point is the model's result, as is the fix in the last line."),
+    "enclosure": ("Section through the sealed box: aluminium walls around still air, a circuit board at mid-height with the component at its middle, the redesign's bridge from the component up to the lid, and heat leaving through the walls to the air outside", "The box in section, to scale. The board hangs in the air with a gap at each edge, so as drawn its heat leaves only through the air and by radiation. The hatched block is the redesign: a bridge from the component to the lid. On the right, what isn't known and the two limits."),
     "fan_rotor": ("Side view of the fan rotor: a shaft between two bearings on springs and dampers, a steel disc at mid-span with the unbalance marked, and below it the shaft's bent shape on soft and stiff pedestals", "The model: a centre-hung fan, its impeller between two bearings. The impeller is a steel disc at mid-span and each bearing with its pedestal is a spring and a damper. Below: the 65 mm shaft's first mode, from the rotor model, on soft and stiff pedestals. On soft ones the ends move a third as much as the middle, so the critical speed drops."),
     "random_vib": ("Side view of the arm clamped to a shaker table, with the three shaking directions and the flat input spectrum", "The test: the arm clamped to a shaker table and shaken on one axis at a time. The stress is read on the surface near the clamp and extrapolated to it; the tip clearance is drawn six times larger so it can be seen."),
 }
@@ -357,6 +365,7 @@ QUESTION = {
     "oring": "Does an O-ring seal a 3 bar coolant-pump cover at every corner of its tolerance stack, within the bolts' force and the groove's room?",
     "shaft": "Does a gearbox shaft's shoulder fillet survive rotating bending and a 1.5 × overload, and if not, what step does?",
     "cold_plate": "Does a water-cooled aluminium plate keep the electronics on it under 45 °C, with the coolant and the thermal stress inside their limits?",
+    "enclosure": "Does a sealed electronics box keep its hottest component under 85 °C and its air under 60 °C, bare or painted inside, and if not, what fixes it?",
     "turbulent_flow": "Can this CFD setup be trusted for pressure drop and flow layout? Checked against measurements, in a pipe and behind a step.",
     "cfd": "Does a 1 mm coolant passage stay within its 30 Pa pressure budget and keep enough shear on its walls to limit fouling?",
     "thermal": "Does the tip of an aluminium heat-sink fin stay above 60 °C, and how sure can I be?",
@@ -404,7 +413,7 @@ SERVICES = [
                                           '<a href="grading.html">the ones on the grading page</a>.'),
 ]
 # card order on the home page and through the pager: these first, the rest as listed in CARDS
-FRONT = ["motor", "bracket_opt", "turbulent_flow", "pv_nozzle", "bracket_arm", "cold_plate", "fan_rotor", "shaft", "oring",
+FRONT = ["motor", "bracket_opt", "turbulent_flow", "pv_nozzle", "bracket_arm", "cold_plate", "enclosure", "fan_rotor", "shaft", "oring",
          "crack", "bolted_joint"]
 
 import tomllib
@@ -444,7 +453,7 @@ if not th_heat.exists():
 # home cards open with the setup, the user's rule for every study (2026-11-23): the part first, then the result. Each
 # card's left picture is cut from the study's drawing as the build runs, so it changes with the drawing; the result
 # chart sits beside it, and the finding and the verdict under both.
-CARD_CROP = {"oring": (0, 0, 0.655, 1), "fan_rotor": (0, 0, 1, 0.56), "shaft": (0, 0, 0.74, 0.73)}     # study: (x0, y0, x1, y1) as fractions of the drawing's content, where the part is only part of it
+CARD_CROP = {"oring": (0, 0, 0.655, 1), "fan_rotor": (0, 0, 1, 0.56), "shaft": (0, 0, 0.74, 0.73), "enclosure": (0.1, 0, 0.67, 0.84)}     # study: (x0, y0, x1, y1) as fractions of the drawing's content, where the part is only part of it
 
 
 def card_thumb(gk: str):

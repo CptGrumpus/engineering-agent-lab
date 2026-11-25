@@ -1,0 +1,94 @@
+{
+  "run_id": "20261124-175934_turek_hron_fsi3_dt_a",
+  "case_name": "turek_hron_fsi3_dt_a",
+  "model": "openfoam_ccx_precice_fsi",
+  "case_source": "cases/turek_hron_fsi3_dt_a.toml",
+  "case_sha256": "a223a94c09877f3698a8251b812f5dabf9632a52da84caac3da7ab7c1458d0b6",
+  "model_sources_sha256": {
+    "models/fsi/turek_hron_fsi.py": "44935422842646833e961e81a25064dc98a6b2a8e6bd6c9b2686fbdbe7420494",
+    "models/fsi/run_turek_hron_fsi.sh": "902fc9d0efa20c06540045fe5b210c41c095894a5d0ab235502b91e7fad37559",
+    "models/fea/flag_ccx.py": "4ae65080b525535565e09d6a52c1bcc2e9a24e979816b465613b402f59884bd1",
+    "models/fsi/frozen_motion_diffusivity.py": "7aac3090f220b55bba23e37131611bccb67bbd46325ce48ed6a815299cf42da7"
+  },
+  "rerun_of": null,
+  "started_utc": "2026-11-24T22:59:34+00:00",
+  "environment": {
+    "python": "3.14.10",
+    "python_executable": "<repo>\\.venv\\Scripts\\python.exe",
+    "platform": "Windows-11-10.0.26100-SP0",
+    "machine": "AMD64",
+    "packages": {
+      "numpy": "2.5.5",
+      "scipy": "1.18.1",
+      "matplotlib": "3.11.2",
+      "cadquery": "2.8.0"
+    },
+    "git": {
+      "commit": "3a081c3167197a74c1d52928a3b8a0a23cf50056",
+      "dirty": true
+    },
+    "tools": {
+      "openfoam_bashrc": "/usr/lib/openfoam/openfoam2512/etc/bashrc",
+      "gmsh": "4.15.0"
+    }
+  },
+  "numerics": {
+    "periodic_periods": 4,
+    "solid_alpha": 0.0,
+    "write_interval_s": 1.0,
+    "ramp_time_s": 2.0,
+    "coupling_rel_tol": 1e-05,
+    "coupling_max_iterations": 100,
+    "rbf_support_radius_m": 0.05,
+    "solver_timeout_s": 64800
+  },
+  "points": [
+    {
+      "label": "p00_baseline",
+      "parameters": {
+        "solid_density_kg_per_m3": 1000.0,
+        "shear_modulus_Pa": 2000000.0,
+        "poisson_ratio": 0.4,
+        "fluid_density_kg_per_m3": 1000.0,
+        "kinematic_viscosity_m2_per_s": 0.001,
+        "mean_velocity_m_per_s": 2.0,
+        "fluid_cell_size_m": 0.0025,
+        "solid_element_size_mm": 2.5,
+        "time_step_s": 0.001,
+        "end_time_s": 8.0,
+        "benchmark_ux_A_m": -0.00288,
+        "benchmark_uy_A_m": 0.00147,
+        "benchmark_drag_N_per_m": 460.5,
+        "benchmark_lift_N_per_m": 2.5,
+        "benchmark_ux_A_mean": -0.00288,
+        "benchmark_ux_A_amp": 0.00272,
+        "benchmark_ux_A_freq_Hz": 10.93,
+        "benchmark_uy_A_mean": 0.00147,
+        "benchmark_uy_A_amp": 0.03499,
+        "benchmark_uy_A_freq_Hz": 5.46,
+        "benchmark_drag_mean": 460.5,
+        "benchmark_drag_amp": 27.74,
+        "benchmark_drag_freq_Hz": 10.93,
+        "benchmark_lift_mean": 2.5,
+        "benchmark_lift_amp": 153.91,
+        "benchmark_lift_freq_Hz": 5.46
+      },
+      "status": "failed",
+      "derived": {
+        "reynolds_D": 200.0,
+        "mass_ratio": 1.0
+      },
+      "solver": {
+        "success": false,
+        "message": "FSI run failed (exit 30) <repo>/runs/20261124-175934_turek_hron_fsi3_dt_a/inputs/run_turek_hron_fsi.sh: line 39: 1793899 Killed                  ccx_preCICE -i flag -precice-participant Solid > log.ccx 2>&1  (wd: ~/AppData/Local/Temp/fsi_26tcnpu3/case/solid)",
+        "nfev": null
+      },
+      "failure_tails": [
+        "case/solid/spooles.out"
+      ]
+    }
+  ],
+  "study": "turek_hron_fsi",
+  "status": "failed",
+  "finished_utc": "2026-11-25T15:19:18+00:00"
+}

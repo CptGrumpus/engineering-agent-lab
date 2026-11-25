@@ -14,7 +14,7 @@ Planned studies, not started. Each one follows the usual loop (frame requirement
 | 8 | Pressure vessel with a nozzle, ASME VIII-2 Part 5 elastic stress analysis (study 18) | Design-code verdict from linearised stresses on classification lines; rule vs analysis | Lame cylinder, exact pressure resultants, simplified pressure-area rule | CadQuery · Gmsh · CalculiX | Medium | **Done**: [portfolio/18](portfolio/18-pressure-vessel-nozzle.md). Placement decides: toe lines PL 205.1 against 207 (about 11.7 mm), crotch line 256.7 (about 20 mm), rule 16 mm; hemispherical head about 6.5 mm (axisymmetric model, checked against shell theory) |
 | 9 | Turbulent CFD: pipe friction, then the backward-facing step against measurements (study 19) | Turbulence modelling; validation against measured data | Prandtl's smooth-pipe law; Driver & Seegmiller's step data | OpenFOAM | Medium | **Done**: part 1 (pipe friction) verified, +2.4 % on Prandtl (GCI 0.48 %); part 2 (step) scored once against Driver & Seegmiller 2026-11-23: REQ-S1 PASS (+2.3 %), REQ-S2 PASS (7.0 % rms), REQ-S3 FAIL (recovery +0.0227, limit 0.02; 2D, no side walls); finest step mesh unconverged at its cap (verification FAIL, reported); [portfolio/19](portfolio/19-turbulent-pipe-friction.md) |
 | 10 | Random vibration of the study-4 bracket (C) | Forced response to a PSD; 3-sigma stress; vibration fatigue | Miles' equation; effective mass | CalculiX · Python | Medium | **Verified** (run 20261123-100907_bracket_random_mesh, 3.1 / 1.95 / 1.22 mm): PASS on all three: 3-sigma root stress 38.6 MPa (limit 236.7, GCI 1.3 %), damage 2.4e-3 (limit 0.5), tip 0.345 mm (limit 1.0, GCI 0.1 %); harmonic check 1e-6 after finding CalculiX's absolute-damping base motion; a 16.5 GB .frd from carried-over output requests, fixed; [portfolio/21](portfolio/21-bracket-random-vibration.md) |
-| 11 | Natural convection and radiation (D) | Buoyant flow; view-factor radiation | de Vahl Davis cavity benchmark; two-surface exchange | OpenFOAM · CalculiX | Medium | **In progress**: stage 1 (de Vahl Davis) PASS, stage 2 (two-surface radiation) PASS; enclosure corners: emissivity 0.9 done (component 98.4 / 94.3 C, air 66.9 / 67.0 C, both FAIL), emissivity 0.1 running; 1 mm mesh check running; next: size a conduction path to the lid (user's decision 16:55) |
+| 11 | Natural convection and radiation (D) | Buoyant flow; view-factor radiation | de Vahl Davis cavity benchmark; two-surface exchange | OpenFOAM · CalculiX | Medium | **Done (page 27)**: stages 1-2 PASS; corners all FAIL (component 94-163 C, air 67-84 C); 1 mm mesh check +0.05 K; redesign (shell + bridge to the lid): REQ-D1 passes at both emissivities from 5 W/mK, REQ-D2 fails with every bridge; redesign runs unsettled at 3,600 s (verdicts by extrapolation; a 9,000 s verification set needs the user's go-ahead) |
 | 12 | O-ring compression (E) | Hyperelastic large strain with self-contact | Published force-squeeze correlation; J about 1 | CalculiX | High | **Done** (2026-11-24): every requirement passes at the three tolerance corners (loosest peak 1.50 MPa, tightest 5.94 N/mm, fill 80.4 %); Hertz 1.6 %, Lindley within 10.6 %, inside Parker's band; mesh GCI 1.1 % or less; [portfolio/25](portfolio/25-oring-face-seal.md) |
 | 13 | Cracked plate, K and crack growth (F) | Fracture mechanics; damage tolerance | Handbook K solutions; G-K consistency | CalculiX · Python | Medium | **Done** (runs edge_crack_mesh r0-r2 and edge_crack_noise, 2026-11-23): K within 0.66 % of Tada, critical crack 37.0 mm (verified), life about 92,000 cycles from 2 mm (+-0.2 %, formally unverified: mesh noise), inspection interval about 46,000 cycles; REQ-F1, F2 PASS; [portfolio/24](portfolio/24-cracked-plate-growth.md) |
 | 14 | Rotor critical speeds (G) | Rotordynamics, Campbell diagram | Jeffcott rotor closed form | ROSS (Python) | Low-medium | **Verified** (runs 20261123-162721 and -163104): 50 mm shaft FAILS (critical in range), 60 mm FAILS on soft bearings (14.3 %), 65 mm PASSES (margin 23.8 % or more, under 5 um); [portfolio/23](portfolio/23-fan-rotor-critical-speeds.md) |
@@ -79,15 +79,20 @@ commit). Rules that bind:
   `*.inp`, `*.dat`, `__pycache__`, files > 600 kB, then `tests/test_privacy.py`; never two FEMM cases at once; check
   free RAM on long runs.
 
-### Running at 16:25, 2026-11-24 (scratchpads under `%LOCALAPPDATA%/Temp/claude/cb67dd1e648f8970/<session>/scratchpad/`)
+### Running at 10:29, 2026-11-25: NOTHING (every run has ended; no new runs without the user's go-ahead)
 
-| Job | Run dir (log) | Done about | When it finishes |
-|---|---|---|---|
-| Study 6: FSI2 r1 level a (frozen motion), started 08:24; level b DONE 16:22 (scored, committed 1964b81) | `runs/*_turek_hron_fsi2_mesh_a_r1` (`fsi2_r1_a.log`) | about 16:45 | Score P1-P2 in its header (b's results are there). |
-| Study 6: FSI2 r1 level c, at about 11 of 15 s at 16:11 | `runs/*_turek_hron_fsi2_mesh_c_r1` (`fsi2_r1_c.log`) | about 20:00-21:00 | Score P1-P5; `scripts/combine_mesh_levels.py` over the three r1 runs; page 17 (drop 'draft' if c passes); skills. |
-| Study 6: FSI3 time-step study (`turek_hron_fsi3_dt_{a,c}`), started 10:33 | `runs/*_turek_hron_fsi3_dt_*` (`fsi3_dt_{a,c}.log`) | a about 17:00-18:00; c late evening | Score; `combine_mesh_levels.py --parameter time_step_s` with 20261123-161107 as the middle level; page 17. |
-| Study 11: enclosure eps 0.1 corners (`enclosure_k{5,20}_eps0p1`), started 14:40; the eps 0.9 corners DONE (1106522) | `runs/*_enclosure_*_eps0p1` | about 19:00 | Score P1-P5 (P3 = these); commit; study 11 page (27); README row; BACKLOG row 11. |
-| Study 11: mesh check on 1 mm cells (`enclosure_k20_eps0p9_mesh1mm`, predictions in the header), started 16:18 | `runs/*_enclosure_k20_eps0p9_mesh1mm` (`enclosure_mesh1mm.log`) | tomorrow early morning (about 13 h) | Compare with the 2 mm run (20261124-144021): difference as the mesh error; page 27. |
+DONE the morning of 2026-11-25 (f84e573): FSI3 time-step study scored to 6.9 s (tip motion converges in dt; dt_c's
+forces lost, the FSI study now keeps one force row per time); FSI3 dt_a and FSI2 r1 level a reruns crashed at the
+same times with byte-identical records (deterministic); 1 mm enclosure mesh check +0.05 K (8526555); pages 27 and
+17 (6bd544e and after). Open for the user: AISC PDFs into references/aisc/; a 9,000 s enclosure verification set
+and any FSI rerun with a changed solid setup need a go-ahead.
+
+DONE this evening (committed 544b06a): the ten study 11 redesign runs (results, corrected heat balance and settled
+extrapolation in each header: REQ-D1 passes from 1-2 W/mK at emissivity 0.9 and 5 W/mK at 0.1, REQ-D2 fails in all;
+the runs were not settled at 3,600 s, verdicts supported by extrapolation; a 9,000 s verification set needs the
+user's go-ahead) and FSI2 r1 level c (crashed 14.047 s; scored to 14.0 s with levels a and b on the same window,
+user's decision; every requirement passes, run-level GCI FAILS). Still to write: study 11 page (27), page 17 update,
+README row, BACKLOG row 11; tell the dashboard session.
 
 Machine elements (study 16) DONE 16:24: page 26; dashboard session told.
 

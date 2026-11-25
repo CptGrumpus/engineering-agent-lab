@@ -27,6 +27,31 @@
 #      62-65 C); passing it needs a path for the board's heat as well.
 #   P5 About 2.5 h per run at emissivity 0.9 and 7 h at 0.1, the ten side by side.
 # This file: board 5 W/mK, emissivity 0.9, shell and a bridge of 20 W/mK.
+#
+# RESULTS (run 20261124-171528_enclosure_fix_k5_eps0p9_br20, finished 19:48, scored 2026-11-24 after 22:35): hottest
+# component 63.28 C (REQ-D1 PASS, limit 85), mean air 61.13 C (REQ-D2 FAIL, limit 60), shell outside 55.70 C mean,
+# bridge up to 62.22 C, radiation share 29.9 % (exact areas; 29.3 % as recorded). Verification as run: FAIL (heat
+# balance 2.02 %, settled 0.229 K). Heat-balance correction (found after the runs, 22:30): the study summed the wall
+# fluxes times one 2 mm face, but blockMesh rounds each block to whole cells, so the 25 and 29 mm blocks have 2.083
+# and 2.071 mm faces: the shell's outside counted 428 mm of its 436 mm perimeter (1.87 % low; the radiation total
+# likewise 412 of 420 mm). Fixed after these runs (harness/openfoam.py patch_face_areas, exact areas from the
+# polyMesh; test); recomputed here as the mean flux times the true perimeter: heat out 15.59 W against 15 W at 3,600 s
+# (+3.93 %): NOT SETTLED. Extrapolated to the settled state (Aitken, last three samples 2,880 / 3,240 / 3,600 s, ratio
+# 0.74 per 360 s): component 62.64 C, air 60.55 C, heat out 15.01 W (+0.07 %, the balance closes); the verdicts are
+# unchanged. Status: verdicts from an unsettled run, supported by the extrapolation; a run to about 9,000 s (7 time
+# constants) would verify them, and only with the user's go-ahead (no new runs at present).
+#
+# Predictions, scored over all ten runs: P1 MISSED: as run, five of ten failed the 1 % heat balance; with the
+# corrected totals only three are within 1 % at 3,600 s (both shell-only runs and emissivity 0.1 with 2 W/mK); the
+# others were still cooling or warming (heat out 1.0-3.9 % off), settling with a time constant of about 1,200 s (the
+# ratio 0.74 per 360 s), not the 440 s estimated; the settled check (component change over the last tenth under 0.3 K)
+# passed every run and is too weak for that slow mode. P2 HELD at emissivity 0.9 (component -2.8 K, air -1.0 K against
+# the corner), MISSED at 0.1 (-8.6 K, -3.1 K: with little radiation the shell's spreading matters). P3 MIXED: at 0.9
+# the 2 / 5 / 20 W/mK bridges came within 2 K of the hand values (78.0 / 70.0 / 63.3 C against 80 / 68 / 62), but 1
+# W/mK ran 15 K cooler (84.8 against 100) and passes REQ-D1, by 0.2 K (0.7 K extrapolated); at 0.1 the bridges ran 22
+# / 13 / 6 / 2.5 K hotter than at 0.9, not 'a few K', and REQ-D1 passes only from 5 W/mK. P4 HELD: REQ-D2 fails in
+# every run (mean air 60.5-80.8 C extrapolated). P5 HELD at 0.9 (2.5-3.3 h), MISSED at 0.1 (3.9-5.2 h against 7 h:
+# faster), the ten side by side.
 
 [case]
 name = "enclosure_fix_k5_eps0p9_br20"

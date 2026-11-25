@@ -1,0 +1,148 @@
+# Turek-Hron FSI2 mesh study, revision 1 (study 6): the three fluid levels (3.54 / 2.5 / 1.77 mm) rerun with ONE
+# change, the mesh motion (numerics mesh_motion = "frozen"): a frozen diffusivity 1 / d on the base mesh, d the exact
+# distance to the cylinder and flag (models/fsi/frozen_motion_diffusivity.py), solved to convergence with GAMG, in
+# place of OpenFOAM's quadratic inverseDistance recomputed on the moved mesh with two Gauss-Seidel sweeps. Physics,
+# meshes, dt, PISO, coupling, checks and requirements as turek_hron_fsi2_mesh_{a,b,c} (read them). The change goes to
+# all three levels so the levels stay comparable. User's go-ahead 2026-11-24, after 07:38 ("do 1/2 as well").
+#
+# Why (cases/turek_hron_fsi2_mesh_c_diag.toml, results): level c failed at 8.836 s by a mesh-motion cell collapse
+# below the flag tip, through a growing period-2 oscillation made inside the mesh-motion solve. Offline test
+# (2026-11-24 08:14, one moveMesh solve from the base mesh with the crash step's flag displacement, scratch): the
+# current diffusivity's answer depends on the linear solver (PCG 572 inverted cells, GAMG none, both "converged" in
+# one iteration: ill posed); frozen 1 / d^2 is well posed (PCG and GAMG agree) but squeezes the cells at the bottom
+# wall (0.13 of their base volume at 1.2 x the displacement); frozen 1 / d keeps every cell above 0.55 / 0.46 of
+# its base volume at 1.0 / 1.2 x, non-orthogonality at most 50 / 54 deg (the run's healthiest state at 8.8 s: 0.35).
+# With a frozen diffusivity the mesh is a linear function of the flag's displacement, so that test is exact for
+# what the run will produce at that displacement. Smoke test (3.54 mm, 50 steps): drag 1.944 N/m as the plain case,
+# GAMG about 15 iterations per motion solve.
+#
+# Predictions (written BEFORE the runs, 2026-11-24 08:24):
+#   P1 All three levels reach 15 s; every point check passes on every level (force transfer 1e-3, flag cells
+#      under 140 deg, periodic, coupling).
+#   P2 Levels a and b repeat their earlier runs within 0.5 % on every benchmark quantity (the mesh motion changes the
+#      fluxes only through the moving cells' shape), frequency within 0.1 %.
+#   P3 Level c within the earlier P3 bands (uy amplitude 7.9-8.4e-2, frequency 1.92-1.94 Hz, drag mean 212-221, drag
+#      amplitude 73-81, lift amplitude 232-252); every requirement passes on b and c.
+#   P4 Combined three-level check: frequency and drag mean converge with GCI under 1 %; the amplitudes may classify
+#      oscillatory or anomalous (as FSI3's force amplitudes), reported, not tuned.
+#   P5 About 7-10 h side by side (level c alone reached 8.8 s in 4.1 h on a free CPU; the motion solve adds a few
+#      percent; the solid sets the pace).
+# This file: level a, 3.54 mm.
+#
+# Crash (run 20261124-082453_turek_hron_fsi2_mesh_a_r1): the CalculiX solid (ccx_preCICE, adapter 2.20.2) died of heap corruption ("corrupted double-linked
+# list", SIGABRT) at t = 14.01 s (16:06); its abort handler never exited, so the dead process held a core and the fluid
+# waited until preCICE's socket closed. Found 17:36, killed 17:57 with the user's go-ahead; run failed (exit 30). Not a
+# numerical failure: the fluid and solid residuals were normal to the last step, and the same case had run cleanly
+# before (FSI2 level b ran all 15 s). Rerun unchanged (user's decision 17:56).
+
+[case]
+name = "turek_hron_fsi2_mesh_a_r1"
+model = "openfoam_ccx_precice_fsi"
+description = "Turek-Hron FSI2: self-excited periodic oscillation of the elastic flag behind the cylinder (Re 100, density ratio 10); OpenFOAM v2512 (moving mesh) coupled to CalculiX through preCICE; fluid 3.54 mm at the body (mesh study level a), solid 2.5 mm, dt 0.001 s to 15 s; mean, amplitude and frequency of the tip displacements, drag and lift over the last periods against the published benchmark."
+assumptions = [
+  "2D: one cell deep in the fluid, plane strain in the solid (one element layer, as deep as the fluid).",
+  "St. Venant-Kirchhoff solid (CalculiX *ELASTIC under NLGEOM), no gravity, as the FSI tests define it.",
+  "No numerical damping in the solid (HHT alpha 0).",
+  "Inflow: the benchmark's parabola with its (1 - cos) ramp over 2 s.",
+  "Statistics from the last whole periods (benchmark definition); the oscillation is periodic (checked: last two periods).",
+]
+limitations = [
+  "One level of a three-level mesh study run as separate cases side by side (scripts/combine_mesh_levels.py applies the study's run-level check to the three runs).",
+  "The fluid mesh is regenerated per size (FSI1: about +-0.5 % mesh-to-mesh scatter on the tip displacement).",
+]
+
+[parameters]
+solid_density_kg_per_m3 = 10000.0
+shear_modulus_Pa = 500000.0
+poisson_ratio = 0.4
+fluid_density_kg_per_m3 = 1000.0
+kinematic_viscosity_m2_per_s = 0.001
+mean_velocity_m_per_s = 1.0
+fluid_cell_size_m = 0.0035355339
+solid_element_size_mm = 2.5
+time_step_s = 0.001
+end_time_s = 15.0
+# steady-case benchmark keys (required by the study; unused in periodic mode): the periodic means
+benchmark_ux_A_m = -1.485e-2
+benchmark_uy_A_m = 1.30e-3
+benchmark_drag_N_per_m = 215.06
+benchmark_lift_N_per_m = 0.61
+benchmark_ux_A_mean = -1.485e-2
+benchmark_ux_A_amp = 1.270e-2
+benchmark_ux_A_freq_Hz = 3.86
+benchmark_uy_A_mean = 1.30e-3
+benchmark_uy_A_amp = 8.16e-2
+benchmark_uy_A_freq_Hz = 1.93
+benchmark_drag_mean = 215.06
+benchmark_drag_amp = 77.65
+benchmark_drag_freq_Hz = 3.86
+benchmark_lift_mean = 0.61
+benchmark_lift_amp = 237.8
+benchmark_lift_freq_Hz = 1.93
+
+[numerics]
+periodic_periods = 4
+solid_alpha = 0.0
+write_interval_s = 1.0
+ramp_time_s = 2.0
+coupling_rel_tol = 1e-5
+coupling_max_iterations = 100
+rbf_support_radius_m = 0.05
+solver_timeout_s = 64800       # 18 h: three levels side by side
+mesh_motion = "frozen"          # revision 1: frozen 1 / d diffusivity, converged GAMG (header)
+mesh_motion_exponent = 1.0
+
+[verification]
+periodic_rel_tol = 0.02           # last two periods: uy amplitude and drag mean agree within 2 % (a settled cycle)
+force_transfer_rel_tol = 1e-3     # window by window (preCICE watch-integrals, fixed in FSI1 r2): no inertia involved
+flag_cell_max_angle_deg = 140.0   # the corner-wrap check from FSI1's noise study
+profile_rel_tol = 1e-6
+gci_max = 0.01
+
+[[requirements]]
+id = "REQ-FSI2-1"
+text = "The coupled model shall reproduce the FSI2 amplitude of the tip's vertical displacement within 5 %."
+metric = "uy_A_amp_deviation_pct"
+operator = "<="
+limit = 5.0
+units = "%"
+
+[[requirements]]
+id = "REQ-FSI2-2"
+text = "It shall reproduce the FSI2 oscillation frequency (uy of point A) within 3 %."
+metric = "uy_A_freq_Hz_deviation_pct"
+operator = "<="
+limit = 3.0
+units = "%"
+
+[[requirements]]
+id = "REQ-FSI2-3"
+text = "It shall reproduce the FSI2 mean drag within 5 %."
+metric = "drag_mean_deviation_pct"
+operator = "<="
+limit = 5.0
+units = "%"
+
+[[requirements]]
+id = "REQ-FSI2-4"
+text = "It shall reproduce the FSI2 drag amplitude within 15 % (the benchmark's own levels spread 15 %)."
+metric = "drag_amp_deviation_pct"
+operator = "<="
+limit = 15.0
+units = "%"
+
+[[requirements]]
+id = "REQ-FSI2-5"
+text = "It shall reproduce the FSI2 lift amplitude within 10 %."
+metric = "lift_amp_deviation_pct"
+operator = "<="
+limit = 10.0
+units = "%"
+
+[[requirements]]
+id = "REQ-FSI2-6"
+text = "It shall reproduce the FSI2 mean horizontal tip displacement within 10 % (second order, as in FSI1)."
+metric = "ux_A_mean_deviation_pct"
+operator = "<="
+limit = 10.0
+units = "%"
