@@ -58,6 +58,12 @@ class OpenFOAMEnclosure(Backend):
         def files():
             keep = [case / n for n in ("log.blockMesh", "log.splitMeshRegions", "log.checkMesh", "versions.txt")]
             keep += sorted((case / "system").rglob("*")) + sorted((case / "constant").glob("*/*"))
+            # the final temperature and cell centres of every region (small at these meshes), for a field plot
+            done = [d for d in case.iterdir() if d.is_dir() and d.name.replace(".", "").isdigit()
+                    and d.name != "0"] if case.is_dir() else []
+            if done:
+                last = max(done, key=lambda d: float(d.name))
+                keep += sorted(last.glob("*/T")) + sorted(last.glob("*/C"))
             return {str(f.relative_to(case)).replace("\\", "/"): f for f in keep
                     if f.is_file() and f.stat().st_size < 20e6 and "polyMesh" not in f.parts}
 
