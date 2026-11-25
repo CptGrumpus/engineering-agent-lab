@@ -639,6 +639,14 @@ nic.funet.fi/pub/sci/physics/elmer/bin/windows/rel26.1/) unpacked to `~/tools/el
 
 ## preCICE coupling (OpenFOAM v2512 + CalculiX, study 6)
 
+- **OpenFOAM function objects write at every coupling sub-iteration** under implicit coupling (FSI3 at dt 0.0005 s:
+  104,426 force rows for 16,001 steps, 18 MB). At dt 0.00025 s force.dat passed the harness's 20 MB keep limit and was
+  lost with the work dir. The FSI study now keeps one row per time, the last (the converged iteration): the metrics
+  are identical to four decimals and the file is 6x smaller.
+- **The coupled runs are deterministic.** Unchanged reruns of FSI3 dt_a and FSI2 r1 level a crashed at the same time
+  as their first runs (6.902 and 14.009 s) with byte-identical watch-point logs; a rerun is a reproducibility check,
+  never a cure for a solver crash.
+
 - The preCICE OpenFOAM adapter (v1.4.0) supports the openfoam.com line v1812 to v2606, not
   openfoam.org v14 (its newest .org branch is OpenFOAM 10). Install openfoam.com v2512 beside v14; its
   bashrc is `/usr/lib/openfoam/openfoam2512/etc/bashrc`, outside the `/opt/openfoam*` the harness

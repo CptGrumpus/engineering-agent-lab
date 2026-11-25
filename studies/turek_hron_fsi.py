@@ -275,6 +275,18 @@ class PreciceFSI(Backend):
                         fh.seek(max(0, big.stat().st_size - 200_000))
                         tail = fh.read().decode("utf-8", "replace").splitlines()[-400:]
                     big.with_name(big.name + ".tail").write_text("\n".join(tail) + "\n", encoding="utf-8")
+            # force files get a row per coupling sub-iteration and pass the size limit at small time steps (FSI3 dt_c,
+            # 0.00025 s: drag and lift lost with the work dir, 2026-11-25): keep one row per time, the last (the
+            # converged iteration), which is all the metrics use; small files are kept whole
+            for big in fl.glob("postProcessing/*/0/*.dat"):
+                if big.is_file() and big.stat().st_size >= 20e6:
+                    rows, head = {}, []
+                    for line in big.read_text(encoding="utf-8").splitlines():
+                        if line.startswith("#") or not line.strip():
+                            head.append(line)
+                        else:
+                            rows[line.split(None, 1)[0]] = line
+                    big.write_text("\n".join(head + list(rows.values())) + "\n", encoding="utf-8")
             keep = (sorted(fl.glob("system/*")) + sorted(fl.glob("constant/*")) + sorted(fl.glob("0/*"))
                     + sorted(fl.glob("log.*")) + sorted(fl.glob("*.log")) + sorted(so.glob("log.*"))
                     + [fl / "mesh.geo"]

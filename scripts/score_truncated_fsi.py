@@ -48,8 +48,14 @@ def score(run: Path, t_end: float) -> dict:
     n = int(numerics["periodic_periods"])
     d = float(F._W.DEPTH)          # the 2D mesh's thickness (m), as the backend's depth_m
     wp = F.read_watchpoint(so / "precice-Solid-watchpoint-A.log")
-    Fo = F.read_forces(fl / "postProcessing/forces/0/force.dat")
-    Ff = F.read_forces(fl / "postProcessing/forcesFlag/0/force.dat")
+    # the harness keeps files under 20 MB; at small time steps the force files (a row per coupling sub-iteration) pass
+    # it and are lost with the work dir (FSI3 dt_c): then only the displacement metrics can be scored
+    forces_kept = (fl / "postProcessing/forces/0/force.dat").is_file()
+    if forces_kept:
+        Fo = F.read_forces(fl / "postProcessing/forces/0/force.dat")
+        Ff = F.read_forces(fl / "postProcessing/forcesFlag/0/force.dat")
+    else:
+        Fo = Ff = np.column_stack([wp[:, 0], np.ones((len(wp), 4))])   # placeholder; force metrics set to NaN below
     it = F.read_iterations(fl / "precice-Fluid-iterations.log")
     t_last = float(wp[-1, 0])
     if t_last < t_end - 1e-9:
@@ -62,22 +68,30 @@ def score(run: Path, t_end: float) -> dict:
               "lift_N_per_m": np.interp(wp[:, 0], Fo[:, 0], (Fo[:, 2] + Fo[:, 4]) / d)}
     study = study_for(case["case"]["model"])
     metrics = study.compute_metrics(series, params, case)
+    if not forces_kept:
+        for k in list(metrics):
+            if k.startswith(("drag", "lift")):
+                metrics[k] = float("nan")
     st = F.periodic_stats(series, n)
     steady = max(abs(st["uy_A_amp"] - st["uy_A_prev_amp"]) / abs(st["uy_A_amp"]),
-                 abs(st["drag_mean"] - st["drag_prev_mean"]) / abs(st["drag_mean"]))
+                 abs(st["drag_mean"] - st["drag_prev_mean"]) / abs(st["drag_mean"]) if forces_kept else 0.0)
     t0, _, t2 = F.last_periods(series["t_s"], series["uy_A_m"], n)
-    tr = F.transfer_per_window(F.read_watchintegral(fl / "precice-Fluid-watchintegral-Wet.log"),
-                               F.read_watchintegral(so / "precice-Solid-watchintegral-Wet.log"), Ff, t0, t2)
     chk = (fl / "log.checkMesh").read_text(encoding="utf-8")
     checks = [
         check("mesh", "checkMesh reports Mesh OK (1 = failed)", 0.0 if "Mesh OK." in chk else 1.0, 0.5),
         check("coupling_converged", f"coupling windows up to {t_end:g} s that hit the iteration limit without "
               "converging", float(np.sum(it[:, 3] < 0.5)), 0.5),
         check("periodic", "periodic state: max of |uy(A) amplitude, last period - the one before| / amplitude and the "
-              "same for the drag mean", float(steady), tol["periodic_rel_tol"]),
-        check("force_transfer", f"force transfer per coupling window over {t0:g}-{t2:g} s (preCICE watch-integrals)",
-              max(tr["transfer_mapping_max_rel"], tr["transfer_fluid_max_rel"]), tol["force_transfer_rel_tol"]),
+              "same for the drag mean" + ("" if forces_kept else " (forces not kept: uy(A) only)"), float(steady),
+              tol["periodic_rel_tol"]),
     ]
+    tr = {}
+    if forces_kept:
+        tr = F.transfer_per_window(F.read_watchintegral(fl / "precice-Fluid-watchintegral-Wet.log"),
+                                   F.read_watchintegral(so / "precice-Solid-watchintegral-Wet.log"), Ff, t0, t2)
+        checks.append(check("force_transfer", f"force transfer per coupling window over {t0:g}-{t2:g} s (preCICE "
+                            "watch-integrals)", max(tr["transfer_mapping_max_rel"], tr["transfer_fluid_max_rel"]),
+                            tol["force_transfer_rel_tol"]))
     done = pt["status"] == "completed"
     from_run = {}
     if done:
@@ -88,12 +102,15 @@ def score(run: Path, t_end: float) -> dict:
     for r in case.get("requirements", []):
         v = float(metrics[r["metric"]])
         reqs.append({"id": r["id"], "metric": r["metric"], "value": v, "limit": r["limit"],
-                     "status": "PASS" if OPS[r["operator"]](v, r["limit"]) else "FAIL"})
+                     "status": "NOT EVALUATED" if np.isnan(v) else
+                     ("PASS" if OPS[r["operator"]](v, r["limit"]) else "FAIL")})
     return {"run": run.name, "point_status_in_harness": pt["status"], "record_end_s": t_last, "t_end_s": t_end,
             "windows": int(len(it)), "coupling_iterations_mean": float(np.mean(it[:, 2])),
             "period_window_s": [t0, t2], "parameters": params, "metrics": metrics, "checks": checks,
             "checks_from_the_finished_run": from_run,
-            "not_evaluated": [] if done else ["inflow_profile", "flag_cells"], "requirements": reqs,
+            "not_evaluated": ([] if done else ["inflow_profile", "flag_cells"])
+            + ([] if forces_kept else ["force_transfer", "drag and lift metrics (force files not kept)"]),
+            "requirements": reqs,
             "transfer": tr, "case": case}
 
 
@@ -106,9 +123,14 @@ def main():
     a = ap.parse_args()
     scored = [score(Path(r), a.t_end) for r in a.runs]
     ref = scored[0]["case"]
+    wall_clock_only = {"solver_timeout_s"}   # a time limit, not a setting that changes the answer
+
+    def same(sec, c):
+        return ({k: v for k, v in c.get(sec, {}).items() if k not in wall_clock_only}
+                == {k: v for k, v in ref.get(sec, {}).items() if k not in wall_clock_only})
     for s in scored[1:]:
         for sec in ("numerics", "verification"):
-            if s["case"].get(sec) != ref.get(sec):
+            if not same(sec, s["case"]):
                 raise SystemExit(f"cases differ in [{sec}]")
         pa, pr = dict(s["parameters"]), dict(ref["parameters"])
         pa.pop(a.parameter, None), pr.pop(a.parameter, None)

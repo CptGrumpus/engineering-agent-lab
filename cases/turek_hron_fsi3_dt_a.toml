@@ -21,6 +21,13 @@
 # numerical failure: the fluid and solid residuals were normal to the last step, and the same case had run cleanly
 # before (FSI2 level b ran all 15 s). Rerun unchanged (user's decision 17:56).
 
+#
+# RERUN (run 20261124-175934_turek_hron_fsi3_dt_a, started 17:59): died again at t = 6.902 s (22:50), the same point:
+# its watch-point log is byte-identical to the first run's, so the coupled run is deterministic and the heap
+# corruption reproducible, not random. Killed 2026-11-25 10:18 with the user's go-ahead. Scored to 6.9 s with the
+# other two levels (results and predictions in cases/turek_hron_fsi3_dt_c.toml): uy amplitude 33.39 mm (4.57 % from
+# the benchmark, limit 5), frequency 5.415 Hz (0.82 %); every requirement passes.
+
 [case]
 name = "turek_hron_fsi3_dt_a"
 model = "openfoam_ccx_precice_fsi"
