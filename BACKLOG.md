@@ -79,15 +79,21 @@ commit). Rules that bind:
   `*.inp`, `*.dat`, `__pycache__`, files > 600 kB, then `tests/test_privacy.py`; never two FEMM cases at once; check
   free RAM on long runs.
 
-### Running at 16:25, 2026-11-24 (scratchpads under `%LOCALAPPDATA%/Temp/claude/cb67dd1e648f8970/<session>/scratchpad/`)
+### Running at 22:45, 2026-11-24 (scratchpads under `%LOCALAPPDATA%/Temp/claude/cb67dd1e648f8970/<session>/scratchpad/`)
 
 | Job | Run dir (log) | Done about | When it finishes |
 |---|---|---|---|
-| Study 6: FSI2 r1 level a (frozen motion), started 08:24; level b DONE 16:22 (scored, committed 1964b81) | `runs/*_turek_hron_fsi2_mesh_a_r1` (`fsi2_r1_a.log`) | about 16:45 | Score P1-P2 in its header (b's results are there). |
-| Study 6: FSI2 r1 level c, at about 11 of 15 s at 16:11 | `runs/*_turek_hron_fsi2_mesh_c_r1` (`fsi2_r1_c.log`) | about 20:00-21:00 | Score P1-P5; `scripts/combine_mesh_levels.py` over the three r1 runs; page 17 (drop 'draft' if c passes); skills. |
-| Study 6: FSI3 time-step study (`turek_hron_fsi3_dt_{a,c}`), started 10:33 | `runs/*_turek_hron_fsi3_dt_*` (`fsi3_dt_{a,c}.log`) | a about 17:00-18:00; c late evening | Score; `combine_mesh_levels.py --parameter time_step_s` with 20261123-161107 as the middle level; page 17. |
-| Study 11: enclosure eps 0.1 corners (`enclosure_k{5,20}_eps0p1`), started 14:40; the eps 0.9 corners DONE (1106522) | `runs/*_enclosure_*_eps0p1` | about 19:00 | Score P1-P5 (P3 = these); commit; study 11 page (27); README row; BACKLOG row 11. |
-| Study 11: mesh check on 1 mm cells (`enclosure_k20_eps0p9_mesh1mm`, predictions in the header), started 16:18 | `runs/*_enclosure_k20_eps0p9_mesh1mm` (`enclosure_mesh1mm.log`) | tomorrow early morning (about 13 h) | Compare with the 2 mm run (20261124-144021): difference as the mesh error; page 27. |
+| Study 6: FSI2 r1 level a RERUN (unchanged, after the 14.01 s crash), started 17:59 | `runs/20261124-175940_turek_hron_fsi2_mesh_a_r1` (`fsi2_r1_a_rerun.log`) | about 02:00 | Score P1-P2 in a's header; compare with the cut-at-14 s scoring of 082453 (the cut's effect); page 17. |
+| Study 6: FSI3 dt_a RERUN (after the 6.90 s crash), started 17:59 | `runs/20261124-175934_turek_hron_fsi3_dt_a` (`fsi3_dt_a_rerun.log`) | about 22:30-23:30 | Score; then with dt_c the time-step check (`combine_mesh_levels.py --parameter time_step_s`, 20261123-161107 as the middle level). |
+| Study 6: FSI3 dt_c, started 10:33 | `runs/20261124-103350_turek_hron_fsi3_dt_c` (`fsi3_dt_c.log`) | late night | As above. If it crashes late: ask the user (cut-and-score as FSI2 c, or rerun). |
+| Study 11: mesh check on 1 mm cells (`enclosure_k20_eps0p9_mesh1mm`), started 16:18; at 1,680 s of its end time at 22:25 | `runs/*_enclosure_k20_eps0p9_mesh1mm` (`enclosure_mesh1mm.log`) | early morning | Compare with the 2 mm run (20261124-144021): difference as the mesh error; started before the face-area fix (uniform 1 mm mesh: unaffected); page 27. |
+
+DONE this evening (committed 544b06a): the ten study 11 redesign runs (results, corrected heat balance and settled
+extrapolation in each header: REQ-D1 passes from 1-2 W/mK at emissivity 0.9 and 5 W/mK at 0.1, REQ-D2 fails in all;
+the runs were not settled at 3,600 s, verdicts supported by extrapolation; a 9,000 s verification set needs the
+user's go-ahead) and FSI2 r1 level c (crashed 14.047 s; scored to 14.0 s with levels a and b on the same window,
+user's decision; every requirement passes, run-level GCI FAILS). Still to write: study 11 page (27), page 17 update,
+README row, BACKLOG row 11; tell the dashboard session.
 
 Machine elements (study 16) DONE 16:24: page 26; dashboard session told.
 
