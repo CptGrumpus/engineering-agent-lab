@@ -646,6 +646,19 @@ nic.funet.fi/pub/sci/physics/elmer/bin/windows/rel26.1/) unpacked to `~/tools/el
 - **The coupled runs are deterministic.** Unchanged reruns of FSI3 dt_a and FSI2 r1 level a crashed at the same time
   as their first runs (6.902 and 14.009 s) with byte-identical watch-point logs; a rerun is a reproducibility check,
   never a cure for a solver crash.
+- **Take the coupling numerics from the tool's own setup for the same problem, and record where each setting came
+  from.** Study 6 copied the IQN-ILS block from preCICE's perpendicular-flap tutorial, a mild case (time window
+  0.01 s, tolerance 5e-3): QR2 filter 1e-2, initial relaxation 0.5, 100 used iterations. preCICE ships a
+  Turek-Hron FSI3 tutorial (`~/precice-tutorials/turek-hron-fsi3`) with QR2 1.2e-3, relaxation 0.1 and 60 used
+  iterations. That tutorial sat unread on disk through three days of crashes:
+  - FSI3 dt_a died at 6.902 s in the solid (CalculiX's DIRECT-mode stop);
+  - with `solid_iteration_limit` it died at 6.911 s, because the coupling's residual stalled at 0.4-1.4 in a single
+    window after 6,910 good ones.
+
+  The settings are now `numerics.coupling_filter_limit`, `coupling_initial_relaxation`,
+  `coupling_max_used_iterations` and `coupling_time_windows_reused` (the defaults are unchanged). Revision 2 of
+  dt_a tests the tutorial's values. Before writing any solver setting, look for the tool's own example of the same
+  benchmark.
 
 - The preCICE OpenFOAM adapter (v1.4.0) supports the openfoam.com line v1812 to v2606, not
   openfoam.org v14 (its newest .org branch is OpenFOAM 10). Install openfoam.com v2512 beside v14; its
