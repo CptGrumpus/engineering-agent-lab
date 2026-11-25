@@ -79,14 +79,13 @@ commit). Rules that bind:
   `*.inp`, `*.dat`, `__pycache__`, files > 600 kB, then `tests/test_privacy.py`; never two FEMM cases at once; check
   free RAM on long runs.
 
-### Running at 22:38, 2026-11-24 (scratchpads under `%LOCALAPPDATA%/Temp/claude/cb67dd1e648f8970/<session>/scratchpad/`)
+### Running at 10:31, 2026-11-25: NOTHING (every run has ended; no new runs without the user's go-ahead)
 
-| Job | Run dir (log) | Done about | When it finishes |
-|---|---|---|---|
-| Study 6: FSI2 r1 level a RERUN (unchanged, after the 14.01 s crash), started 17:59 | `runs/20261124-175940_turek_hron_fsi2_mesh_a_r1` (`fsi2_r1_a_rerun.log`) | about 02:00 | Score P1-P2 in a's header; compare with the cut-at-14 s scoring of 082453 (the cut's effect); page 17. |
-| Study 6: FSI3 dt_a RERUN (after the 6.90 s crash), started 17:59 | `runs/20261124-175934_turek_hron_fsi3_dt_a` (`fsi3_dt_a_rerun.log`) | about 22:30-23:30 | Score; then with dt_c the time-step check (`combine_mesh_levels.py --parameter time_step_s`, 20261123-161107 as the middle level). |
-| Study 6: FSI3 dt_c, started 10:33 | `runs/20261124-103350_turek_hron_fsi3_dt_c` (`fsi3_dt_c.log`) | late night | As above. If it crashes late: ask the user (cut-and-score as FSI2 c, or rerun). |
-| Study 11: mesh check on 1 mm cells (`enclosure_k20_eps0p9_mesh1mm`), started 16:18; at 1,680 s of its end time at 22:25 | `runs/*_enclosure_k20_eps0p9_mesh1mm` (`enclosure_mesh1mm.log`) | early morning | Compare with the 2 mm run (20261124-144021): difference as the mesh error; started before the face-area fix (uniform 1 mm mesh: unaffected); page 27. |
+DONE the morning of 2026-11-25 (f84e573): FSI3 time-step study scored to 6.9 s (tip motion converges in dt; dt_c's
+forces lost, the FSI study now keeps one force row per time); FSI3 dt_a and FSI2 r1 level a reruns crashed at the
+same times with byte-identical records (deterministic); 1 mm enclosure mesh check +0.05 K (8526555); pages 27 and
+17 (6bd544e and after). Open for the user: AISC PDFs into references/aisc/; a 9,000 s enclosure verification set
+and any FSI rerun with a changed solid setup need a go-ahead.
 
 DONE this evening (committed 544b06a): the ten study 11 redesign runs (results, corrected heat balance and settled
 extrapolation in each header: REQ-D1 passes from 1-2 W/mK at emissivity 0.9 and 5 W/mK at 0.1, REQ-D2 fails in all;

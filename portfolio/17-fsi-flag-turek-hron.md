@@ -7,7 +7,8 @@
 > requirement passes on the finest; frequency and mean drag converge, the tip amplitude extrapolates to 0.02 % from the
 > benchmark). FSI2: the finest mesh's crash was traced to the mesh-motion solve and fixed; with the fix, all three
 > meshes reproduce every published quantity within 3.4 %, but the amplitudes do not converge under the 1 % target as
-> the mesh is refined (the frequency does). The page stays a draft while that and FSI3's time-step study are open.
+> the mesh is refined (the frequency does). FSI3's time-step study converges the tip motion (under 0.75 %). The page
+> stays a draft while FSI2's mesh convergence and the drag and lift time-step check are open.
 
 | | |
 |---|---|
@@ -99,6 +100,14 @@ published results first, and only then are they coupled.
 
   Frequency and drag mean are verified under 1 %. The tip amplitude converges onto the benchmark, but its mesh
   uncertainty (1.45 %) is just over the 1 % target at these sizes. The force amplitudes are reported, not tuned.
+
+  **FSI3 time-step study** (2026-11-25), on the 2.5 mm mesh at dt 0.001 / 0.0005 / 0.00025 s: the coarsest step's
+  solid died at 6.90 s, twice, with byte-identical records (the runs are deterministic, so rerunning cannot cure
+  it), so all three levels are scored over the window ending at 6.9 s. Tip amplitude 33.39 / 33.91 / 34.11 mm,
+  frequency 5.415 / 5.464 / 5.482 Hz: the tip amplitude, frequency and horizontal mean converge in the time step
+  (uncertainty 0.45 / 0.24 / 0.73 %, under the 1 % target), and every requirement that can be evaluated passes on
+  every level. Drag and lift can't be checked across time steps: the finest run's force file passed the harness's
+  size limit and was lost (the harness now keeps one row per time step, which gives identical metrics).
 
   **FSI2:** the 3.54 and 2.5 mm levels agree within 0.1-0.7 % on every benchmark quantity. The 1.77 mm level
   crashed twice at the same step (8.836 s of 15). The log ends kept since the first crash show the cause: the
@@ -202,9 +211,9 @@ published results first, and only then are they coupled.
 ## Limits
 
 - 2D, as the benchmark defines it.
-- FSI3: one time step; the force amplitudes and the horizontal tip mean have no mesh uncertainty (see the mesh
+- FSI3: time-step convergence shown for the tip motion only (the finest step's forces were lost); the force amplitudes and the horizontal tip mean have no mesh uncertainty (see the mesh
   study). FSI2: three mesh levels scored over 14 s, not 15 (two solid crashes); mesh verification fails for the
-  amplitudes and the drag mean; one time step.
+  amplitudes and the drag mean; one time step (FSI3's study covers the time step for the same model).
 - Laminar, as the benchmark defines it; the transient fluid solver is first order in its mesh motion.
 - The published reference values are themselves numerical, and their rows are not all labelled with the
   time step they used.
@@ -228,6 +237,10 @@ published results first, and only then are they coupled.
   [1.77 mm](../runs/20261124-082500_turek_hron_fsi2_mesh_c_r1/report.md) (solid crashed at 14.05 s); scored to 14.0 s by
   `scripts/score_truncated_fsi.py`, output `runs/20261124-082500_turek_hron_fsi2_mesh_c_r1/mesh_levels_t14.json`;
   predictions and Results in `cases/turek_hron_fsi2_mesh_{a,b,c}_r1.toml`
+- FSI3 time-step study: [dt 0.001 s](../runs/20261124-175934_turek_hron_fsi3_dt_a/report.md) (and its identical first run
+  `runs/20261124-103347_turek_hron_fsi3_dt_a`), dt 0.0005 s = the mesh study's 2.5 mm level, [dt 0.00025 s](../runs/20261124-103350_turek_hron_fsi3_dt_c/report.md);
+  scored to 6.9 s, output `runs/20261124-103350_turek_hron_fsi3_dt_c/fsi3_dt_t69.json`; predictions and Results in
+  `cases/turek_hron_fsi3_dt_{a,c}.toml`
 - fluid: [CFD1 first mesh study](../runs/20261121-140245_turek_hron_cfd1_mesh/report.md) (lift verified), [CFD1 refined](../runs/20261121-140657_turek_hron_cfd1_mesh_r1/report.md) (drag verified), [CFD2](../runs/20261121-151947_turek_hron_cfd2_mesh/report.md) (drag verified, lift withheld on mesh noise)
 - case files: `cases/flag_csm1_mesh.toml`, `cases/flag_csm2_mesh.toml`, `cases/flag_csm3_dt.toml`,
   `cases/flag_csm3_dt_r1.toml`, `cases/turek_hron_cfd1_mesh.toml`, `cases/turek_hron_cfd1_mesh_r1.toml`,
