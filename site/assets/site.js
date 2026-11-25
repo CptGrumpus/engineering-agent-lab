@@ -1,4 +1,4 @@
-// Small behaviours shared by every page: old one-page links, the gallery filters and looping thumbnails,
+// Small behaviours shared by every page: old one-page links, the gallery filters,
 // the before-and-after wipe, the contact address, and the phone menu.
 (() => {
   // links to the old single page (index.html#bolted_joint, #tasks, ...) go to the page that now holds them
@@ -7,25 +7,15 @@
     const key = decodeURIComponent(location.hash.slice(1));
     if (key && legacy[key]) { location.replace(legacy[key]); return; }
   }
-  const reduce = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-  // gallery: filter by discipline; a card with motion plays it while hovered or focused (fetched only then)
-  const cards = [...document.querySelectorAll("#gallery .card")];
+  // gallery: filter by discipline
+  const cards = [...document.querySelectorAll("#gallery .wcard")];
   const btns = [...document.querySelectorAll(".filters button")];
   btns.forEach(b => b.addEventListener("click", () => {
     btns.forEach(x => x.setAttribute("aria-pressed", x === b ? "true" : "false"));
     const f = b.dataset.f;
     cards.forEach(c => { c.hidden = !(f === "all" || c.dataset.group === f); });
   }));
-  // a card opens with the study's setup drawing; on hover it shows the result: an animation, or the result chart
-  cards.forEach(c => {
-    const im = c.querySelector("img[data-loop], img[data-hover]");
-    if (!im || (im.dataset.loop && reduce())) return;
-    const still = im.getAttribute("src"), alt = im.dataset.loop || im.dataset.hover;
-    const on = () => { im.src = alt; }, off = () => { im.src = still; };
-    c.addEventListener("mouseenter", on); c.addEventListener("focus", on);
-    c.addEventListener("mouseleave", off); c.addEventListener("blur", off);
-  });
 
   // before-and-after wipes
   document.querySelectorAll(".wipe").forEach(w => {

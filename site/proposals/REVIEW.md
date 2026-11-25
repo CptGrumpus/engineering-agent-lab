@@ -2,6 +2,13 @@
 
 Written 2026-11-24, on the `ui-redesign` branch. Nothing here is published; `main` and the live site are unchanged.
 
+**Status, 2026-11-24 23:32:** version B was chosen and is built into the site on this branch (`site/build_v2.py`,
+`site/pages/home.html`, `site/assets/site.css`; the built pages are in `docs/`). The mock-ups below are kept as the
+record of what was compared. What section 5 lists as not covered still applies, except the motor picture, which is
+now exported from the field data, and the email button, which is the site's own.
+
+![The built home page, first screen](shots/built-first-screen.webp)
+
 - **Version A, the Ledger:** `site/proposals/a.html`
 - **Version B, the Showcase:** `site/proposals/b.html`
 - Rebuild both after any data change: `python site/proposals/build_proposals.py`

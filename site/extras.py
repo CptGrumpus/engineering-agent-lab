@@ -13,6 +13,7 @@ import random
 import re
 import shutil
 import subprocess
+import sys
 import tempfile
 from pathlib import Path
 
@@ -85,6 +86,8 @@ def repo_facts() -> dict:
                            check=True).stdout.split()
     lines = sum(len((REPO / f).read_text(encoding="utf-8").splitlines()) for f in files)
     py = REPO / ".venv" / "Scripts" / "python.exe"
+    if not py.exists():                 # a git worktree has no environment of its own: use the one running the build
+        py = Path(sys.executable)
     # count only tests in committed files: the page says they run on every push
     tests = [f for f in files if f.startswith("tests/") and f.rsplit("/", 1)[-1].startswith("test_")]
     out = subprocess.run([str(py), "-m", "pytest", "--collect-only", "-q", *tests], cwd=REPO,

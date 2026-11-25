@@ -264,7 +264,6 @@ PART_LABEL = {"fea": "01 · Stress check", "cantilever_opt": "01b · Optimised",
               "heat": "11 · Coolant channel", "cold_plate": "15 · Full thermal chain",
               "modal": "04 · Modal analysis", "random_vib": "21 · Random vibration", "bracket_uq": "22 · How robust the pass is",
               "pipe": "19 · Pipe friction", "step": "19, part 2 · Flow over a step"}
-WIDE = {"motor", "bracket_opt", "pv_nozzle", "strap", "cold_plate"}
 
 GALLERY, _seen = [], set()        # (key, no, group, d, title, answer, verdict, tools, thumb key)
 for k, n, g, d, title, a, v, tools in CARDS:
@@ -293,9 +292,11 @@ assert set(SLUG) == {c[0] for c in GALLERY}, "every gallery card needs a page na
 FILE = {k: f"{s}.html" for k, s in SLUG.items()}
 DISC = {"struct": "Structures and vibration", "fluid": "Thermal and fluids", "vehicle": "Vehicle dynamics",
         "geom": "Geometry automation", "workflow": "Workflow validation", "em": "Electric machines"}
-NAV = [("index.html#work", "Studies", "index"), ("how-i-work.html", "How I work", "how-i-work"),
-       ("grading.html", "Grading", "grading"), ("in-progress.html", "In progress", "in-progress"),
-       ("requirements.html", "Requirements", "requirements")]
+# the top bar speaks to a visitor deciding whether to hire: the lead studies, all the work, what's on offer and the
+# method. The requirements table, the grading tasks and the in-progress page are linked where they matter on the
+# home page, and from every page's footer.
+NAV = [("index.html#cases", "Case studies", "cases"), ("index.html#work", "All work", "work"),
+       ("index.html#offer", "Working together", "offer"), ("how-i-work.html", "How I work", "how-i-work")]
 # a study's address: its own page, or its part of a report's page
 STUDY_URL = {c[0]: (f"{FILE[PART_OF[c[0]]]}#{c[0]}" if c[0] in PART_OF else FILE[c[0]]) for c in CARDS}
 # the old single page's sections, for links written as "#section" and for links people already shared
@@ -373,17 +374,35 @@ def setup_key(gk: str):
     return k if k in DRAWINGS and (HERE / "v2" / f"dwg_{k}.webp").exists() else None
 
 
-# the home page leads with the strongest studies (the user, 2026-11-24): the viewer's tabs, and the card order below
-HIGHLIGHTS = [("motor", "Traction motor"), ("bracket_opt", "Optimised bracket"), ("pv_nozzle", "Pressure vessel"),
-              ("bolted_joint", "Bolted joint slip"), ("cold_plate", "Cold plate")]
-# a highlight can show a different picture from its study page's viewer: the motor's field map catches the eye, and
-# its lines tell the diagnosis
-HIGHLIGHT_VIEW = {"motor": {
-    "img": "v2/fig_motor_field.webp",
-    "model": "2004 Toyota Prius traction motor · modelled from its drawings and parts list, checked against Oak Ridge National Laboratory's test",
-    "lines": ["FEMM 4.2 magnetostatics through Pyleecan · the field the magnets drive with no current in the winding, magnets at 25 °C",
-              "Back-EMF 17.7 % above the test, torque 17 to 19 % · nothing tuned; causes ruled out one at a time, each with a prediction first",
-              "Air-gap field: the test's shape within 3.4 %, 14.8 % stronger · the magnets, very likely not fully magnetised"]}}
+# the home page leads with the strongest studies (the user, 2026-11-24). Each is told as a pair, the part then the
+# answer, with one headline number, two sentences and what the checks caught (its lesson on the How I Work page).
+# The words are typed here; "quotes" are the numbers they use, and the build fails if the study's own card or lesson
+# stops saying them, so a changed result can't leave the home page behind.
+LEAD = [
+    dict(key="motor", number="18 %", unit="above the laboratory's test", quotes=["about 18 % high"],
+         line="A production traction motor, modelled from its drawings and parts list with nothing tuned. The model "
+              "read high on back-EMF and torque, and I traced it, cause by cause, to the magnets."),
+    dict(key="bracket_opt", number="78 designs", unit="searched by an AI agent", quotes=["78 designs", "372 g", "98.3 MPa"],
+         line="The lightest machined bracket that stays under 100 MPa: 372 g at 98.3 MPa. The checks threw out the "
+              "agent's first two answers before this one stood."),
+    dict(key="pv_nozzle", number="24 %", unit="over the limit, or 0.9 % under", quotes=["fails by 24 %", "0.9 %"],
+         line="A pressure vessel nozzle that passes its design code on one line and fails on another, on the same "
+              "converged model. I'd judge it by the line that fails."),
+]
+# a lead study can show a different picture from its study page's viewer: the motor's field map catches the eye
+LEAD_VIEW = {"motor": ("v2/fig_motor_field.webp", "The motor's cross-section coloured by flux density with no current in the "
+                       "winding, and one pole enlarged: the thin steel bridges above the magnets saturate")}
+# what can be hired, in the visitor's words (draft, 2026-11-24: the user has not signed these off yet)
+SERVICES = [
+    ("Build and check a model", "From your drawings and requirements to a verdict on each requirement, with the model, "
+                                "the independent check behind it and the files to repeat it."),
+    ("Check a result you already have", "An independent second answer to a number someone else produced: a hand "
+                                        "calculation, a second tool or a mesh study, and a plain statement of what holds."),
+    ("Automate a repeated analysis", "A sweep or an optimisation loop that an AI agent runs under written procedures, "
+                                     "with the same checks on every run."),
+    ("Engineering tasks for AI training", 'Requirement-to-verdict tasks with automated graders, like '
+                                          '<a href="grading.html">the ones on the grading page</a>.'),
+]
 # card order on the home page and through the pager: these first, the rest as listed in CARDS
 FRONT = ["motor", "bracket_opt", "turbulent_flow", "pv_nozzle", "bracket_arm", "cold_plate", "fan_rotor", "shaft", "oring",
          "crack", "bolted_joint"]
@@ -394,7 +413,6 @@ import extras
 import make_og
 import titlecase
 
-LOOPS = json.loads((HERE / "v2" / "loops.json").read_text(encoding="utf-8")) if (HERE / "v2" / "loops.json").exists() else {}
 _fr = HERE / "v2" / "frames.json"
 _frames = json.loads(_fr.read_text(encoding="utf-8")) if _fr.exists() else {}
 for v in VP:                                   # load-step frames for the viewer's slider
@@ -424,8 +442,8 @@ if not th_heat.exists():
     canvas.save(th_heat, "WEBP", quality=88)
 
 # home cards open with the setup, the user's rule for every study (2026-11-23): the part first, then the result. Each
-# card's picture is cut from the study's drawing as the build runs, so it changes with the drawing; the result chart
-# (or its animation) shows on hover, and the verdict sits right under the picture.
+# card's left picture is cut from the study's drawing as the build runs, so it changes with the drawing; the result
+# chart sits beside it, and the finding and the verdict under both.
 CARD_CROP = {"oring": (0, 0, 0.655, 1), "fan_rotor": (0, 0, 1, 0.56), "shaft": (0, 0, 0.74, 0.73)}     # study: (x0, y0, x1, y1) as fractions of the drawing's content, where the part is only part of it
 
 
@@ -471,9 +489,7 @@ def card_thumb(gk: str):
     return out.name
 
 
-CARD_IMG = {g[0]: card_thumb(g[0]) or f"th_{g[8]}.webp" for g in GALLERY}
-# on hover: the study's animation if it has one, otherwise its result chart
-CARD_HOVER = {g[0]: LOOPS.get(g[8]) or (f"v2/th_{g[8]}.webp" if CARD_IMG[g[0]].startswith("tc_") else None) for g in GALLERY}
+CARD_IMG = {g[0]: card_thumb(g[0]) for g in GALLERY}        # None for a study with no drawing: its card shows the result alone
 
 esc = html.escape
 CARD = {c[0]: c for c in CARDS}
@@ -703,7 +719,7 @@ def study_page(gk: str) -> dict:
 '''
     og = make_og.study(SLUG[gk], f"Study {no} · {d.replace('New · ', '').replace('Featured · ', '')}", titlecase.title_case(title),
                        VERDICT[verdict], HERE / "v2" / f"th_{thumb}.webp", figure=entries[0].get("kind") == "figure")
-    return {"file": FILE[gk], "title": f"{title} · {AUTHOR}", "og_title": title, "desc": answer, "nav": "index",
+    return {"file": FILE[gk], "title": f"{title} · {AUTHOR}", "og_title": title, "desc": answer, "nav": "work",
             "main": body, "scripts": viewer_scripts(entries), "og": og, "og_alt": f"{title}: result render",
             "viewer": True, "has3d": any(v.get("mesh") for v in entries)}
 
@@ -711,35 +727,128 @@ def study_page(gk: str) -> dict:
 assert set(QUESTION) == set(GAL), "every study page needs its one-line question"
 
 
+def kind(d: str) -> str:
+    """A card's kind of analysis, without its 'New' or 'Featured' flag."""
+    return re.sub(r"^(New|Featured) · ", "", d)
+
+
+def first_part(text: str, least: int) -> str:
+    """The opening of a card's answer: whole sentences until there are at least `least` characters."""
+    out = ""
+    for s in re.split(r"(?<=[.!?])\s+(?=[A-Z0-9])", text):
+        out = (out + " " + s).strip()
+        if len(out) >= least:
+            break
+    return out
+
+
+def req_counts() -> dict:
+    counts = {"met": 0, "fail": 0, "held": 0}
+    for _, _, _, items in extras.REQS:
+        for *_, v in items:
+            counts[extras.COUNT_AS[v]] += 1
+    return counts
+
+
+# the method's four steps and the mistakes the checks caught are written once, on the How I Work page; the home
+# page reads them from there
+_how = (PAGES / "how.html").read_text(encoding="utf-8")
+FLOW = re.findall(r"<li><b>(.*?)</b><span>(.*?)</span></li>", _how.split('<ol class="steps">')[1].split("</ol>")[0])
+LESSONS = re.findall(r'<article class="finding"><span class="label">(.*?)</span><h3>(.*?)</h3><p>(.*?)</p><a href="#(\w+)">', _how)
+assert len(FLOW) == 4 and len(LESSONS) == _how.count('<article class="finding">'), (len(FLOW), len(LESSONS))
+LESSON = {k: (label, title, text) for label, title, text, k in LESSONS}
+
+
+def memo_excerpt() -> str:
+    """The top of the sample client memo, as a page: its title, subject, status, verdict and first two findings."""
+    memo = (REPO / extras.MEMO).read_text(encoding="utf-8")
+
+    def md(s: str) -> str:
+        return re.sub(r"\*\*(.+?)\*\*", r"<b>\1</b>", esc(s))
+    title = re.search(r"^# Technical Memo: (.*)$", memo, re.M).group(1)
+    subject = re.search(r"\*\*Subject\*\* \| (.*?) \|", memo).group(1)
+    status = re.search(r"\*\*Status\*\* \| (.*?) \|", memo).group(1)
+    lead = re.search(r"## 1\. .*?\n\n(\*\*.*?\*\*)", memo, re.S).group(1)
+    bullets = re.findall(r"^- (.*)$", memo.split("## 1.")[1].split("**Recommendation.**")[0], re.M)[:2]
+    assert len(bullets) == 2, bullets
+    return (f'          <p class="m-h">Technical memo</p><h4>{esc(title)}</h4>\n'
+            f'          <dl><dt>Subject</dt><dd>{esc(subject)}</dd><dt>Status</dt><dd>{esc(status)}</dd></dl>\n'
+            f'          <p class="m-lead">{md(lead)}</p>\n          <ul>' + "".join(f"<li>{md(b)}</li>" for b in bullets) + "</ul>")
+
+
+def lead_case(i: int, L: dict) -> str:
+    k = L["key"]
+    assert k in GAL and k not in GROUPS and k in LESSON, f"lead study {k} needs its own card and a lesson on the How I Work page"
+    _, no, group, d, title, answer, verdict, tools, _ = GAL[k]
+    label, caught, ltext = LESSON[k]
+    for q in L["quotes"]:
+        assert q in answer or q in ltext, f'the home page says "{q}" about {k}, and neither its card nor its lesson does any more'
+    v = next(x for x in VP if x["study"] == k)
+    img, alt = LEAD_VIEW.get(k, (v["img"], v["model"]))
+    plate = " on-plate" if k in LEAD_VIEW or v.get("kind") == "figure" else ""
+    sk = setup_key(k)
+    assert sk and CARD_IMG[k], f"lead study {k} needs a setup drawing"
+    return f'''    <article class="lead-case{" flip" if i % 2 else ""}">
+      <div class="lead-text">
+        <p class="lead-tag">{i + 1:02d} · {DISC[group]}</p>
+        <h3>{esc(title)}</h3>
+        <p class="lead-q">{esc(QUESTION[k])}</p>
+        <p class="big"><b>{esc(L["number"])}</b><span>{esc(L["unit"])}</span></p>
+        <p class="say">{esc(L["line"])}</p>
+        <p class="lead-caught"><i>What the checks caught</i>{caught}</p>
+        <p class="go"><span class="v v-{verdict}">{VERDICT[verdict]}</span><a href="{STUDY_URL[k]}">Read the study →</a></p>
+      </div>
+      <a class="pair" href="{STUDY_URL[k]}" aria-label="Open the study: {esc(title)}">
+        <figure class="on-plate"><img src="v2/{CARD_IMG[k]}" alt="{esc(DRAWINGS[sk][0])}" loading="lazy" width="1200" height="750"><figcaption>The part</figcaption></figure>
+        <figure class="{plate.strip()}"><img src="{img}" alt="{esc(alt)}" loading="lazy"><figcaption>The answer</figcaption></figure>
+      </a>
+    </article>'''
+
+
 def home_page(facts) -> dict:
     cards = "\n".join(
-        f'''      <a class="card{' wide' if k in WIDE else ''}" href="{FILE[k]}" data-study="{k}" data-group="{g}">
-        <span class="thumb"><img src="v2/{CARD_IMG[k]}" alt="" loading="lazy" width="800" height="500"{f' data-{"loop" if CARD_HOVER[k] == LOOPS.get(th) else "hover"}="{CARD_HOVER[k]}"' if CARD_HOVER[k] else ""}></span>
-        <span class="card-body">
-          <span class="meta"><span class="no">{n}</span><span>{esc(d.replace("New · ", "").replace("Featured · ", ""))}</span></span>
-          <span class="card-title">{esc(t)}</span>
-          <span class="card-foot"><span class="v v-{v}">{VERDICT[v]}</span><span class="tools">{tools}</span></span>
-        </span>
+        f'''      <a class="wcard" href="{FILE[k]}" data-study="{k}" data-group="{g}">
+        <span class="duo{'' if CARD_IMG[k] else ' one'}">{f'<img src="v2/{CARD_IMG[k]}" alt="" loading="lazy" width="1200" height="750">' if CARD_IMG[k] else ''}<img src="v2/th_{th}.webp" alt="" loading="lazy" width="800" height="500"></span>
+        <span class="wmeta">{n} · {esc(kind(d))}</span>
+        <span class="card-title">{esc(t)}</span>
+        <span class="find">{esc(first_part(a, 50))}</span>
+        <span class="v v-{v}">{VERDICT[v]}</span>
       </a>''' for k, n, g, d, t, a, v, tools, th in GALLERY)
-    entries = []
-    for i, (study, label) in enumerate(HIGHLIGHTS):
-        v = dict(next(x for x in VP if x["study"] == study))
-        v.update(HIGHLIGHT_VIEW.get(study, {}))
-        v.update(part=label, main=i == 0, href=STUDY_URL[study])
-        entries.append(v)
-    n_req = sum(len(items) for _, _, _, items in extras.REQS)
-    main = ((PAGES / "home.html").read_text(encoding="utf-8")
-            .replace("{{VIEWER}}", viewer_html(entries)).replace("{{CARDS}}", cards)
-            .replace("{{REQ_COUNT}}", str(n_req)))
+    # what I can model: every kind of analysis as a tag that opens its study, by discipline, the largest first
+    ranges = []
+    order = ["struct", "fluid", "em", "vehicle", "geom", "workflow"]              # ties keep the filter buttons' order
+    assert set(order) == set(DISC)
+    for g in sorted(order, key=lambda g: -sum(c[2] == g for c in CARDS)):
+        items = {kind(c[3]): c[0] for c in reversed(CARDS) if c[2] == g}          # the first study of a kind keeps the tag
+        n = sum(c[2] == g for c in CARDS)
+        if n == 1:                       # one study: its kind only repeats the heading, so name the part
+            items = {re.split(r"[,:]", CARD[k][4])[0]: k for k in items.values()}
+        tags = "".join(f'<a href="{STUDY_URL[k]}">{esc(label)}</a>' for label, k in reversed(items.items()))
+        ranges.append(f'      <div class="rg"><h3><b>{n}</b> {DISC[g]}</h3><div>{tags}</div></div>')
+    counts = req_counts()
+    n_req = sum(counts.values())
+    dots = "".join(f'<i class="{c}"></i>' for c in ("met", "fail", "held") for _ in range(counts[c]))
+    lessons = "\n".join(f'          <li><a href="{STUDY_URL[k]}"><i>{label}</i><h4>{title}</h4></a></li>'
+                        for label, title, _, k in LESSONS[:6])
+    fill = {"{{LEADS}}": "\n".join(lead_case(i, L) for i, L in enumerate(LEAD)), "{{RANGE}}": "\n".join(ranges),
+            "{{SERVICES}}": "\n".join(f"        <li><h3>{esc(a)}</h3><p>{b}</p></li>" for a, b in SERVICES),
+            "{{MEMO}}": memo_excerpt(), "{{FLOW}}": "\n".join(f"      <li><b>{a}</b><span>{b}</span></li>" for a, b in FLOW),
+            "{{DOTS}}": dots, "{{LESSONS}}": lessons, "{{CARDS}}": cards, "{{PARTS}}": str(len(GALLERY)),
+            "{{REQ_COUNT}}": str(n_req), "{{MET}}": str(counts["met"]), "{{NOT_MET}}": str(counts["fail"]),
+            "{{HELD}}": str(counts["held"]), "{{CAUGHT}}": str(len(LESSONS))}
+    main = (PAGES / "home.html").read_text(encoding="utf-8")
+    for a, b in fill.items():
+        main = main.replace(a, b)
     legacy = {**STUDY_URL, **{k: FILE[k] for k in FILE}, **{k: v for k, v in SECTION_URL.items() if k not in ("work", "top")}}
     legacy.update({k: STUDY_URL[k] for k in PART_OF})          # a study inside a report keeps its own address
-    scripts = f"<script>window.LEGACY = {json.dumps(legacy)};</script>\n" + viewer_scripts(entries)
+    legacy.pop("contact")        # index.html#contact is the contact section on every page; the roller study has its own page
+    scripts = f"<script>window.LEGACY = {json.dumps(legacy)};</script>"
     return {"file": "index.html", "title": f"{AUTHOR} · Simulation Portfolio", "og_title": "Simulation, Proof Attached",
             "desc": f"{WORDS[len(CARDS)][1]} open-source simulation studies by {AUTHOR}, mechanical engineer: FEA, CFD, coupled "
                     "multiphysics and an optimisation loop, each checked against an independent reference.",
-            "nav": "index", "main": main, "scripts": scripts, "og": make_og.make({**facts, "studies": len(CARDS)}),
+            "nav": "home", "main": main, "scripts": scripts, "og": make_og.make({**facts, "studies": len(CARDS)}),
             "og_alt": "A machined clevis bracket rendered with its stress contours, beside the page headline and its counts of studies, checks and runs",
-            "viewer": True, "has3d": True, "home": True}
+            "home": True}
 
 
 def reqs_page() -> dict:

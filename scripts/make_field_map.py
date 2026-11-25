@@ -1,6 +1,9 @@
 """The motor's magnetic field for the site: |B| over the whole cross-section and one pole enlarged.
 
-    .venv\\Scripts\\python.exe scripts\\make_field_map.py
+    .venv\\Scripts\\python.exe scripts\\make_field_map.py            the figure and the home page's picture
+    .venv\\Scripts\\python.exe scripts\\make_field_map.py --hero     the home page's picture only
+
+Also writes site/v2/hero_motor_field.webp: the whole section alone on a see-through background, for the home page.
 
 Reads the FEMM solution exported by scripts/export_femm_field.py (build/render/motor_rev5_centre/field.npz and
 field.json: one pole, 45 degrees, anti-periodic) and writes site/v2/fig_motor_field.webp. The export is revision 5, the
@@ -36,11 +39,17 @@ RUN = REPO / "runs" / "20261123-215502_motor_prius_rev5_oc"
 POINT = "p00_gap0775"
 POLES, STACK_M = 8, 0.08382
 OUT = REPO / "site" / "v2" / "fig_motor_field.webp"
+HERO = REPO / "site" / "v2" / "hero_motor_field.webp"
+# the export lives in build/, which git ignores, so a worktree has none: name another clone's with FIELD_SRC
+import os  # noqa: E402
+
+if os.environ.get("FIELD_SRC"):
+    SRC = Path(os.environ["FIELD_SRC"])
 VMAX, NB = 2.4, 12
 COIL, AIRGAP, STATOR_AIR, ROTOR, VOID, MAG_A, MAG_B, STATOR = 11, 0, 15, 20, 26, 220, 221, 10
 
 
-def main():
+def main(hero_only: bool = False):
     meta = json.loads((SRC / "field.json").read_text(encoding="utf-8"))
     man = json.loads((RUN / "manifest.json").read_text(encoding="utf-8"))
     t_mag = [p for p in man["points"] if p["label"] == POINT][0]["parameters"]["magnet_temperature_C"]
@@ -68,21 +77,6 @@ def main():
         R = np.array([[np.cos(a), -np.sin(a)], [np.sin(a), np.cos(a)]])
         return (xy @ R.T)[tri[show]]
 
-    fig = plt.figure(figsize=(fk.FULL, 4.9), dpi=220)
-    fk.heading(fig, "The magnets' field at open circuit: the thin bridges above the magnets saturate, near 2.3 T",
-               f"The client-data model, magnets at {t_mag:g} °C, FEMM 2D magnetostatics, one pole solved and repeated; flux density |B| in tesla")
-    axL = fig.add_axes([0.0, 0.08, 0.47, 0.80])
-    axR = fig.add_axes([0.45, 0.08, 0.47, 0.80])
-    for ax in (axL, axR):
-        ax.set_aspect("equal")
-        ax.axis("off")
-    for k in range(8):
-        axL.add_collection(PolyCollection(polys(k), facecolors=face[show], edgecolors="face", linewidths=0.05, antialiased=False))
-    axL.set_xlim(-136, 136)
-    axL.set_ylim(-136, 136)
-    axR.add_collection(PolyCollection(polys(0), facecolors=face[show], edgecolors="face", linewidths=0.05, antialiased=False))
-    axR.set_xlim(-38, 38)
-    axR.set_ylim(54, 112)
     # outlines of the magnets and the non-magnetic pockets: edges used by only one triangle of the group
     from matplotlib.collections import LineCollection
 
@@ -98,6 +92,42 @@ def main():
         q = xy @ R.T
         for e in edges:
             ax.add_collection(LineCollection(q[e], colors=fk.INK, linewidths=lw, zorder=3))
+
+    # the home page's picture: the whole section alone on a see-through background. The same elements, bands and
+    # outlines as the figure's left panel, with no labels; drawn large and scaled down so its rim is smooth
+    hf = plt.figure(figsize=(6, 6), dpi=440)
+    hx = hf.add_axes([0, 0, 1, 1])
+    hx.set_aspect("equal")
+    hx.axis("off")
+    for k in range(8):
+        hx.add_collection(PolyCollection(polys(k), facecolors=face[show], edgecolors="face", linewidths=0.05, antialiased=False))
+        draw_outlines(hx, k, 0.45)
+    hx.set_xlim(-136, 136)
+    hx.set_ylim(-136, 136)
+    hf.savefig(HERO.with_suffix(".png"), dpi=440, transparent=True)
+    plt.close(hf)
+    from PIL import Image
+    Image.open(HERO.with_suffix(".png")).convert("RGBA").resize((1200, 1200), Image.LANCZOS).save(HERO, "WEBP", quality=92, method=6)
+    HERO.with_suffix(".png").unlink()
+    print("hero", HERO.name, f"{HERO.stat().st_size // 1024} KB")
+    if hero_only:
+        return
+
+    fig = plt.figure(figsize=(fk.FULL, 4.9), dpi=220)
+    fk.heading(fig, "The magnets' field at open circuit: the thin bridges above the magnets saturate, near 2.3 T",
+               f"The client-data model, magnets at {t_mag:g} °C, FEMM 2D magnetostatics, one pole solved and repeated; flux density |B| in tesla")
+    axL = fig.add_axes([0.0, 0.08, 0.47, 0.80])
+    axR = fig.add_axes([0.45, 0.08, 0.47, 0.80])
+    for ax in (axL, axR):
+        ax.set_aspect("equal")
+        ax.axis("off")
+    for k in range(8):
+        axL.add_collection(PolyCollection(polys(k), facecolors=face[show], edgecolors="face", linewidths=0.05, antialiased=False))
+    axL.set_xlim(-136, 136)
+    axL.set_ylim(-136, 136)
+    axR.add_collection(PolyCollection(polys(0), facecolors=face[show], edgecolors="face", linewidths=0.05, antialiased=False))
+    axR.set_xlim(-38, 38)
+    axR.set_ylim(54, 112)
     for k in range(8):
         draw_outlines(axL, k, 0.3)
     draw_outlines(axR, 0, 0.8)
@@ -138,11 +168,10 @@ def main():
     kx.set_title("T", fontsize=8.5, color=fk.INK2, pad=4)
     fig.savefig(OUT.with_suffix(".png"), dpi=220, facecolor=fk.SURFACE)
     plt.close(fig)
-    from PIL import Image
     Image.open(OUT.with_suffix(".png")).convert("RGB").save(OUT, "WEBP", quality=90, method=6)
     OUT.with_suffix(".png").unlink()
     print("field map", OUT.name, f"{OUT.stat().st_size // 1024} KB, peak {b.max():.2f} T")
 
 
 if __name__ == "__main__":
-    main()
+    main(hero_only="--hero" in sys.argv)

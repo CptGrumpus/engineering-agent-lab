@@ -67,21 +67,39 @@ result chart, so every page read as "just results". Every study page runs, top t
 5. The write-up: question, answer, **the model** (moved up by the build to follow the answer), why it matters, how it
    works, the checks, what I caught, the limits, the case record and the evidence.
 
-The home cards follow the same rule: each card's picture is the study's setup drawing, and the verdict sits right
-under it. The build cuts `v2/tc_<study>.webp` from the drawing itself (title block off, trimmed, fitted to 16:10), so
-a redrawn part updates its card. Hover shows the result: the animation if `loops.json` has one, otherwise the result
-chart. When a drawing carries a table or a second plot beside the part, add a `CARD_CROP` entry and look at the card:
+The home cards follow the same rule: each card shows the study's setup drawing on the left and its result on the
+right, with the finding and the verdict under both. The build cuts `v2/tc_<study>.webp` from the drawing itself
+(title block off, trimmed, fitted to 16:10), so a redrawn part updates its card; the result is the chart's
+`th_<key>.webp`. When a drawing carries a table or a second plot beside the part, add a `CARD_CROP` entry and look at the card:
 a crop through a block of notes leaves half-words at the edge. A long part (the shaft is 3.5 times wider than
 tall) shrinks to a strip on the card: crop to the part itself and leave the detail views and text blocks for the page. The setup-first rule was settled for the pages on
 2026-11-23; applying it to the cards was asked again a day later, so apply it to every new place a study is shown
 rather than asking.
 
-The home page leads with the strongest studies (user, 2026-11-24): the hero lede's examples, the viewer's tabs
-(`HIGHLIGHTS`, first tab shown first) and the cards (`FRONT` in `build_v2.py`, which also sets the pager's order).
-Strongest means what a hiring client values most: real hardware or measured data, a cause traced, several physics,
-a design decision. The traction motor leads, with its field map and the diagnosis in the viewer lines
-(`HIGHLIGHT_VIEW`). When a study lands, decide where it goes in `FRONT` rather than letting it fall to the end; when
-a highlighted study's result changes, check its `HIGHLIGHT_VIEW` lines and the lede too.
+The home page leads with the strongest studies (user, 2026-11-24): the first screen's picture, the three lead
+studies (`LEAD` in `build_v2.py`) and the cards (`FRONT`, which also sets the pager's order). Strongest means what a
+hiring client values most: real hardware or measured data, a cause traced, several physics, a design decision. The
+traction motor leads. When a study lands, decide where it goes in `FRONT` rather than letting it fall to the end.
+
+The home page is the Showcase (user's choice, 2026-11-24, on the `ui-redesign` branch): one dark theme, the result
+plots' colour scale as the brand. It answers a first-time visitor's questions in order: who and what (the first
+screen names the person, the work and how to get in touch), proof (three lead studies, each a pair: the part, then the
+answer, with one number and what the checks caught), range (every kind of analysis as a tag that opens its study),
+what's on offer and what comes back (`SERVICES`, the sample memo shown as a page, the four method steps), trust
+(one dot per requirement and the mistakes the checks caught), then every part. What it must not do:
+
+- Type a number twice. Counts come from `extras.REQS`, the method steps and lessons from `pages/how.html`, the memo
+  from the memo file. A lead study's typed words carry `quotes`, and the build fails when the study's card or lesson
+  stops saying them: change the card first, then the lead's words.
+- Use a section id that is also a study's key (`contact` is the roller study and the footer): links written as
+  `#key` are rewritten to the study's page, and old one-page links are redirected by key.
+- Put a heading through the title-case rule that it gets wrong. A phrasal verb's "on" comes out lower case ("What I
+  Can Take on"): reword the heading.
+- Set large numbers in the display face: its 1 reads as a broken glyph, so they use the body face.
+
+The first screen's picture is exported by `scripts/make_field_map.py --hero` from the gated field data, not cropped
+from the figure. A lead study with a 3D render shows it bare on the dark page; a chart or a drawing sits on a
+paper-coloured plate (`on-plate`).
 
 Every study needs a drawing, so a new study isn't finished without one. The drawing shows the physical setup: the
 part with its main dimensions, the supports and loads, what's modelled (a half or a quarter), the inputs that are
