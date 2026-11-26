@@ -413,6 +413,98 @@ def scene_cold_plate_3d():
     return scene_cold_plate(thin=4, name="cold_plate_3d")
 
 
+# --------------------------------------------------------------------------- study 23: fan rotor
+
+ROTOR_SCALE = dict(vmin=0.0, vmax=100.0, bands=10, band_colors=mr.bands(10))
+ROTOR_DRAWN_MM = 60.0          # the largest deflection as drawn; a mode shape has no amplitude of its own
+SEG = 48                       # facets round the shaft and the disc
+
+
+def _ring(cx, cy, cz, r, n=SEG):
+    """Points of a circle of radius r in the plane x = cx (the rotor's axis is x), centred at (cx, cy, cz)."""
+    t = 2 * np.pi * np.arange(n) / n
+    return np.column_stack([np.full(n, cx), cy + r * np.cos(t), cz + r * np.sin(t)])
+
+
+def _close(rings: list):
+    """Side faces between consecutive rings, both ends capped with a centre point; orientation fixed afterwards."""
+    n = len(rings[0])
+    xyz = list(np.vstack(rings))
+    tris = []
+    for k in range(len(rings) - 1):
+        for i in range(n):
+            j = (i + 1) % n
+            a, b, c, d = k * n + i, k * n + j, (k + 1) * n + j, (k + 1) * n + i
+            tris += [(a, b, c), (a, c, d)]
+    for k, flip in ((0, True), (len(rings) - 1, False)):
+        c = len(xyz)
+        xyz.append(rings[k].mean(axis=0))
+        for i in range(n):
+            t = (c, k * n + i, k * n + (i + 1) % n)
+            tris.append(t[::-1] if flip else t)
+    return np.array(xyz), np.array(tris)
+
+
+def _annulus(x0, x1, cz, r, R, n=SEG):
+    """A closed disc with a bore: outer and inner cylinders and the two faces between them."""
+    rings = [_ring(x0, 0, cz, R, n), _ring(x1, 0, cz, R, n), _ring(x1, 0, cz, r, n), _ring(x0, 0, cz, r, n)]
+    xyz = np.vstack(rings)
+    tris = []
+    for a, b in ((0, 1), (1, 2), (2, 3), (3, 0)):
+        for i in range(n):
+            j = (i + 1) % n
+            tris += [(a * n + i, a * n + j, b * n + j), (a * n + i, b * n + j, b * n + i)]
+    return xyz, np.array(tris)
+
+
+def _outward(xyz, tris):
+    return tris if enclosed_volume(xyz, tris.astype(np.int64)) > 0 else tris[:, ::-1]
+
+
+def scene_fan_rotor():
+    """The recommended fan rotor (65 mm shaft, softest bearings) in its forward whirl mode at its first critical
+    speed, from build/render/fan_rotor_critical.json (scripts/export_fan_modes.py --critical, which rebuilds the
+    run's rotor and checks the mode's frequency and the rotor's mass against the run before writing). The shaft
+    axis is x, the deflection drawn in z; the bending between nodes is a cubic spline through the 21 nodes."""
+    from scipy.interpolate import CubicSpline
+
+    m = json.loads((BUILD / "fan_rotor_critical.json").read_text(encoding="utf-8"))
+    rec = read_json(REPO / "runs" / m["run"] / "points" / m["point"] / "point.json")
+    if m["critical_rpm"] != rec["metrics"]["first_forward_critical_rpm"] or abs(m["wd_rpm"] / m["critical_rpm"] - 1) > 1e-3:
+        raise RuntimeError("the exported mode isn't the run's first forward critical")
+    z = np.array(m["nodes_m"]) * 1000
+    u = np.abs(np.array(m["x"]))
+    spl = CubicSpline(z, u)
+    r, R = m["shaft_diameter_m"] * 500, m["disc_diameter_m"] * 500
+    w, zd = m["disc_width_m"] * 1000, z[m["disc_node"]]
+    xs = np.union1d(np.linspace(z[0], z[-1], 161), [zd - w / 2, zd + w / 2])
+    parts = []
+    for scale in (ROTOR_DRAWN_MM, 0.0):                     # drawn, then undeformed for the volume gate
+        sx, st = _close([_ring(x, 0, scale * spl(x), r) for x in xs])
+        dx, dt = _annulus(zd - w / 2, zd + w / 2, scale * spl(zd), r, R)
+        parts.append((sx, st, dx, dt))
+    sx, st, dx, dt = parts[0]
+    gx, _, gdx, _ = parts[1]
+    st, dt = _outward(parts[1][0], st), _outward(parts[1][2], dt)
+    val_s = np.concatenate([np.repeat(100 * spl(xs), SEG), 100 * spl(xs[[0, -1]])])
+    val_d = np.full(len(dx), 100 * spl(zd))
+    xyz, ghost = np.vstack([sx, dx]), np.vstack([gx, gdx])
+    tris = np.vstack([st, dt + len(sx)])
+    val = np.concatenate([val_s, val_d])
+    k = 0.5 * SEG * np.sin(2 * np.pi / SEG)                   # area of the faceted circle / r^2
+    vol = k * r ** 2 * (z[-1] - z[0]) + k * (R ** 2 - r ** 2) * w
+    brg = 100 * u[0]
+    return write_scene(BUILD / "fan_rotor", xyz, tris, val, ghost_xyz=ghost, field="deflection, share of the largest",
+                       units="%", **ROTOR_SCALE, elev=16, azim=-58, sharp_angle_deg=40, distance_factor=2.6,
+                       frame_box=[[-20, -210, -210], [1020, 210, 210 + ROTOR_DRAWN_MM]], fill=0.95,
+                       resolution=[1400, 900], expected_volume_mm3=vol,
+                       title=f"Fan rotor at its first critical speed, {m['critical_rpm']:,.0f} rpm: how it whirls",
+                       caption=f"The forward whirl of the recommended 65 mm shaft on the softest bearings, "
+                               f"{m['margin_pct']:.0f} % above the {m['speed_max_rpm']:,.0f} rpm top of the range. The "
+                               f"shaft bows and the bearings at its ends move too, {brg:.0f} % as far as the disc. A "
+                               f"mode has no size of its own, so the deflection is drawn exaggerated.")
+
+
 # --------------------------------------------------------------------------- study 28: steel portal frame
 
 FRAME = REPO / "runs/20261125-231923_steel_frame_portal/points/p00_baseline"
@@ -510,7 +602,7 @@ def scene_steel_frame():
 
 
 SCENES = {"cold_plate_3d": scene_cold_plate_3d, "strap_proof": scene_strap_proof, "bolted_joint_pressure": scene_bolted_joint, "joint_section": scene_joint_section, "cold_plate": scene_cold_plate,
-          "strut": scene_strut, "pv_nozzle": lambda: scene_pv_nozzle(), "steel_frame": scene_steel_frame}
+          "strut": scene_strut, "pv_nozzle": lambda: scene_pv_nozzle(), "steel_frame": scene_steel_frame, "fan_rotor": scene_fan_rotor}
 
 
 # --------------------------------------------------------------------------- gates and page assets
