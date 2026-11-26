@@ -80,12 +80,20 @@ commit). Rules that bind:
   `*.inp`, `*.dat`, `__pycache__`, files > 600 kB, then `tests/test_privacy.py`; never two FEMM cases at once; check
   free RAM on long runs.
 
-### Running at 21:30, 2026-11-25 (user's go-ahead 2026-11-25: "run whatever is still pending")
+### Running at 01:15, 2026-11-26
 
 | Job | Run dir (log) | Done about | When it finishes |
 |---|---|---|---|
-| Study 6: FSI3 damping test `turek_hron_fsi3_dt_a_alpha` (solid_alpha -0.05, the one change; predictions 22:06, 57d5d01), started 22:07 | `runs/*_turek_hron_fsi3_dt_a_alpha` (`fsi3_dt_a_alpha.log`) | about 03:00-04:00 | Score P1-P4 (P2: Newton creep from the .sta). User's decision about 22:45: WAIT for it; if P1 and P2 hold, start the 4 reruns with alpha -0.05 (FSI2 levels a / b / c, FSI3 dt_c; predictions first); update FAILURES.md either way |
+| Study 6: FSI2 levels a / b / c at alpha -0.05 `turek_hron_fsi2_mesh_{a,b,c}_alpha` (one change from r1; predictions 01:06, 0c1b42a), started 01:12 | `runs/*_turek_hron_fsi2_mesh_?_alpha` (`turek_hron_fsi2_mesh_?_alpha.log`) | a 07:00-10:00, b 08:00-11:00, c 11:00-15:00 | Score P1-P5 per level (P2 from flag.sta); then `scripts/combine_mesh_levels.py` over the three (P4); Results in each header; page 17 (FSI2 rows, Limits, banner); FAILURES.md status cells |
+| Study 6: FSI3 dt_c at alpha -0.05 `turek_hron_fsi3_dt_c_alpha` (predictions 01:06, 0c1b42a), started 01:12 | `runs/*_turek_hron_fsi3_dt_c_alpha` | 2026-11-26 19:00-01:00 | Score P1-P5; the three-level time-step check with dt_a_alpha (cut 7.999 s) and mesh_b, forces included (the open item); page 17 |
 | Study 6: CFD2 lift, fourth nested level `turek_hron_cfd2_nested_r1` (1.25 / 0.625 / 0.3125 mm; user approved 19:29; predictions 19:31, 78adc4a), started 19:32 | `runs/*_turek_hron_cfd2_nested_r1` | about 01:00-04:00 | Score P1-P4; page 17's CFD2 lift line and banner. No further level either way. |
+
+DONE 01:15, 2026-11-26 (0c1b42a): the FSI3 damping test. alpha -0.05 cured the solid's Newton creep (2 iterations
+in all 44,948 attempts; metrics within 0.06 % of alpha 0 to 6.9 s); every evaluable check and requirement passes to
+7.999 s. It then aborted on a separate end-of-run fault (a 1e-12 s last sub-step; CalculiX took dt = 0), fixed
+(max-time-windows, solid step past the end; test; a 0.1 s coupled run exits 0 on both sides). P1 missed as worded
+(the abort), P2 and P3 held, P4 missed (2 h 51 min). Per the user's decision the four reruns started (above).
+FAILURES.md (new chain items 5-6), run-case skill, page 17. The 20 h dt_c rerun is now one of the four.
 
 DONE 23:00: the bare-metal as-drawn corners (e493188: everything fails as predicted); page 27 rewritten against
 revision B (42c3f91); dashboard session told.

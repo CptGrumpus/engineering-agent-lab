@@ -2,15 +2,16 @@
 
 [Portfolio index](../PORTFOLIO.md) · Fluids and structures (coupled)
 
-> **Draft (updated 2026-11-25).** The solid and fluid stages are verified. The coupled stage (preCICE): the steady
+> **Draft (updated 2026-11-26).** The solid and fluid stages are verified. The coupled stage (preCICE): the steady
 > case (FSI1) reproduces the benchmark within 1 %; the periodic FSI3 case is verified on three meshes (every
 > requirement passes on the finest; frequency and mean drag converge, the tip amplitude extrapolates to 0.02 % from the
 > benchmark). FSI2: the finest mesh's crash was traced to the mesh-motion solve and fixed; with the fix, all three
 > meshes reproduce every published quantity within 3.4 %, but the amplitudes do not converge under the 1 % target as
 > the mesh is refined (the frequency does). FSI3's time-step study converges the tip motion (under 0.75 %). The late
-> crashes: three attempts at FSI3's coarsest time step agree to 0.1 % and all fail within 16 ms of 6.9 s; the solid's
-> Newton iterations creep before each, the signature of its undamped time integration, and a run with numerical
-> damping is testing that overnight. On nested meshes the CFD1 lift is now verified; CFD2's fourth mesh level runs overnight. The page
+> crashes are diagnosed: the solid's time integration was undamped. With CalculiX's default damping, and nothing else
+> changed, FSI3's coarsest time step ran past its old crash point to the end of the run, every check and requirement
+> passing, the results within 0.06 % of the undamped run. A second, unrelated fault at the very last step was found
+> and fixed the same night. The FSI2 levels and FSI3's finest step are rerunning with both fixes. On nested meshes the CFD1 lift is now verified; CFD2's fourth mesh level runs overnight. The page
 > stays a draft while FSI2's mesh convergence, the drag and lift time-step check and CFD2's lift are open.
 
 | | |
@@ -130,14 +131,25 @@ published results first, and only then are they coupled.
   4. **Those settings did not help either.** The rerun with preCICE's own settings died at 6.895 s, this time in the
      solid on a window's first coupling iteration, on a load that looks ordinary. Up to 6.89 s all three attempts
      agree within 0.1 %. Three different fixes, three different symptoms, one physical moment: the numerics being
-     changed are not the cause. What the three share is the coarse time step (0.001 s, maximum Courant number about
-     2.8); at 0.0005 s (2.4) the same model ran the full 8 s. So the coarse step is scored on its record up to 6.9 s.
+     changed are not the cause. I first read what the three share as the coarse time step (0.001 s, maximum Courant
+     number about 2.8; at 0.0005 s the same model ran the full 8 s). Item 5 shows that reading was wrong.
   5. **The shared setting I had not looked at.** Every attempt also kept the solid's time integration undamped (HHT
      alpha 0). The solid's Newton iterations per step creep before every crash (2 for most of the run, then 3, 4,
      5-7, 14-18 by 6.9 s; the same before FSI2's crashes at 14 s), and the run that finished stays flat at 2: the
-     signature that broke the dynamic solid test CSM3 until CalculiX's default damping (alpha -0.05) cured it. A run
-     with that one change is testing it overnight. Separately, a crashed solid no longer hangs: the hang was Open
-     MPI's crash handler spinning on the corrupted memory, now switched off.
+     signature that broke the dynamic solid test CSM3 until CalculiX's default damping (alpha -0.05) cured it.
+     **Confirmed (2026-11-26):** with that one change, FSI3 at 0.001 s ran through 6.9 s to the last window, with 2
+     Newton iterations in every one of 44,948 solid attempts. Up to 6.9 s its results match the undamped run within
+     0.06 % (the tip amplitude and frequency within 0.001 %). Over the full 8 s every evaluable check and
+     every requirement passes (tip amplitude 4.6 % from the benchmark, frequency 0.8 %, mean drag 1.7 %).
+     Separately, a crashed solid no longer hangs: the hang was Open MPI's crash handler spinning on the corrupted
+     memory, now switched off.
+  6. **A second fault, at the very end.** That run then crashed on its last window, for a different reason. preCICE
+     shortened the last window by a rounding remainder to end exactly at 8 s; the solid's own clock came out 1e-12 s
+     short, preCICE asked it for a 1e-12 s step, and CalculiX took a zero step and corrupted its memory. The run now
+     ends on a count of windows and the solid's step runs past the end. A short coupled run ends cleanly on both
+     sides and gives a bit-identical record. FSI3's finest step (0.00025 s), which died on its very last step, most
+     likely hit the same fault. All three FSI2 levels and FSI3's finest step are rerunning with both fixes; their
+     predictions were committed first.
 
   The runs that complete are unaffected: every one converged each window to the tolerance. The weakness is
   robustness, not accuracy.
@@ -263,8 +275,10 @@ published results first, and only then are they coupled.
 ## Limits
 
 - 2D, as the benchmark defines it.
-- FSI3 at the coarsest time step (0.001 s) is scored up to 6.9 s, not 8 s: three attempts with different solid and
-  coupling settings all failed within 16 ms of 6.9 s (see "Why the coupled runs crash").
+- FSI3 at the coarsest time step (0.001 s): the undamped attempts are scored up to 6.9 s; the damped run's record ends
+  at 7.999 s, one window short of 8 s, where the end-of-run fault stopped it (see "Why the coupled runs crash"). The
+  time-step study still mixes damped and undamped levels until the reruns finish (the damping moved every result by
+  under 0.06 %).
 - FSI3: time-step convergence shown for the tip motion only (the finest step's forces were lost); the force amplitudes and the horizontal tip mean have no mesh uncertainty (see the mesh
   study). FSI2: three mesh levels scored over 14 s, not 15 (two solid crashes); mesh verification fails for the
   amplitudes and the drag mean; one time step (FSI3's study covers the time step for the same model).
@@ -298,7 +312,11 @@ published results first, and only then are they coupled.
 - FSI crash diagnosis: [dt 0.001 s, solid iteration limit 40](../runs/20261125-113046_turek_hron_fsi3_dt_a_r1/report.md)
   (passed 6.902 s, then the coupling stalled at 6.911 s); predictions and Results in
   `cases/turek_hron_fsi3_dt_a_r1.toml`; [preCICE's own FSI3 acceleration](../runs/20261125-162526_turek_hron_fsi3_dt_a_r2/report.md)
-  (crashed at 6.895 s; within 0.1 % of the others to 6.89 s), `cases/turek_hron_fsi3_dt_a_r2.toml`
+  (crashed at 6.895 s; within 0.1 % of the others to 6.89 s), `cases/turek_hron_fsi3_dt_a_r2.toml`;
+  [damped solid, alpha -0.05](../runs/20261125-220709_turek_hron_fsi3_dt_a_alpha/report.md) (no creep; record to
+  7.999 s, scored by `scripts/score_truncated_fsi.py`: `dt_a_alpha_t8.json`, `dt_a_alpha_t69.json` and
+  `solid_newton_counts.json` in the run), `cases/turek_hron_fsi3_dt_a_alpha.toml`; reruns with both fixes running:
+  `cases/turek_hron_fsi2_mesh_{a,b,c}_alpha.toml`, `cases/turek_hron_fsi3_dt_c_alpha.toml`
 - fluid on nested meshes: [CFD1](../runs/20261125-185354_turek_hron_cfd1_nested/report.md) (lift and drag verified),
   [CFD2](../runs/20261125-185358_turek_hron_cfd2_nested/report.md) (drag verified; lift at an anomalous order, a fourth
   level running: `cases/turek_hron_cfd2_nested_r1.toml`); predictions and Results in `cases/turek_hron_cfd{1,2}_nested.toml`
