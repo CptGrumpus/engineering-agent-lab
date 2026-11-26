@@ -1,0 +1,134 @@
+# Turek-Hron FSI3, time-step level a (dt 0.001 s), with HHT numerical damping in the solid: alpha -0.05 instead of 0.
+# Exactly the original case turek_hron_fsi3_dt_a (read it) with ONE change, solid_alpha; the coupling settings and
+# the solid's iteration limit are the original's defaults (not r1's or r2's), so the test isolates the damping.
+#
+# Why (found 2026-11-25 about 22:00, after r2): the solid's Newton iterations per step CREEP before every solid crash.
+# CalculiX's .sta, first iterate of each window: dt_a r1 and r2 both 2 to 4 s, 3 at 5 s, 4 at 6 s, 5-7 at 6.5 s, 14-18
+# at 6.9 s, then the failure; FSI2 r1 levels a and c (crashed at 14.0 s) 2 to 12 s, rising to 9-13 by 14.0 s; FSI2 r1
+# level b (finished 15 s) flat at 2 throughout; dt_c (dt 0.00025 s) flat at 2 until 7.9 s (2.85 there). That is the
+# signature that broke CSM3 r1 and r2 (the trapezoidal rule, alpha 0, has no numerical damping; energy builds in the
+# flag's stiff in-plane modes until Newton diverges), which CSM3 r3 cured with alpha -0.05, CalculiX's own default.
+# FSI2 and FSI3 chose alpha 0 deliberately ('damping would eat the self-excited amplitude'), and every attempt so far
+# shared it: the r2 reading ('the coarse step is the likeliest cause') missed this. The coarse step still matters
+# (the creep is far slower at dt 0.00025 s).
+#
+# Predictions, written BEFORE the run (2026-11-25 22:06):
+#   P1 The run reaches 8 s; every point check passes.
+#   P2 No creep: the solid's first-iterate Newton count stays at 2-3 throughout (alpha 0: 4 by 6 s, 14+ at 6.9 s).
+#   P3 Up to 6.9 s the metrics move little: uy amplitude, frequency and drag mean within 1 % of the alpha-0 record
+#      (fsi3_dt_t69.json, its dt_a entry), the amplitudes at or slightly below it (damping lowers them, if anything).
+#   P4 4.5-6 h beside the other runs.
+# Decision rule: P1 and P2 held -> the cause is the undamped solid integrator; the fix (alpha -0.05) then needs every
+#   FSI2 / FSI3 level rerun for a consistent study (about 8 h each for FSI2, 20 h for FSI3 dt_c): the user's decision.
+#   P1 held but P3 missed (a change over 1 %) -> the damping changes the answer; report it, and prefer the smaller
+#   step. P1 missed -> the hypothesis is wrong for this case; the crash stays a stated limit.
+
+[case]
+name = "turek_hron_fsi3_dt_a_alpha"
+model = "openfoam_ccx_precice_fsi"
+description = "Turek-Hron FSI3: self-excited periodic oscillation of the elastic flag behind the cylinder (Re 200, density ratio 1); OpenFOAM v2512 (moving mesh) coupled to CalculiX through preCICE; fluid 2.5 mm at the body (time-step study level a, dt 0.001 s), solid 2.5 mm, dt 0.0005 s to 8 s; mean, amplitude and frequency of the tip displacements, drag and lift over the last periods against the published benchmark."
+assumptions = [
+  "2D: one cell deep in the fluid, plane strain in the solid (one element layer, as deep as the fluid).",
+  "St. Venant-Kirchhoff solid (CalculiX *ELASTIC under NLGEOM), no gravity, as the FSI tests define it.",
+  "A little numerical damping in the solid: HHT alpha -0.05 (CalculiX's default), which damps the stiff high-frequency modes and leaves the 5.5 Hz motion damped by about 0.1 % of critical.",
+  "Inflow: the benchmark's parabola with its (1 - cos) ramp over 2 s.",
+  "Statistics from the last whole periods (benchmark definition); the oscillation is periodic (checked: last two periods).",
+]
+limitations = [
+  "One level of a three-level mesh study run as separate cases side by side (scripts/combine_mesh_levels.py applies the study's run-level check to the three runs).",
+  "The fluid mesh is regenerated per size (FSI1: about +-0.5 % mesh-to-mesh scatter on the tip displacement).",
+]
+
+[parameters]
+solid_density_kg_per_m3 = 1000.0
+shear_modulus_Pa = 2000000.0
+poisson_ratio = 0.4
+fluid_density_kg_per_m3 = 1000.0
+kinematic_viscosity_m2_per_s = 0.001
+mean_velocity_m_per_s = 2.0
+fluid_cell_size_m = 0.0025
+solid_element_size_mm = 2.5
+time_step_s = 0.001
+end_time_s = 8.0
+# steady-case benchmark keys (required by the study; unused in periodic mode): the periodic means
+benchmark_ux_A_m = -2.88e-3
+benchmark_uy_A_m = 1.47e-3
+benchmark_drag_N_per_m = 460.5
+benchmark_lift_N_per_m = 2.50
+benchmark_ux_A_mean = -2.88e-3
+benchmark_ux_A_amp = 2.72e-3
+benchmark_ux_A_freq_Hz = 10.93
+benchmark_uy_A_mean = 1.47e-3
+benchmark_uy_A_amp = 3.499e-2
+benchmark_uy_A_freq_Hz = 5.46
+benchmark_drag_mean = 460.5
+benchmark_drag_amp = 27.74
+benchmark_drag_freq_Hz = 10.93
+benchmark_lift_mean = 2.50
+benchmark_lift_amp = 153.91
+benchmark_lift_freq_Hz = 5.46
+
+[numerics]
+periodic_periods = 4
+solid_alpha = -0.05
+write_interval_s = 1.0
+ramp_time_s = 2.0
+coupling_rel_tol = 1e-5
+coupling_max_iterations = 100
+rbf_support_radius_m = 0.05
+solver_timeout_s = 64800
+
+[verification]
+periodic_rel_tol = 0.02           # last two periods: uy amplitude and drag mean agree within 2 % (a settled cycle)
+force_transfer_rel_tol = 1e-3     # window by window (preCICE watch-integrals, fixed in FSI1 r2): no inertia involved
+flag_cell_max_angle_deg = 140.0   # the corner-wrap check from FSI1's noise study
+profile_rel_tol = 1e-6
+gci_max = 0.01
+
+[[requirements]]
+id = "REQ-FSI3-1"
+text = "The coupled model shall reproduce the FSI3 amplitude of the tip's vertical displacement within 5 %."
+metric = "uy_A_amp_deviation_pct"
+operator = "<="
+limit = 5.0
+units = "%"
+
+[[requirements]]
+id = "REQ-FSI3-2"
+text = "It shall reproduce the FSI3 oscillation frequency (uy of point A) within 3 %."
+metric = "uy_A_freq_Hz_deviation_pct"
+operator = "<="
+limit = 3.0
+units = "%"
+
+[[requirements]]
+id = "REQ-FSI3-3"
+text = "It shall reproduce the FSI3 mean drag within 5 %."
+metric = "drag_mean_deviation_pct"
+operator = "<="
+limit = 5.0
+units = "%"
+
+[[requirements]]
+id = "REQ-FSI3-4"
+text = "It shall reproduce the FSI3 drag amplitude within 25 % (the benchmark's own tables spread about 40 %)."
+metric = "drag_amp_deviation_pct"
+operator = "<="
+limit = 25.0
+units = "%"
+
+[[requirements]]
+id = "REQ-FSI3-5"
+text = "It shall reproduce the FSI3 lift amplitude within 10 %."
+metric = "lift_amp_deviation_pct"
+operator = "<="
+limit = 10.0
+units = "%"
+
+[[requirements]]
+id = "REQ-FSI3-6"
+text = "It shall reproduce the FSI3 mean horizontal tip displacement within 15 % (second order; the benchmark spreads 12 %)."
+metric = "ux_A_mean_deviation_pct"
+operator = "<="
+limit = 15.0
+units = "%"

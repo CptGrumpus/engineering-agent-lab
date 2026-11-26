@@ -206,7 +206,12 @@ the grid check.
   there, the numerics you are changing are not the cause. Look at what all the attempts share (here the coarse step:
   Courant 2.77 against 2.36 for the step that ran 8 s), cut and score the record, state the limit, and stop
   spending runs on it. The dead solver process:
-  its abort handler never exits, so the dead process holds a core and the harness waits forever. Check long coupled
+  its abort handler never exits, so the dead process holds a core and the harness waits forever. **Fixed
+  2026-11-25:** the handler is Open MPI's (`opal_signal` 6,7,8,11; preCICE links Open MPI 4.1.2), which prints a
+  backtrace from the corrupted heap and spins. `export OMPI_MCA_opal_signal=""` before launching a participant
+  (`models/fsi/run_turek_hron_fsi.sh`) makes it exit at once (code 134) and the run fail cleanly. A crash is
+  reproducible in seconds with `numerics.solid_iteration_limit = 1` and `ramp_time_s = 0` (the solid's first
+  increment cannot converge): use that to test anything on the crash path, not a 4-hour run. Check long coupled
   runs by the age of their solver logs, not only the newest time directory: a log untouched for longer than a few
   write intervals while `ps` still lists both participants (or only one) means a hang. Killing a process needs the
   user's go-ahead; then rerun unchanged and record the crash in the case header. A third crash (FSI2 r1 level c,

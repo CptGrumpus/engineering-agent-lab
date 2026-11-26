@@ -31,6 +31,12 @@ if [ -f frozen_diffusivity.json ]; then
   python3 "$HERE/frozen_motion_diffusivity.py" . > log.motionDiffusivity 2>&1 || exit 21
 fi
 cd ../solid || exit 10
+# Open MPI's crash handler (opal_signal 6,7,8,11) catches the solid's abort after a heap corruption, tries to print
+# a backtrace from the corrupted heap, and spins forever: the dead solid then held a core and this script's `wait`
+# never returned (four runs on 2026-11-24/25, each killed by hand). With the handler off the solid exits at once
+# (code 134), the fluid sees the closed socket, and the run fails cleanly. Reproduced and tested 2026-11-25
+# (scratch, Newton limit 1: hung 300 s until killed without it; exited in 14 s with it).
+export OMPI_MCA_opal_signal=""
 ccx_preCICE -i flag -precice-participant Solid > log.ccx 2>&1 &
 solid_pid=$!
 cd ../fluid
