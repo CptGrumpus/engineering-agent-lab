@@ -413,8 +413,104 @@ def scene_cold_plate_3d():
     return scene_cold_plate(thin=4, name="cold_plate_3d")
 
 
+# --------------------------------------------------------------------------- study 28: steel portal frame
+
+FRAME = REPO / "runs/20261125-231923_steel_frame_portal/points/p00_baseline"
+FRAME_SCALE = dict(vmin=0.0, vmax=1.0, bands=10, band_colors=mr.bands(10))   # 0.1 bands to the code limit 1.0
+IN = 25.4
+
+
+def w_prism(p0, p1, uax, vax, sh: dict, s: np.ndarray, val: np.ndarray):
+    """A W-shape (no root fillets) swept straight from p0 to p1: `uax` is the depth direction, `vax` the flange
+    width, with vax x uax along p0 -> p1 so the faces point outwards. One ring of 12 profile vertices at each
+    position s (0..1) along the member, carrying that position's value; capped at both ends."""
+    d, bf, tw, tf = (sh[k] * IN for k in ("d", "bf", "tw", "tf"))
+    y1, y2 = -d / 2 + tf, d / 2 - tf
+    prof = [(-bf / 2, -d / 2), (bf / 2, -d / 2), (bf / 2, y1), (tw / 2, y1), (tw / 2, y2), (bf / 2, y2),
+            (bf / 2, d / 2), (-bf / 2, d / 2), (-bf / 2, y2), (-tw / 2, y2), (-tw / 2, y1), (-bf / 2, y1)]
+    p0, p1, uax, vax = (np.asarray(a, float) for a in (p0, p1, uax, vax))
+    assert np.allclose(np.cross(vax, uax), (p1 - p0) / np.linalg.norm(p1 - p0))
+    xyz = np.array([p0 + t * (p1 - p0) + a * vax + b * uax for t in s for a, b in prof])
+    n = len(prof)
+    tris = []
+    for k in range(len(s) - 1):
+        for i in range(n):
+            j = (i + 1) % n
+            a, b, c, e = k * n + i, k * n + j, (k + 1) * n + j, (k + 1) * n + i
+            tris += [(a, b, c), (a, c, e)]
+    cap = [(0, 1, 2), (0, 2, 3), (0, 3, 10), (0, 10, 11), (10, 3, 4), (10, 4, 9),
+           (7, 8, 9), (7, 9, 4), (7, 4, 5), (7, 5, 6)]
+    last = (len(s) - 1) * n
+    tris += [(c, b, a) for a, b, c in cap] + [(last + a, last + b, last + c) for a, b, c in cap]
+    area = 2 * bf * tf + (d - 2 * tf) * tw
+    return xyz, np.array(tris), np.repeat(val, n), area * np.linalg.norm(p1 - p0)
+
+
+def scene_steel_frame():
+    """The portal under gravity plus the sideways load, each member drawn as its W-shape and coloured by the
+    AISC H1-1b ratio at each point along it: Pr / (2 Pc) + |M(x)| / Mc, with the member's own axial load and
+    capacities and the second-order moment at the nine points per member the analysis reports (linear between
+    them). At the member's largest moment it must equal the member's recorded ratio. No solve: everything is
+    read from the evidence run."""
+    import csv
+
+    rec = read_json(FRAME / "point.json")
+    p, mc = rec["parameters"], rec["solver_outputs"]["member_checks"]["gravity_lateral"]
+    shapes = read_json(REPO / "validation/aisc_shapes_subset.json")["shapes"]
+    col, bm = shapes[p["column_shape"]], shapes[p["beam_shape"]]
+    H, L = p["frame_height_m"] * 1000, p["bay_span_m"] * 1000
+    rows = list(csv.DictReader((FRAME / "moment_diagrams.csv").open(encoding="utf-8")))
+    s0 = np.array([float(r["position_along_member"]) for r in rows])
+
+    def ratio(member, s):
+        c = mc[member]
+        assert c["H1_equation"] == "H1-1b", member
+        m = np.array([float(r[f"M_kNm_gravity_lateral_{member}"]) for r in rows])
+        assert abs(np.max(np.abs(m)) / c["Mr_kNm"] - 1) < 1e-9, member      # Mr sits on a reported point
+        r = c["Pr_kN"] / (2 * c["phiPn_kN"]) + np.abs(np.interp(s, s0, m)) / c["phiMn_kNm"]
+        return r
+
+    dc, db = col["d"] * IN, bm["d"] * IN
+    fine = np.union1d(s0, np.linspace(0, 1, 49))
+    parts, vol = [], 0.0
+    # columns from the base to the top of the beam (above the beam's centreline the knee's value is held); the
+    # beam between the columns' inner faces. Columns' webs in the frame's plane, so both bend about their strong axis
+    top = (H + db / 2) / H
+    zc = np.union1d(fine * top, [1.0])
+    for member, x in (("left_column", 0.0), ("right_column", L)):
+        val = ratio(member, np.minimum(zc, 1.0))
+        parts.append(w_prism((x, 0, 0), (x, 0, H + db / 2), (1, 0, 0), (0, -1, 0), col, zc / top, val))
+    xb = np.union1d(fine, [dc / 2 / L, 1 - dc / 2 / L])
+    xb = xb[(xb >= dc / 2 / L - 1e-12) & (xb <= 1 - dc / 2 / L + 1e-12)]
+    parts.append(w_prism((dc / 2, 0, H), (L - dc / 2, 0, H), (0, 0, 1), (0, 1, 0), bm,
+                         (xb - xb[0]) / (xb[-1] - xb[0]), ratio("beam", xb)))
+    xyz, tris, val = [], [], []
+    for a, t, v, vv in parts:
+        tris.append(t + sum(len(q) for q in xyz))
+        xyz.append(a)
+        val.append(v)
+        vol += vv
+    xyz, tris, val = np.vstack(xyz), np.vstack(tris), np.concatenate(val)
+    # the drawn field reaches each member's recorded ratio, no more
+    peak ={m: float(np.max(ratio(m, s0))) for m in mc}
+    for m, v in peak.items():
+        if abs(v / mc[m]["H1_ratio"] - 1) > 1e-9:
+            raise RuntimeError(f"{m}: largest drawn ratio {v} != recorded H1 ratio {mc[m]['H1_ratio']}")
+    if abs(val.max() / max(peak.values()) - 1) > 1e-9:
+        raise RuntimeError("the drawn field's maximum is not the governing member's ratio")
+    b, lc, rc = mc["beam"]["H1_ratio"], mc["left_column"]["H1_ratio"], mc["right_column"]["H1_ratio"]
+    return write_scene(BUILD / "steel_frame", xyz, tris, val, field="AISC H1-1 ratio", units="", **FRAME_SCALE,
+                       elev=10, azim=-55, sharp_angle_deg=30, distance_factor=2.6,
+                       frame_box=[[-150, -110, 0], [L + 150, 110, H + db / 2]], fill=0.95, resolution=[1400, 900],
+                       expected_volume_mm3=vol,
+                       title="Steel portal at its factored load: how close each part is to its code limit",
+                       caption=f"Each member coloured by its AISC 360-22 H1-1 ratio along its length, from the "
+                               f"second-order analysis; 1.0 is the limit. The beam peaks at {b:.2f} at midspan, the "
+                               f"leeward column at {rc:.2f} at its top, the windward column at {lc:.2f}.")
+
+
 SCENES = {"cold_plate_3d": scene_cold_plate_3d, "strap_proof": scene_strap_proof, "bolted_joint_pressure": scene_bolted_joint, "joint_section": scene_joint_section, "cold_plate": scene_cold_plate,
-          "strut": scene_strut, "pv_nozzle": lambda: scene_pv_nozzle()}
+          "strut": scene_strut, "pv_nozzle": lambda: scene_pv_nozzle(), "steel_frame": scene_steel_frame}
 
 
 # --------------------------------------------------------------------------- gates and page assets

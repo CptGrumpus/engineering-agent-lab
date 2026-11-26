@@ -36,7 +36,7 @@ MAGIC = 0x3144334D                                   # "M3D1" little-endian
 # cold plate uses a lighter mesh: every fourth node through the thickness (make_study_renders.py)
 SCENES = {"bracket_opt": "opt/bracket_opt_hero", "cantilever": "cantilever", "cantilever_opt": "cantilever_opt", "fatigue": "fatigue",
           "fin": "fin", "mode1": "mode1", "strut": "strut", "bolted_joint": "bolted_joint", "duct": "duct",
-          "cold_plate": "cold_plate_3d"}
+          "cold_plate": "cold_plate_3d", "steel_frame": "steel_frame"}
 
 
 def feature_edges(pts: np.ndarray, tris: np.ndarray, angle_deg: float) -> np.ndarray:

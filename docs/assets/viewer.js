@@ -24,7 +24,8 @@
       sw.innerHTML = v.bands.slice().reverse().map(c => `<i style="background:${c}"></i>`).join("");
       ticks.innerHTML = Array.from({ length: n + 1 }, (_, i) => {
         const val = v.vmax - (v.vmax - v.vmin) * i / n;
-        return `<span style="top:${(100 * i / n).toFixed(3)}%">${sci(val)}</span>`;
+        // a dimensionless ratio reads better as 0.80 than +8.000e-01; solver fields keep the solver's style
+        return `<span style="top:${(100 * i / n).toFixed(3)}%">${v.fixed != null ? val.toFixed(v.fixed) : sci(val)}</span>`;
       }).join("");
       title.innerHTML = `${esc(v.legend)}<small>${esc(v.unit)}</small>`;
     } else { sw.innerHTML = ""; ticks.innerHTML = ""; title.innerHTML = ""; }
