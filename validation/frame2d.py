@@ -68,6 +68,18 @@ def fixed_end_local(w, L, P, EI):
     return np.array([0.0, -w * L / 2, -M, 0.0, -w * L / 2, M])
 
 
+def _condense(kl, fe, rel):
+    """Static condensation of the released end rotations: k* = kaa - kar krr^-1 kra, f* = fa - kar krr^-1 fr, put
+    back as 6 x 6 / 6 with zero rows and columns at the released dofs (their end moments are then exactly zero)."""
+    keep = [d for d in range(6) if d not in rel]
+    krr_inv = np.linalg.inv(kl[np.ix_(rel, rel)])
+    kar = kl[np.ix_(keep, rel)]
+    kc, fc = np.zeros((6, 6)), np.zeros(6)
+    kc[np.ix_(keep, keep)] = kl[np.ix_(keep, keep)] - kar @ krr_inv @ kl[np.ix_(rel, keep)]
+    fc[keep] = fe[keep] - kar @ krr_inv @ fe[rel]
+    return kc, fc
+
+
 class Frame:
     def __init__(self):
         self.nodes: list[tuple[float, float]] = []
@@ -79,9 +91,14 @@ class Frame:
         self.nodes.append((float(x), float(y)))
         return len(self.nodes) - 1
 
-    def member(self, i, j, E, A, I, w=0.0):
-        """w: uniform load per length in the member's local +y (perpendicular, to the left of i -> j)."""
-        self.members.append({"i": i, "j": j, "E": E, "A": A, "I": I, "w": float(w)})
+    def member(self, i, j, E, A, I, w=0.0, release_i=False, release_j=False):
+        """w: uniform load per length in the member's local +y (perpendicular, to the left of i -> j).
+        release_i / release_j: a moment release (hinge) at that end; its rotation is condensed out of the member
+        (exact under the second-order stiffness too: a pinned-pinned strut keeps only its axial stiffness and the
+        P-Delta string stiffness -P/L). A node whose every member is released there has no rotational stiffness:
+        give it support(n, ux=False, uy=False, rz=True)."""
+        self.members.append({"i": i, "j": j, "E": E, "A": A, "I": I, "w": float(w),
+                             "release": [d for d, r in ((2, release_i), (5, release_j)) if r]})
 
     def support(self, n, ux=True, uy=True, rz=True):
         self.fixed[n] = (ux, uy, rz)
@@ -115,6 +132,8 @@ class Frame:
                 Pe = P[e] if second_order else 0.0
                 kl = member_stiffness_local(m["E"], m["A"], m["I"], L, Pe)
                 fe = fixed_end_local(m["w"], L, Pe, m["E"] * m["I"])
+                if m.get("release"):
+                    kl, fe = _condense(kl, fe, m["release"])
                 dofs = [3 * m["i"], 3 * m["i"] + 1, 3 * m["i"] + 2, 3 * m["j"], 3 * m["j"] + 1, 3 * m["j"] + 2]
                 K[np.ix_(dofs, dofs)] += T.T @ kl @ T
                 F[dofs] -= T.T @ fe            # equivalent nodal loads
