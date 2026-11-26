@@ -11,6 +11,14 @@
 # its last three writes): P1 every point check passes. P2 U1 157.40 C (REQ-E1 FAIL), board maximum 156.36 C (REQ-E2
 # FAIL), air 84.55 C (REQ-E4 FAIL), each +-0.3 K. P3 C1 (board under 5-15 mm from its left end) 145-156 C: REQ-E3
 # FAIL; the capacitor's life governs. P4 10-14 h beside the other runs.
+#
+# Results (run 20261125-162821_enclosure_k20_eps0p1_e, scored 22:53): VERIFICATION PASS.
+#   P1 HELD: every point check (heat balance and settled change under 1e-4).
+#   P2 HELD: U1 157.39 C, board maximum 156.36 C, air 84.55 C, each within 0.01 K of the extrapolation: REQ-E1, E2
+#      and E4 FAIL.
+#   P3 HELD: C1 152.66 C, inside 145-156 C: REQ-E3 FAIL. Above even a 125 C capacitor's rating, so no part choice
+#      rescues the bare-metal box: the interior must be painted (emissivity 0.9) first.
+#   P4 MISSED (fast): 16:28-22:51, 6.4 h.
 
 [case]
 name = "enclosure_k20_eps0p1_e"

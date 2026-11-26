@@ -1,0 +1,97 @@
+{
+  "points": [
+    {
+      "label": "p00_baseline",
+      "parameters": {
+        "width_mm": 150.0,
+        "height_mm": 60.0,
+        "box_depth_mm": 200.0,
+        "board_length_mm": 100.0,
+        "board_thickness_mm": 2.0,
+        "component_length_mm": 20.0,
+        "power_component_W": 5.0,
+        "power_board_W": 10.0,
+        "board_k_W_mK": 20.0,
+        "ambient_C": 40.0,
+        "h_ext_W_m2K": 5.0,
+        "eps_ext": 0.85,
+        "eps_int": 0.1,
+        "cell_mm": 2.0,
+        "n_phi": 4,
+        "max_iterations": 1
+      },
+      "derived": {},
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "heat_balance",
+          "description": "|heat leaving the walls to the ambient - input power| / input, at the end",
+          "kind": "numerical",
+          "value": 3.645339831237493e-06,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "settled",
+          "description": "change of the component's maximum over the last tenth of the run (K)",
+          "kind": "numerical",
+          "value": 9.101999978611275e-06,
+          "tolerance": 0.3,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-E1",
+          "text": "U1's junction shall stay at or below 125 C (Tj max 150 C less the client's 25 K derating): its case at or below 115 C with 2.0 K/W junction to case at 5 W; the U1 block's hottest point stands for the case.",
+          "metric": "component_max_C",
+          "operator": "<=",
+          "limit": 115.0,
+          "units": "C",
+          "value": 157.39393787900002,
+          "margin": -42.39393787900002,
+          "verdict": "FAIL"
+        },
+        {
+          "id": "REQ-E2",
+          "text": "The FR-4 board shall stay at or below 105 C anywhere (UL 796 MOT 130 C less the client's 25 K).",
+          "metric": "board_max_C",
+          "operator": "<=",
+          "limit": 105.0,
+          "units": "C",
+          "value": 156.35853756200004,
+          "margin": -51.35853756200004,
+          "verdict": "FAIL"
+        },
+        {
+          "id": "REQ-E3",
+          "text": "C1 (105 C / 5,000 h electrolytic, 5-15 mm from the board's left end) shall stay at or below 70 C, for 50,000 h of life; the board under its footprint stands for C1.",
+          "metric": "C1_board_max_C",
+          "operator": "<=",
+          "limit": 70.0,
+          "units": "C",
+          "value": 152.66428037000003,
+          "margin": -82.66428037000003,
+          "verdict": "FAIL"
+        },
+        {
+          "id": "REQ-E4",
+          "text": "The internal air shall stay at or below 70 C (the commercial-grade parts' 0-70 C ambient rating; the mean air stands for the local air in 2D).",
+          "metric": "air_mean_C",
+          "operator": "<=",
+          "limit": 70.0,
+          "units": "C",
+          "value": 84.5492959519795,
+          "margin": -14.549295951979502,
+          "verdict": "FAIL"
+        }
+      ]
+    }
+  ],
+  "run_id": "20261125-162821_enclosure_k20_eps0p1_e",
+  "generated_utc": "2026-11-26T03:51:07+00:00",
+  "verification_status": "PASS"
+}
