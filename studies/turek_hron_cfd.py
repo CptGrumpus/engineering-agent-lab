@@ -116,7 +116,8 @@ class OpenFOAMTurekHron(Backend):
                                         W.XC + (W.R ** 2 - (W.FLAG_H / 2) ** 2) ** 0.5, W.XC + W.R + flag,
                                         W.YC - W.FLAG_H / 2, W.YC + W.FLAG_H / 2)
         r = subprocess.run(of.wsl_command("bash", of.to_wsl_path(self.runner), of.to_wsl_path(case), self.bashrc),
-                           capture_output=True, text=True, timeout=7200)
+                           capture_output=True, text=True,
+                           timeout=float(numerics.get("solver_timeout_s", 7200)))
         (case / "mesh.msh").unlink(missing_ok=True)
         if r.returncode != 0:
             return failed(f"OpenFOAM stage failed (exit {r.returncode}) {r.stderr.strip()[:300]}") | {

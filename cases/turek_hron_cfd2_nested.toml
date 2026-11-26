@@ -27,6 +27,19 @@
 # lift is checked by the coupled runs' own studies). P3 missed (oscillatory or divergent on nested meshes) -> the
 # scatter was not only the topology: the base mesh may sit outside the asymptotic range for lift; next is a fourth
 # level (0.3125 mm, about 835k cells, about 17 h single-core), asked of the user first. No tolerance changes either way.
+#
+# Results (run 20261125-185358_turek_hron_cfd2_nested, scored 19:30): VERIFICATION FAIL (lift's run-level check).
+#   P1 HELD: every point check on every level; 383 / 968 / 2,754 iterations; flag cells 123 / 116 / 116 deg.
+#   P2 HELD: drag 138.113 / 137.314 / 136.988 N/m, monotone, observed order 1.29, GCI 0.20 %, extrapolated 136.764
+#      (0.03 % from the earlier mesh study's 136.719; 0.05 % from the benchmark): REQ-F1 verified PASS.
+#   P3 MISSED: lift 10.8523 / 10.4239 / 10.3817 N/m, monotone (R 0.099) but observed order 3.34, above 1.5 x the
+#      design order 2: 'anomalous order', no uncertainty (run-level FAIL). Extrapolated 10.368 (order 2) to 10.377
+#      (order 3.34): 1.5-1.6 % under the benchmark, not within 1 % as predicted. REQ-F2 PASS in value, unverified.
+#   P4 MISSED: the nested 1.25 mm lift (10.424) lies just under the regenerated meshes' band (10.47-10.94); the
+#      nested family settles lower than the regenerated 0.625 mm mesh did (10.606).
+#   P5 HELD: 34 min (18:54-19:28).
+#   Decision (rule above): the coarsest level is likely outside the asymptotic range for lift; the user approved a
+#   fourth level at 19:29 ("Yes, overnight"): turek_hron_cfd2_nested_r1 (1.25 / 0.625 / 0.3125 mm).
 
 [case]
 name = "turek_hron_cfd2_nested"
