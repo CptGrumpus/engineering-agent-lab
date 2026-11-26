@@ -18,6 +18,29 @@
 # per window average 5-8 (r1: 5.47 to 6.91 s). P4 no window stalls: the largest per-window iteration count stays under
 # 20. P5 about 5-6 h beside the enclosure runs. If P1 holds: FSI2 r1 levels a and c rerun with both settings (the
 # solid limit and this acceleration), and the setup's defaults change to these after FSI2 confirms them.
+#
+# Results (run 20261125-162526_turek_hron_fsi3_dt_a_r2, scored 21:25): CRASHED at 6.895 s (window 6,895, 19:41), the
+# third dt 0.001 s attempt to die within 16 ms of 6.9 s. The solid failed on the window's FIRST coupling iteration:
+# Newton reached the 40-iteration limit (largest increment of displacement 0.70 m on a 0.35 m flag, residual force
+# 5.5e4 at node 3365), then the same heap-corruption abort; ccx hung in its abort handler (80 % CPU) until killed at
+# 21:18 with the user's go-ahead. The load it failed on looks ordinary: the fluid's first pressure residual of the
+# window (0.29) matches the previous window's start (0.30); the tip motion up to the crash is regular (uy 0.034 m, the
+# benchmark's amplitude, nothing growing).
+#   P1 MISSED: crashed at 6.895 s, earlier than r1 (6.911 s).
+#   P2 HELD: not byte-identical to r1; on the window to 6.89 s (the same whole periods, 6.1154-6.8543 s, as the
+#      cut-at-6.9 s scoring) every metric within 0.103 % of the original dt_a run (lift mean -0.103 %, uy mean
+#      -0.018 %, the rest under 0.03 %); r1 is identical to the original there.
+#   P3 HELD: 5.24 coupling iterations per window on average (r1 5.46).
+#   P4 HELD up to the crash: no window above 18 iterations; the fatal window did not stall in the coupling.
+#   P5 NOT EVALUABLE (3.3 h to the crash).
+# Reading: three attempts with different solid and coupling numerics (default solid limit: solid DIRECT stop at 6.902 s;
+# solid limit 40: coupling stall at 6.911 s; plus preCICE's own FSI3 acceleration: solid Newton failure at 6.895 s)
+# agree to 0.1 % up to the end and all fail within 16 ms of the same physical moment, with three different symptoms.
+# So the coupling settings are not the cause; the likeliest cause is the coarse step (not proven). At dt 0.001 s the fluid's maximum Courant number is
+# about 2.77 under PISO (the dt study's own predictions named this as the likeliest failure); dt 0.0005 s (Courant
+# 2.36) ran the full 8 s. Decision (the rule above): P1 missed, so NO FSI2 reruns and no change to the defaults; dt_a
+# stays scored on its record cut at 6.9 s (fsi3_dt_t69.json), FSI2 r1 levels a and c on theirs at 14.0 s (the user's
+# decision 2026-11-24). Both are stated limits on page 17. No further crash work.
 
 [case]
 name = "turek_hron_fsi3_dt_a_r2"

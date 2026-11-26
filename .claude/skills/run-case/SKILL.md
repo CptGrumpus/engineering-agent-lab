@@ -199,8 +199,13 @@ the grid check.
   COUPLING stopped converging (preCICE residual stuck at 0.4-1.4 over seven iterations; IQN-ILS with 15 reused
   windows, about 70 columns) and handed the solid a 0.27 m increment. Read `precice-*-convergence.log` for the crash
   window too: a stalled coupling residual means the next change is the acceleration (fewer reused windows, a
-  stronger filter), not the solid. Raising one limit only moves the crash to the next weakest link. The dead solver
-  process:
+  stronger filter), not the solid. Raising one limit only moves the crash to the next weakest link. Then the
+  acceleration from preCICE's own FSI3 tutorial (r2, 2026-11-25) died at 6.895 s, in the solid on a window's first
+  coupling iteration, on an ordinary-looking load. **Stop rule:** when fixes to different parts of the numerics all
+  fail within a few steps of the same physical time, with different symptoms, and the records agree to 0.1 % up to
+  there, the numerics you are changing are not the cause. Look at what all the attempts share (here the coarse step:
+  Courant 2.77 against 2.36 for the step that ran 8 s), cut and score the record, state the limit, and stop
+  spending runs on it. The dead solver process:
   its abort handler never exits, so the dead process holds a core and the harness waits forever. Check long coupled
   runs by the age of their solver logs, not only the newest time directory: a log untouched for longer than a few
   write intervals while `ps` still lists both participants (or only one) means a hang. Killing a process needs the
