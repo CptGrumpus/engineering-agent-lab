@@ -141,7 +141,12 @@ def failures_panel() -> str:
         sw, n, _fixed, opn = cells
         if opn:
             open_n += 1
-            status = "Open: cause found, fix under test" if "under test" in opn else "Open"
+            if "under test" in opn:
+                status = "Open: cause found, fix under test"
+            elif "runs with" in opn and "fix" in opn:
+                status = "Open: fixed, full-length reruns going"
+            else:
+                status = "Open"
             cls = "warn"
         else:
             status, cls = "Fixed", "pass"
