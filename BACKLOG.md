@@ -85,7 +85,8 @@ commit). Rules that bind:
 | Job | Run dir (log) | Done about | When it finishes |
 |---|---|---|---|
 | Study 6: FSI2 levels a / b / c at alpha -0.05 `turek_hron_fsi2_mesh_{a,b,c}_alpha` (one change from r1; predictions 01:06, 0c1b42a), started 01:12 | `runs/*_turek_hron_fsi2_mesh_?_alpha` (`turek_hron_fsi2_mesh_?_alpha.log`) | a 07:00-10:00, b 08:00-11:00, c 11:00-15:00 | Score P1-P5 per level (P2 from flag.sta); then `scripts/combine_mesh_levels.py` over the three (P4); Results in each header; page 17 (FSI2 rows, Limits, banner); FAILURES.md status cells |
-| Study 6: FSI3 dt_c at alpha -0.05 `turek_hron_fsi3_dt_c_alpha` (predictions 01:06, 0c1b42a), started 01:12 | `runs/*_turek_hron_fsi3_dt_c_alpha` | 2026-11-26 19:00-01:00 | Score P1-P5; the three-level time-step check with dt_a_alpha (cut 7.999 s) and mesh_b, forces included (the open item); page 17 |
+| Study 6: FSI3 dt_c at alpha -0.05 `turek_hron_fsi3_dt_c_alpha` (predictions 01:06, 0c1b42a), started 01:12 | `runs/*_turek_hron_fsi3_dt_c_alpha` | 2026-11-26 19:00-01:00 (at 07:29: 3.84 of 8 s, so about 14:30) | Score P1-P5; the three-level time-step check with dt_a_alpha (cut 7.999 s) and dt_b_alpha, forces included (the open item); page 17 |
+| Study 6: FSI3 level b at alpha -0.05 `turek_hron_fsi3_dt_b_alpha` (mesh_b with one change; predictions 07:34; user's decision about 07:33), QUEUED: starts when at most two coupled runs remain (after FSI2 a and b, about 08:25) | `runs/*_turek_hron_fsi3_dt_b_alpha` (`turek_hron_fsi3_dt_b_alpha.log`) | about 14:00-16:30 | Score P1-P5; it replaces the alpha-0 mesh_b in the time-step check (P4 compares both) |
 
 DONE 04:45, 2026-11-26: CFD2 fourth nested level (run 20261125-193110). Drag verified again (136.843 at 0.3125 mm, GCI 0.107 %,
 extrapolated 136.725); lift 10.4239 / 10.3817 / 10.4310 turns back up (divergent, no estimate): reported, not verified,
