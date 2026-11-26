@@ -7,7 +7,9 @@ A failed run is evidence, not noise: keep it, record it, and put the lesson into
 
 <!-- The site's 'When the Software Broke' panel parses this heading and the 4-column table below it
 (site/extras.py failures_panel; the build asserts on it): keep '## By software (DATE: N failed points in M runs,
-of P points)' and the columns Software | Failed runs | Fixed | Open, or tell the dashboard session. -->
+of P points)' and the columns Software | Failed runs | Fixed | Open, or tell the dashboard session. The ccx_preCICE
+row's status chip keys on its Open cell containing "runs with" and "fix": tell the dashboard session when that cell
+is reworded (for example when the reruns report). -->
 ## By software (2026-11-26: 25 failed points in 22 runs, of 958 points)
 
 | Software | Failed runs | Fixed | Open |
