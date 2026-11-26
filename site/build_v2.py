@@ -122,10 +122,10 @@ VP = [
      "lines": ["CalculiX, half the shaft in 10-node tetrahedra, 0.14 mm on the fillet · Kt and Kts from the model, fatigue by Shigley's method",
                "Left: safety against fillet radius as drawn. Middle: the step scaled up. Right: stress along the drawn fillet",
                "As drawn 1.19 (need 1.5), yield 1.83 (need 2.0) · best fillet that fits 1.47 · d 36 / D 45: 1.62 and 2.52 · hollow dot: unverified"]},
-    {"id": "enclosure", "study": "enclosure", "kind": "figure", "img": "v2/fig_enclosure_revb.svg",
+    {"id": "enclosure", "study": "enclosure", "tab": "Enclosure", "legend": "T", "unit": "°C", "fixed": 0,
      "model": "Sealed aluminium enclosure, 150 × 60 mm section · 15 W inside, still air at 40 °C outside · bare or painted inside",
      "lines": ["OpenFOAM 14, the air and the solids solved together: natural convection, conduction and surface radiation, marched to a settled state",
-               "Left: each part against the client's limit, as drawn and with the bridge. Right: temperature along the board",
+               "Top: as drawn, painted inside. Bottom: the aluminium shell and the 2 W/mK bridge to the lid · each 2 mm cell as solved; the 2D section's solids given 12 mm of depth, the air the sheet behind",
                "As drawn, painted: C1 89 to 91 °C (limit 70) · bare: all four fail · with a 125 °C capacitor and a 2 to 5 W/mK bridge: C1 79 to 82 °C (limit 90), U1 69 to 77 °C"]},
 ]
 VP += [

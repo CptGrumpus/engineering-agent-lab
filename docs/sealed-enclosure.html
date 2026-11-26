@@ -73,7 +73,7 @@
       </div>
       <div class="stage"><div class="vp-parts" id="vp-parts" role="group" aria-label="Results on this page" hidden></div><button class="vp-3d" id="vp-3d" type="button" aria-pressed="false" hidden>Rotate in 3D</button>
       <p class="vp-hint" id="vp-hint" hidden><span class="long">Same surface and colour bands as the render · </span>Drag to turn · <span class="long">scroll or </span>pinch to zoom<span class="long"> · double-click to reset</span></p>
-      <img id="vp-img" src="v2/fig_enclosure_revb.svg" alt="Sealed aluminium enclosure, 150 × 60 mm section · 15 W inside, still air at 40 °C outside · bare or painted inside">
+      <img id="vp-img" src="v2/vp_enclosure.webp" alt="Sealed aluminium enclosure, 150 × 60 mm section · 15 W inside, still air at 40 °C outside · bare or painted inside">
       <svg class="triad" viewBox="0 0 54 54" aria-hidden="true">
         <g stroke-width="1.6" fill="none" stroke-linecap="round">
           <line x1="14" y1="40" x2="44" y2="46" stroke="#ff8f6b"/><line x1="14" y1="40" x2="34" y2="28" stroke="#8fe3a8"/><line x1="14" y1="40" x2="14" y2="8" stroke="#8fb4ff"/>
@@ -132,6 +132,7 @@
     <h2 id="why-it-matters">Why It Matters</h2>
     <p>A sealed box has no fan and no vents, so everything leaves through the walls, and inside it the heat has only weak paths: slow natural convection and radiation. Which of the two carries the load depends on the surface finish, something a drawing often leaves open. Here the finish alone moves U1 by more than 60 K. And a limit written as "hottest component" points the fix at the hottest part, when the part that wears out first may sit somewhere cooler.</p>
     <h2 id="how-it-works">How It Works</h2>
+    <figure><div class="plate"><img src="v2/fig_enclosure_revb.svg" alt="Left: each part's temperature against the client's limit, as drawn and with the bridge; as drawn and painted, C1 is 89 to 91 °C against its 70 °C limit, and as a 125 °C part with the bridge it is 79 to 82 °C against 90. Right: temperature along the board" loading="lazy"></div><figcaption><b>Left: each part against the client's limit</b>, as drawn and with the bridge to the lid. C1 fails as specified with any bridge, and passes as a 125 °C part. <b>Right: the temperature along the board.</b> The bridge pulls down the middle, where U1 sits, more than the ends, where C1 sits.</figcaption></figure>
     <p>The same model runs at the four corners of what isn't known, the board's conductivity and the inside finish:</p>
     <div class="table-wrap">
       <table>
@@ -228,8 +229,9 @@
     </div>
   </div>
 </footer>
-<script>window.VP = [{"id": "enclosure", "study": "enclosure", "kind": "figure", "img": "v2/fig_enclosure_revb.svg", "model": "Sealed aluminium enclosure, 150 × 60 mm section · 15 W inside, still air at 40 °C outside · bare or painted inside", "lines": ["OpenFOAM 14, the air and the solids solved together: natural convection, conduction and surface radiation, marched to a settled state", "Left: each part against the client's limit, as drawn and with the bridge. Right: temperature along the board", "As drawn, painted: C1 89 to 91 °C (limit 70) · bare: all four fail · with a 125 °C capacitor and a 2 to 5 W/mK bridge: C1 79 to 82 °C (limit 90), U1 69 to 77 °C"], "check": "", "card": "enclosure"}];</script>
+<script>window.VP = [{"id": "enclosure", "study": "enclosure", "tab": "Enclosure", "legend": "T", "unit": "°C", "fixed": 0, "model": "Sealed aluminium enclosure, 150 × 60 mm section · 15 W inside, still air at 40 °C outside · bare or painted inside", "lines": ["OpenFOAM 14, the air and the solids solved together: natural convection, conduction and surface radiation, marched to a settled state", "Top: as drawn, painted inside. Bottom: the aluminium shell and the 2 W/mK bridge to the lid · each 2 mm cell as solved; the 2D section's solids given 12 mm of depth, the air the sheet behind", "As drawn, painted: C1 89 to 91 °C (limit 70) · bare: all four fail · with a 125 °C capacitor and a 2 to 5 W/mK bridge: C1 79 to 82 °C (limit 90), U1 69 to 77 °C"], "mesh": "v2/m3d_enclosure.bin", "mesh_kb": 521, "elev": 14, "azim": -68, "img": "v2/vp_enclosure.webp", "bands": ["#3c3286", "#4771e9", "#33adf7", "#18dec0", "#4ef97d", "#a4fc3c", "#dde037", "#fcb136", "#f76f1a", "#d63506", "#9e1001"], "vmin": 45.0, "vmax": 100.0, "check": "Render check: encloses 56 316.1 mm³ of 56 316.1 design · 100.0 % of pixels on the legend", "card": "enclosure"}];</script>
 <script src="assets/viewer.js?v=8e64ba5049"></script>
+<script src="assets/viewer3d.js?v=8e64ba5049"></script>
 <script src="assets/site.js?v=8e64ba5049"></script>
 </body>
 </html>

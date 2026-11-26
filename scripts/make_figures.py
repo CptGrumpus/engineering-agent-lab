@@ -1907,7 +1907,7 @@ def fan_rotor():
     fk.heading(fig, "The 50 mm shaft passes through a critical speed in service; a 65 mm shaft clears the range",
                "ROSS rotor model, bearing stiffness 10⁷ (solid) to 10⁸ N/m (dashed); geometry, speeds and bearings are assumed")
     fk.key(fig, [("meets", "meets", None), ("misses", "misses", None)], y_in=0.66)
-    thumb(fig, resp_ax, "fan_rotor")
+    # the card's thumbnail is the 3D render's (make_study_renders.py)
     fk.save(fig, "fan_rotor")
 
 
@@ -2200,7 +2200,7 @@ def enclosure_revb():
     fk.heading(fig, "No bridge saves the capacitor; a 125 °C capacitor with a bridge passes every limit",
                "The client's per-part limits · settled OpenFOAM runs · each pair: the two board conductivities, or "
                "2 and 5 W/mK bridges")
-    thumb(fig, ax, "enclosure")
+    # the card's thumbnail is the 3D render's (make_study_renders.py)
     fig.savefig(fk.OUT / "fig_enclosure_revb.svg", format="svg", dpi=300, metadata={"Date": None, "Creator": None})
     fk.plt.close(fig)
     print("fig enclosure_revb")
@@ -2398,7 +2398,7 @@ def steel_frame():
     fk.heading(fig, "Every member and both deflections pass; the unbraced beam sets the margin, at 0.80",
                "AISC 360-22, Direct Analysis Method, second order · filled: gravity plus lateral · ring: gravity plus "
                "notional load")
-    thumb(fig, bx, "steel_frame")
+    # the card's thumbnail is the 3D render's (make_study_renders.py)
     fig.savefig(fk.OUT / "fig_steel_frame.svg", format="svg", dpi=300, metadata={"Date": None, "Creator": None})
     fk.plt.close(fig)
     print("fig steel_frame")

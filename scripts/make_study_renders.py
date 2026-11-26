@@ -505,6 +505,103 @@ def scene_fan_rotor():
                                f"mode has no size of its own, so the deflection is drawn exaggerated.")
 
 
+# --------------------------------------------------------------------------- study 27: sealed enclosure
+
+ENC_DEPTH = 12.0       # mm of depth given to the 2D section's solids for the picture; the model is a section
+ENC_AIR = 2.0          # the air's field as a thin sheet behind the solids
+ENC_GAP = 30.0         # between the two sections, stacked
+
+
+def _voxels(ex, ey, mask, val, z0, z1, dy=0.0):
+    """Closed surface of the cells where `mask` holds, each cell extruded from z0 to z1 and coloured by its own value:
+    front and back faces, and side faces only where the neighbour is outside the set. Vertices are per face, so
+    every face carries its cell's value unblended (the finite-volume field as solved)."""
+    xyz, tris, v = [], [], []
+
+    def quad(p, t):
+        k = len(xyz)
+        xyz.extend(p)
+        v.extend([t] * 4)
+        tris.extend([(k, k + 1, k + 2), (k, k + 2, k + 3)])
+
+    ny, nx = mask.shape
+    for i in range(ny):
+        for j in range(nx):
+            if not mask[i, j]:
+                continue
+            x0, x1, y0, y1, t = ex[j], ex[j + 1], ey[i] + dy, ey[i + 1] + dy, val[i, j]
+            quad([(x0, y0, z1), (x1, y0, z1), (x1, y1, z1), (x0, y1, z1)], t)
+            quad([(x0, y0, z0), (x0, y1, z0), (x1, y1, z0), (x1, y0, z0)], t)
+            out = lambda a, b: not (0 <= a < ny and 0 <= b < nx and mask[a, b])  # noqa: E731
+            if out(i, j + 1):
+                quad([(x1, y0, z0), (x1, y1, z0), (x1, y1, z1), (x1, y0, z1)], t)
+            if out(i, j - 1):
+                quad([(x0, y0, z0), (x0, y0, z1), (x0, y1, z1), (x0, y1, z0)], t)
+            if out(i + 1, j):
+                quad([(x0, y1, z0), (x0, y1, z1), (x1, y1, z1), (x1, y1, z0)], t)
+            if out(i - 1, j):
+                quad([(x0, y0, z0), (x1, y0, z0), (x1, y0, z1), (x0, y0, z1)], t)
+    area = sum((ex[j + 1] - ex[j]) * (ey[i + 1] - ey[i]) for i, j in zip(*np.nonzero(mask)))
+    return np.array(xyz), np.array(tris), np.array(v), area * (z1 - z0)
+
+
+def scene_enclosure():
+    """The sealed enclosure's final temperature field, as drawn (top: painted inside, 5 W/mK board) and as
+    recommended (bottom: aluminium shell and a 2 W/mK bridge to the lid), on one scale. Each solid region's cells
+    are given depth and the air's cells form a thin sheet behind them. Gated on the scores the requirements were
+    judged on, through make_figures' readers of the runs' kept final fields."""
+    import make_figures as mf
+
+    d, s = mf._enc_scores()
+    runs = [r["run"] for r in d["runs"]]
+    pick = [(next(k for k in runs if k.endswith("enclosure_k5_eps0p9_e")), ("drawn", 5, 0.9)),
+            (next(k for k in runs if k.endswith("enclosure_fix_k5_eps0p9_br2_long")), ("fix", 2, 0.9))]
+    secs = []
+    for run, key in pick:
+        ex, ey, grid, reg = mf._enc_section(run)
+        sc = s[key]
+        for name, want in (("component", sc["component_max_C"]), ("board", sc["board_max_C"])):
+            if abs(np.nanmax(reg[name][2]) - want) > 0.01:
+                raise RuntimeError(f"{run} {name}: field max {np.nanmax(reg[name][2])} against the score {want}")
+        xc, yc = (ex[1:] + ex[:-1]) / 2, (ey[1:] + ey[:-1]) / 2
+        label = np.full(grid.shape, "", dtype=object)
+        for name, (x, y, _) in reg.items():
+            label[np.abs(yc[:, None] - np.round(y, 3)).argmin(axis=0), np.abs(xc[:, None] - np.round(x, 3)).argmin(axis=0)] = name
+        assert (label != "").all(), run
+        secs.append((ex - ex[0], ey - ey[0], grid, label, sc))
+    vmin = np.floor(min(np.nanmin(g) for _, _, g, _, _ in secs) / 5) * 5
+    vmax = np.ceil(max(np.nanmax(g) for _, _, g, _, _ in secs) / 5) * 5
+    bands = int(round((vmax - vmin) / 5))
+    parts, vol, dy = [], 0.0, 0.0
+    for ex, ey, grid, label, sc in reversed(secs):            # the recommended design at the bottom
+        dx = (secs[0][0][-1] - ex[-1]) / 2                     # centre the narrower section over the wider one
+        solid = label != "fluid"
+        for mask, z0, z1 in ((solid, 0.0, ENC_DEPTH), (~solid, -ENC_AIR, 0.0)):
+            a, t, v, vv = _voxels(ex + dx, ey, mask, grid, z0, z1, dy)
+            parts.append((a, t, v))
+            vol += vv
+        dy += ey[-1] + ENC_GAP
+    xyz, tris, val = [], [], []
+    for a, t, v in parts:
+        tris.append(t + sum(len(q) for q in xyz))
+        xyz.append(a)
+        val.append(v)
+    xyz, tris, val = np.vstack(xyz), np.vstack(tris), np.concatenate(val)
+    # (x, y, z) -> (x, -z, y): the section's height up, its depth away from the camera with the air sheet at the
+    # back; a proper rotation, so the faces keep their winding
+    xyz = np.column_stack([xyz[:, 0], -xyz[:, 2], xyz[:, 1]])
+    drawn, fix = secs[0][4], secs[1][4]
+    return write_scene(BUILD / "enclosure", xyz, tris, val, field="temperature", units="°C", vmin=vmin, vmax=vmax,
+                       bands=bands, band_colors=mr.bands(bands), elev=14, azim=-68, sharp_angle_deg=30,
+                       distance_factor=2.6, frame_box=[[0, -ENC_DEPTH, 0], [secs[0][0][-1], ENC_AIR, dy - ENC_GAP]],
+                       fill=0.95, resolution=[1400, 900], expected_volume_mm3=vol,
+                       title="Sealed enclosure: where the heat sits, as drawn and as recommended",
+                       caption=f"Top, as drawn: U1 {drawn['component_max_C']:.0f} °C, C1 {drawn['C1_board_max_C']:.0f} °C. "
+                               f"Bottom, with the aluminium shell and the bridge to the lid: U1 {fix['component_max_C']:.0f} °C, "
+                               f"C1 {fix['C1_board_max_C']:.0f} °C. A 2D section: the solids are given {ENC_DEPTH:.0f} mm of "
+                               f"depth for the picture, and the air is the sheet behind them.")
+
+
 # --------------------------------------------------------------------------- study 28: steel portal frame
 
 FRAME = REPO / "runs/20261125-231923_steel_frame_portal/points/p00_baseline"
@@ -602,7 +699,7 @@ def scene_steel_frame():
 
 
 SCENES = {"cold_plate_3d": scene_cold_plate_3d, "strap_proof": scene_strap_proof, "bolted_joint_pressure": scene_bolted_joint, "joint_section": scene_joint_section, "cold_plate": scene_cold_plate,
-          "strut": scene_strut, "pv_nozzle": lambda: scene_pv_nozzle(), "steel_frame": scene_steel_frame, "fan_rotor": scene_fan_rotor}
+          "strut": scene_strut, "pv_nozzle": lambda: scene_pv_nozzle(), "steel_frame": scene_steel_frame, "fan_rotor": scene_fan_rotor, "enclosure": scene_enclosure}
 
 
 # --------------------------------------------------------------------------- gates and page assets
