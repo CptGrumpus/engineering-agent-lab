@@ -175,6 +175,13 @@ alt text and a caption, as on the vessel page. For a dimensionless field (a code
 `"fixed": <decimals>` on the entry so the legend reads 0.8, not +8.000e-01. When a render's lit pass misreads, look
 at `build/render/<id>_beauty.png` before touching anything: on the steel frame the midspan web sat in the top
 flange's shadow (1.99 %, then 2.02 %); a lower camera fixed the picture itself. Change the view, never the gate.
+The renderer's up is +z and its azimuth follows matplotlib (-90 looks from -y, so -60 to -70 is front-left), so
+lay a 2D section's height along z with a proper rotation (det +1, faces keep their winding). Deep hollow parts
+shadow their own insides: the enclosure's air misread 7.2 % inside a 30 mm-deep shell and 0.38 % at 12 mm. Look
+where the result's peak is before accepting a camera: the shaft's first view passed every gate with the fillet's
+peak hidden behind the shoulder. `make_study_renders.publish` writes `th_<id>.webp`, and so does
+`make_figures.thumb()`; for a study with a render, remove its `thumb()` call or the next figure run swaps the
+card back to the chart.
 
 ## Editing the source safely
 
