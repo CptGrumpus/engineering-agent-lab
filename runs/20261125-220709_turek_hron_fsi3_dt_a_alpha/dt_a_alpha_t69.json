@@ -1,0 +1,186 @@
+{
+ "t_end_s": 6.9,
+ "parameter": "time_step_s",
+ "runs": [
+  {
+   "run": "20261125-220709_turek_hron_fsi3_dt_a_alpha",
+   "point_status_in_harness": "failed",
+   "record_end_s": 7.999,
+   "t_end_s": 6.9,
+   "windows": 6900,
+   "coupling_iterations_mean": 5.397826086956521,
+   "period_window_s": [
+    6.1155860866469345,
+    6.854458021393867
+   ],
+   "parameters": {
+    "solid_density_kg_per_m3": 1000.0,
+    "shear_modulus_Pa": 2000000.0,
+    "poisson_ratio": 0.4,
+    "fluid_density_kg_per_m3": 1000.0,
+    "kinematic_viscosity_m2_per_s": 0.001,
+    "mean_velocity_m_per_s": 2.0,
+    "fluid_cell_size_m": 0.0025,
+    "solid_element_size_mm": 2.5,
+    "time_step_s": 0.001,
+    "end_time_s": 8.0,
+    "benchmark_ux_A_m": -0.00288,
+    "benchmark_uy_A_m": 0.00147,
+    "benchmark_drag_N_per_m": 460.5,
+    "benchmark_lift_N_per_m": 2.5,
+    "benchmark_ux_A_mean": -0.00288,
+    "benchmark_ux_A_amp": 0.00272,
+    "benchmark_ux_A_freq_Hz": 10.93,
+    "benchmark_uy_A_mean": 0.00147,
+    "benchmark_uy_A_amp": 0.03499,
+    "benchmark_uy_A_freq_Hz": 5.46,
+    "benchmark_drag_mean": 460.5,
+    "benchmark_drag_amp": 27.74,
+    "benchmark_drag_freq_Hz": 10.93,
+    "benchmark_lift_mean": 2.5,
+    "benchmark_lift_amp": 153.91,
+    "benchmark_lift_freq_Hz": 5.46
+   },
+   "metrics": {
+    "ux_A_mean": -0.0026337871075,
+    "ux_A_amp": 0.0024770516824999997,
+    "ux_A_freq_Hz": 10.826801397428078,
+    "uy_A_mean": 0.0014586179500000011,
+    "uy_A_amp": 0.033390564250000004,
+    "uy_A_freq_Hz": 5.41526458106718,
+    "drag_mean": 468.2517220615,
+    "drag_amp": 23.860945346500017,
+    "drag_freq_Hz": 10.824852556813266,
+    "lift_mean": 8.998611747149994,
+    "lift_amp": 147.57312477214998,
+    "lift_freq_Hz": 5.41171198258129,
+    "ux_A_m": -0.00469477348,
+    "uy_A_m": 0.0348582775,
+    "drag_N_per_m": 461.06585763600003,
+    "lift_N_per_m": -35.8677417133,
+    "ux_A_mean_deviation_pct": 8.549058767361114,
+    "ux_A_amp_deviation_pct": 8.931923437500016,
+    "ux_A_freq_Hz_deviation_pct": 0.9441775166690031,
+    "uy_A_mean_deviation_pct": 0.032529436981991476,
+    "uy_A_amp_deviation_pct": 4.5711224635610055,
+    "uy_A_freq_Hz_deviation_pct": 0.8193300170846187,
+    "drag_mean_deviation_pct": 1.6833272663409347,
+    "drag_amp_deviation_pct": 13.983614468276789,
+    "drag_freq_Hz_deviation_pct": 0.9620077144257464,
+    "lift_mean_deviation_pct": 4.222345362322132,
+    "lift_amp_deviation_pct": 4.117260235104942,
+    "lift_freq_Hz_deviation_pct": 0.8843959234196037,
+    "ux_A_deviation_pct": NaN,
+    "uy_A_deviation_pct": NaN,
+    "drag_deviation_pct": NaN,
+    "lift_deviation_pct": NaN
+   },
+   "checks": [
+    {
+     "id": "mesh",
+     "description": "checkMesh reports Mesh OK (1 = failed)",
+     "kind": "numerical",
+     "value": 0.0,
+     "tolerance": 0.5,
+     "comparison": "<=",
+     "status": "PASS"
+    },
+    {
+     "id": "coupling_converged",
+     "description": "coupling windows up to 6.9 s that hit the iteration limit without converging",
+     "kind": "numerical",
+     "value": 0.0,
+     "tolerance": 0.5,
+     "comparison": "<=",
+     "status": "PASS"
+    },
+    {
+     "id": "periodic",
+     "description": "periodic state: max of |uy(A) amplitude, last period - the one before| / amplitude and the same for the drag mean",
+     "kind": "numerical",
+     "value": 0.00013392406209475035,
+     "tolerance": 0.02,
+     "comparison": "<=",
+     "status": "PASS"
+    },
+    {
+     "id": "force_transfer",
+     "description": "force transfer per coupling window over 6.11559-6.85446 s (preCICE watch-integrals)",
+     "kind": "numerical",
+     "value": 3.0696542040335355e-09,
+     "tolerance": 0.001,
+     "comparison": "<=",
+     "status": "PASS"
+    }
+   ],
+   "checks_from_the_finished_run": {},
+   "not_evaluated": [
+    "inflow_profile",
+    "flag_cells"
+   ],
+   "requirements": [
+    {
+     "id": "REQ-FSI3-1",
+     "metric": "uy_A_amp_deviation_pct",
+     "value": 4.5711224635610055,
+     "limit": 5.0,
+     "status": "PASS"
+    },
+    {
+     "id": "REQ-FSI3-2",
+     "metric": "uy_A_freq_Hz_deviation_pct",
+     "value": 0.8193300170846187,
+     "limit": 3.0,
+     "status": "PASS"
+    },
+    {
+     "id": "REQ-FSI3-3",
+     "metric": "drag_mean_deviation_pct",
+     "value": 1.6833272663409347,
+     "limit": 5.0,
+     "status": "PASS"
+    },
+    {
+     "id": "REQ-FSI3-4",
+     "metric": "drag_amp_deviation_pct",
+     "value": 13.983614468276789,
+     "limit": 25.0,
+     "status": "PASS"
+    },
+    {
+     "id": "REQ-FSI3-5",
+     "metric": "lift_amp_deviation_pct",
+     "value": 4.117260235104942,
+     "limit": 10.0,
+     "status": "PASS"
+    },
+    {
+     "id": "REQ-FSI3-6",
+     "metric": "ux_A_mean_deviation_pct",
+     "value": 8.549058767361114,
+     "limit": 15.0,
+     "status": "PASS"
+    }
+   ],
+   "transfer": {
+    "transfer_mapping_max_rel": 0.0,
+    "transfer_fluid_max_rel": 3.0696542040335355e-09,
+    "transfer_windows": 739,
+    "transfer_from_s": 6.1155860866469345,
+    "transfer_to_s": 6.854458021393867
+   }
+  }
+ ],
+ "run_checks": [
+  {
+   "id": "mesh_convergence_gci",
+   "description": "needs >= 3 completed mesh levels",
+   "kind": "numerical",
+   "value": Infinity,
+   "tolerance": 0.0,
+   "comparison": "<=",
+   "status": "FAIL"
+  }
+ ],
+ "run_detail": {}
+}

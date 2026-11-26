@@ -23,6 +23,30 @@
 #   P1 held but P3 missed (a change over 1 %) -> the damping changes the answer; report it, and prefer the smaller
 #   step. P1 missed -> the hypothesis is wrong for this case; the crash stays a stated limit.
 
+#
+# Results (run 20261125-220709_turek_hron_fsi3_dt_a_alpha, 22:07-00:58, scored 2026-11-26 01:05). The physics ran
+# to the last window: 7,999 of 8,000 windows converged, Newton at 2 iterations in all 44,948 solid attempts. Then the
+# solid aborted ('malloc(): unsorted double linked list corrupted', SIGABRT, no hang: the Open MPI fix held) on a
+# DIFFERENT fault, at the end of the run: preCICE shortened the last window to 0.000999999999999446 s to land on
+# max-time 8; CalculiX, clipping its increment to its own step remainder, advanced about 1e-12 s less; preCICE asked
+# for a 1e-12 s sub-step and CalculiX took dt = 0. Fixed (models/fsi/turek_hron_fsi.py: preCICE ends on a whole number
+# of windows, the solid's step runs 10 steps past the end; tests/test_turek_hron_fsi.py), tested on a 0.1 s coupled
+# run of this case (both participants exit 0, 100 windows, watch-point bit-identical to this run's). The alpha-0 dt_c
+# run died on its last step (7.99975 s) too, most likely the same fault. The harness marks the point failed; the kept
+# files are complete to 7.999 s, scored by scripts/score_truncated_fsi.py (dt_a_alpha_t8.json in the run, cut 7.999 s;
+# and cut at 6.9 s for P3): every evaluable point check passes (mesh, coupling 0 unconverged, periodic 2.1e-5, force
+# transfer 3.1e-9) and every requirement passes: uy amplitude 33.395 mm (4.56 % from the benchmark), frequency 5.4153
+# Hz (0.82 %), drag mean 468.24 N/m (1.68 %), drag amplitude 23.87 (13.9 %), lift amplitude 147.6 (4.10 %), ux mean
+# -2.635 mm (8.52 %). The first FSI3 dt_a record over the full 8 s.
+#   P1 MISSED as worded (the solver aborted at the end); the simulation reached the last window and every evaluable
+#      check passes. P2 HELD (2 throughout; alpha 0: 4 by 6 s, 14-18 at 6.9 s). P3 HELD: to 6.9 s against the alpha-0
+#      record, uy amplitude and frequency unchanged (0.000 %), drag mean +0.002 %, drag amplitude -0.012 %, lift
+#      amplitude -0.057 %, ux mean -0.003 %. P4 MISSED: 2 h 51 min, faster than 4.5-6 h (no creep: about 5.6 coupling
+#      iterations per window, every solid attempt 2 Newton iterations).
+#   Decision rule: P2 held and P1's miss is the separate end-of-run fault (fixed and tested), so the cause of the
+#   crashes is the undamped solid integrator. Per the user's decision, the four reruns at alpha -0.05 follow:
+#   turek_hron_fsi2_mesh_{a,b,c}_alpha and turek_hron_fsi3_dt_c_alpha (predictions 01:06, committed before the runs).
+
 [case]
 name = "turek_hron_fsi3_dt_a_alpha"
 model = "openfoam_ccx_precice_fsi"

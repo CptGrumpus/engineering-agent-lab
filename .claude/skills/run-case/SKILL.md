@@ -213,9 +213,10 @@ the grid check.
   acceleration from preCICE's own FSI3 tutorial (r2, 2026-11-25) died at 6.895 s, in the solid on a window's first
   coupling iteration, on an ordinary-looking load. **Stop rule:** when fixes to different parts of the numerics all
   fail within a few steps of the same physical time, with different symptoms, and the records agree to 0.1 % up to
-  there, the numerics you are changing are not the cause. Look at what all the attempts share (here the coarse step:
-  Courant 2.77 against 2.36 for the step that ran 8 s), cut and score the record, state the limit, and stop
-  spending runs on it. The dead solver process:
+  there, the numerics you are changing are not the cause. Look at what all the attempts share, settings never
+  changed included (here first read as the coarse step; it was the undamped solid integrator, alpha 0, shared by
+  every attempt: alpha -0.05 alone cured it, 2026-11-26, Newton at 2 in all 44,948 attempts, metrics within
+  0.06 %), and test that one shared thing alone, or cut and score the record and state the limit. The dead solver process:
   its abort handler never exits, so the dead process holds a core and the harness waits forever. **Fixed
   2026-11-25:** the handler is Open MPI's (`opal_signal` 6,7,8,11; preCICE links Open MPI 4.1.2), which prints a
   backtrace from the corrupted heap and spins. `export OMPI_MCA_opal_signal=""` before launching a participant
@@ -229,6 +230,14 @@ the grid check.
   and coupling logs, and `scripts/score_truncated_fsi.py OUT.json --t-end T RUN...` applies the study's own metrics,
   point checks and run-level check to records cut at T, every level on the same window (it reproduces a finished
   run's harness metrics exactly at its full length). Ask before choosing between that and a rerun.
+- **Check how a coupled run ends, not only how it runs.** Ending a preCICE coupling on `max-time` makes preCICE
+  shorten the last window to a float remainder (8 - 7.999000000000001 = 0.000999999999999446 s); a solver that also
+  clips its increment to its own step's end (CalculiX, from its accumulated step fraction) can come up about 1e-12 s
+  short, preCICE then asks for a 1e-12 s sub-step and CalculiX takes dt = 0 and corrupts its heap (FSI3 dt_a alpha
+  -0.05, 2026-11-26: 7,999 good windows, then SIGABRT; FSI3 dt_c's last-step crash was most likely the same). Whether
+  a given end time trips it depends on round-off, so it cannot be predicted (an emulation of both clocks did not
+  reproduce it). End on `max-time-windows` (an integer) and give the participant's own step a margin past the end
+  (`models/fsi/turek_hron_fsi.py`), then confirm on a short coupled run that both participants exit 0.
 - **Settling time depends on the corner, not only the model.** Study 11's emissivity-0.1 corners had a time constant
   of about 534 s against 242 s at 0.9 (radiation carried 22 % of the heat instead of 75 %), so a 2,400 s run sized from
   one prototype corner left them unsettled (0.62 K over the last tenth against 0.3). Size the run length from the

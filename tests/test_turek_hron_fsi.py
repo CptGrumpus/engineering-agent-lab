@@ -38,6 +38,20 @@ def test_solid_is_si_and_as_thick_as_the_fluid_is_deep(case):
     assert "*DYNAMIC, ALPHA=-0.3" in text and "NLGEOM" in text
 
 
+def test_run_ends_on_whole_windows_and_the_solid_step_outlasts_it(case):
+    # FSI3 dt_a alpha -0.05 (2026-11-26): the solid step ending at the coupled end time left a 1e-12 s sub-step,
+    # CalculiX took dt = 0 and aborted. preCICE must end on a window count, the solid step must run past it
+    root, _ = case
+    xml = (root / "precice-config.xml").read_text(encoding="utf-8")
+    assert '<max-time-windows value="200" />' in xml and "<max-time " not in xml
+    deck = (root / "solid/flag.inp").read_text(encoding="utf-8").splitlines()
+    i = next(k for k, ln in enumerate(deck) if ln.startswith("*DYNAMIC"))
+    dt, period = (float(v) for v in deck[i + 1].split(","))
+    assert dt == 0.005 and period == pytest.approx(1.0 + 10 * 0.005)
+    with pytest.raises(ValueError, match="whole number of time steps"):
+        W.write_precice({**FSI1, "end_time_s": 1.0025}, {}, root / "bad.xml")
+
+
 def test_wetted_set_excludes_the_clamped_root(case):
     root, _ = case
     text = (root / "solid/flag.inp").read_text(encoding="utf-8")

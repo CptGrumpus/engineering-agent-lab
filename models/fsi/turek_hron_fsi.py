@@ -328,6 +328,11 @@ def write_solid(params: dict, numerics: dict, d: Path) -> dict:
     rho = float(params["solid_density_kg_per_m3"])
     dt, t_end = float(params["time_step_s"]), float(params["end_time_s"])
     alpha = float(numerics.get("solid_alpha", 0.0))
+    # the step runs 10 time steps past the coupled end time, so CalculiX never clips an increment to the step's
+    # remainder: preCICE ends the run (on a whole number of time windows, write_precice). With the step ending at
+    # t_end, FSI3 dt_a with alpha -0.05 (2026-11-26) completed 8 s and then crashed: CalculiX's own clock was
+    # about 1e-12 s short of preCICE's at the last window, preCICE asked for a 1e-12 s sub-step, CalculiX took
+    # dt = 0 and its heap was corrupted ("malloc(): unsorted double linked list corrupted", SIGABRT)
     nodes = []
     for line in m.node_lines():                                  # mm -> m
         i, x, y, z = line.split(",")
@@ -343,7 +348,7 @@ def write_solid(params: dict, numerics: dict, d: Path) -> dict:
             + [f"{e}, " + ", ".join(str(v) for v in n) for e, n in m.connectivity().items()] + sets
             + ["*MATERIAL, NAME=EL", "*ELASTIC", f"{E!r}, {nu!r}", "*DENSITY", f"{rho!r}",
                "*SOLID SECTION, ELSET=Eall, MATERIAL=EL",
-               "*STEP, NLGEOM, INC=1000000", f"*DYNAMIC, ALPHA={alpha!r}, DIRECT", f"{dt!r}, {t_end!r}"]
+               "*STEP, NLGEOM, INC=1000000", f"*DYNAMIC, ALPHA={alpha!r}, DIRECT", f"{dt!r}, {t_end + 10 * dt!r}"]
             + _iteration_controls(numerics)
             + ["*BOUNDARY", "Nfix, 1, 3", "*BOUNDARY", "Nall, 3",
                "*CLOAD", " Nsurface, 1, 0.0", " Nsurface, 2, 0.0", " Nsurface, 3, 0.0",
@@ -370,6 +375,11 @@ def write_precice(params: dict, numerics: dict, path: Path) -> None:
     dt, t_end = float(params["time_step_s"]), float(params["end_time_s"])
     radius = float(numerics.get("rbf_support_radius_m", 0.05))
     tol = float(numerics.get("coupling_rel_tol", 1e-4))
+    # end on a whole number of time windows, not on max-time: a float time sum never shortens the last window to a
+    # round-off remainder (see write_solid)
+    n_windows = round(t_end / dt)
+    if abs(t_end / dt - n_windows) > 1e-9:
+        raise ValueError(f"end time {t_end} is not a whole number of time steps ({dt})")
     _w(path, f"""<?xml version="1.0" encoding="UTF-8" ?>
 <precice-configuration>
   <log>
@@ -408,7 +418,7 @@ def write_precice(params: dict, numerics: dict, path: Path) -> None:
   <m2n:sockets acceptor="Fluid" connector="Solid" exchange-directory=".." />
   <coupling-scheme:parallel-implicit>
     <time-window-size value="{dt!r}" />
-    <max-time value="{t_end!r}" />
+    <max-time-windows value="{n_windows}" />
     <participants first="Fluid" second="Solid" />
     <exchange data="Force" mesh="Solid-Mesh" from="Fluid" to="Solid" />
     <exchange data="Displacement" mesh="Solid-Mesh" from="Solid" to="Fluid" />
