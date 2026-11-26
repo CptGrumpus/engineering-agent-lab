@@ -28,6 +28,19 @@
 #      a stated limit (the damping does not change the fluid's mesh dependence).
 #   P5 Wall time side by side with the other runs: a 6-9 h, b 7-10 h, c 10-14 h.
 # This file: level a, 3.54 mm.
+#
+# Results (run 20261126-011217_turek_hron_fsi2_mesh_a_alpha, 01:12-08:18, scored 2026-11-26 08:25). VERIFICATION
+# PASS, 7/7 checks (flag cells 118 deg, periodic 1.5e-4, coupling converged), every requirement PASS: over the last
+# periods to 15 s uy amplitude 81.647 mm (0.057 %), frequency 1.93109 Hz (0.056 %), drag mean 218.10 N/m (1.41 %),
+# drag amplitude 77.27 (0.49 %), lift amplitude 241.91 (1.73 %), ux mean -14.849 mm (0.007 %).
+#   P1 HELD: 15 s reached; both participants ended normally (CalculiX "Total CalculiX Time", OpenFOAM "End"; the
+#      harness reports completed); every point check passes. The alpha-0 runs of this level died at 14.009-14.01 s.
+#   P2 HELD: 2 Newton iterations in every one of 105,331 solid attempts, to 15.0 s (solid_newton_counts.json).
+#   P3 HELD, far inside: to 14.0 s (a_alpha_t14.json, scripts/score_truncated_fsi.py) against the alpha-0 record:
+#      uy amplitude +0.001 %, frequency 0.000 %, drag mean -0.003 %, drag amplitude -0.007 %, lift amplitude -0.017 %,
+#      ux mean +0.002 %.
+#   P4 waits for levels b and c (scored in cases/turek_hron_fsi2_mesh_c_alpha.toml).
+#   P5 HELD: 7 h 06 min (predicted 6-9 h).
 
 [case]
 name = "turek_hron_fsi2_mesh_a_alpha"
