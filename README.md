@@ -54,6 +54,11 @@ The intended user is an automotive engineer with a master's degree in mechanical
 | Natural convection in a square cavity (de Vahl Davis) | `openfoam_cavity` | OpenFOAM 14 (in WSL), fluid solver, Boussinesq | `cavity_devahldavis`, `cavity_mesh_ra1e6` |
 | Grey-surface radiation between concentric cylinders | `openfoam_annulus_radiation` | OpenFOAM 14, fluid solver with fvDOM | `annulus_angular`, `annulus_emissivity` |
 | Sealed electronics enclosure (conjugate heat transfer, convection and radiation; shell and bridge redesign) | `openfoam_enclosure_cht` | OpenFOAM 14 (in WSL), foamMultiRun: air, board, component, optional aluminium shell and bridge, fvDOM | `enclosure_k{5,20}_eps0p{1,9}`, `enclosure_k20_eps0p9_mesh1mm`, `enclosure_fix_k5_eps0p{1,9}_{shell,br1,br2,br5,br20}` |
+| Bracket random vibration (PSD base input; RMS stress, fatigue damage, displacement) | `cadquery_ccx_random` | CadQuery -> Gmsh -> CalculiX modal, then random response | `bracket_random_mesh` |
+| Bracket random vibration under uncertain inputs (Sobol indices, FORM, importance sampling) | `cadquery_ccx_random_uq` | CalculiX random response with `harness/uncertainty.py` | `bracket_random_uq` |
+| Cracked plate, fatigue crack growth (K, Paris life, inspection interval) | `gmsh_ccx_edge_crack` | Gmsh -> CalculiX plane strain, quarter-point tip elements; Paris integration in Python | `edge_crack_mesh`, `edge_crack_mesh_r1`, `edge_crack_mesh_r2`, `edge_crack_noise` |
+| Backward-facing step, separated turbulent flow (reattachment, skin friction, pressure recovery) | `openfoam_step_rans` | OpenFOAM 14 (in WSL), k-omega SST | `step_mesh`, `step_inlet_tu`, `step_outlet` |
+| Fan rotor critical speeds (Campbell diagram, unbalance response) | `ross_rotor` | ROSS 3.1 (own environment), Timoshenko shaft elements | `rotor_fan_mesh`, `rotor_fan_design` |
 
 ## Project folders
 

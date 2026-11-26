@@ -141,7 +141,8 @@ per problem type:
 11. **Tests:** `.venv/Scripts/python.exe -m pytest -q -p no:cacheprovider`.
 12. **Docs:** add the model to the tables in `run-case` and
     `verify-against-reference`, the README studies table, and PORTFOLIO if it is a
-    portfolio piece. `tests/test_skill_harness.py` enforces the two skill tables:
+    portfolio piece. `tests/test_skill_harness.py` enforces the two skill tables,
+    `tests/test_case_records.py` the README table (five models were missing on 2026-11-25):
     run it before committing a new model (studies 11 and 12 skipped this step
     and the test stayed red until the shaft study's commit).
 13. **Commit curated evidence** with `git add -f`, leaving out bulky result CSVs,

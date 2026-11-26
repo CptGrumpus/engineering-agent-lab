@@ -280,7 +280,9 @@ range). Ask for it. If the user wants to proceed anyway, choose a value, mark it
   commit that says the predictions are unchanged.
 - After the run, score every prediction in a Results block in the header: HELD,
   PARTLY or MISSED, with the reason. Misses stay in; they are the record of what
-  the model taught you.
+  the model taught you. Edit only comments then: `tests/test_case_records.py` fails when a
+  case's settings no longer equal its latest committed run's `inputs/case.toml`; a
+  changed setting is a new case or revision, never an edit after the run.
 
 ## Output
 
