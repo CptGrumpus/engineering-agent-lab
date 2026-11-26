@@ -28,6 +28,25 @@
 #      a stated limit (the damping does not change the fluid's mesh dependence).
 #   P5 Wall time side by side with the other runs: a 6-9 h, b 7-10 h, c 10-14 h.
 # This file: level c, 1.77 mm.
+#
+# Results (run 20261126-011223_turek_hron_fsi2_mesh_c_alpha, 01:12-11:34, scored 2026-11-26 11:45). VERIFICATION
+# PASS, 7/7 checks (flag cells 122 deg, periodic 1.9e-4, force transfer 2.3e-9), every requirement PASS: over the last
+# periods to 15 s uy amplitude 82.870 mm (1.56 %), frequency 1.93290 Hz (0.15 %), drag mean 218.43 N/m (1.57 %),
+# drag amplitude 79.90 (2.90 %), lift amplitude 245.13 (3.08 %), ux mean -15.234 mm (2.59 %).
+#   P1 HELD (all three levels): 15 s reached, both participants ended normally on every level (CalculiX "Job
+#      finished", OpenFOAM "End"), every point check passes. The alpha-0 run of this level died at 14.047 s.
+#   P2 HELD (all three): 2 Newton iterations in every solid attempt, here 107,493 to 15.0 s (a 105,331, b 110,107).
+#   P3 HELD: to 14.0 s (c_alpha_t14.json) against the alpha-0 record: uy amplitude +0.008 %, frequency -0.001 %, drag
+#      mean -0.008 %, drag amplitude -0.049 %, lift amplitude -0.108 %, ux mean +0.005 % (limits 0.3 % / 1 %).
+#   P4 HELD: the three-level check over the full 15 s (mesh_levels_alpha.json, scripts/combine_mesh_levels.py, a / b /
+#      c alpha) classifies exactly as the alpha-0 check at 14.0 s: frequency converged (0.066 %, oscillatory);
+#      uy amplitude monotone, GCI 1.43 % (alpha 0: 1.41 %), extrapolated 83.82 mm; drag amplitude monotone 3.75 %
+#      (3.71 %); ux mean monotone 2.09 % (2.13 %); drag mean divergent (218.10 / 217.90 / 218.43, oscillating,
+#      growing) and lift amplitude divergent (241.91 / 243.42 / 245.13, the increments growing, ratio 1.13).
+#      Run-level FAIL again: the amplitudes' mesh convergence stays a stated limit; every level passes every
+#      requirement; the extrapolated uy amplitude (83.82 mm) is 2.7 % above the benchmark's 81.6 mm, inside the
+#      5 % limit, so the verdict holds at the extrapolated value too.
+#   P5 HELD: 10 h 22 min (predicted 10-14 h).
 
 [case]
 name = "turek_hron_fsi2_mesh_c_alpha"

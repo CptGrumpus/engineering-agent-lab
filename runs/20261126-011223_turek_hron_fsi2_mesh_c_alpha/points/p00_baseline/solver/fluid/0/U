@@ -1,0 +1,37 @@
+FoamFile
+{
+    version 2.0;
+    format      ascii;
+    class       volVectorField;
+    object      U;
+}
+
+dimensions      [0 1 -1 0 0 0 0];
+internalField   uniform (0 0 0);
+boundaryField
+{
+    inlet
+    {
+        type            codedFixedValue;
+        value           uniform (0 0 0);
+        name            turekHronInlet;
+        code
+        #{
+            const vectorField& Cf = patch().Cf();
+            vectorField& field = *this;
+            const scalar t = this->db().time().value();
+            const scalar H = 0.41, Um = 1.0, T = 2.0;
+            const scalar ramp = (T > 0 && t < T) ? 0.5*(1.0 - Foam::cos(constant::mathematical::pi*t/T)) : 1.0;
+            forAll(Cf, i)
+            {
+                const scalar y = Cf[i].y();
+                field[i] = vector(1.5*Um*4.0*y*(H - y)/(H*H)*ramp, 0, 0);
+            }
+        #};
+    }
+    outlet       { type zeroGradient; }
+    walls        { type noSlip; }
+    cylinder     { type noSlip; }
+    flag         { type movingWallVelocity; value uniform (0 0 0); }
+    frontAndBack { type empty; }
+}

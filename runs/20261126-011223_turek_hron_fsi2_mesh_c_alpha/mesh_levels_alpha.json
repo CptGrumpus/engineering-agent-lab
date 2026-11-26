@@ -1,0 +1,136 @@
+{
+ "runs": [
+  "20261126-011217_turek_hron_fsi2_mesh_a_alpha",
+  "20261126-011220_turek_hron_fsi2_mesh_b_alpha",
+  "20261126-011223_turek_hron_fsi2_mesh_c_alpha"
+ ],
+ "parameter": "fluid_cell_size_m",
+ "values": [
+  0.0035355339,
+  0.0025,
+  0.001767767
+ ],
+ "checks": [
+  {
+   "id": "discretization_uy_A_amp",
+   "description": "relative discretization uncertainty of uy_A_amp, monotone (R = 0.660): GCI_fine, observed order 1.20, extrapolated 0.0838153",
+   "kind": "numerical",
+   "value": 0.014257922251754476,
+   "tolerance": 0.01,
+   "comparison": "<=",
+   "status": "FAIL",
+   "metric": "uy_A_amp_deviation_pct"
+  },
+  {
+   "id": "discretization_uy_A_freq_Hz",
+   "description": "relative discretization uncertainty of uy_A_freq_Hz, oscillatory (R = -0.113): 1.25 x half-range of the 3 finest solutions",
+   "kind": "numerical",
+   "value": 0.0006612091659210172,
+   "tolerance": 0.01,
+   "comparison": "<=",
+   "status": "PASS",
+   "metric": "uy_A_freq_Hz_deviation_pct"
+  },
+  {
+   "id": "discretization_drag_mean",
+   "description": "relative discretization uncertainty of drag_mean, divergent (oscillating, growing) (R = -2.593): no estimate",
+   "kind": "numerical",
+   "value": Infinity,
+   "tolerance": 0.01,
+   "comparison": "<=",
+   "status": "FAIL",
+   "metric": "drag_mean_deviation_pct"
+  },
+  {
+   "id": "discretization_drag_amp",
+   "description": "relative discretization uncertainty of drag_amp, monotone (R = 0.690): GCI_fine, observed order 1.07, extrapolated 82.3033",
+   "kind": "numerical",
+   "value": 0.03754080304151547,
+   "tolerance": 0.01,
+   "comparison": "<=",
+   "status": "FAIL",
+   "metric": "drag_amp_deviation_pct"
+  },
+  {
+   "id": "discretization_lift_amp",
+   "description": "relative discretization uncertainty of lift_amp, divergent (R = 1.133): no estimate",
+   "kind": "numerical",
+   "value": Infinity,
+   "tolerance": 0.01,
+   "comparison": "<=",
+   "status": "FAIL",
+   "metric": "lift_amp_deviation_pct"
+  },
+  {
+   "id": "discretization_ux_A_mean",
+   "description": "relative discretization uncertainty of ux_A_mean, monotone (R = 0.631): GCI_fine, observed order 1.33, extrapolated -0.0154887",
+   "kind": "numerical",
+   "value": 0.02087700424333686,
+   "tolerance": 0.01,
+   "comparison": "<=",
+   "status": "FAIL",
+   "metric": "ux_A_mean_deviation_pct"
+  }
+ ],
+ "detail": {
+  "meshes_used": [
+   "20261126-011223_turek_hron_fsi2_mesh_c_alpha/p00_baseline",
+   "20261126-011220_turek_hron_fsi2_mesh_b_alpha/p00_baseline",
+   "20261126-011217_turek_hron_fsi2_mesh_a_alpha/p00_baseline"
+  ],
+  "uy_A_amp": {
+   "regime": "monotone",
+   "uncertainty": 0.014257922251754476,
+   "converged_exactly": false,
+   "order": 1.1981063679924016,
+   "extrapolated": 0.08381527294894864,
+   "rel_error_fine": 0.005871094212499314,
+   "rel_error_extrapolated": 0.011277700539427829,
+   "gci_fine": 0.014257922251754476,
+   "convergence_ratio": 0.6601870457198562,
+   "r21": 1.414213524746191,
+   "r32": 1.4142135599999999
+  },
+  "uy_A_freq_Hz": {
+   "regime": "oscillatory",
+   "convergence_ratio": -0.11293660782100372,
+   "uncertainty": 0.0006612091659210172
+  },
+  "drag_mean": {
+   "regime": "divergent (oscillating, growing)",
+   "uncertainty": Infinity,
+   "convergence_ratio": -2.593412725421004
+  },
+  "drag_amp": {
+   "regime": "monotone",
+   "uncertainty": 0.03754080304151547,
+   "converged_exactly": false,
+   "order": 1.0693585432978239,
+   "extrapolated": 82.30329660829403,
+   "rel_error_fine": 0.013473245008915072,
+   "rel_error_extrapolated": 0.029156981241164743,
+   "gci_fine": 0.03754080304151547,
+   "convergence_ratio": 0.6903120844971725,
+   "r21": 1.414213524746191,
+   "r32": 1.4142135599999999
+  },
+  "lift_amp": {
+   "regime": "divergent",
+   "uncertainty": Infinity,
+   "convergence_ratio": 1.1326934015448777
+  },
+  "ux_A_mean": {
+   "regime": "monotone",
+   "uncertainty": 0.02087700424333686,
+   "converged_exactly": false,
+   "order": 1.3300435501144983,
+   "extrapolated": -0.015488697930911427,
+   "rel_error_fine": 0.00978032781995077,
+   "rel_error_extrapolated": 0.01642724211204587,
+   "gci_fine": 0.02087700424333686,
+   "convergence_ratio": 0.6306791510005229,
+   "r21": 1.414213524746191,
+   "r32": 1.4142135599999999
+  }
+ }
+}
