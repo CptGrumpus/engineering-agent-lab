@@ -921,7 +921,8 @@ pages = [home_page(facts)] + [study_page(c[0]) for c in GALLERY] + [
     text_page("how-i-work.html", "how.html", "How I work", "How I work: the same method for every study",
               "Requirements first, a model built as code, every number checked against something independent, and a "
               "report that links each requirement to its evidence. Where the AI agent fits, and the mistakes the checks caught.",
-              "how-i-work", {"{{TERMINAL}}": term_html, "{{CAPS}}": extras.CAPS, "{{CODE_FACTS}}": extras.code_facts(facts)}),
+              "how-i-work", {"{{TERMINAL}}": term_html, "{{CAPS}}": extras.CAPS, "{{CODE_FACTS}}": extras.code_facts(facts),
+                            "{{FAILURES}}": extras.failures_panel()}),
     text_page("grading.html", "grading.html", "Grading tasks", "Try grading an engineering answer",
               f"{TASK_WORDS[len(gdata)].capitalize()} engineering evaluation tasks built from verified simulation studies, each "
               "with a reference solution and an automated grader you can try on the page.",

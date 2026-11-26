@@ -36,6 +36,21 @@
     });
   }
 
+  // light or dark: the system setting until the reader picks one; the choice is kept for the next page
+  const toggle = document.querySelector(".theme-toggle");
+  if (toggle) {
+    const root = document.documentElement;
+    const current = () => root.dataset.theme || (matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+    const label = () => toggle.setAttribute("aria-label", current() === "light" ? "Switch to dark mode" : "Switch to light mode");
+    label();
+    toggle.addEventListener("click", () => {
+      const next = current() === "light" ? "dark" : "light";
+      root.dataset.theme = next;
+      try { localStorage.setItem("theme", next); } catch (e) {}
+      label();
+    });
+  }
+
   // phone menu: close when a link is chosen or the page is clicked elsewhere
   const menu = document.querySelector(".menu");
   if (menu) document.addEventListener("click", e => { if (menu.open && !e.target.closest(".menu > summary")) menu.open = false; });

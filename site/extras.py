@@ -115,6 +115,47 @@ def code_facts(facts: dict) -> str:
             f"automated tests that run on every push.")
 
 
+# --------------------------------------------------------------------------- failure ledger
+def failures_panel() -> str:
+    """The How I Work page's 'When the software broke' panel, read from FAILURES.md (the study session's ledger).
+
+    Counts and rows come from the ledger's by-software table, so the panel changes with it; code names and
+    parentheticals are dropped for the reader, and the full ledger is one link away."""
+    s = (REPO / "FAILURES.md").read_text(encoding="utf-8")
+    m = re.search(r"^## By software \([^:]*: (\d+) failed points in (\d+) runs, of ([\d,]+) points\)\s*$", s, re.M)
+    assert m, "FAILURES.md: the by-software heading changed"
+    points, runs, total = m.group(1), m.group(2), m.group(3)
+    body = s[m.end():].split("\n## ", 1)[0]
+    rows = [r for r in body.splitlines() if r.startswith("|") and not r.startswith("|---") and not r.startswith("| Software")]
+    assert rows, "FAILURES.md: no by-software rows"
+
+    def plain(t: str) -> str:
+        t = re.sub(r"\([^)]*\)", "", t).replace("`", "").replace("Our own", "My own")
+        return re.sub(r"\s+([,.])", r"\1", re.sub(r"\s{2,}", " ", t)).strip()
+
+    out = []
+    open_n = 0
+    for r in rows:
+        cells = [c.strip() for c in r.strip().strip("|").split("|")]
+        assert len(cells) == 4, r
+        sw, n, _fixed, opn = cells
+        if opn:
+            open_n += 1
+            status = "Open: cause found, fix under test" if "under test" in opn else "Open"
+            cls = "warn"
+        else:
+            status, cls = "Fixed", "pass"
+        out.append(f'<tr><td>{html.escape(plain(sw))}</td><td class="num">{html.escape(n)}</td>'
+                   f'<td><span class="chip {cls}">{status}</span></td></tr>')
+    lede = (f"Of {total} individual solves since 18 November, {points} failed, in {runs} runs. Every one is kept "
+            f"and logged with the software, what happened, the cause and what was done about it. "
+            + ("All but one of the software problems are fixed." if open_n == 1
+               else f"{open_n} of the software problems are still open." if open_n else "Every software problem is fixed."))
+    return (f'<p class="fail-lede">{lede}</p>\n<div class="table-wrap"><table class="fail-table"><thead><tr><th>Software</th>'
+            f'<th>Failed runs</th><th>Status</th></tr></thead><tbody>\n' + "\n".join(out) +
+            f'\n</tbody></table></div>\n<p class="plan-link"><a href="{REPO_URL}/blob/main/FAILURES.md">Read the full failure ledger</a></p>')
+
+
 # --------------------------------------------------------------------------- grader demo
 def _load(name):
     spec = importlib.util.spec_from_file_location(f"page_grader_{name}", TASKS / name / "grader.py")

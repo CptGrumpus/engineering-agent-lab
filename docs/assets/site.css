@@ -27,6 +27,65 @@
   --shadow: none;
   color-scheme: dark;
 }
+/* Light theme (2026-11-25): follows the reader's system setting unless they pick one with the toggle, which
+   site.js stores and the layout's head script applies before the first paint. The result viewer and the terminal
+   keep their dark stage in both themes; drawings and charts sit on paper plates in both. */
+:root[data-theme="light"] {
+  --bg: #f5f6f8;
+  --surface: #ffffff;
+  --raise: #eceff4;
+  --ink: #111720;
+  --ink-2: #3b4555;
+  --ink-3: #5b6678;
+  --rule: #d9dee6;
+  --accent: #077a62;
+  --accent-ink: #ffffff;
+  --accent-soft: #dff2ec;
+  --hot: #b0501a;
+  --pass: #137148; --pass-bg: #e2f2e9;
+  --fail: #b3261e; --fail-bg: #fbe8e5;
+  --warn: #85590a; --warn-bg: #faf0d6;
+  --plate: #ffffff;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --bg: #f5f6f8;
+    --surface: #ffffff;
+    --raise: #eceff4;
+    --ink: #111720;
+    --ink-2: #3b4555;
+    --ink-3: #5b6678;
+    --rule: #d9dee6;
+    --accent: #077a62;
+    --accent-ink: #ffffff;
+    --accent-soft: #dff2ec;
+    --hot: #b0501a;
+    --pass: #137148; --pass-bg: #e2f2e9;
+    --fail: #b3261e; --fail-bg: #fbe8e5;
+    --warn: #85590a; --warn-bg: #faf0d6;
+    --plate: #ffffff;
+    color-scheme: light;
+  }
+}
+.fail-panel { display: grid; gap: 16px; max-width: 900px; margin-top: 20px; }
+.fail-lede { color: var(--ink-2); font-size: 1.06rem; max-width: 64ch; }
+.fail-table { min-width: 520px; }
+.fail-table td:nth-child(2) { text-align: right; }
+.fail-table th:nth-child(2) { text-align: right; }
+.theme-toggle {
+  flex: none; display: inline-grid; place-items: center; width: 34px; height: 34px; padding: 0;
+  color: var(--ink-2); background: transparent; border: 1px solid var(--rule); border-radius: var(--radius); cursor: pointer;
+}
+.theme-toggle:hover { color: var(--ink); background: var(--accent-soft); }
+.theme-toggle svg { width: 18px; height: 18px; }
+.theme-toggle .i-sun { display: none; }
+:root[data-theme="light"] .theme-toggle .i-sun { display: block; }
+:root[data-theme="light"] .theme-toggle .i-moon { display: none; }
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) .theme-toggle .i-sun { display: block; }
+  :root:not([data-theme="dark"]) .theme-toggle .i-moon { display: none; }
+}
 
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; }
