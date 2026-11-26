@@ -8,9 +8,9 @@
 > benchmark). FSI2: the finest mesh's crash was traced to the mesh-motion solve and fixed; with the fix, all three
 > meshes reproduce every published quantity within 3.4 %, but the amplitudes do not converge under the 1 % target as
 > the mesh is refined (the frequency does). FSI3's time-step study converges the tip motion (under 0.75 %). The late
-> crashes are closed as a stated limit: three attempts at FSI3's coarsest time step, with different solid and coupling
-> settings, agree to 0.1 % and all fail within 16 ms of 6.9 s, so the settings are not the cause (the coarse step is
-> the likeliest). On nested meshes the CFD1 lift is now verified; CFD2's fourth mesh level runs overnight. The page
+> crashes: three attempts at FSI3's coarsest time step agree to 0.1 % and all fail within 16 ms of 6.9 s; the solid's
+> Newton iterations creep before each, the signature of its undamped time integration, and a run with numerical
+> damping is testing that overnight. On nested meshes the CFD1 lift is now verified; CFD2's fourth mesh level runs overnight. The page
 > stays a draft while FSI2's mesh convergence, the drag and lift time-step check and CFD2's lift are open.
 
 | | |
@@ -131,8 +131,13 @@ published results first, and only then are they coupled.
      solid on a window's first coupling iteration, on a load that looks ordinary. Up to 6.89 s all three attempts
      agree within 0.1 %. Three different fixes, three different symptoms, one physical moment: the numerics being
      changed are not the cause. What the three share is the coarse time step (0.001 s, maximum Courant number about
-     2.8); at 0.0005 s (2.4) the same model ran the full 8 s. So the coarse step is scored on its record up to 6.9 s
-     and the crash is a stated limit; no more runs are spent on it.
+     2.8); at 0.0005 s (2.4) the same model ran the full 8 s. So the coarse step is scored on its record up to 6.9 s.
+  5. **The shared setting I had not looked at.** Every attempt also kept the solid's time integration undamped (HHT
+     alpha 0). The solid's Newton iterations per step creep before every crash (2 for most of the run, then 3, 4,
+     5-7, 14-18 by 6.9 s; the same before FSI2's crashes at 14 s), and the run that finished stays flat at 2: the
+     signature that broke the dynamic solid test CSM3 until CalculiX's default damping (alpha -0.05) cured it. A run
+     with that one change is testing it overnight. Separately, a crashed solid no longer hangs: the hang was Open
+     MPI's crash handler spinning on the corrupted memory, now switched off.
 
   The runs that complete are unaffected: every one converged each window to the tolerance. The weakness is
   robustness, not accuracy.
