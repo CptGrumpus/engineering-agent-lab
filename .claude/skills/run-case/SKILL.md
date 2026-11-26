@@ -180,6 +180,15 @@ the grid check.
 ## Failure handling
 
 - Never delete or overwrite a run directory, including failed ones. Failed runs are evidence.
+- **Every failed run gets a row in `FAILURES.md` in the same session** (software and version, what happened, cause
+  or "not diagnosed", status), and its lesson goes into the matching skill. `tests/test_failures_ledger.py` fails
+  when a committed run with a failed point is missing; `python scripts/list_failures.py --all` lists every failed
+  point, uncommitted ones too. Before diagnosing a new crash, read the ledger: the same software may have failed
+  the same way before (the FSI solid's crash chain took four runs to see because each was treated alone).
+- **Track the solver's effort over the run, not only its end.** A solver whose Newton iterations per step creep
+  upward (CalculiX's `.sta`, column ITRS; 2 for most of the run, then 3, 4, 7, 14) is heading for a failure long
+  before it fails; finished runs stay flat. Look at what all failed attempts SHARE, settings never changed
+  included: the FSI attempts all kept `solid_alpha = 0`, the undamped integrator that had already broken CSM3.
 - A failed point keeps the last 400 lines of every solver log the study did not copy, in
   `points/<label>/solver/failure_tails/` (`harness/run.py`, `keep_failure_tails`). Read them before
   changing anything, then change one thing per rerun. If the tail is missing (a study that deletes its own work

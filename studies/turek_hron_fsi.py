@@ -243,6 +243,36 @@ def read_iterations(path: Path) -> np.ndarray:
     return np.loadtxt(path, skiprows=1, ndmin=2)
 
 
+_SIGNALS = {6: "SIGABRT", 7: "SIGBUS", 8: "SIGFPE", 9: "SIGKILL", 11: "SIGSEGV", 15: "SIGTERM"}
+
+
+def _participants_exit(case: Path) -> str:
+    """'; participants: fluid rc 1 (error exit), then solid rc 134 (SIGABRT) 0.7 s later' from the runner's
+    participants_exit.txt, or ''. The order does NOT name the culprit: a solid that stops on non-convergence closes
+    its preCICE connection first (the fluid exits on the closed socket) and then aborts in its cleanup (reproduced
+    2026-11-25: fluid rc 1, then solid rc 134 0.7 s later). Read the logs for which one failed first."""
+    f = case / "participants_exit.txt"
+    if not f.exists():
+        return ""
+    ends = []
+    for line in f.read_text(encoding="utf-8").splitlines():
+        a = dict(kv.split("=", 1) for kv in line.split()[1:] if "=" in kv)
+        try:
+            ends.append((float(a["end"]), line.split()[0], int(a["rc"])))
+        except (KeyError, ValueError):
+            continue
+    if not ends:
+        return ""
+
+    def code(rc):
+        return f"rc {rc} ({_SIGNALS.get(rc - 128, f'signal {rc - 128}')})" if rc > 128 else             f"rc {rc}" + (" (error exit)" if rc else "")
+    ends.sort()
+    s = f"; participants: {ends[0][1]} {code(ends[0][2])}"
+    for t, who, rc in ends[1:]:
+        s += f", then {who} {code(rc)} {t - ends[0][0]:.1f} s later"
+    return s
+
+
 class PreciceFSI(Backend):
     sources = (WRITER, RUNNER, FLAG_WRITER, FROZEN_DIFFUSIVITY)
 
@@ -324,7 +354,7 @@ class PreciceFSI(Backend):
                            capture_output=True, text=True, timeout=float(numerics.get("solver_timeout_s", 21600)))
         (fl / "mesh.msh").unlink(missing_ok=True)
         if r.returncode != 0:
-            return failed(f"FSI run failed (exit {r.returncode}) {r.stderr.strip()[:300]}") | {
+            return failed(f"FSI run failed (exit {r.returncode}){_participants_exit(case)} {r.stderr.strip()[:300]}") | {
                 "files": files(), "cleanup": work}
         for line in (case / "versions.txt").read_text(encoding="utf-8").splitlines():
             k, _, v = line.partition("=")

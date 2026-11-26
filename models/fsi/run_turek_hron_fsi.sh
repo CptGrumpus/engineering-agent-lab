@@ -37,14 +37,17 @@ cd ../solid || exit 10
 # (code 134), the fluid sees the closed socket, and the run fails cleanly. Reproduced and tested 2026-11-25
 # (scratch, Newton limit 1: hung 300 s until killed without it; exited in 14 s with it).
 export OMPI_MCA_opal_signal=""
-ccx_preCICE -i flag -precice-participant Solid > log.ccx 2>&1 &
+# each participant's exit code and end time go to ../participants_exit.txt: exit 30 alone cannot say which one
+# died first (when the fluid crashes, the solid then fails on the closed socket too, and the solid is tested first)
+( ccx_preCICE -i flag -precice-participant Solid > log.ccx 2>&1; echo "solid rc=$? end=$(date +%s.%N)" >> ../participants_exit.txt ) &
 solid_pid=$!
 cd ../fluid
 pimpleFoam > log.pimpleFoam 2>&1
 fluid_rc=$?
+echo "fluid rc=$fluid_rc end=$(date +%s.%N)" >> ../participants_exit.txt
 wait $solid_pid
-solid_rc=$?
-[ $solid_rc -ne 0 ] && exit 30
+solid_rc=$(sed -n 's/^solid rc=\([0-9]*\).*/\1/p' ../participants_exit.txt)
+[ "${solid_rc:-1}" -ne 0 ] && exit 30
 [ $fluid_rc -ne 0 ] && exit 31
 postProcess -func writeCellCentres -latestTime > log.writeCellCentres 2>&1 || exit 32
 exit 0
