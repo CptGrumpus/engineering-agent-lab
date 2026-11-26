@@ -1,86 +1,103 @@
   <section class="study" id="enclosure">
     <div class="study-head">
       <span class="label">Study 27 · OpenFOAM and Python, electronics cooling</span>
-      <h2>Sealed Electronics Enclosure: The Hot Component and Its Fix</h2>
+      <h2>Sealed Electronics Enclosure: The Capacitor That Decides the Design</h2>
     </div>
     <h3>The Question</h3>
-    <p>A sealed aluminium box, 150 × 60 mm in section and 200 mm deep, holds a circuit board at mid-height. The board gives off 10 W, and one component on it another 5 W. Outside is still air at 40 °C. Does the hottest component stay at or below 85 °C, and the air inside at or below 60 °C on average, whether the inside of the box is bare metal (emissivity 0.1) or painted (0.9)? The board's copper layers make its in-plane conductivity uncertain, so I bracketed it at 5 and 20 W/mK. And if the box fails, what fixes it? The client, the powers and the limits are made up.</p>
+    <p>A sealed aluminium box, 150 × 60 mm in section and 200 mm deep, holds a circuit board at mid-height. The board gives off 10 W, and a 5 W regulator, U1, sits in its middle. Near one end is the bulk capacitor, C1. Outside is still air at 40 °C. The inside finish isn't decided, so I ran it bare (emissivity 0.1) and painted (0.9), and the board's copper layers make its in-plane conductivity uncertain, so I bracketed it at 5 and 20 W/mK. Does every part stay within its limit at every combination, and if not, what fixes it? The client, the parts, the powers and the limits are made up.</p>
+    <p>The requirements came in two rounds. The first brief gave two blanket limits: the hottest component at 85 °C and the air at 60 °C. Blanket limits stand in for the parts, so I asked for per-part data, and the client sent a list with datasheet values and a derating policy:</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Part</th><th>Limit</th><th>Where it comes from</th></tr></thead>
+        <tbody>
+          <tr><td>U1, the regulator</td><td>case 115 °C</td><td>junction 150 °C less the client's 25 K margin, less 2 K/W × 5 W from junction to case</td></tr>
+          <tr><td>The board, anywhere</td><td>105 °C</td><td>the laminate's 130 °C rating less 25 K</td></tr>
+          <tr><td>C1, a 105 °C, 5,000 h electrolytic</td><td>70 °C</td><td>50,000 h of life: life doubles for every 10 K under the rating, so 71.8 °C, rounded down for its own ripple heating</td></tr>
+          <tr><td>The air inside</td><td>70 °C</td><td>the 0 to 70 °C rating of the other parts</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>The list arrived after the first redesign results were known, though before the final runs, so it isn't a blind test. Every limit follows from a stated rule, and none was picked to make a design pass. The first round's verdicts are kept below.</p>
     <h3>The Answer</h3>
     <div class="answer">
-      <div class="chips"><span class="chip fail">Component 94 to 163 °C as drawn, limit 85</span><span class="chip fail">Air inside 67 to 84 °C as drawn, limit 60</span><span class="chip warn">With a 5 W/mK bridge to the lid: component 70 to 76 °C, on runs not yet settled</span><span class="chip fail">Air still 62 to 66 °C with that bridge</span><span class="chip warn">The board itself reaches 98 °C; no limit was set for it</span></div>
-      <p><strong>No. As drawn it overheats on both counts, at every corner.</strong> With a painted interior the component reaches 94 to 98 °C and the air 67 °C. With bare metal inside it's far worse, 156 to 163 °C and 84 °C. A bare surface radiates very little, so the board is left with the air alone: radiation carries about 75 % of the heat to the walls when the inside is painted and 22 % when it's bare. The board's conductivity moves the component by 4 to 7 K, which changes no verdict.</p>
-      <p><strong>A heat path from the component to the lid fixes the component.</strong> I added a bridge between the component and the lid, a pillar with a gap pad, and modelled the walls as 2 mm of aluminium so the lid can spread what the bridge delivers. With a bridge worth 5 W/mK the component sits at 70.0 °C with a painted interior and 76.1 °C with a bare one, 9 K under the limit at the worse finish. A 2 W/mK bridge passes only when the inside is painted (78.0 against 91.1 °C). At 1 W/mK the painted box reads 84.8 °C, 0.2 K under the limit, which is too close to call a pass.</p>
-      <p><strong>The air still fails, with every bridge.</strong> At 5 W/mK it's 62.3 °C painted and 66.2 °C bare, and even 20 W/mK leaves it at 61.1 and 64.0 °C. The bridge takes the component's 5 W out, but the board's own 10 W still goes into the air. Meeting the air limit needs a second path, such as clamping the board's edges to the walls or a pad under the whole board, or a looser limit. I didn't assess either.</p>
-      <p><strong>Something the requirement doesn't cover: the board.</strong> Once the bridge cools the component, the hottest point is on the board itself: 79.7 °C painted and 98.4 °C bare with the 5 W/mK bridge. The requirement names the component, so the verdict above stands, but anything else mounted on that board would see those temperatures. The second path the air needs would deal with this too.</p>
-      <p><strong>The redesign runs stopped before the box had settled.</strong> The shell and the bridge make the box about five times slower to settle than the box as drawn, which I hadn't allowed for. When the runs stopped, after an hour of simulated time, eight of the ten were still off balance: seven were shedding 1 to 4 % more heat than the 15 W going in, and one was still 1 % short. Extrapolated to the settled state, the heat balance closes to 0.3 % or better and the component moves by less than 0.7 K. The 5 W/mK runs were still cooling, so their settled temperatures are 0.5 to 0.6 K lower than the ones above. No verdict changes, but the redesign's pass stays unverified until a longer run confirms it.</p>
+      <div class="chips"><span class="chip fail">As drawn, painted: C1 89 to 91 °C, limit 70</span><span class="chip fail">As drawn, bare inside: all four limits missed</span><span class="chip fail">No bridge alone gets C1 under 70 °C; the best is 77</span><span class="chip pass">Painted, a 125 °C capacitor and a 2 to 5 W/mK bridge: every limit met</span><span class="chip warn">The capacitor change is the client's call</span></div>
+      <p><strong>No. As drawn the box fails, and the capacitor is what decides it.</strong> Painted inside, U1, the board and the air all pass, but C1 runs at 89 to 91 °C against its 70 °C limit, which gives it about 13,000 to 15,000 hours of life instead of 50,000. Bare inside, every limit fails: U1 reaches 157 to 164 °C. A bare surface radiates very little, so the board has the air alone: radiation carries about 75 % of the heat to the walls when the inside is painted and 23 % when it's bare.</p>
+      <p><strong>A bridge to the lid cools U1 a great deal and C1 very little.</strong> I modelled the walls as 2 mm of aluminium and added a bridge from U1 to the lid. With a 5 W/mK bridge U1 drops from 98 to 69 °C, but C1 only from 89 to 79 °C. Once U1's heat goes into the lid, the board's own 10 W makes its ends the hottest part, and C1 sits at an end. Even a 20 W/mK bridge leaves C1 at 76.9 °C. Moving C1 doesn't help either: as drawn, the coolest point of the board is its very end, only 2 K under C1.</p>
+      <p><strong>What passes everything:</strong> paint the inside, change C1 to a 125 °C, 5,000 h capacitor, and add a bridge of at least 2 W/mK. By the client's own rule the new capacitor's limit is 90 °C. With a 2 to 5 W/mK bridge, C1 runs at 79 to 82 °C, U1 at 69 to 77 °C against 115, the board at 79 to 82 °C against 105, and the air at 62 to 63 °C against 70. Without the bridge the new capacitor would pass by only 4.6 K, and on the 20 W/mK board as drawn it wouldn't pass at all (90.9 °C).</p>
+      <p><strong>Under the first brief, the bridge looked like the whole answer.</strong> A 5 W/mK bridge met the 85 °C component limit at either finish, and the 60 °C air limit failed with every design. The per-part list shows why that was the wrong question: the air limit had no part behind it, and the part that governs is the capacitor, which no bridge fixes.</p>
     </div>
     <h3>Why It Matters</h3>
-    <p>A sealed box has no fan and no vents, so everything leaves through the walls, and inside it the heat has only weak paths: slow natural convection and radiation. Which of the two carries the load depends on the surface finish, something a drawing often leaves open. Here the finish alone moves the component by more than 60 K. What the client needs is a change that works at either finish, and a plain statement of what that change doesn't fix.</p>
+    <p>A sealed box has no fan and no vents, so everything leaves through the walls, and inside it the heat has only weak paths: slow natural convection and radiation. Which of the two carries the load depends on the surface finish, something a drawing often leaves open. Here the finish alone moves U1 by more than 60 K. And a limit written as "hottest component" points the fix at the hottest part, when the part that wears out first may sit somewhere cooler.</p>
     <h3>The Model</h3>
     <dl class="spec">
       <dt>Section</dt><dd>A 2D section through the box, 150 × 60 mm inside. The box's end walls are left out, so the model has less wall to lose heat through and errs on the hot side.</dd>
-      <dt>Board</dt><dd>A solid 100 × 2 mm strip at mid-height, with the component as its middle 20 mm. Heat is generated inside both: 5 W in the component and 10 W over the rest. The board is solid so that it spreads the component's heat sideways; a first prototype with a hollow board and fixed surface fluxes couldn't, and read far too hot.</dd>
+      <dt>Board</dt><dd>A solid 100 × 2 mm strip at mid-height, with U1 as its middle 20 mm. Heat is generated inside both: 5 W in U1 and 10 W over the rest. C1 is read as the board's temperature under its footprint, 5 to 15 mm from the board's left end.</dd>
       <dt>Air</dt><dd>Laminar natural convection, the air as a perfect gas, with radiation between the inside surfaces: grey and diffuse, the air transparent, 16 ray directions.</dd>
       <dt>Outside</dt><dd>Convection at 5 W/m²K and radiation from a painted surface, emissivity 0.85, to still air at 40 °C.</dd>
       <dt>Solver</dt><dd>OpenFOAM 14, the air and the solids solved together (conjugate heat transfer) and marched in time until the temperatures stop moving. 2 mm cells.</dd>
-      <dt>Redesign</dt><dd>The walls become a 2 mm aluminium shell, 200 W/mK, and a 20 × 29 mm bridge joins the component to the lid. One effective conductivity stands for the pillar and its pad: 5 W/mK is 1.45 K/W through the box's depth.</dd>
+      <dt>Redesign</dt><dd>The walls become a 2 mm aluminium shell, 200 W/mK, and a 20 × 29 mm bridge joins U1 to the lid. One effective conductivity stands for a pillar and its gap pad: 2 W/mK is 3.6 K/W through the box's depth, 5 W/mK is 1.45 K/W.</dd>
     </dl>
+    <figure class="drawing">
+      <a class="plate" href="v2/fig_enclosure_field.svg" title="Open full size"><img src="v2/fig_enclosure_field.svg" alt="Temperature in the box's section, as drawn and with the recommended bridge, on one colour scale. As drawn the board and U1 are the hottest, near 98 °C, with a plume rising from U1. With the bridge U1 drops to 77 °C and the heat goes up the bridge into the lid, while the board's ends, where C1 sits, stay near 82 °C." loading="lazy"></a>
+      <figcaption>The final temperature field from each run, on one scale: as drawn with a painted interior, and the recommended design with a 2 W/mK bridge. The bridge takes U1's heat straight to the lid, but the rest of the board still heats the air, and its ends stay the warmest part of it.</figcaption>
+    </figure>
     {{CASE}}
     <h3>How It Works</h3>
     <p>The same model runs at the four corners of what isn't known, the board's conductivity and the inside finish:</p>
     <div class="table-wrap">
       <table>
-        <thead><tr><th>Board</th><th>Inside finish</th><th>Hottest component</th><th>Mean air</th><th>Reaches the walls by radiation</th></tr></thead>
+        <thead><tr><th>Board</th><th>Inside</th><th>U1</th><th>Board, hottest</th><th>C1</th><th>Air</th><th>Radiation's share</th></tr></thead>
         <tbody>
-          <tr><td>5 W/mK</td><td>painted, 0.9</td><td>98.4 °C</td><td>66.9 °C</td><td>75 %</td></tr>
-          <tr><td>20 W/mK</td><td>painted, 0.9</td><td>94.2 °C</td><td>67.0 °C</td><td>76 %</td></tr>
-          <tr><td>5 W/mK</td><td>bare, 0.1</td><td>163.2 °C</td><td>83.9 °C</td><td>22 %</td></tr>
-          <tr><td>20 W/mK</td><td>bare, 0.1</td><td>156.3 °C</td><td>84.1 °C</td><td>22 %</td></tr>
-          <tr><td>Limit</td><td></td><td>≤ 85 °C</td><td>≤ 60 °C</td><td></td></tr>
+          <tr><td>5 W/mK</td><td>painted, 0.9</td><td>98.4 °C</td><td>95.8 °C</td><td><strong>89.2 °C</strong></td><td>66.9 °C</td><td>75 %</td></tr>
+          <tr><td>20 W/mK</td><td>painted, 0.9</td><td>94.2 °C</td><td>93.4 °C</td><td><strong>90.9 °C</strong></td><td>67.0 °C</td><td>75 %</td></tr>
+          <tr><td>5 W/mK</td><td>bare, 0.1</td><td><strong>164.3 °C</strong></td><td><strong>160.7 °C</strong></td><td><strong>149.4 °C</strong></td><td><strong>84.3 °C</strong></td><td>23 %</td></tr>
+          <tr><td>20 W/mK</td><td>bare, 0.1</td><td><strong>157.4 °C</strong></td><td><strong>156.4 °C</strong></td><td><strong>152.7 °C</strong></td><td><strong>84.5 °C</strong></td><td>23 %</td></tr>
+          <tr><td>Limit</td><td></td><td>≤ 115 °C</td><td>≤ 105 °C</td><td>≤ 70 °C</td><td>≤ 70 °C</td><td></td></tr>
         </tbody>
       </table>
     </div>
-    <p>Then the redesign, on the worse board (5 W/mK), with the walls modelled and the bridge's conductivity stepped up. Each cell reads painted / bare:</p>
+    <p>Then the redesign, on the 5 W/mK board, which is the worse one for U1, with the bridge's conductivity stepped up. Each cell reads painted / bare; bold misses its limit, with C1 judged as specified:</p>
     <div class="table-wrap">
       <table>
-        <thead><tr><th>Bridge</th><th>Hottest component</th><th>Board's hottest point</th><th>Mean air</th></tr></thead>
+        <thead><tr><th>Bridge</th><th>U1</th><th>Board, hottest</th><th>C1</th><th>Air</th></tr></thead>
         <tbody>
-          <tr><td>None, walls modelled</td><td>95.7 / 154.6 °C</td><td>93.7 / 152.7 °C</td><td>65.9 / 80.8 °C</td></tr>
-          <tr><td>1 W/mK</td><td>84.8 / 106.6 °C</td><td>85.2 / 116.3 °C</td><td>64.5 / 71.9 °C</td></tr>
-          <tr><td>2 W/mK</td><td>78.0 / 91.1 °C</td><td>82.5 / 107.3 °C</td><td>63.5 / 69.1 °C</td></tr>
-          <tr><td><strong>5 W/mK</strong></td><td><strong>70.0 / 76.1 °C</strong></td><td>79.7 / 98.4 °C</td><td>62.3 / 66.2 °C</td></tr>
-          <tr><td>20 W/mK</td><td>63.3 / 65.8 °C</td><td>77.5 / 92.2 °C</td><td>61.1 / 64.0 °C</td></tr>
-          <tr><td>Limit</td><td>≤ 85 °C</td><td>none set</td><td>≤ 60 °C</td></tr>
+          <tr><td>None, walls modelled</td><td>95.6 / <strong>154.6 °C</strong></td><td>93.6 / <strong>152.7 °C</strong></td><td><strong>85.4 / 129.9 °C</strong></td><td>65.8 / <strong>80.8 °C</strong></td></tr>
+          <tr><td>1 W/mK</td><td>84.3 / 107.0 °C</td><td>84.8 / <strong>116.6 °C</strong></td><td><strong>84.6 / 116.6 °C</strong></td><td>64.2 / <strong>72.1 °C</strong></td></tr>
+          <tr><td>2 W/mK</td><td>77.5 / 90.8 °C</td><td>82.1 / <strong>107.0 °C</strong></td><td><strong>82.1 / 107.0 °C</strong></td><td>63.1 / 69.0 °C</td></tr>
+          <tr><td>5 W/mK</td><td>69.4 / 75.6 °C</td><td>79.2 / 97.9 °C</td><td><strong>79.2 / 97.9 °C</strong></td><td>61.8 / 65.8 °C</td></tr>
+          <tr><td>20 W/mK</td><td>62.6 / 65.2 °C</td><td>76.9 / 91.6 °C</td><td><strong>76.9 / 91.6 °C</strong></td><td>60.6 / 63.5 °C</td></tr>
+          <tr><td>Limit</td><td>≤ 115 °C</td><td>≤ 105 °C</td><td>≤ 70 °C as specified, ≤ 90 °C as a 125 °C part</td><td>≤ 70 °C</td></tr>
         </tbody>
       </table>
     </div>
-    <p>These are the values when each run stopped. Modelling the walls alone helps a little, 3 K painted and 9 K bare, because the aluminium evens out the wall temperature.</p>
+    <p>With a bridge in, C1's footprint holds the board's hottest point in every run, to within 0.2 K. The new capacitor needs paint as well: bare inside, even the 5 and 20 W/mK bridges leave C1 at 97.9 and 91.6 °C, over its 90 °C.</p>
     <h3>How I Checked It</h3>
     <ul class="proof">
       <li><strong>Natural convection against a published benchmark,</strong> before the box was modelled: the square cavity with one hot and one cold wall (de Vahl Davis, 1983), at four Rayleigh numbers from 10³ to 10⁶. The heat crossing the cavity lands within 0.05 to 0.57 % of the published values, and the peak air speeds within 0.62 %. A three-mesh study at the highest Rayleigh number extrapolates the heat transfer to within 0.07 % of the benchmark. One of the two peak speeds converged faster than the method allows, so its uncertainty can't be estimated, and that mesh study is recorded as failing verification.</li>
       <li><strong>Radiation against an exact answer:</strong> the heat exchanged between two concentric cylinders, where the two-surface formula is exact. With the 16 ray directions the box runs use, the model is 0.92 % under it, inside the 1 % I set but only just. With 32 directions it's 0.20 %, and 64 give 0.05 %. At 32 directions it stays within 0.21 % for emissivities from 0.1 to 0.9.</li>
-      <li><strong>Heat balance:</strong> the heat leaving the walls against the 15 W put in, within 0.46 to 0.74 % at the four corners as drawn.</li>
-      <li><strong>Mesh:</strong> one corner, painted with the 20 W/mK board, rerun on 1 mm cells. The component moves 0.05 K and the air 0.13 K, against margins of 9 and 7 K. Two mesh sizes give a difference, not a convergence study.</li>
-      <li><strong>Settling:</strong> each run has to stop changing, under 0.3 K at the component over its last tenth. The two bare corners missed that (0.6 K) and stopped about 1 K short of where they settle. They fail by more than 70 K, so I didn't rerun them.</li>
+      <li><strong>Settled, and checked by energy:</strong> every one of the 14 final runs passes its checks. The heat leaving the box matches the 15 W put in to within 0.05 %, and the temperatures moved by less than 0.01 K over the last tenth of each run.</li>
+      <li><strong>Predictions before the runs:</strong> I predicted every final value from shorter runs extrapolated to the settled state. All 14 landed within 0.02 K, and every requirement verdict I'd predicted held. The three I'd left open, C1 in the painted redesign, came out as fails.</li>
+      <li><strong>Mesh:</strong> one corner, painted with the 20 W/mK board, rerun on 1 mm cells. U1 moves 0.05 K and the air 0.13 K. Two mesh sizes give a difference, not a convergence study.</li>
     </ul>
     <div class="caught">
       <h3>What I Caught Along the Way</h3>
       <ul>
+        <li><strong>A blanket limit hid the part that decides the design.</strong> Under the first brief, a bridge to the lid looked like the answer. Asking for the parts' own limits showed that the capacitor's life governs, and that no bridge fixes it.</li>
         <li><strong>Energy made by a name pattern.</strong> Two patterns matched the solids' boundary names, and the general one also caught the air's side. The board never lost the heat it radiated, and the walls were shedding 671 W/m² against 179 put in. The heat balance caught it, and explicit names fixed it.</li>
         <li><strong>A boundary condition can't spread heat.</strong> As drawn, the walls are a boundary: each face loses its heat where it arrives. That's fine until a bridge puts 5 W into 20 mm of lid, which would then sit about 110 K above ambient. So the redesign models the walls as solid aluminium.</li>
-        <li><strong>An accounting error that hid an unsettled run.</strong> Six of the ten redesign runs failed the 1 % heat balance. My totals multiplied each wall flux by a nominal 2 mm face, but the mesher rounds each block to whole cells, so some faces are 2.07 or 2.08 mm and the perimeter came out 1.9 % short. With the exact areas, read from the mesh, the picture changed: eight runs were out, not six, because the shell and bridge give the box a slow drift with a time constant near 20 minutes. My settling check on the component had passed all ten. It's too weak for a drift that slow, and the heat balance is now the settling test.</li>
+        <li><strong>An accounting error that hid an unsettled run.</strong> Six of the first ten redesign runs failed the 1 % heat balance. My totals multiplied each wall flux by a nominal 2 mm face, but the mesher rounds each block to whole cells, so the perimeter came out 1.9 % short. With the exact areas, read from the mesh, the real issue showed: the shell and bridge give the box a slow drift, with a time constant near 20 minutes, and those one-hour runs hadn't settled. My settling check on U1 had passed all ten. The heat balance is now the settling test, and the 2.5-hour reruns confirmed the extrapolated values to 0.02 K.</li>
         <li><strong>A steady solve that only looked converged.</strong> The steady version of the coupled solve ran 9,246 iterations and then diverged, so every run marches in time instead.</li>
-        <li><strong>My hand estimates missed where it mattered.</strong> I expected the 1 W/mK bridge to leave the component near 100 °C, and it ran 15 K cooler. I expected a bare interior to cost a few kelvin once a bridge was in, and it cost 2.5 to 22 K. Each miss is written into the case file beside the prediction.</li>
+        <li><strong>My hand estimates missed where it mattered.</strong> I expected the 1 W/mK bridge to leave U1 near 100 °C, and it ran 15 K cooler. I expected a bare interior to cost a few kelvin once a bridge was in, and it cost 2.5 to 22 K. Each miss is written into the case file beside the prediction.</li>
       </ul>
     </div>
     <h3>Limits</h3>
     <ul>
       <li>A 2D section: no end walls and no 3D flow. A 3D model would credit the end walls, so the real box should run cooler than this.</li>
-      <li>The redesign's verdicts rest on runs stopped about one time constant early, plus extrapolation. Runs about two and a half times longer would verify them directly, and they haven't been run.</li>
-      <li>The redesign was run on the worse board only, and the mesh check is on one corner of the box as drawn.</li>
+      <li>C1 is read as the board under it, with its own ripple loss covered by the client's 1.8 K allowance; U1's hottest model point stands for its case, which errs on the safe side; and the air limit is judged on the mean air, since a 2D section has no local air for each part.</li>
+      <li>The redesign was run on the 5 W/mK board only. As drawn, the 20 W/mK board puts C1 1.7 K hotter; the recommended design's 8 to 11 K margin covers that, but it isn't run.</li>
+      <li>The bridge is one effective conductivity with perfect contact. A real pad's contact resistance has to come out of the same thermal-resistance budget.</li>
       <li>Radiation with 16 directions is 0.9 % off on the benchmark, close to its 1 % limit, and radiation carries about three quarters of the heat when the inside is painted.</li>
-      <li>The bridge is one effective conductivity with perfect contact. A real pad's contact resistance has to come out of the same 1.45 K/W.</li>
       <li>Laminar flow, grey diffuse surfaces and transparent air.</li>
-      <li>No physical test. The powers, the limits and the outside conditions are made up.</li>
+      <li>No physical test. The parts, the powers, the limits and the outside conditions are made up.</li>
     </ul>
   </section>

@@ -42,7 +42,7 @@ STUDY_DOCS = {
 }
 RUN_PREFIX = {"pipe": "pipe_", "step": "step_"}
 # runs a write-up cites by a pattern instead of one by one: listed with the ones it names
-RUN_GLOB = {"enclosure": ["*_enclosure_fix_k5_eps0p*"]}
+RUN_GLOB = {"enclosure": ["*_enclosure_fix_k5_eps0p*", "*_enclosure_k*_eps0p*_e"]}
 # studies whose page cites a chosen set of runs instead of every run its write-up mentions, and links no write-up
 # until it's rewritten to match the page (the motor: the page shows the client-data model; user, 2026-11-23)
 RUN_LIST = {"motor": ["20261123-141642_motor_prius_rev5_oc", "20261123-150432_motor_prius_rev5_inductance",
@@ -601,10 +601,12 @@ REQS = [
         ("Smallest fillet meeting the fatigue limit", "under the 4 mm shoulder", "none: 1.47 at 3.9 mm", "fail"),
         ("The fix: d 36 / D 45 mm, fillet 1.8 mm, at its lower tolerance", "≥ 1.5 and ≥ 2.0", "fatigue 1.62, yield 2.52", "met")]),
     ("enclosure", "27", "Sealed enclosure", [
-        ("Hottest component as drawn, bare or painted inside", "≤ 85 °C", "94 to 98 °C painted, 156 to 163 °C bare", "fail"),
-        ("Mean air inside, as drawn", "≤ 60 °C", "67 °C painted, 84 °C bare", "fail"),
-        ("Hottest component with a 5 W/mK bridge to the lid", "≤ 85 °C", "70.0 °C painted, 76.1 °C bare when the runs stopped, still cooling; 0.5 to 0.6 K lower once settled, by extrapolation", "unsettled"),
-        ("Mean air inside with that bridge", "≤ 60 °C", "62.3 °C painted, 66.2 °C bare; over the limit with every bridge tried", "fail")]),
+        ("U1's case as drawn, bare or painted inside", "≤ 115 °C", "94 to 98 °C painted, 157 to 164 °C bare", "fail"),
+        ("The board, anywhere, as drawn", "≤ 105 °C", "93 to 96 °C painted, 156 to 161 °C bare", "fail"),
+        ("Capacitor C1 as drawn (50,000 h of life)", "≤ 70 °C", "89 to 91 °C painted, 149 to 153 °C bare", "fail"),
+        ("Mean air inside, as drawn", "≤ 70 °C", "67 °C painted, 84 °C bare", "fail"),
+        ("C1 as specified, with any bridge to the lid", "≤ 70 °C", "77 to 85 °C painted; best 76.9 °C at 20 W/mK", "fail"),
+        ("Every limit, painted, with a 125 °C capacitor and a 2 to 5 W/mK bridge", "each part's own; C1 ≤ 90 °C as a 125 °C part", "C1 79 to 82 °C, U1 69 to 77 °C, board 79 to 82 °C, air 62 to 63 °C", "approval")]),
     ("cfd", "05", "Coolant channel", [
         ("Supply pressure", "≤ 30 Pa", "33.4 Pa nominal, 28–42 Pa over tolerances", "fail"),
         ("Wall shear stress", "≥ 0.5 Pa", "0.43 Pa with warm coolant", "fail"),
@@ -665,9 +667,9 @@ REQS = [
 CHIP = {"met": ("pass", "Met"), "fail": ("fail", "Not met"), "held": ("warn", "Withheld"),
         "open": ("warn", "Open"), "finding": ("note", "Finding, confirmed by test"), "cond": ("warn", "Depends on steel grade"),
         "provisional": ("warn", "Met; depends on the flux"), "nominal": ("warn", "Met at the nominal fit"),
-        "unsettled": ("warn", "Met; run not settled")}
+        "unsettled": ("warn", "Met; run not settled"), "approval": ("warn", "Met, if the client approves the part change")}
 # how each status counts in the summary line: a design finding is still a requirement the design doesn't meet
-COUNT_AS = {"met": "met", "fail": "fail", "held": "held", "open": "held", "finding": "fail", "cond": "fail", "provisional": "held", "nominal": "met", "unsettled": "held"}
+COUNT_AS = {"met": "met", "fail": "fail", "held": "held", "open": "held", "finding": "fail", "cond": "fail", "provisional": "held", "nominal": "met", "unsettled": "held", "approval": "held"}
 
 
 def reqs_html() -> str:

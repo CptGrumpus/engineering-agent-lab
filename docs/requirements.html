@@ -4,11 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Every Requirement · Justin Smith</title>
-<meta name="description" content="All 74 requirements across the simulation studies, each with its limit, result and verdict.">
+<meta name="description" content="All 76 requirements across the simulation studies, each with its limit, result and verdict.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://cptgrumpus.github.io/engineering-agent-lab/requirements.html">
 <meta property="og:title" content="Every Requirement in One Table">
-<meta property="og:description" content="All 74 requirements across the simulation studies, each with its limit, result and verdict.">
+<meta property="og:description" content="All 76 requirements across the simulation studies, each with its limit, result and verdict.">
 <meta property="og:image" content="https://cptgrumpus.github.io/engineering-agent-lab/v2/og_card.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -57,7 +57,7 @@
     <div class="page-head">
       <p class="eyebrow">Requirements</p>
       <h1>Every Requirement in One Table</h1>
-      <p>74 requirements across the studies: <b class="c-pass">51 met</b>, <b class="c-fail">20 not met</b>, <b class="c-warn">3 withheld</b>. "Not met" is still a verified answer: the design fails, and the study explains what would fix it. "Withheld" means the checks didn't support calling it either way, or that the result waits on open work. Each study's name links to its page.</p>
+      <p>76 requirements across the studies: <b class="c-pass">51 met</b>, <b class="c-fail">22 not met</b>, <b class="c-warn">3 withheld</b>. "Not met" is still a verified answer: the design fails, and the study explains what would fix it. "Withheld" means the checks didn't support calling it either way, or that the result waits on open work. Each study's name links to its page.</p>
     </div>
     <div class="reqs open">
       <div class="table-wrap">
@@ -93,10 +93,12 @@
           <tr><td></td><td>Yield safety at a 1.5 × overload, as drawn</td><td class="num">≥ 2.0</td><td>1.77 to 1.92; 1.83 at the nominal</td><td><span class="chip fail">Not met</span></td></tr>
           <tr><td></td><td>Smallest fillet meeting the fatigue limit</td><td class="num">under the 4 mm shoulder</td><td>none: 1.47 at 3.9 mm</td><td><span class="chip fail">Not met</span></td></tr>
           <tr><td></td><td>The fix: d 36 / D 45 mm, fillet 1.8 mm, at its lower tolerance</td><td class="num">≥ 1.5 and ≥ 2.0</td><td>fatigue 1.62, yield 2.52</td><td><span class="chip pass">Met</span></td></tr>
-          <tr class="r-first"><td><a href="sealed-enclosure.html"><span class="r-no">27</span> Sealed Enclosure</a></td><td>Hottest component as drawn, bare or painted inside</td><td class="num">≤ 85 °C</td><td>94 to 98 °C painted, 156 to 163 °C bare</td><td><span class="chip fail">Not met</span></td></tr>
-          <tr><td></td><td>Mean air inside, as drawn</td><td class="num">≤ 60 °C</td><td>67 °C painted, 84 °C bare</td><td><span class="chip fail">Not met</span></td></tr>
-          <tr><td></td><td>Hottest component with a 5 W/mK bridge to the lid</td><td class="num">≤ 85 °C</td><td>70.0 °C painted, 76.1 °C bare when the runs stopped, still cooling; 0.5 to 0.6 K lower once settled, by extrapolation</td><td><span class="chip warn">Met; run not settled</span></td></tr>
-          <tr><td></td><td>Mean air inside with that bridge</td><td class="num">≤ 60 °C</td><td>62.3 °C painted, 66.2 °C bare; over the limit with every bridge tried</td><td><span class="chip fail">Not met</span></td></tr>
+          <tr class="r-first"><td><a href="sealed-enclosure.html"><span class="r-no">27</span> Sealed Enclosure</a></td><td>U1&#x27;s case as drawn, bare or painted inside</td><td class="num">≤ 115 °C</td><td>94 to 98 °C painted, 157 to 164 °C bare</td><td><span class="chip fail">Not met</span></td></tr>
+          <tr><td></td><td>The board, anywhere, as drawn</td><td class="num">≤ 105 °C</td><td>93 to 96 °C painted, 156 to 161 °C bare</td><td><span class="chip fail">Not met</span></td></tr>
+          <tr><td></td><td>Capacitor C1 as drawn (50,000 h of life)</td><td class="num">≤ 70 °C</td><td>89 to 91 °C painted, 149 to 153 °C bare</td><td><span class="chip fail">Not met</span></td></tr>
+          <tr><td></td><td>Mean air inside, as drawn</td><td class="num">≤ 70 °C</td><td>67 °C painted, 84 °C bare</td><td><span class="chip fail">Not met</span></td></tr>
+          <tr><td></td><td>C1 as specified, with any bridge to the lid</td><td class="num">≤ 70 °C</td><td>77 to 85 °C painted; best 76.9 °C at 20 W/mK</td><td><span class="chip fail">Not met</span></td></tr>
+          <tr><td></td><td>Every limit, painted, with a 125 °C capacitor and a 2 to 5 W/mK bridge</td><td class="num">each part&#x27;s own; C1 ≤ 90 °C as a 125 °C part</td><td>C1 79 to 82 °C, U1 69 to 77 °C, board 79 to 82 °C, air 62 to 63 °C</td><td><span class="chip warn">Met, if the client approves the part change</span></td></tr>
           <tr class="r-first"><td><a href="coolant-channel.html"><span class="r-no">05</span> Coolant Channel</a></td><td>Supply pressure</td><td class="num">≤ 30 Pa</td><td>33.4 Pa nominal, 28–42 Pa over tolerances</td><td><span class="chip fail">Not met</span></td></tr>
           <tr><td></td><td>Wall shear stress</td><td class="num">≥ 0.5 Pa</td><td>0.43 Pa with warm coolant</td><td><span class="chip fail">Not met</span></td></tr>
           <tr><td></td><td>2D assumption: side-wall effect</td><td class="num">≤ 5 %</td><td>3.2 %</td><td><span class="chip pass">Met</span></td></tr>

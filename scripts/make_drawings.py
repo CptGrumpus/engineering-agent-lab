@@ -1351,9 +1351,9 @@ def shaft():
 
 def enclosure():
     # study 27 (study 11 in the repo): the sealed box's 2D section to scale, as drawn, with the redesign's bridge to the lid
-    c = tomllib.loads((REPO / "cases" / "enclosure_fix_k5_eps0p9_br5.toml").read_text(encoding="utf-8"))
+    c = tomllib.loads((REPO / "cases" / "enclosure_fix_k5_eps0p9_br2_long.toml").read_text(encoding="utf-8"))
     p = c["parameters"]
-    corners = [case(f"enclosure_k{k}_eps0p{e}") for k in (5, 20) for e in (1, 9)]
+    corners = [case(f"enclosure_k{k}_eps0p{e}_e") for k in (5, 20) for e in (1, 9)]
     shared = ("width_mm", "height_mm", "box_depth_mm", "board_length_mm", "board_thickness_mm", "component_length_mm",
               "power_component_W", "power_board_W", "ambient_C", "h_ext_W_m2K", "eps_ext")
     for q in corners:                      # the four corners and the redesign are the same box
@@ -1361,7 +1361,9 @@ def enclosure():
     eps = sorted({q["eps_int"] for q in corners})
     kb = sorted({q["board_k_W_mK"] for q in corners})
     assert len(eps) == 2 and len(kb) == 2
-    req = {r["id"]: r["limit"] for r in c["requirements"]}
+    scores = json.loads((REPO / "validation" / "enclosure" / "client_requirements_revB_scores.json").read_text(encoding="utf-8"))
+    req = {k: v[1] for k, v in scores["limits"].items()}                # the client's revision B list
+    c1a, c1b = scores["c1_span_mm"]
     W, H, Lb, tb, Lc, ts = (p[k] for k in ("width_mm", "height_mm", "board_length_mm", "board_thickness_mm",
                                            "component_length_mm", "shell_thickness_mm"))
     x0, x1, c0, c1 = (W - Lb) / 2, (W + Lb) / 2, (W - Lc) / 2, (W + Lc) / 2
@@ -1373,6 +1375,7 @@ def enclosure():
     rect(ax, c0, y1, c1, H, fc="#d3dceb", ec=ACC, lw=1.0, hatch="xxxx", z=2.4, ls=(0, (4, 2)))   # the fix
     rect(ax, x0, y0, x1, y1, fc="#cfd8e4", lw=1.0, z=3)                      # the board
     rect(ax, c0, y0, c1, y1, fc=HOT, ec=INK, lw=1.0, z=3.2)                  # the component
+    rect(ax, x0 + c1a, y1, x0 + c1b, y1 + 5, fc="#e9d9b6", ec=INK, lw=0.9, z=3.1)   # C1, where it sits
     # the outside: still air, heat leaving through every wall
     for x in np.linspace(12, W - 12, 7):
         force(ax, (x, H + ts + 1.5), (x, H + ts + 9), color=HOT, lw=1.0)
@@ -1382,12 +1385,14 @@ def enclosure():
     text(ax, W / 2, H + ts + 16.5, f"outside: still air at {p['ambient_C']:g} °C · the walls lose heat by convection, "
          f"{p['h_ext_W_m2K']:g} W/m²K,\nand by radiation, painted, emissivity {p['eps_ext']:g}", color=HOT, bold=True, fs=7.6)
     # what's inside
-    note(ax, ((c0 + c1) / 2 - 5, y0), (23, 10), f"the component: {p['power_component_W']:g} W, modelled\nas the "
+    note(ax, ((c0 + c1) / 2 - 5, y0), (23, 10), f"U1, the regulator: {p['power_component_W']:g} W, modelled\nas the "
          f"middle {Lc:g} mm of the board", color=HOT, ha="left")
+    note(ax, (x0 + (c1a + c1b) / 2, y1 + 5), (3, 41), f"C1, the bulk capacitor, {c1a:g}-{c1b:g} mm\nfrom the board's end: "
+         "read as the\nboard under it", ha="left")
     note(ax, (x1 - 12, y0), (88, 10), f"circuit board, {p['power_board_W']:g} W spread\nover the rest of it", ha="left")
-    text(ax, 5, 47, "sealed air: natural convection,\nand radiation between the surfaces", fs=7.3, ha="left", box=False)
-    note(ax, ((c0 + c1) / 2 + 3, y1 + gap * 0.62), (101, 47), f"the fix: a bridge from the\ncomponent to the lid, a pillar"
-         f"\nwith a gap pad, {Lc:g} × {gap:g},\nsized at {p['bridge_k_W_mK']:g} W/mK effective", color=ACC, ha="left")
+    text(ax, 5, 54, "sealed air: natural convection,\nand radiation between the surfaces", fs=7.3, ha="left", box=False)
+    note(ax, ((c0 + c1) / 2 + 3, y1 + gap * 0.62), (101, 47), f"the fix: a bridge from\nU1 to the lid, a pillar"
+         f"\nwith a gap pad, {Lc:g} × {gap:g},\nat least {p['bridge_k_W_mK']:g} W/mK effective", color=ACC, ha="left")
     note(ax, (x0 / 2, (y0 + y1) / 2), (-40, -17), "air between the board's edge and the wall:\nthe board's heat leaves "
          "only through the air\nand by radiation", ha="left", va="top")
     # dimensions
@@ -1404,12 +1409,13 @@ def enclosure():
     text(ax, tx, ty - 3.0 * dy, f"board's in-plane conductivity: {kb[0]:g} to\n{kb[1]:g} W/mK (its copper layers)", ha="left",
          va="top", fs=7.2, color=INK, box=False)
     text(ax, tx, ty - 5.6 * dy, "The limits", ha="left", fs=8, color=INK, bold=True, box=False)
-    text(ax, tx, ty - 6.6 * dy, f"hottest component ≤ {req['REQ-D1']:g} °C\nmean air inside ≤ {req['REQ-D2']:g} °C", ha="left",
+    text(ax, tx, ty - 6.6 * dy, f"U1's case ≤ {req['REQ-E1']:g} °C\nthe board, anywhere ≤ {req['REQ-E2']:g} °C\n"
+         f"C1 ≤ {req['REQ-E3']:g} °C, for 50,000 h of life\nmean air inside ≤ {req['REQ-E4']:g} °C", ha="left",
          va="top", fs=7.2, color=INK, box=False)
-    text(ax, tx, ty - 9.4 * dy, f"Modelled: this section of a box {p['box_depth_mm']:g} mm\ndeep. Its end walls are left "
+    text(ax, tx, ty - 11.4 * dy, f"Modelled: this section of a box {p['box_depth_mm']:g} mm\ndeep. Its end walls are left "
          "out, so the\nmodel has less wall to lose heat through\nand errs on the hot side.", ha="left", va="top", fs=7.2,
          color=ACC, box=False)
-    finish(fig, "enclosure", "Study 27 · sealed electronics enclosure · section as drawn, with the redesign's bridge to the lid",
+    finish(fig, "enclosure", "Study 27 · sealed electronics enclosure · section as drawn, with the recommended bridge to the lid",
            "dimensions in mm, to scale")
 
 
