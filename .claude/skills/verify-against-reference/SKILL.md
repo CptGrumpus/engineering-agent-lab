@@ -130,6 +130,15 @@ Predict convergence on the reported quantity, not the solver's residual norm (El
   data, and none exists for synthetic cases.
 - When test data does exist, compare against it once, blind, after the predictions are written
   (`frame-requirements`, "Blind validation against test data").
+- **Code checks are verified against the code body's own worked examples** (steel frame study, 2026-11-25: AISC 360
+  member checks against nine v16.0 Design Examples; the frame analysis against Example C.1A, which also gives a
+  Direct Analysis Method benchmark with published drifts, moments and reactions). Match to the printed precision
+  (three figures, 0.5 %), and where the example rounds an intermediate (Lc/r to 103, Lb to 11.7 ft), say so in the
+  test and allow for it explicitly (0.8 %). Read figure-only inputs (member sizes on an elevation) by rendering the
+  page, not from the text layer. Pin borderline classifications (a flange compact by 0.002) in a test.
+- **A comparison between two methods can pass because of a shared mistake.** Check that each side has its own
+  inputs: the B1-B2 "lateral translation" frame first carried the gravity load again, and that error put the two
+  methods 85 % apart; had the exact side shared it, they would have agreed.
 
 ## Artifacts
 
