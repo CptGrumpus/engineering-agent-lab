@@ -138,8 +138,9 @@ Machine elements (study 16) DONE 16:24: page 26; dashboard session told.
    **2026-11-25 21:55: in `references/aisc/`** (the user's downloads; AISC moved its pages, the old links died):
    A360-22W-ewr.pdf (360-22 with Commentary, 780 pages), P901-23W.pdf (Companion v16.0 Vol. 1, Design Examples, 1,054
    pages, the full set), P902-23W.pdf (Vol. 2, Design Tables: compression / flexure tables, not the section
-   properties). Still needed: the Shapes Database v16.0 (.xlsx) from
-   https://www.aisc.org/aisc/publications/steel-construction-manual/shapes-database-v160/ . No PDF library is in the
+   properties). **SHAPE160.xlsx** (Shapes Database v16.0, 22:58; sheet 'Database v16.0', 2,301 shapes, 166 columns:
+   each name appears twice, US units first, then metric; W10X33 A 9.71 in2, Ix 171 in4, Zx 38.8 in3; W14X30 A 8.85,
+   Ix 291, Zx 47.3). All AISC inputs are in place: the study is unblocked. No PDF library is in the
    project venv: read them with PyMuPDF from a scratch venv (`python -I`, paths as arguments).
    Prototype notes (scratch, 17:16-17:20): CalculiX B32 + NLGEOM gives P-delta (cantilever root moment 109.4 against
    100 first order at P = 5 kN, the right size by hand); `*EL FILE, SECTION FORCES` needs `OUTPUT=2D` on both FILE
