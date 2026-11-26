@@ -1,0 +1,355 @@
+{
+  "points": [
+    {
+      "label": "p00_cell_size_m-0.0025",
+      "parameters": {
+        "mean_velocity_m_per_s": 0.2,
+        "kinematic_viscosity_m2_per_s": 0.001,
+        "density_kg_per_m3": 1000.0,
+        "flag_length_m": 0.35,
+        "cell_size_m": 0.0025,
+        "benchmark_drag_N_per_m": 14.2929,
+        "benchmark_lift_N_per_m": 1.11905
+      },
+      "derived": {
+        "reynolds_D": 20.000000000000004,
+        "dynamic_pressure_times_D_N_per_m": 2.0000000000000004
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "mesh",
+          "description": "checkMesh reports Mesh OK (1 = failed)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.5,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "flag_cells",
+          "description": "largest interior angle (deg) of the fluid cells touching the flag, at (0.3455, 0.2110) m (a cell wrapped around a tip corner reads near 180)",
+          "kind": "numerical",
+          "value": 122.63748739834053,
+          "tolerance": 140.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "converged",
+          "description": "SIMPLE met its residual targets (1 = stopped at the iteration limit)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.5,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "forces_settled",
+          "description": "max over drag and lift of the spread over the last 10 % of iterations / final value",
+          "kind": "numerical",
+          "value": 6.237043989889008e-08,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "inflow_profile",
+          "description": "max over inlet faces |U - benchmark parabola at the face centre| / (1.5 U_mean)",
+          "kind": "numerical",
+          "value": 6.202696016532892e-08,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "flow_rate",
+          "description": "|inlet flow - U_mean H depth| / (U_mean H depth) (midpoint sampling of the parabola on the inlet faces; shrinks with the mesh)",
+          "kind": "numerical",
+          "value": 0.0002934456126462903,
+          "tolerance": 0.005,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "mass_conservation",
+          "description": "|outlet flow - inlet flow| / inlet flow",
+          "kind": "numerical",
+          "value": 8.525673803465938e-14,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "laminar",
+          "description": "Reynolds number (D) / 200 (the benchmark's steady laminar range)",
+          "kind": "validity",
+          "value": 0.10000000000000002,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-F1",
+          "text": "Before it is coupled to the solid, the fluid model shall reproduce the Turek-Hron CFD1 drag within 1 %.",
+          "metric": "drag_deviation_pct",
+          "operator": "<=",
+          "limit": 1.0,
+          "units": "%",
+          "value": 0.007328173862559774,
+          "margin": 0.9926718261374402,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-F2",
+          "text": "It shall reproduce the CFD1 lift within 2 % (lift is a small difference of large pressure forces, about 8 % of the drag).",
+          "metric": "lift_deviation_pct",
+          "operator": "<=",
+          "limit": 2.0,
+          "units": "%",
+          "value": 0.3317123338903751,
+          "margin": 1.6682876661096249,
+          "verdict": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p01_cell_size_m-0.00125",
+      "parameters": {
+        "mean_velocity_m_per_s": 0.2,
+        "kinematic_viscosity_m2_per_s": 0.001,
+        "density_kg_per_m3": 1000.0,
+        "flag_length_m": 0.35,
+        "cell_size_m": 0.00125,
+        "benchmark_drag_N_per_m": 14.2929,
+        "benchmark_lift_N_per_m": 1.11905
+      },
+      "derived": {
+        "reynolds_D": 20.000000000000004,
+        "dynamic_pressure_times_D_N_per_m": 2.0000000000000004
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "mesh",
+          "description": "checkMesh reports Mesh OK (1 = failed)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.5,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "flag_cells",
+          "description": "largest interior angle (deg) of the fluid cells touching the flag, at (0.3497, 0.2106) m (a cell wrapped around a tip corner reads near 180)",
+          "kind": "numerical",
+          "value": 115.7083334859181,
+          "tolerance": 140.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "converged",
+          "description": "SIMPLE met its residual targets (1 = stopped at the iteration limit)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.5,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "forces_settled",
+          "description": "max over drag and lift of the spread over the last 10 % of iterations / final value",
+          "kind": "numerical",
+          "value": 2.3001257610844863e-07,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "inflow_profile",
+          "description": "max over inlet faces |U - benchmark parabola at the face centre| / (1.5 U_mean)",
+          "kind": "numerical",
+          "value": 6.249466129778132e-08,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "flow_rate",
+          "description": "|inlet flow - U_mean H depth| / (U_mean H depth) (midpoint sampling of the parabola on the inlet faces; shrinks with the mesh)",
+          "kind": "numerical",
+          "value": 7.331468982916216e-05,
+          "tolerance": 0.005,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "mass_conservation",
+          "description": "|outlet flow - inlet flow| / inlet flow",
+          "kind": "numerical",
+          "value": 3.701882357349787e-15,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "laminar",
+          "description": "Reynolds number (D) / 200 (the benchmark's steady laminar range)",
+          "kind": "validity",
+          "value": 0.10000000000000002,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-F1",
+          "text": "Before it is coupled to the solid, the fluid model shall reproduce the Turek-Hron CFD1 drag within 1 %.",
+          "metric": "drag_deviation_pct",
+          "operator": "<=",
+          "limit": 1.0,
+          "units": "%",
+          "value": 0.2612509274604912,
+          "margin": 0.7387490725395087,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-F2",
+          "text": "It shall reproduce the CFD1 lift within 2 % (lift is a small difference of large pressure forces, about 8 % of the drag).",
+          "metric": "lift_deviation_pct",
+          "operator": "<=",
+          "limit": 2.0,
+          "units": "%",
+          "value": 0.6058871625896879,
+          "margin": 1.394112837410312,
+          "verdict": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p02_cell_size_m-0.000625",
+      "parameters": {
+        "mean_velocity_m_per_s": 0.2,
+        "kinematic_viscosity_m2_per_s": 0.001,
+        "density_kg_per_m3": 1000.0,
+        "flag_length_m": 0.35,
+        "cell_size_m": 0.000625,
+        "benchmark_drag_N_per_m": 14.2929,
+        "benchmark_lift_N_per_m": 1.11905
+      },
+      "derived": {
+        "reynolds_D": 20.000000000000004,
+        "dynamic_pressure_times_D_N_per_m": 2.0000000000000004
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "mesh",
+          "description": "checkMesh reports Mesh OK (1 = failed)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.5,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "flag_cells",
+          "description": "largest interior angle (deg) of the fluid cells touching the flag, at (0.3495, 0.2103) m (a cell wrapped around a tip corner reads near 180)",
+          "kind": "numerical",
+          "value": 115.70833348590816,
+          "tolerance": 140.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "converged",
+          "description": "SIMPLE met its residual targets (1 = stopped at the iteration limit)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.5,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "forces_settled",
+          "description": "max over drag and lift of the spread over the last 10 % of iterations / final value",
+          "kind": "numerical",
+          "value": 7.72849291083003e-07,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "inflow_profile",
+          "description": "max over inlet faces |U - benchmark parabola at the face centre| / (1.5 U_mean)",
+          "kind": "numerical",
+          "value": 6.24993245120405e-08,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "flow_rate",
+          "description": "|inlet flow - U_mean H depth| / (U_mean H depth) (midpoint sampling of the parabola on the inlet faces; shrinks with the mesh)",
+          "kind": "numerical",
+          "value": 1.8282610485316442e-05,
+          "tolerance": 0.005,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "mass_conservation",
+          "description": "|outlet flow - inlet flow| / inlet flow",
+          "kind": "numerical",
+          "value": 2.6707906690485573e-13,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "laminar",
+          "description": "Reynolds number (D) / 200 (the benchmark's steady laminar range)",
+          "kind": "validity",
+          "value": 0.10000000000000002,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-F1",
+          "text": "Before it is coupled to the solid, the fluid model shall reproduce the Turek-Hron CFD1 drag within 1 %.",
+          "metric": "drag_deviation_pct",
+          "operator": "<=",
+          "limit": 1.0,
+          "units": "%",
+          "value": 0.21790221653408878,
+          "margin": 0.7820977834659112,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-F2",
+          "text": "It shall reproduce the CFD1 lift within 2 % (lift is a small difference of large pressure forces, about 8 % of the drag).",
+          "metric": "lift_deviation_pct",
+          "operator": "<=",
+          "limit": 2.0,
+          "units": "%",
+          "value": 0.5257228303819992,
+          "margin": 1.4742771696180008,
+          "verdict": "PASS"
+        }
+      ]
+    }
+  ],
+  "run_id": "20261125-185354_turek_hron_cfd1_nested",
+  "generated_utc": "2026-11-26T00:45:16+00:00",
+  "verification_status": "PASS"
+}

@@ -28,6 +28,20 @@
 # lift is checked by the coupled runs' own studies). P3 missed (oscillatory or divergent on nested meshes) -> the
 # scatter was not only the topology: the base mesh may sit outside the asymptotic range for lift; next is a fourth
 # level (0.3125 mm, about 835k cells, about 17 h single-core), asked of the user first. No tolerance changes either way.
+#
+# Results (run 20261125-185354_turek_hron_cfd1_nested, scored 19:46): VERIFICATION PASS.
+#   P1 HELD: every point check on every level; 411 / 1,328 / 4,600 iterations; flag cells 123 / 116 / 116 deg.
+#   P2 MISSED in form, REQ-F1 still verified: drag 14.2939 / 14.3302 / 14.3240 N/m is oscillatory (R -0.17), not
+#      monotone; uncertainty 0.16 % (not under 0.1 %); no extrapolation, the finest 0.15 % above revision 1's
+#      14.3026 (predicted within 0.1 %); 0.22 % from the benchmark: REQ-F1 verified PASS.
+#   P3 HELD in outcome, MISSED in regime: lift 1.11534 / 1.12583 / 1.12493 N/m is oscillatory (R -0.085), not
+#      monotone; uncertainty 0.58 % under the 1 % limit: REQ-F2 verified PASS; the finest 0.53 % from the benchmark.
+#   P4 HELD: the nested 1.25 mm lift 1.12583 inside the band 1.107-1.128 (near its top).
+#   P5 MISSED (fast): 51 min (18:54-19:45).
+#   Reading: lift is now formally verified for CFD1 (it was not on regenerated meshes). Both quantities change sign
+#   between the 2.5-1.25 and 1.25-0.625 mm steps with a small second step, the pattern of a coarsest level not yet
+#   asymptotic; the uncertainty bound covers that. Decision: no fourth level for CFD1 (the user's 19:29 approval
+#   covered only a case whose lift does not verify).
 
 [case]
 name = "turek_hron_cfd1_nested"
