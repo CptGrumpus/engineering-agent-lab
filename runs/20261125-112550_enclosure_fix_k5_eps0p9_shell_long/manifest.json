@@ -1,0 +1,242 @@
+{
+  "run_id": "20261125-112550_enclosure_fix_k5_eps0p9_shell_long",
+  "case_name": "enclosure_fix_k5_eps0p9_shell_long",
+  "model": "openfoam_enclosure_cht",
+  "case_source": "cases/enclosure_fix_k5_eps0p9_shell_long.toml",
+  "case_sha256": "3ab9037d4a1868e6278fb94be9dedeebca50ef207ae2bfa9dc1564cba7bac7ab",
+  "model_sources_sha256": {
+    "models/cfd/enclosure_openfoam.py": "98473919ce824be3de79e7c65756c36577fd3955b9ec10e810ededcb655b514e",
+    "models/cfd/run_enclosure.sh": "4c8dc1768ddb7a27ec94850f128150ebec04638548231807dc9c4ad92de8cacb"
+  },
+  "rerun_of": null,
+  "started_utc": "2026-11-25T16:25:50+00:00",
+  "environment": {
+    "python": "3.14.10",
+    "python_executable": "<repo>\\.venv\\Scripts\\python.exe",
+    "platform": "Windows-11-10.0.26100-SP0",
+    "machine": "AMD64",
+    "packages": {
+      "numpy": "2.5.5",
+      "scipy": "1.18.1",
+      "matplotlib": "3.11.2",
+      "cadquery": "2.8.0"
+    },
+    "git": {
+      "commit": "f1f5a0569994e8542618c70cccabe144cdaeeeb9",
+      "dirty": true
+    },
+    "tools": {}
+  },
+  "numerics": {
+    "transient_end_s": 9000.0,
+    "solver_timeout_s": 172800
+  },
+  "points": [
+    {
+      "label": "p00_baseline",
+      "parameters": {
+        "width_mm": 150.0,
+        "height_mm": 60.0,
+        "box_depth_mm": 200.0,
+        "board_length_mm": 100.0,
+        "board_thickness_mm": 2.0,
+        "component_length_mm": 20.0,
+        "power_component_W": 5.0,
+        "power_board_W": 10.0,
+        "board_k_W_mK": 5.0,
+        "ambient_C": 40.0,
+        "h_ext_W_m2K": 5.0,
+        "eps_ext": 0.85,
+        "eps_int": 0.9,
+        "cell_mm": 2.0,
+        "n_phi": 4,
+        "max_iterations": 1,
+        "shell_thickness_mm": 2.0,
+        "shell_k_W_mK": 200.0,
+        "bridge_k_W_mK": 0.0
+      },
+      "status": "completed",
+      "derived": {},
+      "solver": {
+        "success": true,
+        "message": "enclosure: component 95.59 C",
+        "nfev": null
+      },
+      "solver_outputs": {
+        "q_component_W_m3": 624999.9999999999,
+        "q_board_W_m3": 312499.99999999994,
+        "regions": [
+          "fluid",
+          "board",
+          "component",
+          "shell"
+        ],
+        "interfaces": {
+          "fluid": [
+            "board",
+            "component",
+            "shell"
+          ],
+          "board": [
+            "component",
+            "fluid"
+          ],
+          "component": [
+            "board",
+            "fluid"
+          ],
+          "shell": [
+            "fluid"
+          ]
+        },
+        "shell_thickness_m": 0.002,
+        "bridge_k_W_mK": 0.0,
+        "q_in_W_m2": 178.57142857142856,
+        "power_W": 15.0,
+        "history": [
+          {
+            "t": 900.0,
+            "component_max_C": 98.98601449400002,
+            "board_max_C": 96.99074379800004,
+            "air_mean_C": 69.25486412532302,
+            "walls_mean_C": 58.53414944411685,
+            "q_out_W_m2": 212.53837625434502,
+            "qr_walls_W_m2": 136.29268556790154,
+            "Q_out_W": 18.529361295260813,
+            "Q_rad_W": 11.34943250653076,
+            "walls_max_C": 59.525649361000035
+          },
+          {
+            "t": 1800.0,
+            "component_max_C": 96.634183071,
+            "board_max_C": 94.61534600000005,
+            "air_mean_C": 66.8524483450143,
+            "walls_mean_C": 56.154880965336474,
+            "q_out_W_m2": 184.08294739273867,
+            "qr_walls_W_m2": 133.37417085856362,
+            "Q_out_W": 16.0481730607545,
+            "Q_rad_W": 11.106260808536547,
+            "walls_max_C": 57.142161335000026
+          },
+          {
+            "t": 2700.0,
+            "component_max_C": 95.903416214,
+            "board_max_C": 93.879843317,
+            "air_mean_C": 66.13026407224675,
+            "walls_mean_C": 55.44597182472904,
+            "q_out_W_m2": 175.6734528894108,
+            "qr_walls_W_m2": 132.41393203466902,
+            "Q_out_W": 15.31490477073372,
+            "Q_rad_W": 11.026266918448915,
+            "walls_max_C": 56.43087003100004
+          },
+          {
+            "t": 3600.0,
+            "component_max_C": 95.68342333600003,
+            "board_max_C": 93.65841577400005,
+            "air_mean_C": 65.91295979840078,
+            "walls_mean_C": 55.23269176450464,
+            "q_out_W_m2": 173.1495479397792,
+            "qr_walls_W_m2": 132.1254615677331,
+            "Q_out_W": 15.094832123282343,
+            "Q_rad_W": 11.002235592926317,
+            "walls_max_C": 56.21687139200003
+          },
+          {
+            "t": 4500.0,
+            "component_max_C": 95.61711708500002,
+            "board_max_C": 93.59167640100003,
+            "air_mean_C": 65.84746867620709,
+            "walls_mean_C": 55.1684141904953,
+            "q_out_W_m2": 172.38945911641108,
+            "qr_walls_W_m2": 132.03858156291696,
+            "Q_out_W": 15.02855594778346,
+            "Q_rad_W": 10.994997968819481,
+            "walls_max_C": 56.15237709500002
+          },
+          {
+            "t": 5400.0,
+            "component_max_C": 95.597122238,
+            "board_max_C": 93.57155143100005,
+            "air_mean_C": 65.827721013563,
+            "walls_mean_C": 55.149032506728986,
+            "q_out_W_m2": 172.16031929167215,
+            "qr_walls_W_m2": 132.01239071309877,
+            "Q_out_W": 15.008576031321454,
+            "Q_rad_W": 10.992816116029907,
+            "walls_max_C": 56.13292995300003
+          },
+          {
+            "t": 6300.0,
+            "component_max_C": 95.59109264,
+            "board_max_C": 93.56548232700004,
+            "air_mean_C": 65.8217654846722,
+            "walls_mean_C": 55.14318742992532,
+            "q_out_W_m2": 172.0912205086643,
+            "qr_walls_W_m2": 132.0044942369733,
+            "Q_out_W": 15.002550941521308,
+            "Q_rad_W": 10.992158292932228,
+            "walls_max_C": 56.12706526100004
+          },
+          {
+            "t": 7200.0,
+            "component_max_C": 95.58927432600001,
+            "board_max_C": 93.56365188000001,
+            "air_mean_C": 65.81996931968757,
+            "walls_mean_C": 55.14142470658413,
+            "q_out_W_m2": 172.0703825288646,
+            "qr_walls_W_m2": 132.00211235485452,
+            "Q_out_W": 15.000733967419569,
+            "Q_rad_W": 10.991959867929276,
+            "walls_max_C": 56.125296657000035
+          },
+          {
+            "t": 8100.0,
+            "component_max_C": 95.588726199,
+            "board_max_C": 93.563099324,
+            "air_mean_C": 65.81942693427294,
+            "walls_mean_C": 55.140893139677644,
+            "q_out_W_m2": 172.06409866540827,
+            "qr_walls_W_m2": 132.00139005264742,
+            "Q_out_W": 15.000186044079806,
+            "Q_rad_W": 10.991899693980828,
+            "walls_max_C": 56.12476337300001
+          },
+          {
+            "t": 9000.0,
+            "component_max_C": 95.58856083300003,
+            "board_max_C": 93.56293259400002,
+            "air_mean_C": 65.81926332457397,
+            "walls_mean_C": 55.14073277137379,
+            "q_out_W_m2": 172.06220289146412,
+            "qr_walls_W_m2": 132.00117164954023,
+            "Q_out_W": 15.000020741514094,
+            "Q_rad_W": 10.991881498901499,
+            "walls_max_C": 56.124602486000015
+          }
+        ],
+        "final": {
+          "t": 9000.0,
+          "component_max_C": 95.58856083300003,
+          "board_max_C": 93.56293259400002,
+          "air_mean_C": 65.81926332457397,
+          "walls_mean_C": 55.14073277137379,
+          "q_out_W_m2": 172.06220289146412,
+          "qr_walls_W_m2": 132.00117164954023,
+          "Q_out_W": 15.000020741514094,
+          "Q_rad_W": 10.991881498901499,
+          "walls_max_C": 56.124602486000015
+        }
+      },
+      "metrics": {
+        "component_max_C": 95.58856083300003,
+        "air_mean_C": 65.81926332457397,
+        "walls_mean_C": 55.14073277137379,
+        "radiation_share_pct": 73.27920999267666
+      }
+    }
+  ],
+  "study": "enclosure_thermal",
+  "status": "completed",
+  "finished_utc": "2026-11-25T22:14:19+00:00"
+}
