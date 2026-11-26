@@ -187,7 +187,17 @@ day stale before anyone noticed. Say "recently" or give the date.
 .venv\Scripts\python.exe site\check_viewer3d.py
 ```
 
-All three must pass. Check changed pages at 360 px wide for sideways overflow. The study session commits in the
+All three must pass. Check changed pages at 360 px wide for sideways overflow.
+
+The site has a light and a dark theme (2026-11-25): the reader's system setting, or their choice from the top
+bar's toggle. A new colour goes in as a token in `site.css`'s `:root` with its light value in both light blocks
+(`[data-theme="light"]` and the `prefers-color-scheme: light` one); a hard-coded colour shows up in one theme only.
+The result viewer and terminal are dark stages in both themes, on purpose. Screenshot a changed page in both
+(`cdp.mjs ... light` and `... dark`).
+
+How I Work's "When the Software Broke" panel is read from the study session's `FAILURES.md` by
+`extras.failures_panel()`, which asserts the by-software heading and table shape; if the ledger's layout changes,
+the build stops, and the fix goes in the parser, not in copied numbers. The study session commits in the
 same clone: add and commit only your own paths, in one command, and never leave files staged.
 
 Work on a feature branch goes in a git worktree (a second folder), never a branch switch in this clone: a switch
