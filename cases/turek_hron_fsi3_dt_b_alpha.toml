@@ -20,6 +20,20 @@
 #      scripts/score_truncated_fsi.py --parameter time_step_s) classifies every quantity as the same check does with
 #      the alpha-0 level b in this run's place, and each uncertainty (GCI) differs by under 0.2 percentage points.
 #   P5 5.5-8 h, starting beside FSI2 level c (to about 10:30) and FSI3 dt_c (to about 14:30).
+#
+# Results (run 20261126-083740_turek_hron_fsi3_dt_b_alpha, 08:37-15:13, scored 2026-11-26 15:20). VERIFICATION
+# PASS, 7/7 checks (flag cells 123 deg, periodic 7.6e-6, force transfer 3.0e-9), every requirement PASS: over the last
+# periods to 8 s uy amplitude 33.910 mm (3.09 %), frequency 5.4640 Hz (0.074 %), drag mean 469.85 N/m (2.03 %), drag
+# amplitude 25.273 (8.89 %), lift amplitude 153.41 (0.32 %), ux mean -2.7007 mm (6.23 %).
+#   P1 HELD: 8 s reached, both participants ended normally (CalculiX "Job finished", OpenFOAM "End"), every point
+#      check passes.
+#   P2 HELD: 2 Newton iterations in all 106,495 solid attempts (solid_newton_counts.json).
+#   P3 HELD: against the alpha-0 record to 7.999 s (b_alpha_t7999.json, same cut): uy amplitude -0.001 %, frequency
+#      -0.0001 %, ux mean +0.004 % (larger in magnitude), drag mean +0.0005 %, drag amplitude -0.001 %, lift amplitude
+#      -0.016 % (limit 0.1 %). Not in the prediction: the small lift mean (9.93 -> 9.92 N/m) moved 0.13 %. The last
+#      whole periods end at 7.908 s, so the full 8 s record and the 7.999 s cut give the same numbers.
+#   P4 open: needs dt_c_alpha (running, due about 17:30-18:00).
+#   P5 HELD: 6 h 36 min (predicted 5.5-8 h).
 
 [case]
 name = "turek_hron_fsi3_dt_b_alpha"

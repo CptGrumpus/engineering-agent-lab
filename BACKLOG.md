@@ -80,12 +80,15 @@ commit). Rules that bind:
   `*.inp`, `*.dat`, `__pycache__`, files > 600 kB, then `tests/test_privacy.py`; never two FEMM cases at once; check
   free RAM on long runs.
 
-### Running at 11:50, 2026-11-26
+### Running at 15:20, 2026-11-26
 
 | Job | Run dir (log) | Done about | When it finishes |
 |---|---|---|---|
 | Study 6: FSI3 dt_c at alpha -0.05 `turek_hron_fsi3_dt_c_alpha` (predictions 01:06, 0c1b42a), started 01:12 | `runs/*_turek_hron_fsi3_dt_c_alpha` | 2026-11-26 17:30-19:30 (at 10:54: 5.03 of 8 s; slowed by the fourth run and the host's other load) | Score P1-P5; the three-level time-step check with dt_a_alpha (cut 7.999 s) and dt_b_alpha, forces included (the open item); page 17 |
-| Study 6: FSI3 level b at alpha -0.05 `turek_hron_fsi3_dt_b_alpha` (mesh_b with one change; predictions 07:34; user's decision about 07:33), started 08:37 (run 20261126-083740) | `runs/*_turek_hron_fsi3_dt_b_alpha` (`turek_hron_fsi3_dt_b_alpha.log`) | about 13:30-14:30 (at 10:54: 3.67 of 8 s) | Score P1-P5; it replaces the alpha-0 mesh_b in the time-step check (P4 compares both) |
+
+DONE 15:20, 2026-11-26: FSI3 level b at alpha -0.05 (run 20261126-083740, 6 h 36 min) reached 8 s, VERIFICATION PASS,
+every requirement PASS, 2 Newton iterations in all 106,495 solid attempts; within 0.016 % of its alpha-0 record on
+every predicted metric (P1, P2, P3, P5 held). P4 (the three-level time-step check) waits for dt_c.
 
 DONE 11:50, 2026-11-26 (9d1a7d9, 6c19ce5, 7c60f7f): FSI2 levels a / b / c at alpha -0.05 all reached 15 s (7 h 06 / 7 h 25 /
 10 h 22 min), VERIFICATION PASS, every requirement PASS on every level, 2 Newton iterations in all 322,931 solid
