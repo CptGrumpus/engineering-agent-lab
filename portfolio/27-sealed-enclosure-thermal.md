@@ -1,67 +1,102 @@
-# Sealed electronics enclosure: natural convection and radiation, and the fix for the hot component
+# Sealed electronics enclosure: natural convection and radiation, and what it takes to pass
 
 [Portfolio index](../PORTFOLIO.md) · Thermal and fluids
 
 | | |
 |---|---|
-| **Answer** | The sealed aluminium box as drawn (150 x 60 mm section, 200 mm deep; a board carrying 10 W with a 5 W component; 40 C ambient) **fails both requirements at every corner** of the uncertain inputs: the component reaches **94-98 C** with a high-emissivity interior and **156-163 C** with a bare-metal one (limit 85), the mean air **67-84 C** (limit 60). **A conduction path from the component to the lid fixes the component**: with an aluminium shell modelled and a pad or pillar of effective conductivity **5 W/mK**, the component sits at **70 C** (emissivity 0.9) and **76 C** (0.1), so it passes at both interior finishes; 2 W/mK passes only with a high-emissivity interior (78 against 91 C). **The air limit still fails with every bridge** (61-72 C): the board's own 10 W heats the air, and passing REQ-D2 needs a path for that heat too. Verification: every model part is checked against an exact or benchmark answer first (natural convection within 0.6 % of de Vahl Davis; radiation within 0.9 % of the exact exchange at the angular resolution the box uses); a 1 mm mesh moves the corner result by 0.05 K. The redesign runs stopped before the box fully settled; extrapolated to the settled state, their heat balance closes to 0.03-0.30 % and no verdict changes (details below). With a bridge the **board** becomes the hottest part (79.7 / 98.4 C at 5 W/mK): REQ-D1 names the component, so whether it should cover the rest of the board is open with the client. The client, loads and limits are synthetic. |
+| **Answer** | The sealed aluminium box as drawn (150 x 60 mm section, 200 mm deep; a board carrying 10 W with a 5 W regulator U1; 40 C ambient) **fails the client's requirement list**. With a painted interior (emissivity 0.9), U1, the board laminate and the internal air pass, but the bulk capacitor C1 runs at **89-91 C** against its **70 C** life limit (about 15,000 h of the 50,000 h asked). With a bare-metal interior (0.1) everything fails (U1 157-164 C, C1 149-153 C). **No bridge or shell fixes C1 with the part as specified**: C1 sits on a nearly isothermal board, so the best redesign still holds it at **76.9 C**. **What passes everything**: a painted interior, C1 changed to a **125 C, 5,000 h** capacitor (its life limit becomes 90 C by the client's own derating rule), and a thermal bridge from U1 to the lid of at least **2 W/mK** effective conductivity for margin: at 2-5 W/mK, C1 is at **79-82 C** (8-11 K under its new limit), U1 at **69-77 C** (limit 115), the board at **79-82 C** (limit 105), the air at **62-63 C** (limit 70). The part change is the client's decision. Verification: each model part checked against an exact or benchmark answer first (natural convection within 0.6 % of de Vahl Davis; radiation within 0.9 % of exact exchange); every final run settled (heat balance within 0.05 %), and the settled values land within 0.02 K of the extrapolations made from shorter runs; a 1 mm mesh moves the result by 0.05 K. The client, loads, limits and parts are synthetic. |
 | **Discipline** | Electronics cooling: conjugate heat transfer with natural convection and radiation |
 | **Tools** | OpenFOAM 14 (foamMultiRun, fvDOM radiation), Python |
-| **Methods** | 2D conjugate heat transfer (air, board, component, aluminium shell, bridge), laminar natural convection with a perfect gas, grey diffuse radiation by the discrete ordinates method, transient to a settled state; staged verification against benchmarks; corner study over the uncertain inputs; heat-balance and settling checks with extrapolation to the settled state |
+| **Methods** | 2D conjugate heat transfer (air, board, component, aluminium shell, bridge), laminar natural convection with a perfect gas, grey diffuse radiation by the discrete ordinates method, transient to a settled state; staged verification against benchmarks; corner study over the uncertain inputs; per-part limits derived from datasheets and a derating policy |
 
 ## The question
 
 A sealed aluminium enclosure (2D section 150 x 60 mm, 200 mm deep) holds a 100 x 2 mm circuit board at mid-height that
-dissipates 10 W, with a 20 mm component on it dissipating 5 W. Outside: still air at 40 C (convection 5 W/m2K, paint
-emissivity 0.85). Does the hottest component stay at or below 85 C (REQ-D1), and the mean internal air at or below 60 C
-(REQ-D2), whatever the interior finish (emissivity 0.1 bare to 0.9 painted, REQ-D3)? The board's in-plane conductivity
-is uncertain (copper planes): bracket it at 5 and 20 W/mK. If it fails, what fixes it?
+dissipates 10 W, with a 20 mm regulator U1 on it dissipating 5 W. Outside: still air at 40 C (convection 5 W/m2K, paint
+emissivity 0.85). The interior finish is open (emissivity 0.1 bare to 0.9 painted) and the board's in-plane
+conductivity is uncertain (copper planes: bracketed at 5 and 20 W/mK). Does the design meet the client's thermal
+requirements at every combination, and if not, what fixes it?
+
+**The requirements came in two rounds.** The first brief gave two blanket limits: hottest component 85 C (REQ-D1) and
+mean internal air 60 C (REQ-D2). Blanket limits are proxies, so the client was asked for per-part data, and sent a
+requirement list with datasheet values and a derating policy ([`CLIENT_REQUIREMENTS.md`](../validation/enclosure/CLIENT_REQUIREMENTS.md),
+revision B, synthetic):
+
+| ID | Requirement | Limit | Derived from |
+|---|---|---|---|
+| REQ-E1 | U1 junction at or below 125 C | U1 case 115 C | Tj max 150 C less 25 K; 2.0 K/W x 5 W junction to case |
+| REQ-E2 | Board laminate at or below 105 C anywhere | 105 C | FR-4 maximum operating temperature 130 C less 25 K |
+| REQ-E3 | C1 (105 C, 5,000 h electrolytic, 5-15 mm from the board's left end) lasts 50,000 h | 70 C | Life doubles per 10 K below rating: 71.8 C, rounded down for ripple heating |
+| REQ-E4 | Commercial-grade parts within their 0-70 C ambient rating | Internal air 70 C | Their datasheet rating |
+
+For the record: revision B was written after the first redesign results were known (but before the final, settled
+runs), so it is not a blind test. Every limit is derived from a stated rule, so none was chosen to make a design
+pass. The first round's verdicts stay on record below.
 
 ## The answer
 
-As drawn, at the four corners:
+**As drawn** (settled runs, 9,000 s of simulated time for the bare interior):
 
-| Board | Interior emissivity | Hottest component | Mean air | Radiation share |
-|---|---|---|---|---|
-| 5 W/mK | 0.9 | **98.4 C** | **66.9 C** | 75 % |
-| 20 W/mK | 0.9 | **94.2 C** | **67.0 C** | 76 % |
-| 5 W/mK | 0.1 | **163.2 C** (unverified, settling) | **83.9 C** | 22 % |
-| 20 W/mK | 0.1 | **156.3 C** (unverified, settling) | **84.1 C** | 22 % |
+| Board | Interior | U1 (REQ-E1, 115 C) | Board max (REQ-E2, 105 C) | C1 (REQ-E3, 70 C) | Air (REQ-E4, 70 C) |
+|---|---|---|---|---|---|
+| 5 W/mK | 0.9 | 98.4 C pass | 95.8 C pass | **89.2 C FAIL** | 66.9 C pass |
+| 20 W/mK | 0.9 | 94.2 C pass | 93.4 C pass | **90.9 C FAIL** | 67.0 C pass |
+| 5 W/mK | 0.1 | **164.3 C FAIL** | **160.7 C FAIL** | **149.4 C FAIL** | **84.3 C FAIL** |
+| 20 W/mK | 0.1 | **157.4 C FAIL** | **156.4 C FAIL** | **152.7 C FAIL** | **84.5 C FAIL** |
 
-Both limits fail everywhere, and by far at low emissivity: a bare interior sheds the board's heat almost only by
-convection. The emissivity-0.1 corners had not finished settling (0.6 K over the last tenth of the run against 0.3);
-extrapolated, the component settles near 164 C, so no verdict depends on it.
+A bare interior sheds the board's heat almost only by convection (radiation carries 22 % of it, against 75 % when
+painted), and nothing survives it. With paint, only C1 fails: at 89-91 C an electrolytic rated 5,000 h at 105 C lasts
+about 13,000-15,000 h, not 50,000.
 
-The redesign, on the worse board (5 W/mK): the walls become a 2 mm aluminium shell (it conducts along the walls, which a
-boundary condition cannot), and a bridge (a thermal pad or a pillar with a gap pad) joins the component's top to the lid
-across the 29 mm gap:
+**The redesign** (5 W/mK board, the worse for U1): the walls become a 2 mm aluminium shell (it conducts along the walls,
+which a boundary condition cannot), and a bridge (a thermal pad or a pillar with a gap pad) joins U1's top to the lid
+across the 29 mm gap. Settled values, 9,000 s:
 
-| Bridge conductivity | Component, emissivity 0.9 | Component, emissivity 0.1 | Board maximum, 0.9 / 0.1 | Mean air, 0.9 / 0.1 |
-|---|---|---|---|---|
-| none (shell only) | 95.7 C | 154.6 C | 93.7 / 152.7 C | 65.9 / 80.8 C |
-| 1 W/mK | 84.8 C (passes by 0.2 K) | 106.6 C | 85.2 / 116.3 C | 64.5 / 71.9 C |
-| 2 W/mK | 78.0 C | 91.1 C | 82.5 / 107.3 C | 63.5 / 69.1 C |
-| **5 W/mK** | **70.0 C** | **76.1 C** | 79.7 / 98.4 C | 62.3 / 66.2 C |
-| 20 W/mK | 63.3 C | 65.8 C | 77.5 / 92.2 C | 61.1 / 64.0 C |
+| Bridge | Interior | U1 | Board max | C1 | Air | Fails |
+|---|---|---|---|---|---|---|
+| none (shell only) | 0.9 | 95.6 C | 93.6 C | 85.4 C | 65.8 C | E3 |
+| 1 W/mK | 0.9 | 84.3 C | 84.8 C | 84.6 C | 64.2 C | E3 |
+| 2 W/mK | 0.9 | 77.5 C | 82.1 C | 82.1 C | 63.1 C | E3 |
+| 5 W/mK | 0.9 | 69.4 C | 79.2 C | 79.2 C | 61.8 C | E3 |
+| 20 W/mK | 0.9 | 62.6 C | 76.9 C | 76.9 C | 60.6 C | E3 |
+| none (shell only) | 0.1 | 154.6 C | 152.7 C | 130.0 C | 80.8 C | all four |
+| 1 W/mK | 0.1 | 107.0 C | 116.6 C | 116.6 C | 72.1 C | E2, E3, E4 |
+| 2 W/mK | 0.1 | 90.8 C | 107.0 C | 107.0 C | 69.0 C | E2, E3 |
+| 5 W/mK | 0.1 | 75.6 C | 97.9 C | 97.9 C | 65.8 C | E3 |
+| 20 W/mK | 0.1 | 65.2 C | 91.6 C | 91.6 C | 63.5 C | E3 |
 
-Once the bridge cools the component, the board away from it is the hottest part of the assembly: at 5 W/mK it reaches 79.7 C with a painted interior and 98.4 C with a bare one. REQ-D1 as written names the component, so the verdicts above stand, but if other parts on the board carry the same 85 C limit, the bare-interior design fails on them. That is the client's call, and it is the first question to put to them.
+The bridge cools U1 a great deal but C1 only a little. Once U1 is cooled, the board's own 10 W makes its far ends the
+hottest part, and C1 sits at the left end (in every bridged run, C1's footprint holds the board maximum, within 0.2 K).
+Moving C1 along the board does not help either: as drawn the coolest point of the board is its very end, 87.1 C,
+only 2 K under C1's footprint.
 
-**Recommendation:** a bridge of at least 5 W/mK effective conductivity (component width, full gap: 1.45 K/W through the
-box's depth) meets REQ-D1 for both interior finishes with 9 K of margin, provided the limit applies to the
-component only (see the board temperatures above). A high-emissivity interior alone is not
-enough (shell only: 95.7 C). REQ-D2 needs a second path: the board's 10 W must reach the walls by conduction too (board
-edges clamped to the walls, or a full-area gap pad), or the limit must be relaxed; neither is assessed here.
+**Recommendation** (for the client to approve, since it changes a part):
+1. **Paint the interior** (emissivity 0.9 or better). With bare metal every design fails at least one requirement,
+   and even with the new C1 below, the 5 and 20 W/mK bridges leave it at 97.9 / 91.6 C, over its 90 C limit.
+2. **Change C1 to a 125 C, 5,000 h electrolytic.** By the client's own rule its life limit becomes 125 - 10 log2(10) =
+   91.8 C, 90 C after the same 1.8 K ripple allowance. (A 105 C, 10,000 h part gives 80 C: too tight.)
+3. **Add a bridge of at least 2 W/mK** effective conductivity (U1's width, full gap: 3.6 K/W through the box's depth
+   at 2 W/mK, 1.45 K/W at 5). With paint and the new C1: C1 at 82.1 C (2 W/mK) or 79.2 C (5 W/mK) against 90 C, U1 at
+   77.5 / 69.4 C against 115 C, the board at 82.1 / 79.2 C against 105 C, the air at 63.1 / 61.8 C against 70 C.
+   Without a bridge the new C1 would pass by only 4.6 K (85.4 C, shell only) and as drawn not at all on the 20 W/mK
+   board (90.9 C).
+
+**The first round's verdicts** (REQ-D1 hottest component 85 C, REQ-D2 mean air 60 C), kept for the record: as drawn
+both fail at every corner; a bridge of at least 5 W/mK meets REQ-D1 at both finishes (69.4 / 75.6 C); REQ-D2 fails in
+every design (60.6-84.5 C). Revision B replaced both: the 60 C air limit had no part behind it.
 
 ## How it works
 
 - **One model, conjugate heat transfer.** OpenFOAM's multi-region solver couples the air (laminar natural convection,
-  perfect gas, buoyancy), the solid board and component (volumetric heat sources), and in the redesign the aluminium
-  shell and the bridge. The board is solid so it spreads heat: a first prototype with fixed surface fluxes put the
-  component at 154 C.
+  perfect gas, buoyancy), the solid board and U1 (volumetric heat sources), and in the redesign the aluminium
+  shell and the bridge. The board is solid so it spreads heat: a first prototype with fixed surface fluxes put U1
+  at 154 C.
 - **Radiation** between the inside surfaces by the discrete ordinates method (grey, diffuse; the air transparent).
 - **Transient to a settled state**: a steady coupled solve looked converged for thousands of iterations and then
   diverged, so every run marches in time until the temperatures stop moving, and the heat balance confirms it.
 - **Outside**: convection and radiation to ambient on the shell's outer faces.
+- **Per-part metrics**: U1's hottest point, the board's maximum, and C1 as the largest board temperature under its
+  footprint, read from each run's final temperature field.
 
 ## How I know it's right
 
@@ -71,10 +106,14 @@ edges clamped to the walls, or a full-area gap pad), or the limit must be relaxe
 - **Stage 2, radiation**: grey exchange between concentric cylinders against the exact two-surface formula: 0.92 %
   at the 4 directions per quarter the box runs use (limit 1 %), 0.21 and 0.05 % at 8 and 16; 0.11-0.21 % over
   emissivities 0.1-0.9 at 8 directions.
-- **Heat balance**: heat leaving the box against the 15 W put in: 0.46-0.74 % at the four corners (limit 1 %).
-- **Mesh**: the 20 W/mK, emissivity-0.9 corner on 1 mm cells (2 mm in the study) moves the component by 0.05 K and the
-  air by 0.13 K, against margins of 9 and 7 K.
-- **Settling**: the component's change over the last tenth of the run, and the heat balance (below).
+- **Settled, and checked by energy**: heat leaving the box against the 15 W put in closes to under 0.01 % in the
+  as-drawn runs and under 0.05 % in the redesign runs (limit 1 %); the temperatures moved by under 0.01 K over the
+  last tenth of each run.
+- **Predictions held**: every final value was predicted before its run, from shorter runs extrapolated to the settled
+  state, to within 0.3 K. All 14 landed within 0.02 K; every requirement verdict predicted for them held, and the
+  three C1 verdicts predicted as uncertain (redesign, painted, 2-20 W/mK) came out as fails.
+- **Mesh**: the 20 W/mK, emissivity-0.9 corner on 1 mm cells (2 mm in the study) moves U1 by 0.05 K and the air by
+  0.13 K.
 
 ## What the checks caught
 
@@ -86,14 +125,13 @@ edges clamped to the walls, or a full-area gap pad), or the limit must be relaxe
   sit about 110 K above ambient). The redesign models the walls as a solid shell.
 - **A 1.9 % accounting error that looked like an unsettled run.** Six redesign runs failed the 1 % heat balance by
   1.2-2.9 %. The cause was my post-processing: it multiplied the wall fluxes by one 2 mm face area, but the mesher
-  rounds each block to whole cells, so blocks of 25 and 29 mm have 2.08 and 2.07 mm faces, and the box's perimeter came
-  out 1.9 % short. With exact face areas (now read from the mesh, with a test) the totals showed what was really
-  happening: the shell and bridge give the box a slow mode (time constant about 20 minutes, five times the original
-  box's), so at the 1-hour mark 8 of the 10 runs were outside 1 % (the bridged ones still cooling, heat out up to 4 %
-  above the input). Extrapolating each run to its settled state closes the heat balance to 0.03-0.30 % and moves the
-  component by at most 0.64 K and the air by at most 0.58 K, changing no
-  verdict. The settling check on the component alone had passed every run: it is too weak for a slow mode, and the
-  heat balance is now the settling test.
+  rounds each block to whole cells, so the box's perimeter came out 1.9 % short. With exact face areas (now read from
+  the mesh, with a test) the totals showed the real issue: the shell and bridge give the box a slow mode (time constant
+  about 20 minutes), so the first 1-hour runs had not settled. The settling check on U1 alone had passed every one of
+  them: it is too weak for a slow mode, and the heat balance is now the settling test. The 2.5-hour reruns confirmed
+  the extrapolated values to 0.02 K.
+- **A blanket limit hid the part that decides the design.** Under the first brief the bridge looked like the answer
+  (U1 passes at 5 W/mK). Asking for per-part limits showed that the capacitor's life governs, and that no bridge fixes it.
 - **My predictions were wrong in instructive ways**: the 1 W/mK bridge ran 15 K cooler than my hand estimate, and at
   low emissivity the bridges ran 2.5-22 K hotter than at high emissivity, not "a few K"; the shell alone helped 8.6 K at
   low emissivity against 2.8 K at high. Each miss is written into its case file next to the prediction.
@@ -104,13 +142,14 @@ edges clamped to the walls, or a full-area gap pad), or the limit must be relaxe
 - Laminar flow (Rayleigh number about 1e5-1e6 on the box height), grey diffuse surfaces, transparent air.
 - Radiation at 4 directions per quarter: 0.92 % from exact in the stage-2 test, and radiation carries about 75 % of
   the walls' inside heat with a painted interior.
-- The redesign was run on the 5 W/mK board only (the worse one); the mesh check covers one as-drawn corner at two
-  levels.
+- C1 is represented by the board temperature under its footprint (its own ripple loss is covered by the client's
+  1.8 K allowance); U1's hottest model point stands for its case (conservative); REQ-E4 uses the mean internal air,
+  since a 2D section has no local air per part.
+- The redesign was run on the 5 W/mK board only. As drawn, the 20 W/mK board puts C1 1.7 K hotter; the recommended
+  design's 8-11 K margin covers that, but it is not run.
 - The bridge is one effective conductivity standing for a pillar and its gap pad, with perfect contact; a real pad's
-  contact resistance must be added to the 1.45 K/W budget.
-- Synthetic loads, limits and outside conditions; no test data.
-- The redesign verdicts rest on runs stopped about one time constant early plus extrapolation; a set of longer runs
-  (about 2.5 hours of simulated time) would verify them directly.
+  contact resistance must be added to the thermal-resistance budget.
+- Synthetic loads, limits, parts and outside conditions; no test data.
 
 ## Evidence
 
@@ -118,12 +157,19 @@ edges clamped to the walls, or a full-area gap pad), or the limit must be relaxe
   [`cavity_mesh_ra1e6`](../runs/20261124-105444_cavity_mesh_ra1e6/report.md); stage 2:
   [`annulus_angular`](../runs/20261124-110740_annulus_angular/report.md),
   [`annulus_emissivity`](../runs/20261124-110742_annulus_emissivity/report.md)
-- Corners: [`enclosure_k5_eps0p9`](../runs/20261124-144014_enclosure_k5_eps0p9/report.md),
+- As drawn, against revision B: [`k5, 0.9`](../runs/20261125-162808_enclosure_k5_eps0p9_e/report.md),
+  [`k20, 0.9`](../runs/20261125-162813_enclosure_k20_eps0p9_e/report.md),
+  [`k5, 0.1`](../runs/20261125-162817_enclosure_k5_eps0p1_e/report.md),
+  [`k20, 0.1`](../runs/20261125-162821_enclosure_k20_eps0p1_e/report.md); first round:
+  [`enclosure_k5_eps0p9`](../runs/20261124-144014_enclosure_k5_eps0p9/report.md),
   [`enclosure_k20_eps0p9`](../runs/20261124-144021_enclosure_k20_eps0p9/report.md),
   [`enclosure_k5_eps0p1`](../runs/20261124-144011_enclosure_k5_eps0p1/report.md),
   [`enclosure_k20_eps0p1`](../runs/20261124-144017_enclosure_k20_eps0p1/report.md); mesh check
   [`enclosure_k20_eps0p9_mesh1mm`](../runs/20261124-161733_enclosure_k20_eps0p9_mesh1mm/report.md)
-- Redesign: `runs/20261124-1714*_enclosure_fix_k5_eps0p1_*` and `runs/20261124-1715*_enclosure_fix_k5_eps0p9_*` (ten
-  runs; corrected heat balance and settled extrapolation in each case header)
+- Redesign, settled (9,000 s): `runs/20261125-1125*_enclosure_fix_k5_*_long` (ten runs; results and both rounds'
+  verdicts in each case header); the first 3,600 s set: `runs/20261124-1714*` and `runs/20261124-1715*`
+- All 14 final runs scored against revision B:
+  [`client_requirements_revB_scores.json`](../validation/enclosure/client_requirements_revB_scores.json)
+  (`scripts/score_client_requirements.py`)
 - Cases with predictions and results: `cases/cavity_*.toml`, `cases/annulus_*.toml`, `cases/enclosure_*.toml`; model
   `models/cfd/enclosure_openfoam.py`, study `studies/enclosure_thermal.py`
