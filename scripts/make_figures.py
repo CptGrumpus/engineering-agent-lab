@@ -1394,7 +1394,7 @@ def oring_seal():
     ax.tick_params(axis="y", length=0)
     ax.set_xlabel("groove fill, %")
     fk.panel(ax, "Groove fill")
-    thumb(fig, fig.axes[0], "oring")
+    # the card's thumbnail is the 3D render's (make_study_renders.py)
     fk.heading(fig, "The seal passes at all three corners of its tolerance stack",
                "O-ring face seal, 3.53 mm NBR 70 in a 2.79 × 4.80 mm groove, coolant at 3 bar; CalculiX, axisymmetric, "
                "the ring's upper half")
@@ -1504,7 +1504,7 @@ def shaft_fillet():
     ax.set_xlabel("along the fillet, ° (0 = small diameter)")
     ax.set_ylabel("stress / nominal stress")
     fk.panel(ax, f"Where it peaks, R{r16['parameters']['fillet_radius_mm']:g} as drawn")
-    thumb(fig, fig.axes[0], "shaft")
+    # the card's thumbnail is the 3D render's (make_study_renders.py)
     fk.heading(fig, "The shaft fails as drawn; a 36 mm seat with a 45 mm shoulder passes",
                f"Gearbox shaft, 42CrMo4: rotating bending {rad[0][0]['parameters']['bending_moment_Nm']:g} N m, steady torque "
                f"{rad[0][0]['parameters']['torque_Nm']:g} N m · CalculiX and Shigley's method · hollow: point unverified")
@@ -2061,7 +2061,7 @@ def crack_growth():
     fk.heading(fig, "A 2 mm edge crack takes about 92,000 cycles to reach the critical 37 mm: inspect at least every 46,000",
                "CalculiX plane strain, K by energy release on the finest tip mesh; BS 7910 growth law; loads and toughness are assumed")
     fk.key(fig, [("model", "dot", MODEL), ("handbook", "line", REF)], y_in=0.66)
-    thumb(fig, ax, "crack")
+    # the card's thumbnail is the 3D render's (make_study_renders.py)
     fk.save(fig, "crack_growth")
 
 

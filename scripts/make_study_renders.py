@@ -699,7 +699,11 @@ def scene_steel_frame():
 
 
 SCENES = {"cold_plate_3d": scene_cold_plate_3d, "strap_proof": scene_strap_proof, "bolted_joint_pressure": scene_bolted_joint, "joint_section": scene_joint_section, "cold_plate": scene_cold_plate,
-          "strut": scene_strut, "pv_nozzle": lambda: scene_pv_nozzle(), "steel_frame": scene_steel_frame, "fan_rotor": scene_fan_rotor, "enclosure": scene_enclosure}
+          "strut": scene_strut, "pv_nozzle": lambda: scene_pv_nozzle(), "steel_frame": scene_steel_frame, "fan_rotor": scene_fan_rotor, "enclosure": scene_enclosure,
+          # studies 24-26: the study session's scenes (scripts/scenes_24_26.py imports from here, so imported lazily)
+          "crack": lambda: __import__("scenes_24_26").scene_cracked_plate(),
+          "oring": lambda: __import__("scenes_24_26").scene_oring(),
+          "shaft": lambda: __import__("scenes_24_26").scene_shaft_fillet()}
 
 
 # --------------------------------------------------------------------------- gates and page assets

@@ -339,7 +339,7 @@ def scene_shaft_fillet():
     xyz = np.column_stack([xyz[:, 2] - g["z_end"] / 2, -xyz[:, 1], xyz[:, 0]])
     peak = float(vm.max())
     return write_scene(BUILD / "shaft_fillet", xyz, tris, vm, field="von Mises stress", units="MPa", **SHAFT_SCALE,
-                       elev=18, azim=-62, sharp_angle_deg=40, distance_factor=2.8, resolution=[1400, 900],
+                       elev=34, azim=-128, sharp_angle_deg=40, distance_factor=2.8, resolution=[1400, 900],
                        expected_volume_mm3=2 * out["volume_mm3"],
                        title="Recommended shaft step under 300 N m bending: von Mises stress",
                        caption=f"36 mm seat, 45 mm shoulder, 1.6 mm fillet. The fillet concentrates the stress "

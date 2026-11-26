@@ -73,7 +73,7 @@
       </div>
       <div class="stage"><div class="vp-parts" id="vp-parts" role="group" aria-label="Results on this page" hidden></div><button class="vp-3d" id="vp-3d" type="button" aria-pressed="false" hidden>Rotate in 3D</button>
       <p class="vp-hint" id="vp-hint" hidden><span class="long">Same surface and colour bands as the render · </span>Drag to turn · <span class="long">scroll or </span>pinch to zoom<span class="long"> · double-click to reset</span></p>
-      <img id="vp-img" src="v2/fig_crack_growth.svg" alt="Edge-cracked S355 plate, 100 × 10 mm · 150 MPa peak, R = 0.1 · detectable crack 2 mm">
+      <img id="vp-img" src="v2/vp_crack.webp" alt="Edge-cracked S355 plate, 100 × 10 mm · 150 MPa peak, R = 0.1 · detectable crack 2 mm">
       <svg class="triad" viewBox="0 0 54 54" aria-hidden="true">
         <g stroke-width="1.6" fill="none" stroke-linecap="round">
           <line x1="14" y1="40" x2="44" y2="46" stroke="#ff8f6b"/><line x1="14" y1="40" x2="34" y2="28" stroke="#8fe3a8"/><line x1="14" y1="40" x2="14" y2="8" stroke="#8fb4ff"/>
@@ -111,6 +111,7 @@
     <h2 id="why-it-matters">Why It Matters</h2>
     <p>A stress check assumes the part has no cracks. Welded and heavily cycled structures are managed differently: assume a crack just below what inspection can find, and make sure it can't grow to failure between two inspections. That's damage tolerance, and it sets inspection intervals for bridges, cranes, pressure equipment and aircraft. The answer depends on the stress intensity at the crack tip, which is what this model computes.</p>
     <h2 id="how-it-works">How It Works</h2>
+    <figure><div class="plate"><img src="v2/fig_crack_growth.svg" alt="Left: stress intensity against crack length from both methods, on Tada's handbook curve. Right: the crack growing from the 2 mm detectable size to the critical 37.0 mm in about 92,000 cycles" loading="lazy"></div><figcaption><b>Left: the stress intensity from both methods against Tada's handbook.</b> <b>Right: the crack growing from 2 mm to critical.</b> It reaches 37.0 mm after about 92,000 cycles, so I'd inspect at least every 46,000.</figcaption></figure>
     <p>CalculiX solves the plate at each crack length, and the stress intensity K comes out two independent ways, neither needing special crack-tip elements:</p>
     <ul>
       <li><strong>Energy release rate.</strong> The strain energy at the crack length and 0.2 mm either side gives the energy released per unit of crack growth, G, and K = √(E′G).</li>
@@ -177,8 +178,9 @@
     </div>
   </div>
 </footer>
-<script>window.VP = [{"id": "crack", "study": "crack", "kind": "figure", "img": "v2/fig_crack_growth.svg", "model": "Edge-cracked S355 plate, 100 × 10 mm · 150 MPa peak, R = 0.1 · detectable crack 2 mm", "lines": ["CalculiX plane strain · K by energy release and by crack opening · finest tip mesh 0.025 mm", "Left: stress intensity against Tada's handbook. Right: crack growth from 2 mm to critical", "Critical crack 37.0 mm · life about 92,000 cycles · inspect at least every 46,000"], "check": "", "card": "crack"}];</script>
+<script>window.VP = [{"id": "crack", "study": "crack", "tab": "Crack", "legend": "S22", "unit": "MPa", "model": "Edge-cracked S355 plate, 100 × 10 mm · 150 MPa peak, R = 0.1 · detectable crack 2 mm", "lines": ["CalculiX plane strain · K by energy release and by crack opening · finest tip mesh 0.025 mm", "Opening stress with a 35 mm crack, just short of the critical length · displacements × 50, outline at rest · the range stops at 450 MPa, as the tip is singular", "Critical crack 37.0 mm · life about 92,000 cycles · inspect at least every 46,000"], "mesh": "v2/m3d_crack.bin", "mesh_kb": 1078, "elev": 24, "azim": -72, "img": "v2/vp_crack.webp", "bands": ["#3b2f80", "#466be3", "#3ba0fd", "#1ad2d2", "#32f298", "#80ff53", "#bef434", "#eecf3a", "#fe9e2f", "#f26014", "#d02f05", "#9b0f01"], "vmin": -150.0, "vmax": 450.0, "check": "Render check: encloses 400 000.0 mm³ of 400 000.0 design · 100.0 % of pixels on the legend", "card": "crack"}];</script>
 <script src="assets/viewer.js?v=8e64ba5049"></script>
+<script src="assets/viewer3d.js?v=8e64ba5049"></script>
 <script src="assets/site.js?v=8e64ba5049"></script>
 </body>
 </html>
