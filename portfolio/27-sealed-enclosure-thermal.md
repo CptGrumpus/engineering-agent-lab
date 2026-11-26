@@ -44,7 +44,7 @@ pass. The first round's verdicts stay on record below.
 | 5 W/mK | 0.1 | **164.3 C FAIL** | **160.7 C FAIL** | **149.4 C FAIL** | **84.3 C FAIL** |
 | 20 W/mK | 0.1 | **157.4 C FAIL** | **156.4 C FAIL** | **152.7 C FAIL** | **84.5 C FAIL** |
 
-A bare interior sheds the board's heat almost only by convection (radiation carries 22 % of it, against 75 % when
+A bare interior sheds the board's heat almost only by convection (radiation carries 23 % of it, against 75 % when
 painted), and nothing survives it. With paint, only C1 fails: at 89-91 C an electrolytic rated 5,000 h at 105 C lasts
 about 13,000-15,000 h, not 50,000.
 
@@ -59,7 +59,7 @@ across the 29 mm gap. Settled values, 9,000 s:
 | 2 W/mK | 0.9 | 77.5 C | 82.1 C | 82.1 C | 63.1 C | E3 |
 | 5 W/mK | 0.9 | 69.4 C | 79.2 C | 79.2 C | 61.8 C | E3 |
 | 20 W/mK | 0.9 | 62.6 C | 76.9 C | 76.9 C | 60.6 C | E3 |
-| none (shell only) | 0.1 | 154.6 C | 152.7 C | 130.0 C | 80.8 C | all four |
+| none (shell only) | 0.1 | 154.6 C | 152.7 C | 129.9 C | 80.8 C | all four |
 | 1 W/mK | 0.1 | 107.0 C | 116.6 C | 116.6 C | 72.1 C | E2, E3, E4 |
 | 2 W/mK | 0.1 | 90.8 C | 107.0 C | 107.0 C | 69.0 C | E2, E3 |
 | 5 W/mK | 0.1 | 75.6 C | 97.9 C | 97.9 C | 65.8 C | E3 |
