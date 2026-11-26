@@ -45,7 +45,8 @@ def test_c1a_equilibrium_and_tau_b():
     # takes part of it (its P-Delta shear, 144 kips x drift / H)
     assert sum(r["frame"].reactions[0::3]) == pytest.approx(-0.576, abs=1e-9)
     lean_base = r["reactions"]["left"][0] + r["reactions"]["right"][0] + 0.576
-    assert -lean_base == pytest.approx(144.0 * r["drift"] / 240.0, rel=1e-6)
+    # the leaning column sways with the right column's top (the link is nearly rigid), not the frame's average drift
+    assert -lean_base == pytest.approx(144.0 * r["right"]["ux_top"] / 240.0, rel=1e-3)
     assert tau_b(1.0 * r["right"]["N"], 50 * 19.1) == 1.0  # alpha Pr / Pns = 0.076 (the example: 0.0760)
     assert r["right"]["N"] / 955 == pytest.approx(0.0760, abs=5e-4)
 
