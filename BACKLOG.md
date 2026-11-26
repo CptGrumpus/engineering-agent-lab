@@ -132,6 +132,12 @@ Machine elements (study 16) DONE 16:24: page 26; dashboard session told.
    portal, B1/B2 beside the DAM, equilibrium, segment convergence. The USER downloads the AISC PDFs (Cloudflare blocks
    automated fetches) into `references/aisc/` (gitignored: copyrighted): 360-22 with Commentary, Design Examples v16.0,
    Shapes Database v16.0.
+   **2026-11-25 21:55: in `references/aisc/`** (the user's downloads; AISC moved its pages, the old links died):
+   A360-22W-ewr.pdf (360-22 with Commentary, 780 pages), P901-23W.pdf (Companion v16.0 Vol. 1, Design Examples, 1,054
+   pages, the full set), P902-23W.pdf (Vol. 2, Design Tables: compression / flexure tables, not the section
+   properties). Still needed: the Shapes Database v16.0 (.xlsx) from
+   https://www.aisc.org/aisc/publications/steel-construction-manual/shapes-database-v160/ . No PDF library is in the
+   project venv: read them with PyMuPDF from a scratch venv (`python -I`, paths as arguments).
    Prototype notes (scratch, 17:16-17:20): CalculiX B32 + NLGEOM gives P-delta (cantilever root moment 109.4 against
    100 first order at P = 5 kN, the right size by hand); `*EL FILE, SECTION FORCES` needs `OUTPUT=2D` on both FILE
    cards; component 5 (the SYZ slot) is the bending moment (linear test: root 1.006e6 against 1e6 N mm, but 1.46e4 at a
