@@ -218,7 +218,10 @@ the grid check.
   mode of the whole box (time constant about 1,200 s) moves the component only a few tenths of a kelvin per tenth of
   the run. Judge settling by the heat balance (computed with real face areas) as well, and when a run stops short,
   estimate the settled values (Aitken over the last three equally spaced samples) and say how far each verdict sits
-  from them, rather than reporting the end values as settled.
+  from them, rather than reporting the end values as settled. Tested 2026-11-25: Aitken over the last three 3,600 s
+  writes predicted all ten 9,000 s redesign runs (seven time constants, heat balance under 0.05 %) to within 0.02 K
+  on the component, air and board maximum. For a single slow first-order mode it is reliable; still confirm with a
+  long run before a verdict sits within about 1 K of a limit (one did: 84.34 C against 85).
 
 ## Human judgment needed
 

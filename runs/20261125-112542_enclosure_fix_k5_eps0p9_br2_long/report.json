@@ -1,0 +1,78 @@
+{
+  "points": [
+    {
+      "label": "p00_baseline",
+      "parameters": {
+        "width_mm": 150.0,
+        "height_mm": 60.0,
+        "box_depth_mm": 200.0,
+        "board_length_mm": 100.0,
+        "board_thickness_mm": 2.0,
+        "component_length_mm": 20.0,
+        "power_component_W": 5.0,
+        "power_board_W": 10.0,
+        "board_k_W_mK": 5.0,
+        "ambient_C": 40.0,
+        "h_ext_W_m2K": 5.0,
+        "eps_ext": 0.85,
+        "eps_int": 0.9,
+        "cell_mm": 2.0,
+        "n_phi": 4,
+        "max_iterations": 1,
+        "shell_thickness_mm": 2.0,
+        "shell_k_W_mK": 200.0,
+        "bridge_k_W_mK": 2.0
+      },
+      "derived": {},
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "heat_balance",
+          "description": "|heat leaving the walls to the ambient - input power| / input, at the end",
+          "kind": "numerical",
+          "value": 0.0002793644100110034,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "settled",
+          "description": "change of the component's maximum over the last tenth of the run (K)",
+          "kind": "numerical",
+          "value": 0.0065678809999667465,
+          "tolerance": 0.3,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-D1",
+          "text": "The hottest component shall stay at or below 85 C at 40 C ambient.",
+          "metric": "component_max_C",
+          "operator": "<=",
+          "limit": 85.0,
+          "units": "C",
+          "value": 77.45541356900003,
+          "margin": 7.544586430999971,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-D2",
+          "text": "The mean internal air temperature shall stay at or below 60 C at 40 C ambient.",
+          "metric": "air_mean_C",
+          "operator": "<=",
+          "limit": 60.0,
+          "units": "C",
+          "value": 63.109275430226035,
+          "margin": -3.1092754302260346,
+          "verdict": "FAIL"
+        }
+      ]
+    }
+  ],
+  "run_id": "20261125-112542_enclosure_fix_k5_eps0p9_br2_long",
+  "generated_utc": "2026-11-25T21:34:52+00:00",
+  "verification_status": "PASS"
+}

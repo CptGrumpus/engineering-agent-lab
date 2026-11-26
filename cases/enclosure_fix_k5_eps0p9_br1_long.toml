@@ -22,6 +22,16 @@
 # 84.78 C, PASS; REQ-E4 air at or below 70 C: 64.18 C, PASS (each +-0.3 K, the extrapolated values above); REQ-E3 C1
 # (the board under 5-15 mm from its left end) at or below 70 C: 72-84 C, FAIL. The bridge cools U1 but moves the
 # board's hottest point outward, toward C1.
+#
+# Results (run 20261125-112534_enclosure_fix_k5_eps0p9_br1_long, scored 20:05): VERIFICATION PASS.
+#   P1 HELD: heat balance 0.026 %, settled change 0.006 K.
+#   P2 HELD: hottest component 84.34 C, mean air 64.18 C, board maximum 84.76 C (+0.01 / -0.00 / -0.02 K from the extrapolation).
+#   P3 HELD: REQ-D1 PASS, REQ-D2 FAIL, as at 3,600 s.
+#   P4 MISSED: 5.5 h (11:25-16:53).
+#   Revision B (scripts/score_client_requirements.py, final board field): REQ-E1 84.34 C PASS (predicted pass: HELD); REQ-E2 84.76 C PASS (predicted pass: HELD);
+#   REQ-E3 84.61 C FAIL (predicted fail: HELD); REQ-E4 64.18 C PASS (predicted pass: HELD). C1 0.61 K above its predicted band (72-84 C): the band's top
+#   was the board maximum rounded down; C1 is 0.15 K under the board maximum here (84.76 C), the board nearly
+#   isothermal with this weak bridge.
 
 [case]
 name = "enclosure_fix_k5_eps0p9_br1_long"
