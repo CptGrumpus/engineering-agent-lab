@@ -191,12 +191,15 @@ All three must pass. Check changed pages at 360 px wide for sideways overflow. T
 same clone: add and commit only your own paths, in one command, and never leave files staged.
 
 Work on a feature branch goes in a git worktree (a second folder), never a branch switch in this clone: a switch
-would move the study session onto the branch and its commits with it. The redesign lives in
-`../engineering-agent-lab-ui` on `ui-redesign` (2026-11-24); run its scripts with this clone's `.venv`. Design
-mock-ups there are filled from `build_v2.py`'s own data by `site/proposals/build_proposals.py`, so a mock-up never
-shows a number the site doesn't.
+would move the study session onto the branch and its commits with it. The "Showcase" redesign was built that way
+in `../engineering-agent-lab-ui` on `ui-redesign` and became `main` on 2026-11-25 (fast-forward, pushed), so site
+work now goes on `main` again; keep the worktree for the next feature branch, run its scripts with this clone's
+`.venv`. Design mock-ups are filled from `build_v2.py`'s own data by `site/proposals/build_proposals.py`, so a
+mock-up never shows a number the site doesn't.
 
-A study lands on `main` first (the live site's source) and is then merged into the branch and rebuilt there; the
-built pages in `docs/` conflict on every merge, so take either side and rebuild. Build only after the resolved
-files are staged: while a file is still unmerged, `git ls-files` lists it three times, and the method page's line
-and file counts came out 2,000 lines and two files too high (2026-11-25).
+While a feature branch is open, a study lands on `main` first (the live site's source) and is then merged into the
+branch and rebuilt there; the built pages in `docs/` conflict on every merge, so take either side and rebuild. Build
+only after the resolved files are staged: while a file is still unmerged, `git ls-files` lists it three times, and
+the method page's line and file counts came out 2,000 lines and two files too high (2026-11-25). To land the branch,
+merge `main` into it last, then `git merge --ff-only ui-redesign` in this clone: the study session's uncommitted
+files stay as they are, and main can move between the check and the merge, so re-check right before.
