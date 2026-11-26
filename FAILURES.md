@@ -10,11 +10,11 @@ A failed run is evidence, not noise: keep it, record it, and put the lesson into
 of P points)' and the columns Software | Failed runs | Fixed | Open, or tell the dashboard session. The ccx_preCICE
 row's status chip keys on its Open cell containing "runs with" and "fix": tell the dashboard session when that cell
 is reworded (for example when the reruns report). -->
-## By software (2026-11-26: 25 failed points in 22 runs, of 958 points)
+## By software (2026-11-26: 25 failed points in 22 runs, of 964 points)
 
 | Software | Failed runs | Fixed | Open |
 |---|---|---|---|
-| CalculiX 2.20 through the preCICE adapter (`ccx_preCICE` 2.20.2, preCICE 3.4.1, Open MPI 4.1.2), the FSI solid | 9 | the hang (Open MPI's crash handler, 57d5d01); the creep (HHT alpha -0.05, confirmed by `turek_hron_fsi3_dt_a_alpha`); the zero-length last step (whole-window end) | the first full-length runs with both fixes (FSI2 levels a / b / c, FSI3 dt_c, started 2026-11-26) |
+| CalculiX 2.20 through the preCICE adapter (`ccx_preCICE` 2.20.2, preCICE 3.4.1, Open MPI 4.1.2), the FSI solid | 9 | the hang (Open MPI's crash handler, 57d5d01); the creep (HHT alpha -0.05, confirmed by `turek_hron_fsi3_dt_a_alpha`); the zero-length last step (whole-window end) | the full-length runs with both fixes: FSI2 levels a / b / c done (all 15 s, no crash, 2 Newton iterations throughout); FSI3 dt_b and dt_c running |
 | OpenFOAM v2512 `pimpleFoam` (FSI fluid) | 3 | yes (frozen mesh-motion diffusivity) | |
 | CalculiX 2.22 (FreeCAD 1.1 build), standalone | 7 | yes (each below) | |
 | OpenFOAM 14 (`foamRun`) | 1 | yes (timeout) | |
@@ -43,6 +43,9 @@ The one that keeps crashing is the FSI solid, `ccx_preCICE`. Its chain, as estab
    Fixed: preCICE ends on `max-time-windows` and the solid's step runs 10 steps past the end
    (`models/fsi/turek_hron_fsi.py`, test in `tests/test_turek_hron_fsi.py`; a 0.1 s coupled run exits 0 on both
    sides). FSI3 dt_c's crash on its very last step (7.99975 s) was most likely this.
+7. **Both fixes confirmed on full-length runs, 2026-11-26:** FSI2 levels a / b / c at alpha -0.05 with the
+   whole-window end all reached 15 s (the alpha-0 runs of a and c died at 14.01 / 14.05 s), both participants ending
+   normally, 2 Newton iterations in all 322,931 solid attempts.
 
 ## Ledger
 
@@ -54,7 +57,7 @@ The one that keeps crashing is the FSI solid, `ccx_preCICE`. Its chain, as estab
 | 2026-11-21 | 20261121-142836_flag_csm3_dt_r1, 20261121-164522_flag_csm3_dt_r2 (dt 0.000625 s) | CalculiX 2.22 (NLGEOM dynamic) | Diverged at t = 5.84 s after Newton iterations crept from 2 to 12 per step | HHT alpha 0 (no numerical damping): energy in stiff modes | Fixed: flag_csm3_dt_r3 (alpha -0.05) |
 | 2026-11-23 | 20261123-105948_motor_prius_rev4_oc (3 points) | Pyleecan / FEMM 4.2 | LoadMissingFileError in load_json, all points in a minute | Our setup: the new machine files were not registered | Fixed and rerun |
 | 2026-11-23 | 20261123-123413_turek_hron_fsi2_mesh_c, 20261123-180658_turek_hron_fsi2_mesh_c, 20261124-035322_turek_hron_fsi2_mesh_c_diag | OpenFOAM v2512 `pimpleFoam` (reported as "solid, exit 30") | Floating point exception in GAMG at 8.836 s after the Courant number jumped 2.2 -> 5.8 -> 17.9 | A cell under the flag tip collapsed: the mesh-motion diffusivity was ill-posed (a period-2 oscillation in the motion solve) | Fixed: frozen 1/d diffusivity; all three FSI2 levels rerun |
-| 2026-11-24 | 20261124-082453_turek_hron_fsi2_mesh_a_r1, 20261124-175940_turek_hron_fsi2_mesh_a_r1, 20261124-082500_turek_hron_fsi2_mesh_c_r1 | `ccx_preCICE` | Heap corruption at 14.009 s (twice, deterministic) and 14.047 s; the solid hung | Newton creep from about 12 s (to 9-13 iterations), then the DIRECT stop (chain above) | Scored to 14.0 s (the user's decision); hang fixed; damping fix confirmed; rerun at alpha -0.05 running (`turek_hron_fsi2_mesh_{a,b,c}_alpha`) |
+| 2026-11-24 | 20261124-082453_turek_hron_fsi2_mesh_a_r1, 20261124-175940_turek_hron_fsi2_mesh_a_r1, 20261124-082500_turek_hron_fsi2_mesh_c_r1 | `ccx_preCICE` | Heap corruption at 14.009 s (twice, deterministic) and 14.047 s; the solid hung | Newton creep from about 12 s (to 9-13 iterations), then the DIRECT stop (chain above) | Scored to 14.0 s (the user's decision); hang fixed; damping fix confirmed; rerun at alpha -0.05 (`turek_hron_fsi2_mesh_{a,b,c}_alpha`, 2026-11-26): all three levels to 15 s, no crash, results within 0.11 % of these records to 14 s |
 | 2026-11-24 | 20261124-091009_motor_prius_efficiency_rev5_refined (cold, hot) | Our Python (SciPy interpolation) | "One of the requested xi is out of bounds" | Half-table interpolation stepped off the grid edge | Fixed: half-table checks keep both grid ends (7a7412f) |
 | 2026-11-24 | 20261124-100614_oring_free_lindley | CalculiX 2.22 | "Matrix found to be singular" at 26.5 % squeeze | A free ring is held radially only by its hoop stiffness; load steps too large | Fixed: load increments 0.005 |
 | 2026-11-24 | 20261124-103347_turek_hron_fsi3_dt_a, 20261124-175934_turek_hron_fsi3_dt_a | `ccx_preCICE` | Heap corruption at 6.902 s (twice, deterministic); the solid hung | Newton creep from about 5 s (chain above) | Scored to 6.9 s; hang fixed; superseded by the damping test (record to 7.999 s) |

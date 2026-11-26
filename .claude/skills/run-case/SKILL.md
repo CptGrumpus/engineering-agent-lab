@@ -231,7 +231,10 @@ the grid check.
   14.05 of 15 s) was scored instead, with the user's decision: the harness keeps a failed point's watch-point, force
   and coupling logs, and `scripts/score_truncated_fsi.py OUT.json --t-end T RUN...` applies the study's own metrics,
   point checks and run-level check to records cut at T, every level on the same window (it reproduces a finished
-  run's harness metrics exactly at its full length). Ask before choosing between that and a rerun.
+  run's harness metrics exactly at its full length). Ask before choosing between that and a rerun. Checked
+  against full records on 2026-11-26: FSI2's three levels scored cut at 14.0 s (alpha 0, two of them crashed) and
+  rerun to 15 s (alpha -0.05) gave the same classification for every quantity and GCIs within 0.04 percentage
+  points, so a cut a few periods short of the end is a sound basis for a verdict when the cut window is periodic.
 - **Check how a coupled run ends, not only how it runs.** Ending a preCICE coupling on `max-time` makes preCICE
   shorten the last window to a float remainder (8 - 7.999000000000001 = 0.000999999999999446 s); a solver that also
   clips its increment to its own step's end (CalculiX, from its accumulated step fraction) can come up about 1e-12 s

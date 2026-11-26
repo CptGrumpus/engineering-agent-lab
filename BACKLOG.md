@@ -80,13 +80,19 @@ commit). Rules that bind:
   `*.inp`, `*.dat`, `__pycache__`, files > 600 kB, then `tests/test_privacy.py`; never two FEMM cases at once; check
   free RAM on long runs.
 
-### Running at 01:15, 2026-11-26
+### Running at 11:50, 2026-11-26
 
 | Job | Run dir (log) | Done about | When it finishes |
 |---|---|---|---|
-| Study 6: FSI2 levels a / b / c at alpha -0.05 `turek_hron_fsi2_mesh_{a,b,c}_alpha` (one change from r1; predictions 01:06, 0c1b42a), started 01:12 | `runs/*_turek_hron_fsi2_mesh_?_alpha` (`turek_hron_fsi2_mesh_?_alpha.log`) | a 07:00-10:00, b 08:00-11:00, c 11:00-15:00 | Score P1-P5 per level (P2 from flag.sta); then `scripts/combine_mesh_levels.py` over the three (P4); Results in each header; page 17 (FSI2 rows, Limits, banner); FAILURES.md status cells |
-| Study 6: FSI3 dt_c at alpha -0.05 `turek_hron_fsi3_dt_c_alpha` (predictions 01:06, 0c1b42a), started 01:12 | `runs/*_turek_hron_fsi3_dt_c_alpha` | 2026-11-26 19:00-01:00 (at 07:29: 3.84 of 8 s, so about 14:30) | Score P1-P5; the three-level time-step check with dt_a_alpha (cut 7.999 s) and dt_b_alpha, forces included (the open item); page 17 |
-| Study 6: FSI3 level b at alpha -0.05 `turek_hron_fsi3_dt_b_alpha` (mesh_b with one change; predictions 07:34; user's decision about 07:33), QUEUED: starts when at most two coupled runs remain (after FSI2 a and b, about 08:25) | `runs/*_turek_hron_fsi3_dt_b_alpha` (`turek_hron_fsi3_dt_b_alpha.log`) | about 14:00-16:30 | Score P1-P5; it replaces the alpha-0 mesh_b in the time-step check (P4 compares both) |
+| Study 6: FSI3 dt_c at alpha -0.05 `turek_hron_fsi3_dt_c_alpha` (predictions 01:06, 0c1b42a), started 01:12 | `runs/*_turek_hron_fsi3_dt_c_alpha` | 2026-11-26 17:30-19:30 (at 10:54: 5.03 of 8 s; slowed by the fourth run and the host's other load) | Score P1-P5; the three-level time-step check with dt_a_alpha (cut 7.999 s) and dt_b_alpha, forces included (the open item); page 17 |
+| Study 6: FSI3 level b at alpha -0.05 `turek_hron_fsi3_dt_b_alpha` (mesh_b with one change; predictions 07:34; user's decision about 07:33), started 08:37 (run 20261126-083740) | `runs/*_turek_hron_fsi3_dt_b_alpha` (`turek_hron_fsi3_dt_b_alpha.log`) | about 13:30-14:30 (at 10:54: 3.67 of 8 s) | Score P1-P5; it replaces the alpha-0 mesh_b in the time-step check (P4 compares both) |
+
+DONE 11:50, 2026-11-26 (9d1a7d9, 6c19ce5, 7c60f7f): FSI2 levels a / b / c at alpha -0.05 all reached 15 s (7 h 06 / 7 h 25 /
+10 h 22 min), VERIFICATION PASS, every requirement PASS on every level, 2 Newton iterations in all 322,931 solid
+attempts; to 14.0 s within 0.11 % of the alpha-0 records (level b, whose alpha-0 run finished: 0.019 % on the full
+record). Three-level check exactly as at 14.0 s (frequency converged; amplitudes monotone 1.43 / 3.75 / 2.09 %; drag
+mean, lift amplitude divergent): run-level FAIL as predicted, a stated limit. P1-P5 held on all three. Model default
+solid_alpha -0.05 (9dc38fd). Page 17, FAILURES.md (chain item 7), run-case skill.
 
 DONE 04:45, 2026-11-26: CFD2 fourth nested level (run 20261125-193110). Drag verified again (136.843 at 0.3125 mm, GCI 0.107 %,
 extrapolated 136.725); lift 10.4239 / 10.3817 / 10.4310 turns back up (divergent, no estimate): reported, not verified,
