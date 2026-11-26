@@ -28,6 +28,21 @@
 #      a stated limit (the damping does not change the fluid's mesh dependence).
 #   P5 Wall time side by side with the other runs: a 6-9 h, b 7-10 h, c 10-14 h.
 # This file: level b, 2.50 mm.
+#
+# Results (run 20261126-011220_turek_hron_fsi2_mesh_b_alpha, 01:12-08:37, scored 2026-11-26 08:45). VERIFICATION
+# PASS, 7/7 checks (flag cells 123 deg, periodic 1.1e-4, force transfer 2.3e-9), every requirement PASS: over the last
+# periods to 15 s uy amplitude 82.383 mm (0.96 %), frequency 1.93314 Hz (0.16 %), drag mean 217.90 N/m (1.32 %),
+# drag amplitude 78.83 (1.52 %), lift amplitude 243.42 (2.36 %), ux mean -15.085 mm (1.58 %).
+#   P1 HELD: 15 s reached; both participants ended normally (CalculiX "Job finished", OpenFOAM "End"); every point
+#      check passes.
+#   P2 HELD: 2 Newton iterations in every one of 110,107 solid attempts, to 15.0 s (solid_newton_counts.json; alpha 0
+#      was flat at 2 on this level too).
+#   P3 HELD, far inside: to 14.0 s (b_alpha_t14.json) against the alpha-0 record: uy amplitude +0.001 %, frequency
+#      0.000 %, drag mean -0.004 %, drag amplitude -0.014 %, lift amplitude -0.019 %, ux mean +0.001 %. This level's
+#      alpha-0 run also finished 15 s: over the full record the same, at most -0.017 % (lift amplitude). The damping's
+#      effect on the answer, measured on a run that never crashed: under 0.02 %.
+#   P4 waits for level c (scored in cases/turek_hron_fsi2_mesh_c_alpha.toml).
+#   P5 HELD: 7 h 25 min (predicted 7-10 h).
 
 [case]
 name = "turek_hron_fsi2_mesh_b_alpha"
