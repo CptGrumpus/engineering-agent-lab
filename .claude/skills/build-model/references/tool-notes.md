@@ -225,7 +225,15 @@ Traps found while building the studies in this repo, by tool.
   2.9 / 1.27 / 0.45 / 0.07 % of its swing at dt 0.01 / 0.005 / 0.0025 / 0.00125 s over 6 s (about 4x
   less per halving), and the extra energy stiffened the swing and raised its frequency. Check the
   energy directly (an undamped body released from rest must return to its start height), and keep only
-  the steps that pass in the GCI. ALPHA < 0 would damp the drift and the physics with it.
+  the steps that pass in the GCI. ALPHA < 0 would hide the drift this energy check exists to measure, so keep
+  ALPHA = 0 for the energy check itself (a short free release), and use -0.05 for long runs (next bullet).
+- **Long coupled runs: HHT ALPHA -0.05 by default, and it costs practically nothing.** Its damping of a mode is
+  about -alpha * omega * dt / 2 of critical: 0.03 % for FSI2 (1.93 Hz, dt 0.001 s), 0.02-0.04 % for FSI3. Measured
+  2026-11-26 against alpha 0 on the same cases: FSI2 level b (both runs finished 15 s) moved by at most 0.019 % (lift
+  amplitude) on every benchmark quantity, FSI2 level a by 0.017 % to 14.0 s, FSI3 dt_a by 0.06 % to 6.9 s; the
+  Newton count stayed at 2 in every one of about 260,000 solid attempts, while every long alpha-0 run whose count
+  crept (FSI2 a and c at 14 s, FSI3 dt_a at 6.9 s three times) crashed. `models/fsi/turek_hron_fsi.py` now defaults
+  `solid_alpha` to -0.05 (test `test_solid_is_damped_by_default`); state it in the case's assumptions anyway.
 - **Measure a period from mid-level crossings, not from local extrema.** A sudden release also excites
   higher modes, which never decay without damping; a mode at 6.6 Hz riding on a 1.07 Hz swing made an
   extremum search find false troughs (a synthetic two-mode test read 1.71 Hz) and made the last-period

@@ -327,7 +327,10 @@ def write_solid(params: dict, numerics: dict, d: Path) -> dict:
     E = 2 * float(params["shear_modulus_Pa"]) * (1 + nu)
     rho = float(params["solid_density_kg_per_m3"])
     dt, t_end = float(params["time_step_s"]), float(params["end_time_s"])
-    alpha = float(numerics.get("solid_alpha", 0.0))
+    # HHT alpha: default -0.05 (CalculiX's own default) since 2026-11-26. Every long run at alpha 0 crashed after its
+    # Newton iterations crept up (FSI2 levels a and c at 14 s, FSI3 dt_a at 6.9 s); at -0.05 none did, and the answer
+    # moved by at most 0.02 % (FSI2 level b, full 15 s record) to 0.06 % (FSI3 dt_a). Cases state it explicitly.
+    alpha = float(numerics.get("solid_alpha", -0.05))
     # the step runs 10 time steps past the coupled end time, so CalculiX never clips an increment to the step's
     # remainder: preCICE ends the run (on a whole number of time windows, write_precice). With the step ending at
     # t_end, FSI3 dt_a with alpha -0.05 (2026-11-26) completed 8 s and then crashed: CalculiX's own clock was

@@ -52,6 +52,12 @@ def test_run_ends_on_whole_windows_and_the_solid_step_outlasts_it(case):
         W.write_precice({**FSI1, "end_time_s": 1.0025}, {}, root / "bad.xml")
 
 
+def test_solid_is_damped_by_default(tmp_path):
+    # every long run at alpha 0 crashed after Newton creep; -0.05 cured it at a 0.02-0.06 % cost (2026-11-26)
+    W.write_case(FSI1, {}, tmp_path)
+    assert "*DYNAMIC, ALPHA=-0.05, DIRECT" in (tmp_path / "solid/flag.inp").read_text(encoding="utf-8")
+
+
 def test_wetted_set_excludes_the_clamped_root(case):
     root, _ = case
     text = (root / "solid/flag.inp").read_text(encoding="utf-8")

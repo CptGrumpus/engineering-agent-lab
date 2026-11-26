@@ -190,6 +190,8 @@ the grid check.
   upward (CalculiX's `.sta`, column ITRS; 2 for most of the run, then 3, 4, 7, 14) is heading for a failure long
   before it fails; finished runs stay flat. Look at what all failed attempts SHARE, settings never changed
   included: the FSI attempts all kept `solid_alpha = 0`, the undamped integrator that had already broken CSM3.
+  Start long dynamic or coupled solids damped (HHT alpha -0.05, the FSI model's default since 2026-11-26: no creep
+  in any damped run so far, FSI2 levels a and b both to 15 s, answer within 0.02 %; build-model `references/tool-notes.md`).
 - A failed point keeps the last 400 lines of every solver log the study did not copy, in
   `points/<label>/solver/failure_tails/` (`harness/run.py`, `keep_failure_tails`). Read them before
   changing anything, then change one thing per rerun. If the tail is missing (a study that deletes its own work

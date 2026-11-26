@@ -219,7 +219,7 @@ Machine elements (study 16) DONE 16:24: page 26; dashboard session told.
    nOuterCorrectors 3 (~15-20 h, fixes only the instability). Recommended: A now, B when the CPU is free. A
    settings change must go to all three levels, or the levels are no longer comparable. FSI3 c (1.77 mm, Courant
    2.36) is the same risk: read its result first.
-3. Motor field render for the site: re-export from a revision-5 solution (`scripts/export_femm_field.py`; copy the
+3. DONE (5dc9f1b, ee324c5; found stale 2026-11-26): motor field render for the site: re-export from a revision-5 solution (`scripts/export_femm_field.py`; copy the
    evidence run's .ans to build/ first, Pyleecan overwrites it); the revision-4 export in `build/render/motor_rev4_centre`
    has the wrong magnet. Refresh `reports/motor/` after the 18 % is explained.
 4. Future, to consider (user, 2026-11-23: leave for now): ORNL's measured air-gap flux map (TM-2004/137 Fig. 13) as a
