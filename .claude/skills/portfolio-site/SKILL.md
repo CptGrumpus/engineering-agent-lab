@@ -197,7 +197,10 @@ The result viewer and terminal are dark stages in both themes, on purpose. Scree
 
 How I Work's "When the Software Broke" panel is read from the study session's `FAILURES.md` by
 `extras.failures_panel()`, which asserts the by-software heading and table shape; if the ledger's layout changes,
-the build stops, and the fix goes in the parser, not in copied numbers. The study session commits in the
+the build stops, and the fix goes in the parser, not in copied numbers. The status chip comes from the Open
+cell's wording ("under test" → fix under test; "runs with ... fix" → fixed, reruns going; else plain "Open").
+When the ledger's wording moves on, read the rendered chip: a bare "Open" for a row whose cause is found and fixed
+undersells it, so add a rule. The study session commits in the
 same clone: add and commit only your own paths, in one command, and never leave files staged. That includes
 deletions: `git rm` stages at once, and on 2026-11-25 the old enclosure chart's deletion went out in the study
 session's next commit (b5b2ddc) while the site was still building. Delete a file with plain `rm` and let the
