@@ -48,6 +48,21 @@ check that the metric measures that, not a convenient proxy:
   or hot-spot stress the governing standard defines.
 - Comfort in vehicle dynamics is usually frequency-weighted (ISO 2631). If the
   metric is unweighted, say so as a limitation.
+- A blanket electronics limit ("hottest component 85 C, mean air 60 C") is a
+  proxy. Real thermal specs are per part, from datasheets and a derating policy:
+  - junction at least 25 K under Tj max, the case limit following from the
+    junction-to-case resistance times the power;
+  - the laminate under its UL 796 MOT less a margin;
+  - electrolytic capacitor life, about 2x per 10 K below its rating, at its
+    position on the board;
+  - other parts within their ambient rating.
+
+  Study 11 found this late. Its bridge redesign cooled U1 but made the board
+  hotter than U1. The blanket limit could not say whether that mattered, and the
+  part-by-part list (`validation/enclosure/CLIENT_REQUIREMENTS.md`) changes which
+  design is needed. Ask for the bill of materials, the datasheet limits and the
+  part positions at framing. If the requirements change after results are known,
+  record when they were written and the rule behind each limit.
 
 If the definition is a judgement call, state it in the requirement text and the
 assumptions, so a reviewer can disagree with it explicitly. When the judgement could

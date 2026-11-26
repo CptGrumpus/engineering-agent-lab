@@ -1,0 +1,95 @@
+# Study 11, the as-drawn corner enclosure_k5_eps0p9 (read it: geometry, model, assumptions, results) rerun against the
+# client's requirement list, revision B (validation/enclosure/CLIENT_REQUIREMENTS.md; synthetic, the user's decision
+# 2026-11-25: 'create a list of requirements and assume the client gave it to us'). The model is unchanged; the end
+# time stays 2,400 s (this corner had settled: a determinism check as well). Code since that run, none touching the
+# physics: exact face areas in the heat-out total, the final fields and cell centres kept, and two new metrics
+# (board_max_C; C1_board_max_C, the largest board temperature under the case's [locations] C1 footprint, from the
+# final board field). Requirements: REQ-E1 U1 115 C (case, for a 125 C junction), REQ-E2 board 105 C, REQ-E3 C1 70 C,
+# REQ-E4 internal air 70 C.
+#
+# Predictions (written BEFORE the run, 2026-11-25 16:27; from run 20261124-144014_enclosure_k5_eps0p9, its final
+# write): P1 every point check passes. P2 U1 98.45 C (REQ-E1 PASS), board maximum 95.84 C (REQ-E2 PASS), air 66.93 C
+# (REQ-E4 PASS), each +-0.3 K (identical to the earlier run to 0.01 K: same code path for the physics). P3 C1 (board
+# under 5-15 mm from its left end) 75-90 C: REQ-E3 FAIL; the capacitor's life governs. P4 2-4 h beside the other runs.
+#
+# Results (run 20261125-162808_enclosure_k5_eps0p9_e, scored 18:12): P1 HELD (VERIFICATION PASS). P2 HELD: U1
+# 98.45 C, board 95.84 C, air 66.93 C, identical to the earlier run (REQ-E1, E2, E4 PASS). P3 HELD: C1 89.16 C,
+# REQ-E3 FAIL by 19 K (about 15,000 h of life against the 50,000 h asked). P4 MISSED (fast): 1.5 h, 16:28-17:59.
+
+[case]
+name = "enclosure_k5_eps0p9_e"
+model = "openfoam_enclosure_cht"
+description = "Sealed enclosure, 2D section: 15 W board (5 W component), board conductivity 5 W/mK, internal emissivity 0.9, 40 C ambient; hottest component and mean air against the limits."
+assumptions = [
+  "2D section (per unit depth of the 200 mm box); the box's end walls are left out (conservative).",
+  "Laminar natural convection (Rayleigh number about 1e5-1e6 on the box height), air as a perfect gas.",
+  "Grey diffuse internal surfaces (emissivity the corner's value), transparent air.",
+  "Walls: thin aluminium, no conduction resistance and no lateral spreading in the wall (each face loses heat locally: conservative for hot spots); outside h 5 W/m2K and emissivity 0.85 to 40 C (synthetic).",
+  "Board: isotropic effective conductivity (the corner's value; synthetic bracket for FR4 with copper planes); the component a solid block of the board's material.",
+]
+limitations = [
+  "2D: no heat path through the box's end walls and no 3D flow.",
+  "Steady operation only (a transient run to a settled state).",
+  "No physical test data.",
+]
+
+[parameters]
+width_mm = 150.0
+height_mm = 60.0
+box_depth_mm = 200.0
+board_length_mm = 100.0
+board_thickness_mm = 2.0
+component_length_mm = 20.0
+power_component_W = 5.0
+power_board_W = 10.0
+board_k_W_mK = 5.0
+ambient_C = 40.0
+h_ext_W_m2K = 5.0
+eps_ext = 0.85
+eps_int = 0.9
+cell_mm = 2.0
+n_phi = 4
+max_iterations = 1
+
+[numerics]
+transient_end_s = 2400.0
+solver_timeout_s = 36000
+
+[verification]
+heat_balance_rel_tol = 0.01
+settled_K = 0.3
+
+[locations]
+C1_from_board_left_mm = [5.0, 15.0]   # the client's C1 footprint (validation/enclosure/CLIENT_REQUIREMENTS.md)
+
+[[requirements]]
+id = "REQ-E1"
+text = "U1's junction shall stay at or below 125 C (Tj max 150 C less the client's 25 K derating): its case at or below 115 C with 2.0 K/W junction to case at 5 W; the U1 block's hottest point stands for the case."
+metric = "component_max_C"
+operator = "<="
+limit = 115.0
+units = "C"
+
+[[requirements]]
+id = "REQ-E2"
+text = "The FR-4 board shall stay at or below 105 C anywhere (UL 796 MOT 130 C less the client's 25 K)."
+metric = "board_max_C"
+operator = "<="
+limit = 105.0
+units = "C"
+
+[[requirements]]
+id = "REQ-E3"
+text = "C1 (105 C / 5,000 h electrolytic, 5-15 mm from the board's left end) shall stay at or below 70 C, for 50,000 h of life; the board under its footprint stands for C1."
+metric = "C1_board_max_C"
+operator = "<="
+limit = 70.0
+units = "C"
+
+[[requirements]]
+id = "REQ-E4"
+text = "The internal air shall stay at or below 70 C (the commercial-grade parts' 0-70 C ambient rating; the mean air stands for the local air in 2D)."
+metric = "air_mean_C"
+operator = "<="
+limit = 70.0
+units = "C"

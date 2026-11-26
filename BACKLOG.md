@@ -79,7 +79,20 @@ commit). Rules that bind:
   `*.inp`, `*.dat`, `__pycache__`, files > 600 kB, then `tests/test_privacy.py`; never two FEMM cases at once; check
   free RAM on long runs.
 
-### Running at 10:29, 2026-11-25: NOTHING (every run has ended; no new runs without the user's go-ahead)
+### Running at 11:30, 2026-11-25 (user's go-ahead 2026-11-25: "run whatever is still pending")
+
+| Job | Run dir (log) | Done about | When it finishes |
+|---|---|---|---|
+| Study 11: redesign verification set, ten cases `enclosure_fix_k5_*_long` (9,000 s), started 11:22 | `runs/*_enclosure_fix_k5_*_long` (`enclosure_fix_k5_*_long.log`) | eps 0.9 about 17:30-20:30; eps 0.1 about 21:30-08:00 | Score P1-P4 against each header, then the revision B predictions with `scripts/score_client_requirements.py`; replace the extrapolated verdicts on page 27 (and tell the dashboard session: final T fields are kept now). |
+| Study 11: the four as-drawn corners against the client's list, revision B (`enclosure_*_e`; `validation/enclosure/CLIENT_REQUIREMENTS.md`), started 16:27 | `runs/*_enclosure_*_e` | eps 0.9 about 19:00; eps 0.1 tomorrow morning | Score against each header; page 27 gets the revision B verdicts (as drawn and redesign) with the requirement list and its timing. |
+| Study 6: FSI3 `turek_hron_fsi3_dt_a_r2` (preCICE's own FSI3 acceleration settings), started 16:25 | `runs/*_turek_hron_fsi3_dt_a_r2` (`fsi3_dt_a_r2.log`) | about 21:00-22:00 | Score P1-P5; if it reaches 8 s, FSI2 r1 levels a and c with both settings (user: "keep working as resources open up"). |
+| Study 6: CFD lift on NESTED meshes, `turek_hron_cfd1_nested` and `turek_hron_cfd2_nested` (one 2.5 mm base split uniformly; predictions 18:52, a8aafa1), started 18:54 | `runs/*_turek_hron_cfd*_nested` | about 19:50-20:30 | Score P1-P5; P3 held: lift verified, page 17; missed: a 0.3125 mm level (about 17 h) only on the user's go-ahead |
+
+DONE 16:00 (74c0d59): FSI3 dt_a_r1 passed 6.902 s, crashed at 6.911 s on a stalled COUPLING (IQN-ILS), not the
+solid; the conditional FSI reruns are NOT started; a coupling-side revision needs the user's go-ahead. CFD1/CFD2
+mesh noise measured (lift 0.82 % / 2.45 % peak to peak at 1.25 mm): declaring it does not verify the lift; nested
+structured meshes would (not started). Page 17 still to update with both.
+
 
 DONE the morning of 2026-11-25 (f84e573): FSI3 time-step study scored to 6.9 s (tip motion converges in dt; dt_c's
 forces lost, the FSI study now keeps one force row per time); FSI3 dt_a and FSI2 r1 level a reruns crashed at the
@@ -622,6 +635,15 @@ elements, probabilistic uncertainty). Each with its tools and independent refere
   study (the coolant channel or the cantilever); reliability index and failure probability against a requirement.
 - Also noted: transient conduction (exact series for a slab or cylinder), machine elements (a gear tooth by ISO 6336 or
   AGMA against FE contact; shaft fatigue by DIN 743).
+- **I. Welded joint fatigue** (proposed 2026-11-25; user: "add them to the list", not to start until the current
+  studies are complete and refined). A welded bracket or attachment; weld-toe hot-spot stress from the FE model by
+  surface extrapolation; fatigue against the DNV-RP-C203 S-N curves (free from DNV: check that it downloads before
+  framing; if it is blocked like AISC, the user downloads it). Checks: nominal-stress method beside the hot-spot method,
+  the extrapolation points' mesh dependence, Miner's sum against a closed-form constant-amplitude life.
+- **J. Composite laminate plate** (proposed 2026-11-25, same status). Classical laminate theory (ABD matrix, ply
+  stresses) in Python and a CalculiX layered-shell model (*SHELL SECTION, COMPOSITE); first-ply failure (Tsai-Wu,
+  maximum stress) against a requirement. Checks: CLT closed form against the FE ply stresses, a published textbook
+  worked example, symmetric-laminate decoupling (B = 0), mesh convergence.
 
 ### For the dashboard session (from the study session)
 

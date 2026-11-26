@@ -2,13 +2,15 @@
 
 [Portfolio index](../PORTFOLIO.md) · Fluids and structures (coupled)
 
-> **Draft (updated 2026-11-24).** The solid and fluid stages are verified. The coupled stage (preCICE): the steady
+> **Draft (updated 2026-11-25).** The solid and fluid stages are verified. The coupled stage (preCICE): the steady
 > case (FSI1) reproduces the benchmark within 1 %; the periodic FSI3 case is verified on three meshes (every
 > requirement passes on the finest; frequency and mean drag converge, the tip amplitude extrapolates to 0.02 % from the
 > benchmark). FSI2: the finest mesh's crash was traced to the mesh-motion solve and fixed; with the fix, all three
 > meshes reproduce every published quantity within 3.4 %, but the amplitudes do not converge under the 1 % target as
-> the mesh is refined (the frequency does). FSI3's time-step study converges the tip motion (under 0.75 %). The page
-> stays a draft while FSI2's mesh convergence and the drag and lift time-step check are open.
+> the mesh is refined (the frequency does). FSI3's time-step study converges the tip motion (under 0.75 %). The late
+> crashes of three coupled runs are diagnosed (the solid, then the coupling's acceleration settings), and a rerun
+> with preCICE's own settings for this benchmark is running. The page stays a draft while FSI2's mesh convergence,
+> the drag and lift time-step check and that rerun are open.
 
 | | |
 |---|---|
@@ -36,14 +38,14 @@ published results first, and only then are they coupled.
   matches to the same 0.01 %.
 - **Fluid (CFD1, Re 20).** Drag 14.300 N/m on 208,000 cells, extrapolating to 14.303 against the
   published 14.293, with a 0.02 % mesh uncertainty. Lift lands within 0.6 % of the published 1.119 on
-  every mesh, but it scatters between meshes (see below).
+  every mesh, but it scatters between meshes: 0.31 % standard deviation, measured at one mesh size (see below).
 - **Solid, dynamic (CSM3).** Released from rest, the flag swings at **1.0946 Hz** (time-step uncertainty 0.013 %),
   0.09 % under the published band of 1.0956 to 1.0995. The horizontal mean is inside the band. The vertical mean and
   amplitude sit inside the band or within 0.08 % of it, but are formally unverified: they move by only 0.03 to
   0.09 % between time steps, without a clean convergence pattern.
 - **Fluid at Re 100 (CFD2).** Drag converges to 136.719 N/m against the published 136.700 (0.014 %, mesh
-  uncertainty 0.11 %). Lift is 10.61 on the finest mesh, 0.7 % from the published 10.53, with the same
-  mesh-to-mesh scatter as CFD1.
+  uncertainty 0.11 %). Lift is 10.61 on the finest mesh, 0.7 % from the published 10.53, with a larger
+  mesh-to-mesh scatter than CFD1: 0.97 % standard deviation, 2.45 % peak to peak at one size.
 - **Coupled, steady (FSI1).** Three fluid meshes (5 / 2.5 / 1.25 mm), all 4800 coupling windows converged on each.
   Drag converges at order 2.75 to 14.299 N/m against the published 14.294 (0.03 %). The tip's vertical
   displacement is 0.4 % and then 1.0 % below the published value as the mesh refines, moving away from it, which is
@@ -108,6 +110,22 @@ published results first, and only then are they coupled.
   (uncertainty 0.45 / 0.24 / 0.73 %, under the 1 % target), and every requirement that can be evaluated passes on
   every level. Drag and lift can't be checked across time steps: the finest run's force file passed the harness's
   size limit and was lost (the harness now keeps one row per time step, which gives identical metrics).
+
+  **Why the coupled runs crash** (2026-11-25), as far as diagnosed. Each crash came in one window after thousands of
+  clean ones, at the same instant on a rerun:
+  1. **The solid gives up on a hard window.** The solid's Newton residual rose at iterations 5-7 of a window's first
+     coupling iteration. In DIRECT mode CalculiX stops on non-convergence, and under the coupling adapter that stop
+     ends in a memory fault. Raising its iteration limit to 40 carried FSI3 dt 0.001 through 6.902 s: the window
+     converged in 14 Newton iterations, and the record up to it was byte-identical.
+  2. **Then the coupling stalled.** Nine windows later, at 6.911 s, preCICE's quasi-Newton update stopped
+     converging (residual 0.4-1.4 over seven iterations, where every earlier window fell to 1e-5 in 6-8). It handed
+     the solid a 0.27 m increment on a 0.035 m swing, and the solid gave up again.
+  3. **The cause in our setup.** The acceleration settings had been copied from preCICE's mild perpendicular-flap
+     example. preCICE's own Turek-Hron FSI3 example uses a tighter filter (1.2e-3 against 1e-2), a smaller initial
+     relaxation (0.1 against 0.5) and a shorter history (60 against 100). A rerun with those settings is running.
+
+  The runs that complete are unaffected: every one converged each window to the tolerance. The weakness is
+  robustness, not accuracy.
 
   **FSI2:** the 3.54 and 2.5 mm levels agree within 0.1-0.7 % on every benchmark quantity. The 1.77 mm level
   crashed twice at the same step (8.836 s of 15). The log ends kept since the first crash show the cause: the
@@ -185,10 +203,22 @@ published results first, and only then are they coupled.
   mode, which never decays without damping and shifts the troughs. A synthetic two-mode test showed the
   trough finder reading 1.71 Hz for 1.07. Cycles are now counted from mid-level crossings, and the
   frequency became steady across time steps at 1.095 Hz.
-- **Lift scatters with the mesh.** Gmsh regenerates the mesh at each size rather than refining it, and
-  lift is a small difference of large pressure forces, so it scatters by about ±0.6 % from mesh to mesh.
-  One CFD1 mesh study verified it and the next withheld it; CFD2 shows the same. The fix (nested meshes, or measuring that scatter
-  first) is the next revision; the tolerance stays.
+- **Lift scatters with the mesh.** Gmsh regenerates the mesh at each size rather than refining it, and lift is a
+  small difference of large pressure forces, so it scatters from mesh to mesh. One CFD1 mesh study verified it and
+  the next withheld it, and CFD2 showed the same.
+
+  Measured on 2026-11-25 with four meshes within 3.5 % of 1.25 mm, plus the study's own 1.25 mm mesh:
+
+  | Case | Lift, peak to peak | Lift, standard deviation | Drag, peak to peak |
+  |---|---|---|---|
+  | CFD1 (Re 20) | 0.82 % | 0.31 % | 0.02 % |
+  | CFD2 (Re 100) | 2.45 % | 0.97 % | 0.04 % |
+
+  For CFD2 that is as large as the whole mesh study's spread. Declaring the scatter as a noise floor would turn the
+  check green while one mesh's lift is only known to about ±1 %, so it was not declared. The lift stands as 0.3-0.7 %
+  from the benchmark on the finest meshes, uncertain by that scatter: inside the 2 % requirement, formally
+  unverified. Nested structured meshes would remove the scatter. All eight meshes also passed the new flag-corner
+  cell check.
 - **A jittering force that wasn't unsteady flow.** In the coupled steady case lift changed sign about 600 times in
   800 steps, ±2 % peak to peak, with no drift. At Re 20 the flow can't shed vortices, so a steadiness check that
   measured peak to peak was measuring coupling noise. Judging steadiness by drift (the mean of each half of the last
@@ -242,6 +272,15 @@ published results first, and only then are they coupled.
   `runs/20261124-103347_turek_hron_fsi3_dt_a`), dt 0.0005 s = the mesh study's 2.5 mm level, [dt 0.00025 s](../runs/20261124-103350_turek_hron_fsi3_dt_c/report.md);
   scored to 6.9 s, output `runs/20261124-103350_turek_hron_fsi3_dt_c/fsi3_dt_t69.json`; predictions and Results in
   `cases/turek_hron_fsi3_dt_{a,c}.toml`
+- FSI crash diagnosis: [dt 0.001 s, solid iteration limit 40](../runs/20261125-113046_turek_hron_fsi3_dt_a_r1/report.md)
+  (passed 6.902 s, then the coupling stalled at 6.911 s); predictions and Results in
+  `cases/turek_hron_fsi3_dt_a_r1.toml`; preCICE's own FSI3 acceleration in `cases/turek_hron_fsi3_dt_a_r2.toml` (running)
+- fluid mesh scatter: CFD1 [a](../runs/20261125-154325_turek_hron_cfd1_noise_a/report.md),
+  [b](../runs/20261125-154328_turek_hron_cfd1_noise_b/report.md), [c](../runs/20261125-154331_turek_hron_cfd1_noise_c/report.md),
+  [d](../runs/20261125-154335_turek_hron_cfd1_noise_d/report.md); CFD2 [a](../runs/20261125-154338_turek_hron_cfd2_noise_a/report.md),
+  [b](../runs/20261125-154342_turek_hron_cfd2_noise_b/report.md), [c](../runs/20261125-154346_turek_hron_cfd2_noise_c/report.md),
+  [d](../runs/20261125-154348_turek_hron_cfd2_noise_d/report.md); predictions and Results in
+  `cases/turek_hron_cfd{1,2}_noise_{a,b,c,d}.toml`
 - fluid: [CFD1 first mesh study](../runs/20261121-140245_turek_hron_cfd1_mesh/report.md) (lift verified), [CFD1 refined](../runs/20261121-140657_turek_hron_cfd1_mesh_r1/report.md) (drag verified), [CFD2](../runs/20261121-151947_turek_hron_cfd2_mesh/report.md) (drag verified, lift withheld on mesh noise)
 - case files: `cases/flag_csm1_mesh.toml`, `cases/flag_csm2_mesh.toml`, `cases/flag_csm3_dt.toml`,
   `cases/flag_csm3_dt_r1.toml`, `cases/turek_hron_cfd1_mesh.toml`, `cases/turek_hron_cfd1_mesh_r1.toml`,

@@ -363,6 +363,16 @@ Traps found while building the studies in this repo, by tool.
   mm the corner was clean again. It depends on the exact size, so nothing warns you: check the angles of the cells on
   the measured surface (`studies/turek_hron_fsi.py` `flag_cell_quality`), and rebuild a suspect mesh from the kept
   mesh.geo: Gmsh regenerates it exactly (same cell count), so a defect can be located after the run.
+- **Nested 2D meshes: refine in Gmsh, not with OpenFOAM's `refineMesh`.** On an extruded unstructured quad mesh,
+  `refineMesh -all` (with or without a dict, `useHexTopology` or `hexRef8`) cut about 800 of 13,047 skewed quads twice
+  in one direction: 3,345 polyhedra at the first split, skewness 6.4 and a failed checkMesh at the second. (Without
+  the `empty` patch type set first it splits in z too: 8x, not 4x.) What works: mesh the 2D surface once at the base
+  size, then `Mesh 2; RefineMesh; ... Save "mesh2d.msh";` in the .geo, run with `gmsh mesh.geo -parse_and_exit`.
+  Each quad splits into four, the new boundary nodes land on the true OpenCASCADE curves (arc nodes on the circle to
+  1e-16 m), and the counts are exact (x4 per level). Gmsh's extrusion cannot follow (the extruded side faces would be
+  split into two layers), so extrude in Python (`models/cfd/turek_hron_openfoam.py` `extrude_msh22`: base quads
+  ordered counter-clockwise for positive hex volumes; boundary quads from the physical curves' lines). Midpoint
+  splitting is not angle-preserving: non-orthogonality grew 34 -> 42 -> 45 deg over two levels; check it.
 - **Gmsh `-setnumber` did not override a `DefineNumber` in the .geo** (the mesh came out unchanged);
   write the sizes into the .geo itself. `gmshToFoam` names patches after the physical groups and types
   them all `patch`: set `empty`, `wall` with `foamDictionary constant/polyMesh/boundary -entry
@@ -646,6 +656,19 @@ nic.funet.fi/pub/sci/physics/elmer/bin/windows/rel26.1/) unpacked to `~/tools/el
 - **The coupled runs are deterministic.** Unchanged reruns of FSI3 dt_a and FSI2 r1 level a crashed at the same time
   as their first runs (6.902 and 14.009 s) with byte-identical watch-point logs; a rerun is a reproducibility check,
   never a cure for a solver crash.
+- **Take the coupling numerics from the tool's own setup for the same problem, and record where each setting came
+  from.** Study 6 copied the IQN-ILS block from preCICE's perpendicular-flap tutorial, a mild case (time window
+  0.01 s, tolerance 5e-3): QR2 filter 1e-2, initial relaxation 0.5, 100 used iterations. preCICE ships a
+  Turek-Hron FSI3 tutorial (`~/precice-tutorials/turek-hron-fsi3`) with QR2 1.2e-3, relaxation 0.1 and 60 used
+  iterations. That tutorial sat unread on disk through three days of crashes:
+  - FSI3 dt_a died at 6.902 s in the solid (CalculiX's DIRECT-mode stop);
+  - with `solid_iteration_limit` it died at 6.911 s, because the coupling's residual stalled at 0.4-1.4 in a single
+    window after 6,910 good ones.
+
+  The settings are now `numerics.coupling_filter_limit`, `coupling_initial_relaxation`,
+  `coupling_max_used_iterations` and `coupling_time_windows_reused` (the defaults are unchanged). Revision 2 of
+  dt_a tests the tutorial's values. Before writing any solver setting, look for the tool's own example of the same
+  benchmark.
 
 - The preCICE OpenFOAM adapter (v1.4.0) supports the openfoam.com line v1812 to v2606, not
   openfoam.org v14 (its newest .org branch is OpenFOAM 10). Install openfoam.com v2512 beside v14; its

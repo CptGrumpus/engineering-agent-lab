@@ -1,0 +1,82 @@
+# Study 6 (portfolio 17), CFD1 mesh noise, one of four single-mesh cases (a-d: body cells 1.21 / 1.23 / 1.27 / 1.29
+# mm, under 3.5 % from the nominal 1.25 mm of the mesh study's middle level), the user's go-ahead 2026-11-25 ('please
+# start the other runs'). Same model, numerics, checks and requirements as turek_hron_cfd1_mesh_r1 (read it); only the
+# cell size changes. Why: Gmsh regenerates the mesh at each size, and the mesh study's lift moved 1.11534 / 1.11275 /
+# 1.12546 N/m (2.5 / 1.25 / 0.625 mm; 'divergent, oscillating', REQ-F2 withheld), so the lift's mesh uncertainty could
+# not be estimated. This measures the regenerated-mesh scatter at one nominal size, to declare as
+# verification.mesh_noise_rel in a revision (the method of turek_hron_fsi1_noise_a-d and study 18). New since the mesh
+# study (2026-11-25, studies/turek_hron_cfd.py): the flag_cells check (largest interior angle of the fluid cells
+# touching the flag, limit 140 deg, from FSI1 noise mesh a) and verification.mesh_noise_rel support; scratch pre-
+# screen of these four CFD meshes: 121.6-130.8 deg.
+#
+# Predictions (for the four together with the mesh study's 1.25 mm point; written BEFORE the runs, 2026-11-25 15:42):
+# P1 every point check passes on every mesh, flag_cells included. P2 lift scatters by 0.5-1.5 % peak to peak over the
+# five meshes (FSI1's coupled lift scattered 1.12 %); drag by under 0.1 %. If the lift scatter is at least the 1.14 %
+# between the mesh study's two finer levels, those differences are noise and a revision declaring it verifies REQ-F2;
+# if it is far smaller (under 0.3 %), the lift is still changing with the mesh and the study needs a finer level
+# instead. P3 about 5-20 min each (the mesh study's 1.25 mm level took 981-1266 SIMPLE iterations on 52k cells), the
+# eight side by side beside the running jobs.
+#
+# Results (run 20261125-154328_turek_hron_cfd1_noise_b, 2026-11-25 15:43-15:51): VERIFICATION PASS, every point check;
+# lift 1.11513, drag 14.29896 N/m, 54054 cells, 1262 iterations, flag cells 122.1 deg. Together (a-d and the mesh
+# study's 1.25 mm point, 1.11275 / 14.29797): lift 0.82 % peak to peak over the mean (sample standard deviation 0.31
+# %), drag 0.020 % (0.008 %). P1 HELD (every check, flag_cells 121.6-130.8 deg). P2 HELD in size (lift 0.82 % in the
+# 0.5-1.5 % band, drag under 0.1 %), but the decision it set is MIXED: 0.82 % is neither 'at least 1.14 %' nor 'under
+# 0.3 %'. Most of the 1.14 % move between the mesh study's 1.25 and 0.625 mm levels is the scatter of one regenerated
+# mesh; declaring 0.82 % as the noise floor would still leave that 1.14 % spread above it, so a revision with the same
+# three levels would not verify the lift either. Reading: the lift is known to about +-0.3 % (one standard deviation
+# of the mesh scatter) and every mesh so far lies 0.3-0.6 % under the benchmark, inside REQ-F2's 2 %; the formal GCI
+# stays unverifiable on regenerated meshes (nested structured meshes would remove the scatter). P3 HELD: 8 min for all
+# eight side by side (15:43-15:51).
+
+[case]
+name = "turek_hron_cfd1_noise_b"
+model = "openfoam_turek_hron"
+description = "Turek-Hron CFD1: steady laminar flow (Re 20) in a 2.5 x 0.41 m channel round a cylinder (r 0.05 m) with a rigid 0.35 x 0.02 m flag; OpenFOAM 14 on a Gmsh quad-dominant mesh, body cell size 1.23 mm (mesh-noise case b); drag and lift against the published benchmark."
+assumptions = [
+  "2D (one cell deep, empty front and back), as the benchmark defines it.",
+  "Steady flow: at Re 20 the wake is steady; the SIMPLE residual targets and the settled force history check it.",
+  "The flag is rigid and fixed (the CFD tests make it so by a huge stiffness and density).",
+  "Inflow: the benchmark's parabolic profile at the full mean velocity (the steady tests have no time ramp).",
+]
+limitations = [
+  "A solver-qualification case: it shows that the fluid participant reproduces the published fluid-only forces, not that the coupled result is right.",
+  "Pressure outlet at 2.5 m as in the benchmark; no separate domain-length study.",
+]
+
+[parameters]
+mean_velocity_m_per_s = 0.2
+kinematic_viscosity_m2_per_s = 0.001
+density_kg_per_m3 = 1000.0
+flag_length_m = 0.35
+cell_size_m = 0.00123
+benchmark_drag_N_per_m = 14.2929
+benchmark_lift_N_per_m = 1.11905
+
+[numerics]
+max_iterations = 20000
+residual_p = 1e-10
+residual_U = 1e-11
+
+[verification]
+forces_settled_max = 1e-6
+flow_rel_tol = 5e-3
+mass_rel_tol = 1e-6
+profile_rel_tol = 1e-6
+gci_max = 0.01
+
+[[requirements]]
+id = "REQ-F1"
+text = "Before it is coupled to the solid, the fluid model shall reproduce the Turek-Hron CFD1 drag within 1 %."
+metric = "drag_deviation_pct"
+operator = "<="
+limit = 1.0
+units = "%"
+
+[[requirements]]
+id = "REQ-F2"
+text = "It shall reproduce the CFD1 lift within 2 % (lift is a small difference of large pressure forces, about 8 % of the drag)."
+metric = "lift_deviation_pct"
+operator = "<="
+limit = 2.0
+units = "%"

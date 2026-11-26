@@ -1,0 +1,87 @@
+# Study 11, REDESIGN VERIFICATION (user's go-ahead 2026-11-25, 'run whatever is still pending'): the case
+# enclosure_fix_k5_eps0p1_br5 (read it: geometry, model, assumptions, results) rerun UNCHANGED except the end time,
+# 3,600 -> 9,000 s. Why: the 3,600 s run (20261124-171511_enclosure_fix_k5_eps0p1_br5) stopped before the box settled
+# (a slow mode with a time constant of about 1,200 s from the shell's and the air's heat capacity; heat out off the
+# input by up to 4 % once computed with exact face areas), so its verdicts rest on an Aitken extrapolation. 9,000 s is
+# about 7 time constants. Two code changes since that run, neither touching the physics: the heat-out and radiation
+# totals use exact face areas from the polyMesh (harness.openfoam.patch_face_areas; the old sum was 1.9 % low), and
+# the run keeps each region's final temperature and cell centres (for a field plot; every region's cell centres are
+# now written, shell and bridge included). Ten writes, every 900 s. Tolerances unchanged (heat balance 1 %, settled
+# 0.3 K).
+#
+# Predictions (written BEFORE the run, 2026-11-25 11:21; from the 3,600 s run's extrapolation, Aitken over its last
+# three writes): P1 every point check passes, the heat balance within 0.3 % and the settled change under 0.1 K. P2
+# hottest component 75.64 C +- 0.3 K (REQ-D1 PASS), mean air 65.78 C +- 0.3 K (REQ-D2 FAIL), board maximum 97.93 C +-
+# 0.3 K. P3 the same verdicts as the 3,600 s run. P4 about 10-14 h (2.5 x the 3,600 s run's wall time), the ten side
+# by side.
+#
+# Predictions against the client's requirement list, revision B (validation/enclosure/CLIENT_REQUIREMENTS.md, the
+# user's decision 2026-11-25; written 2026-11-25 16:28, while this run was still going and before any of its results
+# were read; the run code is unchanged, so this run is rescored from its kept final board field by
+# scripts/score_client_requirements.py): REQ-E1 U1 at or below 115 C: 75.64 C, PASS; REQ-E2 board at or below 105 C:
+# 97.93 C, PASS; REQ-E4 air at or below 70 C: 65.78 C, PASS (each +-0.3 K, the extrapolated values above); REQ-E3 C1
+# (the board under 5-15 mm from its left end) at or below 70 C: 85-98 C, FAIL. The bridge cools U1 but moves the
+# board's hottest point outward, toward C1.
+
+[case]
+name = "enclosure_fix_k5_eps0p1_br5_long"
+model = "openfoam_enclosure_cht"
+description = "Sealed enclosure redesign, verification to 9,000 s: board 5 W/mK, emissivity 0.1, shell and a bridge of 5 W/mK; aluminium shell 2 mm, 200 W/mK; hottest component and mean air against the limits."
+assumptions = [
+  "2D section (per unit depth of the 200 mm box); the box's end walls are left out (conservative).",
+  "Laminar natural convection (Rayleigh number about 1e5-1e6 on the box height), air as a perfect gas.",
+  "Grey diffuse internal surfaces (emissivity the corner's value), transparent air.",
+  "Walls: a 2 mm aluminium shell (200 W/mK) conducting along the walls; outside h 5 W/m2K and emissivity 0.85 to 40 C (synthetic).",
+  "Bridge: a solid block the component's width from its top to the lid, one effective conductivity for a pillar and its gap pad; perfect contact at both ends.",
+  "Board: isotropic effective conductivity (the corner's value; synthetic bracket for FR4 with copper planes); the component a solid block of the board's material.",
+]
+limitations = [
+  "2D: no heat path through the box's end walls and no 3D flow.",
+  "Steady operation only (a transient run to a settled state).",
+  "No physical test data.",
+]
+
+[parameters]
+width_mm = 150.0
+height_mm = 60.0
+box_depth_mm = 200.0
+board_length_mm = 100.0
+board_thickness_mm = 2.0
+component_length_mm = 20.0
+power_component_W = 5.0
+power_board_W = 10.0
+board_k_W_mK = 5.0
+ambient_C = 40.0
+h_ext_W_m2K = 5.0
+eps_ext = 0.85
+eps_int = 0.1
+cell_mm = 2.0
+n_phi = 4
+max_iterations = 1
+shell_thickness_mm = 2.0
+shell_k_W_mK = 200.0
+bridge_k_W_mK = 5.0
+
+[numerics]
+transient_end_s = 9000.0
+solver_timeout_s = 172800
+
+[verification]
+heat_balance_rel_tol = 0.01
+settled_K = 0.3
+
+[[requirements]]
+id = "REQ-D1"
+text = "The hottest component shall stay at or below 85 C at 40 C ambient."
+metric = "component_max_C"
+operator = "<="
+limit = 85.0
+units = "C"
+
+[[requirements]]
+id = "REQ-D2"
+text = "The mean internal air temperature shall stay at or below 60 C at 40 C ambient."
+metric = "air_mean_C"
+operator = "<="
+limit = 60.0
+units = "C"

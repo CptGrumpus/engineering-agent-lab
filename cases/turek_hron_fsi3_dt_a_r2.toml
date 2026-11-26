@@ -1,0 +1,135 @@
+# Turek-Hron FSI3 time-step level a, REVISION 2 (study 6): turek_hron_fsi3_dt_a_r1 (read it: the solid iteration limit
+# carried the run through its 6.902 s window, then the COUPLING stalled in window 6,911, preCICE's residual 0.4-1.4
+# over seven iterations, and handed the solid a 0.27 m increment) with ONE change: the quasi-Newton acceleration
+# settings. Where ours came from: preCICE's perpendicular-flap tutorial (the toolchain check of 2026-11-21), a mild
+# case (time window 0.01 s, tolerance 5e-3). preCICE's own Turek-Hron FSI3 tutorial (tutorials develop branch, turek-
+# hron-fsi3/precice-config.xml, the copy in ~/precice-tutorials read 2026-11-25) uses, for this benchmark, IQN-ILS
+# with a residual-sum preconditioner, QR2 filter 1.2e-3, initial relaxation 0.1, at most 60 used iterations, 15 reused
+# windows, tolerance 1e-4, 100 iterations per window. The revision takes its filter, relaxation and history length;
+# our tighter tolerance (1e-5, a verification choice) and 100-iteration limit stay. Reading: a filter of 1e-2 drops
+# columns that still carry information and 100 columns over 15 windows of a swinging flag mix outdated Jacobian
+# information; either can stall the least-squares update in one window, which fits a stall in a single window after
+# 6,910 good ones. Config check: precice-tools check passes for both participants. User's instruction 2026-11-25:
+# 'keep working as resources open up'.
+#
+# Predictions (written BEFORE the run, 2026-11-25 16:25): P1 the run reaches 8 s; every point check passes. P2 the
+# record is NOT byte-identical to r1 (every coupling iterate changes) but agrees within the coupling tolerance:
+# metrics over the window to 6.9 s within 0.2 % of the cut-at-6.9 s scoring (fsi3_dt_t69.json). P3 coupling iterations
+# per window average 5-8 (r1: 5.47 to 6.91 s). P4 no window stalls: the largest per-window iteration count stays under
+# 20. P5 about 5-6 h beside the enclosure runs. If P1 holds: FSI2 r1 levels a and c rerun with both settings (the
+# solid limit and this acceleration), and the setup's defaults change to these after FSI2 confirms them.
+
+[case]
+name = "turek_hron_fsi3_dt_a_r2"
+model = "openfoam_ccx_precice_fsi"
+description = "Turek-Hron FSI3: self-excited periodic oscillation of the elastic flag behind the cylinder (Re 200, density ratio 1); OpenFOAM v2512 (moving mesh) coupled to CalculiX through preCICE; fluid 2.5 mm at the body (time-step study level a, dt 0.001 s), solid 2.5 mm, dt 0.0005 s to 8 s; mean, amplitude and frequency of the tip displacements, drag and lift over the last periods against the published benchmark."
+assumptions = [
+  "2D: one cell deep in the fluid, plane strain in the solid (one element layer, as deep as the fluid).",
+  "St. Venant-Kirchhoff solid (CalculiX *ELASTIC under NLGEOM), no gravity, as the FSI tests define it.",
+  "No numerical damping in the solid (HHT alpha 0).",
+  "Inflow: the benchmark's parabola with its (1 - cos) ramp over 2 s.",
+  "Statistics from the last whole periods (benchmark definition); the oscillation is periodic (checked: last two periods).",
+]
+limitations = [
+  "One level of a three-level mesh study run as separate cases side by side (scripts/combine_mesh_levels.py applies the study's run-level check to the three runs).",
+  "The fluid mesh is regenerated per size (FSI1: about +-0.5 % mesh-to-mesh scatter on the tip displacement).",
+]
+
+[parameters]
+solid_density_kg_per_m3 = 1000.0
+shear_modulus_Pa = 2000000.0
+poisson_ratio = 0.4
+fluid_density_kg_per_m3 = 1000.0
+kinematic_viscosity_m2_per_s = 0.001
+mean_velocity_m_per_s = 2.0
+fluid_cell_size_m = 0.0025
+solid_element_size_mm = 2.5
+time_step_s = 0.001
+end_time_s = 8.0
+# steady-case benchmark keys (required by the study; unused in periodic mode): the periodic means
+benchmark_ux_A_m = -2.88e-3
+benchmark_uy_A_m = 1.47e-3
+benchmark_drag_N_per_m = 460.5
+benchmark_lift_N_per_m = 2.50
+benchmark_ux_A_mean = -2.88e-3
+benchmark_ux_A_amp = 2.72e-3
+benchmark_ux_A_freq_Hz = 10.93
+benchmark_uy_A_mean = 1.47e-3
+benchmark_uy_A_amp = 3.499e-2
+benchmark_uy_A_freq_Hz = 5.46
+benchmark_drag_mean = 460.5
+benchmark_drag_amp = 27.74
+benchmark_drag_freq_Hz = 10.93
+benchmark_lift_mean = 2.50
+benchmark_lift_amp = 153.91
+benchmark_lift_freq_Hz = 5.46
+
+[numerics]
+solid_iteration_limit = 40      # from revision 1 (kept)
+coupling_filter_limit = 1.2e-3       # revision 2: the acceleration of preCICE's own FSI3 tutorial
+coupling_initial_relaxation = 0.1   # (header); was 1e-2 / 0.5 / 100, from the perpendicular-flap
+coupling_max_used_iterations = 60   # tutorial. time-windows-reused stays 15, preconditioner
+                                    # residual-sum (preCICE 3.4's default for IQN-ILS, unchanged)
+periodic_periods = 4
+solid_alpha = 0.0
+write_interval_s = 1.0
+ramp_time_s = 2.0
+coupling_rel_tol = 1e-5
+coupling_max_iterations = 100
+rbf_support_radius_m = 0.05
+solver_timeout_s = 64800
+
+[verification]
+periodic_rel_tol = 0.02           # last two periods: uy amplitude and drag mean agree within 2 % (a settled cycle)
+force_transfer_rel_tol = 1e-3     # window by window (preCICE watch-integrals, fixed in FSI1 r2): no inertia involved
+flag_cell_max_angle_deg = 140.0   # the corner-wrap check from FSI1's noise study
+profile_rel_tol = 1e-6
+gci_max = 0.01
+
+[[requirements]]
+id = "REQ-FSI3-1"
+text = "The coupled model shall reproduce the FSI3 amplitude of the tip's vertical displacement within 5 %."
+metric = "uy_A_amp_deviation_pct"
+operator = "<="
+limit = 5.0
+units = "%"
+
+[[requirements]]
+id = "REQ-FSI3-2"
+text = "It shall reproduce the FSI3 oscillation frequency (uy of point A) within 3 %."
+metric = "uy_A_freq_Hz_deviation_pct"
+operator = "<="
+limit = 3.0
+units = "%"
+
+[[requirements]]
+id = "REQ-FSI3-3"
+text = "It shall reproduce the FSI3 mean drag within 5 %."
+metric = "drag_mean_deviation_pct"
+operator = "<="
+limit = 5.0
+units = "%"
+
+[[requirements]]
+id = "REQ-FSI3-4"
+text = "It shall reproduce the FSI3 drag amplitude within 25 % (the benchmark's own tables spread about 40 %)."
+metric = "drag_amp_deviation_pct"
+operator = "<="
+limit = 25.0
+units = "%"
+
+[[requirements]]
+id = "REQ-FSI3-5"
+text = "It shall reproduce the FSI3 lift amplitude within 10 %."
+metric = "lift_amp_deviation_pct"
+operator = "<="
+limit = 10.0
+units = "%"
+
+[[requirements]]
+id = "REQ-FSI3-6"
+text = "It shall reproduce the FSI3 mean horizontal tip displacement within 15 % (second order; the benchmark spreads 12 %)."
+metric = "ux_A_mean_deviation_pct"
+operator = "<="
+limit = 15.0
+units = "%"

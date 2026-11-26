@@ -191,7 +191,16 @@ the grid check.
 - **A coupled run can die without ending.** `ccx_preCICE` (adapter 2.20.2) crashed twice on 2026-11-24 with heap
   corruption ("corrupted double-linked list") at 6.9 s and 14.0 s, while a sibling ran 15 s cleanly. It is NOT
   random: the unchanged rerun of FSI3 dt_a died again at 6.902 s, so a plain rerun repeats it (do not spend hours on
-  one; cut-and-score below, or change something in the solid's setup, with the user's decision);
+  one; cut-and-score below, or change something in the solid's setup, with the user's decision). Read the solid's
+  log tail before the abort: in every case the solid's Newton residual was rising at iterations 5-7 of a window's
+  first coupling iteration, and under `*DYNAMIC, DIRECT` CalculiX stops on non-convergence (its divergence check fires
+  after I_0 = 4); the stop is what corrupts the heap. Tested 2026-11-25: `numerics.solid_iteration_limit = 40`
+  (FSI study) carried FSI3 dt_a through its 6.902 s window (14 Newton iterations) but it died 9 ms later, where the
+  COUPLING stopped converging (preCICE residual stuck at 0.4-1.4 over seven iterations; IQN-ILS with 15 reused
+  windows, about 70 columns) and handed the solid a 0.27 m increment. Read `precice-*-convergence.log` for the crash
+  window too: a stalled coupling residual means the next change is the acceleration (fewer reused windows, a
+  stronger filter), not the solid. Raising one limit only moves the crash to the next weakest link. The dead solver
+  process:
   its abort handler never exits, so the dead process holds a core and the harness waits forever. Check long coupled
   runs by the age of their solver logs, not only the newest time directory: a log untouched for longer than a few
   write intervals while `ps` still lists both participants (or only one) means a hang. Killing a process needs the

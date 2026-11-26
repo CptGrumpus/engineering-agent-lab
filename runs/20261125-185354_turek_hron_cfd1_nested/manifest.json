@@ -1,0 +1,206 @@
+{
+  "run_id": "20261125-185354_turek_hron_cfd1_nested",
+  "case_name": "turek_hron_cfd1_nested",
+  "model": "openfoam_turek_hron",
+  "case_source": "cases/turek_hron_cfd1_nested.toml",
+  "case_sha256": "fe0e03510b6ec592264d7447ba8bd8c99a9ed605a8e7c0810b638ce0af8168ab",
+  "model_sources_sha256": {
+    "models/cfd/turek_hron_openfoam.py": "575cd2be98066b2e1623f7ffed11c637de8263f0ac86bba9c9c1033547851e5d",
+    "models/cfd/run_turek_hron.sh": "b16457572203279ff053586beb83b59d25755c9a0882bbeba35ea469549fa855"
+  },
+  "rerun_of": null,
+  "started_utc": "2026-11-25T23:53:54+00:00",
+  "environment": {
+    "python": "3.14.10",
+    "python_executable": "<repo>\\.venv\\Scripts\\python.exe",
+    "platform": "Windows-11-10.0.26100-SP0",
+    "machine": "AMD64",
+    "packages": {
+      "numpy": "2.5.5",
+      "scipy": "1.18.1",
+      "matplotlib": "3.11.2",
+      "cadquery": "2.8.0"
+    },
+    "git": {
+      "commit": "a8aafa1af2d4dcc56bb2b50938e3a3a2fc2552e6",
+      "dirty": true
+    },
+    "tools": {
+      "openfoam_bashrc": "/opt/openfoam14/etc/bashrc",
+      "gmsh": "4.15.0",
+      "openfoam_version": "14",
+      "openfoam_package": "openfoam14 20261008",
+      "linux": "Ubuntu 22.04.5 LTS"
+    }
+  },
+  "numerics": {
+    "max_iterations": 20000,
+    "residual_p": 1e-10,
+    "residual_U": 1e-11,
+    "nested_base_cell_size_m": 0.0025
+  },
+  "points": [
+    {
+      "label": "p00_cell_size_m-0.0025",
+      "parameters": {
+        "mean_velocity_m_per_s": 0.2,
+        "kinematic_viscosity_m2_per_s": 0.001,
+        "density_kg_per_m3": 1000.0,
+        "flag_length_m": 0.35,
+        "cell_size_m": 0.0025,
+        "benchmark_drag_N_per_m": 14.2929,
+        "benchmark_lift_N_per_m": 1.11905
+      },
+      "status": "completed",
+      "derived": {
+        "reynolds_D": 20.000000000000004,
+        "dynamic_pressure_times_D_N_per_m": 2.0000000000000004
+      },
+      "solver": {
+        "success": true,
+        "message": "drag 14.29395, lift 1.11534 N/m (13047 cells, 411 iterations)",
+        "nfev": 411
+      },
+      "solver_outputs": {
+        "cells": 13047,
+        "mesh_ok": true,
+        "simple_converged": true,
+        "iterations": 411,
+        "final_initial_residuals": {
+          "Ux": 5.14184992846e-12,
+          "Uy": 9.64997856756e-12,
+          "p": 5.67096707819e-13
+        },
+        "inlet_flow_m3_per_s": 0.00082024062540237,
+        "outlet_flow_m3_per_s": 0.00082024062540244,
+        "imposed_flow_m3_per_s": 0.0008200000000000001,
+        "inlet_profile_error_max": 6.202696016532892e-08,
+        "inlet_faces": 42,
+        "pressure_drag_N_per_m": 7.432371376117,
+        "viscous_drag_N_per_m": 6.861576032445001,
+        "domain_area_m2": 1.010139311116558,
+        "nested_refine_levels": 0,
+        "flag_cell_max_angle_deg": 122.63748739834053,
+        "flag_cell_max_angle_at_m": [
+          0.3454513900863913,
+          0.21102360617452331
+        ]
+      },
+      "metrics": {
+        "drag_N_per_m": 14.293947408562001,
+        "lift_N_per_m": 1.1153379731275999,
+        "drag_deviation_pct": 0.007328173862559774,
+        "lift_deviation_pct": 0.3317123338903751
+      }
+    },
+    {
+      "label": "p01_cell_size_m-0.00125",
+      "parameters": {
+        "mean_velocity_m_per_s": 0.2,
+        "kinematic_viscosity_m2_per_s": 0.001,
+        "density_kg_per_m3": 1000.0,
+        "flag_length_m": 0.35,
+        "cell_size_m": 0.00125,
+        "benchmark_drag_N_per_m": 14.2929,
+        "benchmark_lift_N_per_m": 1.11905
+      },
+      "status": "completed",
+      "derived": {
+        "reynolds_D": 20.000000000000004,
+        "dynamic_pressure_times_D_N_per_m": 2.0000000000000004
+      },
+      "solver": {
+        "success": true,
+        "message": "drag 14.33024, lift 1.12583 N/m (52188 cells, 1328 iterations)",
+        "nfev": 1328
+      },
+      "solver_outputs": {
+        "cells": 52188,
+        "mesh_ok": true,
+        "simple_converged": true,
+        "iterations": 1328,
+        "final_initial_residuals": {
+          "Ux": 6.54720876896e-12,
+          "Uy": 9.96561510356e-12,
+          "p": 5.46039845695e-13
+        },
+        "inlet_flow_m3_per_s": 0.00082006011804566,
+        "outlet_flow_m3_per_s": 0.000820060118045657,
+        "imposed_flow_m3_per_s": 0.0008200000000000001,
+        "inlet_profile_error_max": 6.249466129778132e-08,
+        "inlet_faces": 84,
+        "pressure_drag_N_per_m": 7.507363609624,
+        "viscous_drag_N_per_m": 6.822876724187,
+        "domain_area_m2": 1.010139311116558,
+        "nested_refine_levels": 1,
+        "flag_cell_max_angle_deg": 115.7083334859181,
+        "flag_cell_max_angle_at_m": [
+          0.3496547354543201,
+          0.21061753996245325
+        ]
+      },
+      "metrics": {
+        "drag_N_per_m": 14.330240333811,
+        "lift_N_per_m": 1.12583018029296,
+        "drag_deviation_pct": 0.2612509274604912,
+        "lift_deviation_pct": 0.6058871625896879
+      }
+    },
+    {
+      "label": "p02_cell_size_m-0.000625",
+      "parameters": {
+        "mean_velocity_m_per_s": 0.2,
+        "kinematic_viscosity_m2_per_s": 0.001,
+        "density_kg_per_m3": 1000.0,
+        "flag_length_m": 0.35,
+        "cell_size_m": 0.000625,
+        "benchmark_drag_N_per_m": 14.2929,
+        "benchmark_lift_N_per_m": 1.11905
+      },
+      "status": "completed",
+      "derived": {
+        "reynolds_D": 20.000000000000004,
+        "dynamic_pressure_times_D_N_per_m": 2.0000000000000004
+      },
+      "solver": {
+        "success": true,
+        "message": "drag 14.32404, lift 1.12493 N/m (208752 cells, 4600 iterations)",
+        "nfev": 4600
+      },
+      "solver_outputs": {
+        "cells": 208752,
+        "mesh_ok": true,
+        "simple_converged": true,
+        "iterations": 4600,
+        "final_initial_residuals": {
+          "Ux": 7.05529729928e-12,
+          "Uy": 9.98176123285e-12,
+          "p": 5.44888661591e-13
+        },
+        "inlet_flow_m3_per_s": 0.000820014991740598,
+        "outlet_flow_m3_per_s": 0.0008200149917408171,
+        "imposed_flow_m3_per_s": 0.0008200000000000001,
+        "inlet_profile_error_max": 6.24993245120405e-08,
+        "inlet_faces": 168,
+        "pressure_drag_N_per_m": 7.539054056843,
+        "viscous_drag_N_per_m": 6.784990489064,
+        "domain_area_m2": 1.010139311116558,
+        "nested_refine_levels": 2,
+        "flag_cell_max_angle_deg": 115.70833348590816,
+        "flag_cell_max_angle_at_m": [
+          0.34946450440515353,
+          0.21029216951002855
+        ]
+      },
+      "metrics": {
+        "drag_N_per_m": 14.324044545907,
+        "lift_N_per_m": 1.1249331013333899,
+        "drag_deviation_pct": 0.21790221653408878,
+        "lift_deviation_pct": 0.5257228303819992
+      }
+    }
+  ],
+  "study": "turek_hron_cfd",
+  "status": "completed",
+  "finished_utc": "2026-11-26T00:45:15+00:00"
+}

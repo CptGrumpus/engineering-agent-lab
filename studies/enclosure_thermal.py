@@ -30,6 +30,20 @@ RUNNER = "models/cfd/run_enclosure.sh"
 SIGMA = 5.670374419e-8
 
 
+def board_profile(C: np.ndarray, T: np.ndarray, board_left_m: float) -> list:
+    """The board's temperature along its length at the final time: [x from the board's left end (mm), the
+    largest temperature over the board's thickness at that x (C)], from the board region's cell centres C and
+    temperatures T (K). Used for a part placed on the board (client requirement list, 2026-11-25)."""
+    xs = np.round((np.asarray(C)[:, 0] - board_left_m) * 1e3, 6)
+    return [[float(x), float(T[xs == x].max()) - 273.15] for x in np.unique(xs)]
+
+
+def part_max_C(profile: list, span_mm) -> float:
+    """Largest board temperature under a part's footprint, span_mm = [from, to] from the board's left end."""
+    sel = [t for x, t in profile if span_mm[0] <= x <= span_mm[1]]
+    return float(max(sel)) if sel else float("nan")
+
+
 def _load_writer(path: Path):
     spec = importlib.util.spec_from_file_location("enclosure_openfoam_saved", path)
     mod = importlib.util.module_from_spec(spec)
@@ -58,6 +72,12 @@ class OpenFOAMEnclosure(Backend):
         def files():
             keep = [case / n for n in ("log.blockMesh", "log.splitMeshRegions", "log.checkMesh", "versions.txt")]
             keep += sorted((case / "system").rglob("*")) + sorted((case / "constant").glob("*/*"))
+            # the final temperature and cell centres of every region (small at these meshes), for a field plot
+            done = [d for d in case.iterdir() if d.is_dir() and d.name.replace(".", "").isdigit()
+                    and d.name != "0"] if case.is_dir() else []
+            if done:
+                last = max(done, key=lambda d: float(d.name))
+                keep += sorted(last.glob("*/T")) + sorted(last.glob("*/C"))
             return {str(f.relative_to(case)).replace("\\", "/"): f for f in keep
                     if f.is_file() and f.stat().st_size < 20e6 and "polyMesh" not in f.parts}
 
@@ -113,8 +133,12 @@ class OpenFOAMEnclosure(Backend):
         q_in = (float(params["power_component_W"]) + float(params["power_board_W"])) / (
             2 * (lay["W"] + lay["H"]) * float(params["box_depth_mm"]) / 1e3)
         series = {k: np.array([hh[k] for hh in hist]) for k in hist[0]}
+        profile = []
+        if (times[-1] / "board" / "C").exists():    # cell centres are written at the latest time only
+            profile = board_profile(of.read_internal_field(times[-1] / "board" / "C"),
+                                    of.read_internal_field(times[-1] / "board" / "T"), lay["xs"][1])
         outputs = {**info, "q_in_W_m2": q_in, "power_W": float(params["power_component_W"]) + float(params["power_board_W"]),
-                   "history": hist, "final": hist[-1]}
+                   "history": hist, "final": hist[-1], "board_profile": profile}
         return {"success": True, "message": f"enclosure: component {hist[-1]['component_max_C']:.2f} C", "nfev": None,
                 "series": series, "outputs": outputs, "files": files(), "cleanup": work}
 
@@ -125,7 +149,8 @@ class OpenFOAMEnclosure(Backend):
 class EnclosureThermalStudy(Study):
     name = "enclosure_thermal"
     models = {"openfoam_enclosure_cht": OpenFOAMEnclosure}
-    metrics = frozenset({"component_max_C", "air_mean_C", "walls_mean_C", "radiation_share_pct"})
+    metrics = frozenset({"component_max_C", "air_mean_C", "walls_mean_C", "radiation_share_pct", "board_max_C",
+                         "C1_board_max_C"})
     param_names = _W.PARAMS
     series_file = "history.csv"
     compare_description = "max relative difference in the temperature histories"
@@ -136,8 +161,13 @@ class EnclosureThermalStudy(Study):
             share = 100 * f["Q_rad_W"] / outputs["power_W"]
         else:
             share = 100 * f["qr_walls_W_m2"] / outputs["q_in_W_m2"]
-        return {"component_max_C": f["component_max_C"], "air_mean_C": f["air_mean_C"],
-                "walls_mean_C": f["walls_mean_C"], "radiation_share_pct": share}
+        m = {"component_max_C": f["component_max_C"], "air_mean_C": f["air_mean_C"],
+             "walls_mean_C": f["walls_mean_C"], "radiation_share_pct": share, "board_max_C": f["board_max_C"]}
+        # a part on the board (case [locations], e.g. C1_from_board_left_mm = [5.0, 15.0]): the board under it
+        span = (case or {}).get("locations", {}).get("C1_from_board_left_mm")
+        if span and outputs.get("board_profile"):
+            m["C1_board_max_C"] = part_max_C(outputs["board_profile"], span)
+        return m
 
     def verify_point(self, case, point, pdir: Path, series, backend):
         tol = case["verification"]

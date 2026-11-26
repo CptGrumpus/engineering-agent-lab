@@ -18,7 +18,9 @@ blockMesh > log.blockMesh 2>&1 || exit 20
 splitMeshRegions -cellZones all > log.splitMeshRegions 2>&1 || exit 25
 checkMesh -region fluid > log.checkMesh 2>&1 || exit 21
 foamMultiRun > log.foamMultiRun 2>&1 || exit 22
-for r in fluid board component; do
+# every region splitMeshRegions made (the redesign adds shell and bridge), so the final fields can be plotted
+for d in constant/*/polyMesh; do
+  r=$(basename "$(dirname "$d")")
   foamPostProcess -region $r -func writeCellCentres -latestTime > log.writeCellCentres.$r 2>&1 || exit 24
 done
 exit 0

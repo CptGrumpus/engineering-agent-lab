@@ -305,6 +305,21 @@ def solid_params(params: dict) -> dict:
             "flag_height_m": FLAG_H, "cylinder_radius_m": R, "element_size_mm": params["solid_element_size_mm"]}
 
 
+def _iteration_controls(numerics: dict) -> list[str]:
+    """Opt-in numerics.solid_iteration_limit = N: CalculiX's divergence check (I_0, default 4: residuals rising in two
+    consecutive iterations), logarithmic check (I_R, default 8) and iteration limit (I_C, default 16) all moved to N.
+    Under *DYNAMIC, DIRECT a failed check stops the calculation (manual, *DYNAMIC); under the preCICE adapter that stop
+    corrupted the heap and hung (FSI3 dt_a at 6.902 s and FSI2 r1 a / c at 14.01 / 14.05 s, 2026-11-24: in each the
+    solid's Newton residual rose at iterations 5-7 of the first coupling iteration of a window, then the process
+    aborted). The other entries keep the manual's defaults. Off (no line) when unset: earlier decks unchanged."""
+    n = numerics.get("solid_iteration_limit")
+    if not n:
+        return []
+    n = int(n)
+    return ["*CONTROLS, PARAMETERS=TIME INCREMENTATION", f"{n}, {n}, 9, {n}, 10, 4, 0, 5, 0, 0",
+            "0.25, 0.5, 0.75, 0.85, 0., 0., 1.5, 0."]
+
+
 def write_solid(params: dict, numerics: dict, d: Path) -> dict:
     F = _flag_module()
     m = F.FlagMesh(solid_params(params), thickness_mm=DEPTH * 1e3)
@@ -328,8 +343,9 @@ def write_solid(params: dict, numerics: dict, d: Path) -> dict:
             + [f"{e}, " + ", ".join(str(v) for v in n) for e, n in m.connectivity().items()] + sets
             + ["*MATERIAL, NAME=EL", "*ELASTIC", f"{E!r}, {nu!r}", "*DENSITY", f"{rho!r}",
                "*SOLID SECTION, ELSET=Eall, MATERIAL=EL",
-               "*STEP, NLGEOM, INC=1000000", f"*DYNAMIC, ALPHA={alpha!r}, DIRECT", f"{dt!r}, {t_end!r}",
-               "*BOUNDARY", "Nfix, 1, 3", "*BOUNDARY", "Nall, 3",
+               "*STEP, NLGEOM, INC=1000000", f"*DYNAMIC, ALPHA={alpha!r}, DIRECT", f"{dt!r}, {t_end!r}"]
+            + _iteration_controls(numerics)
+            + ["*BOUNDARY", "Nfix, 1, 3", "*BOUNDARY", "Nall, 3",
                "*CLOAD", " Nsurface, 1, 0.0", " Nsurface, 2, 0.0", " Nsurface, 3, 0.0",
                "*NODE PRINT, NSET=NA, FREQUENCY=1", "U",
                "*NODE PRINT, NSET=Nfix, TOTALS=ONLY, FREQUENCY=1", "RF",
@@ -402,10 +418,10 @@ def write_precice(params: dict, numerics: dict, path: Path) -> None:
     <acceleration:IQN-ILS>
       <data name="Displacement" mesh="Solid-Mesh" />
       <data name="Force" mesh="Solid-Mesh" />
-      <filter type="QR2" limit="1e-2" />
-      <initial-relaxation value="0.5" />
-      <max-used-iterations value="100" />
-      <time-windows-reused value="15" />
+      <filter type="QR2" limit="{float(numerics.get("coupling_filter_limit", 1e-2))!r}" />
+      <initial-relaxation value="{float(numerics.get("coupling_initial_relaxation", 0.5))!r}" />
+      <max-used-iterations value="{int(numerics.get("coupling_max_used_iterations", 100))}" />
+      <time-windows-reused value="{int(numerics.get("coupling_time_windows_reused", 15))}" />
     </acceleration:IQN-ILS>
   </coupling-scheme:parallel-implicit>
 </precice-configuration>
