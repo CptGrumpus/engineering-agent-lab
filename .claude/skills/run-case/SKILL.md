@@ -191,7 +191,9 @@ the grid check.
   before it fails; finished runs stay flat. Look at what all failed attempts SHARE, settings never changed
   included: the FSI attempts all kept `solid_alpha = 0`, the undamped integrator that had already broken CSM3.
   Start long dynamic or coupled solids damped (HHT alpha -0.05, the FSI model's default since 2026-11-26: no creep
-  in any damped run so far, FSI2 levels a and b both to 15 s, answer within 0.02 %; build-model `references/tool-notes.md`).
+  in any of six full-length damped runs, FSI2 a / b / c to 15 s and FSI3 dt_a / b / c to 8 s, 2 Newton iterations in
+  all of about 750,000 solid attempts; results within 0.06 % of the undamped runs, 0.004 % at the finest step;
+  build-model `references/tool-notes.md`).
 - A failed point keeps the last 400 lines of every solver log the study did not copy, in
   `points/<label>/solver/failure_tails/` (`harness/run.py`, `keep_failure_tails`). Read them before
   changing anything, then change one thing per rerun. If the tail is missing (a study that deletes its own work
@@ -235,6 +237,10 @@ the grid check.
   against full records on 2026-11-26: FSI2's three levels scored cut at 14.0 s (alpha 0, two of them crashed) and
   rerun to 15 s (alpha -0.05) gave the same classification for every quantity and GCIs within 0.04 percentage
   points, so a cut a few periods short of the end is a sound basis for a verdict when the cut window is periodic.
+  The script refuses runs whose [numerics] differ, on purpose. To show that a mixed set (one level at other settings)
+  would not change the verdict, call its `score()` and the study's `verify_run_level` on both sets in a labelled
+  comparison and keep the output in the run (FSI3 time steps, 2026-11-26: alpha 0 against -0.05 at level b, same
+  classification, GCIs within 0.02 percentage points, `p4_alpha_vs_mixed_t7999.json`). Do not loosen the refusal.
 - **Check how a coupled run ends, not only how it runs.** Ending a preCICE coupling on `max-time` makes preCICE
   shorten the last window to a float remainder (8 - 7.999000000000001 = 0.000999999999999446 s); a solver that also
   clips its increment to its own step's end (CalculiX, from its accumulated step fraction) can come up about 1e-12 s
@@ -242,7 +248,13 @@ the grid check.
   -0.05, 2026-11-26: 7,999 good windows, then SIGABRT; FSI3 dt_c's last-step crash was most likely the same). Whether
   a given end time trips it depends on round-off, so it cannot be predicted (an emulation of both clocks did not
   reproduce it). End on `max-time-windows` (an integer) and give the participant's own step a margin past the end
-  (`models/fsi/turek_hron_fsi.py`), then confirm on a short coupled run that both participants exit 0.
+  (`models/fsi/turek_hron_fsi.py`), then confirm on a short coupled run that both participants exit 0. Confirmed on
+  full length 2026-11-26: every rerun with this end, FSI3 dt_c included (its alpha-0 run died on the last step),
+  ended normally on both sides.
+- **Predict convergence per quantity, not from one ratio.** FSI3's force predictions assumed the tip's ratio per
+  halving of the step (0.38) for every force: drag followed it (0.36), lift converged faster (0.27, order 1.9), so its
+  GCI landed under the predicted range. Wall-time predictions made beside other runs miss when those runs end early:
+  dt_c took 17 h 19 min against 18-24 h once it ran alone; state the load assumed.
 - **Settling time depends on the corner, not only the model.** Study 11's emissivity-0.1 corners had a time constant
   of about 534 s against 242 s at 0.9 (radiation carried 22 % of the heat instead of 75 %), so a 2,400 s run sized from
   one prototype corner left them unsettled (0.62 K over the last tenth against 0.3). Size the run length from the

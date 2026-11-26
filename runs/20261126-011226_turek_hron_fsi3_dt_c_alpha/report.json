@@ -1,0 +1,177 @@
+{
+  "points": [
+    {
+      "label": "p00_baseline",
+      "parameters": {
+        "solid_density_kg_per_m3": 1000.0,
+        "shear_modulus_Pa": 2000000.0,
+        "poisson_ratio": 0.4,
+        "fluid_density_kg_per_m3": 1000.0,
+        "kinematic_viscosity_m2_per_s": 0.001,
+        "mean_velocity_m_per_s": 2.0,
+        "fluid_cell_size_m": 0.0025,
+        "solid_element_size_mm": 2.5,
+        "time_step_s": 0.00025,
+        "end_time_s": 8.0,
+        "benchmark_ux_A_m": -0.00288,
+        "benchmark_uy_A_m": 0.00147,
+        "benchmark_drag_N_per_m": 460.5,
+        "benchmark_lift_N_per_m": 2.5,
+        "benchmark_ux_A_mean": -0.00288,
+        "benchmark_ux_A_amp": 0.00272,
+        "benchmark_ux_A_freq_Hz": 10.93,
+        "benchmark_uy_A_mean": 0.00147,
+        "benchmark_uy_A_amp": 0.03499,
+        "benchmark_uy_A_freq_Hz": 5.46,
+        "benchmark_drag_mean": 460.5,
+        "benchmark_drag_amp": 27.74,
+        "benchmark_drag_freq_Hz": 10.93,
+        "benchmark_lift_mean": 2.5,
+        "benchmark_lift_amp": 153.91,
+        "benchmark_lift_freq_Hz": 5.46
+      },
+      "derived": {
+        "reynolds_D": 200.0,
+        "mass_ratio": 1.0
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "mesh",
+          "description": "checkMesh reports Mesh OK (1 = failed)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.5,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "flag_cells",
+          "description": "largest interior angle (deg) of the fluid cells touching the flag, at (0.3455, 0.2110) m (a cell wrapped around a tip corner reads near 180)",
+          "kind": "numerical",
+          "value": 122.63748739834053,
+          "tolerance": 140.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "coupling_converged",
+          "description": "coupling windows that hit the iteration limit without converging",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.5,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "periodic",
+          "description": "periodic state: max of |uy(A) amplitude, last period - the one before| / amplitude and the same for the drag mean",
+          "kind": "numerical",
+          "value": 4.669064965016798e-06,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "force_transfer",
+          "description": "force transfer per coupling window over 7.15752-7.88745 s: the larger of |force the solid receives - force the fluid writes| and |force the fluid writes - OpenFOAM's force on the flag|, each over the largest force in the window",
+          "kind": "numerical",
+          "value": 2.970650267041262e-09,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "inflow_profile",
+          "description": "max over inlet faces |U - benchmark parabola| / (1.5 U_mean), after the ramp",
+          "kind": "numerical",
+          "value": 4.663357107877649e-10,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "laminar",
+          "description": "Reynolds number (D) / 200",
+          "kind": "validity",
+          "value": 1.0,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-FSI3-1",
+          "text": "The coupled model shall reproduce the FSI3 amplitude of the tip's vertical displacement within 5 %.",
+          "metric": "uy_A_amp_deviation_pct",
+          "operator": "<=",
+          "limit": 5.0,
+          "units": "%",
+          "value": 2.5222307802229333,
+          "margin": 2.4777692197770667,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-FSI3-2",
+          "text": "It shall reproduce the FSI3 oscillation frequency (uy of point A) within 3 %.",
+          "metric": "uy_A_freq_Hz_deviation_pct",
+          "operator": "<=",
+          "limit": 3.0,
+          "units": "%",
+          "value": 0.4026817623126828,
+          "margin": 2.5973182376873174,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-FSI3-3",
+          "text": "It shall reproduce the FSI3 mean drag within 5 %.",
+          "metric": "drag_mean_deviation_pct",
+          "operator": "<=",
+          "limit": 5.0,
+          "units": "%",
+          "value": 2.157053222041252,
+          "margin": 2.842946777958748,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-FSI3-4",
+          "text": "It shall reproduce the FSI3 drag amplitude within 25 % (the benchmark's own tables spread about 40 %).",
+          "metric": "drag_amp_deviation_pct",
+          "operator": "<=",
+          "limit": 25.0,
+          "units": "%",
+          "value": 7.068861249099047,
+          "margin": 17.931138750900953,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-FSI3-5",
+          "text": "It shall reproduce the FSI3 lift amplitude within 10 %.",
+          "metric": "lift_amp_deviation_pct",
+          "operator": "<=",
+          "limit": 10.0,
+          "units": "%",
+          "value": 0.6990033008576302,
+          "margin": 9.30099669914237,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-FSI3-6",
+          "text": "It shall reproduce the FSI3 mean horizontal tip displacement within 15 % (second order; the benchmark spreads 12 %).",
+          "metric": "ux_A_mean_deviation_pct",
+          "operator": "<=",
+          "limit": 15.0,
+          "units": "%",
+          "value": 5.352333454861116,
+          "margin": 9.647666545138884,
+          "verdict": "PASS"
+        }
+      ]
+    }
+  ],
+  "run_id": "20261126-011226_turek_hron_fsi3_dt_c_alpha",
+  "generated_utc": "2026-11-26T23:31:16+00:00",
+  "verification_status": "PASS"
+}

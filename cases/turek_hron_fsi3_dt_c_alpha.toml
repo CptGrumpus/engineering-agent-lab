@@ -32,6 +32,24 @@
 #      Three-level uncertainty: drag mean under 0.5 %; drag and lift amplitudes monotone, 0.5-2.5 % (may exceed the
 #      1 % limit; reported, not tuned).
 #   P5 18-24 h beside the other runs (the alpha-0 run took 20 h).
+#
+# Results (run 20261126-011226_turek_hron_fsi3_dt_c_alpha, 01:12-18:31, scored 2026-11-26 18:33). VERIFICATION
+# PASS, 7/7 checks, every requirement PASS: uy amplitude 34.107 mm (2.52 %), frequency 5.4820 Hz (0.40 %), drag mean
+# 470.43 N/m (2.16 %), drag amplitude 25.78 (7.07 %), lift amplitude 154.99 (0.70 %), ux mean -2.726 mm (5.35 %).
+#   P1 HELD: 8 s reached, both participants ended normally (CalculiX "Job finished", OpenFOAM "End"); the force files
+#      were kept (5.6 MB each) and every point check passes.
+#   P2 HELD: 2 Newton iterations in all 272,980 solid attempts (solid_newton_counts.json), none of the alpha-0 creep.
+#   P3 HELD: against the alpha-0 record cut at the same 7.999 s: uy amplitude, frequency, ux mean and ux amplitude
+#      within 0.0005 %, uy mean -0.004 % (limit 0.3 %). At this time step the damping changes nothing visible.
+#   P4 HELD except one range: drag mean 470.43 (predicted 470.0-471.2), drag amplitude 25.78 (25.4-26.4), lift
+#      amplitude 154.99 (154.5-157.0); every quantity monotone (fsi3_dt_alpha_3level_t7999.json: dt_a_alpha / dt_b_alpha
+#      / this run, all alpha -0.05, cut 7.999 s). Uncertainty: drag mean 0.087 % (predicted under 0.5 %), drag amplitude
+#      1.39 % (0.5-2.5 %; FAILS the 1 % limit, reported, not tuned), lift amplitude 0.47 %, just under the predicted
+#      0.5-2.5 %: lift converges faster (ratio 0.27 per halving, order 1.9) than the tip and drag (0.36-0.38, order
+#      1.4-1.5). The other checks: uy amplitude 0.45 %, frequency 0.24 %, ux mean 0.71 %, all PASS.
+#   P5 NOT HELD, faster: 17 h 19 min (predicted 18-24 h); the other coupled runs finished by 15:13 and it ran alone.
+# The description's "solid 2.5 mm, dt 0.0005 s" is inherited text: the run's coupling window was 0.00025 s (31,996
+# windows to 7.999 s). Left as run (the run's inputs/case.toml holds the same text).
 
 [case]
 name = "turek_hron_fsi3_dt_c_alpha"
