@@ -38,7 +38,7 @@ STUDY_DOCS = {
     "pipe": "19-turbulent-pipe-friction", "motor": "20-prius-traction-motor", "step": "19-turbulent-pipe-friction",
     "random_vib": "21-bracket-random-vibration", "bracket_uq": "22-bracket-random-uncertainty",
     "fan_rotor": "23-fan-rotor-critical-speeds", "crack": "24-cracked-plate-growth", "oring": "25-oring-face-seal", "shaft": "26-shaft-shoulder-fatigue",
-    "enclosure": "27-sealed-enclosure-thermal",
+    "enclosure": "27-sealed-enclosure-thermal", "steel_frame": "28-steel-portal-frame-aisc",
 }
 RUN_PREFIX = {"pipe": "pipe_", "step": "step_"}
 # runs a write-up cites by a pattern instead of one by one: listed with the ones it names
@@ -595,6 +595,10 @@ REQS = [
         ("Peak contact pressure on the cover, loosest corner", "≥ 0.6 MPa (2 × 3 bar)", "1.50 MPa", "met"),
         ("Closing force, tightest corner", "≤ 12 N/mm", "5.94 N/mm (mesh uncertainty 1.1 %)", "met"),
         ("Groove fill, tightest corner", "≤ 85 %", "80.4 %; the hand cross-check differs by 1.05 %, just over its 1 %", "met")]),
+    ("steel_frame", "28", "Steel portal frame", [
+        ("Each member's combined ratio, AISC 360-22 Eq. H1-1, Direct Analysis Method", "≤ 1.0", "0.80, the beam unbraced over 6 m; columns 0.45", "met"),
+        ("Beam deflection under the service live load", "≤ L/360 = 16.7 mm", "4.1 mm", "met"),
+        ("Frame drift under the service sideways load", "≤ H/400 = 10.0 mm", "2.6 mm", "met")]),
     ("shaft", "26", "Gearbox shaft shoulder", [
         ("Fatigue safety at the fillet, as drawn (fillet 1.4 to 2.0 mm)", "≥ 1.5", "1.15 to 1.26; 1.19 at the nominal 1.6 mm", "fail"),
         ("Yield safety at a 1.5 × overload, as drawn", "≥ 2.0", "1.77 to 1.92; 1.83 at the nominal", "fail"),
@@ -809,6 +813,7 @@ CAPS = """<div class="table-wrap">
           <tr><td>Turbulent flow (RANS, k-omega SST) with resolved and wall-function wall treatments, checked against measured pipe friction</td><td>OpenFOAM</td><td><a href="#pipe">19</a></td></tr>
           <tr><td>Heat transfer, from conduction with surface convection to convection in a heated coolant channel</td><td>CalculiX, OpenFOAM</td><td><a href="#thermal">6</a>, <a href="#heat">11</a></td></tr>
           <tr><td>Electronics cooling in a sealed enclosure: natural convection, conduction and surface radiation solved together, with the convection and the radiation each checked against a known answer first</td><td>OpenFOAM, Python</td><td><a href="#enclosure">27</a></td></tr>
+          <tr><td>Steel design to a building code: a second-order frame analysis by AISC 360-22's Direct Analysis Method and the member checks of Chapters E to H, both reproduced against AISC's own worked examples first</td><td>Python</td><td><a href="#steel_frame">28</a></td></tr>
           <tr><td>Ride, road holding and frequency response, including ISO 2631 comfort weighting</td><td>Python (SciPy), OpenModelica</td><td><a href="#suspension">7</a>, <a href="#baseline">9</a></td></tr>
           <tr><td>Renders of FE results and CAD parts in Blender, with the legend colours and geometry checked automatically</td><td>Blender (Cycles), Python</td><td><a href="#fea">1</a>, <a href="#strap">2</a>, <a href="#modal">4</a>, <a href="#thermal">6</a>, <a href="#cad">8</a>, <a href="#bracket_opt">12</a>, <a href="#strut">13</a>, <a href="#strap_proof">14</a>, <a href="#cold_plate">15</a>, <a href="#bolted_joint">16</a></td></tr>
           <tr><td>Verification against exact and handbook solutions, the Grid Convergence Index, and tolerance and sensitivity studies</td><td>Python</td><td>All</td></tr>

@@ -2295,13 +2295,122 @@ def enclosure_field():
     print("fig enclosure_field")
 
 
+def steel_frame():
+    """The steel portal frame to AISC 360-22: the second-order moment diagram on the frame (gravity plus lateral,
+    the governing case), every check as a share of its limit, and the beam's bracing against the largest ratio."""
+    import csv
+    run, brace_run = "20261125-231923_steel_frame_portal", "20261125-231927_steel_frame_beam_bracing"
+    for r in (run, brace_run):
+        assert all(verified(r).values()), r
+    pt = point(run, "p00_baseline")
+    m, mc = pt["metrics"], pt["solver_outputs"]["member_checks"]
+    L_ = limits("steel_frame_portal")
+    prm = pt["parameters"]
+    H, L = prm["frame_height_m"], prm["bay_span_m"]
+    rows = list(csv.DictReader((RUNS / run / "points" / "p00_baseline" / "moment_diagrams.csv").open(encoding="utf-8")))
+    s = np.array([float(r["position_along_member"]) for r in rows])
+    M = {k: np.array([float(r[f"M_kNm_gravity_lateral_{k}"]) for r in rows]) for k in ("left_column", "right_column", "beam")}
+    for k in M:                                        # the saved diagram is the one the member checks used
+        assert np.allclose(M[k], mc["gravity_lateral"][k]["moments_kNm"]), k
+    # a rigid knee carries the moment round the corner: the sign convention is tension on the member's left
+    # (columns run base to top, the beam left to right), so the knees must match in size
+    assert abs(abs(M["left_column"][-1]) - abs(M["beam"][0])) < 1e-6 and abs(abs(M["right_column"][-1]) - abs(M["beam"][-1])) < 1e-6
+
+    fig, gs = fk.new(FULL, 3.9, 1, 3, wspace=0.62, top=0.80, width_ratios=[1.55, 1.0, 0.75])
+    gs.update(left=0.01, bottom=0.62 / 3.9)
+    ax = fig.add_subplot(gs[0, 0])
+    sc = 1.15 / max(abs(v).max() for v in M.values())               # m of offset per kN m
+    members = {"left_column": (np.zeros_like(s), H * s, (-1.0, 0.0)), "right_column": (np.full_like(s, L), H * s, (-1.0, 0.0)),
+               "beam": (L * s, np.full_like(s, H), (0.0, 1.0))}
+    for k, (x, y, (nx, ny)) in members.items():
+        xd, yd = x + nx * sc * M[k], y + ny * sc * M[k]
+        ax.fill(np.r_[x, xd[::-1]], np.r_[y, yd[::-1]], color=MODEL, alpha=0.16, linewidth=0, zorder=2)
+        ax.plot(xd, yd, color=MODEL, linewidth=1.8, zorder=3)
+    ax.plot([0, 0, L, L], [0, H, H, 0], color=INK, linewidth=2.4, zorder=4, solid_joinstyle="miter")
+    for x in (0, L):
+        ax.plot([x - 0.45, x + 0.45], [0, 0], color=INK, linewidth=1.4, zorder=4)
+        for t in np.linspace(x - 0.45, x + 0.45, 6):
+            ax.plot([t, t - 0.18], [0, -0.22], color=INK, linewidth=0.6, zorder=4)
+    mid = int(np.argmax(abs(M["beam"])))
+    lab = [(0 - sc * M["left_column"][-1], H, abs(M["left_column"][-1]), "right", 0),
+           (L - sc * M["right_column"][-1], H, abs(M["right_column"][-1]), "left", 0),
+           (L * s[mid], H + sc * M["beam"][mid], abs(M["beam"][mid]), "center", -1),
+           (-0.5, 0.35, abs(M["left_column"][0]), "right", 0),
+           (L + 0.5, 0.35, abs(M["right_column"][0]), "left", 0)]
+    for x, y, v, ha, vpos in lab:
+        fk.label(ax, x, y, f"{v:.0f}", dx={"right": -5, "left": 5, "center": 0}[ha], dy=-9 * vpos if vpos else 0,
+                 ha=ha, va="top" if vpos == -1 else "center", size=8.5, color=INK2)
+    ax.text(L / 2, -0.35, "drawn on the tension side · wind from the left", fontsize=7.8, color=INK2, ha="center", va="top")
+    ax.set_aspect("equal")
+    ax.set_xlim(-2.0, L + 1.7); ax.set_ylim(-1.0, H + 1.4)
+    ax.axis("off")
+    fk.panel(ax, "Bending moment, kN m")
+
+    # every check as a share of its limit
+    bx = fig.add_subplot(gs[0, 1])
+    fk.style(bx, grid="x")
+    a1 = L_["max_interaction_ratio"][1]
+    checks = [("Beam, Eq. H1-1", [mc[c]["beam"]["H1_ratio"] / a1 for c in ("gravity_lateral", "gravity_notional")]),
+              ("Leeward column", [mc[c]["right_column"]["H1_ratio"] / a1 for c in ("gravity_lateral", "gravity_notional")]),
+              ("Windward column", [mc[c]["left_column"]["H1_ratio"] / a1 for c in ("gravity_lateral", "gravity_notional")]),
+              ("Live-load deflection", [m["live_deflection_mm"] / L_["live_deflection_mm"][1]]),
+              ("Service drift", [m["service_drift_mm"] / L_["service_drift_mm"][1]])]
+    assert abs(max(max(v) for _, v in checks[:3]) * a1 - m["max_interaction_ratio"]) < 1e-9
+    bx.set_xlim(0, 1.25)
+    bx.set_ylim(len(checks) - 0.4, -0.7)
+    for i, (name, vals) in enumerate(checks):
+        bx.plot([0, max(vals)], [i, i], color=fk.AXIS, linewidth=2.2, zorder=2)
+        for j, v in enumerate(vals):
+            if j == 0:
+                fk.status_dot(bx, v, i, "meets" if v <= 1 else "misses", size=52)
+            else:
+                bx.scatter([v], [i], s=40, facecolor=fk.SURFACE, edgecolor=MODEL, linewidth=1.5, zorder=4)
+        fk.label(bx, max(vals), i, f"{max(vals):.2f}", dx=8, size=8.5, color=INK2)
+    bx.set_yticks(range(len(checks)), [c[0] for c in checks])
+    fk.limit(bx, 1.0, "limit", "above", at=0.99)
+    bx.set_xlabel("share of the limit")
+    fk.panel(bx, "Every check against its limit")
+
+    # the beam's bracing
+    cx = fig.add_subplot(gs[0, 2])
+    fk.style(cx, grid="y")
+    bp = []
+    for d in sorted((RUNS / brace_run / "points").iterdir()):
+        q = json.loads((d / "point.json").read_text(encoding="utf-8"))
+        bp.append((q["parameters"]["beam_unbraced_length_m"], q["metrics"]["beam_interaction_max"], q["metrics"]["column_interaction_max"]))
+    bp.sort()
+    lb = [b[0] for b in bp]
+    cx.set_xlim(0.8, 6.7); cx.set_ylim(0, 1.15)
+    fk.limit(cx, 1.0, "limit 1.0", "above", axis="y", at=0.98)
+    cx.plot(lb, [b[1] for b in bp], color=MODEL, zorder=3)
+    cx.plot(lb, [b[2] for b in bp], color=fk.MUTED, linestyle=(0, (4, 3)), linewidth=1.6, zorder=3)
+    for x, b, c in bp:
+        fk.status_dot(cx, x, b, "meets" if b <= 1 else "misses", size=44)
+        fk.label(cx, x, b, f"{b:.2f}", dy=9 if b > c else -9, ha="center", va="bottom" if b > c else "top", size=8.2, color=INK2)
+    fk.label(cx, lb[-1], bp[-1][2], "columns", dy=-8, ha="right", va="top", size=8.2, color=INK2)
+    fk.label(cx, lb[-1], bp[-1][1], "beam", dx=-10, dy=10, ha="right", size=8.2, color=INK2)
+    assert lb[-1] == prm["beam_unbraced_length_m"]
+    cx.set_xticks(lb, [f"{x:g}" for x in lb])
+    cx.set_xlabel("beam unbraced length, m")
+    cx.set_ylabel("largest H1-1 ratio")
+    fk.panel(cx, "Bracing the beam")
+
+    fk.heading(fig, "Every member and both deflections pass; the unbraced beam sets the margin, at 0.80",
+               "AISC 360-22, Direct Analysis Method, second order · filled: gravity plus lateral · ring: gravity plus "
+               "notional load")
+    thumb(fig, bx, "steel_frame")
+    fig.savefig(fk.OUT / "fig_steel_frame.svg", format="svg", dpi=300, metadata={"Date": None, "Creator": None})
+    fk.plt.close(fig)
+    print("fig steel_frame")
+
+
 ALL = {f.__name__: f for f in (cfd_tolerance, cfd_duct, cfd_response, cfd_field, fea_tet4, strap_sweep, fatigue_sweep,
                                strut_sweep, strut_response, proof_response, joint_response, contact_response, fea_response, strap_response,
                                fatigue_sn, fin_response, fin_h_sweep, qc_bump_sweep, cad_sweep, heat_response,
                                qc_liftoff, qc_iso, coldplate_response, pipe_friction, motor_comparison,
                                motor_rotor, pv_nozzle, step_comparison, random_vibration, bracket_uncertainty,
                                fan_rotor, fan_rotor_campbell, crack_growth, motor_efficiency, motor_airgap, oring_seal, shaft_fillet,
-                               enclosure_revb, enclosure_field)}
+                               enclosure_revb, enclosure_field, steel_frame)}
 # not on the site (the earlier model's thermal result): motor_thermal
 
 if __name__ == "__main__":

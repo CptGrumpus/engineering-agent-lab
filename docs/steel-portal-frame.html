@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Steel Portal Frame to AISC 360-22 · Justin Smith</title>
+<meta name="description" content="Passes every requirement: the largest member ratio is 0.80, in the beam taken as unbraced over 6 m, with the columns at 0.45, live-load deflection 4.1 of 16.7 mm and drift 2.6 of 10 mm. The frame solver and member checks reproduce AISC&#x27;s own worked examples within 0.7 %.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://cptgrumpus.github.io/engineering-agent-lab/steel-portal-frame.html">
+<meta property="og:title" content="Steel Portal Frame to AISC 360-22">
+<meta property="og:description" content="Passes every requirement: the largest member ratio is 0.80, in the beam taken as unbraced over 6 m, with the columns at 0.45, live-load deflection 4.1 of 16.7 mm and drift 2.6 of 10 mm. The frame solver and member checks reproduce AISC&#x27;s own worked examples within 0.7 %.">
+<meta property="og:image" content="https://cptgrumpus.github.io/engineering-agent-lab/v2/og_steel-portal-frame.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Steel portal frame to AISC 360-22: result render">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://cptgrumpus.github.io/engineering-agent-lab/steel-portal-frame.html">
+<meta name="theme-color" content="#0b0f15" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#f5f6f8" media="(prefers-color-scheme: light)">
+<meta name="color-scheme" content="dark light">
+<script>try{var t=localStorage.getItem("theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3CclipPath id='c'%3E%3Crect width='24' height='24' rx='5'/%3E%3C/clipPath%3E%3Cg clip-path='url(%23c)'%3E%3Crect width='4' height='24' fill='%2330123b'/%3E%3Crect x='4' width='4' height='24' fill='%234686fb'/%3E%3Crect x='8' width='4' height='24' fill='%231ae4b6'/%3E%3Crect x='12' width='4' height='24' fill='%23a2fc3c'/%3E%3Crect x='16' width='4' height='24' fill='%23fb8022'/%3E%3Crect x='20' width='4' height='24' fill='%237a0403'/%3E%3C/g%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="assets/site.css?v=225a046159">
+</head>
+<body>
+<nav class="topbar" aria-label="Site">
+  <div class="wrap">
+    <a class="brand" href="index.html"><span class="brand-mark" aria-hidden="true"><i style="background:#30123b"></i><i style="background:#4686fb"></i><i style="background:#1ae4b6"></i><i style="background:#a2fc3c"></i><i style="background:#fb8022"></i><i style="background:#7a0403"></i></span>Justin Smith <small>Simulation Portfolio</small></a>
+    <div class="navgroup">
+      <div class="topnav">
+        <a href="index.html#cases">Case Studies</a>
+        <a href="index.html#work" aria-current="page">All Work</a>
+        <a href="index.html#offer">Working Together</a>
+        <a href="how-i-work.html">How I Work</a>
+      </div>
+      <a class="nav-contact" href="#contact">Get in Touch</a>
+      <button class="theme-toggle" type="button" aria-label="Switch between light and dark" title="Light or dark"><svg class="i-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg><svg class="i-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg></button>
+      <details class="menu">
+        <summary>Menu</summary>
+        <div class="menu-panel">
+        <a href="index.html#cases">Case Studies</a>
+        <a href="index.html#work" aria-current="page">All Work</a>
+        <a href="index.html#offer">Working Together</a>
+        <a href="how-i-work.html">How I Work</a>
+          <a href="#contact">Get in Touch</a>
+        </div>
+      </details>
+    </div>
+  </div>
+</nav>
+
+<main id="top">
+  <div class="wrap">
+    <nav class="crumbs" aria-label="Breadcrumb"><a href="index.html#work">All studies</a><span>/</span><span>Structures and vibration</span></nav>
+    <header class="study-hero">
+      <p class="eyebrow">Study 28 · Python and AISC 360-22, structural steel design</p>
+      <h1>Steel Portal Frame to AISC 360-22</h1>
+      <p class="study-q"><span class="k">The question</span>Does a steel portal frame for an equipment platform meet AISC 360-22 on strength and deflection, and how much does the beam&#x27;s bracing matter?</p>
+    </header>
+    <figure class="study-setup"><a class="plate" href="v2/dwg_steel_frame.webp" title="Open the drawing full size"><img src="v2/dwg_steel_frame.webp" alt="Elevation of the single-bay steel portal: two W10x33 columns on fixed bases, a W14x30 beam across the 6 m span with the distributed load on it and the sideways load at the left knee, and the two sections drawn larger beside it"></a><figcaption><b>The setup.</b> The frame to scale, with the client's factored loads and the service loads in brackets, and the two W-shapes at four times the frame's scale. The beam's bracing isn't specified, so it's taken as unbraced over the whole span. On the right, the three limits.</figcaption></figure>
+    <div class="study-answer">
+      <p class="k">The answer</p>
+      <span class="v v-pass">Passes</span>
+      <p class="study-lede">Passes every requirement: the largest member ratio is 0.80, in the beam taken as unbraced over 6 m, with the columns at 0.45, live-load deflection 4.1 of 16.7 mm and drift 2.6 of 10 mm. The frame solver and member checks reproduce AISC&#x27;s own worked examples within 0.7 %.</p>
+    </div>
+    <div class="vp" id="vp" role="region" aria-label="Result viewer">
+      <div class="legend">
+        <div class="legend-title" id="lg-title"></div>
+        <div class="legend-body"><div class="swatches" id="lg-sw"></div><div class="ticks" id="lg-ticks"></div></div>
+      </div>
+      <div class="stage"><div class="vp-parts" id="vp-parts" role="group" aria-label="Results on this page" hidden></div><button class="vp-3d" id="vp-3d" type="button" aria-pressed="false" hidden>Rotate in 3D</button>
+      <p class="vp-hint" id="vp-hint" hidden><span class="long">Same surface and colour bands as the render · </span>Drag to turn · <span class="long">scroll or </span>pinch to zoom<span class="long"> · double-click to reset</span></p>
+      <img id="vp-img" src="v2/fig_steel_frame.svg" alt="Steel portal for an equipment platform, W10x33 columns 4.0 m, W14x30 beam 6.0 m, fixed bases · 35 kN/m and 15 kN factored">
+      <svg class="triad" viewBox="0 0 54 54" aria-hidden="true">
+        <g stroke-width="1.6" fill="none" stroke-linecap="round">
+          <line x1="14" y1="40" x2="44" y2="46" stroke="#ff8f6b"/><line x1="14" y1="40" x2="34" y2="28" stroke="#8fe3a8"/><line x1="14" y1="40" x2="14" y2="8" stroke="#8fb4ff"/>
+        </g>
+        <g font-family="JetBrains Mono, monospace" font-size="8" fill="#edf1f8"><text x="46" y="50">X</text><text x="36" y="27">Y</text><text x="11" y="6">Z</text></g>
+      </svg>
+      </div>
+      <div class="vp-scrub" id="vp-scrub" hidden>
+        <button type="button" class="vp-play" id="vp-play" aria-label="Play the analysis step by step">▶</button>
+        <input type="range" id="vp-range" min="0" max="0" step="1" value="0" aria-label="Load step">
+        <output id="vp-step" for="vp-range"></output>
+      </div>
+      <div class="status" id="vp-status" aria-live="polite"></div>
+    </div>
+
+    <div class="study-layout">
+      <article class="study-main">
+
+    <h2 id="the-question">The Question</h2>
+    <p>A client's equipment platform sits on a single-bay steel portal: two W10x33 columns, 4.0 m tall with fixed bases, rigidly joined to a W14x30 beam spanning 6.0 m, all ASTM A992 steel. The client gives the factored loads, 35 kN/m on the beam and 15 kN sideways at beam level, and the service loads, 12 kN/m live and 10 kN sideways. Does the frame meet the US steel specification, AISC 360-22, on strength and on deflection? The client and the loads are made up.</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Requirement</th><th>Limit</th></tr></thead>
+        <tbody>
+          <tr><td>Each member's combined axial and bending ratio, Eq. H1-1, by the Direct Analysis Method</td><td>≤ 1.0</td></tr>
+          <tr><td>Beam deflection under the service live load</td><td>L/360 = 16.7 mm</td></tr>
+          <tr><td>Frame drift under the service sideways load</td><td>H/400 = 10.0 mm</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <h2 id="the-answer">The Answer</h2>
+    <div class="answer">
+      <div class="chips"><span class="chip pass">Largest member ratio 0.80, the beam (limit 1.0)</span><span class="chip pass">Columns 0.45</span><span class="chip pass">Live-load deflection 4.1 mm (limit 16.7)</span><span class="chip pass">Drift 2.6 mm (limit 10.0)</span><span class="chip note">Bracing the beam at midspan: 0.48</span></div>
+      <p><strong>Yes, the frame passes all three requirements.</strong> The highest ratio is 0.80, in the beam under gravity plus the sideways load, and it's set by lateral-torsional buckling: the beam twisting sideways over its 6.0 m length. The leeward column reaches 0.45. Shear is at most 22 % of capacity. Under service loads the beam deflects 4.1 mm against 16.7, and the frame sways 2.6 mm against 10.0.</p>
+      <p><strong>The beam's bracing decides the margin, not the verdict.</strong> The client didn't say how the beam is held against twisting, so I took no credit for the platform deck and treated it as unbraced over the full 6.0 m, the safe assumption. Bracing it at midspan drops its ratio to 0.48. At quarter points the beam falls to 0.39 and the leeward column, at 0.45, governs instead. Either way it passes. So I'd ask the client how the deck is attached, and whether the frame is braced out of its plane at beam level, as I assumed for the columns.</p>
+      <p><strong>The frame is stiff, so stability effects are small.</strong> The second-order sway is only 2 % above the first-order sway. Below a ratio of 1.7 the specification lets the small notional loads stay out of the wind case, so they go in the gravity case only.</p>
+    </div>
+    <h2 id="the-model">The Model</h2>
+    <dl class="spec">
+      <dt>Frame</dt><dd>A plane frame: two W10x33 columns, 4.0 m, fixed at the base, rigidly joined to a W14x30 beam, 6.0 m. Section properties from the AISC Shapes Database. A992 steel, Fy 345 MPa, E 200 GPa.</dd>
+      <dt>Analysis</dt><dd>The direct stiffness method with the exact stiffness of a member under axial load, so both kinds of second-order effect, the frame's sway (P-Delta) and each member's bowing (P-delta), come out exactly without splitting members. Iterated on the axial forces.</dd>
+      <dt>Code method</dt><dd>AISC 360-22's Direct Analysis Method: every stiffness at 80 %, notional loads of 0.2 % of the gravity load for out-of-plumbness, and each member's effective length taken as its unbraced length. The axial load is about 5 % of the squash load, so no further stiffness reduction applies.</dd>
+      <dt>Member checks</dt><dd>Chapters E, F, G and H: compression (with the effective area of the beam's slender web), bending with lateral-torsional and flange local buckling, web shear, and the H1-1 interaction. Cb, the moment-shape factor, is computed from each member's own second-order moment diagram.</dd>
+      <dt>Service</dt><dd>Full stiffness: the beam's live-load deflection relative to its ends, and the frame's sway under the service sideways load with the live load on, second order.</dd>
+    </dl>
+    <details class="record"><summary>The case file: recorded assumptions, limits and inputs</summary><div class="record-body"><p>This is the study's own record, written before the run and saved with it, in the shorthand of the case file.</p><p class="case"><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/cases/steel_frame_portal.toml">cases/steel_frame_portal.toml ↗</a></p><p>Single-bay steel portal for an equipment platform (W10x33 columns 4.0 m, W14x30 beam 6.0 m, fixed bases), AISC 360-22 LRFD by the Direct Analysis Method: member interaction H1-1, beam live-load deflection and service drift against the client&#x27;s limits.</p><h3>Assumptions, and How Each Is Checked</h3><ul><li>Plane frame; rigid knees (no joint flexibility); fixed bases.</li><li>Direct Analysis Method (C2): second-order analysis with P-Delta and P-delta (exact stability functions), all stiffnesses x 0.8, tau_b = 1 (checked: alpha Pr / Pns under 0.5), notional loads 0.002 Y in the lateral direction.</li><li>Effective length = unbraced length (C3). Columns braced out of plane at base and beam only (4.0 m); beam laterally unbraced over its 6.0 m span (conservative; the client has not specified the bracing).</li><li>Cb from each member&#x27;s own second-order moment diagram (Eq. F1-1).</li><li>Factored loads as given by the client (LRFD); serviceability with nominal stiffness: live-load deflection first order, drift second order with the service live load on the beam.</li><li>Section properties from the AISC Shapes Database v16.0; ASTM A992 Fy 345 MPa, E 200,000 MPa.</li></ul><h3>Limits</h3><ul><li>Connections, base plates and anchorage not designed (the knees and bases are assumed rigid and adequate).</li><li>Out-of-plane stability of the frame (bracing members) not checked.</li><li>No dynamic or fatigue assessment of the equipment loads.</li><li>Synthetic client and loads.</li></ul><h3>Inputs</h3><div class="table-wrap"><table><thead><tr><th>Input</th><th>Value</th></tr></thead><tbody><tr><td>frame_height_m</td><td>4</td></tr><tr><td>bay_span_m</td><td>6</td></tr><tr><td>column_shape</td><td>W10X33</td></tr><tr><td>beam_shape</td><td>W14X30</td></tr><tr><td>youngs_modulus_MPa</td><td>200000</td></tr><tr><td>yield_strength_MPa</td><td>345</td></tr><tr><td>base</td><td>fixed</td></tr><tr><td>factored_gravity_kN_per_m</td><td>35</td></tr><tr><td>factored_lateral_kN</td><td>15</td></tr><tr><td>service_live_kN_per_m</td><td>12</td></tr><tr><td>service_lateral_kN</td><td>10</td></tr><tr><td>beam_unbraced_length_m</td><td>6</td></tr><tr><td>column_unbraced_length_weak_m</td><td>4</td></tr></tbody></table></div><p class="case"><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/cases/steel_frame_beam_bracing.toml">cases/steel_frame_beam_bracing.toml ↗</a></p><p>Single-bay steel portal for an equipment platform (W10x33 columns 4.0 m, W14x30 beam 6.0 m, fixed bases), AISC 360-22 LRFD by the Direct Analysis Method: member interaction H1-1, beam live-load deflection and service drift against the client&#x27;s limits.</p><h3>Assumptions, and How Each Is Checked</h3><ul><li>Plane frame; rigid knees (no joint flexibility); fixed bases.</li><li>Direct Analysis Method (C2): second-order analysis with P-Delta and P-delta (exact stability functions), all stiffnesses x 0.8, tau_b = 1 (checked: alpha Pr / Pns under 0.5), notional loads 0.002 Y in the lateral direction.</li><li>Effective length = unbraced length (C3). Columns braced out of plane at base and beam only (4.0 m); beam laterally unbraced over its 6.0 m span (conservative; the client has not specified the bracing).</li><li>Cb from each member&#x27;s own second-order moment diagram (Eq. F1-1).</li><li>Factored loads as given by the client (LRFD); serviceability with nominal stiffness: live-load deflection first order, drift second order with the service live load on the beam.</li><li>Section properties from the AISC Shapes Database v16.0; ASTM A992 Fy 345 MPa, E 200,000 MPa.</li></ul><h3>Limits</h3><ul><li>Connections, base plates and anchorage not designed (the knees and bases are assumed rigid and adequate).</li><li>Out-of-plane stability of the frame (bracing members) not checked.</li><li>No dynamic or fatigue assessment of the equipment loads.</li><li>Synthetic client and loads.</li></ul><h3>Inputs</h3><div class="table-wrap"><table><thead><tr><th>Input</th><th>Value</th></tr></thead><tbody><tr><td>frame_height_m</td><td>4</td></tr><tr><td>bay_span_m</td><td>6</td></tr><tr><td>column_shape</td><td>W10X33</td></tr><tr><td>beam_shape</td><td>W14X30</td></tr><tr><td>youngs_modulus_MPa</td><td>200000</td></tr><tr><td>yield_strength_MPa</td><td>345</td></tr><tr><td>base</td><td>fixed</td></tr><tr><td>factored_gravity_kN_per_m</td><td>35</td></tr><tr><td>factored_lateral_kN</td><td>15</td></tr><tr><td>service_live_kN_per_m</td><td>12</td></tr><tr><td>service_lateral_kN</td><td>10</td></tr><tr><td>beam_unbraced_length_m</td><td>6</td></tr><tr><td>column_unbraced_length_weak_m</td><td>4</td></tr></tbody></table></div></div></details>
+    <h2 id="why-it-matters">Why It Matters</h2>
+    <p>This is the everyday work of a structural design check: take a frame and its loads, run a stability analysis the code accepts, and judge every member against the code's own equations. The answer is only as good as the code checks, so the useful question is whether my implementation gives AISC's answers, not just plausible ones. I wrote the frame solver and the member checks for this study and held both to AISC's published worked examples before using them on the client's frame.</p>
+    <h2 id="how-it-works">How It Works</h2>
+    <p>Each member's ratio in both load cases, from the second-order analysis:</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Member</th><th>Gravity + notional load</th><th>Gravity + sideways load</th><th>What governs</th></tr></thead>
+        <tbody>
+          <tr><td>Beam, W14x30</td><td>0.789</td><td><strong>0.801</strong></td><td>lateral-torsional buckling over 6.0 m, Cb 1.26</td></tr>
+          <tr><td>Leeward column, W10x33</td><td>0.385</td><td>0.452</td><td>bending at the plastic moment (Cb 2.2), small axial load</td></tr>
+          <tr><td>Windward column</td><td>0.381</td><td>0.313</td><td></td></tr>
+          <tr><td>Limit</td><td>≤ 1.0</td><td>≤ 1.0</td><td></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>And the beam's bracing, the one input the client left open:</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Beam unbraced length</th><th>Largest ratio</th><th>Where</th></tr></thead>
+        <tbody>
+          <tr><td>6.0 m, no bracing (the base case)</td><td>0.801</td><td>the beam</td></tr>
+          <tr><td>3.0 m, braced at midspan</td><td>0.477</td><td>the beam</td></tr>
+          <tr><td>1.5 m, quarter points</td><td>0.452</td><td>the leeward column (the beam 0.389)</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <h2 id="how-i-checked-it">How I Checked It</h2>
+    <ul class="proof">
+      <li><strong>The analysis against AISC's own worked example.</strong> Design Example C.1A, a pinned-base portal with a leaning column designed by the Direct Analysis Method, runs inside every point of the study: drift 0.288 in. against the published 0.290, knee moments 109 and 128 kip-ft against 109 and 127, base shears and reactions within 0.7 %.</li>
+      <li><strong>The member checks against 12 worked answers</strong> from nine of AISC's Design Examples: columns E.1C, E.1D and E.1E (a slender web at three lengths), beams F.1-1B to F.1-3B (yielding, then inelastic and elastic lateral-torsional buckling) and F.3B (a noncompact flange), shear G.1B and interaction H.1B. All within 0.5 %, or 0.8 % where the example rounds a step along the way.</li>
+      <li><strong>First order against the closed form:</strong> the knee moment under the beam load and the base moment under the sideways load match Kleinlogel's formulas for a fixed-base portal to 4 × 10⁻⁹.</li>
+      <li><strong>Second order two ways:</strong> the exact solution against AISC's approximate B1-B2 amplification, 0.05 % apart.</li>
+      <li><strong>Equilibrium and discretisation:</strong> reactions balance the loads to 3 × 10⁻¹⁴, and 2 or 8 elements per member give the same moments to 3 × 10⁻¹⁰.</li>
+    </ul>
+    <div class="caught">
+      <h2 id="what-i-caught-along-the-way">What I Caught Along the Way</h2>
+      <ul>
+        <li><strong>A wrong test, and a commit that went in with it failing.</strong> The check on the worked example first compared the leaning column's base shear with the frame's average drift, but the leaning column sways with the column it's tied to. A piped test command hid the failure from the commit gate. The test is fixed, and commits now gate on the test runner's own exit code.</li>
+        <li><strong>The approximate method counted the gravity load twice.</strong> My first B1-B2 calculation came out 85 % above the exact moment, 148 against 80 kN m, because its sideways analysis carried the gravity load again. With the two analyses properly separated, the amplifier is 1.02 and the two methods agree to 0.05 %.</li>
+        <li><strong>A column flange right on the compact limit.</strong> The W10x33's flange ratio is 9.15 against a limit of 9.152, compact by 0.002. The comparison runs at full precision and a test pins the classification, so a change in rounding or section data shows up as a failing test, not a silent switch of limit state.</li>
+      </ul>
+    </div>
+    <h2 id="limits">Limits</h2>
+    <ul>
+      <li>A plane frame. The rigid knees and fixed bases are assumed adequate; the connections, base plates and anchors aren't designed.</li>
+      <li>The bracing assumptions above: the beam unbraced, the columns braced out of plane at the beam.</li>
+      <li>Loads as the client gave them, with no load derivation, and no dynamic, fatigue or vibration check for the equipment.</li>
+      <li>The base case's prediction wasn't blind: a development run printed its values first, and the case file says so. The checks above are the evidence. The bracing study's predictions were written before its run.</li>
+      <li>A made-up client and loads.</li>
+    </ul>
+    <h2 id="evidence">Evidence</h2>
+    <div class="side-card"><ul class="ev-list"><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/portfolio/28-steel-portal-frame-aisc.md">Full write-up on GitHub</a></li></ul><p class="label">Run reports, with every check and the saved inputs</p><ul class="ev-list ev-runs"><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261125-231923_steel_frame_portal/report.md">steel_frame_portal</a></li><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261125-231927_steel_frame_beam_bracing/report.md">steel_frame_beam_bracing</a></li></ul></div>
+      </article>
+      <aside class="study-side" aria-label="Summary of this study">
+        <div class="side-card"><h2>At a Glance</h2><dl><div><dt>Study</dt><dd>28</dd></div><div><dt>Discipline</dt><dd>Structures and vibration</dd></div><div><dt>Tools</dt><dd>Python · AISC 360-22</dd></div><div><dt>Verdict</dt><dd><span class="v v-pass">Passes</span></dd></div></dl></div><div class="side-card"><h2>Requirements</h2><ul class="side-reqs"><li><span class="r-what">Each member&#x27;s combined ratio, AISC 360-22 Eq. H1-1, Direct Analysis Method</span><span class="r-num">≤ 1.0 · 0.80, the beam unbraced over 6 m; columns 0.45</span><span class="chip pass">Met</span></li><li><span class="r-what">Beam deflection under the service live load</span><span class="r-num">≤ L/360 = 16.7 mm · 4.1 mm</span><span class="chip pass">Met</span></li><li><span class="r-what">Frame drift under the service sideways load</span><span class="r-num">≤ H/400 = 10.0 mm · 2.6 mm</span><span class="chip pass">Met</span></li></ul></div><div class="side-card side-toc"><h2>On This Page</h2><ul class="toc"><li><a href="#the-question">The Question</a></li><li><a href="#the-answer">The Answer</a></li><li><a href="#the-model">The Model</a></li><li><a href="#why-it-matters">Why It Matters</a></li><li><a href="#how-it-works">How It Works</a></li><li><a href="#how-i-checked-it">How I Checked It</a></li><li><a href="#what-i-caught-along-the-way">What I Caught Along the Way</a></li><li><a href="#limits">Limits</a></li><li><a href="#evidence">Evidence</a></li></ul></div>
+      </aside>
+    </div>
+    <nav class="pager" aria-label="More studies"><a class="prev" href="pressure-vessel-nozzle.html"><small>← Previous study</small><b>Pressure Vessel Nozzle, Design Code Check</b></a><a class="next" href="bracket-modal.html"><small>Next study →</small><b>Bracket Arm: Modal Analysis, Random Vibration and How Robust the Pass Is</b></a></nav>
+  </div>
+
+</main>
+
+<footer class="site-foot">
+  <div class="wrap">
+    <section class="contact" id="contact" aria-labelledby="contact-title">
+      <div class="band-head">
+        <p class="eyebrow">Contact</p>
+        <h2 id="contact-title">Have a Part That Needs an Answer?</h2>
+        <p class="contact-name"><b>Justin Smith</b>, mechanical engineer (MS), with a background in automotive. Available for remote contract work.</p>
+        <p>Send me the requirement and whatever drawings or data you have. I'll tell you what I'd model, what I'd check it against and what you'd get back.</p>
+      </div>
+      <div class="contact-actions">
+        <!-- the address is stored reversed and base64-encoded so scrapers reading the page or the repository don't pick it up; site.js decodes it -->
+        <a class="cta" id="contact-mail" href="#contact" data-m="bW9jLmxpYW1nQDg1MW5pdHN1amh0aW1z">Email me</a>
+        <button class="cta-2" id="contact-show" type="button">Show the address</button>
+        <span class="contact-addr" id="contact-addr" hidden></span>
+      </div>
+    </section>
+    <div class="foot-nav">
+      <a href="index.html#work">All studies</a>
+      <a href="requirements.html">Every requirement</a>
+      <a href="how-i-work.html">How I work</a>
+      <a href="grading.html">Grading tasks</a>
+      <a href="in-progress.html">In progress</a>
+      <a href="https://github.com/CptGrumpus/engineering-agent-lab">Source on GitHub ↗</a>
+      <span>Open-source tools throughout: CalculiX, OpenFOAM, Gmsh, CadQuery, OpenModelica, Blender.</span>
+    </div>
+  </div>
+</footer>
+<script>window.VP = [{"id": "steel_frame", "study": "steel_frame", "kind": "figure", "img": "v2/fig_steel_frame.svg", "model": "Steel portal for an equipment platform, W10x33 columns 4.0 m, W14x30 beam 6.0 m, fixed bases · 35 kN/m and 15 kN factored", "lines": ["Python, a plane-frame solver with exact stability functions · AISC 360-22 Direct Analysis Method, Chapters E, F, G and H", "Left: second-order bending moments. Middle: every check against its limit. Right: the beam's bracing", "Largest ratio 0.80, the beam unbraced over 6 m (limit 1.0) · columns 0.45 · deflection 4.1 of 16.7 mm · drift 2.6 of 10.0 mm"], "check": "", "card": "steel_frame"}];</script>
+<script src="assets/viewer.js?v=225a046159"></script>
+<script src="assets/site.js?v=225a046159"></script>
+</body>
+</html>

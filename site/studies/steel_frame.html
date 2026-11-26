@@ -1,0 +1,84 @@
+  <section class="study" id="steel_frame">
+    <div class="study-head">
+      <span class="label">Study 28 · Python and AISC 360-22, structural steel design</span>
+      <h2>Steel Portal Frame to AISC 360-22: Checked Against AISC's Own Examples</h2>
+    </div>
+    <h3>The Question</h3>
+    <p>A client's equipment platform sits on a single-bay steel portal: two W10x33 columns, 4.0 m tall with fixed bases, rigidly joined to a W14x30 beam spanning 6.0 m, all ASTM A992 steel. The client gives the factored loads, 35 kN/m on the beam and 15 kN sideways at beam level, and the service loads, 12 kN/m live and 10 kN sideways. Does the frame meet the US steel specification, AISC 360-22, on strength and on deflection? The client and the loads are made up.</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Requirement</th><th>Limit</th></tr></thead>
+        <tbody>
+          <tr><td>Each member's combined axial and bending ratio, Eq. H1-1, by the Direct Analysis Method</td><td>≤ 1.0</td></tr>
+          <tr><td>Beam deflection under the service live load</td><td>L/360 = 16.7 mm</td></tr>
+          <tr><td>Frame drift under the service sideways load</td><td>H/400 = 10.0 mm</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <h3>The Answer</h3>
+    <div class="answer">
+      <div class="chips"><span class="chip pass">Largest member ratio 0.80, the beam (limit 1.0)</span><span class="chip pass">Columns 0.45</span><span class="chip pass">Live-load deflection 4.1 mm (limit 16.7)</span><span class="chip pass">Drift 2.6 mm (limit 10.0)</span><span class="chip note">Bracing the beam at midspan: 0.48</span></div>
+      <p><strong>Yes, the frame passes all three requirements.</strong> The highest ratio is 0.80, in the beam under gravity plus the sideways load, and it's set by lateral-torsional buckling: the beam twisting sideways over its 6.0 m length. The leeward column reaches 0.45. Shear is at most 22 % of capacity. Under service loads the beam deflects 4.1 mm against 16.7, and the frame sways 2.6 mm against 10.0.</p>
+      <p><strong>The beam's bracing decides the margin, not the verdict.</strong> The client didn't say how the beam is held against twisting, so I took no credit for the platform deck and treated it as unbraced over the full 6.0 m, the safe assumption. Bracing it at midspan drops its ratio to 0.48. At quarter points the beam falls to 0.39 and the leeward column, at 0.45, governs instead. Either way it passes. So I'd ask the client how the deck is attached, and whether the frame is braced out of its plane at beam level, as I assumed for the columns.</p>
+      <p><strong>The frame is stiff, so stability effects are small.</strong> The second-order sway is only 2 % above the first-order sway. Below a ratio of 1.7 the specification lets the small notional loads stay out of the wind case, so they go in the gravity case only.</p>
+    </div>
+    <h3>Why It Matters</h3>
+    <p>This is the everyday work of a structural design check: take a frame and its loads, run a stability analysis the code accepts, and judge every member against the code's own equations. The answer is only as good as the code checks, so the useful question is whether my implementation gives AISC's answers, not just plausible ones. I wrote the frame solver and the member checks for this study and held both to AISC's published worked examples before using them on the client's frame.</p>
+    <h3>The Model</h3>
+    <dl class="spec">
+      <dt>Frame</dt><dd>A plane frame: two W10x33 columns, 4.0 m, fixed at the base, rigidly joined to a W14x30 beam, 6.0 m. Section properties from the AISC Shapes Database. A992 steel, Fy 345 MPa, E 200 GPa.</dd>
+      <dt>Analysis</dt><dd>The direct stiffness method with the exact stiffness of a member under axial load, so both kinds of second-order effect, the frame's sway (P-Delta) and each member's bowing (P-delta), come out exactly without splitting members. Iterated on the axial forces.</dd>
+      <dt>Code method</dt><dd>AISC 360-22's Direct Analysis Method: every stiffness at 80 %, notional loads of 0.2 % of the gravity load for out-of-plumbness, and each member's effective length taken as its unbraced length. The axial load is about 5 % of the squash load, so no further stiffness reduction applies.</dd>
+      <dt>Member checks</dt><dd>Chapters E, F, G and H: compression (with the effective area of the beam's slender web), bending with lateral-torsional and flange local buckling, web shear, and the H1-1 interaction. Cb, the moment-shape factor, is computed from each member's own second-order moment diagram.</dd>
+      <dt>Service</dt><dd>Full stiffness: the beam's live-load deflection relative to its ends, and the frame's sway under the service sideways load with the live load on, second order.</dd>
+    </dl>
+    {{CASE}}
+    <h3>How It Works</h3>
+    <p>Each member's ratio in both load cases, from the second-order analysis:</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Member</th><th>Gravity + notional load</th><th>Gravity + sideways load</th><th>What governs</th></tr></thead>
+        <tbody>
+          <tr><td>Beam, W14x30</td><td>0.789</td><td><strong>0.801</strong></td><td>lateral-torsional buckling over 6.0 m, Cb 1.26</td></tr>
+          <tr><td>Leeward column, W10x33</td><td>0.385</td><td>0.452</td><td>bending at the plastic moment (Cb 2.2), small axial load</td></tr>
+          <tr><td>Windward column</td><td>0.381</td><td>0.313</td><td></td></tr>
+          <tr><td>Limit</td><td>≤ 1.0</td><td>≤ 1.0</td><td></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>And the beam's bracing, the one input the client left open:</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Beam unbraced length</th><th>Largest ratio</th><th>Where</th></tr></thead>
+        <tbody>
+          <tr><td>6.0 m, no bracing (the base case)</td><td>0.801</td><td>the beam</td></tr>
+          <tr><td>3.0 m, braced at midspan</td><td>0.477</td><td>the beam</td></tr>
+          <tr><td>1.5 m, quarter points</td><td>0.452</td><td>the leeward column (the beam 0.389)</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <h3>How I Checked It</h3>
+    <ul class="proof">
+      <li><strong>The analysis against AISC's own worked example.</strong> Design Example C.1A, a pinned-base portal with a leaning column designed by the Direct Analysis Method, runs inside every point of the study: drift 0.288 in. against the published 0.290, knee moments 109 and 128 kip-ft against 109 and 127, base shears and reactions within 0.7 %.</li>
+      <li><strong>The member checks against 12 worked answers</strong> from nine of AISC's Design Examples: columns E.1C, E.1D and E.1E (a slender web at three lengths), beams F.1-1B to F.1-3B (yielding, then inelastic and elastic lateral-torsional buckling) and F.3B (a noncompact flange), shear G.1B and interaction H.1B. All within 0.5 %, or 0.8 % where the example rounds a step along the way.</li>
+      <li><strong>First order against the closed form:</strong> the knee moment under the beam load and the base moment under the sideways load match Kleinlogel's formulas for a fixed-base portal to 4 × 10⁻⁹.</li>
+      <li><strong>Second order two ways:</strong> the exact solution against AISC's approximate B1-B2 amplification, 0.05 % apart.</li>
+      <li><strong>Equilibrium and discretisation:</strong> reactions balance the loads to 3 × 10⁻¹⁴, and 2 or 8 elements per member give the same moments to 3 × 10⁻¹⁰.</li>
+    </ul>
+    <div class="caught">
+      <h3>What I Caught Along the Way</h3>
+      <ul>
+        <li><strong>A wrong test, and a commit that went in with it failing.</strong> The check on the worked example first compared the leaning column's base shear with the frame's average drift, but the leaning column sways with the column it's tied to. A piped test command hid the failure from the commit gate. The test is fixed, and commits now gate on the test runner's own exit code.</li>
+        <li><strong>The approximate method counted the gravity load twice.</strong> My first B1-B2 calculation came out 85 % above the exact moment, 148 against 80 kN m, because its sideways analysis carried the gravity load again. With the two analyses properly separated, the amplifier is 1.02 and the two methods agree to 0.05 %.</li>
+        <li><strong>A column flange right on the compact limit.</strong> The W10x33's flange ratio is 9.15 against a limit of 9.152, compact by 0.002. The comparison runs at full precision and a test pins the classification, so a change in rounding or section data shows up as a failing test, not a silent switch of limit state.</li>
+      </ul>
+    </div>
+    <h3>Limits</h3>
+    <ul>
+      <li>A plane frame. The rigid knees and fixed bases are assumed adequate; the connections, base plates and anchors aren't designed.</li>
+      <li>The bracing assumptions above: the beam unbraced, the columns braced out of plane at the beam.</li>
+      <li>Loads as the client gave them, with no load derivation, and no dynamic, fatigue or vibration check for the equipment.</li>
+      <li>The base case's prediction wasn't blind: a development run printed its values first, and the case file says so. The checks above are the evidence. The bracing study's predictions were written before its run.</li>
+      <li>A made-up client and loads.</li>
+    </ul>
+  </section>

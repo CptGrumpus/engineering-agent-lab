@@ -1419,9 +1419,81 @@ def enclosure():
            "dimensions in mm, to scale")
 
 
+def _wshape(ax, cx, cy, s, k, label):
+    """A W-shape's cross-section, centred at (cx, cy), from the AISC Shapes Database values s (inches) at k times
+    the frame's scale."""
+    mm = 25.4 * k
+    d, bf, tw, tf = s["d"] * mm, s["bf"] * mm, s["tw"] * mm, s["tf"] * mm
+    pts = [(-bf / 2, -d / 2), (bf / 2, -d / 2), (bf / 2, -d / 2 + tf), (tw / 2, -d / 2 + tf), (tw / 2, d / 2 - tf),
+           (bf / 2, d / 2 - tf), (bf / 2, d / 2), (-bf / 2, d / 2), (-bf / 2, d / 2 - tf), (-tw / 2, d / 2 - tf),
+           (-tw / 2, -d / 2 + tf), (-bf / 2, -d / 2 + tf)]
+    poly(ax, [(cx + x, cy + y) for x, y in pts], fc="#cfd8e4", hatch="////", lw=1.0)
+    dim(ax, (cx + bf / 2, cy - d / 2), (cx + bf / 2, cy + d / 2), -170, f"{s['d'] * 25.4:.0f}", fs=6.8)
+    dim(ax, (cx - bf / 2, cy - d / 2), (cx + bf / 2, cy - d / 2), -150, f"{s['bf'] * 25.4:.0f}", fs=6.8)
+    text(ax, cx, cy + d / 2 + 140, label, fs=7.2, color=INK, bold=True, box=False)
+
+
+def steel_frame():
+    # study 28: the single-bay portal in elevation, to scale, with its loads, supports and the two W-shapes' sections
+    c = tomllib.loads((REPO / "cases" / "steel_frame_portal.toml").read_text(encoding="utf-8"))
+    p = c["parameters"]
+    req = {r["id"]: r for r in c["requirements"]}
+    shapes = json.loads((REPO / "validation" / "aisc_shapes_subset.json").read_text(encoding="utf-8"))["shapes"]
+    col, beam = shapes[p["column_shape"]], shapes[p["beam_shape"]]
+    H, L = 1000 * p["frame_height_m"], 1000 * p["bay_span_m"]
+    dc, db = col["d"] * 25.4, beam["d"] * 25.4
+    assert p["base"] == "fixed"
+    fig, ax = new(9.5, (-1500, 12600), (-1150, 5900))
+    # members to scale: centrelines on the frame's nodes, depth from the section tables
+    rect(ax, -dc / 2, 0, dc / 2, H - db / 2, fc="#cfd8e4", lw=1.0, z=3)
+    rect(ax, L - dc / 2, 0, L + dc / 2, H - db / 2, fc="#cfd8e4", lw=1.0, z=3)
+    rect(ax, -dc / 2, H - db / 2, L + dc / 2, H + db / 2, fc="#cfd8e4", lw=1.0, z=3)
+    for x in (0, L):
+        centre(ax, (x, -250), (x, H + 450))
+        wall(ax, (x + 520, 0), (x - 520, 0), side=1, ticks=7)
+    centre(ax, (-450, H), (L + 450, H))
+    # loads: factored (the analysis), service in brackets
+    top = H + db / 2
+    for x in np.linspace(250, L - 250, 13):
+        force(ax, (x, top + 620), (x, top + 40), lw=1.0)
+    ax.plot([250, L - 250], [top + 620, top + 620], color=ACC, lw=1.0, zorder=5)
+    text(ax, L / 2, top + 900, f"{p['factored_gravity_kN_per_m']:g} kN/m factored  ({p['service_live_kN_per_m']:g} kN/m "
+         "service live)", color=ACC, bold=True, fs=7.8)
+    force(ax, (-1350, H), (-dc / 2 - 40, H), f"{p['factored_lateral_kN']:g} kN factored\n({p['service_lateral_kN']:g} kN "
+          "service)", ha="center", va="bottom", dx=200, dy=160, fs=7.6)
+    # notes on the members and supports
+    note(ax, (L * 0.62, H - db / 2), (L * 0.62, H - 1250), f"beam {p['beam_shape'].replace('X', 'x')}: unbraced over "
+         f"{p['beam_unbraced_length_m']:g} m,\nits bracing not specified", ha="center", va="top", color=HOT)
+    note(ax, (dc / 2, H * 0.45), (900, H * 0.45), f"columns {p['column_shape'].replace('X', 'x')}, braced out of\nplane at "
+         "the beam (assumed)", ha="left")
+    note(ax, (L - 300, 0), (L - 1500, 650), "fixed bases, rigid knees", ha="center")
+    # dimensions
+    dim(ax, (0, 0), (L, 0), -620, f"{L:g} span")
+    dim(ax, (L, 0), (L, H), -650, f"{H:g}")
+    # the sections, at 4 times the frame's scale
+    k = 4
+    _wshape(ax, 7650, 4250, beam, k, f"beam {p['beam_shape'].replace('X', 'x')}")
+    _wshape(ax, 7650, 1350, col, k, f"columns {p['column_shape'].replace('X', 'x')}")
+    text(ax, 7650, -380, f"sections at {k} × the frame's scale", fs=7, box=False)
+    # what isn't known, the limits, the method
+    tx, ty, dy = 9050, 5650, 330
+    text(ax, tx, ty, "What isn't known", ha="left", fs=8, color=INK, bold=True, box=False)
+    text(ax, tx, ty - dy, "how the beam is braced against\nlateral-torsional buckling: taken\nas unbraced, the "
+         "safe side", ha="left", va="top", fs=7.2, color=INK, box=False)
+    text(ax, tx, ty - 4.0 * dy, "The limits", ha="left", fs=8, color=INK, bold=True, box=False)
+    a1, a2, a3 = (req[k_]["limit"] for k_ in ("REQ-A1", "REQ-A2", "REQ-A3"))
+    text(ax, tx, ty - 5.0 * dy, f"each member's ratio, Eq. H1-1 ≤ {a1:.1f}\nlive-load deflection ≤ L/360 = {a2:.1f} mm\n"
+         f"service drift ≤ H/400 = {a3:.1f} mm", ha="left", va="top", fs=7.2, color=INK, box=False)
+    text(ax, tx, ty - 8.6 * dy, f"Modelled: a plane frame, second order,\nby AISC 360-22's Direct Analysis\nMethod: "
+         f"stiffness at 80 %, notional\nloads. Steel ASTM A992, Fy {p['yield_strength_MPa']:g} MPa.", ha="left", va="top",
+         fs=7.2, color=ACC, box=False)
+    finish(fig, "steel_frame", "Study 28 · steel portal frame for an equipment platform · elevation and sections",
+           units="dimensions in mm, frame to scale", source="Drawn from the case file's inputs and the AISC Shapes Database")
+
+
 ALL = {f.__name__: f for f in (fea, cantilever_opt, strap, modal, strut, contact, bolted_joint, pv_nozzle, bracket_opt, cad,
                                cfd, thermal, heat, cold_plate, pipe, suspension, baseline, motor, step, random_vib, fan_rotor,
-                               fatigue, strap_proof, bracket_uq, crack, flag, motor_stops, oring, shaft, enclosure)}
+                               fatigue, strap_proof, bracket_uq, crack, flag, motor_stops, oring, shaft, enclosure, steel_frame)}
 
 if __name__ == "__main__":
     for name in sys.argv[1:] or ALL:
