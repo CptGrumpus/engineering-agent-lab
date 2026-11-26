@@ -1,6 +1,6 @@
 """The link preview card (Open Graph image) shown when the page link is pasted into LinkedIn, email or Slack.
 
-1200 x 630, the size LinkedIn, Slack and most mail clients expect. It shows the optimised bracket render
+1200 x 630, the size LinkedIn, Slack and most mail clients expect. It shows the traction motor's field map
 on the viewer's background with the page headline and the counts from the run records, so the card
 always agrees with the page. Called by build_v2.py; writes site/v2/og_card.png.
 """
@@ -40,24 +40,25 @@ def make(facts: dict) -> Path:
         g.line([(0, y), (W, y)], fill=(237, 241, 248, 16))
     img = Image.alpha_composite(img.convert("RGBA"), grid)
 
-    part = Image.open(HERE / "v2" / "vp_bracket_opt.webp").convert("RGBA")
+    # the traction motor's magnetic field (study 20), the strongest single result: a ring on the right, the
+    # headline on the left
+    part = Image.open(HERE / "v2" / "hero_motor_field.webp").convert("RGBA")
     part = part.crop(part.getbbox())
-    # the part runs from its root (top left) down to the tip (bottom right), so it sits top right and
-    # the text takes the empty triangle below it
-    scale = 840 / part.width
-    part = part.resize((round(part.width * scale), round(part.height * scale)), Image.LANCZOS)
-    img.alpha_composite(part, (W - part.width - 36, 28))
+    side = H - 72 - 2 * 24                                # above the stats band
+    part = part.resize((side, side), Image.LANCZOS)
+    img.alpha_composite(part, (W - side - 48, 24))
 
     d = ImageDraw.Draw(img)
     mono = _font(["consola.ttf", "cour.ttf"], 18)
     title = _font(["segoeuib.ttf", "arialbd.ttf"], 62)
     body = _font(["segoeui.ttf", "arial.ttf"], 25)
     x = 64
-    d.text((x, 272), "MECHANICAL ENGINEERING  ·  SIMULATION PORTFOLIO", font=mono, fill=INK2)
-    d.text((x, 300), "Simulation,", font=title, fill=INK)
-    d.text((x, 370), "proof attached.", font=title, fill=ACCENT)
-    d.text((x, 462), "Featured: an agent-driven bracket optimisation,", font=body, fill=INK2)
-    d.text((x, 494), "with all 78 candidate designs solved and checked", font=body, fill=INK2)
+    d.text((x, 150), "MECHANICAL ENGINEERING  ·  SIMULATION PORTFOLIO", font=mono, fill=INK2)
+    d.text((x, 178), "Simulation,", font=title, fill=INK)
+    d.text((x, 248), "proof attached.", font=title, fill=ACCENT)
+    for i, line in enumerate(["Featured: a production traction motor,", "modelled from its drawings with nothing",
+                              "tuned, and checked against its lab test"]):
+        d.text((x, 350 + 32 * i), line, font=body, fill=INK2)
     stats = f"{facts.get('studies', 16)} studies  ·  {facts['checks']:,} automated checks  ·  {facts['runs']} saved runs  ·  open-source solvers"
     d.rectangle([(0, H - 72), (W, H)], fill=(8, 14, 26, 150))
     d.text((x, H - 50), stats, font=body, fill=INK)

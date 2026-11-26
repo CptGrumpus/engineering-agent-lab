@@ -865,7 +865,7 @@ def home_page(facts) -> dict:
             "desc": f"{WORDS[len(CARDS)][1]} open-source simulation studies by {AUTHOR}, mechanical engineer: FEA, CFD, coupled "
                     "multiphysics and an optimisation loop, each checked against an independent reference.",
             "nav": "home", "main": main, "scripts": scripts, "og": make_og.make({**facts, "studies": len(CARDS)}),
-            "og_alt": "A machined clevis bracket rendered with its stress contours, beside the page headline and its counts of studies, checks and runs",
+            "og_alt": "The traction motor's magnetic field, stator and rotor in cross-section, beside the page headline and its counts of studies, checks and runs",
             "home": True}
 
 
