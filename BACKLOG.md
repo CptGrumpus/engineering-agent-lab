@@ -86,7 +86,12 @@ commit). Rules that bind:
 |---|---|---|---|
 | Study 6: FSI2 levels a / b / c at alpha -0.05 `turek_hron_fsi2_mesh_{a,b,c}_alpha` (one change from r1; predictions 01:06, 0c1b42a), started 01:12 | `runs/*_turek_hron_fsi2_mesh_?_alpha` (`turek_hron_fsi2_mesh_?_alpha.log`) | a 07:00-10:00, b 08:00-11:00, c 11:00-15:00 | Score P1-P5 per level (P2 from flag.sta); then `scripts/combine_mesh_levels.py` over the three (P4); Results in each header; page 17 (FSI2 rows, Limits, banner); FAILURES.md status cells |
 | Study 6: FSI3 dt_c at alpha -0.05 `turek_hron_fsi3_dt_c_alpha` (predictions 01:06, 0c1b42a), started 01:12 | `runs/*_turek_hron_fsi3_dt_c_alpha` | 2026-11-26 19:00-01:00 | Score P1-P5; the three-level time-step check with dt_a_alpha (cut 7.999 s) and mesh_b, forces included (the open item); page 17 |
-| Study 6: CFD2 lift, fourth nested level `turek_hron_cfd2_nested_r1` (1.25 / 0.625 / 0.3125 mm; user approved 19:29; predictions 19:31, 78adc4a), started 19:32 | `runs/*_turek_hron_cfd2_nested_r1` | about 01:00-04:00 | Score P1-P4; page 17's CFD2 lift line and banner. No further level either way. |
+
+DONE 04:45, 2026-11-26: CFD2 fourth nested level (run 20261125-193110). Drag verified again (136.843 at 0.3125 mm, GCI 0.107 %,
+extrapolated 136.725); lift 10.4239 / 10.3817 / 10.4310 turns back up (divergent, no estimate): reported, not verified,
+the three finest within 0.47 % and 1.0-1.5 % under the benchmark (REQ-F2 passes). P1 missed (forces_settled 2.4e-6 on the
+finest; the lift had settled to 1e-6 N/m), P2 missed, P3 held, P4 missed (9.1 h). No further level (decision rule). Page 17,
+convergence-diagnosis reference.
 
 DONE 01:15, 2026-11-26 (0c1b42a): the FSI3 damping test. alpha -0.05 cured the solid's Newton creep (2 iterations
 in all 44,948 attempts; metrics within 0.06 % of alpha 0 to 6.9 s); every evaluable check and requirement passes to

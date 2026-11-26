@@ -22,6 +22,29 @@
 # values as the contrast. P2 missed (anomalous or oscillatory again) -> the lift stays unverified in form, reported
 # in value with the four-level spread; no further level.
 
+#
+# Results (run 20261125-193110_turek_hron_cfd2_nested_r1, 19:31-04:37, scored 2026-11-26 04:39): VERIFICATION FAIL
+# (lift's run-level check; one point check, below).
+#   Drag 137.314 / 136.988 / 136.843 N/m (1.25 / 0.625 / 0.3125 mm), monotone, observed order 1.16, GCI 0.107 %,
+#   extrapolated 136.725 (0.03 % under the three-level 136.764 of run 185358; 0.02 % from the benchmark 136.7):
+#   REQ-F1 verified PASS again.
+#   Lift 10.4239 / 10.3817 / 10.4310 N/m: down, then UP at the finest level (R = -1.17); the harness classes it
+#   divergent (oscillating, growing), no estimate. Four nested levels, 2.5 mm included: 10.8523 / 10.4239 / 10.3817 /
+#   10.4310. The three finest spread 0.47 % and sit 0.98-1.45 % under the benchmark (10.5343), inside REQ-F2's 2 %
+#   (PASS, unverified). Not iteration error: the finest level's lift settled to 10.43102 with a geometric-tail
+#   estimate of 1e-6 N/m still to come, 1/40,000 of the 0.049 N/m reversal. Cause not diagnosed (a possibility, not
+#   tested: Gmsh's refinement snaps each level's new boundary nodes onto the curved cylinder, so the family is not
+#   strictly nested at the wall, and the lift, a small difference of large pressure forces, feels that most).
+#   P1 MISSED: the 0.3125 mm level's forces_settled is 2.38e-6 against 1e-6 (the spread of the last 10 % of its 8,968
+#      iterations, about 900: the tail of the lift's decay, 2.5e-5 N/m in all, 1e-11 N/m on the last iteration). Every other check passes on every level. The 1.25 and 0.625 mm levels repeat run 185358
+#      exactly (drag, lift and iteration counts identical); 8,968 iterations, inside 7,000-9,000. The check stands as
+#      failed; its tolerance is not changed after the fact.
+#   P2 MISSED: lift 10.4310, above the 10.365-10.380 band, and not monotone; no GCI.
+#   P3 HELD: drag 136.843 in 136.83-136.89, GCI 0.107 % under 0.15 %, extrapolated 136.725 within 0.03 % of 136.764.
+#   P4 MISSED: 9 h 06 min, just over 9 h (the 0.3125 mm level 8.6 h).
+#   Decision rule (P2 missed): CFD2's lift stays unverified in form, reported in value with the four-level spread;
+#   no further level.
+
 [case]
 name = "turek_hron_cfd2_nested_r1"
 model = "openfoam_turek_hron"

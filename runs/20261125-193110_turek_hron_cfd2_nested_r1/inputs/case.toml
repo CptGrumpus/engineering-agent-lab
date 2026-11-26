@@ -1,0 +1,81 @@
+# Turek-Hron CFD2 (Re 100), nested-mesh revision 1: the same nested family (one 2.5 mm base split uniformly)
+# one level further, 1.25 / 0.625 / 0.3125 mm (52,188 / 208,752 / 835,008 cells). Same model, checks, requirements
+# and tolerances as turek_hron_cfd2_nested.toml (read it for the method and the first results).
+#
+# Why: on 2.5 / 1.25 / 0.625 mm the lift converged monotonically but at an observed order of 3.34 (anomalous against
+# the design order 2), so no uncertainty: the 2.5 mm level is likely outside the asymptotic range for lift. The
+# user approved a fourth level at 19:29 ("Yes, overnight"). The two coarser levels are rerun rather than reused so
+# the harness's own run-level check applies to one run, and they double as a determinism check. Only change besides
+# the sweep: numerics solver_timeout_s (the OpenFOAM stage's 2 h default would stop the 0.3125 mm level).
+#
+# Predictions, written BEFORE the run (2026-11-25 19:31):
+#   P1 Every point check passes on every level. The 1.25 and 0.625 mm levels repeat run 20261125-185358 exactly
+#      (drag and lift to 1e-9 relative: the same mesh and solver). SIMPLE at 0.3125 mm takes 7,000-9,000
+#      iterations (968 / 2,754 so far, about x2.9 per halving).
+#   P2 Lift at 0.3125 mm 10.365-10.380 N/m (the two extrapolations above: 10.368-10.377); monotone on the three
+#      finest, observed order 1.5-3, GCI under 0.5 %: REQ-F2 verified PASS, the lift settling 1.4-1.7 % under the
+#      benchmark.
+#   P3 Drag at 0.3125 mm 136.83-136.89 N/m; monotone, GCI under 0.15 %; extrapolated within 0.05 % of 136.764.
+#   P4 6-9 h in all (the 0.3125 mm level 5.5-8 h).
+# Decision rule: P2 held -> lift verified for CFD2; the 1.5 % gap to the benchmark is then a stated, verified
+# difference (inside the 2 % requirement), not mesh error, and page 17 says so with the regenerated meshes' higher
+# values as the contrast. P2 missed (anomalous or oscillatory again) -> the lift stays unverified in form, reported
+# in value with the four-level spread; no further level.
+
+[case]
+name = "turek_hron_cfd2_nested_r1"
+model = "openfoam_turek_hron"
+description = "Turek-Hron CFD2: steady laminar flow (Re 100) in a 2.5 x 0.41 m channel round a cylinder (r 0.05 m) with a rigid 0.35 x 0.02 m flag; OpenFOAM 14 on NESTED Gmsh quad meshes (one 2.5 mm base split uniformly), body cell size 1.25 / 0.625 / 0.3125 mm; drag and lift against the published benchmark."
+assumptions = [
+  "2D (one cell deep, empty front and back), as the benchmark defines it.",
+  "Steady flow: the benchmark treats CFD2 (Re 100) as steady (the flag acts as a splitter plate); the SIMPLE residual targets and the settled force history check it.",
+  "The flag is rigid and fixed (the CFD tests make it so by a huge stiffness and density).",
+  "Inflow: the benchmark's parabolic profile at the full mean velocity (the steady tests have no time ramp).",
+]
+limitations = [
+  "A solver-qualification case: it shows that the fluid participant reproduces the published fluid-only forces, not that the coupled result is right.",
+  "Pressure outlet at 2.5 m as in the benchmark; no separate domain-length study.",
+]
+
+[parameters]
+mean_velocity_m_per_s = 1.0
+kinematic_viscosity_m2_per_s = 0.001
+density_kg_per_m3 = 1000.0
+flag_length_m = 0.35
+cell_size_m = 0.0025
+benchmark_drag_N_per_m = 136.7
+benchmark_lift_N_per_m = 10.5343
+
+[sweep]
+parameter = "cell_size_m"
+values = [0.00125, 0.000625, 0.0003125]
+
+[numerics]
+max_iterations = 20000
+residual_p = 1e-10
+residual_U = 1e-11
+nested_base_cell_size_m = 0.0025
+solver_timeout_s = 172800
+
+[verification]
+forces_settled_max = 1e-6
+flow_rel_tol = 5e-3
+mass_rel_tol = 1e-6
+profile_rel_tol = 1e-6
+gci_max = 0.01
+
+[[requirements]]
+id = "REQ-F1"
+text = "Before it is coupled to the solid, the fluid model shall reproduce the Turek-Hron CFD2 drag within 1 %."
+metric = "drag_deviation_pct"
+operator = "<="
+limit = 1.0
+units = "%"
+
+[[requirements]]
+id = "REQ-F2"
+text = "It shall reproduce the CFD2 lift within 2 % (lift is a small difference of large pressure forces, about 8 % of the drag)."
+metric = "lift_deviation_pct"
+operator = "<="
+limit = 2.0
+units = "%"
