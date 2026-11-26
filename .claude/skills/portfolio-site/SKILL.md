@@ -168,6 +168,14 @@ any "where it stands day to day" link to it, and reword limits that said data "i
 Don't write "today" or "now" into page copy: the site is static, so "Finished today" on the In progress page was a
 day stale before anyone noticed. Say "recently" or give the date.
 
+A study gets exactly one viewer entry (`build_v2.py` asserts it). When a 3D render arrives for a study whose entry
+was a chart (`"kind": "figure"`), the entry becomes the render (tab, legend, unit; add the scene to
+`make_mesh3d.SCENES` for the 3D view) and the chart moves into the study page's How It Works as a `<figure>` with
+alt text and a caption, as on the vessel page. For a dimensionless field (a code ratio, a share of a limit), set
+`"fixed": <decimals>` on the entry so the legend reads 0.8, not +8.000e-01. When a render's lit pass misreads, look
+at `build/render/<id>_beauty.png` before touching anything: on the steel frame the midspan web sat in the top
+flange's shadow (1.99 %, then 2.02 %); a lower camera fixed the picture itself. Change the view, never the gate.
+
 ## Editing the source safely
 
 - Write patch scripts with the Write tool, not a Git Bash heredoc: the heredoc turns `\\n` into a real newline
