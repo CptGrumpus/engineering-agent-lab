@@ -5,6 +5,9 @@ the cause (or "not diagnosed") and the status. `tests/test_failures_ledger.py` f
 failed point is missing; `python scripts/list_failures.py` lists every failed point and marks the unlisted ones.
 A failed run is evidence, not noise: keep it, record it, and put the lesson into the matching skill.
 
+<!-- The site's 'When the Software Broke' panel parses this heading and the 4-column table below it
+(site/extras.py failures_panel; the build asserts on it): keep '## By software (DATE: N failed points in M runs,
+of P points)' and the columns Software | Failed runs | Fixed | Open, or tell the dashboard session. -->
 ## By software (2026-11-25: 24 failed points in 21 runs, of 951 points)
 
 | Software | Failed runs | Fixed | Open |
