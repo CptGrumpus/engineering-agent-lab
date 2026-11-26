@@ -65,8 +65,8 @@ check that the metric measures that, not a convenient proxy:
   record when they were written and the rule behind each limit.
 
   The outcome (2026-11-25, 14 settled runs): the capacitor's life governed, and
-  no cooling path fixed it. The bridge cooled U1 by up to 33 K but C1 by under
-  13 K, because C1 sits on a board heated by its own 10 W. The answer that
+  no cooling path fixed it. With a painted interior the bridge cooled U1 by up
+  to 33 K but C1 by under 9 K, because C1 sits on a board heated by its own 10 W. The answer that
   passes is a part change (a 125 C capacitor), and the limit for that part
   follows from the client's own rule, re-derived, not chosen. When a remedy
   targets one part, check that it reaches the part that governs. When only a
