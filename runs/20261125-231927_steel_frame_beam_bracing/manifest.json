@@ -1,0 +1,704 @@
+{
+  "run_id": "20261125-231927_steel_frame_beam_bracing",
+  "case_name": "steel_frame_beam_bracing",
+  "model": "aisc_portal_frame",
+  "case_source": "cases/steel_frame_beam_bracing.toml",
+  "case_sha256": "6300b521471447a8a53ae68c0b5038ba574b340ffd06b4f508537f875eed62f5",
+  "model_sources_sha256": {
+    "validation/frame2d.py": "79be1c766185283b257ae0d7a7b318aaf9907928d64233de4f0a11a03dcee3d1",
+    "validation/aisc_frame.py": "836a8c753b7daf52b12cfb17cf1d1ed8eea42f125f422aaa683353ff47b51580",
+    "validation/aisc360.py": "b18df6e815242b9173d451871baae292c2ddb3864959f9ccacc5f77120fc27ab",
+    "validation/aisc_shapes_subset.json": "b9a1258a6d96dd5de5f980a2583712d185df80de7a6d584fa94aa5619e4accd4"
+  },
+  "rerun_of": null,
+  "started_utc": "2026-11-26T04:19:27+00:00",
+  "environment": {
+    "python": "3.14.10",
+    "python_executable": "<repo>\\.venv\\Scripts\\python.exe",
+    "platform": "Windows-11-10.0.26100-SP0",
+    "machine": "AMD64",
+    "packages": {
+      "numpy": "2.5.5",
+      "scipy": "1.18.1",
+      "matplotlib": "3.11.2",
+      "cadquery": "2.8.0"
+    },
+    "git": {
+      "commit": "2bc42b4426bbf0b786e28d172ca3e6cfa089e6e7",
+      "dirty": true
+    },
+    "tools": {}
+  },
+  "numerics": {},
+  "points": [
+    {
+      "label": "p00_beam_unbraced_length_m-6",
+      "parameters": {
+        "frame_height_m": 4.0,
+        "bay_span_m": 6.0,
+        "column_shape": "W10X33",
+        "beam_shape": "W14X30",
+        "youngs_modulus_MPa": 200000.0,
+        "yield_strength_MPa": 345.0,
+        "base": "fixed",
+        "factored_gravity_kN_per_m": 35.0,
+        "factored_lateral_kN": 15.0,
+        "service_live_kN_per_m": 12.0,
+        "service_lateral_kN": 10.0,
+        "beam_unbraced_length_m": 6.0,
+        "column_unbraced_length_weak_m": 4.0
+      },
+      "status": "completed",
+      "derived": {},
+      "solver": {
+        "success": true,
+        "message": "max H1 0.801 (beam, gravity_lateral); drift ratio 1.020",
+        "nfev": null
+      },
+      "solver_outputs": {
+        "member_checks": {
+          "gravity_notional": {
+            "left_column": {
+              "Pr_kN": 104.87582987806515,
+              "Mr_kNm": 66.5235748060388,
+              "Vr_kN": 24.896422782205512,
+              "Cb": 2.1622990721648594,
+              "phiPn_kN": 1201.1561642171403,
+              "phiMn_kNm": 197.41822395484093,
+              "flexure_regime": "inelastic LTB",
+              "phiVn_kN": 376.832730204,
+              "H1_equation": "H1-1b",
+              "H1_ratio": 0.38062395136085647,
+              "shear_ratio": 0.06606757000308261,
+              "alpha_Pr_over_Pns": 0.04852545901482823,
+              "web_slender_in_compression": false,
+              "moments_kNm": [
+                -33.03880470983421,
+                -20.557343836472114,
+                -8.028562592828825,
+                4.518699372726738,
+                17.055559871574403,
+                29.553160657936694,
+                41.9827338568623,
+                54.31566818418741,
+                66.5235748060388
+              ]
+            },
+            "right_column": {
+              "Pr_kN": 105.12417012194219,
+              "Mr_kNm": 67.26857044754934,
+              "Vr_kN": 25.316422782204114,
+              "Cb": 2.164027242806555,
+              "phiPn_kN": 1201.1561642171403,
+              "phiMn_kNm": 197.41822395484093,
+              "flexure_regime": "inelastic LTB",
+              "phiVn_kN": 376.832730204,
+              "H1_equation": "H1-1b",
+              "H1_ratio": 0.3845010192133672,
+              "shear_ratio": 0.06718212287053453,
+              "alpha_Pr_over_Pns": 0.0486403646545738,
+              "web_slender_in_compression": false,
+              "moments_kNm": [
+                34.00300813656505,
+                21.310436945087158,
+                8.568695724924236,
+                -4.192816230848253,
+                -16.944654011715173,
+                -29.657395028590678,
+                -42.301706901192304,
+                -54.848415137272596,
+                -67.26857044754934
+              ]
+            },
+            "beam": {
+              "Pr_kN": 25.316422782202892,
+              "Mr_kNm": 90.98400329123537,
+              "Vr_kN": 105.12417012194172,
+              "Cb": 1.2632374595134785,
+              "phiPn_kN": 353.93215229861397,
+              "phiMn_kNm": 120.72533277777436,
+              "flexure_regime": "elastic LTB",
+              "phiVn_kN": 497.6002951199999,
+              "H1_equation": "H1-1b",
+              "H1_ratio": 0.7894091815218056,
+              "shear_ratio": 0.21126227446587478,
+              "alpha_Pr_over_Pns": 0.0128520539731375,
+              "web_slender_in_compression": true,
+              "moments_kNm": [
+                66.52357480603881,
+                -2.417993149576301,
+                -51.6714899639787,
+                -81.20072572704882,
+                -90.98400329123537,
+                -81.01413421391717,
+                -51.29844403925126,
+                -1.8587669155923563,
+                67.26857044754942
+              ]
+            }
+          },
+          "gravity_lateral": {
+            "left_column": {
+              "Pr_kN": 100.56545216078625,
+              "Mr_kNm": 53.5986954769901,
+              "Vr_kN": 17.590474235356787,
+              "Cb": 2.07059338014519,
+              "phiPn_kN": 1201.1561642171403,
+              "phiMn_kNm": 197.41822395484093,
+              "flexure_regime": "inelastic LTB",
+              "phiVn_kN": 376.832730204,
+              "H1_equation": "H1-1b",
+              "H1_ratio": 0.31336015433185277,
+              "shear_ratio": 0.04667979404505046,
+              "alpha_Pr_over_Pns": 0.0465310713899443,
+              "web_slender_in_compression": false,
+              "moments_kNm": [
+                -16.252668975738832,
+                -7.4427305744462116,
+                1.383636037283361,
+                10.206948573124857,
+                19.007731487962097,
+                27.766558965921938,
+                36.464097798640935,
+                45.08115005912337,
+                53.5986954769901
+              ]
+            },
+            "right_column": {
+              "Pr_kN": 109.43454783921003,
+              "Mr_kNm": 80.20482899695587,
+              "Vr_kN": 32.59047423536144,
+              "Cb": 2.189070371345187,
+              "phiPn_kN": 1201.1561642171403,
+              "phiMn_kNm": 197.41822395484093,
+              "flexure_regime": "inelastic LTB",
+              "phiVn_kN": 376.832730204,
+              "H1_equation": "H1-1b",
+              "H1_ratio": 0.4518224564142303,
+              "shear_ratio": 0.08648525359704942,
+              "alpha_Pr_over_Pns": 0.050634752279452626,
+              "web_slender_in_compression": false,
+              "moments_kNm": [
+                50.689201203254754,
+                34.33961246310913,
+                17.90754309864849,
+                1.432461445207119,
+                -15.046060850275754,
+                -31.48844387675047,
+                -47.855194526405334,
+                -64.1070013535149,
+                -80.20482899695587
+              ]
+            },
+            "beam": {
+              "Pr_kN": 32.59047423536051,
+              "Mr_kNm": 91.08813488108058,
+              "Vr_kN": 109.43454783921014,
+              "Cb": 1.2631585630363829,
+              "phiPn_kN": 353.93215229861397,
+              "phiMn_kNm": 120.71779278330965,
+              "flexure_regime": "elastic LTB",
+              "phiVn_kN": 497.6002951199999,
+              "H1_equation": "H1-1b",
+              "H1_ratio": 0.8005949109026596,
+              "shear_ratio": 0.2199246039691741,
+              "alpha_Pr_over_Pns": 0.01654477559829067,
+              "web_slender_in_compression": true,
+              "moments_kNm": [
+                53.59869547699024,
+                -12.158082213768644,
+                -58.217411837937696,
+                -84.53572728928943,
+                -91.08813488108058,
+                -77.86843689206495,
+                -44.889137428785546,
+                7.818569401610961,
+                80.20482899695591
+              ]
+            }
+          }
+        },
+        "drift_ratio_2nd_1st": 1.0199233660347051,
+        "notional_load_kN": 0.42000000000000004,
+        "notional_in_lateral_case": false,
+        "equilibrium_rel": {
+          "gravity_notional": 3.312293085313979e-14,
+          "gravity_lateral": 1.940255363782247e-14
+        },
+        "live_deflection_mm": 4.100380602357884,
+        "service_drift_mm": 2.6126099994470477,
+        "service_drift_first_order_mm": 2.598542520917256,
+        "b1b2": {
+          "B1": 1.0,
+          "B2": 1.0204730120509273,
+          "Cm": 0.4020962548374736,
+          "M_amplified_kNm": 80.16671611291869,
+          "M_nt_kNm": -66.65053547932753,
+          "M_lt_kNm": -13.245015276226258
+        },
+        "exact_right_column_top_kNm": 80.20482899695587,
+        "segment_check_right_top_kNm": 80.20482902041017,
+        "frame_dims_mm": [
+          4000.0,
+          6000.0
+        ]
+      },
+      "metrics": {
+        "max_interaction_ratio": 0.8005949109026596,
+        "column_interaction_max": 0.4518224564142303,
+        "beam_interaction_max": 0.8005949109026596,
+        "shear_ratio_max": 0.2199246039691741,
+        "live_deflection_mm": 4.100380602357884,
+        "service_drift_mm": 2.6126099994470477,
+        "drift_ratio_2nd_1st": 1.0199233660347051
+      }
+    },
+    {
+      "label": "p01_beam_unbraced_length_m-3",
+      "parameters": {
+        "frame_height_m": 4.0,
+        "bay_span_m": 6.0,
+        "column_shape": "W10X33",
+        "beam_shape": "W14X30",
+        "youngs_modulus_MPa": 200000.0,
+        "yield_strength_MPa": 345.0,
+        "base": "fixed",
+        "factored_gravity_kN_per_m": 35.0,
+        "factored_lateral_kN": 15.0,
+        "service_live_kN_per_m": 12.0,
+        "service_lateral_kN": 10.0,
+        "beam_unbraced_length_m": 3.0,
+        "column_unbraced_length_weak_m": 4.0
+      },
+      "status": "completed",
+      "derived": {},
+      "solver": {
+        "success": true,
+        "message": "max H1 0.477 (beam, gravity_lateral); drift ratio 1.020",
+        "nfev": null
+      },
+      "solver_outputs": {
+        "member_checks": {
+          "gravity_notional": {
+            "left_column": {
+              "Pr_kN": 104.87582987806515,
+              "Mr_kNm": 66.5235748060388,
+              "Vr_kN": 24.896422782205512,
+              "Cb": 2.1622990721648594,
+              "phiPn_kN": 1201.1561642171403,
+              "phiMn_kNm": 197.41822395484093,
+              "flexure_regime": "inelastic LTB",
+              "phiVn_kN": 376.832730204,
+              "H1_equation": "H1-1b",
+              "H1_ratio": 0.38062395136085647,
+              "shear_ratio": 0.06606757000308261,
+              "alpha_Pr_over_Pns": 0.04852545901482823,
+              "web_slender_in_compression": false,
+              "moments_kNm": [
+                -33.03880470983421,
+                -20.557343836472114,
+                -8.028562592828825,
+                4.518699372726738,
+                17.055559871574403,
+                29.553160657936694,
+                41.9827338568623,
+                54.31566818418741,
+                66.5235748060388
+              ]
+            },
+            "right_column": {
+              "Pr_kN": 105.12417012194219,
+              "Mr_kNm": 67.26857044754934,
+              "Vr_kN": 25.316422782204114,
+              "Cb": 2.164027242806555,
+              "phiPn_kN": 1201.1561642171403,
+              "phiMn_kNm": 197.41822395484093,
+              "flexure_regime": "inelastic LTB",
+              "phiVn_kN": 376.832730204,
+              "H1_equation": "H1-1b",
+              "H1_ratio": 0.3845010192133672,
+              "shear_ratio": 0.06718212287053453,
+              "alpha_Pr_over_Pns": 0.0486403646545738,
+              "web_slender_in_compression": false,
+              "moments_kNm": [
+                34.00300813656505,
+                21.310436945087158,
+                8.568695724924236,
+                -4.192816230848253,
+                -16.944654011715173,
+                -29.657395028590678,
+                -42.301706901192304,
+                -54.848415137272596,
+                -67.26857044754934
+              ]
+            },
+            "beam": {
+              "Pr_kN": 25.316422782202892,
+              "Mr_kNm": 90.98400329123537,
+              "Vr_kN": 105.12417012194172,
+              "Cb": 1.0,
+              "phiPn_kN": 1118.3764422968625,
+              "phiMn_kNm": 197.15670705041856,
+              "flexure_regime": "inelastic LTB",
+              "phiVn_kN": 497.6002951199999,
+              "H1_equation": "H1-1b",
+              "H1_ratio": 0.472799021342347,
+              "shear_ratio": 0.21126227446587478,
+              "alpha_Pr_over_Pns": 0.012865530830096401,
+              "web_slender_in_compression": true,
+              "moments_kNm": [
+                66.52357480603881,
+                -2.417993149576301,
+                -51.6714899639787,
+                -81.20072572704882,
+                -90.98400329123537,
+                -81.01413421391717,
+                -51.29844403925126,
+                -1.8587669155923563,
+                67.26857044754942
+              ]
+            }
+          },
+          "gravity_lateral": {
+            "left_column": {
+              "Pr_kN": 100.56545216078625,
+              "Mr_kNm": 53.5986954769901,
+              "Vr_kN": 17.590474235356787,
+              "Cb": 2.07059338014519,
+              "phiPn_kN": 1201.1561642171403,
+              "phiMn_kNm": 197.41822395484093,
+              "flexure_regime": "inelastic LTB",
+              "phiVn_kN": 376.832730204,
+              "H1_equation": "H1-1b",
+              "H1_ratio": 0.31336015433185277,
+              "shear_ratio": 0.04667979404505046,
+              "alpha_Pr_over_Pns": 0.0465310713899443,
+              "web_slender_in_compression": false,
+              "moments_kNm": [
+                -16.252668975738832,
+                -7.4427305744462116,
+                1.383636037283361,
+                10.206948573124857,
+                19.007731487962097,
+                27.766558965921938,
+                36.464097798640935,
+                45.08115005912337,
+                53.5986954769901
+              ]
+            },
+            "right_column": {
+              "Pr_kN": 109.43454783921003,
+              "Mr_kNm": 80.20482899695587,
+              "Vr_kN": 32.59047423536144,
+              "Cb": 2.189070371345187,
+              "phiPn_kN": 1201.1561642171403,
+              "phiMn_kNm": 197.41822395484093,
+              "flexure_regime": "inelastic LTB",
+              "phiVn_kN": 376.832730204,
+              "H1_equation": "H1-1b",
+              "H1_ratio": 0.4518224564142303,
+              "shear_ratio": 0.08648525359704942,
+              "alpha_Pr_over_Pns": 0.050634752279452626,
+              "web_slender_in_compression": false,
+              "moments_kNm": [
+                50.689201203254754,
+                34.33961246310913,
+                17.90754309864849,
+                1.432461445207119,
+                -15.046060850275754,
+                -31.48844387675047,
+                -47.855194526405334,
+                -64.1070013535149,
+                -80.20482899695587
+              ]
+            },
+            "beam": {
+              "Pr_kN": 32.59047423536051,
+              "Mr_kNm": 91.08813488108058,
+              "Vr_kN": 109.43454783921014,
+              "Cb": 1.0,
+              "phiPn_kN": 1118.3764422968625,
+              "phiMn_kNm": 197.15670705041856,
+              "flexure_regime": "inelastic LTB",
+              "phiVn_kN": 497.6002951199999,
+              "H1_equation": "H1-1b",
+              "H1_ratio": 0.47657924655301936,
+              "shear_ratio": 0.2199246039691741,
+              "alpha_Pr_over_Pns": 0.01656212469864625,
+              "web_slender_in_compression": true,
+              "moments_kNm": [
+                53.59869547699024,
+                -12.158082213768644,
+                -58.217411837937696,
+                -84.53572728928943,
+                -91.08813488108058,
+                -77.86843689206495,
+                -44.889137428785546,
+                7.818569401610961,
+                80.20482899695591
+              ]
+            }
+          }
+        },
+        "drift_ratio_2nd_1st": 1.0199233660347051,
+        "notional_load_kN": 0.42000000000000004,
+        "notional_in_lateral_case": false,
+        "equilibrium_rel": {
+          "gravity_notional": 3.312293085313979e-14,
+          "gravity_lateral": 1.940255363782247e-14
+        },
+        "live_deflection_mm": 4.100380602357884,
+        "service_drift_mm": 2.6126099994470477,
+        "service_drift_first_order_mm": 2.598542520917256,
+        "b1b2": {
+          "B1": 1.0,
+          "B2": 1.0204730120509273,
+          "Cm": 0.4020962548374736,
+          "M_amplified_kNm": 80.16671611291869,
+          "M_nt_kNm": -66.65053547932753,
+          "M_lt_kNm": -13.245015276226258
+        },
+        "exact_right_column_top_kNm": 80.20482899695587,
+        "segment_check_right_top_kNm": 80.20482902041017,
+        "frame_dims_mm": [
+          4000.0,
+          6000.0
+        ]
+      },
+      "metrics": {
+        "max_interaction_ratio": 0.47657924655301936,
+        "column_interaction_max": 0.4518224564142303,
+        "beam_interaction_max": 0.47657924655301936,
+        "shear_ratio_max": 0.2199246039691741,
+        "live_deflection_mm": 4.100380602357884,
+        "service_drift_mm": 2.6126099994470477,
+        "drift_ratio_2nd_1st": 1.0199233660347051
+      }
+    },
+    {
+      "label": "p02_beam_unbraced_length_m-1.5",
+      "parameters": {
+        "frame_height_m": 4.0,
+        "bay_span_m": 6.0,
+        "column_shape": "W10X33",
+        "beam_shape": "W14X30",
+        "youngs_modulus_MPa": 200000.0,
+        "yield_strength_MPa": 345.0,
+        "base": "fixed",
+        "factored_gravity_kN_per_m": 35.0,
+        "factored_lateral_kN": 15.0,
+        "service_live_kN_per_m": 12.0,
+        "service_lateral_kN": 10.0,
+        "beam_unbraced_length_m": 1.5,
+        "column_unbraced_length_weak_m": 4.0
+      },
+      "status": "completed",
+      "derived": {},
+      "solver": {
+        "success": true,
+        "message": "max H1 0.452 (right_column, gravity_lateral); drift ratio 1.020",
+        "nfev": null
+      },
+      "solver_outputs": {
+        "member_checks": {
+          "gravity_notional": {
+            "left_column": {
+              "Pr_kN": 104.87582987806515,
+              "Mr_kNm": 66.5235748060388,
+              "Vr_kN": 24.896422782205512,
+              "Cb": 2.1622990721648594,
+              "phiPn_kN": 1201.1561642171403,
+              "phiMn_kNm": 197.41822395484093,
+              "flexure_regime": "inelastic LTB",
+              "phiVn_kN": 376.832730204,
+              "H1_equation": "H1-1b",
+              "H1_ratio": 0.38062395136085647,
+              "shear_ratio": 0.06606757000308261,
+              "alpha_Pr_over_Pns": 0.04852545901482823,
+              "web_slender_in_compression": false,
+              "moments_kNm": [
+                -33.03880470983421,
+                -20.557343836472114,
+                -8.028562592828825,
+                4.518699372726738,
+                17.055559871574403,
+                29.553160657936694,
+                41.9827338568623,
+                54.31566818418741,
+                66.5235748060388
+              ]
+            },
+            "right_column": {
+              "Pr_kN": 105.12417012194219,
+              "Mr_kNm": 67.26857044754934,
+              "Vr_kN": 25.316422782204114,
+              "Cb": 2.164027242806555,
+              "phiPn_kN": 1201.1561642171403,
+              "phiMn_kNm": 197.41822395484093,
+              "flexure_regime": "inelastic LTB",
+              "phiVn_kN": 376.832730204,
+              "H1_equation": "H1-1b",
+              "H1_ratio": 0.3845010192133672,
+              "shear_ratio": 0.06718212287053453,
+              "alpha_Pr_over_Pns": 0.0486403646545738,
+              "web_slender_in_compression": false,
+              "moments_kNm": [
+                34.00300813656505,
+                21.310436945087158,
+                8.568695724924236,
+                -4.192816230848253,
+                -16.944654011715173,
+                -29.657395028590678,
+                -42.301706901192304,
+                -54.848415137272596,
+                -67.26857044754934
+              ]
+            },
+            "beam": {
+              "Pr_kN": 25.316422782202892,
+              "Mr_kNm": 90.98400329123537,
+              "Vr_kN": 105.12417012194172,
+              "Cb": 1.0,
+              "phiPn_kN": 1497.1676212332118,
+              "phiMn_kNm": 240.67107349559996,
+              "flexure_regime": "yielding",
+              "phiVn_kN": 497.6002951199999,
+              "H1_equation": "H1-1b",
+              "H1_ratio": 0.3864977251949001,
+              "shear_ratio": 0.21126227446587478,
+              "alpha_Pr_over_Pns": 0.013439410282469148,
+              "web_slender_in_compression": true,
+              "moments_kNm": [
+                66.52357480603881,
+                -2.417993149576301,
+                -51.6714899639787,
+                -81.20072572704882,
+                -90.98400329123537,
+                -81.01413421391717,
+                -51.29844403925126,
+                -1.8587669155923563,
+                67.26857044754942
+              ]
+            }
+          },
+          "gravity_lateral": {
+            "left_column": {
+              "Pr_kN": 100.56545216078625,
+              "Mr_kNm": 53.5986954769901,
+              "Vr_kN": 17.590474235356787,
+              "Cb": 2.07059338014519,
+              "phiPn_kN": 1201.1561642171403,
+              "phiMn_kNm": 197.41822395484093,
+              "flexure_regime": "inelastic LTB",
+              "phiVn_kN": 376.832730204,
+              "H1_equation": "H1-1b",
+              "H1_ratio": 0.31336015433185277,
+              "shear_ratio": 0.04667979404505046,
+              "alpha_Pr_over_Pns": 0.0465310713899443,
+              "web_slender_in_compression": false,
+              "moments_kNm": [
+                -16.252668975738832,
+                -7.4427305744462116,
+                1.383636037283361,
+                10.206948573124857,
+                19.007731487962097,
+                27.766558965921938,
+                36.464097798640935,
+                45.08115005912337,
+                53.5986954769901
+              ]
+            },
+            "right_column": {
+              "Pr_kN": 109.43454783921003,
+              "Mr_kNm": 80.20482899695587,
+              "Vr_kN": 32.59047423536144,
+              "Cb": 2.189070371345187,
+              "phiPn_kN": 1201.1561642171403,
+              "phiMn_kNm": 197.41822395484093,
+              "flexure_regime": "inelastic LTB",
+              "phiVn_kN": 376.832730204,
+              "H1_equation": "H1-1b",
+              "H1_ratio": 0.4518224564142303,
+              "shear_ratio": 0.08648525359704942,
+              "alpha_Pr_over_Pns": 0.050634752279452626,
+              "web_slender_in_compression": false,
+              "moments_kNm": [
+                50.689201203254754,
+                34.33961246310913,
+                17.90754309864849,
+                1.432461445207119,
+                -15.046060850275754,
+                -31.48844387675047,
+                -47.855194526405334,
+                -64.1070013535149,
+                -80.20482899695587
+              ]
+            },
+            "beam": {
+              "Pr_kN": 32.59047423536051,
+              "Mr_kNm": 91.08813488108058,
+              "Vr_kN": 109.43454783921014,
+              "Cb": 1.0,
+              "phiPn_kN": 1497.1676212332118,
+              "phiMn_kNm": 240.67107349559996,
+              "flexure_regime": "yielding",
+              "phiVn_kN": 497.6002951199999,
+              "H1_equation": "H1-1b",
+              "H1_ratio": 0.3893596679030648,
+              "shear_ratio": 0.2199246039691741,
+              "alpha_Pr_over_Pns": 0.017300894297639705,
+              "web_slender_in_compression": true,
+              "moments_kNm": [
+                53.59869547699024,
+                -12.158082213768644,
+                -58.217411837937696,
+                -84.53572728928943,
+                -91.08813488108058,
+                -77.86843689206495,
+                -44.889137428785546,
+                7.818569401610961,
+                80.20482899695591
+              ]
+            }
+          }
+        },
+        "drift_ratio_2nd_1st": 1.0199233660347051,
+        "notional_load_kN": 0.42000000000000004,
+        "notional_in_lateral_case": false,
+        "equilibrium_rel": {
+          "gravity_notional": 3.312293085313979e-14,
+          "gravity_lateral": 1.940255363782247e-14
+        },
+        "live_deflection_mm": 4.100380602357884,
+        "service_drift_mm": 2.6126099994470477,
+        "service_drift_first_order_mm": 2.598542520917256,
+        "b1b2": {
+          "B1": 1.0,
+          "B2": 1.0204730120509273,
+          "Cm": 0.4020962548374736,
+          "M_amplified_kNm": 80.16671611291869,
+          "M_nt_kNm": -66.65053547932753,
+          "M_lt_kNm": -13.245015276226258
+        },
+        "exact_right_column_top_kNm": 80.20482899695587,
+        "segment_check_right_top_kNm": 80.20482902041017,
+        "frame_dims_mm": [
+          4000.0,
+          6000.0
+        ]
+      },
+      "metrics": {
+        "max_interaction_ratio": 0.4518224564142303,
+        "column_interaction_max": 0.4518224564142303,
+        "beam_interaction_max": 0.3893596679030648,
+        "shear_ratio_max": 0.2199246039691741,
+        "live_deflection_mm": 4.100380602357884,
+        "service_drift_mm": 2.6126099994470477,
+        "drift_ratio_2nd_1st": 1.0199233660347051
+      }
+    }
+  ],
+  "study": "steel_frame",
+  "status": "completed",
+  "finished_utc": "2026-11-26T04:19:28+00:00"
+}
