@@ -79,14 +79,21 @@ commit). Rules that bind:
   `*.inp`, `*.dat`, `__pycache__`, files > 600 kB, then `tests/test_privacy.py`; never two FEMM cases at once; check
   free RAM on long runs.
 
-### Running at 11:30, 2026-11-25 (user's go-ahead 2026-11-25: "run whatever is still pending")
+### Running at 21:30, 2026-11-25 (user's go-ahead 2026-11-25: "run whatever is still pending")
 
 | Job | Run dir (log) | Done about | When it finishes |
 |---|---|---|---|
-| Study 11: redesign verification set, ten cases `enclosure_fix_k5_*_long` (9,000 s), started 11:22 | `runs/*_enclosure_fix_k5_*_long` (`enclosure_fix_k5_*_long.log`) | eps 0.9 about 17:30-20:30; eps 0.1 about 21:30-08:00 | Score P1-P4 against each header, then the revision B predictions with `scripts/score_client_requirements.py`; replace the extrapolated verdicts on page 27 (and tell the dashboard session: final T fields are kept now). |
-| Study 11: the four as-drawn corners against the client's list, revision B (`enclosure_*_e`; `validation/enclosure/CLIENT_REQUIREMENTS.md`), started 16:27 | `runs/*_enclosure_*_e` | eps 0.9 about 19:00; eps 0.1 tomorrow morning | Score against each header; page 27 gets the revision B verdicts (as drawn and redesign) with the requirement list and its timing. |
-| Study 6: FSI3 `turek_hron_fsi3_dt_a_r2` (preCICE's own FSI3 acceleration settings), started 16:25 | `runs/*_turek_hron_fsi3_dt_a_r2` (`fsi3_dt_a_r2.log`) | about 21:00-22:00 | Score P1-P5; if it reaches 8 s, FSI2 r1 levels a and c with both settings (user: "keep working as resources open up"). |
-| Study 6: CFD lift on NESTED meshes, `turek_hron_cfd1_nested` and `turek_hron_cfd2_nested` (one 2.5 mm base split uniformly; predictions 18:52, a8aafa1), started 18:54 | `runs/*_turek_hron_cfd*_nested` | about 19:50-20:30 | Score P1-P5; P3 held: lift verified, page 17; missed: a 0.3125 mm level (about 17 h) only on the user's go-ahead |
+| Study 11: the two bare-metal as-drawn corners against revision B (`enclosure_k5_eps0p1_e`, `enclosure_k20_eps0p1_e`, 9,000 s), started 16:27 | `runs/*_enclosure_k*_eps0p1_e` | tomorrow morning | Score against each header; rerun `scripts/score_client_requirements.py` into `validation/enclosure/client_requirements_revB_scores.json` with all 14 runs; rewrite page 27 (revision B verdicts, the requirement list and its timing, the C1 recommendation: a 125 C part); tell the dashboard session (it rebuilds page 27 and its chart from the 9,000 s runs' saved fields). |
+| Study 6: CFD2 lift, fourth nested level `turek_hron_cfd2_nested_r1` (1.25 / 0.625 / 0.3125 mm; user approved 19:29; predictions 19:31, 78adc4a), started 19:32 | `runs/*_turek_hron_cfd2_nested_r1` | about 01:00-04:00 | Score P1-P4; page 17's CFD2 lift line and banner. No further level either way. |
+
+DONE 21:30: the ten 9,000 s redesign runs (db5f990: P1-P3 held in all, within 0.02 K of the extrapolations; no design
+meets REQ-E3, C1 best 76.9 C); the two painted as-drawn corners against revision B (c41f9d7: C1 89.2 / 90.9 C, FAIL;
+the rest PASS); CFD1 lift verified on nested meshes (8f444c9); CFD2 nested (78adc4a: drag verified, lift anomalous
+order); FSI3 dt_a r2 crashed at 6.895 s (1c62c0c: the third attempt, coupling settings ruled out; NO FSI2 reruns; the
+crash closed as a stated limit, page 17 e436ca8). Still open in study 6: the FSI3 drag and lift time-step check (dt_c
+died on its very last step, 7.99975 of 8 s, harmless to its tip record, but its forces were lost to the old force-file
+size limit, since fixed); closing it needs dt_c rerun (about 20 h): the user's call. FSI2's mesh convergence of the
+amplitudes stays a stated limit unless the user wants more levels.
 
 DONE 16:00 (74c0d59): FSI3 dt_a_r1 passed 6.902 s, crashed at 6.911 s on a stalled COUPLING (IQN-ILS), not the
 solid; the conditional FSI reruns are NOT started; a coupling-side revision needs the user's go-ahead. CFD1/CFD2
