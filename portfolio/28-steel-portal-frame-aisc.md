@@ -27,7 +27,7 @@ lateral. Does the frame meet AISC 360-22?
 | Member | Gravity + notional load | Gravity + lateral load | Governing limit state |
 |---|---|---|---|
 | Beam (W14x30) | 0.789 | **0.801** | Lateral-torsional buckling, unbraced 6.0 m (Cb 1.26) |
-| Leeward column (W10x33) | 0.385 | 0.452 | Flexure near the plastic moment (Cb 2.2), small axial load |
+| Leeward column (W10x33) | 0.385 | 0.452 | Flexure at the plastic moment (Cb 2.2 lifts lateral-torsional buckling to the 0.9 Mp cap), small axial load |
 | Windward column | 0.381 | 0.313 | |
 
 **All three requirements pass.** Shear is far from critical (at most 22 % of capacity). The frame is stiff: the
