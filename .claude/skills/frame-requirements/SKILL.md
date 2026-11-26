@@ -64,6 +64,14 @@ check that the metric measures that, not a convenient proxy:
   part positions at framing. If the requirements change after results are known,
   record when they were written and the rule behind each limit.
 
+  The outcome (2026-11-25, 14 settled runs): the capacitor's life governed, and
+  no cooling path fixed it. The bridge cooled U1 by up to 33 K but C1 by under
+  13 K, because C1 sits on a board heated by its own 10 W. The answer that
+  passes is a part change (a 125 C capacitor), and the limit for that part
+  follows from the client's own rule, re-derived, not chosen. When a remedy
+  targets one part, check that it reaches the part that governs. When only a
+  part change passes, present it as the client's decision, with the derivation.
+
 If the definition is a judgement call, state it in the requirement text and the
 assumptions, so a reviewer can disagree with it explicitly. When the judgement could
 decide the verdict, plan a case that varies it before reporting a thin margin: study

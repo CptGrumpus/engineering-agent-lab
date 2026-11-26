@@ -83,9 +83,11 @@ commit). Rules that bind:
 
 | Job | Run dir (log) | Done about | When it finishes |
 |---|---|---|---|
-| Study 11: the two bare-metal as-drawn corners against revision B (`enclosure_k5_eps0p1_e`, `enclosure_k20_eps0p1_e`, 9,000 s), started 16:27 | `runs/*_enclosure_k*_eps0p1_e` | tomorrow morning | Score against each header; rerun `scripts/score_client_requirements.py` into `validation/enclosure/client_requirements_revB_scores.json` with all 14 runs; rewrite page 27 (revision B verdicts, the requirement list and its timing, the C1 recommendation: a 125 C part); tell the dashboard session (it rebuilds page 27 and its chart from the 9,000 s runs' saved fields). |
 | Study 6: FSI3 damping test `turek_hron_fsi3_dt_a_alpha` (solid_alpha -0.05, the one change; predictions 22:06, 57d5d01), started 22:07 | `runs/*_turek_hron_fsi3_dt_a_alpha` (`fsi3_dt_a_alpha.log`) | about 03:00-04:00 | Score P1-P4 (P2: Newton creep from the .sta). User's decision about 22:45: WAIT for it; if P1 and P2 hold, start the 4 reruns with alpha -0.05 (FSI2 levels a / b / c, FSI3 dt_c; predictions first); update FAILURES.md either way |
 | Study 6: CFD2 lift, fourth nested level `turek_hron_cfd2_nested_r1` (1.25 / 0.625 / 0.3125 mm; user approved 19:29; predictions 19:31, 78adc4a), started 19:32 | `runs/*_turek_hron_cfd2_nested_r1` | about 01:00-04:00 | Score P1-P4; page 17's CFD2 lift line and banner. No further level either way. |
+
+DONE 23:00: the bare-metal as-drawn corners (e493188: everything fails as predicted); page 27 rewritten against
+revision B (42c3f91); dashboard session told.
 
 DONE 21:30: the ten 9,000 s redesign runs (db5f990: P1-P3 held in all, within 0.02 K of the extrapolations; no design
 meets REQ-E3, C1 best 76.9 C); the two painted as-drawn corners against revision B (c41f9d7: C1 89.2 / 90.9 C, FAIL;
