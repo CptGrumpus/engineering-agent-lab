@@ -80,6 +80,29 @@ commit). Rules that bind:
   `*.inp`, `*.dat`, `__pycache__`, files > 600 kB, then `tests/test_privacy.py`; never two FEMM cases at once; check
   free RAM on long runs.
 
+### Part 2 day (2026-11-27, written 17:34)
+
+Done today, each with predictions committed first, runs scored, page section, figure and lessons in skills:
+- **Study 18 part 2** (limit load, no classification line): 12 mm nozzle passes WITHOUT a pad, collapse 1.675 x design
+  (1.663 extrapolated) against 1.5; part 1's crotch-line recommendation withdrawn. Mesh and wall runs FAIL one check
+  (axial self-balance 1.08e-5 against 1e-5: the coarse far mesh). Detailed CAD as built and padded, STEP.
+- **Study 2 part 2** (strap hole in 3D): mid-thickness 1.5 % over plane stress; 16 mm passes by 1 %; largest hole
+  16.3 mm (was 16.7). Thin-plate run FAILS one validity check (premise does not hold in the limit).
+- **Study 25 part 2** (O-ring cover between bolts): a 4 mm cover lifts 15.1 um (r2, 4 meshes, PASS), 3 mm 29 um,
+  against 75.5 um: the flat-cover assumption holds; flatness tolerance matters more. r1 FAILS its GCI (curvature
+  sizing + rigid-patch slow convergence, both traced).
+- **Study 11 part 2** (passage with side walls): 44.25 C with a 2 mm aluminium plate (margin 0.97 -> 0.75 K); fails
+  below about 0.23 mm of aluminium; grid run FAILS one exact check at the coarsest grid.
+- **Study 10 part 2** (roller with its ends, half-space contact): straight roller fails (singular ends); log crown
+  A = 1.3 x Lundberg passes at 617 MPa, window 1.1-2.5 x. The 3D FE roller (models/fea/roller_3d.py) is built but
+  takes about an hour per solve; a crowned trial (Lundberg A, approaches 0.014/0.016/0.018 mm, scratch dir r3_log3)
+  was still running at 17:34 as a cross-check: compare it with the half-space model at the FE's own loads.
+- **Standing rule adopted** (user, 2026-11-27): simple model first, a fuller check where the margin is as small as the
+  simplification's likely error (build-model skill "Choosing checks" item 5; memory simple-first-verify-fuller). The
+  revisit list (2, 10, 25, 11; notes on 15 and 13) is done.
+- Pushes: the dashboard session pushes with the user's approval; check `git log origin/main..HEAD` before any push of
+  your own (memory shared-git-index).
+
 ### Study 26 part 2 done (03:58, 2026-11-27)
 
 r1 runs scored: noise (010741), check_r1 (015248), design_r1 (021152), mesh_r1 (031958, VERIFICATION PASS). Page 26
