@@ -27,6 +27,17 @@
 #   P2 Against ROSS (61.88 Hz) the solid is 0.5-1.0 % higher at every level (solid_vs_ross passes 2 %): the beam model
 #      holds for the rotor as idealised, the small gap being the disc's thickness and the end faces' rigid bodies.
 #   P3 Corrected critical 3730-3755 rpm, margin 24-25 % (REQ-G1 passes); every check passes; under 5 minutes.
+#
+# Results (run 20261127-120200_rotor_solid_mesh, 12:02-12:05, scored 2026-11-27 12:10). VERIFICATION FAIL on the
+# discretization check only.
+#   P1 half held: the solid's f1 62.3886 / 62.3848 / 62.3703 Hz (31 k, 53 k, 97 k nodes), within 0.03 % of each
+#      other, but the discretization check fails: the steps grow (0.004 then 0.014 Hz, ratio 3.8), "divergent" by the
+#      default noise floor 1e-5. The meshes are not a clean refinement (curvature sizing holds the fillets' and the
+#      disc's edges at 16 elements per circle at every level); no floor was declared, so the check stands as failed.
+#      The 0.03 % spread is the solid's mesh uncertainty for what follows (the effects measured are 2-3 %).
+#   P2 held: solid / ROSS 1.0082 / 1.0081 / 1.0079.
+#   P3 held as to values: corrected critical 3744-3745 rpm, margin 24.8 % (REQ-G1 passes); not every check passes
+#      (P1); 3 minutes.
 
 [case]
 name = "rotor_solid_mesh"

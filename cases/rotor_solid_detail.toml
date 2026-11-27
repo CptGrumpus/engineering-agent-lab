@@ -33,6 +33,27 @@
 #      recommendation holds. On stiff bearings the margin stays above 45 %.
 #   P5 solid_vs_ross (2 %) passes on the uniform rotor and journals only, may fail with a hub (the point of the case);
 #      every other check passes; under 10 minutes.
+#
+# Results (run 20261127-120457_rotor_solid_detail, 12:05-12:09, scored 2026-11-27 12:10). VERIFICATION FAIL on
+# solid_vs_ross at detailed_kb1e8 (3.1 %), the hub's effect this case is about.
+#   P1 held: uniform solid / ROSS 1.0081.
+#   P2 half held: hub only, ROSS +1.13 % on its uniform rotor (in 1-2 %), the solid -1.62 % on its own (predicted
+#      0 to -1.5 %): solid / ROSS 0.9807 (in 0.97-0.99). The beam model gets the hub's effect backwards.
+#   P3 half held: journals only, solid / ROSS 1.0080, the same as the uniform rotor (held); but both models rise
+#      slightly (+0.1 %), where a fall was predicted: the journals sit where the bending moment is smallest, and they
+#      take mass off.
+#   P4 held: detailed solid / ROSS 0.9805; corrected critical 3686 rpm, margin 22.9 % (REQ-G1 passes: the 65 mm
+#      recommendation holds); stiff bearings 0.9691, 4578 rpm, margin 52.6 %.
+#   P5 held: solid_vs_ross passes on the uniform rotor, journals, hub (1.93 %) and detailed (1.95 %) at 1e7 and fails at
+#      1e8 (3.09 %): the stiffer the bearings, the more of the rotor's flexibility is the shaft, the larger the hub's
+#      share; every other check passes; 4 minutes.
+# Findings:
+#   1. A hub on a beam model is a choice between two wrong answers. As a shaft section of the hub's diameter (ROSS
+#      here) it is too stiff: +2.0 % (soft bearings) to +3.2 % (stiff) on f1 against the solid. As mass and inertia
+#      only (a rigid disc element; scratch, 12:10) it is too soft: 57.81 Hz, -5.9 % (69.52 Hz, -8.8 % on stiff
+#      bearings). A 100 mm hub on a 65 mm shaft stiffens it partly, and only the solid says how much.
+#   2. For study 23 the difference does not change the verdict: the corrected first critical is 3686 rpm on soft
+#      bearings, 22.9 % above the top speed (part 1's beam model: 23.8 %).
 
 [case]
 name = "rotor_solid_detail"

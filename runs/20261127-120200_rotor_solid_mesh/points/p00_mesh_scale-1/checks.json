@@ -1,0 +1,33 @@
+{
+  "label": "p00_mesh_scale-1",
+  "status": "PASS",
+  "checks": [
+    {
+      "id": "cad_volume",
+      "description": "|half solid's volume / hand volume - 1|",
+      "kind": "numerical",
+      "value": 2.220446049250313e-16,
+      "tolerance": 1e-09,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "mesh_quality",
+      "description": "0.1 - the smallest scaled Jacobian",
+      "kind": "validity",
+      "value": -0.7498530746083051,
+      "tolerance": 0.0,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "solid_vs_ross",
+      "description": "|solid's first lateral frequency at rest / ROSS's - 1| (cross-tool: on the rotor ROSS idealises exactly, the beam model must agree)",
+      "kind": "numerical",
+      "value": 0.008146701841788229,
+      "tolerance": 0.02,
+      "comparison": "<=",
+      "status": "PASS"
+    }
+  ]
+}

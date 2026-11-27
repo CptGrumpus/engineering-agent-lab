@@ -38,6 +38,7 @@ anything. Each row below happened in this repo.
 | Coarse elements too stiff, error 4-33 % | Locking / low-order elements (linear tets in bending) | Use quadratic elements; keep the linear-element run as evidence | cantilever TET4 |
 | Output not on the requested grid | Tool silently ignored the requested settings | Fix how settings are passed; never relax the grid check | OpenModelica `-override` |
 | Every numerical check passes but a validity check fails | The model is the wrong tool for this point | Revise the scenario or the model; withhold verdicts | quarter car at 36 km/h (wheel lift) |
+| Three meshes agree to 0.03 % but the check says 'divergent' (R 3.8) | The levels are not a strict refinement: a size set by curvature (Gmsh `MeshSizeFromCurvature`, n per circle) does not scale with mesh_scale, so the curved regions keep their element count while the rest refines; the differences are then noise, and the default floor (1e-5) calls them divergent | Scale the curvature count with the mesh scale, or measure and declare a noise floor before the run; never loosen the tolerance after it (rotor solid, run 20261127-120200: the check stands failed, the 0.03 % spread reported) |
 
 ## Study F (edge crack): a declared noise floor must be measured, and a finite-difference step must clear the mesh
 

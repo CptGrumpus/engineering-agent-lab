@@ -1,0 +1,136 @@
+{
+  "run_id": "20261127-120200_rotor_solid_mesh",
+  "verified_utc": "2026-11-27T17:04:46+00:00",
+  "tolerances": {
+    "volume_rel_tol": 1e-09,
+    "min_scaled_jacobian": 0.1,
+    "ross_rel_tol": 0.02,
+    "gci_max": 0.01
+  },
+  "points": [
+    {
+      "label": "p00_mesh_scale-1",
+      "status": "PASS",
+      "checks": [
+        {
+          "id": "cad_volume",
+          "description": "|half solid's volume / hand volume - 1|",
+          "kind": "numerical",
+          "value": 2.220446049250313e-16,
+          "tolerance": 1e-09,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "mesh_quality",
+          "description": "0.1 - the smallest scaled Jacobian",
+          "kind": "validity",
+          "value": -0.7498530746083051,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "solid_vs_ross",
+          "description": "|solid's first lateral frequency at rest / ROSS's - 1| (cross-tool: on the rotor ROSS idealises exactly, the beam model must agree)",
+          "kind": "numerical",
+          "value": 0.008146701841788229,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p01_mesh_scale-0.8",
+      "status": "PASS",
+      "checks": [
+        {
+          "id": "cad_volume",
+          "description": "|half solid's volume / hand volume - 1|",
+          "kind": "numerical",
+          "value": 2.220446049250313e-16,
+          "tolerance": 1e-09,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "mesh_quality",
+          "description": "0.1 - the smallest scaled Jacobian",
+          "kind": "validity",
+          "value": -0.7064033338828454,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "solid_vs_ross",
+          "description": "|solid's first lateral frequency at rest / ROSS's - 1| (cross-tool: on the rotor ROSS idealises exactly, the beam model must agree)",
+          "kind": "numerical",
+          "value": 0.008085135522438947,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p02_mesh_scale-0.64",
+      "status": "PASS",
+      "checks": [
+        {
+          "id": "cad_volume",
+          "description": "|half solid's volume / hand volume - 1|",
+          "kind": "numerical",
+          "value": 2.220446049250313e-16,
+          "tolerance": 1e-09,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "mesh_quality",
+          "description": "0.1 - the smallest scaled Jacobian",
+          "kind": "validity",
+          "value": -0.7672797858528302,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "solid_vs_ross",
+          "description": "|solid's first lateral frequency at rest / ROSS's - 1| (cross-tool: on the rotor ROSS idealises exactly, the beam model must agree)",
+          "kind": "numerical",
+          "value": 0.007850989599243796,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ]
+    }
+  ],
+  "run_checks": [
+    {
+      "id": "discretization_solid_f1",
+      "description": "relative discretization uncertainty of the solid's f1, divergent (R = 3.803): no estimate",
+      "kind": "numerical",
+      "value": Infinity,
+      "tolerance": 0.01,
+      "comparison": "<=",
+      "status": "FAIL",
+      "metric": "solid_f1_hz"
+    }
+  ],
+  "run_check_detail": {
+    "levels_used": [
+      "p02_mesh_scale-0.64",
+      "p01_mesh_scale-0.8",
+      "p00_mesh_scale-1"
+    ],
+    "solid_f1_hz": {
+      "regime": "divergent",
+      "uncertainty": Infinity,
+      "convergence_ratio": 3.803149606298346
+    }
+  },
+  "status": "FAIL"
+}

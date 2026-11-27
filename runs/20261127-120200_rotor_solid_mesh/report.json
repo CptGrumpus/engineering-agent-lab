@@ -1,0 +1,223 @@
+{
+  "points": [
+    {
+      "label": "p00_mesh_scale-1",
+      "parameters": {
+        "density_kg_per_m3": 7850.0,
+        "youngs_modulus_Pa": 205000000000.0,
+        "poisson_ratio": 0.29,
+        "n_elements": 20,
+        "bearing_span_m": 1.0,
+        "shaft_diameter_m": 0.065,
+        "disc_width_m": 0.025,
+        "disc_diameter_m": 0.4,
+        "bearing_stiffness_N_per_m": 10000000.0,
+        "bearing_damping_Ns_per_m": 500.0,
+        "speed_min_rpm": 1000.0,
+        "speed_max_rpm": 3000.0,
+        "campbell_max_rpm": 9000.0,
+        "campbell_points": 91,
+        "modes": 6,
+        "response_points": 41,
+        "hub_diameter_m": 0.0,
+        "hub_length_m": 0.0,
+        "journal_diameter_m": 0.0,
+        "journal_length_m": 0.0,
+        "element_size_mm": 10.0,
+        "mesh_scale": 1.0
+      },
+      "derived": {},
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "cad_volume",
+          "description": "|half solid's volume / hand volume - 1|",
+          "kind": "numerical",
+          "value": 2.220446049250313e-16,
+          "tolerance": 1e-09,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "mesh_quality",
+          "description": "0.1 - the smallest scaled Jacobian",
+          "kind": "validity",
+          "value": -0.7498530746083051,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "solid_vs_ross",
+          "description": "|solid's first lateral frequency at rest / ROSS's - 1| (cross-tool: on the rotor ROSS idealises exactly, the beam model must agree)",
+          "kind": "numerical",
+          "value": 0.008146701841788229,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-G1",
+          "text": "Every forward critical speed shall lie at least 15 % outside the 1000-3000 rpm operating range (part 1's REQ-G1): here the first forward critical, ROSS's corrected by the solid at rest.",
+          "metric": "corrected_margin_pct",
+          "operator": ">=",
+          "limit": 15.0,
+          "units": "%",
+          "value": 24.822741937280558,
+          "margin": 9.822741937280558,
+          "verdict": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p01_mesh_scale-0.8",
+      "parameters": {
+        "density_kg_per_m3": 7850.0,
+        "youngs_modulus_Pa": 205000000000.0,
+        "poisson_ratio": 0.29,
+        "n_elements": 20,
+        "bearing_span_m": 1.0,
+        "shaft_diameter_m": 0.065,
+        "disc_width_m": 0.025,
+        "disc_diameter_m": 0.4,
+        "bearing_stiffness_N_per_m": 10000000.0,
+        "bearing_damping_Ns_per_m": 500.0,
+        "speed_min_rpm": 1000.0,
+        "speed_max_rpm": 3000.0,
+        "campbell_max_rpm": 9000.0,
+        "campbell_points": 91,
+        "modes": 6,
+        "response_points": 41,
+        "hub_diameter_m": 0.0,
+        "hub_length_m": 0.0,
+        "journal_diameter_m": 0.0,
+        "journal_length_m": 0.0,
+        "element_size_mm": 10.0,
+        "mesh_scale": 0.8
+      },
+      "derived": {},
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "cad_volume",
+          "description": "|half solid's volume / hand volume - 1|",
+          "kind": "numerical",
+          "value": 2.220446049250313e-16,
+          "tolerance": 1e-09,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "mesh_quality",
+          "description": "0.1 - the smallest scaled Jacobian",
+          "kind": "validity",
+          "value": -0.7064033338828454,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "solid_vs_ross",
+          "description": "|solid's first lateral frequency at rest / ROSS's - 1| (cross-tool: on the rotor ROSS idealises exactly, the beam model must agree)",
+          "kind": "numerical",
+          "value": 0.008085135522438947,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-G1",
+          "text": "Every forward critical speed shall lie at least 15 % outside the 1000-3000 rpm operating range (part 1's REQ-G1): here the first forward critical, ROSS's corrected by the solid at rest.",
+          "metric": "corrected_margin_pct",
+          "operator": ">=",
+          "limit": 15.0,
+          "units": "%",
+          "value": 24.815119160973342,
+          "margin": 9.815119160973342,
+          "verdict": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p02_mesh_scale-0.64",
+      "parameters": {
+        "density_kg_per_m3": 7850.0,
+        "youngs_modulus_Pa": 205000000000.0,
+        "poisson_ratio": 0.29,
+        "n_elements": 20,
+        "bearing_span_m": 1.0,
+        "shaft_diameter_m": 0.065,
+        "disc_width_m": 0.025,
+        "disc_diameter_m": 0.4,
+        "bearing_stiffness_N_per_m": 10000000.0,
+        "bearing_damping_Ns_per_m": 500.0,
+        "speed_min_rpm": 1000.0,
+        "speed_max_rpm": 3000.0,
+        "campbell_max_rpm": 9000.0,
+        "campbell_points": 91,
+        "modes": 6,
+        "response_points": 41,
+        "hub_diameter_m": 0.0,
+        "hub_length_m": 0.0,
+        "journal_diameter_m": 0.0,
+        "journal_length_m": 0.0,
+        "element_size_mm": 10.0,
+        "mesh_scale": 0.64
+      },
+      "derived": {},
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "cad_volume",
+          "description": "|half solid's volume / hand volume - 1|",
+          "kind": "numerical",
+          "value": 2.220446049250313e-16,
+          "tolerance": 1e-09,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "mesh_quality",
+          "description": "0.1 - the smallest scaled Jacobian",
+          "kind": "validity",
+          "value": -0.7672797858528302,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "solid_vs_ross",
+          "description": "|solid's first lateral frequency at rest / ROSS's - 1| (cross-tool: on the rotor ROSS idealises exactly, the beam model must agree)",
+          "kind": "numerical",
+          "value": 0.007850989599243796,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-G1",
+          "text": "Every forward critical speed shall lie at least 15 % outside the 1000-3000 rpm operating range (part 1's REQ-G1): here the first forward critical, ROSS's corrected by the solid at rest.",
+          "metric": "corrected_margin_pct",
+          "operator": ">=",
+          "limit": 15.0,
+          "units": "%",
+          "value": 24.786128602264725,
+          "margin": 9.786128602264725,
+          "verdict": "PASS"
+        }
+      ]
+    }
+  ],
+  "run_id": "20261127-120200_rotor_solid_mesh",
+  "generated_utc": "2026-11-27T17:04:52+00:00",
+  "verification_status": "FAIL"
+}

@@ -124,7 +124,8 @@ def write_deck(p: dict, mesh_inp: Path, deck: Path, modes: int = 6) -> dict:
               "*SOLID SECTION, ELSET=ROTOR, MATERIAL=STEEL",
               "*BOUNDARY", "SYM, 2, 2, 0.",
               f"{r0}, 2, 3, 0.", f"{r1}, 2, 2, 0.",                 # the reference nodes: symmetric, one held axially
-              f"{rot0}, 1, 1, 0.", f"{rot0}, 3, 3, 0.", f"{rot1}, 1, 1, 0.", f"{rot1}, 3, 3, 0.",   # rotate about y only
+              # the rotation nodes turn about y only (bending in the x-z plane)
+              f"{rot0}, 1, 1, 0.", f"{rot0}, 3, 3, 0.", f"{rot1}, 1, 1, 0.", f"{rot1}, 3, 3, 0.",
               "*STEP", "*FREQUENCY", str(int(modes)), "*NODE FILE", "U", "*END STEP"]
     deck.write_text("\n".join(lines) + "\n", encoding="utf-8")
     return {"nodes": int(len(ids)), "elements": int(len(eids)), "end_nodes": [int(len(end0)), int(len(end1))]}

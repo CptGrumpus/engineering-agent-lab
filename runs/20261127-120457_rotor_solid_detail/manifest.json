@@ -1,0 +1,410 @@
+{
+  "run_id": "20261127-120457_rotor_solid_detail",
+  "case_name": "rotor_solid_detail",
+  "model": "ccx_rotor_solid",
+  "case_source": "cases/rotor_solid_detail.toml",
+  "case_sha256": "77cf8ba1ad84ea1c7f63d70aebc71de0e552de4f4b45ad5ac800388081597427",
+  "model_sources_sha256": {
+    "models/fea/rotor_solid.py": "c8f9601b954e8c5b273621dbc5370499e80ee71029e68e4a0373fd628058f280",
+    "models/rotor/fan_rotor.py": "dde7333ddf609350f711eb4cf513059d4147ed73965b639b9c5d272894ab20f6"
+  },
+  "rerun_of": null,
+  "started_utc": "2026-11-27T17:04:57+00:00",
+  "environment": {
+    "python": "3.14.10",
+    "python_executable": "<repo>\\.venv\\Scripts\\python.exe",
+    "platform": "Windows-11-10.0.26100-SP0",
+    "machine": "AMD64",
+    "packages": {
+      "numpy": "2.5.5",
+      "scipy": "1.18.1",
+      "matplotlib": "3.11.2",
+      "cadquery": "2.8.0"
+    },
+    "git": {
+      "commit": "9e619537beffc5b02c1a7662c7089956d0854254",
+      "dirty": true
+    },
+    "tools": {
+      "cadquery": "2.8.0",
+      "gmsh (Python API)": "4.15.0",
+      "calculix": "This is Version 2.22",
+      "ross": "ERROR: Could not load REFPROP (REFPRP64.dll) due to: 126. Make sure the library is in your system search path. In case you run 64bit Windows and you have a REFPROP license, try installing the 64bit DLL from NIST."
+    }
+  },
+  "numerics": {
+    "solver_timeout_s": 1800,
+    "solve_timeout_s": 3600,
+    "solid_modes": 6
+  },
+  "points": [
+    {
+      "label": "p00_uniform",
+      "parameters": {
+        "density_kg_per_m3": 7850.0,
+        "youngs_modulus_Pa": 205000000000.0,
+        "poisson_ratio": 0.29,
+        "n_elements": 20,
+        "bearing_span_m": 1.0,
+        "shaft_diameter_m": 0.065,
+        "disc_width_m": 0.025,
+        "disc_diameter_m": 0.4,
+        "bearing_stiffness_N_per_m": 10000000.0,
+        "bearing_damping_Ns_per_m": 500.0,
+        "speed_min_rpm": 1000.0,
+        "speed_max_rpm": 3000.0,
+        "campbell_max_rpm": 9000.0,
+        "campbell_points": 91,
+        "modes": 6,
+        "response_points": 41,
+        "hub_diameter_m": 0.0,
+        "hub_length_m": 0.0,
+        "journal_diameter_m": 0.0,
+        "journal_length_m": 0.0,
+        "element_size_mm": 10.0,
+        "mesh_scale": 0.8,
+        "scenario": "uniform"
+      },
+      "status": "completed",
+      "derived": {},
+      "solver": {
+        "success": true,
+        "message": "53481 nodes; solid 62.385 Hz, ROSS 61.884 Hz",
+        "nfev": 2
+      },
+      "solver_outputs": {
+        "cad": {
+          "volume_mm3": 3188471.1064675786,
+          "hand_volume_mm3": 3188471.106467578
+        },
+        "mesh": {
+          "elements": 31069,
+          "min_scaled_jacobian": 0.8064033338828454,
+          "inverted_elements": 0,
+          "gmsh": "4.15.0"
+        },
+        "nodes": 53481,
+        "solid_hz": [
+          62.38483,
+          202.3267,
+          354.8108,
+          434.3269,
+          580.5073,
+          851.1219
+        ],
+        "ross_0rpm_hz": [
+          61.884485547611156,
+          61.884485549693395,
+          205.2538889527387,
+          205.25388896111323
+        ],
+        "ross_first_forward_critical_rpm": 3714.4219698157162,
+        "ross_rotor_mass_kg": 50.05899637154099,
+        "speed_max_rpm": 3000.0
+      },
+      "metrics": {
+        "solid_f1_hz": 62.38483,
+        "ross_f1_hz": 61.884485547611156,
+        "solid_over_ross": 1.008085135522439,
+        "ross_critical_rpm": 3714.4219698157162,
+        "corrected_critical_rpm": 3744.4535748292005,
+        "corrected_margin_pct": 24.815119160973342
+      }
+    },
+    {
+      "label": "p01_hub",
+      "parameters": {
+        "density_kg_per_m3": 7850.0,
+        "youngs_modulus_Pa": 205000000000.0,
+        "poisson_ratio": 0.29,
+        "n_elements": 20,
+        "bearing_span_m": 1.0,
+        "shaft_diameter_m": 0.065,
+        "disc_width_m": 0.025,
+        "disc_diameter_m": 0.4,
+        "bearing_stiffness_N_per_m": 10000000.0,
+        "bearing_damping_Ns_per_m": 500.0,
+        "speed_min_rpm": 1000.0,
+        "speed_max_rpm": 3000.0,
+        "campbell_max_rpm": 9000.0,
+        "campbell_points": 91,
+        "modes": 6,
+        "response_points": 41,
+        "hub_diameter_m": 0.13,
+        "hub_length_m": 0.1,
+        "journal_diameter_m": 0.0,
+        "journal_length_m": 0.0,
+        "element_size_mm": 10.0,
+        "mesh_scale": 0.8,
+        "scenario": "hub"
+      },
+      "status": "completed",
+      "derived": {},
+      "solver": {
+        "success": true,
+        "message": "60763 nodes; solid 61.371 Hz, ROSS 62.578 Hz",
+        "nfev": 2
+      },
+      "solver_outputs": {
+        "cad": {
+          "volume_mm3": 3561780.6710074283,
+          "hand_volume_mm3": 3561780.6710074274
+        },
+        "mesh": {
+          "elements": 35829,
+          "min_scaled_jacobian": 0.8533017133476152,
+          "inverted_elements": 0,
+          "gmsh": "4.15.0"
+        },
+        "nodes": 60763,
+        "solid_hz": [
+          61.37092,
+          204.1587,
+          375.1094,
+          534.2042,
+          716.096,
+          1093.968
+        ],
+        "ross_0rpm_hz": [
+          62.57759438230056,
+          62.577594384185126,
+          205.5505421690088,
+          205.55054217240755
+        ],
+        "ross_first_forward_critical_rpm": 3755.6828598934812,
+        "ross_rotor_mass_kg": 55.91995653481662,
+        "speed_max_rpm": 3000.0
+      },
+      "metrics": {
+        "solid_f1_hz": 61.37092,
+        "ross_f1_hz": 62.57759438230056,
+        "solid_over_ross": 0.9807171497368736,
+        "ross_critical_rpm": 3755.6828598934812,
+        "corrected_critical_rpm": 3683.262589670365,
+        "corrected_margin_pct": 22.775419655678817
+      }
+    },
+    {
+      "label": "p02_journals",
+      "parameters": {
+        "density_kg_per_m3": 7850.0,
+        "youngs_modulus_Pa": 205000000000.0,
+        "poisson_ratio": 0.29,
+        "n_elements": 20,
+        "bearing_span_m": 1.0,
+        "shaft_diameter_m": 0.065,
+        "disc_width_m": 0.025,
+        "disc_diameter_m": 0.4,
+        "bearing_stiffness_N_per_m": 10000000.0,
+        "bearing_damping_Ns_per_m": 500.0,
+        "speed_min_rpm": 1000.0,
+        "speed_max_rpm": 3000.0,
+        "campbell_max_rpm": 9000.0,
+        "campbell_points": 91,
+        "modes": 6,
+        "response_points": 41,
+        "hub_diameter_m": 0.0,
+        "hub_length_m": 0.0,
+        "journal_diameter_m": 0.055,
+        "journal_length_m": 0.05,
+        "element_size_mm": 10.0,
+        "mesh_scale": 0.8,
+        "scenario": "journals"
+      },
+      "status": "completed",
+      "derived": {},
+      "solver": {
+        "success": true,
+        "message": "53751 nodes; solid 62.434 Hz, ROSS 61.936 Hz",
+        "nfev": 2
+      },
+      "solver_outputs": {
+        "cad": {
+          "volume_mm3": 3141347.2166637313,
+          "hand_volume_mm3": 3141347.2166637313
+        },
+        "mesh": {
+          "elements": 31150,
+          "min_scaled_jacobian": 0.7699776032842572,
+          "inverted_elements": 0,
+          "gmsh": "4.15.0"
+        },
+        "nodes": 53751,
+        "solid_hz": [
+          62.43354,
+          206.5128,
+          372.0194,
+          443.1695,
+          577.3177,
+          851.3945
+        ],
+        "ross_0rpm_hz": [
+          61.93576084866349,
+          61.93576084956215,
+          209.90529269762882,
+          209.90529270490413
+        ],
+        "ross_first_forward_critical_rpm": 3717.3794337635095,
+        "ross_rotor_mass_kg": 49.31915130162059,
+        "speed_max_rpm": 3000.0
+      },
+      "metrics": {
+        "solid_f1_hz": 62.43354,
+        "ross_f1_hz": 61.93576084866349,
+        "solid_over_ross": 1.0080370232724323,
+        "ross_critical_rpm": 3717.3794337635095,
+        "corrected_critical_rpm": 3747.256098785128,
+        "corrected_margin_pct": 24.908536626170942
+      }
+    },
+    {
+      "label": "p03_detailed",
+      "parameters": {
+        "density_kg_per_m3": 7850.0,
+        "youngs_modulus_Pa": 205000000000.0,
+        "poisson_ratio": 0.29,
+        "n_elements": 20,
+        "bearing_span_m": 1.0,
+        "shaft_diameter_m": 0.065,
+        "disc_width_m": 0.025,
+        "disc_diameter_m": 0.4,
+        "bearing_stiffness_N_per_m": 10000000.0,
+        "bearing_damping_Ns_per_m": 500.0,
+        "speed_min_rpm": 1000.0,
+        "speed_max_rpm": 3000.0,
+        "campbell_max_rpm": 9000.0,
+        "campbell_points": 91,
+        "modes": 6,
+        "response_points": 41,
+        "hub_diameter_m": 0.13,
+        "hub_length_m": 0.1,
+        "journal_diameter_m": 0.055,
+        "journal_length_m": 0.05,
+        "element_size_mm": 10.0,
+        "mesh_scale": 0.8,
+        "scenario": "detailed"
+      },
+      "status": "completed",
+      "derived": {},
+      "solver": {
+        "success": true,
+        "message": "60685 nodes; solid 61.415 Hz, ROSS 62.635 Hz",
+        "nfev": 2
+      },
+      "solver_outputs": {
+        "cad": {
+          "volume_mm3": 3514656.781203581,
+          "hand_volume_mm3": 3514656.781203581
+        },
+        "mesh": {
+          "elements": 35784,
+          "min_scaled_jacobian": 0.7679800727398548,
+          "inverted_elements": 0,
+          "gmsh": "4.15.0"
+        },
+        "nodes": 60685,
+        "solid_hz": [
+          61.41493,
+          208.6697,
+          394.4929,
+          550.0469,
+          707.5672,
+          1094.295
+        ],
+        "ross_0rpm_hz": [
+          62.635210607072636,
+          62.635210608223616,
+          210.29240545943844,
+          210.2924054644017
+        ],
+        "ross_first_forward_critical_rpm": 3759.040100832303,
+        "ross_rotor_mass_kg": 55.18011146489623,
+        "speed_max_rpm": 3000.0
+      },
+      "metrics": {
+        "solid_f1_hz": 61.41493,
+        "ross_f1_hz": 62.635210607072636,
+        "solid_over_ross": 0.9805176577959036,
+        "ross_critical_rpm": 3759.040100832303,
+        "corrected_critical_rpm": 3685.805195228967,
+        "corrected_margin_pct": 22.860173174298893
+      }
+    },
+    {
+      "label": "p04_detailed_kb1e8",
+      "parameters": {
+        "density_kg_per_m3": 7850.0,
+        "youngs_modulus_Pa": 205000000000.0,
+        "poisson_ratio": 0.29,
+        "n_elements": 20,
+        "bearing_span_m": 1.0,
+        "shaft_diameter_m": 0.065,
+        "disc_width_m": 0.025,
+        "disc_diameter_m": 0.4,
+        "bearing_stiffness_N_per_m": 100000000.0,
+        "bearing_damping_Ns_per_m": 500.0,
+        "speed_min_rpm": 1000.0,
+        "speed_max_rpm": 3000.0,
+        "campbell_max_rpm": 9000.0,
+        "campbell_points": 91,
+        "modes": 6,
+        "response_points": 41,
+        "hub_diameter_m": 0.13,
+        "hub_length_m": 0.1,
+        "journal_diameter_m": 0.055,
+        "journal_length_m": 0.05,
+        "element_size_mm": 10.0,
+        "mesh_scale": 0.8,
+        "scenario": "detailed_kb1e8"
+      },
+      "status": "completed",
+      "derived": {},
+      "solver": {
+        "success": true,
+        "message": "60685 nodes; solid 76.252 Hz, ROSS 78.685 Hz",
+        "nfev": 2
+      },
+      "solver_outputs": {
+        "cad": {
+          "volume_mm3": 3514656.781203581,
+          "hand_volume_mm3": 3514656.781203581
+        },
+        "mesh": {
+          "elements": 35784,
+          "min_scaled_jacobian": 0.7679800727398548,
+          "inverted_elements": 0,
+          "gmsh": "4.15.0"
+        },
+        "nodes": 60685,
+        "solid_hz": [
+          76.25209,
+          337.8385,
+          707.5671,
+          764.9536,
+          784.6283,
+          1094.295
+        ],
+        "ross_0rpm_hz": [
+          78.68471743286219,
+          78.68471743314778,
+          352.5378653207528,
+          352.53786532077197
+        ],
+        "ross_first_forward_critical_rpm": 4724.129127647005,
+        "ross_rotor_mass_kg": 55.18011146489623,
+        "speed_max_rpm": 3000.0
+      },
+      "metrics": {
+        "solid_f1_hz": 76.25209,
+        "ross_f1_hz": 78.68471743286219,
+        "solid_over_ross": 0.9690838639035867,
+        "ross_critical_rpm": 4724.129127647005,
+        "corrected_critical_rpm": 4578.07730859964,
+        "corrected_margin_pct": 52.60257695332133
+      }
+    }
+  ],
+  "study": "rotor_solid",
+  "status": "completed",
+  "finished_utc": "2026-11-27T17:09:05+00:00"
+}
