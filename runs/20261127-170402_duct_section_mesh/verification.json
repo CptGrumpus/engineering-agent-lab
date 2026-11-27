@@ -1,0 +1,194 @@
+{
+  "run_id": "20261127-170402_duct_section_mesh",
+  "verified_utc": "2026-11-27T22:04:04+00:00",
+  "tolerances": {
+    "exact_rel_tol": 0.001,
+    "table_rel_tol": 0.0015,
+    "mesh_noise_rel": 1e-06,
+    "gci_max": 0.01
+  },
+  "points": [
+    {
+      "label": "p00_cells_across_half_gap-20",
+      "status": "FAIL",
+      "checks": [
+        {
+          "id": "parallel_plate_limit",
+          "description": "|wall excess with the side wall replaced by symmetry - 17/70 q H / k| / (17/70 q H / k) (exact)",
+          "kind": "numerical",
+          "value": 0.0004393859128927202,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "fRe_exact",
+          "description": "|Fanning fRe - the exact rectangular-duct series| / exact",
+          "kind": "numerical",
+          "value": 0.0013053461788071763,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "FAIL"
+        },
+        {
+          "id": "incropera_Nu_ar4",
+          "description": "|Nu, four walls at one temperature, b/a = 4 - Incropera Table 8.1 (5.33)| / 5.33 (printed to 3 figures)",
+          "kind": "numerical",
+          "value": 0.0010157621306876585,
+          "tolerance": 0.0015,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "incropera_Nu_ar8",
+          "description": "|Nu, four walls at one temperature, b/a = 8 - Incropera Table 8.1 (6.49)| / 6.49 (printed to 3 figures)",
+          "kind": "numerical",
+          "value": 0.0006805289893407895,
+          "tolerance": 0.0015,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p01_cells_across_half_gap-40",
+      "status": "PASS",
+      "checks": [
+        {
+          "id": "parallel_plate_limit",
+          "description": "|wall excess with the side wall replaced by symmetry - 17/70 q H / k| / (17/70 q H / k) (exact)",
+          "kind": "numerical",
+          "value": 0.00011018212555391482,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "fRe_exact",
+          "description": "|Fanning fRe - the exact rectangular-duct series| / exact",
+          "kind": "numerical",
+          "value": 0.0003415747443734629,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "incropera_Nu_ar4",
+          "description": "|Nu, four walls at one temperature, b/a = 4 - Incropera Table 8.1 (5.33)| / 5.33 (printed to 3 figures)",
+          "kind": "numerical",
+          "value": 0.0004245374854527917,
+          "tolerance": 0.0015,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "incropera_Nu_ar8",
+          "description": "|Nu, four walls at one temperature, b/a = 8 - Incropera Table 8.1 (6.49)| / 6.49 (printed to 3 figures)",
+          "kind": "numerical",
+          "value": 0.00022697199738752616,
+          "tolerance": 0.0015,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p02_cells_across_half_gap-80",
+      "status": "PASS",
+      "checks": [
+        {
+          "id": "parallel_plate_limit",
+          "description": "|wall excess with the side wall replaced by symmetry - 17/70 q H / k| / (17/70 q H / k) (exact)",
+          "kind": "numerical",
+          "value": 2.7566508379872623e-05,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "fRe_exact",
+          "description": "|Fanning fRe - the exact rectangular-duct series| / exact",
+          "kind": "numerical",
+          "value": 9.577996693188595e-05,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "incropera_Nu_ar4",
+          "description": "|Nu, four walls at one temperature, b/a = 4 - Incropera Table 8.1 (5.33)| / 5.33 (printed to 3 figures)",
+          "kind": "numerical",
+          "value": 0.000296418371662055,
+          "tolerance": 0.0015,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "incropera_Nu_ar8",
+          "description": "|Nu, four walls at one temperature, b/a = 8 - Incropera Table 8.1 (6.49)| / 6.49 (printed to 3 figures)",
+          "kind": "numerical",
+          "value": 0.00011931992327030017,
+          "tolerance": 0.0015,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ]
+    }
+  ],
+  "run_checks": [
+    {
+      "id": "discretization_wall_peak_excess_K",
+      "description": "relative discretization uncertainty of wall_peak_excess_K, monotone (R = 0.254): GCI_fine, observed order 1.97, extrapolated 12.2212",
+      "kind": "numerical",
+      "value": 3.936892267690756e-05,
+      "tolerance": 0.01,
+      "comparison": "<=",
+      "status": "PASS",
+      "metric": "wall_peak_excess_K"
+    },
+    {
+      "id": "discretization_wall_peak_temperature_C",
+      "description": "relative discretization uncertainty of wall_peak_temperature_C, monotone (R = 0.254): GCI_fine, observed order 1.97, extrapolated 44.2474",
+      "kind": "numerical",
+      "value": 1.0873507939114925e-05,
+      "tolerance": 0.01,
+      "comparison": "<=",
+      "status": "PASS",
+      "metric": "wall_peak_temperature_C"
+    }
+  ],
+  "run_check_detail": {
+    "meshes_used": [
+      "p02_cells_across_half_gap-80",
+      "p01_cells_across_half_gap-40",
+      "p00_cells_across_half_gap-20"
+    ],
+    "wall_peak_excess_K": {
+      "regime": "monotone",
+      "uncertainty": 3.936892267690756e-05,
+      "converged_exactly": false,
+      "order": 1.9744543873191873,
+      "extrapolated": 12.221188842471143,
+      "rel_error_fine": 9.227432672373972e-05,
+      "rel_error_extrapolated": 3.1494146229080663e-05,
+      "gci_fine": 3.936892267690756e-05,
+      "convergence_ratio": 0.25446614135248424,
+      "r21": 2.0,
+      "r32": 2.0
+    },
+    "wall_peak_temperature_C": {
+      "regime": "monotone",
+      "uncertainty": 1.0873507939114925e-05,
+      "converged_exactly": false,
+      "order": 1.974454387318609,
+      "extrapolated": 44.24736464854316,
+      "rel_error_fine": 2.548572721790673e-05,
+      "rel_error_extrapolated": 8.69873068268466e-06,
+      "gci_fine": 1.0873507939114925e-05,
+      "convergence_ratio": 0.2544661413525863,
+      "r21": 2.0,
+      "r32": 2.0
+    }
+  },
+  "status": "FAIL"
+}

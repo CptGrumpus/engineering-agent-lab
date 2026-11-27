@@ -15,6 +15,16 @@
 #      0.1 %.
 #   P3 REQ-T1-3D passes: the wall peaks at about 44.25 C, using 22 % of study 11's 0.97 K margin.
 #   P4 Seconds.
+#
+# Results (run 20261127-170402_duct_section_mesh): verification FAIL, on one point check at the coarsest grid; the
+# run-level GCI passes.
+#   P1 NOT HELD at 20 cells: fRe_exact 1.31e-3 against 1e-3 (40 cells: 3.4e-4, 80: 9.6e-5: second order, the
+#      coarsest grid's own discretisation error). Every other check passes at every grid (the parallel-plate limit
+#      4.4e-4 / 1.1e-4 / 2.8e-5; Incropera within 1.0e-3 / 4.3e-4 / 3.0e-4 at b/a = 4). Tolerance unchanged.
+#   P2 HELD: peak wall excess 12.215 / 12.220 / 12.221 K (parallel plates 12.003), 1.8 % higher, at the side wall;
+#      GCI 4e-5.
+#   P3 HELD: REQ-T1-3D passes, the wall peaking at 44.25 C, 22 % of study 11's 0.97 K margin.
+#   P4 HELD.
 
 [case]
 name = "duct_section_mesh"

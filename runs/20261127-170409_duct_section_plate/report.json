@@ -1,0 +1,457 @@
+{
+  "points": [
+    {
+      "label": "p00_plate_thickness_mm-0.1",
+      "parameters": {
+        "gap_mm": 1.0,
+        "width_mm": 20.0,
+        "cells_across_half_gap": 40,
+        "side_growth": 1.08,
+        "dz_max_over_dy": 8.0,
+        "bc": "plate",
+        "plate_conductivity_W_per_mK": 167.0,
+        "plate_thickness_mm": 0.1,
+        "fluid_conductivity_W_per_mK": 0.607,
+        "wall_heat_flux_W_per_m2": 30000.0,
+        "wall_temperature_2D_C": 44.029,
+        "wall_limit_C": 45.0
+      },
+      "derived": {
+        "parallel_plate_excess_K": 12.002824193927983,
+        "plate_conductance_rel_mm": 27.512355848434925,
+        "study11_margin_K": 0.9709999999999965
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "parallel_plate_limit",
+          "description": "|wall excess with the side wall replaced by symmetry - 17/70 q H / k| / (17/70 q H / k) (exact)",
+          "kind": "numerical",
+          "value": 0.00011018212555391482,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "fRe_exact",
+          "description": "|Fanning fRe - the exact rectangular-duct series| / exact",
+          "kind": "numerical",
+          "value": 0.0003415747443734629,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "incropera_Nu_ar4",
+          "description": "|Nu, four walls at one temperature, b/a = 4 - Incropera Table 8.1 (5.33)| / 5.33 (printed to 3 figures)",
+          "kind": "numerical",
+          "value": 0.0004245374854527917,
+          "tolerance": 0.0015,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "incropera_Nu_ar8",
+          "description": "|Nu, four walls at one temperature, b/a = 8 - Incropera Table 8.1 (6.49)| / 6.49 (printed to 3 figures)",
+          "kind": "numerical",
+          "value": 0.00022697199738752616,
+          "tolerance": 0.0015,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-T1-3D",
+          "text": "With the side walls, the passage's wall stays at or under 45 C (study 11's REQ on the wall temperature, at its hottest point across the width): the 3D peak excess corrected onto study 11's verified 2D value.",
+          "metric": "wall_peak_temperature_C",
+          "operator": "<=",
+          "limit": 45.0,
+          "units": "C",
+          "value": 45.86054862188904,
+          "margin": -0.8605486218890377,
+          "verdict": "FAIL"
+        }
+      ]
+    },
+    {
+      "label": "p01_plate_thickness_mm-0.25",
+      "parameters": {
+        "gap_mm": 1.0,
+        "width_mm": 20.0,
+        "cells_across_half_gap": 40,
+        "side_growth": 1.08,
+        "dz_max_over_dy": 8.0,
+        "bc": "plate",
+        "plate_conductivity_W_per_mK": 167.0,
+        "plate_thickness_mm": 0.25,
+        "fluid_conductivity_W_per_mK": 0.607,
+        "wall_heat_flux_W_per_m2": 30000.0,
+        "wall_temperature_2D_C": 44.029,
+        "wall_limit_C": 45.0
+      },
+      "derived": {
+        "parallel_plate_excess_K": 12.002824193927983,
+        "plate_conductance_rel_mm": 68.78088962108731,
+        "study11_margin_K": 0.9709999999999965
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "parallel_plate_limit",
+          "description": "|wall excess with the side wall replaced by symmetry - 17/70 q H / k| / (17/70 q H / k) (exact)",
+          "kind": "numerical",
+          "value": 0.00011018212555391482,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "fRe_exact",
+          "description": "|Fanning fRe - the exact rectangular-duct series| / exact",
+          "kind": "numerical",
+          "value": 0.0003415747443734629,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "incropera_Nu_ar4",
+          "description": "|Nu, four walls at one temperature, b/a = 4 - Incropera Table 8.1 (5.33)| / 5.33 (printed to 3 figures)",
+          "kind": "numerical",
+          "value": 0.0004245374854527917,
+          "tolerance": 0.0015,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "incropera_Nu_ar8",
+          "description": "|Nu, four walls at one temperature, b/a = 8 - Incropera Table 8.1 (6.49)| / 6.49 (printed to 3 figures)",
+          "kind": "numerical",
+          "value": 0.00022697199738752616,
+          "tolerance": 0.0015,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-T1-3D",
+          "text": "With the side walls, the passage's wall stays at or under 45 C (study 11's REQ on the wall temperature, at its hottest point across the width): the 3D peak excess corrected onto study 11's verified 2D value.",
+          "metric": "wall_peak_temperature_C",
+          "operator": "<=",
+          "limit": 45.0,
+          "units": "C",
+          "value": 44.846979684403145,
+          "margin": 0.15302031559685503,
+          "verdict": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p02_plate_thickness_mm-0.5",
+      "parameters": {
+        "gap_mm": 1.0,
+        "width_mm": 20.0,
+        "cells_across_half_gap": 40,
+        "side_growth": 1.08,
+        "dz_max_over_dy": 8.0,
+        "bc": "plate",
+        "plate_conductivity_W_per_mK": 167.0,
+        "plate_thickness_mm": 0.5,
+        "fluid_conductivity_W_per_mK": 0.607,
+        "wall_heat_flux_W_per_m2": 30000.0,
+        "wall_temperature_2D_C": 44.029,
+        "wall_limit_C": 45.0
+      },
+      "derived": {
+        "parallel_plate_excess_K": 12.002824193927983,
+        "plate_conductance_rel_mm": 137.56177924217462,
+        "study11_margin_K": 0.9709999999999965
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "parallel_plate_limit",
+          "description": "|wall excess with the side wall replaced by symmetry - 17/70 q H / k| / (17/70 q H / k) (exact)",
+          "kind": "numerical",
+          "value": 0.00011018212555391482,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "fRe_exact",
+          "description": "|Fanning fRe - the exact rectangular-duct series| / exact",
+          "kind": "numerical",
+          "value": 0.0003415747443734629,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "incropera_Nu_ar4",
+          "description": "|Nu, four walls at one temperature, b/a = 4 - Incropera Table 8.1 (5.33)| / 5.33 (printed to 3 figures)",
+          "kind": "numerical",
+          "value": 0.0004245374854527917,
+          "tolerance": 0.0015,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "incropera_Nu_ar8",
+          "description": "|Nu, four walls at one temperature, b/a = 8 - Incropera Table 8.1 (6.49)| / 6.49 (printed to 3 figures)",
+          "kind": "numerical",
+          "value": 0.00022697199738752616,
+          "tolerance": 0.0015,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-T1-3D",
+          "text": "With the side walls, the passage's wall stays at or under 45 C (study 11's REQ on the wall temperature, at its hottest point across the width): the 3D peak excess corrected onto study 11's verified 2D value.",
+          "metric": "wall_peak_temperature_C",
+          "operator": "<=",
+          "limit": 45.0,
+          "units": "C",
+          "value": 44.50438210189922,
+          "margin": 0.4956178981007824,
+          "verdict": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p03_plate_thickness_mm-1",
+      "parameters": {
+        "gap_mm": 1.0,
+        "width_mm": 20.0,
+        "cells_across_half_gap": 40,
+        "side_growth": 1.08,
+        "dz_max_over_dy": 8.0,
+        "bc": "plate",
+        "plate_conductivity_W_per_mK": 167.0,
+        "plate_thickness_mm": 1.0,
+        "fluid_conductivity_W_per_mK": 0.607,
+        "wall_heat_flux_W_per_m2": 30000.0,
+        "wall_temperature_2D_C": 44.029,
+        "wall_limit_C": 45.0
+      },
+      "derived": {
+        "parallel_plate_excess_K": 12.002824193927983,
+        "plate_conductance_rel_mm": 275.12355848434925,
+        "study11_margin_K": 0.9709999999999965
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "parallel_plate_limit",
+          "description": "|wall excess with the side wall replaced by symmetry - 17/70 q H / k| / (17/70 q H / k) (exact)",
+          "kind": "numerical",
+          "value": 0.00011018212555391482,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "fRe_exact",
+          "description": "|Fanning fRe - the exact rectangular-duct series| / exact",
+          "kind": "numerical",
+          "value": 0.0003415747443734629,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "incropera_Nu_ar4",
+          "description": "|Nu, four walls at one temperature, b/a = 4 - Incropera Table 8.1 (5.33)| / 5.33 (printed to 3 figures)",
+          "kind": "numerical",
+          "value": 0.0004245374854527917,
+          "tolerance": 0.0015,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "incropera_Nu_ar8",
+          "description": "|Nu, four walls at one temperature, b/a = 8 - Incropera Table 8.1 (6.49)| / 6.49 (printed to 3 figures)",
+          "kind": "numerical",
+          "value": 0.00022697199738752616,
+          "tolerance": 0.0015,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-T1-3D",
+          "text": "With the side walls, the passage's wall stays at or under 45 C (study 11's REQ on the wall temperature, at its hottest point across the width): the 3D peak excess corrected onto study 11's verified 2D value.",
+          "metric": "wall_peak_temperature_C",
+          "operator": "<=",
+          "limit": 45.0,
+          "units": "C",
+          "value": 44.33218020590002,
+          "margin": 0.6678197940999766,
+          "verdict": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p04_plate_thickness_mm-2",
+      "parameters": {
+        "gap_mm": 1.0,
+        "width_mm": 20.0,
+        "cells_across_half_gap": 40,
+        "side_growth": 1.08,
+        "dz_max_over_dy": 8.0,
+        "bc": "plate",
+        "plate_conductivity_W_per_mK": 167.0,
+        "plate_thickness_mm": 2.0,
+        "fluid_conductivity_W_per_mK": 0.607,
+        "wall_heat_flux_W_per_m2": 30000.0,
+        "wall_temperature_2D_C": 44.029,
+        "wall_limit_C": 45.0
+      },
+      "derived": {
+        "parallel_plate_excess_K": 12.002824193927983,
+        "plate_conductance_rel_mm": 550.2471169686985,
+        "study11_margin_K": 0.9709999999999965
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "parallel_plate_limit",
+          "description": "|wall excess with the side wall replaced by symmetry - 17/70 q H / k| / (17/70 q H / k) (exact)",
+          "kind": "numerical",
+          "value": 0.00011018212555391482,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "fRe_exact",
+          "description": "|Fanning fRe - the exact rectangular-duct series| / exact",
+          "kind": "numerical",
+          "value": 0.0003415747443734629,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "incropera_Nu_ar4",
+          "description": "|Nu, four walls at one temperature, b/a = 4 - Incropera Table 8.1 (5.33)| / 5.33 (printed to 3 figures)",
+          "kind": "numerical",
+          "value": 0.0004245374854527917,
+          "tolerance": 0.0015,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "incropera_Nu_ar8",
+          "description": "|Nu, four walls at one temperature, b/a = 8 - Incropera Table 8.1 (6.49)| / 6.49 (printed to 3 figures)",
+          "kind": "numerical",
+          "value": 0.00022697199738752616,
+          "tolerance": 0.0015,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-T1-3D",
+          "text": "With the side walls, the passage's wall stays at or under 45 C (study 11's REQ on the wall temperature, at its hottest point across the width): the 3D peak excess corrected onto study 11's verified 2D value.",
+          "metric": "wall_peak_temperature_C",
+          "operator": "<=",
+          "limit": 45.0,
+          "units": "C",
+          "value": 44.24585208617847,
+          "margin": 0.7541479138215266,
+          "verdict": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p05_plate_thickness_mm-4",
+      "parameters": {
+        "gap_mm": 1.0,
+        "width_mm": 20.0,
+        "cells_across_half_gap": 40,
+        "side_growth": 1.08,
+        "dz_max_over_dy": 8.0,
+        "bc": "plate",
+        "plate_conductivity_W_per_mK": 167.0,
+        "plate_thickness_mm": 4.0,
+        "fluid_conductivity_W_per_mK": 0.607,
+        "wall_heat_flux_W_per_m2": 30000.0,
+        "wall_temperature_2D_C": 44.029,
+        "wall_limit_C": 45.0
+      },
+      "derived": {
+        "parallel_plate_excess_K": 12.002824193927983,
+        "plate_conductance_rel_mm": 1100.494233937397,
+        "study11_margin_K": 0.9709999999999965
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "parallel_plate_limit",
+          "description": "|wall excess with the side wall replaced by symmetry - 17/70 q H / k| / (17/70 q H / k) (exact)",
+          "kind": "numerical",
+          "value": 0.00011018212555391482,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "fRe_exact",
+          "description": "|Fanning fRe - the exact rectangular-duct series| / exact",
+          "kind": "numerical",
+          "value": 0.0003415747443734629,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "incropera_Nu_ar4",
+          "description": "|Nu, four walls at one temperature, b/a = 4 - Incropera Table 8.1 (5.33)| / 5.33 (printed to 3 figures)",
+          "kind": "numerical",
+          "value": 0.0004245374854527917,
+          "tolerance": 0.0015,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "incropera_Nu_ar8",
+          "description": "|Nu, four walls at one temperature, b/a = 8 - Incropera Table 8.1 (6.49)| / 6.49 (printed to 3 figures)",
+          "kind": "numerical",
+          "value": 0.00022697199738752616,
+          "tolerance": 0.0015,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-T1-3D",
+          "text": "With the side walls, the passage's wall stays at or under 45 C (study 11's REQ on the wall temperature, at its hottest point across the width): the 3D peak excess corrected onto study 11's verified 2D value.",
+          "metric": "wall_peak_temperature_C",
+          "operator": "<=",
+          "limit": 45.0,
+          "units": "C",
+          "value": 44.20263105777878,
+          "margin": 0.7973689422212189,
+          "verdict": "PASS"
+        }
+      ]
+    }
+  ],
+  "run_id": "20261127-170409_duct_section_plate",
+  "generated_utc": "2026-11-27T22:04:11+00:00",
+  "verification_status": "PASS"
+}
