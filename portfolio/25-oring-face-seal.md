@@ -153,6 +153,16 @@ faces' flatness to well under that, rather than thicken the cover.
   which at a loaded support node includes its own share of the load. The washer footprints carry no load, so there
   the printed reaction is the true one, and the equilibrium check is made only there.
 
+### The seal as built
+
+The seal is delivered as a detailed CadQuery assembly ([`models/cad/oring_cover.py`](../models/cad/oring_cover.py),
+[STEP](cad/oring_seal_nominal.step)): the pump flange with the face groove and four tapped holes, the O-ring drawn
+free, the 6 mm cover, and four M6 socket-head screws with washers. Every part matches a hand volume to 10⁻⁹. Two
+overlaps are intended and measured, not forbidden: the free O-ring stands 0.74 mm proud of the sealing face, and its
+overlap with the cover (250.6 mm³) is its squeeze, equal to the hand formula; each screw's shank overlaps its tapped
+hole by the thread engagement (the threads are not drawn). Nothing else touches. The flange and the screws are
+synthetic.
+
 ### Limits (part 2)
 
 - The cover is synthetic (geometry, material, bolts); the answer is the lift per thickness, to set against the real

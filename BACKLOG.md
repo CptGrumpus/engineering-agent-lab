@@ -126,7 +126,7 @@ change:
 | 18 nozzle | CadQuery 3D | **Done (part 2):** limit load (no classification line) at three meshes and four walls, plain-cylinder reference (6e-5); detailed assembly as analysed and with a pad, STEP (models/cad/vessel_nozzle.py); runs 20261127-143302 | 12 mm passes without a pad: collapse 1.675 (extrapolated 1.663) against 1.5; part 1's crotch-line recommendation withdrawn; one far-mesh equilibrium check fails (1.08e-5, left standing) |
 | 27 enclosure | 3D CFD boxes | housing with fins, board, components, cable glands | U1 and board temperatures |
 | 11/15 cold plate | CFD channel | serpentine channel plate with ports and screws | pressure drop, hot spot |
-| 25 O-ring | axisymmetric (right) | flange and groove assembly for the drawing and render | none expected (visual, drawing) |
+| 25 O-ring | axisymmetric (right) | **Done (2026-11-27):** flange with groove and tapped holes, free O-ring, 6 mm cover, M6 screws and washers, STEP (models/cad/oring_cover.py); squeeze overlap and thread engagement measured against hand formulas | none (visual, drawing); the cover's stiffness checked in part 2 |
 | 24 cracked plate | 2D, 3D surface crack | weld toe of a T-joint (with weld fatigue I) | crack initiation site, life |
 | 20 motor | 2D EM | 3D lamination stack and housing for the render | none (visual) |
 | 01-14, 21, 22 | CadQuery single parts | chamfers, real hole patterns, STEP + drawing links | small; deliverable set |
