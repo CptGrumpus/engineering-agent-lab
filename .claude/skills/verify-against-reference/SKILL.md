@@ -65,6 +65,7 @@ points). References live in `validation/` and must not import from `models/`; ke
 | roller in 3D (`roller_3d`) | Hertz line contact at mid-length for the local line load there (long-roller limit); roller and plate reactions; the target load bracketed by the steps | GCI over contact_element_size_mm |
 | O-ring cover (`oring_cover`) | the edge-supported plate against Mindlin's plate (Kirchhoff plus the shear term); the washer reaction against the applied load (exact: the footprints carry no load) | GCI over element_size_mm |
 | duct section (`duct_section`) | in every point: the parallel-plate limit (17/70 q H / k, exact), Fanning fRe against the exact rectangular-duct series, Incropera Table 8.1 Nu for four walls at one temperature (5.33, 6.49) | GCI over cells_across_half_gap |
+| roller on half-spaces (`roller_halfspace`) | in every point, on its own grid: a long straight roller's mid-length pressure against Hertz line contact for the line load that section carries, and a circularly crowned roller against Hertz's elliptical contact (Johnson: b^3 = 3 W (K - E) / (2 pi E* e^2 B)) | GCI over grid_scale |
 
 Two kinds of check, both gating verification:
 - **numerical**: were the equations solved correctly?

@@ -68,6 +68,7 @@ The intended user is an automotive engineer with a master's degree in mechanical
 | Track roller in 3D with its ends (study 10 part 2: edge loading, crowned profiles) | `ccx_roller_3d` | Study 10's section extruded along the roller (graded layers), profile as a micron drop, CalculiX penalty contact, one step per approach, interpolated to the target load | (cases to follow) |
 | O-ring cover between its bolts (study 25 part 2: the cover's lift at the seal against the squeeze margin) | `ccx_oring_cover` | CadQuery quarter cover, Gmsh C3D10, CalculiX static; washer footprints held; plate theory as the reference | `oring_cover_reference`, `oring_cover_mesh`, `oring_cover_thickness` |
 | Cold-plate passage with its side walls (study 11 part 2: the broad wall's hot spot near the side walls, with the plate's spreading) | `python_duct_section` | Finite volumes on the quarter cross-section (SciPy), fully developed; the plate as a conducting sheet, or the H1 / H2 bounds | `duct_section_mesh`, `duct_section_plate`, `duct_section_bounds` |
+| Track roller along its length by half-space contact (study 10 part 2: ends, edge radius, logarithmic crown) | `python_roller_halfspace` | Boussinesq / Love influence coefficients on a quarter grid, active-set contact, approach set by the load; Hertz line and elliptical contact inside every point | `roller_hs_crown`, `roller_hs_mesh`, `roller_hs_plain`, `roller_hs_square` |
 
 ## Project folders
 
