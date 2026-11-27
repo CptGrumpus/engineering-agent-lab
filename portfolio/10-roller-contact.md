@@ -68,7 +68,7 @@ profile does it need?
 The crown is the logarithmic profile of the Fujiwara-Kawase form, its drop capped at 30 µm at the ends. Too gentle
 a crown leaves the ends loaded; too strong a crown piles the load into the middle. The window runs from about 1.1 to
 2.5 times Lundberg's parameter, a drop at 1 mm from the end of about 3.1 to 7.1 µm. The drawing should call for about
-3.7 µm there, with a tolerance of about ±2 µm. With it, the roller keeps part 1's verdict at 617 MPa, 1.7 % above the
+3.7 µm there, with a tolerance of about ±2 µm. With it, the roller keeps part 1's verdict at 617 MPa, 1.8 % above the
 long roller.
 
 ### How it works
