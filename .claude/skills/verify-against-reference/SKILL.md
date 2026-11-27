@@ -151,6 +151,15 @@ Predict convergence on the reported quantity, not the solver's residual norm (El
   8.7 %): not a fixed definition offset but most likely the reference's peak resolution (a global strain-energy
   criterion). One point cannot tell an offset from a trend; three can.
 
+- **State a reference's conditions exactly, and test them in a trial before the case.** "The stress averaged
+  through the thickness equals plane stress" holds only in the thin limit: averaged stresses satisfy
+  plane-stress equilibrium exactly but not its stress-strain law (sigma_zz averages to zero without vanishing).
+  The 3D strap's trials showed 0.4 % that did not shrink with the mesh; the reference became the thin-plate
+  limit (t / d 0.0025, within 0.13 %), and the 0.4 % a reported thickness effect (study 2 part 2).
+- **A validity check's premise can fail in the limit case run to check the model.** "Peak at mid-thickness"
+  failed on the thin plate, where the profile is uniform to 1e-4 and the maximum lands on a mid-side node. Write
+  validity checks so they skip where their premise does not apply (or state it in the check), before the run.
+
 ## Artifacts
 
 `verification.json`, plus `points/<label>/{checks.json, reference.csv, response.png}`.

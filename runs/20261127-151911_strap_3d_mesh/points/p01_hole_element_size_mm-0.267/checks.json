@@ -1,0 +1,78 @@
+{
+  "label": "p01_hole_element_size_mm-0.267",
+  "status": "PASS",
+  "checks": [
+    {
+      "id": "cad_area",
+      "description": "|face area from CadQuery - closed form| / closed form",
+      "kind": "numerical",
+      "value": 1.467178235171414e-16,
+      "tolerance": 1e-09,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "loaded_area",
+      "description": "|area of the loaded element faces - W t / 4| / (W t / 4)",
+      "kind": "numerical",
+      "value": 2.220446049250313e-16,
+      "tolerance": 1e-09,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "equilibrium",
+      "description": "|reaction on x = 0 + F / 4| / (F / 4)",
+      "kind": "numerical",
+      "value": 0.0,
+      "tolerance": 1e-06,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "ligament_force",
+      "description": "|integral of sigma_xx over the ligament face - F / 4| / (F / 4)",
+      "kind": "numerical",
+      "value": 0.0008288796909784457,
+      "tolerance": 0.01,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "far_field_uniform",
+      "description": "max |sigma_xx on the loaded end - F / (W t)| / (F / (W t))",
+      "kind": "numerical",
+      "value": 0.00016320000000003,
+      "tolerance": 0.001,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "kt_mean_reference",
+      "description": "|Kt_net of the through-thickness mean - Peterson (plane stress)| / Peterson (model form: the mean differs from plane stress by order (t / r)^2)",
+      "kind": "numerical",
+      "value": 0.009197676948400568,
+      "tolerance": 0.02,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "mid_is_peak",
+      "description": "the hole-edge peak is at mid-thickness (0 = yes)",
+      "kind": "validity",
+      "value": 0.0,
+      "tolerance": 0.0,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "linear_material",
+      "description": "peak hole-edge stress / yield strength",
+      "kind": "validity",
+      "value": 0.4307282608695652,
+      "tolerance": 1.0,
+      "comparison": "<=",
+      "status": "PASS"
+    }
+  ]
+}

@@ -1,0 +1,96 @@
+{
+  "label": "p00_baseline",
+  "status": "FAIL",
+  "checks": [
+    {
+      "id": "cad_area",
+      "description": "|face area from CadQuery - closed form| / closed form",
+      "kind": "numerical",
+      "value": 1.467178235171414e-16,
+      "tolerance": 1e-09,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "loaded_area",
+      "description": "|area of the loaded element faces - W t / 4| / (W t / 4)",
+      "kind": "numerical",
+      "value": 1.1102230246251565e-16,
+      "tolerance": 1e-09,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "equilibrium",
+      "description": "|reaction on x = 0 + F / 4| / (F / 4)",
+      "kind": "numerical",
+      "value": 0.0,
+      "tolerance": 1e-06,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "ligament_force",
+      "description": "|integral of sigma_xx over the ligament face - F / 4| / (F / 4)",
+      "kind": "numerical",
+      "value": 0.0006054311686667369,
+      "tolerance": 0.01,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "far_field_uniform",
+      "description": "max |sigma_xx on the loaded end - F / (W t)| / (F / (W t))",
+      "kind": "numerical",
+      "value": 0.00015359999999997598,
+      "tolerance": 0.001,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "kt_mean_reference",
+      "description": "|Kt_net of the through-thickness mean - Peterson (plane stress)| / Peterson (model form: the mean differs from plane stress by order (t / r)^2)",
+      "kind": "numerical",
+      "value": 0.006037357761397022,
+      "tolerance": 0.02,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "mid_is_peak",
+      "description": "the hole-edge peak is at mid-thickness (0 = yes)",
+      "kind": "validity",
+      "value": 1.0,
+      "tolerance": 0.0,
+      "comparison": "<=",
+      "status": "FAIL"
+    },
+    {
+      "id": "linear_material",
+      "description": "peak hole-edge stress / yield strength",
+      "kind": "validity",
+      "value": 0.4244492753623188,
+      "tolerance": 1.0,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "thin_plate_limit",
+      "description": "|mid-thickness hole stress - study 2's plane-stress value| / plane stress (thin plate: the 3D solution tends to plane stress)",
+      "kind": "numerical",
+      "value": 0.0012821827879783143,
+      "tolerance": 0.003,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "thin_plate_uniform",
+      "description": "|face / mid-thickness hole stress - 1| (thin plate: uniform through t)",
+      "kind": "numerical",
+      "value": 0.0,
+      "tolerance": 0.003,
+      "comparison": "<=",
+      "status": "PASS"
+    }
+  ]
+}

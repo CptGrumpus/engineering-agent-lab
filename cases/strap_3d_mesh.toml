@@ -16,6 +16,19 @@
 #   P3 REQ-H1 still passes at 16 mm, by about 1 % (118.8 against 120): plane stress was 1.5 % optimistic, inside its
 #      2.6 % margin. The face sees about 114.4 MPa, 2.2 % under plane stress.
 #   P4 A few minutes in all.
+#
+# Results (run 20261127-151911_strap_3d_mesh): verification PASS (24/24 point checks, 2/2 run checks).
+#   P1 HELD.
+#   P2 HELD: mid-thickness 118.962 / 118.881 / 118.827 MPa at 0.4 / 0.267 / 0.178 mm (predicted 118.96 / 118.87 /
+#      118.82), monotone from above, observed order 1.0, extrapolated 118.72; GCI 0.11 % (predicted under 0.5 %).
+#   P3 HELD: REQ-H1 PASSES at 16 mm, 118.83 MPa against 120 (margin 1.0 %; extrapolated 118.72, 1.1 %). Plane stress
+#      was optimistic by 1.5-1.6 % (mid / plane stress 1.0157 on the finest mesh, 1.0148 extrapolated), inside its
+#      2.6 % margin. The face sees 114.43 MPa, 2.2 % under plane stress (predicted 114.4). The mean through the
+#      thickness is 117.46 MPa (extrapolated 117.36), 0.3-0.4 % over plane stress: the order (t / r)^2 difference of
+#      generalised plane stress at t / r = 0.5.
+#   P4 HELD: about 3 minutes.
+# Answer: the 16 mm hole still passes with the thickness modelled, by 1 % instead of 2.6 %; study 2's "a few percent
+# higher at mid-thickness" is 1.5 %.
 
 [case]
 name = "strap_3d_mesh"

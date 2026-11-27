@@ -43,7 +43,7 @@ All problems are synthetic, so no client data is involved. Every number comes fr
 | | Question | Answer |
 |---|---|---|
 | [1. Cantilever bracket, 3D finite elements](portfolio/01-cantilever-bracket.md) | Does a steel cantilever meet its stiffness and stress limits, and how accurate is the model? | Yes: 0.953 mm deflection and 150 MPa root stress, with 0.02 % mesh uncertainty. |
-| [2. Cable hole in a strap, CAD to FEA](portfolio/02-strap-cable-hole.md) | How large can a cable hole in an aluminium strap be before the stress at its edge exceeds the allowable? | About 16.7 mm. A 16 mm hole passes at 117 MPa; 18 mm fails at 125 MPa. |
+| [2. Cable hole in a strap, CAD to FEA](portfolio/02-strap-cable-hole.md) | How large can a cable hole in an aluminium strap be before the stress at its edge exceeds the allowable? | About 16.7 mm. A 16 mm hole passes at 117 MPa; 18 mm fails at 125 MPa. Part 2, in 3D: the peak at mid-thickness is 1.5 % higher; the largest hole is about 16.3 mm, and 16 mm passes by 1 %. |
 | [3. Strap fatigue life, chained analysis](portfolio/03-strap-fatigue.md) | Does the strap survive ten million service cycles, and what cyclic load can it be rated for? | Yes, by a wide margin; rated to about 7.8 kN cyclic for 3 × 10⁷ cycles. |
 | [4. Bracket arm vibration, modal analysis](portfolio/04-bracket-modal.md) | How thin can an engine-mounted bracket arm be and keep its first mode above 250 Hz within a mass budget? | 7 mm: 261.7 Hz at 206 g. |
 | [10. Roller-on-plate contact](portfolio/10-roller-contact.md) | Does a track roller's contact stay within its pressure and subsurface-shear limits at 500 N/mm? | Yes: 609 MPa against 650, and 184 MPa shear against 200. Matches Hertz to 0.4 %. |

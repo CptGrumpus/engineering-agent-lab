@@ -9,6 +9,16 @@
 #   P1 Every check passes, thin_plate_limit within its 3e-3 (the 3D quads and study 2's triangles at a similar size:
 #      about 0.1 %); thin_plate_uniform within it by far (about 1e-5).
 #   P2 Under a minute.
+#
+# Results (run 20261127-151903_strap_3d_thin): verification FAIL (9/10 checks), on one validity check.
+#   P1 NOT HELD, on mid_is_peak: in the thin limit the hole-edge stress is uniform to 1e-4 (117.138 at the corner
+#      nodes, 117.148 at the mid-side nodes between them, the nodal extrapolation's pattern), so the largest value
+#      sits at a mid-side node, not at z = 0. The check's premise (a thick plate, peak at mid-thickness) does not hold
+#      in the thin limit; the failure is left standing, its tolerance unchanged. The reference checks pass:
+#      thin_plate_limit 1.28e-3 (mid-thickness 117.148 against plane stress 116.988; predicted about 0.1 %),
+#      thin_plate_uniform 0 at the corner nodes (face 117.138 = mid-plane 117.138); equilibrium exact, ligament force
+#      6e-4.
+#   P2 HELD: seconds.
 
 [case]
 name = "strap_3d_thin"

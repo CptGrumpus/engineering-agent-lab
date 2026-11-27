@@ -130,7 +130,9 @@ Run every command from the repository root.
    is not measurable, or if the verification tolerances are absent, stop and ask. Tolerances
    must exist **before** the run.
 3. **Run.**
-   - New run: `.venv/Scripts/python.exe -m harness run cases/<case>.toml`
+   - New run: `.venv/Scripts/python.exe -m harness run cases/<case>.toml` (solves only: no verification.json or
+     report.md until `harness verify <run_dir>` and `harness report <run_dir>`; for an evidence run use
+     `pipeline`, as six runs on 2026-11-27 had to be verified afterwards)
    - Run + verify + report in one step: `.venv/Scripts/python.exe -m harness pipeline cases/<case>.toml`
    - Reproduce an earlier run: `.venv/Scripts/python.exe -m harness rerun runs/<run_id>`
 4. **Read the output.** The last lines are `RUN_DIR <path>` (and `REPRODUCIBILITY PASS|FAIL` for

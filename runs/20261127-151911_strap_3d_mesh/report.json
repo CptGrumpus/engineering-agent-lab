@@ -1,0 +1,352 @@
+{
+  "points": [
+    {
+      "label": "p00_hole_element_size_mm-0.4",
+      "parameters": {
+        "length_mm": 160.0,
+        "width_mm": 40.0,
+        "thickness_mm": 4.0,
+        "hole_diameter_mm": 16.0,
+        "axial_load_N": 5000.0,
+        "youngs_modulus_MPa": 68900.0,
+        "poisson_ratio": 0.33,
+        "yield_strength_MPa": 276.0,
+        "hole_element_size_mm": 0.4,
+        "far_element_size_mm": 4.0,
+        "z_layers": 0,
+        "z_ratio": 1.3,
+        "plane_stress_peak_MPa": 116.988
+      },
+      "derived": {
+        "t_over_d": 0.25,
+        "t_over_r": 0.5,
+        "net_stress_MPa": 52.083333333333336,
+        "kt_net_peterson": 2.23568,
+        "peak_stress_peterson_MPa": 116.44166666666666,
+        "face_area_closed_form_mm2": 1549.7345175425633
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "cad_area",
+          "description": "|face area from CadQuery - closed form| / closed form",
+          "kind": "numerical",
+          "value": 1.467178235171414e-16,
+          "tolerance": 1e-09,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "loaded_area",
+          "description": "|area of the loaded element faces - W t / 4| / (W t / 4)",
+          "kind": "numerical",
+          "value": 2.220446049250313e-16,
+          "tolerance": 1e-09,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "equilibrium",
+          "description": "|reaction on x = 0 + F / 4| / (F / 4)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "ligament_force",
+          "description": "|integral of sigma_xx over the ligament face - F / 4| / (F / 4)",
+          "kind": "numerical",
+          "value": 0.0006110106936061399,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "far_field_uniform",
+          "description": "max |sigma_xx on the loaded end - F / (W t)| / (F / (W t))",
+          "kind": "numerical",
+          "value": 0.00016320000000003,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "kt_mean_reference",
+          "description": "|Kt_net of the through-thickness mean - Peterson (plane stress)| / Peterson (model form: the mean differs from plane stress by order (t / r)^2)",
+          "kind": "numerical",
+          "value": 0.009796934373434318,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "mid_is_peak",
+          "description": "the hole-edge peak is at mid-thickness (0 = yes)",
+          "kind": "validity",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "linear_material",
+          "description": "peak hole-edge stress / yield strength",
+          "kind": "validity",
+          "value": 0.4310217391304348,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-H1",
+          "text": "Peak stress at the hole edge under the 5 kN service load shall not exceed 120 MPa (synthetic fatigue allowable), anywhere through the thickness.",
+          "metric": "peak_hole_stress_MPa",
+          "operator": "<=",
+          "limit": 120.0,
+          "units": "MPa",
+          "value": 118.962,
+          "margin": 1.0379999999999967,
+          "verdict": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p01_hole_element_size_mm-0.267",
+      "parameters": {
+        "length_mm": 160.0,
+        "width_mm": 40.0,
+        "thickness_mm": 4.0,
+        "hole_diameter_mm": 16.0,
+        "axial_load_N": 5000.0,
+        "youngs_modulus_MPa": 68900.0,
+        "poisson_ratio": 0.33,
+        "yield_strength_MPa": 276.0,
+        "hole_element_size_mm": 0.267,
+        "far_element_size_mm": 4.0,
+        "z_layers": 0,
+        "z_ratio": 1.3,
+        "plane_stress_peak_MPa": 116.988
+      },
+      "derived": {
+        "t_over_d": 0.25,
+        "t_over_r": 0.5,
+        "net_stress_MPa": 52.083333333333336,
+        "kt_net_peterson": 2.23568,
+        "peak_stress_peterson_MPa": 116.44166666666666,
+        "face_area_closed_form_mm2": 1549.7345175425633
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "cad_area",
+          "description": "|face area from CadQuery - closed form| / closed form",
+          "kind": "numerical",
+          "value": 1.467178235171414e-16,
+          "tolerance": 1e-09,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "loaded_area",
+          "description": "|area of the loaded element faces - W t / 4| / (W t / 4)",
+          "kind": "numerical",
+          "value": 2.220446049250313e-16,
+          "tolerance": 1e-09,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "equilibrium",
+          "description": "|reaction on x = 0 + F / 4| / (F / 4)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "ligament_force",
+          "description": "|integral of sigma_xx over the ligament face - F / 4| / (F / 4)",
+          "kind": "numerical",
+          "value": 0.0008288796909784457,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "far_field_uniform",
+          "description": "max |sigma_xx on the loaded end - F / (W t)| / (F / (W t))",
+          "kind": "numerical",
+          "value": 0.00016320000000003,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "kt_mean_reference",
+          "description": "|Kt_net of the through-thickness mean - Peterson (plane stress)| / Peterson (model form: the mean differs from plane stress by order (t / r)^2)",
+          "kind": "numerical",
+          "value": 0.009197676948400568,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "mid_is_peak",
+          "description": "the hole-edge peak is at mid-thickness (0 = yes)",
+          "kind": "validity",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "linear_material",
+          "description": "peak hole-edge stress / yield strength",
+          "kind": "validity",
+          "value": 0.4307282608695652,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-H1",
+          "text": "Peak stress at the hole edge under the 5 kN service load shall not exceed 120 MPa (synthetic fatigue allowable), anywhere through the thickness.",
+          "metric": "peak_hole_stress_MPa",
+          "operator": "<=",
+          "limit": 120.0,
+          "units": "MPa",
+          "value": 118.881,
+          "margin": 1.1189999999999998,
+          "verdict": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p02_hole_element_size_mm-0.178",
+      "parameters": {
+        "length_mm": 160.0,
+        "width_mm": 40.0,
+        "thickness_mm": 4.0,
+        "hole_diameter_mm": 16.0,
+        "axial_load_N": 5000.0,
+        "youngs_modulus_MPa": 68900.0,
+        "poisson_ratio": 0.33,
+        "yield_strength_MPa": 276.0,
+        "hole_element_size_mm": 0.178,
+        "far_element_size_mm": 4.0,
+        "z_layers": 0,
+        "z_ratio": 1.3,
+        "plane_stress_peak_MPa": 116.988
+      },
+      "derived": {
+        "t_over_d": 0.25,
+        "t_over_r": 0.5,
+        "net_stress_MPa": 52.083333333333336,
+        "kt_net_peterson": 2.23568,
+        "peak_stress_peterson_MPa": 116.44166666666666,
+        "face_area_closed_form_mm2": 1549.7345175425633
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "cad_area",
+          "description": "|face area from CadQuery - closed form| / closed form",
+          "kind": "numerical",
+          "value": 1.467178235171414e-16,
+          "tolerance": 1e-09,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "loaded_area",
+          "description": "|area of the loaded element faces - W t / 4| / (W t / 4)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 1e-09,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "equilibrium",
+          "description": "|reaction on x = 0 + F / 4| / (F / 4)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "ligament_force",
+          "description": "|integral of sigma_xx over the ligament face - F / 4| / (F / 4)",
+          "kind": "numerical",
+          "value": 0.0009530842260946359,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "far_field_uniform",
+          "description": "max |sigma_xx on the loaded end - F / (W t)| / (F / (W t))",
+          "kind": "numerical",
+          "value": 0.00016639999999989996,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "kt_mean_reference",
+          "description": "|Kt_net of the through-thickness mean - Peterson (plane stress)| / Peterson (model form: the mean differs from plane stress by order (t / r)^2)",
+          "kind": "numerical",
+          "value": 0.008784620337794369,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "mid_is_peak",
+          "description": "the hole-edge peak is at mid-thickness (0 = yes)",
+          "kind": "validity",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "linear_material",
+          "description": "peak hole-edge stress / yield strength",
+          "kind": "validity",
+          "value": 0.4305326086956522,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-H1",
+          "text": "Peak stress at the hole edge under the 5 kN service load shall not exceed 120 MPa (synthetic fatigue allowable), anywhere through the thickness.",
+          "metric": "peak_hole_stress_MPa",
+          "operator": "<=",
+          "limit": 120.0,
+          "units": "MPa",
+          "value": 118.827,
+          "margin": 1.1730000000000018,
+          "verdict": "PASS"
+        }
+      ]
+    }
+  ],
+  "run_id": "20261127-151911_strap_3d_mesh",
+  "generated_utc": "2026-11-27T20:23:43+00:00",
+  "verification_status": "PASS"
+}

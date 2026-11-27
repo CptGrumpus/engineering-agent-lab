@@ -1,0 +1,14 @@
+SetFactory("OpenCASCADE");
+Merge "quarter.step";
+hole() = Curve In BoundingBox{-0.001, -0.001, -1, 8.001, 8.001, 1};
+Field[1] = Distance; Field[1].CurvesList = {hole()}; Field[1].Sampling = 400;
+Field[2] = Threshold; Field[2].InField = 1;
+Field[2].SizeMin = 0.4; Field[2].SizeMax = 4.0;
+Field[2].DistMin = 2.0; Field[2].DistMax = 24.0;
+Background Field = 2;
+Mesh.MeshSizeExtendFromBoundary = 0; Mesh.MeshSizeFromPoints = 0; Mesh.MeshSizeFromCurvature = 0;
+Mesh.Algorithm = 8; Mesh.RecombinationAlgorithm = 3; Mesh.RecombineAll = 1;
+Recombine Surface{1};
+out[] = Extrude{0, 0, 2.0} { Surface{1}; Layers{ {1, 1, 1, 1, 1}, {0.31583196027910787, 0.5587796220322677, 0.7456624387654677, 0.8894184516371598, 1.0} }; Recombine; };
+Mesh.ElementOrder = 2; Mesh.SecondOrderIncomplete = 1; Mesh.SecondOrderLinear = 0;
+Physical Volume("PLATE") = {out[1]};
