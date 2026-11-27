@@ -839,13 +839,51 @@ def scene_seal_cad():
                        sharp_angle_deg=40, title="seal_cad", expected_volume_mm3=float(sum(hv.values())))
 
 
+PLATE_EXPLODE = {"cover": 42.0, "component_top": 62.0, "component_bottom": -16.0}   # mm along z, by part
+
+
+def scene_plate_cad():
+    """Studies 11 and 15: the cold plate as built (models/cad/cold_plate.py, study11: base with the 60 x 20 x 1 mm
+    passage milled in, manifold wells and drilled ports, brazed cover, fittings, the component on both faces),
+    exploded along z so the passage shows. Gate: the sum of cold_plate.hand_volumes; lifting is a translation."""
+    from models.cad import cold_plate as P
+    parts, hv = P.build("study11"), P.hand_volumes("study11")
+    assert set(parts) == set(hv), (set(parts) ^ set(hv))
+    xyz, tris = _cad_mesh(parts, lambda n, p: p + [0.0, 0.0, PLATE_EXPLODE.get(n, 0.0)])
+    return write_scene(BUILD / "plate_cad", xyz, tris, elev=30, azim=-62, resolution=[1500, 1300], distance_factor=3.4,
+                       sharp_angle_deg=40, title="plate_cad", expected_volume_mm3=float(sum(hv.values())))
+
+
+ENCL_BOARD = ("board", "U1", "C1", "standoff_", "board_screw_")
+ENCL_FRONT = ("cap_front", "gland", "cap_screw_front_")
+
+
+def scene_enclosure_cad():
+    """Study 27: the sealed enclosure as drawn (models/cad/enclosure.py, as_drawn), exploded along its depth: the
+    board with U1, C1, standoffs and screws drawn out of the front like a drawer, the front cap between. Gate: the
+    sum of enclosure.hand_volumes (thread engagements counted in both parts, as each closed surface encloses its own
+    volume); moving parts is a translation. CAD depth is z and section height y; turned (x, y, z) -> (z, x, y), det
+    +1, so the depth runs across the view and the section stands up."""
+    from models.cad import enclosure as E
+    parts, hv = E.build("as_drawn"), E.hand_volumes("as_drawn")
+    assert set(parts) == set(hv), (set(parts) ^ set(hv))
+
+    def place(name, p):
+        dz = 260.0 if name.startswith(ENCL_BOARD) else 40.0 if name.startswith(ENCL_FRONT) else 0.0
+        q = p + [0.0, 0.0, dz]
+        return np.c_[q[:, 2], q[:, 0], q[:, 1]]
+    xyz, tris = _cad_mesh(parts, place)
+    return write_scene(BUILD / "enclosure_cad", xyz, tris, elev=30, azim=-62, resolution=[1700, 1000], distance_factor=3.4,
+                       sharp_angle_deg=40, title="enclosure_cad", expected_volume_mm3=float(sum(hv.values())))
+
+
 SCENES = {"cold_plate_3d": scene_cold_plate_3d, "strap_proof": scene_strap_proof, "bolted_joint_pressure": scene_bolted_joint, "joint_section": scene_joint_section, "cold_plate": scene_cold_plate,
           "strut": scene_strut, "pv_nozzle": lambda: scene_pv_nozzle(), "steel_frame": scene_steel_frame, "fan_rotor": scene_fan_rotor, "enclosure": scene_enclosure,
           # studies 24-26: the study session's scenes (scripts/scenes_24_26.py imports from here, so imported lazily)
           "crack": lambda: __import__("scenes_24_26").scene_cracked_plate(),
           "oring": lambda: __import__("scenes_24_26").scene_oring(),
           "shaft": lambda: __import__("scenes_24_26").scene_shaft_fillet(),
-          "shaft_cad": scene_shaft_cad, "knee_cad": scene_knee_cad, "rotor_cad": scene_rotor_cad, "nozzle_cad": scene_nozzle_cad, "nozzle_t12_cad": lambda: scene_nozzle_cad("t12", "nozzle_t12_cad"), "roller_cad": scene_roller_cad, "seal_cad": scene_seal_cad,
+          "shaft_cad": scene_shaft_cad, "knee_cad": scene_knee_cad, "rotor_cad": scene_rotor_cad, "nozzle_cad": scene_nozzle_cad, "nozzle_t12_cad": lambda: scene_nozzle_cad("t12", "nozzle_t12_cad"), "roller_cad": scene_roller_cad, "seal_cad": scene_seal_cad, "plate_cad": scene_plate_cad, "enclosure_cad": scene_enclosure_cad,
           "surface_crack": lambda: __import__("scenes_24_26").scene_surface_crack()}
 
 
