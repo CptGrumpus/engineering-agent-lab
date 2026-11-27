@@ -118,11 +118,12 @@ def force(ax, tail, head, label="", ha="left", va="center", color=ACC, dx=0.0, d
         text(ax, tail[0] + dx, tail[1] + dy, label, fs=fs, color=color, ha=ha, va=va, bold=True)
 
 
-def note(ax, xy, xytext, s, ha="left", va="center", color=DIMC, fs=7.5):
+def note(ax, xy, xytext, s, ha="left", va="center", color=DIMC, fs=7.5, scale=1.0):
+    """A leader note; scale is the view's enlargement (a detail at 4 : 1 passes 4, so its dot stays the same size)."""
     ax.annotate(s, xy, xytext, fontsize=fs, color=color, ha=ha, va=va, zorder=6,
                 arrowprops=dict(arrowstyle="-", color=color, lw=0.55, shrinkA=2, shrinkB=0),
                 bbox=dict(fc=PLATE, ec="none", pad=1.0))
-    ax.add_patch(Circle(xy, 0.5 * U, fc=color, ec="none", zorder=6))
+    ax.add_patch(Circle(xy, 0.5 * U / scale, fc=color, ec="none", zorder=6))
 
 
 def wall(ax, p1, p2, side=1.0, ticks=None):
@@ -384,6 +385,88 @@ def pv_nozzle():
     rect(ax, x0 - 470 * k, y0 + 395 * k, x0 + 470 * k, y0 + 935 * k, fc="none", ec=HOT, lw=0.9, z=7)
     text(ax, x0, y0 - Ro * k - 13, f"the vessel as modelled, {2 * L:g} long;\nthis detail is boxed", fs=6.5)
     finish(fig, "pv_nozzle", "Study 18 · nozzle junction · section through both axes")
+
+
+def _fillet_section(c, a, b, f, n=16):
+    """A fillet weld's section in a square corner at c, legs along the unit vectors a and b, leg (radius) f: the
+    region between the corner and the arc tangent to both legs, as the CAD's rolling-ball weld is."""
+    c, a, b = (np.asarray(v, float) for v in (c, a, b))
+    o = c + f * (a + b)
+    t = np.linspace(0, 1, n)
+    arc = [o - f * (np.cos(s * np.pi / 2) * b + np.sin(s * np.pi / 2) * a) for s in t]
+    return [tuple(c)] + [tuple(p) for p in arc]
+
+
+def nozzle_pad():
+    # study 18 part 2: the nozzle as it would be built, with its reinforcing pad (models/cad/vessel_nozzle.py,
+    # t12_pad): section through both axes, the shell's axis across the sheet and the nozzle's up it
+    from models.cad import vessel_nozzle as V
+    s = V.DESIGNS["t12_pad"]
+    dd = V.dims(s)
+    Ri, Ro, t, rni, rno, tn, Xe = s["Ri"], dd["Ro"], s["t"], s["rni"], dd["rno"], s["tn"], dd["Xend"]
+    Rp, tp, wps, wpn, td = s["pad_R"], s["pad_t"], s["weld_pad_shell"], s["weld_pad_nozzle"], s["telltale_d"]
+    x1, x2 = Xe + s["neck_len"], Xe + s["neck_len"] + s["flange_t"]
+    r2, Rf = rno + s["neck_rise"], s["flange_R"]
+    zt = (rno + Rp) / 2
+    zc = 280.0
+    PADC = "#f3d9c6"
+
+    def section(ax, sides, lw=1.2):
+        for sg in sides:
+            P = lambda pts: [(sg * z, x) for z, x in pts]  # noqa: E731
+            poly(ax, P([(rno, Ri), (zc, Ri), (zc, Ro), (rno, Ro)]), hatch="////", lw=lw)               # shell
+            poly(ax, P([(rni, Ri), (rno, Ri), (rno, Xe), (rni, Xe)]), hatch="////", lw=lw)              # nozzle
+            pads = ([(rno, zt - td / 2), (zt + td / 2, Rp)] if sg > 0 else [(rno, Rp)])                # tell-tale cut
+            for z0, z1 in pads:
+                poly(ax, P([(z0, Ro), (z1, Ro), (z1, Ro + tp), (z0, Ro + tp)]), fc=PADC, hatch="\\\\\\\\", ec=HOT, lw=lw)
+            poly(ax, P(_fillet_section((rno, Ro + tp), (1, 0), (0, 1), wpn)), fc=HOT, ec=HOT, lw=0.6, z=3)
+            poly(ax, P(_fillet_section((Rp, Ro), (1, 0), (0, 1), wps)), fc=HOT, ec=HOT, lw=0.6, z=3)
+            poly(ax, P([(rni, Xe), (rno, Xe), (r2, x1), (Rf, x1), (Rf, x2), (rni, x2)]), hatch="////", lw=lw)
+            for zb in (s["bolt_circle_R"] - s["bolt_hole_d"] / 2, s["bolt_circle_R"] + s["bolt_hole_d"] / 2):
+                ax.plot([sg * zb, sg * zb], [x1, x2], color=INK, lw=0.5, ls=(0, (3, 2)), zorder=4)   # holes, off-plane
+
+    fig, ax = new(9.5, (-330, 980), (440, 1000))
+    section(ax, (-1, 1))
+    for sg in (-1, 1):
+        ax.plot([sg * zc, sg * zc], [Ri - 9, Ro + 9], color=PLATE, lw=5, zorder=4)                      # the shell runs on
+        ax.plot([sg * zc - 6, sg * zc + 6, sg * zc - 6, sg * zc + 6], np.linspace(Ri - 8, Ro + 8, 4), color=DIMC, lw=0.7, zorder=5)
+    centre(ax, (0, Ri - 30), (0, x2 + 10))
+    dim(ax, (-Rp, Ro + tp + 4), (Rp, Ro + tp + 4), 110, f"pad Ø{2 * Rp:g}")
+    dim(ax, (-rni, Xe - 30), (rni, Xe - 30), 0, f"Ø{2 * rni:g} bore")
+    dim(ax, (-Rf, x2), (Rf, x2), 18, f"Ø{2 * Rf:g}")
+    dim(ax, (-rno, 720), (-rni, 720), 0, f"{tn:g}", outside=True)
+    dim(ax, (-250, Ri), (-250, Ro), 0, f"{t:g}", outside=True)
+    dim(ax, (-Rf, Ro), (-Rf, Xe), 50, f"{s['Ln']:g}")
+    note(ax, (Rf - 4, x1 + 18), (240, 925), f"weld-neck flange,\n{s['bolt_holes']} × Ø{s['bolt_hole_d']:g} on Ø{2 * s['bolt_circle_R']:g}", ha="left")
+    text(ax, -320, Ri - 22, f"shell bore Ø{2 * Ri:g}; the nozzle is set in, welded through the wall", fs=7, ha="left")
+    # detail A: the pad's corner on the right, 4 : 1
+    zc0, zc1, xc0, xc1 = rno - 18, Rp + 28, Ri - 20, Ro + tp + 40
+    ax.add_patch(Circle(((zc0 + zc1) / 2, Ro + 4), 70, fc="none", ec=HOT, lw=0.9, ls=(0, (4, 2)), zorder=6))
+    text(ax, (zc0 + zc1) / 2 + 58, Ro + 64, "A", fs=8.5, color=HOT, bold=True)
+    k, X0, Y0 = 4.0, 410.0, 480.0
+    lo = ax.transData.transform((X0, Y0))
+    hi = ax.transData.transform((X0 + k * (zc1 - zc0), Y0 + k * (xc1 - xc0)))
+    inv = fig.transFigure.inverted()
+    (fx0, fy0), (fx1, fy1) = inv.transform(lo), inv.transform(hi)
+    axd = fig.add_axes([fx0, fy0, fx1 - fx0, fy1 - fy0])
+    axd.set_xlim(zc0, zc1)
+    axd.set_ylim(xc0, xc1)
+    axd.set_aspect("equal")
+    axd.axis("off")
+    axd.add_patch(Polygon([(zc0, xc0), (zc1, xc0), (zc1, xc1), (zc0, xc1)], closed=True, fc=PLATE, ec=HOT, lw=0.9,
+                          ls=(0, (4, 2)), zorder=0))
+    section(axd, (1,), lw=1.4)
+    text(axd, zc0 + 3, xc1 - 5, "Detail A · 4 : 1", fs=8, color=HOT, bold=True, ha="left", va="top")
+    note(axd, (rno + 3, Ro + tp + 3), (rno + 14, Ro + tp + 27), f"fillet weld {wpn:g}, pad to nozzle", color=HOT, scale=k)
+    note(axd, (Rp + 3.5, Ro + 3.5), (Rp + 26, Ro + tp + 27), f"fillet weld {wps:g},\npad to shell", color=HOT, ha="right", scale=k)
+    note(axd, (zt, Ro + tp - 2), (zt + 10, Ro + tp + 12), f"tell-tale hole Ø{td:g}, through the pad", color=HOT, ha="center", scale=k)
+    note(axd, (Rp - 12, Ro + tp / 2), (Rp - 2, Ri - 10), f"pad {tp:g} thick, as the shell", color=HOT, ha="right", scale=k)
+    text(axd, rno + 26, Ri + t / 2, f"shell, {t:g}", fs=7)
+    text(axd, rni + tn / 2 + 0.5, Ri - 10, f"nozzle, {tn:g}", fs=7, rot=90)
+    text(ax, X0, Y0 - 12, "From the study: the shell, the nozzle and its length. Made up\n"
+         "for the drawing: the pad's size, the welds, the tell-tale hole and the flange (not to ASME B16.5).", fs=6.8, ha="left", va="top", box=False)
+    finish(fig, "nozzle_pad", "Study 18 · the nozzle as it would be built, with a reinforcing pad · section through both axes",
+           source="Drawn from models/cad/vessel_nozzle.py")
 
 
 def hlr(shape, direction):
@@ -1694,7 +1777,7 @@ def keyed_shaft():
 
 ALL = {f.__name__: f for f in (fea, cantilever_opt, strap, modal, strut, contact, bolted_joint, pv_nozzle, bracket_opt, cad,
                                cfd, thermal, heat, cold_plate, pipe, suspension, baseline, motor, step, random_vib, fan_rotor,
-                               fatigue, strap_proof, bracket_uq, crack, flag, motor_stops, oring, shaft, enclosure, steel_frame, keyed_shaft, knee, rotor_detail)}
+                               fatigue, strap_proof, bracket_uq, crack, flag, motor_stops, oring, shaft, enclosure, steel_frame, keyed_shaft, knee, rotor_detail, nozzle_pad)}
 
 if __name__ == "__main__":
     for name in sys.argv[1:] or ALL:
