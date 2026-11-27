@@ -98,6 +98,16 @@ faster than ours. That is what the tunnel's side-wall boundary layers do (the sp
 squeeze the core flow and lower the pressure. A 2D model has no side walls. It was stated as a limit in the framing;
 the comparison puts it at about 0.023 in recovery, just over what the limit allows.
 
+**Is that explanation big enough? A hand estimate says yes** (added 2026-11-27, under the portfolio's standing rule:
+an explanation of a miss is a claim to test, not a conclusion). Each side wall's boundary layer was grown along the
+tunnel by the momentum integral, driven by our own 2D wall pressure, from the inflow the case description gives; its
+displacement thickness narrows the core, which then runs faster and recovers less. By 30 step heights the core runs
+1.6-3.0 % faster and the recovery drops by 0.028 to 0.052, depending on how thick the side walls' boundary layers start
+(a quarter of the floor's to one and a half times it; the shape factor bracketed 1.4-1.8 changes it by 0.003). Every
+case is at least the 0.022 the model misses by, so the side walls can account for the miss; the estimate cannot say
+exactly how much of it, because the side walls' own inflow is not in the case description. A 3D model with the side
+walls would settle it ([`sidewall_estimate.py`](../validation/step_driver_seegmiller/sidewall_estimate.py)).
+
 **How I know it's the model and not the numerics.**
 - **Inflow matched first,** on what the case description gives (not the answer): the momentum thickness 4 step
   heights upstream within 0.7 %.

@@ -154,6 +154,7 @@ stands (build-model skill, "Choosing checks" item 5). Finished studies to revisi
 | 15, 21, 22, 4, 13 | various | wide | none needed: say so on the page with the estimate | **Done for 15 and 13** (2026-11-27: 15's side walls +0.19 K against 4.0 K, from study 11 part 2; 13's beam at slenderness 127, the end fixity named); 4, 21, 22 are already 3D solids |
 | 16, 20 | axisymmetric bolt, 2D motor | - | 16: shown it cannot change the verdict; 20: closed | none |
 | 18, 23, 24, 26, 28 | - | - | already checked with a fuller model | done |
+| 19 step flow (part 2) | 2D, no tunnel side walls (the page's explanation of the 0.022 pressure-recovery miss) | fails by 0.0027 over its 0.02 limit | **Hand estimate done (2026-11-27):** side-wall blockage lowers the recovery by 0.028-0.052, at least the miss; next: 3D RANS with the side walls (span 12 H, half-span by symmetry; hours of CPU: after the roller FE study) | open |
 
 Study 24 part 2 (user's go-ahead 2026-11-26 evening, "keep working"): semi-elliptical surface crack, 3D FE against
 Newman-Raju. surface_crack_mesh (r0) scored: requirements pass, Newman-Raju within 2.4 % on the front average; the
