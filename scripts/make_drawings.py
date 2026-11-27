@@ -1491,9 +1491,83 @@ def steel_frame():
            units="dimensions in mm, frame to scale", source="Drawn from the case file's inputs and the AISC Shapes Database")
 
 
+def keyed_shaft():
+    # study 26 part 2: the detailed intermediate shaft with the recommended 40 mm keyed seat (models/cad/intermediate_shaft.py,
+    # DESIGNS["d40"]); the seat, collar, fillet and seat keyway are the study's, the rest a plausible layout
+    from models.cad import intermediate_shaft as S
+    s = S.DESIGNS["d40"]
+    rj, rs, rc, rp = s["journal"] / 2, s["seat"] / 2, s["collar"] / 2, s["pinion"] / 2
+    f = s["fillet"]
+    kw, kp = S.keyways(s)
+    (g0a, g1a), (g0b, g1b) = S.grooves(s)
+    assert abs(kw["z1"] - (S.Z_SHOULDER - f - S.SEAT_KEY_GAP)) < 1e-12 and kw["rk"] == 0.4
+
+    def arc(cz, cr, r, a0, a1, n=10):
+        t = np.radians(np.linspace(a0, a1, n))
+        return [(cz + r * np.cos(q), cr + r * np.sin(q)) for q in t]
+
+    c, rjf, rcf = S.CHAMFER, S.R_JOURNAL, S.R_COLLAR
+    top = ([(0, rj - c), (c, rj), (g0a, rj), (g0a, s["groove_d"] / 2), (g1a, s["groove_d"] / 2), (g1a, rj)]
+           + arc(S.Z_SEAT - rjf, rj + rjf, rjf, -90, 0) + [(S.Z_SEAT, rs)]
+           + [(kw["z0"], rs), (kw["z0"], rs - kw["t1"]), (kw["z1"], rs - kw["t1"]), (kw["z1"], rs)]
+           + arc(S.Z_SHOULDER - f, rs + f, f, -90, 0) + [(S.Z_SHOULDER, rc), (S.Z_COLLAR_END, rc)]
+           + arc(S.Z_COLLAR_END + rcf, rp + rcf, rcf, 180, 270)
+           + [(kp["z0"], rp), (kp["z0"], rp - kp["t1"]), (kp["z1"], rp - kp["t1"]), (kp["z1"], rp), (S.Z_PINION_END, rp)]
+           + arc(S.Z_PINION_END + rjf, rj + rjf, rjf, 180, 270)
+           + [(g0b, rj), (g0b, s["groove_d"] / 2), (g1b, s["groove_d"] / 2), (g1b, rj), (S.Z_END - c, rj), (S.Z_END, rj - c)])
+    # the underside has no keyways: mirror the same profile with the keyway notches taken out
+    plain = [(z, r) for z, r in top if not (kw["z0"] <= z <= kw["z1"] and r < rs) and not (kp["z0"] <= z <= kp["z1"] and r < rp)]
+    outline = top + [(z, -r) for z, r in reversed(plain)]
+
+    fig, ax = new(9.5, (-42, 318), (-78, 62))
+    poly(ax, outline, fc=FILL, lw=1.3)
+    centre(ax, (-8, 0), (S.Z_END + 8, 0))
+    # the keyways' floors seen from the side: hidden edges of the end-milled ends
+    for k in (kw, kp):
+        ax.plot([k["z0"] + k["B"] / 2] * 2, [k["R"] - k["t1"], k["R"]], color=DIMC, lw=0.5, ls=(0, (2, 1.5)), zorder=3)
+        ax.plot([k["z1"] - k["B"] / 2] * 2, [k["R"] - k["t1"], k["R"]], color=DIMC, lw=0.5, ls=(0, (2, 1.5)), zorder=3)
+    # diameters
+    for z, r, lab in ((8, rj, f"Ø{2 * rj:g}"), (33, rs, f"Ø{2 * rs:g}"), (95, rc, f"Ø{2 * rc:g}"), (145, rp, f"Ø{2 * rp:g}"),
+                      (163, rj, f"Ø{2 * rj:g}")):
+        dim(ax, (z, -r), (z, r), 0, lab)
+    dim(ax, (0, -rc - 2), (S.Z_END, -rc - 2), -8, f"{S.Z_END:g}")
+    dim(ax, (0, -rc - 2), (S.Z_SHOULDER, -rc - 2), -2.5, f"{S.Z_SHOULDER:g}")
+    dim(ax, (kw["z0"], rs), (kw["z1"], rs), 9, f"{S.SEAT_KEY_LENGTH:g}")
+    dim(ax, (kw["z1"], rc), (S.Z_SHOULDER - f, rc), 4, f"{S.SEAT_KEY_GAP:g}", outside=True)
+    note(ax, (S.Z_SHOULDER - f * 0.3, rs + f * 0.3), (112, rc + 15),
+         f"the keyway ends {S.SEAT_KEY_GAP:g} mm before the shoulder\nfillet starts: R{f:g} (0.05 d), +0.4 / −0.2", ha="left")
+    note(ax, (kw["z1"], rs - kw["t1"]), (-36, 44),
+         "governing peak: the bottom corner of the keyway's end\nnearest the shoulder, Kt 3.46 in bending",
+         ha="left", color=HOT)
+    text(ax, (kw["z0"] + kw["z1"]) / 2 - 10, -rs - 3.5, "gear seat", fs=7, va="top", box=False)
+    text(ax, (kp["z0"] + kp["z1"]) / 2, -rp - 3.5, "pinion seat", fs=7, va="top", box=False)
+    # section A-A through the seat keyway
+    za = kw["z1"] - 6
+    ax.plot([za, za], [rc + 2, rc - 2], color=INK, lw=1.2); ax.plot([za, za], [-rc + 2, -rc - 2], color=INK, lw=1.2)
+    text(ax, za + 1.5, -rc - 1, "A", fs=8, color=INK, bold=True, box=False, ha="left", va="top")
+    ox = 250
+    B, t1, rk = kw["B"], kw["t1"], kw["rk"]
+    ang = np.degrees(np.arcsin(B / 2 / rs))
+    sec = arc(ox, 0, rs, 90 + ang, 360 + 90 - ang, 80)
+    sec += [(ox + B / 2, rs * np.cos(np.radians(ang))), (ox + B / 2, rs - t1), (ox - B / 2, rs - t1),
+            (ox - B / 2, rs * np.cos(np.radians(ang)))]
+    poly(ax, sec, fc=FILL, hatch="////", lw=1.2)
+    centre(ax, (ox - rs - 5, 0), (ox + rs + 5, 0)); centre(ax, (ox, -rs - 5), (ox, rs + 5))
+    dim(ax, (ox - B / 2, rs + 1), (ox + B / 2, rs + 1), 6, f"{B:g}")
+    dim(ax, (ox - B / 2 - 1, rs - t1), (ox - B / 2 - 1, rs), 9, f"{t1:g}")
+    dim(ax, (ox - rs, -rs - 4), (ox + rs, -rs - 4), -4, f"Ø{2 * rs:g}")
+    note(ax, (ox + B / 2, rs - t1), (ox + rs + 6, rs + 10), "keyway bottom\ncorner r 0.4 min", ha="left", color=HOT)
+    text(ax, ox, -rs - 22, "A-A: DIN 6885 form A, 12 × 8 key, end-milled", fs=7.2, color=INK, bold=True, box=False)
+    text(ax, -36, -66, "Seat, collar, fillet and seat keyway: the study's (seat 40 / collar 50 passes at fatigue 1.535, yield 2.36). "
+         "Journals, bearings, circlip grooves,\npinion seat and axial layout: a plausible layout, made up for the drawing.",
+         fs=6.8, ha="left", va="top", box=False)
+    finish(fig, "keyed_shaft", "Study 26 · intermediate shaft with the recommended 40 mm keyed gear seat · side view and section A-A",
+           source="Drawn from models/cad/intermediate_shaft.py")
+
+
 ALL = {f.__name__: f for f in (fea, cantilever_opt, strap, modal, strut, contact, bolted_joint, pv_nozzle, bracket_opt, cad,
                                cfd, thermal, heat, cold_plate, pipe, suspension, baseline, motor, step, random_vib, fan_rotor,
-                               fatigue, strap_proof, bracket_uq, crack, flag, motor_stops, oring, shaft, enclosure, steel_frame)}
+                               fatigue, strap_proof, bracket_uq, crack, flag, motor_stops, oring, shaft, enclosure, steel_frame, keyed_shaft)}
 
 if __name__ == "__main__":
     for name in sys.argv[1:] or ALL:

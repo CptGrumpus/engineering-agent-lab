@@ -192,6 +192,12 @@ each requirement as a share of its limit, read from the case files' own limits; 
 a check is drawn hollow and labelled, never swapped for a coarser point that passed. A study-session figure with a
 harness title (the run label as its heading) isn't client-ready; redraw it in figkit from the run's saved data.
 
+A CAD hero render (no field) goes through `make_study_renders` like the rest: `write_scene` without a value, and
+`gate()` then checks the geometry only, the tessellated volume against a volume worked out without the CAD kernel
+(for the keyed shaft, `intermediate_shaft.hand_volume` less the keyways). Each study has one viewer entry, so a
+second render for a study that already has one (the shaft's stress render) goes into the page as a figure, beside
+its drawing, not into the viewer.
+
 ## Editing the source safely
 
 - Write patch scripts with the Write tool, not a Git Bash heredoc: the heredoc turns `\\n` into a real newline

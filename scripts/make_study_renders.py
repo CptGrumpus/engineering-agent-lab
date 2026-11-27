@@ -698,12 +698,29 @@ def scene_steel_frame():
                                f"leeward column at {rc:.2f} at its top, the windward column at {lc:.2f}.")
 
 
+def scene_shaft_cad():
+    """Study 26 part 2: the detailed intermediate shaft with the recommended 40 mm keyed seat, as plain material (a
+    CAD hero render, no field). Axis laid along x, the seat's keyway turned up to face the camera, so its end 2 mm
+    from the shoulder fillet shows. Gate: the tessellated volume against the hand volume of the revolved body
+    (models/cad/intermediate_shaft.hand_volume, independent of the CAD kernel) less the two keyways' volume."""
+    from models.cad import intermediate_shaft as S
+    shaft = S.build("d40").val()
+    keys = S.build("d40", with_keyways=False).val().Volume() - shaft.Volume()
+    assert 0 < keys < 0.05 * shaft.Volume()
+    verts, faces = shaft.tessellate(0.01, 0.1)
+    p = np.array([v.toTuple() for v in verts])
+    xyz = np.c_[p[:, 2] - S.Z_END / 2, -p[:, 1], p[:, 0]]          # (x, y, z) -> (z, -y, x): det +1, keyway (+x) up
+    return write_scene(BUILD / "shaft_cad", xyz, np.array(faces), elev=28, azim=-62, resolution=[1600, 900],
+                       sharp_angle_deg=40, title="shaft_cad", expected_volume_mm3=float(S.hand_volume("d40") - keys))
+
+
 SCENES = {"cold_plate_3d": scene_cold_plate_3d, "strap_proof": scene_strap_proof, "bolted_joint_pressure": scene_bolted_joint, "joint_section": scene_joint_section, "cold_plate": scene_cold_plate,
           "strut": scene_strut, "pv_nozzle": lambda: scene_pv_nozzle(), "steel_frame": scene_steel_frame, "fan_rotor": scene_fan_rotor, "enclosure": scene_enclosure,
           # studies 24-26: the study session's scenes (scripts/scenes_24_26.py imports from here, so imported lazily)
           "crack": lambda: __import__("scenes_24_26").scene_cracked_plate(),
           "oring": lambda: __import__("scenes_24_26").scene_oring(),
-          "shaft": lambda: __import__("scenes_24_26").scene_shaft_fillet()}
+          "shaft": lambda: __import__("scenes_24_26").scene_shaft_fillet(),
+          "shaft_cad": scene_shaft_cad}
 
 
 # --------------------------------------------------------------------------- gates and page assets
@@ -715,6 +732,11 @@ def gate(scene: Path) -> dict:
     err = vol / meta["expected_volume_mm3"] - 1
     if abs(err) > mr.VOLUME_TOL:
         raise RuntimeError(f"{scene.stem}: enclosed volume {err:+.2%} off the design volume")
+    vol_rec = {"enclosed_mm3": round(float(vol), 1), "design_mm3": round(meta["expected_volume_mm3"], 1),
+               "rel_error": float(f"{err:.2e}"), "passed": True}
+    if meta.get("field") is None:                  # a plain CAD render: no legend, so the geometry is the gate
+        assert "value" not in d
+        return {"volume": vol_rec, "color": None, "legibility": None}
     chk = mr.check_colors(scene)
     if not chk["passed"]:
         raise RuntimeError(f"{scene.stem}: colour check failed {chk}")
@@ -1278,13 +1300,17 @@ def main():
     for name in args.only or SCENES:
         scene = SCENES[name]()
         meta = json.loads(scene.with_suffix(".json").read_text(encoding="utf-8"))
-        print(name, f"data {meta['data_min']:.2f} to {meta['data_max']:.2f} {meta['units']}", flush=True)
+        if meta.get("field") is not None:
+            print(name, f"data {meta['data_min']:.2f} to {meta['data_max']:.2f} {meta['units']}", flush=True)
         if not args.skip_render:
             print(name, mr.render(blender, scene, args.samples)["seconds"], "s", flush=True)
         g = gate(scene)
         publish(name, scene, g)
-        print(name, f"volume {g['volume']['rel_error']:+.1e}, {g['color']['fraction_on_legend']:.2%} on the legend, "
-              f"{g['legibility']['misread']:.2%} misread", flush=True)
+        if g["color"] is None:
+            print(name, f"volume {g['volume']['rel_error']:+.1e} (plain CAD render: geometry gate only)", flush=True)
+        else:
+            print(name, f"volume {g['volume']['rel_error']:+.1e}, {g['color']['fraction_on_legend']:.2%} on the legend, "
+                  f"{g['legibility']['misread']:.2%} misread", flush=True)
 
 
 if __name__ == "__main__":
