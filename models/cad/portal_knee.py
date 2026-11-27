@@ -238,7 +238,7 @@ def export(design: str, step: Path) -> dict:
         asm.add(w, name=name)
     step = Path(step)
     step.parent.mkdir(parents=True, exist_ok=True)
-    asm.save(str(step), exportType="STEP")
+    asm.export(str(step), exportType="STEP")      # Assembly.save is deprecated in CadQuery 2.8
     bolts = sum(1 for n in parts if n.endswith("_shank"))
     return {"design": design, "parts": len(parts), "bolts": bolts,
             "volume_mm3": float(sum(w.val().Volume() for w in parts.values())), "step": step.name}

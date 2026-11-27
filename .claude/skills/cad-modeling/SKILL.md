@@ -42,8 +42,10 @@ for the whole part, `tests/test_intermediate_shaft.py`).
 - Rolled shapes: root fillets r = kdes - tf reproduce the tabulated area (0.5 %) but not the tabulated Ix (0.3-0.8 %
   low: the rolled profile differs). Beam theory checked against the solid uses the drawn section's own Ix, or the gap
   lands in whatever the check is meant to measure (a 4 % bias on the knee's spring).
-- Assemblies (bolted joints): each part a separate solid in a `cq.Assembly`, saved as one STEP (`asm.save(...,
-  exportType="STEP")`; 1.2-1.6 MB for a 56-72 part knee). Test by part type (plate with holes, hex head and nut with
+- Assemblies (bolted joints): each part a separate solid in a `cq.Assembly`, saved as one STEP (`asm.export(...,
+  exportType="STEP")`; `save` is deprecated in 2.8; 1.2-1.6 MB for a 56-72 part knee, 126 kB for a 6-part rotor).
+  A keyway's curved top: integrate it (`models/cad/fan_rotor.keyway_volume`) and test the quadrature on a closed
+  form. Test by part type (plate with holes, hex head and nut with
   its hole, washer annulus, shank from the grip, weld triangle x length) against hand volumes, and pairs of
   neighbours for interference (`a.intersect(b)` empty). See `models/cad/portal_knee.py`.
 
