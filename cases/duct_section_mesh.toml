@@ -1,0 +1,67 @@
+# Study 11 part 2, case 1: the passage with its side walls, at three grids (2 mm aluminium plate).
+#
+# Why (standing rule, 2026-11-27): study 11 modelled the passage as parallel plates and passed its wall at 44.03 C
+# against 45: a 0.97 K margin, 5 % of the 19 K rise. Its page says the side walls were neglected ("the 3D duct check
+# showed a 3 % effect on the flow"). Near a side wall the flow slows, and a heated broad wall runs hotter there; how
+# much hotter depends on how far the plate spreads heat across the width, so the plate is in the model as a
+# conducting sheet. The two bounds (no spreading, perfect spreading) are in duct_section_bounds.
+# Scratch trials (2026-11-27): the solver reproduces the parallel-plate limit (0.24283 against 17/70 = 0.24286),
+# Incropera's rectangular-duct Nu (5.332, 6.491 against 5.33, 6.49) and fRe (within 5e-4 of the exact series); the
+# 2 mm plate's peak excess 12.2152 / 12.2197 / 12.2208 K at 20 / 40 / 80 cells across the half gap.
+#
+# Predictions, written BEFORE the evidence run:
+#   P1 Every check passes at every grid.
+#   P2 Peak wall excess 12.215 / 12.220 / 12.221 K (parallel plates 12.003), 1.8 % higher, at the side wall; GCI under
+#      0.1 %.
+#   P3 REQ-T1-3D passes: the wall peaks at about 44.25 C, using 22 % of study 11's 0.97 K margin.
+#   P4 Seconds.
+
+[case]
+name = "duct_section_mesh"
+model = "python_duct_section"
+description = "Study 11's cold-plate passage (1 x 20 mm, water at 0.1 m/s, 30 kW/m2 on both broad walls) with its side walls, fully developed, the broad wall a 2 mm 6061-T6 sheet; 20 / 40 / 80 cells across the half gap."
+assumptions = [
+  "Fully developed flow and heat transfer in the cross-section; the 3D correction (peak excess over the bulk, 3D minus parallel plates) is added to study 11's verified 2D wall temperature, which includes the thermal entry (98 % developed at the outlet in 2D).",
+  "The passage 1 x 20 mm [width synthetic], heated on both broad walls at 30 kW/m2 over its width; the side walls adiabatic (conservative: metal side walls carry heat away).",
+  "The broad wall a conducting sheet of 6061-T6 (k 167 W/m K), its temperature uniform through its thickness; the heat applied uniformly over the passage's width.",
+  "Water properties as study 11 (k 0.607 W/m K); laminar (Re 224).",
+]
+limitations = [
+  "No axial development in 3D: the side-wall correction is the fully developed one.",
+  "The plate's own temperature rise through its thickness (q t / k, 0.36 K for 2 mm) is not in the fluid-side wall temperature this requirement is about; a component on the plate sees it on top.",
+]
+
+[parameters]
+gap_mm = 1.0
+width_mm = 20.0                   # synthetic, as study 5's 3D duct check (the real width was never specified)
+cells_across_half_gap = 40
+side_growth = 1.08
+dz_max_over_dy = 8.0
+bc = "plate"
+plate_conductivity_W_per_mK = 167.0   # 6061-T6 aluminium
+plate_thickness_mm = 2.0
+fluid_conductivity_W_per_mK = 0.607   # water, as study 11
+wall_heat_flux_W_per_m2 = 30000.0     # study 11
+wall_temperature_2D_C = 44.029        # study 11's verified 2D peak (run 20261121-151154, 160 cells)
+wall_limit_C = 45.0
+
+[sweep]
+parameter = "cells_across_half_gap"
+values = [20, 40, 80]
+
+[numerics]
+solver = "SciPy sparse direct, finite volumes"
+
+[verification]
+exact_rel_tol = 1e-3      # the parallel-plate limit and fRe against exact solutions (second-order FV at 40 cells)
+table_rel_tol = 1.5e-3    # Incropera prints 3 figures (5.33, 6.49): half a unit in the last place is 0.1 %
+mesh_noise_rel = 1e-6
+gci_max = 0.01
+
+[[requirements]]
+id = "REQ-T1-3D"
+text = "With the side walls, the passage's wall stays at or under 45 C (study 11's REQ on the wall temperature, at its hottest point across the width): the 3D peak excess corrected onto study 11's verified 2D value."
+metric = "wall_peak_temperature_C"
+operator = "<="
+limit = 45.0
+units = "C"

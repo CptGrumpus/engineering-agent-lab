@@ -1,0 +1,62 @@
+# Study 11 part 2, case 2: how thin can the plate be?
+#
+# Why: the side-wall hot spot depends on the plate's conductance across the width (k t). This case sweeps an
+# aluminium plate from 0.1 to 4 mm at 40 cells (duct_section_mesh gives the grid uncertainty at 2 mm).
+# Scratch trials (2026-11-27): peak wall 45.86 / 44.85 / 44.50 / 44.33 / 44.25 / 44.20 C at 0.1 / 0.25 / 0.5 / 1 / 2 / 4 mm.
+#
+# Predictions, written BEFORE the evidence run:
+#   P1 Every check passes at every thickness.
+#   P2 Peak wall temperature 45.86 / 44.85 / 44.50 / 44.33 / 44.25 / 44.20 C; REQ-T1-3D fails at 0.1 mm and passes
+#      from 0.25 mm (which uses 84 % of the margin); the thickness where the wall reaches 45 C is about 0.2 mm of
+#      aluminium (a plate conductance k t of about 0.035 W/K; about 2 mm of stainless steel would be the same).
+#   P3 Seconds.
+
+[case]
+name = "duct_section_plate"
+model = "python_duct_section"
+description = "Study 11's passage with its side walls, fully developed, the broad wall a 6061-T6 sheet 0.1 / 0.25 / 0.5 / 1 / 2 / 4 mm thick; 40 cells across the half gap."
+assumptions = [
+  "Fully developed flow and heat transfer in the cross-section; the 3D correction (peak excess over the bulk, 3D minus parallel plates) is added to study 11's verified 2D wall temperature, which includes the thermal entry (98 % developed at the outlet in 2D).",
+  "The passage 1 x 20 mm [width synthetic], heated on both broad walls at 30 kW/m2 over its width; the side walls adiabatic (conservative: metal side walls carry heat away).",
+  "The broad wall a conducting sheet of 6061-T6 (k 167 W/m K), its temperature uniform through its thickness; the heat applied uniformly over the passage's width.",
+  "Water properties as study 11 (k 0.607 W/m K); laminar (Re 224).",
+]
+limitations = [
+  "No axial development in 3D: the side-wall correction is the fully developed one.",
+  "The plate's own temperature rise through its thickness (q t / k, 0.36 K for 2 mm) is not in the fluid-side wall temperature this requirement is about; a component on the plate sees it on top.",
+]
+
+[parameters]
+gap_mm = 1.0
+width_mm = 20.0                   # synthetic, as study 5's 3D duct check (the real width was never specified)
+cells_across_half_gap = 40
+side_growth = 1.08
+dz_max_over_dy = 8.0
+bc = "plate"
+plate_conductivity_W_per_mK = 167.0   # 6061-T6 aluminium
+plate_thickness_mm = 2.0
+fluid_conductivity_W_per_mK = 0.607   # water, as study 11
+wall_heat_flux_W_per_m2 = 30000.0     # study 11
+wall_temperature_2D_C = 44.029        # study 11's verified 2D peak (run 20261121-151154, 160 cells)
+wall_limit_C = 45.0
+
+[sweep]
+parameter = "plate_thickness_mm"
+values = [0.1, 0.25, 0.5, 1.0, 2.0, 4.0]
+
+[numerics]
+solver = "SciPy sparse direct, finite volumes"
+
+[verification]
+exact_rel_tol = 1e-3      # the parallel-plate limit and fRe against exact solutions (second-order FV at 40 cells)
+table_rel_tol = 1.5e-3    # Incropera prints 3 figures (5.33, 6.49): half a unit in the last place is 0.1 %
+mesh_noise_rel = 1e-6
+gci_max = 0.01
+
+[[requirements]]
+id = "REQ-T1-3D"
+text = "With the side walls, the passage's wall stays at or under 45 C (study 11's REQ on the wall temperature, at its hottest point across the width): the 3D peak excess corrected onto study 11's verified 2D value."
+metric = "wall_peak_temperature_C"
+operator = "<="
+limit = 45.0
+units = "C"
