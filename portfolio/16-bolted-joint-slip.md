@@ -43,6 +43,15 @@ The finite element model is half the joint (a symmetry plane along the load). Tw
   The decisive test was scaling the plates' stiffness: the shortfall fell exactly in proportion to 1/E (1.3 × 10⁻³, 1.3 × 10⁻⁴, 1.3 × 10⁻⁵). CalculiX evaluates contact on the deformed surfaces, and under the side load the interface tilts by about the strain. The hand formula assumes a rigid, flat interface. So the exact check now uses the rigid-limit extrapolation, and the 0.13 % deformable value is reported as model form. Raising the tolerance would have hidden all of this.
 - **A mesh level that stalled.** The contact solve at 0.7 mm hit a four-hour timeout while 0.5 mm finished in 22 minutes. It was a convergence stall on that particular mesh, not cost; 0.75 mm replaced it.
 
+## The joint as built
+
+The joint is delivered as a detailed CadQuery assembly ([`models/cad/bolted_lap.py`](../models/cad/bolted_lap.py),
+[STEP](cad/bolted_lap_m8.step)): two 6 mm steel strips lapped 40 mm, the 9 mm hole, an M8 x 25 hex bolt and its nut
+(ISO 4017 and 4032 proportions, threads and chamfers not drawn), with the study's 12 mm grip and no washers. Every
+part matches a hand volume to 10⁻⁹ and nothing overlaps. The strips' width and length are synthetic; the bolt's
+bending in a real lap joint (which this model's axisymmetric slice cannot show) was judged earlier not to change the
+verdicts.
+
 ## Limits
 
 - Static side load; no cyclic loading, fretting or self-loosening.
