@@ -155,6 +155,10 @@ Predict convergence on the reported quantity, not the solver's residual norm (El
   8.7 %): not a fixed definition offset but most likely the reference's peak resolution (a global strain-energy
   criterion). One point cannot tell an offset from a trend; three can.
 
+- **A reduced model that passes all its own checks is still not confirmed by them.** Study 10 part 2's half-space
+  model met both Hertz references to 1e-4 and converged to 0.03 %, yet one coarse 3D FE solve read 5 % higher at
+  mid-length (2 % of it known mesh bias) against a 5.1 % margin. When an independent fuller model disagrees by more
+  than about half the margin, state the verdict as conditional on settling it, on the page and in the backlog.
 - **Test a reference against its own limit before trusting it against the model.** The Hertz elliptical-contact
   reference first disagreed with the half-space solver by 2.4x; its long-ellipse limit (minor semi-axis -> 2 p0 R
   / E*, Hertz's line contact) showed the reference was the one wrong (a factor I had "fixed" in), and the test
