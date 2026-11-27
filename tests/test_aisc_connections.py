@@ -110,3 +110,33 @@ def test_end_forms_halve_or_reduce():
     full = c.panel_zone_shear(FY, 10.0, 0.3, 0.0, 500.0)
     assert full == pytest.approx(0.90 * 0.60 * FY * 10.0 * 0.3)
     assert c.panel_zone_shear(FY, 10.0, 0.3, 300.0, 500.0) == pytest.approx(full * (1.4 - 0.6))
+
+
+# ---------------------------------------------------------------- the whole connection, validation/flange_plated.py
+EXAMPLE_GEOMETRY = {
+    "bolt": {"d": D, "Fnv": 54.0},
+    # lev_beam 1 1/4 in. (1 1/2 less 1/4 in. underrun, as the example's block shear; its tearout check at 1 1/2 in.
+    # is not governing either way: bolt shear 24.3 < tearout 26.0 at 1 1/4 in.)
+    "fp": {"b": BP, "t": TP, "Fy": FY, "Fu": FU, "gage": 4.0, "n": 4, "s": 3.0, "le": 1.5, "lev_beam": 1.25,
+           "D16": 6},
+    "wp": {"L": 9.0, "t": 0.375, "Fy": FY, "Fu": FU, "n": 3, "s": 3.0, "le": 1.5, "leh": 2.0, "D16": 4},
+    "col": {"z_top": None, "z_bot": None},
+}
+
+
+def test_flange_plated_connection_reproduces_example_ii_b_1():
+    from validation import flange_plated as fpc
+
+    r = {x["id"]: x for x in fpc.checks(BEAM, COL, EXAMPLE_GEOMETRY, MU * 12, VU)}
+    expected = {"beam_flange_rupture": 318 * 12, "web_bolts": 71.2, "web_plate_shear_yield": 101,
+                "web_plate_shear_rupture": 65.9, "web_plate_block_shear": 82.2, "web_plate_welds": 100,
+                "column_flange_rupture_web_welds": 410, "flange_bolts": 194, "flange_plate_tension_yield": 237,
+                "flange_plate_tension_rupture": 183, "flange_plate_compression": 237, "flange_plate_block_shear_1": 381,
+                "flange_plate_block_shear_3": 300, "beam_flange_block_shear": 294, "column_flange_local_bending": 171,
+                "column_web_yielding_top": 186, "column_web_yielding_bottom": 186, "column_web_crippling": 233}
+    for cid, cap in expected.items():
+        assert close(r[cid]["capacity"], cap), (cid, r[cid]["capacity"], cap)
+    # the example sizes the plate welds: 5.51 sixteenths needed, 3/8 in. (6) chosen
+    assert close(r["flange_plate_welds"]["ratio"], 5.51 / 6, 0.003)
+    assert close(r["flange_bolts"]["demand"], 168) and close(r["flange_plate_tension_yield"]["demand"], 161, 0.003)
+    assert all(x["ratio"] <= 1.0 for x in r.values())         # the example's verdict: every check o.k.
