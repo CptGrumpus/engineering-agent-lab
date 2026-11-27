@@ -2412,6 +2412,14 @@ def keyed_shaft():
     print("fig keyed_shaft")
 
 
+def steel_knee():
+    """Study 28 part 2: the study session's figure (scripts/make_steel_knee_figure.py), converted for the site."""
+    from PIL import Image
+    src = REPO / "portfolio" / "img" / "steel_knee_frame.png"
+    Image.open(src).convert("RGB").save(fk.OUT / "fig_steel_knee.webp", "WEBP", quality=90, method=6)
+    print("fig steel_knee")
+
+
 def crack_surface():
     """Study 24 part 2: the semi-elliptical surface crack. K along the front for the four shapes on the growth path,
     FE against Newman-Raju, and the FE / Newman-Raju ratio by two independent routes against the stated accuracy."""
@@ -2588,7 +2596,7 @@ ALL = {f.__name__: f for f in (cfd_tolerance, cfd_duct, cfd_response, cfd_field,
                                qc_liftoff, qc_iso, coldplate_response, pipe_friction, motor_comparison,
                                motor_rotor, pv_nozzle, step_comparison, random_vibration, bracket_uncertainty,
                                fan_rotor, fan_rotor_campbell, crack_growth, motor_efficiency, motor_airgap, oring_seal, shaft_fillet,
-                               enclosure_revb, enclosure_field, steel_frame, flag_fsi, crack_surface, keyed_shaft)}
+                               enclosure_revb, enclosure_field, steel_frame, flag_fsi, crack_surface, keyed_shaft, steel_knee)}
 # not on the site (the earlier model's thermal result): motor_thermal
 
 if __name__ == "__main__":

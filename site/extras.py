@@ -612,7 +612,10 @@ REQS = [
     ("steel_frame", "28", "Steel portal frame", [
         ("Each member's combined ratio, AISC 360-22 Eq. H1-1, Direct Analysis Method", "≤ 1.0", "0.80, the beam unbraced over 6 m; columns 0.45", "met"),
         ("Beam deflection under the service live load", "≤ L/360 = 16.7 mm", "4.1 mm", "met"),
-        ("Frame drift under the service sideways load", "≤ H/400 = 10.0 mm", "2.6 mm", "met")]),
+        ("Frame drift under the service sideways load", "≤ H/400 = 10.0 mm", "2.6 mm", "met"),
+        ("Part 2: the bolted knee, every Chapter J limit state, slip-critical bolts", "≤ 1.0", "0.92, slip", "met"),
+        ("Part 2: the frame with slip-critical knees as springs: beam H1-1, deflection, drift", "1.0, 16.7 mm, 10.0 mm", "0.83, 4.3 mm, 2.8 mm", "met"),
+        ("Part 2: the frame with snug-tight bearing bolts slipping 1/16 in.: beam H1-1", "≤ 1.0", "1.17 (1.01 with half the slip)", "fail")]),
     ("shaft", "26", "Gearbox shaft shoulder", [
         ("Fatigue safety at the fillet, as drawn (fillet 1.4 to 2.0 mm)", "≥ 1.5", "1.15 to 1.26; 1.19 at the nominal 1.6 mm", "fail"),
         ("Yield safety at a 1.5 × overload, as drawn", "≥ 2.0", "1.77 to 1.92; 1.83 at the nominal", "fail"),
