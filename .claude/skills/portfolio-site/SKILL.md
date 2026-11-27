@@ -201,7 +201,13 @@ its drawing, not into the viewer. A contour render shown outside the viewer has 
 scene's own bands (the caption is left to the page). A camera picked blind for a small feature in a large part
 shows the part, not the feature: the surface crack's first view was the plate's face with the crack plane
 edge-on; `frame_box` round the feature fixed it. Check numbers in a handover against the run before captioning
-(the crack's message quoted the 2 mm shape's K for the 7.5 mm one).
+(the crack's message quoted the 2 mm shape's K for the 7.5 mm one). `frame_box` frames on the tessellation's
+vertices inside the box, and a big plain face has vertices only at its edges: the nozzle's 2 m shell put none in
+the box, so the nozzle and flange alone set the frame and the shell was cropped flat. Pass `fill` (0.72 there) to
+leave room round the framed feature; framing the whole vessel instead made the nozzle too small to read. A drawing
+whose feature is small against the part (10 mm welds on a 1 m section) needs an enlarged detail: an inset axes at
+an exact scale (`make_drawings.nozzle_pad`, 4 : 1), and `note(..., scale=k)` in it so the leader dots stay the size
+of the main view's.
 
 ## Editing the source safely
 
