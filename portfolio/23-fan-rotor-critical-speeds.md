@@ -132,6 +132,10 @@ form), and no two parts overlap. Hub, journal and weld sizes are a plausible lay
 ### Limits (part 2)
 
 - Hub and journal sizes are synthetic; the bonded hub is the tight-fit limit (a loose fit stiffens less still).
+- **The hub's fit is a design input, not a detail.** The bonded solid is the tight-fit limit; a slip fit moves toward
+  the hub as mass only, which sits 5.9 % below the solid. Applied to the corrected critical as a rough bound, that is
+  about 3470 rpm, a 15.7 % margin: still clear of 15 %, but only just. The drawing should call for an interference
+  fit on the hub; a looser fit would need its own check.
 - The solid is at rest: its correction applies the at-rest ratio to ROSS's gyroscopic critical speed.
 - No keyway in the solid (a tight key restores the section); no blades or aerodynamic forces, as part 1.
 
