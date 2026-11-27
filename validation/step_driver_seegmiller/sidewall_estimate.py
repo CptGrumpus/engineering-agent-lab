@@ -1,5 +1,5 @@
 """Study 19 part 2: a hand estimate of the tunnel's side-wall blockage, to test the page's explanation of the
-pressure-recovery miss (ours 0.153, measured 0.131: 0.022 high), before any 3D model.
+pressure-recovery miss (ours 0.1534, measured 0.1307: 0.0227 high), before any 3D model.
 
 The 2D model has no side walls. In the tunnel (span 15.1 cm = 11.9 step heights) a boundary layer grows on each side
 wall; downstream of the step it grows faster, against the pressure rise. Its displacement thickness narrows the core

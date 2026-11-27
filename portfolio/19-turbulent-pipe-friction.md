@@ -104,7 +104,7 @@ tunnel by the momentum integral, driven by our own 2D wall pressure, from the in
 displacement thickness narrows the core, which then runs faster and recovers less. By 30 step heights the core runs
 1.6-3.0 % faster and the recovery drops by 0.028 to 0.052, depending on how thick the side walls' boundary layers start
 (a quarter of the floor's to one and a half times it; the shape factor bracketed 1.4-1.8 changes it by 0.003). Every
-case is at least the 0.022 the model misses by, so the side walls can account for the miss; the estimate cannot say
+case is at least the 0.023 the model misses by, so the side walls can account for the miss; the estimate cannot say
 exactly how much of it, because the side walls' own inflow is not in the case description. A 3D model with the side
 walls would settle it ([`sidewall_estimate.py`](../validation/step_driver_seegmiller/sidewall_estimate.py)).
 
