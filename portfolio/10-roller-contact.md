@@ -4,7 +4,7 @@
 
 | | |
 |---|---|
-| **Answer** | Yes. Peak contact pressure 609 MPa against a 650 MPa limit, and maximum shear below the surface 184 MPa against 200 MPa. **Part 2, with the roller's ends:** a straight roller fails. Square ends, or a 1 mm edge break, load the ends at 2,700-3,000 MPa and more, against 650. **With a logarithmic crown it passes at 617 MPa** (A = 1.8 µm, crown drop 3.7 µm at 1 mm from the end); the crown works from about 3 to 7 µm of drop, so it needs a grinding tolerance of about ±2 µm. |
+| **Answer** | Yes. Peak contact pressure 609 MPa against a 650 MPa limit, and maximum shear below the surface 184 MPa against 200 MPa. **Part 2, with the roller's ends:** a straight roller fails. Square ends, or a 1 mm edge break, load the ends at 2,700-3,000 MPa and more, against 650. **With a logarithmic crown it passes at 617 MPa** on the half-space model (one coarse 3D FE check reads about 5 % higher at mid-length: not yet settled) (A = 1.8 µm, crown drop 3.7 µm at 1 mm from the end); the crown works from about 3 to 7 µm of drop, so it needs a grinding tolerance of about ±2 µm. |
 | **Discipline** | Structures and vibration |
 | **Tools** | Gmsh 4.15, CalculiX 2.22 (surface-to-surface contact) |
 | **Methods** | Nonlinear contact FEA (penalty, frictionless), plane strain, displacement control, Hertz line contact as the exact reference, mesh refinement; part 2: 3D contact along the roller by half-space influence coefficients (Boussinesq, Love), checked against Hertz line and elliptical contact, with crowning profiles |
@@ -81,7 +81,7 @@ long roller.
   length.
 - **Why not the 3D finite-element model?** It is built (study 10's section extruded along the roller, the profile as a
   micron drop), but one solve takes about an hour; the half-space method is the standard tool for roller profiles and
-  solves a design in seconds. One crowned case on the FE model is kept as a cross-check.
+  solves a design in seconds. One FE solve was run as a cross-check; it disagrees by more than the margin allows (below).
 
 ### How I know it's right
 
@@ -91,6 +91,25 @@ long roller.
 - **Grid refinement**: the crowned design gives 616.3, 616.6 and 616.8 MPa on three grids: uncertainty 0.03 %.
 - **The failures behave as theory says**: the square end's peak grows as the end cells shrink, roughly as their size
   to the power -0.47, the signature of a singular edge, so its runs fail their convergence check by design.
+
+### The cross-check against the 3D finite-element model: not settled
+
+One 3D FE solve was run as a cross-check (scratch, 2026-11-27, a single coarse mesh: 0.08 mm contact elements, the
+crown at Lundberg's own A, three approach steps), and compared with the half-space model at the loads the FE steps
+reached:
+
+| Load | FE mid-length | Half-space mid-length | FE peak (where) | Half-space peak (where) |
+|---|---|---|---|---|
+| 451 N/mm | 610 MPa | 580 MPa (FE +5.2 %) | 610 MPa (mid-length) | 612 MPa (0.2 mm from the end) |
+| 528 N/mm | 655 MPa | 622 MPa (FE +5.3 %) | 902 MPa (0.2 mm from the end) | 736 MPa (0.2 mm from the end) |
+
+Both models say the gentle crown fails at the ends. But the FE reads 5 % higher at mid-length, of which about 2 % is
+the coarse contact mesh's known bias (study 10's own 2D runs at 0.08 mm read 2.2 % over Hertz). That leaves about
+3 % unexplained, against the crowned design's 5.1 % margin. Under the portfolio's standing rule that is too close to
+call. **The crowned design passes on the half-space model, which meets every one of its exact checks, but the
+independent 3D model has not confirmed it.** Before the crown is released, the 3D FE model needs a mesh study at the
+chosen crown (several hours of solving). Until then the recommendation is "crown it, about 3.7 µm at 1 mm from the
+end, subject to that check".
 
 ### What the checks caught
 
