@@ -47,6 +47,26 @@
 #   P3 Both ratios settle within 1 % over the three levels (discretization checks pass the 2 % target).
 #   P4 Every point check passes (volume 1e-9, beam theory 0.1 %, equilibrium 1e-6, stations within 1 %, mesh
 #      quality); 10-25 min.
+#
+# Results (run 20261127-104729_steel_knee_mesh, 10:47-10:50, scored 2026-11-27 10:54). VERIFICATION FAIL on one
+# point check (moment equilibrium at the finest level, below); no verdict depends on it.
+#   P1 held: knee_stiffness_ratio 23.88 / 23.77 / 23.69 (the 9 1/2 in. plates: 11 % stiffer than the smoke's
+#      6 1/2 in.); the far pair within 0.03-0.08 %.
+#   P2 held: aisc_index_ratio 8.012 / 7.999 / 7.989: REQ-C2 FAIL. By the Commentary's index the knee is partially
+#      restrained (between 2 and 20), not FR.
+#   P3 held: k L / EI converged within 0.97 % (GCI, target 2 %), Ks L / EI within 0.36 %.
+#   P4 not held: equilibrium of the moment 1.37e-6 at 268 k nodes against a 1e-6 tolerance (force 6.6e-8; 3e-7 to
+#      1e-6 at the coarser levels): round-off of a sum over 3,000 base nodes' reactions times lever arms of 1.5 m,
+#      not a missing load; the tolerance was set too tight for this model. 3 min, not 10-25.
+# Findings:
+#   1. The two measures differ by a factor of 3, and both are right for their purpose: Ks L / EI 8.0 (the beam at
+#      the column face against the column at the joint's bottom: the panel zone and the connection) classifies the
+#      knee as partially restrained, so its stiffness belongs in the analysis; k L / EI 23.7 is that stiffness for
+#      the frame's centreline model, which already counts the members as flexible inside the joint (most of the
+#      panel zone's flexibility). With 23.7 (x 0.8, C2.3) at both knees the frame moves little: see
+#      steel_frame_knee.
+#   2. The extra rotation at 10 kN tip load (1.62 m lever) is 0.169 mrad; it converges from above as the solid's
+#      far field stiffens (the solid's own Ix makes the members' share exact to 0.1 %).
 
 [case]
 name = "steel_knee_mesh"

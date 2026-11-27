@@ -1,0 +1,331 @@
+{
+  "points": [
+    {
+      "label": "p00_bearing4",
+      "parameters": {
+        "column_shape": "W10X33",
+        "beam_shape": "W14X30",
+        "youngs_modulus_MPa": 200000.0,
+        "poisson_ratio": 0.3,
+        "plate_thickness_mm": 12.7,
+        "plate_width_mm": 152.4,
+        "plate_length_mm": 165.1,
+        "setback_mm": 12.7,
+        "tab_width_mm": 88.9,
+        "tab_height_mm": 228.6,
+        "tab_thickness_mm": 9.525,
+        "continuity_plate_thickness_mm": 12.7,
+        "column_length_mm": 1200.0,
+        "beam_length_mm": 1500.0,
+        "tip_load_kN": 10.0,
+        "bay_span_mm": 6000.0,
+        "joint_size_mm": 11.0,
+        "far_size_mm": 16.5,
+        "mesh_scale": 0.8,
+        "station_near_mm": 300.0,
+        "station_far_mm": 700.0,
+        "scenario": "bearing4"
+      },
+      "derived": {},
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "cad_volume",
+          "description": "|CAD volume / hand volume - 1| (stubs, plates, tab, continuity plates)",
+          "kind": "numerical",
+          "value": 1.5543122344752192e-15,
+          "tolerance": 1e-09,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "beam_theory_beam",
+          "description": "beam: rotation between its near and far sections against beam theory with the solid's own section Ix",
+          "kind": "numerical",
+          "value": 0.0007394925378287898,
+          "tolerance": 0.005,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "beam_theory_column",
+          "description": "column: rotation between its near and far sections against beam theory with the solid's own section Ix",
+          "kind": "numerical",
+          "value": 0.00011886648720604853,
+          "tolerance": 0.005,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "equilibrium_force",
+          "description": "|base reaction - tip load| / tip load",
+          "kind": "numerical",
+          "value": 3.862800003844313e-08,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "equilibrium_moment",
+          "description": "|base reaction moment - tip load x lever| / that moment",
+          "kind": "numerical",
+          "value": 2.223854920032226e-07,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "stations_agree",
+          "description": "k L / EI from the near against the far pair of sections (the joint's extra rotation is local, so both must give it)",
+          "kind": "numerical",
+          "value": 0.0002566835515700472,
+          "tolerance": 0.03,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "mesh_quality",
+          "description": "0.1 - the smallest scaled Jacobian (at or below 0: every element above the threshold)",
+          "kind": "validity",
+          "value": -0.016348331268781324,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-C2",
+          "text": "The knee may be analysed as fully restrained (rigid), as part 1 did, only if its secant stiffness meets AISC 360-22 Commentary B3.4b: Ks L / EI >= 20 (L and EI the beam's).",
+          "metric": "aisc_index_ratio",
+          "operator": ">=",
+          "limit": 20.0,
+          "units": "",
+          "value": 7.678105994132194,
+          "margin": -12.321894005867806,
+          "verdict": "FAIL"
+        }
+      ]
+    },
+    {
+      "label": "p01_slip_critical6",
+      "parameters": {
+        "column_shape": "W10X33",
+        "beam_shape": "W14X30",
+        "youngs_modulus_MPa": 200000.0,
+        "poisson_ratio": 0.3,
+        "plate_thickness_mm": 12.7,
+        "plate_width_mm": 152.4,
+        "plate_length_mm": 241.3,
+        "setback_mm": 12.7,
+        "tab_width_mm": 88.9,
+        "tab_height_mm": 228.6,
+        "tab_thickness_mm": 9.525,
+        "continuity_plate_thickness_mm": 12.7,
+        "column_length_mm": 1200.0,
+        "beam_length_mm": 1500.0,
+        "tip_load_kN": 10.0,
+        "bay_span_mm": 6000.0,
+        "joint_size_mm": 11.0,
+        "far_size_mm": 16.5,
+        "mesh_scale": 0.8,
+        "station_near_mm": 300.0,
+        "station_far_mm": 700.0,
+        "scenario": "slip_critical6"
+      },
+      "derived": {},
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "cad_volume",
+          "description": "|CAD volume / hand volume - 1| (stubs, plates, tab, continuity plates)",
+          "kind": "numerical",
+          "value": 2.220446049250313e-16,
+          "tolerance": 1e-09,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "beam_theory_beam",
+          "description": "beam: rotation between its near and far sections against beam theory with the solid's own section Ix",
+          "kind": "numerical",
+          "value": 0.0018011304747727053,
+          "tolerance": 0.005,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "beam_theory_column",
+          "description": "column: rotation between its near and far sections against beam theory with the solid's own section Ix",
+          "kind": "numerical",
+          "value": 0.0001894152125618831,
+          "tolerance": 0.005,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "equilibrium_force",
+          "description": "|base reaction - tip load| / tip load",
+          "kind": "numerical",
+          "value": 7.908400002634153e-08,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "equilibrium_moment",
+          "description": "|base reaction moment - tip load x lever| / that moment",
+          "kind": "numerical",
+          "value": 2.1714010433297035e-07,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "stations_agree",
+          "description": "k L / EI from the near against the far pair of sections (the joint's extra rotation is local, so both must give it)",
+          "kind": "numerical",
+          "value": 0.0008330296736511755,
+          "tolerance": 0.03,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "mesh_quality",
+          "description": "0.1 - the smallest scaled Jacobian (at or below 0: every element above the threshold)",
+          "kind": "validity",
+          "value": -0.035340112506139276,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-C2",
+          "text": "The knee may be analysed as fully restrained (rigid), as part 1 did, only if its secant stiffness meets AISC 360-22 Commentary B3.4b: Ks L / EI >= 20 (L and EI the beam's).",
+          "metric": "aisc_index_ratio",
+          "operator": ">=",
+          "limit": 20.0,
+          "units": "",
+          "value": 7.99851779463172,
+          "margin": -12.00148220536828,
+          "verdict": "FAIL"
+        }
+      ]
+    },
+    {
+      "label": "p02_sc6_no_continuity",
+      "parameters": {
+        "column_shape": "W10X33",
+        "beam_shape": "W14X30",
+        "youngs_modulus_MPa": 200000.0,
+        "poisson_ratio": 0.3,
+        "plate_thickness_mm": 12.7,
+        "plate_width_mm": 152.4,
+        "plate_length_mm": 241.3,
+        "setback_mm": 12.7,
+        "tab_width_mm": 88.9,
+        "tab_height_mm": 228.6,
+        "tab_thickness_mm": 9.525,
+        "continuity_plate_thickness_mm": 0.0,
+        "column_length_mm": 1200.0,
+        "beam_length_mm": 1500.0,
+        "tip_load_kN": 10.0,
+        "bay_span_mm": 6000.0,
+        "joint_size_mm": 11.0,
+        "far_size_mm": 16.5,
+        "mesh_scale": 0.8,
+        "station_near_mm": 300.0,
+        "station_far_mm": 700.0,
+        "scenario": "sc6_no_continuity"
+      },
+      "derived": {},
+      "simulation_status": "completed",
+      "verification_status": "FAIL",
+      "checks": [
+        {
+          "id": "cad_volume",
+          "description": "|CAD volume / hand volume - 1| (stubs, plates, tab, continuity plates)",
+          "kind": "numerical",
+          "value": 1.7763568394002505e-15,
+          "tolerance": 1e-09,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "beam_theory_beam",
+          "description": "beam: rotation between its near and far sections against beam theory with the solid's own section Ix",
+          "kind": "numerical",
+          "value": 0.001652790155884154,
+          "tolerance": 0.005,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "beam_theory_column",
+          "description": "column: rotation between its near and far sections against beam theory with the solid's own section Ix",
+          "kind": "numerical",
+          "value": 0.00011964472790748637,
+          "tolerance": 0.005,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "equilibrium_force",
+          "description": "|base reaction - tip load| / tip load",
+          "kind": "numerical",
+          "value": 1.325159999396419e-07,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "equilibrium_moment",
+          "description": "|base reaction moment - tip load x lever| / that moment",
+          "kind": "numerical",
+          "value": 2.2880160736299202e-07,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "stations_agree",
+          "description": "k L / EI from the near against the far pair of sections (the joint's extra rotation is local, so both must give it)",
+          "kind": "numerical",
+          "value": 0.0005866092568982406,
+          "tolerance": 0.03,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "mesh_quality",
+          "description": "0.1 - the smallest scaled Jacobian (at or below 0: every element above the threshold)",
+          "kind": "validity",
+          "value": 0.029482951645509625,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "FAIL"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-C2",
+          "text": "The knee may be analysed as fully restrained (rigid), as part 1 did, only if its secant stiffness meets AISC 360-22 Commentary B3.4b: Ks L / EI >= 20 (L and EI the beam's).",
+          "metric": "aisc_index_ratio",
+          "operator": ">=",
+          "limit": 20.0,
+          "units": "",
+          "value": 6.6582175980345575,
+          "margin": -13.341782401965443,
+          "verdict": "FAIL (unverified)"
+        }
+      ]
+    }
+  ],
+  "run_id": "20261127-105017_steel_knee_design",
+  "generated_utc": "2026-11-27T15:52:53+00:00",
+  "verification_status": "FAIL"
+}

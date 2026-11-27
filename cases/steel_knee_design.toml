@@ -46,6 +46,17 @@
 #   P2 sc6_no_continuity clearly softer: k L / EI 10-18 and Ks L / EI 5-7 (the column's flange bends under the top
 #      plate at the column's end, unstiffened).
 #   P3 Every point check passes; 5-15 min.
+#
+# Results (run 20261127-105017_steel_knee_design, 10:50-10:53, scored 2026-11-27 10:54). VERIFICATION FAIL on one
+# mesh-quality check (sc6_no_continuity, below).
+#   P1 half held: Ks L / EI 7.68 (bearing4) and 8.00 (slip_critical6), 4 % apart, both REQ-C2 FAIL; but k L / EI
+#      21.33 against 23.77, 11 % apart: the longer bonded plates matter more than predicted (they stiffen the beam's
+#      end, which the centreline model counts as plain beam).
+#   P2 held: sc6_no_continuity k L / EI 15.31, Ks L / EI 6.66: the column flange bends under the top plate at the
+#      column's end; the continuity plates add 55 % to k.
+#   P3 not held: sc6_no_continuity's mesh has one element at scaled Jacobian 0.071 (under 0.1) in the beam web next to
+#      its bottom root fillet, 940 mm from the column face (the far field, as in the smoke): the point is unverified;
+#      the other two pass every check. 3 min, not 5-15.
 
 [case]
 name = "steel_knee_design"
