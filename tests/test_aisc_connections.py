@@ -34,6 +34,12 @@ def test_hole_and_bolt_shear():
     assert close(c.bolt_shear(D), 24.3)
 
 
+def test_slip_resistance_examples_j4a_j4b_j5():
+    assert close(c.slip_resistance(0.75, ns=2), 19.0)              # J.4A: Class A, standard / short-slotted
+    assert close(c.slip_resistance(0.75, ns=2, phi=0.70), 13.3)    # J.4B: long-slotted holes
+    assert close(c.slip_resistance(0.75, ns=1), 9.49, 0.002)       # combined tension and shear example, Tu = 0
+
+
 def test_beam_flange_rupture_f13():
     Afg = BEAM["bf"] * BEAM["tf"]
     Afn = Afg - 2 * (DH + 1 / 16) * BEAM["tf"]

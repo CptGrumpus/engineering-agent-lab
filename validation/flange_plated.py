@@ -6,7 +6,8 @@ stiffener (J10.7, J10.8) where the column flange or web alone does not carry the
 Units kip and inch (as validation/aisc_connections.py). Sections are Shapes Database dicts (validation/aisc360.shape).
 
 Geometry `g` (inch):
-  bolt:  {"d", "Fnv"}                                    diameter, nominal shear stress (54 ksi: Group A, threads N)
+  bolt:  {"d", "Fnv", "slip_critical", "mu"}             diameter, nominal shear stress (54 ksi: Group A, threads N);
+         slip-critical (pretensioned, Class A surface mu 0.30 unless given) adds the slip checks
   fp:    {"b", "t", "Fy", "Fu", "gage", "n", "s", "le", "lev_beam", "D16"}
          flange plates (top and bottom alike): width, thickness, two bolt lines `gage` apart with `n` bolts each at
          pitch `s`; `le` from the last bolt to the plate's end, `lev_beam` from the first bolt to the beam's end;
@@ -77,6 +78,11 @@ def checks(beam: dict, col: dict, g: dict, Mu: float, Vu: float, Pu: float = 0.0
     per_bolt_in = min(_ply(d, fp["t"], fp["Fu"], fp["s"] - dh, Fnv), _ply(d, beam["tf"], FU, fp["s"] - dh, Fnv))
     add("flange_bolts", "flange plate bolt group, two lines: shear, bearing, tearout (J3.6, J3.11)", Pf_bolts,
         2 * (per_bolt_edge + (fp["n"] - 1) * per_bolt_in))
+    if g["bolt"].get("slip_critical"):
+        sr = c.slip_resistance(d, ns=1, mu=g["bolt"].get("mu", 0.30))
+        add("flange_bolts_slip", "flange plate bolts, slip-critical: slip at the required strength (J3-4)", Pf_bolts,
+            2 * fp["n"] * sr)
+        add("web_bolts_slip", "web plate bolts, slip-critical: slip at the required strength (J3-4)", Vu, wp["n"] * sr)
     add("flange_plate_tension_yield", "tension flange plate yielding (J4-1)", Pf_plate,
         c.tension_yield(fp["Fy"], fp["b"] * fp["t"]))
     add("flange_plate_tension_rupture", "tension flange plate rupture, U = 1.0 (J4-2)", Pf_plate,

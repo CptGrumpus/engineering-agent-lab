@@ -11,7 +11,8 @@ phi R_n unless its name says otherwise.
 
 Covered:
 - J3: bolt shear (J3-1), bearing and tearout at a hole (J3-6a, J3-6c; deformation at service load a consideration),
-  standard hole sizes (Table J3.3), a bolt group as the sum of each bolt's least strength (Commentary J3.7).
+  standard hole sizes (Table J3.3), a bolt group as the sum of each bolt's least strength (Commentary J3.7); slip
+  resistance of slip-critical bolts (J3-4, Table J3.1 pretensions).
 - J2.4: fillet weld strength with the directional factor k_ds (J2-5), in the Manual's per-sixteenth form (Eq. 8-2a).
 - J4: tension yielding and rupture (J4-1, J4-2), shear yielding and rupture (J4-3, J4-4), block shear (J4-5),
   compression of a short element (J4.4, KL/r <= 25).
@@ -61,6 +62,18 @@ def bolt_row_strength(n: int, d: float, t: float, Fu: float, s: float, le: float
     (lc = s - dh). Commentary J3.7: the group's strength is the sum over its bolts."""
     dh = hole_std(d)
     return bolt_strength(d, t, Fu, le - dh / 2, Fnv) + (n - 1) * bolt_strength(d, t, Fu, s - dh, Fnv)
+
+
+#: Table J3.1, minimum bolt pretension, Group 120 (A325) bolts, kips, by diameter in inches
+PRETENSION_GROUP_120 = {0.5: 12.0, 0.625: 19.0, 0.75: 28.0, 0.875: 39.0, 1.0: 51.0, 1.125: 56.0, 1.25: 71.0}
+
+
+def slip_resistance(d: float, ns: int = 1, mu: float = 0.30, hf: float = 1.0, phi: float = 1.00,
+                    Du: float = 1.13) -> float:
+    """phi r_n per bolt for the limit state of slip, J3-4: mu Du hf Tb ns. phi 1.00 for standard holes and short
+    slots perpendicular to the load (J3.9(a)), 0.85 oversized and short slots parallel, 0.70 long slots; mu 0.30 for
+    a Class A surface (0.50 Class B); Tb from Table J3.1 (Group 120)."""
+    return phi * mu * Du * hf * PRETENSION_GROUP_120[d] * ns
 
 
 # --- J2: welds --------------------------------------------------------------------------------------------------
