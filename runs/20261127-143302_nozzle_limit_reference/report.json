@@ -1,0 +1,424 @@
+{
+  "points": [
+    {
+      "label": "p00_element_size_local_mm-13.5",
+      "parameters": {
+        "shell_inner_radius_mm": 500.0,
+        "shell_thickness_mm": 16.0,
+        "shell_half_length_mm": 1000.0,
+        "nozzle_inner_radius_mm": 100.0,
+        "nozzle_thickness_mm": 12.0,
+        "nozzle_length_mm": 350.0,
+        "weld_fillet_radius_mm": 10.0,
+        "pressure_MPa": 3.5,
+        "youngs_modulus_MPa": 200000.0,
+        "poisson_ratio": 0.3,
+        "element_size_local_mm": 13.5,
+        "element_size_far_mm": 24.0,
+        "refine_radius_mm": 140.0,
+        "mesh_growth": 0.08,
+        "allowable_stress_MPa": 138.0,
+        "load_factor_max": 2.4,
+        "plain_shell": 1
+      },
+      "derived": {
+        "yield_1p5S_MPa": 207.0,
+        "cylinder_collapse_pressure_MPa": 7.528906257018694,
+        "cylinder_collapse_load_factor": 2.1511160734339128,
+        "required_load_factor": 1.5,
+        "schedule": [
+          1.0,
+          1.5,
+          1.6,
+          1.7,
+          1.8,
+          1.9,
+          2.0,
+          2.1,
+          2.2,
+          2.3,
+          2.4
+        ]
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "cad_valid",
+          "description": "CadQuery B-rep valid (0 = yes)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "mesh_volume",
+          "description": "|mesh volume (straight-sided tets) - CAD volume| / CAD volume",
+          "kind": "numerical",
+          "value": 9.914959314554035e-06,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "equilibrium_y",
+          "description": "max over the completed steps of |reaction on y = 0 / (load factor x exact resultant) - 1|",
+          "kind": "numerical",
+          "value": 6.015037594675476e-07,
+          "tolerance": 1e-05,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "equilibrium_z",
+          "description": "max over the completed steps of |reaction on z = 0 / (load factor x exact resultant) - 1|",
+          "kind": "numerical",
+          "value": 1.9853660249147254e-07,
+          "tolerance": 1e-05,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "self_balance_x",
+          "description": "max over the completed steps of |reaction at the single axial support| / (load factor x quarter nozzle thrust) (a closed vessel: 0)",
+          "kind": "numerical",
+          "value": 5.009545073266189e-14,
+          "tolerance": 1e-05,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "collapse_found",
+          "description": "the analysis stopped on non-convergence below load_factor_max (0 = yes): the collapse load is bracketed",
+          "kind": "validity",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "passed_code_load",
+          "description": "the step to load factor 1.5 completed (0 = yes)",
+          "kind": "validity",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "cylinder_exact",
+          "description": "|collapse pressure - exact closed-end cylinder (2 / sqrt 3) sigma_y ln(Ro / Ri)| / exact",
+          "kind": "numerical",
+          "value": 5.767863270844664e-05,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "cad_hand_volume",
+          "description": "|CAD volume - hand volume| / hand volume (exact for the plain shell)",
+          "kind": "numerical",
+          "value": 4.9960036108132044e-15,
+          "tolerance": 1e-09,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-NL0",
+          "text": "Reference: the plain shell carries 1.5 times the design pressure (Part 5.2.3 load case), collapse load factor >= 1.5.",
+          "metric": "collapse_load_factor",
+          "operator": ">=",
+          "limit": 1.5,
+          "units": "-",
+          "value": 2.150992,
+          "margin": 0.650992,
+          "verdict": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p01_element_size_local_mm-9",
+      "parameters": {
+        "shell_inner_radius_mm": 500.0,
+        "shell_thickness_mm": 16.0,
+        "shell_half_length_mm": 1000.0,
+        "nozzle_inner_radius_mm": 100.0,
+        "nozzle_thickness_mm": 12.0,
+        "nozzle_length_mm": 350.0,
+        "weld_fillet_radius_mm": 10.0,
+        "pressure_MPa": 3.5,
+        "youngs_modulus_MPa": 200000.0,
+        "poisson_ratio": 0.3,
+        "element_size_local_mm": 9.0,
+        "element_size_far_mm": 24.0,
+        "refine_radius_mm": 140.0,
+        "mesh_growth": 0.08,
+        "allowable_stress_MPa": 138.0,
+        "load_factor_max": 2.4,
+        "plain_shell": 1
+      },
+      "derived": {
+        "yield_1p5S_MPa": 207.0,
+        "cylinder_collapse_pressure_MPa": 7.528906257018694,
+        "cylinder_collapse_load_factor": 2.1511160734339128,
+        "required_load_factor": 1.5,
+        "schedule": [
+          1.0,
+          1.5,
+          1.6,
+          1.7,
+          1.8,
+          1.9,
+          2.0,
+          2.1,
+          2.2,
+          2.3,
+          2.4
+        ]
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "cad_valid",
+          "description": "CadQuery B-rep valid (0 = yes)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "mesh_volume",
+          "description": "|mesh volume (straight-sided tets) - CAD volume| / CAD volume",
+          "kind": "numerical",
+          "value": 7.145843149824442e-06,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "equilibrium_y",
+          "description": "max over the completed steps of |reaction on y = 0 / (load factor x exact resultant) - 1|",
+          "kind": "numerical",
+          "value": 2.8571428571932955e-06,
+          "tolerance": 1e-05,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "equilibrium_z",
+          "description": "max over the completed steps of |reaction on z = 0 / (load factor x exact resultant) - 1|",
+          "kind": "numerical",
+          "value": 1.9853660249147254e-07,
+          "tolerance": 1e-05,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "self_balance_x",
+          "description": "max over the completed steps of |reaction at the single axial support| / (load factor x quarter nozzle thrust) (a closed vessel: 0)",
+          "kind": "numerical",
+          "value": 2.148557536164243e-14,
+          "tolerance": 1e-05,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "collapse_found",
+          "description": "the analysis stopped on non-convergence below load_factor_max (0 = yes): the collapse load is bracketed",
+          "kind": "validity",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "passed_code_load",
+          "description": "the step to load factor 1.5 completed (0 = yes)",
+          "kind": "validity",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "cylinder_exact",
+          "description": "|collapse pressure - exact closed-end cylinder (2 / sqrt 3) sigma_y ln(Ro / Ri)| / exact",
+          "kind": "numerical",
+          "value": 5.958462004707066e-05,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "cad_hand_volume",
+          "description": "|CAD volume - hand volume| / hand volume (exact for the plain shell)",
+          "kind": "numerical",
+          "value": 4.9960036108132044e-15,
+          "tolerance": 1e-09,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-NL0",
+          "text": "Reference: the plain shell carries 1.5 times the design pressure (Part 5.2.3 load case), collapse load factor >= 1.5.",
+          "metric": "collapse_load_factor",
+          "operator": ">=",
+          "limit": 1.5,
+          "units": "-",
+          "value": 2.1509879,
+          "margin": 0.6509879000000001,
+          "verdict": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p02_element_size_local_mm-6",
+      "parameters": {
+        "shell_inner_radius_mm": 500.0,
+        "shell_thickness_mm": 16.0,
+        "shell_half_length_mm": 1000.0,
+        "nozzle_inner_radius_mm": 100.0,
+        "nozzle_thickness_mm": 12.0,
+        "nozzle_length_mm": 350.0,
+        "weld_fillet_radius_mm": 10.0,
+        "pressure_MPa": 3.5,
+        "youngs_modulus_MPa": 200000.0,
+        "poisson_ratio": 0.3,
+        "element_size_local_mm": 6.0,
+        "element_size_far_mm": 24.0,
+        "refine_radius_mm": 140.0,
+        "mesh_growth": 0.08,
+        "allowable_stress_MPa": 138.0,
+        "load_factor_max": 2.4,
+        "plain_shell": 1
+      },
+      "derived": {
+        "yield_1p5S_MPa": 207.0,
+        "cylinder_collapse_pressure_MPa": 7.528906257018694,
+        "cylinder_collapse_load_factor": 2.1511160734339128,
+        "required_load_factor": 1.5,
+        "schedule": [
+          1.0,
+          1.5,
+          1.6,
+          1.7,
+          1.8,
+          1.9,
+          2.0,
+          2.1,
+          2.2,
+          2.3,
+          2.4
+        ]
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "cad_valid",
+          "description": "CadQuery B-rep valid (0 = yes)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "mesh_volume",
+          "description": "|mesh volume (straight-sided tets) - CAD volume| / CAD volume",
+          "kind": "numerical",
+          "value": 1.6822794170895647e-05,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "equilibrium_y",
+          "description": "max over the completed steps of |reaction on y = 0 / (load factor x exact resultant) - 1|",
+          "kind": "numerical",
+          "value": 1.6071428572406177e-06,
+          "tolerance": 1e-05,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "equilibrium_z",
+          "description": "max over the completed steps of |reaction on z = 0 / (load factor x exact resultant) - 1|",
+          "kind": "numerical",
+          "value": 1.9853660249147254e-07,
+          "tolerance": 1e-05,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "self_balance_x",
+          "description": "max over the completed steps of |reaction at the single axial support| / (load factor x quarter nozzle thrust) (a closed vessel: 0)",
+          "kind": "numerical",
+          "value": 4.782253084051265e-14,
+          "tolerance": 1e-05,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "collapse_found",
+          "description": "the analysis stopped on non-convergence below load_factor_max (0 = yes): the collapse load is bracketed",
+          "kind": "validity",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "passed_code_load",
+          "description": "the step to load factor 1.5 completed (0 = yes)",
+          "kind": "validity",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "cylinder_exact",
+          "description": "|collapse pressure - exact closed-end cylinder (2 / sqrt 3) sigma_y ln(Ro / Ri)| / exact",
+          "kind": "numerical",
+          "value": 5.767863270844664e-05,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "cad_hand_volume",
+          "description": "|CAD volume - hand volume| / hand volume (exact for the plain shell)",
+          "kind": "numerical",
+          "value": 4.9960036108132044e-15,
+          "tolerance": 1e-09,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-NL0",
+          "text": "Reference: the plain shell carries 1.5 times the design pressure (Part 5.2.3 load case), collapse load factor >= 1.5.",
+          "metric": "collapse_load_factor",
+          "operator": ">=",
+          "limit": 1.5,
+          "units": "-",
+          "value": 2.150992,
+          "margin": 0.650992,
+          "verdict": "PASS"
+        }
+      ]
+    }
+  ],
+  "run_id": "20261127-143302_nozzle_limit_reference",
+  "generated_utc": "2026-11-27T20:40:58+00:00",
+  "verification_status": "PASS"
+}

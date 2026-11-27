@@ -72,6 +72,11 @@ def main(out: Path) -> None:
     cyl = pts[0]["solver_outputs"]["cylinder_collapse_pressure_MPa"] / 3.5
     bx.axhline(cyl, color=TEXT_2, lw=0.8, ls=":")
     bx.text(tn[0], cyl, f" the shell without a nozzle: {cyl:.2f}", fontsize=7.5, va="bottom", color=TEXT_2)
+    if lc.min() >= 1.5:
+        pe = [q["solver_outputs"].get("peeq_max_at_1p5", float("nan")) for q in pts]
+        note = "\n".join([f"every wall swept passes; at {tn[0]:g} mm", f"the plastic strain at 1.5 reaches "
+                          f"{100 * pe[0]:.0f} %", f"({tn[2]:g} mm: {100 * pe[2]:.1f} %)"])
+        bx.text(tn[0] - 0.8, 1.30, note, fontsize=7.5, color=SERIES_1, va="bottom")
     if lc.min() < 1.5 < lc.max():
         t15 = float(np.interp(1.5, lc, tn))
         bx.plot([t15], [1.5], "o", color=SERIES_1, mfc=SURFACE, ms=8)
@@ -106,7 +111,8 @@ def main(out: Path) -> None:
     cx.set_aspect("equal")
     cx.set_xlabel("along the vessel from the nozzle axis, z (mm)")
     cx.set_ylabel("radial, x (mm)")
-    cx.set_title("(c) Yielded at 1.5 x design (section along the vessel)", loc="left", fontsize=10, color=TEXT)
+    cx.set_title("(c) Plastic strain at 1.5 x design", loc="left", fontsize=10, color=TEXT)
+    cx.text(0.98, 0.04, "section through both axes", transform=cx.transAxes, fontsize=7.5, color=TEXT_2, ha="right")
     fig.savefig(out, dpi=150, bbox_inches="tight", facecolor=SURFACE)
     plt.close(fig)
 

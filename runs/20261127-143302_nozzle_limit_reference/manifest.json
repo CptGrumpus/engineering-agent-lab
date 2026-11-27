@@ -1,0 +1,574 @@
+{
+  "run_id": "20261127-143302_nozzle_limit_reference",
+  "case_name": "nozzle_limit_reference",
+  "model": "ccx_nozzle_limit",
+  "case_source": "cases/nozzle_limit_reference.toml",
+  "case_sha256": "95b9095f9fca8fee87ff9c1881d1ca4ab285048e76303eb3e0573c9da88bc0cd",
+  "model_sources_sha256": {
+    "models/fea/nozzle_limit.py": "2972d6f0168cf7bf3fc7da6b53fdfb34c308dc7e691e651dfb0b6f1df6dd5aa7",
+    "models/fea/pressure_vessel.py": "aee06b59014c46b32b4ca22e10e6740e9b017a3a2511d23540c657d142651865"
+  },
+  "rerun_of": null,
+  "started_utc": "2026-11-27T19:33:02+00:00",
+  "environment": {
+    "python": "3.14.10",
+    "python_executable": "<repo>\\.venv\\Scripts\\python.exe",
+    "platform": "Windows-11-10.0.26100-SP0",
+    "machine": "AMD64",
+    "packages": {
+      "numpy": "2.5.5",
+      "scipy": "1.18.1",
+      "matplotlib": "3.11.2",
+      "cadquery": "2.8.0"
+    },
+    "git": {
+      "commit": "1f0cd13401bd0406f051705d637c5b095d772544",
+      "dirty": true
+    },
+    "tools": {
+      "cadquery": "2.8.0",
+      "gmsh": "4.15.0",
+      "CalculiX": "This is Version 2.22"
+    }
+  },
+  "numerics": {
+    "solver_timeout_s": 14400,
+    "threads": 6
+  },
+  "points": [
+    {
+      "label": "p00_element_size_local_mm-13.5",
+      "parameters": {
+        "shell_inner_radius_mm": 500.0,
+        "shell_thickness_mm": 16.0,
+        "shell_half_length_mm": 1000.0,
+        "nozzle_inner_radius_mm": 100.0,
+        "nozzle_thickness_mm": 12.0,
+        "nozzle_length_mm": 350.0,
+        "weld_fillet_radius_mm": 10.0,
+        "pressure_MPa": 3.5,
+        "youngs_modulus_MPa": 200000.0,
+        "poisson_ratio": 0.3,
+        "element_size_local_mm": 13.5,
+        "element_size_far_mm": 24.0,
+        "refine_radius_mm": 140.0,
+        "mesh_growth": 0.08,
+        "allowable_stress_MPa": 138.0,
+        "load_factor_max": 2.4,
+        "plain_shell": 1
+      },
+      "status": "completed",
+      "derived": {
+        "yield_1p5S_MPa": 207.0,
+        "cylinder_collapse_pressure_MPa": 7.528906257018694,
+        "cylinder_collapse_load_factor": 2.1511160734339128,
+        "required_load_factor": 1.5,
+        "schedule": [
+          1.0,
+          1.5,
+          1.6,
+          1.7,
+          1.8,
+          1.9,
+          2.0,
+          2.1,
+          2.2,
+          2.3,
+          2.4
+        ]
+      },
+      "solver": {
+        "success": true,
+        "message": "CalculiX: 21557 C3D10, 42878 nodes; collapse at load factor 2.1510",
+        "nfev": null
+      },
+      "solver_outputs": {
+        "nodes": 42878,
+        "elements": 21557,
+        "monitor_nodes": {
+          "NTOE": 235,
+          "NCROTCH": 886,
+          "NFAR": 29
+        },
+        "back_node": 2,
+        "faces_shell_bore": 6648,
+        "faces_shell_end": 158,
+        "cad_volume_mm3": 25534865.088377714,
+        "cad_volume_hand_mm3": 25534865.08837784,
+        "cad_faces": 6,
+        "cad_valid": true,
+        "mesh_volume_mm3": 25534611.91122926,
+        "expected": {
+          "Ry_N": -3500000.0,
+          "Rz_N": -1374446.7859455345,
+          "Rx_back_N": 0.0,
+          "nozzle_thrust_scale_N": 27488.93571891069
+        },
+        "schedule": [
+          1.0,
+          1.5,
+          1.6,
+          1.7,
+          1.8,
+          1.9,
+          2.0,
+          2.1,
+          2.2,
+          2.3,
+          2.4
+        ],
+        "history": {
+          "lambda": [
+            1.0,
+            1.5,
+            1.6,
+            1.7,
+            1.8,
+            1.9,
+            2.0,
+            2.1
+          ],
+          "Ry_N": [
+            -3500002.0,
+            -5250003.0,
+            -5600003.0,
+            -5950003.0,
+            -6300003.0,
+            -6650004.0,
+            -7000004.0,
+            -7350004.0
+          ],
+          "Rz_N": [
+            -1374447.0,
+            -2061670.0,
+            -2199115.0,
+            -2336560.0,
+            -2474004.0,
+            -2611449.0,
+            -2748894.0,
+            -2886338.0
+          ],
+          "Rx_back_N": [
+            -1.268972e-09,
+            -1.316193e-09,
+            -2.203313e-09,
+            -1.527869e-09,
+            -2.362516e-09,
+            -2.349203e-09,
+            -1.997492e-09,
+            -2.359211e-09
+          ],
+          "u_toe_mm": [
+            0.4723429826121778,
+            0.7085144740565127,
+            0.7557487323053739,
+            0.8029829905542348,
+            0.8502173487648648,
+            0.8974516070137257,
+            0.9446858652625869,
+            0.9905791725326959
+          ],
+          "u_crotch_mm": [
+            0.4763417296560817,
+            0.7145126446994531,
+            0.7621467675867529,
+            0.8097809906763436,
+            0.8574151135636435,
+            0.9050493364248634,
+            0.9526834595405339,
+            0.9989909962430764
+          ],
+          "u_far_mm": [
+            0.05382568002202754,
+            0.08073853003304131,
+            0.08612110003524405,
+            0.09150366003744681,
+            0.09688623003964955,
+            0.1022688000418523,
+            0.10765140004405505,
+            0.11303460153434226
+          ],
+          "collapse_load_factor": 2.150992,
+          "completed_all_steps": false,
+          "stopped_below_min_increment": false
+        },
+        "collapse_load_factor": 2.150992,
+        "ccx_exit": 201,
+        "ccx_stopped_on_min_increment": true,
+        "cylinder_collapse_pressure_MPa": 7.528906257018694,
+        "yield_MPa": 207.0,
+        "plastic_zone_nodes": 447,
+        "peeq_fields_load_factors": [
+          1.5,
+          2.1
+        ],
+        "peeq_max_at_1p5": 0.0,
+        "peeq_max_at_last_step": 9.2634e-06,
+        "yielded_nodes_at_1p5": 0,
+        "yielded_nodes_at_last_step": 958
+      },
+      "metrics": {
+        "collapse_load_factor": 2.150992,
+        "collapse_pressure_MPa": 7.528472,
+        "collapse_over_cylinder": 0.9999423213672916
+      }
+    },
+    {
+      "label": "p01_element_size_local_mm-9",
+      "parameters": {
+        "shell_inner_radius_mm": 500.0,
+        "shell_thickness_mm": 16.0,
+        "shell_half_length_mm": 1000.0,
+        "nozzle_inner_radius_mm": 100.0,
+        "nozzle_thickness_mm": 12.0,
+        "nozzle_length_mm": 350.0,
+        "weld_fillet_radius_mm": 10.0,
+        "pressure_MPa": 3.5,
+        "youngs_modulus_MPa": 200000.0,
+        "poisson_ratio": 0.3,
+        "element_size_local_mm": 9.0,
+        "element_size_far_mm": 24.0,
+        "refine_radius_mm": 140.0,
+        "mesh_growth": 0.08,
+        "allowable_stress_MPa": 138.0,
+        "load_factor_max": 2.4,
+        "plain_shell": 1
+      },
+      "status": "completed",
+      "derived": {
+        "yield_1p5S_MPa": 207.0,
+        "cylinder_collapse_pressure_MPa": 7.528906257018694,
+        "cylinder_collapse_load_factor": 2.1511160734339128,
+        "required_load_factor": 1.5,
+        "schedule": [
+          1.0,
+          1.5,
+          1.6,
+          1.7,
+          1.8,
+          1.9,
+          2.0,
+          2.1,
+          2.2,
+          2.3,
+          2.4
+        ]
+      },
+      "solver": {
+        "success": true,
+        "message": "CalculiX: 23560 C3D10, 46684 nodes; collapse at load factor 2.1510",
+        "nfev": null
+      },
+      "solver_outputs": {
+        "nodes": 46684,
+        "elements": 23560,
+        "monitor_nodes": {
+          "NTOE": 295,
+          "NCROTCH": 890,
+          "NFAR": 29
+        },
+        "back_node": 2,
+        "faces_shell_bore": 7156,
+        "faces_shell_end": 158,
+        "cad_volume_mm3": 25534865.088377714,
+        "cad_volume_hand_mm3": 25534865.08837784,
+        "cad_faces": 6,
+        "cad_valid": true,
+        "mesh_volume_mm3": 25535047.556518488,
+        "expected": {
+          "Ry_N": -3500000.0,
+          "Rz_N": -1374446.7859455345,
+          "Rx_back_N": 0.0,
+          "nozzle_thrust_scale_N": 27488.93571891069
+        },
+        "schedule": [
+          1.0,
+          1.5,
+          1.6,
+          1.7,
+          1.8,
+          1.9,
+          2.0,
+          2.1,
+          2.2,
+          2.3,
+          2.4
+        ],
+        "history": {
+          "lambda": [
+            1.0,
+            1.5,
+            1.6,
+            1.7,
+            1.8,
+            1.9,
+            2.0,
+            2.1
+          ],
+          "Ry_N": [
+            -3500010.0,
+            -5250014.0,
+            -5600015.0,
+            -5950016.0,
+            -6300017.0,
+            -6650018.0,
+            -7000019.0,
+            -7350020.0
+          ],
+          "Rz_N": [
+            -1374447.0,
+            -2061670.0,
+            -2199115.0,
+            -2336560.0,
+            -2474004.0,
+            -2611449.0,
+            -2748894.0,
+            -2886338.0
+          ],
+          "Rx_back_N": [
+            5.906156e-10,
+            -3.50612e-10,
+            3.620517e-10,
+            2.268141e-10,
+            4.78396e-10,
+            3.647358e-10,
+            4.130065e-10,
+            -1.116902e-10
+          ],
+          "u_toe_mm": [
+            0.4723432772330913,
+            0.7085150156734602,
+            0.7557493233215627,
+            0.8029836312457701,
+            0.8502179388938726,
+            0.8974522465419752,
+            0.9446866541519534,
+            0.9901543222828499
+          ],
+          "u_crotch_mm": [
+            0.4763363516746413,
+            0.7145045277348664,
+            0.762138062838015,
+            0.8097716981392218,
+            0.8574053332175241,
+            0.9050389682958265,
+            0.9526726035970332,
+            0.9985630743561041
+          ],
+          "u_far_mm": [
+            0.05382622001622537,
+            0.08073933002433803,
+            0.08612195002596057,
+            0.09150457002758311,
+            0.09688719002920565,
+            0.10226980003082817,
+            0.10765240003245072,
+            0.11303430705557779
+          ],
+          "collapse_load_factor": 2.1509879,
+          "completed_all_steps": false,
+          "stopped_below_min_increment": false
+        },
+        "collapse_load_factor": 2.1509879,
+        "ccx_exit": 201,
+        "ccx_stopped_on_min_increment": true,
+        "cylinder_collapse_pressure_MPa": 7.528906257018694,
+        "yield_MPa": 207.0,
+        "plastic_zone_nodes": 523,
+        "peeq_fields_load_factors": [
+          1.5,
+          2.1
+        ],
+        "peeq_max_at_1p5": 0.0,
+        "peeq_max_at_last_step": 9.77752e-06,
+        "yielded_nodes_at_1p5": 0,
+        "yielded_nodes_at_last_step": 2072
+      },
+      "metrics": {
+        "collapse_load_factor": 2.1509879,
+        "collapse_pressure_MPa": 7.52845765,
+        "collapse_over_cylinder": 0.9999404153799529
+      }
+    },
+    {
+      "label": "p02_element_size_local_mm-6",
+      "parameters": {
+        "shell_inner_radius_mm": 500.0,
+        "shell_thickness_mm": 16.0,
+        "shell_half_length_mm": 1000.0,
+        "nozzle_inner_radius_mm": 100.0,
+        "nozzle_thickness_mm": 12.0,
+        "nozzle_length_mm": 350.0,
+        "weld_fillet_radius_mm": 10.0,
+        "pressure_MPa": 3.5,
+        "youngs_modulus_MPa": 200000.0,
+        "poisson_ratio": 0.3,
+        "element_size_local_mm": 6.0,
+        "element_size_far_mm": 24.0,
+        "refine_radius_mm": 140.0,
+        "mesh_growth": 0.08,
+        "allowable_stress_MPa": 138.0,
+        "load_factor_max": 2.4,
+        "plain_shell": 1
+      },
+      "status": "completed",
+      "derived": {
+        "yield_1p5S_MPa": 207.0,
+        "cylinder_collapse_pressure_MPa": 7.528906257018694,
+        "cylinder_collapse_load_factor": 2.1511160734339128,
+        "required_load_factor": 1.5,
+        "schedule": [
+          1.0,
+          1.5,
+          1.6,
+          1.7,
+          1.8,
+          1.9,
+          2.0,
+          2.1,
+          2.2,
+          2.3,
+          2.4
+        ]
+      },
+      "solver": {
+        "success": true,
+        "message": "CalculiX: 28620 C3D10, 55907 nodes; collapse at load factor 2.1510",
+        "nfev": null
+      },
+      "solver_outputs": {
+        "nodes": 55907,
+        "elements": 28620,
+        "monitor_nodes": {
+          "NTOE": 314,
+          "NCROTCH": 968,
+          "NFAR": 29
+        },
+        "back_node": 2,
+        "faces_shell_bore": 8165,
+        "faces_shell_end": 158,
+        "cad_volume_mm3": 25534865.088377714,
+        "cad_volume_hand_mm3": 25534865.08837784,
+        "cad_faces": 6,
+        "cad_valid": true,
+        "mesh_volume_mm3": 25534435.52059815,
+        "expected": {
+          "Ry_N": -3500000.0,
+          "Rz_N": -1374446.7859455345,
+          "Rx_back_N": 0.0,
+          "nozzle_thrust_scale_N": 27488.93571891069
+        },
+        "schedule": [
+          1.0,
+          1.5,
+          1.6,
+          1.7,
+          1.8,
+          1.9,
+          2.0,
+          2.1,
+          2.2,
+          2.3,
+          2.4
+        ],
+        "history": {
+          "lambda": [
+            1.0,
+            1.5,
+            1.6,
+            1.7,
+            1.8,
+            1.9,
+            2.0,
+            2.1
+          ],
+          "Ry_N": [
+            -3500005.0,
+            -5250008.0,
+            -5600009.0,
+            -5950009.0,
+            -6300010.0,
+            -6650010.0,
+            -7000011.0,
+            -7350011.0
+          ],
+          "Rz_N": [
+            -1374447.0,
+            -2061670.0,
+            -2199115.0,
+            -2336560.0,
+            -2474004.0,
+            -2611449.0,
+            -2748894.0,
+            -2886338.0
+          ],
+          "Rx_back_N": [
+            -9.617365e-10,
+            -1.285908e-09,
+            -1.112067e-09,
+            -1.684009e-09,
+            -1.751268e-09,
+            -1.905939e-09,
+            -1.978309e-09,
+            -2.76064e-09
+          ],
+          "u_toe_mm": [
+            0.4723392635087201,
+            0.7085088951247261,
+            0.7557428814249527,
+            0.8029767677634703,
+            0.850210754063697,
+            0.8974446404022146,
+            0.9446786267024412,
+            0.9896744858662821
+          ],
+          "u_crotch_mm": [
+            0.47633621516871294,
+            0.7145043227530694,
+            0.7621379243205564,
+            0.8097715258880432,
+            0.857405227429705,
+            0.905038828769939,
+            0.9526724303374259,
+            0.9980953480043327
+          ],
+          "u_far_mm": [
+            0.053826000018266686,
+            0.08073900002740002,
+            0.08612160002922668,
+            0.09150420003105333,
+            0.09688680003288001,
+            0.10226940003470666,
+            0.10765200003653334,
+            0.11303560237536799
+          ],
+          "collapse_load_factor": 2.150992,
+          "completed_all_steps": false,
+          "stopped_below_min_increment": false
+        },
+        "collapse_load_factor": 2.150992,
+        "ccx_exit": 201,
+        "ccx_stopped_on_min_increment": true,
+        "cylinder_collapse_pressure_MPa": 7.528906257018694,
+        "yield_MPa": 207.0,
+        "plastic_zone_nodes": 632,
+        "peeq_fields_load_factors": [
+          1.5,
+          2.1
+        ],
+        "peeq_max_at_1p5": 0.0,
+        "peeq_max_at_last_step": 1.12593e-05,
+        "yielded_nodes_at_1p5": 0,
+        "yielded_nodes_at_last_step": 5869
+      },
+      "metrics": {
+        "collapse_load_factor": 2.150992,
+        "collapse_pressure_MPa": 7.528472,
+        "collapse_over_cylinder": 0.9999423213672916
+      }
+    }
+  ],
+  "study": "nozzle_limit",
+  "status": "completed",
+  "finished_utc": "2026-11-27T20:36:27+00:00"
+}

@@ -1,0 +1,75 @@
+# Study 18 part 2, case 1: the limit-load method on the plain shell, against the exact collapse pressure.
+#
+# Why: part 1's verdict on the 12 mm nozzle turned on where the classification line was drawn (toe line: passes,
+# crotch line: fails by 24 %). Part 5.2.3's limit-load route needs no line: an elastic-perfectly plastic solid (yield
+# 1.5 S = 207 MPa), small displacement theory, and the design passes if the analysis converges at 1.5 times the design
+# pressure. The collapse is found as the load where CalculiX's equilibrium iterations stop converging. Before trusting
+# that stop on the nozzle, this case runs the same model, mesh sizing, loads and solver settings on the plain shell (no
+# nozzle), whose collapse pressure is exact: a closed-end cylinder, von Mises, perfectly plastic,
+# p_L = (2 / sqrt 3) x 207 x ln(516 / 500) = 7.5289 MPa, load factor 2.1511 on 3.5 MPa (Hill 1950).
+# Scratch trials (2026-11-27, h_local 16 and 24 mm, single and stepped ramps): 7.5285 and 7.5285 MPa (-6e-5).
+#
+# Predictions, written BEFORE the evidence run:
+#   P1 Every point check passes at every mesh, including cylinder_exact within 1e-3 (the trials gave 6e-5; a
+#      regenerated mesh may scatter more).
+#   P2 Collapse load factor 2.151 at every mesh, within 2e-4 of each other: a uniform membrane state, which any mesh
+#      represents; the GCI is under its floor.
+#   P3 The step ends before the stop show no yield-driven nonlinearity (first yield at the bore is close to the limit
+#      for a thin cylinder: about 2.09), so the displacement history is linear up to the last completed step.
+#   P4 About 10 minutes for the three points (run in parallel with the nozzle cases).
+
+[case]
+name = "nozzle_limit_reference"
+model = "ccx_nozzle_limit"
+description = "Limit load of the plain closed-end shell of study 18 (Ri 500 mm, t 16 mm, no nozzle), elastic-perfectly plastic at 1.5 S = 207 MPa, small displacement; pressure stepped 1, 1.5, then 0.1 apart to 2.4 times 3.5 MPa; three local mesh sizes as the nozzle cases use."
+assumptions = [
+  "Elastic-perfectly plastic steel, von Mises, yield 1.5 S = 207 MPa (the limit-load route's yield), E 200 GPa, nu 0.3; small displacement (NLGEOM off), as Part 5.2.3 specifies.",
+  "Closed vessel: the end thrust applied as a uniform axial traction on the cut end, ramped with the pressure.",
+  "The collapse load is the last converged increment's load factor; the minimum increment (1e-4 of a 0.1 load step) brackets it to 1e-5.",
+  "Quarter model by symmetry, as part 1 (the same CAD route, here without the nozzle).",
+]
+limitations = [
+  "A reference for the method only: the plain shell has no nozzle.",
+]
+
+[parameters]
+shell_inner_radius_mm = 500.0
+shell_thickness_mm = 16.0
+shell_half_length_mm = 1000.0
+nozzle_inner_radius_mm = 100.0
+nozzle_thickness_mm = 12.0
+nozzle_length_mm = 350.0
+weld_fillet_radius_mm = 10.0
+pressure_MPa = 3.5
+youngs_modulus_MPa = 200000.0
+poisson_ratio = 0.3
+element_size_local_mm = 9.0
+element_size_far_mm = 24.0
+refine_radius_mm = 140.0
+mesh_growth = 0.08
+allowable_stress_MPa = 138.0
+load_factor_max = 2.4
+plain_shell = 1
+
+[sweep]
+parameter = "element_size_local_mm"
+values = [13.5, 9.0, 6.0]
+
+[numerics]
+solver_timeout_s = 14400
+threads = 6
+
+[verification]
+volume_rel_tol = 0.01        # straight-sided tets on curved surfaces
+equilibrium_rel_tol = 1e-5   # exact resultants times the load factor, at every completed step
+cylinder_rel_tol = 1e-3      # exact collapse pressure (the trials: 6e-5)
+mesh_noise_rel = 3e-3        # declared before the run: part 1 measured 0.08-0.3 % scatter between regenerated meshes
+gci_max = 0.03
+
+[[requirements]]
+id = "REQ-NL0"
+text = "Reference: the plain shell carries 1.5 times the design pressure (Part 5.2.3 load case), collapse load factor >= 1.5."
+metric = "collapse_load_factor"
+operator = ">="
+limit = 1.5
+units = "-"

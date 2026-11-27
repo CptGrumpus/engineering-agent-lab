@@ -1,0 +1,87 @@
+{
+  "label": "p02_element_size_local_mm-6",
+  "status": "PASS",
+  "checks": [
+    {
+      "id": "cad_valid",
+      "description": "CadQuery B-rep valid (0 = yes)",
+      "kind": "numerical",
+      "value": 0.0,
+      "tolerance": 0.0,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "mesh_volume",
+      "description": "|mesh volume (straight-sided tets) - CAD volume| / CAD volume",
+      "kind": "numerical",
+      "value": 1.6822794170895647e-05,
+      "tolerance": 0.01,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "equilibrium_y",
+      "description": "max over the completed steps of |reaction on y = 0 / (load factor x exact resultant) - 1|",
+      "kind": "numerical",
+      "value": 1.6071428572406177e-06,
+      "tolerance": 1e-05,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "equilibrium_z",
+      "description": "max over the completed steps of |reaction on z = 0 / (load factor x exact resultant) - 1|",
+      "kind": "numerical",
+      "value": 1.9853660249147254e-07,
+      "tolerance": 1e-05,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "self_balance_x",
+      "description": "max over the completed steps of |reaction at the single axial support| / (load factor x quarter nozzle thrust) (a closed vessel: 0)",
+      "kind": "numerical",
+      "value": 4.782253084051265e-14,
+      "tolerance": 1e-05,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "collapse_found",
+      "description": "the analysis stopped on non-convergence below load_factor_max (0 = yes): the collapse load is bracketed",
+      "kind": "validity",
+      "value": 0.0,
+      "tolerance": 0.0,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "passed_code_load",
+      "description": "the step to load factor 1.5 completed (0 = yes)",
+      "kind": "validity",
+      "value": 0.0,
+      "tolerance": 0.0,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "cylinder_exact",
+      "description": "|collapse pressure - exact closed-end cylinder (2 / sqrt 3) sigma_y ln(Ro / Ri)| / exact",
+      "kind": "numerical",
+      "value": 5.767863270844664e-05,
+      "tolerance": 0.001,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "cad_hand_volume",
+      "description": "|CAD volume - hand volume| / hand volume (exact for the plain shell)",
+      "kind": "numerical",
+      "value": 4.9960036108132044e-15,
+      "tolerance": 1e-09,
+      "comparison": "<=",
+      "status": "PASS"
+    }
+  ]
+}

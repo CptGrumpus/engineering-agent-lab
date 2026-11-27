@@ -100,7 +100,7 @@ change:
 | 28 frame | beam elements | **Done (part 2):** the knee as a bolted flange-plated moment connection (the user chose it over the end plate: AISC 358 is behind a browser-only download, II.B-1 is on disk); Chapter J design against II.B-1; 3D CalculiX solid for its stiffness; detailed assembly with bolts, STEP (models/cad/portal_knee.py, portfolio/cad/); render and drawing to offer the dashboard session | Ks L/EI 8.0 (partially restrained by AISC's index), k L/EI 23.7 for the frame: slip-critical knees keep the verdict (beam 0.83); slipping bearing bolts fail the beam (1.17). Open: an extended end plate as part 3 once the user downloads AISC 358 |
 | 16 bolted joint | axisymmetric | 3D lap joint, bolts, nuts, washers, contact | slip and bolt bending |
 | 23 fan rotor | ROSS beam | **Done (part 2):** the rotor as a 3D solid (CalculiX modal) against ROSS, hub and journals one at a time; detailed assembly with keyed hub and welded disc, STEP (models/cad/fan_rotor.py); render and drawing to offer the dashboard session | 65 mm holds: corrected first critical 3686 rpm (22.9 %); the beam model gets the hub backwards (+1.1 % where the solid gives -1.6 %) |
-| 18 nozzle | CadQuery 3D | **In progress (part 2):** limit load (no classification line) at three meshes and four walls, plain-cylinder reference; detailed assembly as analysed and with a pad, welds, tell-tale hole, flange, STEP (models/cad/vessel_nozzle.py); runs 20261127-143302 | part 1's verdict turned on the line placement; the coarse trial collapses at 1.687 x design (passes 1.5 without a pad) |
+| 18 nozzle | CadQuery 3D | **Done (part 2):** limit load (no classification line) at three meshes and four walls, plain-cylinder reference (6e-5); detailed assembly as analysed and with a pad, STEP (models/cad/vessel_nozzle.py); runs 20261127-143302 | 12 mm passes without a pad: collapse 1.675 (extrapolated 1.663) against 1.5; part 1's crotch-line recommendation withdrawn; one far-mesh equilibrium check fails (1.08e-5, left standing) |
 | 27 enclosure | 3D CFD boxes | housing with fins, board, components, cable glands | U1 and board temperatures |
 | 11/15 cold plate | CFD channel | serpentine channel plate with ports and screws | pressure drop, hot spot |
 | 25 O-ring | axisymmetric (right) | flange and groove assembly for the drawing and render | none expected (visual, drawing) |
@@ -123,7 +123,7 @@ stands (build-model skill, "Choosing checks" item 5). Finished studies to revisi
 | 11 cold-plate channel | 2D, side walls neglected | wall 44.03 against 45 C (about 1 K) | 3D duct with side walls (the 3D duct check showed 3 % on the flow) | after 25 |
 | 15, 21, 22, 4, 13 | various | wide | none needed: say so on the page with the estimate | page notes |
 | 16, 20 | axisymmetric bolt, 2D motor | - | 16: shown it cannot change the verdict; 20: closed | none |
-| 18, 23, 24, 26, 28 | - | - | already checked with a fuller model (18 in progress) | done |
+| 18, 23, 24, 26, 28 | - | - | already checked with a fuller model | done |
 
 Study 24 part 2 (user's go-ahead 2026-11-26 evening, "keep working"): semi-elliptical surface crack, 3D FE against
 Newman-Raju. surface_crack_mesh (r0) scored: requirements pass, Newman-Raju within 2.4 % on the front average; the

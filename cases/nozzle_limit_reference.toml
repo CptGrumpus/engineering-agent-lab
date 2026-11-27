@@ -17,6 +17,17 @@
 #   P3 The step ends before the stop show no yield-driven nonlinearity (first yield at the bore is close to the limit
 #      for a thin cylinder: about 2.09), so the displacement history is linear up to the last completed step.
 #   P4 About 10 minutes for the three points (run in parallel with the nozzle cases).
+#
+# Results (run 20261127-143302_nozzle_limit_reference): verification PASS (30/30 point checks, 1/1 run check).
+#   P1 HELD: cylinder_exact 5.8e-5 / 6.0e-5 / 5.8e-5 (tolerance 1e-3); equilibrium at every completed step within
+#      2.9e-6; the single axial support carries 5e-14 of the nozzle-scale thrust.
+#   P2 HELD: collapse load factor 2.150992 / 2.150988 / 2.150992 (exact 2.151116: collapse pressure 7.52847 against
+#      7.52891 MPa); spread 1.9e-6, inside the declared floor.
+#   P3 HELD: the far shell's displacement is linear to 1e-5 through 2.1, the last completed step: the cylinder stays
+#      elastic until it collapses, within the last 2.4 % of the load.
+#   P4 NOT HELD: 63 minutes, not 10: it shared the CPU with the two nozzle cases (6 + 8 + 8 threads on 24 cores), and
+#      the plain shell climbs through eight load steps before it collapses.
+# The solver's stop marks the collapse to 6e-5: the method is sound for the nozzle cases.
 
 [case]
 name = "nozzle_limit_reference"

@@ -330,7 +330,9 @@ Traps found while building the studies in this repo, by tool.
   completed step ends, and locate the stop inside the last step from the .sta file (the last attempt without a U
   suffix). Prints follow the .frd FREQUENCY unless FREQUENCYF is set. Check the stop against an exact collapse load
   first: the plain closed-end cylinder, (2 / sqrt 3) sigma_y ln(Ro / Ri), came out to 6e-5 with C3D10 and
-  NLGEOM=NO (study 18 part 2, 2026-11-27).
+  NLGEOM=NO (study 18 part 2, 2026-11-27). A collapse mechanism need not stay local: the nozzle's plastic zone at
+  1.5 x design ran 290 mm along the shell; save the plastic strain on the symmetry cut faces (small, and it shows
+  the mechanism) rather than predicting where it sits.
 - **CalculiX 2.22 `*SPRING` (SPRING1) wants a decimal point in its stiffness**: `50000` gives "*SPRING card without data", `50000.` works (rotor solid, 2026-11-27); write it with `f"{k:.14e}"`.
 - **A hub on a beam model**: as a shaft section of the hub's diameter it over-stiffens (+2.0 to +3.2 % on f1 for a 130 x 100 mm hub on a 65 mm shaft), as mass only it under-stiffens (-5.9 to -8.8 %); the 3D solid sits between (study 23 part 2). Check a hub's effect with a solid before trusting either.
 - **Coulomb friction itself is exact in CalculiX 2.22 surface-to-surface penalty contact.** A

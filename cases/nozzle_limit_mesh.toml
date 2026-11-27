@@ -19,6 +19,30 @@
 #   P4 At 1.5 the yielding is local to the junction (peak plastic strain 1-3 %, at the crotch corner); by the last
 #      completed step it reaches through the shell wall around the nozzle.
 #   P5 About 1 hour (the finest mesh dominates).
+#
+# Results (run 20261127-143302_nozzle_limit_mesh): verification FAIL, on one check at every mesh (self_balance_x);
+# the run-level GCI passes.
+#   P1 NOT HELD: self_balance_x is 1.08e-5 against 1e-5 at every mesh and every load step, the same value each time.
+#      The reaction at the single axial support (0.30 N at the design load, against a quarter nozzle thrust of
+#      27.5 kN) is a load-representation error of the far mesh, not of the solution: local refinement does not reach
+#      the nozzle's end, 350 mm away, so all three meshes share its 24 mm elements (part 1 used 14 mm), and the curved
+#      end face meshed there carries 5.5e-6 too much area (measured on the scratch trial's mesh, same far size); with
+#      the bore's own projection error that is the imbalance. The 1e-5 tolerance was carried over from part 1's finer
+#      far mesh; it stands, and so does the failure. Every other check passes: equilibrium on both symmetry planes
+#      within 1.7e-6 at every step, mesh volume within 1.2e-4, collapse found, the 1.5 step completed.
+#   P2 HELD: collapse load factor 1.6943 / 1.6826 / 1.6753 at 13.5 / 9 / 6 mm (predicted 1.70 / 1.69 / 1.68), falling
+#      as the mesh refines, 1.1 % apart; GCI 0.92 % (observed order 1.15), extrapolated 1.663.
+#   P3 HELD: REQ-NL1 PASSES at every mesh: the 12 mm nozzle carries 1.5 times the design pressure without a pad,
+#      collapse at 1.675 (5.86 MPa), 11.7 % over the requirement (10.9 % on the extrapolated 1.663). The limit load sides
+#      with part 1's toe-line verdict, not the crotch line's.
+#   P4 PARTLY HELD: peak plastic strain at 1.5 is 2.1 / 2.4 / 2.7 % (predicted 1-3 %, rising with refinement as
+#      predicted for a local value), but it sits on the outer weld fillet near its toe (x 516.3, z 119.4 mm on the
+#      finest mesh), not at the inner crotch corner; and the yielding is not local: at 1.5, plastic strain over 0.1 %
+#      runs about 290 mm along the vessel in the plane through both axes and through the whole shell wall beside the
+#      nozzle (z 114-136 mm). The collapse is a mechanism of the shell along the vessel, beside the opening.
+#   P5 HELD: 68 minutes.
+# Answer: by limit load the unpadded 12 mm nozzle passes, collapse at 1.66-1.68 times the design pressure against 1.5
+# required. Part 1's verdict no longer rests on where a classification line is drawn.
 
 [case]
 name = "nozzle_limit_mesh"

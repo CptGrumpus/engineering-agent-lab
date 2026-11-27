@@ -12,6 +12,24 @@
 #   P3 REQ-NL1 fails at 8 mm and passes from 10 mm; interpolated, the wall where the factor is 1.5 is about 9 mm, below
 #      all three of part 1's answers: the elastic routes are conservative here, the crotch line by more than 2x.
 #   P4 About 1 hour (four points at h_local 9, run alongside the mesh case).
+#
+# Results (run 20261127-143302_nozzle_limit_thickness): verification FAIL, on self_balance_x at 8, 10 and 12 mm
+# (1.53e-5, 1.26e-5, 1.08e-5 against 1e-5); 16 mm passes every check.
+#   P1 NOT HELD: the same far-mesh load-representation error as nozzle_limit_mesh (the nozzle end, 350 mm from the
+#      refinement, meshed at 24 mm; its curved end face's area error changes with the wall, and falls under the
+#      tolerance at 16 mm). Tolerance unchanged, failure left standing; every other check passes at every wall.
+#   P2 PARTLY HELD: the collapse load factor rises with the wall, more slowly than predicted: 1.527 / 1.614 / 1.683 /
+#      1.784 at 8 / 10 / 12 / 16 mm (predicted 1.45 / 1.58 / 1.69 / 1.86): the thin walls do better and the thick one
+#      worse than predicted; 0.71 to 0.83 of the plain shell's 2.151.
+#   P3 NOT HELD: REQ-NL1 passes at every wall, 8 mm included (1.527); the wall where the factor is 1.5 lies below the
+#      range swept (a linear extrapolation of 8-10 mm gives about 7.4 mm, outside the evidence). It is below all three
+#      of part 1's answers (11.7 / 16 / 20.1 mm), as predicted.
+#   P4 NOT HELD: 76 minutes, not 1 hour.
+# Not a design answer by itself: at 8 mm the peak plastic strain at 1.5 times the design pressure is 21.5 % (10 mm:
+# 4.8 %, 12 mm: 2.4 %, 16 mm: 1.1 %). Part 5.2.3 protects against collapse only; a strain that large is for the local
+# failure check (Part 5.3) to judge, and a thin nozzle also carries piping loads worse. Recommendation for review:
+# keep the 12 mm nozzle, without a pad (collapse at 1.66-1.68, 11 % over the requirement, peak plastic strain 2.4-2.7 %
+# at 1.5).
 
 [case]
 name = "nozzle_limit_thickness"

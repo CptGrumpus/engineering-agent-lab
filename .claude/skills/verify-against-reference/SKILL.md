@@ -151,6 +151,11 @@ Predict convergence on the reported quantity, not the solver's residual norm (El
   8.7 %): not a fixed definition offset but most likely the reference's peak resolution (a global strain-energy
   criterion). One point cannot tell an offset from a trend; three can.
 
+- **A check that fails by the same amount on every mesh points at what the refinement does not touch.** The
+  nozzle limit-load runs' axial self-balance read 1.08e-5 at every mesh and every load step: the refinement stays
+  at the junction, so all three meshes share the coarse far end, whose curved end face carries 5.5e-6 too much
+  area. Its 1e-5 tolerance came from part 1, whose far mesh was finer. Re-derive an exactness tolerance when the
+  far mesh changes, before the run (study 18 part 2; the failure stands).
 - **State a reference's conditions exactly, and test them in a trial before the case.** "The stress averaged
   through the thickness equals plane stress" holds only in the thin limit: averaged stresses satisfy
   plane-stress equilibrium exactly but not its stress-strain law (sigma_zz averages to zero without vanishing).
