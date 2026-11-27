@@ -1,5 +1,5 @@
-"""Render scenes for studies 24 (cracked plate), 25 (O-ring face seal) and 26 (shaft shoulder), written by the
-study session for the dashboard session's make_study_renders.py (kept in their own module so the two sessions'
+"""Render scenes for studies 24 (cracked plate; part 2: surface crack), 25 (O-ring face seal) and 26 (shaft
+shoulder), written by the study session for the dashboard session's make_study_renders.py (kept in their own module so the two sessions'
 edits don't meet in one file). Register them there with lazy imports, e.g.
 
     "shaft_fillet": lambda: __import__("scenes_24_26").scene_shaft_fillet(),
@@ -193,6 +193,92 @@ def scene_cracked_plate():
                                f"{row['K_energy'] / np.sqrt(1000):.1f} MPa√m against the 100 MPa√m toughness. "
                                f"Displacements x{CRACK_MAG:.0f}; the range stops at 450 MPa (the tip is singular). "
                                f"Half model mirrored about the crack plane.")
+
+
+# --------------------------------------------------------------------------- study 24 part 2: surface crack
+
+SCRACK_RUN = REPO / "runs/20261126-204858_surface_crack_mesh_r1"
+SCRACK = SCRACK_RUN / "points/p02_front_element_rel-0.0125"   # the finest front mesh, the page's evidence point
+SCRACK_SHAPE = 3            # the deepest shape solved: a 7.5 mm, c 10.08 mm, three quarters through the 10 mm plate
+SCRACK_SCALE = dict(vmin=0.0, vmax=600.0, bands=12, band_colors=mr.bands(12))   # 50 MPa bands; the front is singular
+
+
+def scene_surface_crack():
+    """The semi-elliptical surface crack at its deepest solved shape (a 7.5 mm, c 10.08 mm) under 150 MPa: opening
+    stress sigma_yy on the crack plane, seen from the cut. The quarter model is mirrored about x = 0 (the crack's
+    centre plane), not about y = 0, so the plane y = 0 is a face of the drawn half plate: the crack face (free,
+    sigma_yy near zero) inside the ellipse, the ligament carrying the load around it, highest along the front.
+    Undeformed (the opening is microns).
+
+    The run kept no mesh or deck, so both are made again with the run's own saved model code
+    (inputs/surface_crack.py) and the same Gmsh, as studies/surface_crack.py made the shape's centre solve; the only
+    addition is the field-output request. Gates: the node count must equal the run's at this shape, the ligament's
+    reaction must balance the applied load as the run's did, and the K profile from the crack opening, computed by
+    the run's own k_profile with the study's fit ranges, must equal the recorded K_fe at all 19 stations to 1e-9.
+    The drawn volume is the half plate, 2 (W/2) H t: the crack has no width."""
+    import importlib.util
+    import subprocess
+
+    from harness.calculix import read_frd
+    from studies.cantilever import find_freecadcmd
+
+    spec = importlib.util.spec_from_file_location("surface_crack_saved", SCRACK_RUN / "inputs/surface_crack.py")
+    sc = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(sc)
+    rec = read_json(SCRACK / "point.json")
+    p = rec["parameters"]
+    row = rec["solver_outputs"]["rows"][SCRACK_SHAPE]
+    stations = rec["solver_outputs"]["stations_deg"]
+    a, c = float(row["a_mm"]), float(row["c_mm"])
+    Wh, H, t = float(p["half_width_mm"]), float(p["half_height_mm"]), float(p["thickness_mm"])
+    E, nu, sig = (float(p[k]) for k in ("youngs_modulus_MPa", "poisson_ratio", "sigma_max_MPa"))
+    h = float(p["front_element_rel"]) * a                 # as studies/surface_crack.py: front size scales with a
+    work = BUILD / "surface_crack_solve"
+    work.mkdir(parents=True, exist_ok=True)
+    sc.mesh(work / "mesh.inp", a=a, c=c, Wh=Wh, H=H, t=t, h_front=h, h_far=float(p["far_element_size_mm"]),
+            r_fine=4 * h)
+    info = sc.write_deck(work / "mesh.inp", work / "job.inp", a=a, c=c, Wh=Wh, H=H, t=t, sigma=sig, E=E, nu=nu)
+    if info["nodes"] != row["nodes"]:
+        raise RuntimeError(f"{info['nodes']} nodes; the run had {row['nodes']} at a = {a}, c = {c} mm")
+    deck = (work / "job.inp").read_text(encoding="utf-8")
+    i = deck.rindex("*END STEP")
+    (work / "job.inp").write_text(deck[:i] + "*NODE FILE\nU\n*EL FILE\nS\n" + deck[i:], encoding="utf-8")
+    ccx = find_freecadcmd().parent / "ccx.exe"            # the CalculiX the study ran
+    subprocess.run([str(ccx), "-i", "job"], cwd=work, capture_output=True, text=True, timeout=3600, check=True)
+    top, crack, rf = sc.read_node_print(work / "job.dat")
+    P_app = info["applied_load_N"]
+    if abs(rf + P_app) / P_app > 1e-9:
+        raise RuntimeError(f"ligament reaction {rf} against the applied {P_app}")
+    prof = sc.k_profile(crack, info, a=a, c=c, E=E, nu=nu, stations_deg=stations, r_min=3 * h,
+                        r_max=max(0.3 * a, 6 * h), band=1.5 * h)
+    K = np.array([q["K"] for q in prof])
+    K_rec = np.array(row["K_fe"], dtype=float)
+    if not np.allclose(K, K_rec, rtol=1e-9, atol=0.0, equal_nan=True):
+        raise RuntimeError(f"K profile from the re-solve differs from the run's: max rel "
+                           f"{np.nanmax(np.abs(K / K_rec - 1)):.2e}")
+    fr = read_frd(work / "job.frd")
+    S = fr["STRESS"]
+    nodes, elems = read_inp(work / "mesh.inp")
+    ids = np.array([int(n) for n in S["ids"]])
+    syy = np.asarray(S["SYY"], dtype=float)
+    xyz = np.array([nodes[int(n)] for n in ids])
+    xyz, tris, syy = compact(xyz, mr.surface(nodes, elems, ids), syy)
+    xyz, tris, syy = _mirror3(xyz, tris, syy, 0)
+    # (x, y, z) -> (x, z, -y): the crack plane y = 0 on top (Z = 0, the plate below it), the crack's mouth on the
+    # face Y = 0; a proper rotation, so the faces keep their winding
+    xyz = np.column_stack([xyz[:, 0], xyz[:, 2] - t / 2, -xyz[:, 1]])
+    k_deep = K_rec[-1] / 31.6227766
+    k_surf = K_rec[0] / 31.6227766
+    return write_scene(BUILD / "surface_crack", xyz, tris, syy, field="opening stress σyy", units="MPa",
+                       **SCRACK_SCALE, elev=38, azim=-62, sharp_angle_deg=60, distance_factor=1.6,
+                       resolution=[1400, 900], expected_volume_mm3=2 * Wh * H * t,
+                       title=f"Surface crack {a:.1f} mm deep, {2 * c:.1f} mm long, at 150 MPa: opening stress on "
+                             f"the crack plane",
+                       caption=f"Seen from the cut through the crack: the free crack face (inside the ellipse) "
+                               f"carries no stress, the ligament around it the load, highest along the front "
+                               f"(K {k_deep:.1f} MPa√m at the deepest point, {k_surf:.1f} at the surface; the "
+                               f"range stops at 600 MPa, the front is singular). Quarter model mirrored about the "
+                               f"crack's centre plane.")
 
 
 # --------------------------------------------------------------------------- study 25: O-ring face seal
