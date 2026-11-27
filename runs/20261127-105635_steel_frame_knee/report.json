@@ -1,0 +1,551 @@
+{
+  "points": [
+    {
+      "label": "p00_rigid_sc6",
+      "parameters": {
+        "frame_height_m": 4.0,
+        "bay_span_m": 6.0,
+        "column_shape": "W10X33",
+        "beam_shape": "W14X30",
+        "youngs_modulus_MPa": 200000.0,
+        "yield_strength_MPa": 345.0,
+        "base": "fixed",
+        "factored_gravity_kN_per_m": 35.0,
+        "factored_lateral_kN": 15.0,
+        "service_live_kN_per_m": 12.0,
+        "service_lateral_kN": 10.0,
+        "beam_unbraced_length_m": 6.0,
+        "column_unbraced_length_weak_m": 4.0,
+        "knee_stiffness_ratio": 0.0,
+        "knee_slip_mrad": 0.0,
+        "knee_connection": "slip_critical6",
+        "scenario": "rigid_sc6"
+      },
+      "derived": {},
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "benchmarks_aisc",
+          "description": "largest relative miss against the AISC Design Examples: C.1A drift (scaled to its 2 % tolerance) and moments, E.1D, F.1-3B, H.1B",
+          "kind": "numerical",
+          "value": 0.009113328534469861,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "closed_form_portal",
+          "description": "first-order knee moment (UDL) and base moment (lateral) against Kleinlogel's closed forms, axially rigid",
+          "kind": "numerical",
+          "value": 3.5883057961465513e-09,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "equilibrium",
+          "description": "largest |sum of reactions + applied loads| / total gravity, both load cases",
+          "kind": "numerical",
+          "value": 3.312293085313979e-14,
+          "tolerance": 1e-09,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "b1b2_vs_exact",
+          "description": "|Appendix 8 B1-B2 amplified moment - exact second-order moment| / exact, right column top, gravity + lateral",
+          "kind": "numerical",
+          "value": 0.0004751943806104541,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "segments",
+          "description": "right column top moment with 2 against 8 members per span (exact at nodes: should agree to round-off)",
+          "kind": "numerical",
+          "value": 2.9243008753993284e-10,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "tau_b",
+          "description": "largest alpha Pr / Pns (C2.3: tau_b = 1 and the 0.8 reduction alone apply up to 0.5)",
+          "kind": "validity",
+          "value": 0.050634752279452626,
+          "tolerance": 0.5,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "drift_ratio",
+          "description": "second- to first-order drift ratio (Commentary C1 recommends at most 2.5; above 1.7 notional loads go into every load case)",
+          "kind": "validity",
+          "value": 1.0199233660347051,
+          "tolerance": 2.5,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-A1",
+          "text": "Every member's combined axial and flexural ratio by AISC 360-22 Eq. H1-1 (LRFD, Direct Analysis Method) shall be at most 1.0.",
+          "metric": "max_interaction_ratio",
+          "operator": "<=",
+          "limit": 1.0,
+          "units": "-",
+          "value": 0.8005949109026596,
+          "margin": 0.19940508909734045,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-A2",
+          "text": "The beam's live-load deflection shall be at most L/360 (6,000 / 360 = 16.7 mm).",
+          "metric": "live_deflection_mm",
+          "operator": "<=",
+          "limit": 16.67,
+          "units": "mm",
+          "value": 4.100380602357884,
+          "margin": 12.569619397642118,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-A3",
+          "text": "The frame's drift under the service lateral load shall be at most H/400 (4,000 / 400 = 10.0 mm).",
+          "metric": "service_drift_mm",
+          "operator": "<=",
+          "limit": 10.0,
+          "units": "mm",
+          "value": 2.6126099994470477,
+          "margin": 7.387390000552952,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-C1",
+          "text": "Every limit state of the knee connection (AISC 360-22 Chapter J and J10, LRFD) at both knees in both factored load cases shall have a ratio of at most 1.0.",
+          "metric": "max_connection_ratio",
+          "operator": "<=",
+          "limit": 1.0,
+          "units": "-",
+          "value": 0.9675402990070168,
+          "margin": 0.03245970099298323,
+          "verdict": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p01_sc6",
+      "parameters": {
+        "frame_height_m": 4.0,
+        "bay_span_m": 6.0,
+        "column_shape": "W10X33",
+        "beam_shape": "W14X30",
+        "youngs_modulus_MPa": 200000.0,
+        "yield_strength_MPa": 345.0,
+        "base": "fixed",
+        "factored_gravity_kN_per_m": 35.0,
+        "factored_lateral_kN": 15.0,
+        "service_live_kN_per_m": 12.0,
+        "service_lateral_kN": 10.0,
+        "beam_unbraced_length_m": 6.0,
+        "column_unbraced_length_weak_m": 4.0,
+        "knee_stiffness_ratio": 23.69,
+        "knee_slip_mrad": 0.0,
+        "knee_connection": "slip_critical6",
+        "scenario": "sc6"
+      },
+      "derived": {},
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "benchmarks_aisc",
+          "description": "largest relative miss against the AISC Design Examples: C.1A drift (scaled to its 2 % tolerance) and moments, E.1D, F.1-3B, H.1B",
+          "kind": "numerical",
+          "value": 0.009113328534469861,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "closed_form_portal",
+          "description": "first-order knee moment (UDL) and base moment (lateral) against Kleinlogel's closed forms, axially rigid",
+          "kind": "numerical",
+          "value": 3.5883057961465513e-09,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "equilibrium",
+          "description": "largest |sum of reactions + applied loads| / total gravity, both load cases",
+          "kind": "numerical",
+          "value": 3.3677289528506145e-14,
+          "tolerance": 1e-09,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "b1b2_vs_exact",
+          "description": "|Appendix 8 B1-B2 amplified moment - exact second-order moment| / exact, right column top, gravity + lateral",
+          "kind": "numerical",
+          "value": 0.0006183419987520548,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "segments",
+          "description": "right column top moment with 2 against 8 members per span (exact at nodes: should agree to round-off)",
+          "kind": "numerical",
+          "value": 1.2675875123573714e-10,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "tau_b",
+          "description": "largest alpha Pr / Pns (C2.3: tau_b = 1 and the 0.8 reduction alone apply up to 0.5)",
+          "kind": "validity",
+          "value": 0.05057317395343391,
+          "tolerance": 0.5,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "drift_ratio",
+          "description": "second- to first-order drift ratio (Commentary C1 recommends at most 2.5; above 1.7 notional loads go into every load case)",
+          "kind": "validity",
+          "value": 1.0209759061284587,
+          "tolerance": 2.5,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-A1",
+          "text": "Every member's combined axial and flexural ratio by AISC 360-22 Eq. H1-1 (LRFD, Direct Analysis Method) shall be at most 1.0.",
+          "metric": "max_interaction_ratio",
+          "operator": "<=",
+          "limit": 1.0,
+          "units": "-",
+          "value": 0.8344740256181075,
+          "margin": 0.16552597438189254,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-A2",
+          "text": "The beam's live-load deflection shall be at most L/360 (6,000 / 360 = 16.7 mm).",
+          "metric": "live_deflection_mm",
+          "operator": "<=",
+          "limit": 16.67,
+          "units": "mm",
+          "value": 4.317676734404291,
+          "margin": 12.352323265595711,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-A3",
+          "text": "The frame's drift under the service lateral load shall be at most H/400 (4,000 / 400 = 10.0 mm).",
+          "metric": "service_drift_mm",
+          "operator": "<=",
+          "limit": 10.0,
+          "units": "mm",
+          "value": 2.7678411116482544,
+          "margin": 7.232158888351746,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-C1",
+          "text": "Every limit state of the knee connection (AISC 360-22 Chapter J and J10, LRFD) at both knees in both factored load cases shall have a ratio of at most 1.0.",
+          "metric": "max_connection_ratio",
+          "operator": "<=",
+          "limit": 1.0,
+          "units": "-",
+          "value": 0.9221805158294623,
+          "margin": 0.07781948417053774,
+          "verdict": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p02_bearing4_slip",
+      "parameters": {
+        "frame_height_m": 4.0,
+        "bay_span_m": 6.0,
+        "column_shape": "W10X33",
+        "beam_shape": "W14X30",
+        "youngs_modulus_MPa": 200000.0,
+        "yield_strength_MPa": 345.0,
+        "base": "fixed",
+        "factored_gravity_kN_per_m": 35.0,
+        "factored_lateral_kN": 15.0,
+        "service_live_kN_per_m": 12.0,
+        "service_lateral_kN": 10.0,
+        "beam_unbraced_length_m": 6.0,
+        "column_unbraced_length_weak_m": 4.0,
+        "knee_stiffness_ratio": 21.33,
+        "knee_slip_mrad": 8.741,
+        "knee_connection": "bearing4",
+        "scenario": "bearing4_slip"
+      },
+      "derived": {},
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "benchmarks_aisc",
+          "description": "largest relative miss against the AISC Design Examples: C.1A drift (scaled to its 2 % tolerance) and moments, E.1D, F.1-3B, H.1B",
+          "kind": "numerical",
+          "value": 0.009113328534469861,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "closed_form_portal",
+          "description": "first-order knee moment (UDL) and base moment (lateral) against Kleinlogel's closed forms, axially rigid",
+          "kind": "numerical",
+          "value": 3.5883057961465513e-09,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "equilibrium",
+          "description": "largest |sum of reactions + applied loads| / total gravity, both load cases",
+          "kind": "numerical",
+          "value": 6.014791627724966e-14,
+          "tolerance": 1e-09,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "b1b2_vs_exact",
+          "description": "|Appendix 8 B1-B2 amplified moment - exact second-order moment| / exact, right column top, gravity + lateral",
+          "kind": "numerical",
+          "value": 0.0010668033464246345,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "segments",
+          "description": "right column top moment with 2 against 8 members per span (exact at nodes: should agree to round-off)",
+          "kind": "numerical",
+          "value": 4.10922402759828e-10,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "tau_b",
+          "description": "largest alpha Pr / Pns (C2.3: tau_b = 1 and the 0.8 reduction alone apply up to 0.5)",
+          "kind": "validity",
+          "value": 0.05056721762861327,
+          "tolerance": 0.5,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "drift_ratio",
+          "description": "second- to first-order drift ratio (Commentary C1 recommends at most 2.5; above 1.7 notional loads go into every load case)",
+          "kind": "validity",
+          "value": 1.0209875099035632,
+          "tolerance": 2.5,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-A1",
+          "text": "Every member's combined axial and flexural ratio by AISC 360-22 Eq. H1-1 (LRFD, Direct Analysis Method) shall be at most 1.0.",
+          "metric": "max_interaction_ratio",
+          "operator": "<=",
+          "limit": 1.0,
+          "units": "-",
+          "value": 1.1742370663563837,
+          "margin": -0.1742370663563837,
+          "verdict": "FAIL"
+        },
+        {
+          "id": "REQ-A2",
+          "text": "The beam's live-load deflection shall be at most L/360 (6,000 / 360 = 16.7 mm).",
+          "metric": "live_deflection_mm",
+          "operator": "<=",
+          "limit": 16.67,
+          "units": "mm",
+          "value": 8.35924735448106,
+          "margin": 8.310752645518942,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-A3",
+          "text": "The frame's drift under the service lateral load shall be at most H/400 (4,000 / 400 = 10.0 mm).",
+          "metric": "service_drift_mm",
+          "operator": "<=",
+          "limit": 10.0,
+          "units": "mm",
+          "value": 7.616506808866003,
+          "margin": 2.383493191133997,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-C1",
+          "text": "Every limit state of the knee connection (AISC 360-22 Chapter J and J10, LRFD) at both knees in both factored load cases shall have a ratio of at most 1.0.",
+          "metric": "max_connection_ratio",
+          "operator": "<=",
+          "limit": 1.0,
+          "units": "-",
+          "value": 0.5486968449931413,
+          "margin": 0.4513031550068587,
+          "verdict": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p03_bearing4_half_slip",
+      "parameters": {
+        "frame_height_m": 4.0,
+        "bay_span_m": 6.0,
+        "column_shape": "W10X33",
+        "beam_shape": "W14X30",
+        "youngs_modulus_MPa": 200000.0,
+        "yield_strength_MPa": 345.0,
+        "base": "fixed",
+        "factored_gravity_kN_per_m": 35.0,
+        "factored_lateral_kN": 15.0,
+        "service_live_kN_per_m": 12.0,
+        "service_lateral_kN": 10.0,
+        "beam_unbraced_length_m": 6.0,
+        "column_unbraced_length_weak_m": 4.0,
+        "knee_stiffness_ratio": 21.33,
+        "knee_slip_mrad": 4.371,
+        "knee_connection": "bearing4",
+        "scenario": "bearing4_half_slip"
+      },
+      "derived": {},
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "benchmarks_aisc",
+          "description": "largest relative miss against the AISC Design Examples: C.1A drift (scaled to its 2 % tolerance) and moments, E.1D, F.1-3B, H.1B",
+          "kind": "numerical",
+          "value": 0.009113328534469861,
+          "tolerance": 0.01,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "closed_form_portal",
+          "description": "first-order knee moment (UDL) and base moment (lateral) against Kleinlogel's closed forms, axially rigid",
+          "kind": "numerical",
+          "value": 3.5883057961465513e-09,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "equilibrium",
+          "description": "largest |sum of reactions + applied loads| / total gravity, both load cases",
+          "kind": "numerical",
+          "value": 4.0468183301744006e-14,
+          "tolerance": 1e-09,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "b1b2_vs_exact",
+          "description": "|Appendix 8 B1-B2 amplified moment - exact second-order moment| / exact, right column top, gravity + lateral",
+          "kind": "numerical",
+          "value": 0.000991436324669318,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "segments",
+          "description": "right column top moment with 2 against 8 members per span (exact at nodes: should agree to round-off)",
+          "kind": "numerical",
+          "value": 5.691924425878567e-10,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "tau_b",
+          "description": "largest alpha Pr / Pns (C2.3: tau_b = 1 and the 0.8 reduction alone apply up to 0.5)",
+          "kind": "validity",
+          "value": 0.05056690198810912,
+          "tolerance": 0.5,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "drift_ratio",
+          "description": "second- to first-order drift ratio (Commentary C1 recommends at most 2.5; above 1.7 notional loads go into every load case)",
+          "kind": "validity",
+          "value": 1.0210393224362166,
+          "tolerance": 2.5,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-A1",
+          "text": "Every member's combined axial and flexural ratio by AISC 360-22 Eq. H1-1 (LRFD, Direct Analysis Method) shall be at most 1.0.",
+          "metric": "max_interaction_ratio",
+          "operator": "<=",
+          "limit": 1.0,
+          "units": "-",
+          "value": 1.0062749452090616,
+          "margin": -0.006274945209061578,
+          "verdict": "FAIL"
+        },
+        {
+          "id": "REQ-A2",
+          "text": "The beam's live-load deflection shall be at most L/360 (6,000 / 360 = 16.7 mm).",
+          "metric": "live_deflection_mm",
+          "operator": "<=",
+          "limit": 16.67,
+          "units": "mm",
+          "value": 8.280582480827453,
+          "margin": 8.389417519172548,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-A3",
+          "text": "The frame's drift under the service lateral load shall be at most H/400 (4,000 / 400 = 10.0 mm).",
+          "metric": "service_drift_mm",
+          "operator": "<=",
+          "limit": 10.0,
+          "units": "mm",
+          "value": 4.52388789700654,
+          "margin": 5.47611210299346,
+          "verdict": "PASS"
+        },
+        {
+          "id": "REQ-C1",
+          "text": "Every limit state of the knee connection (AISC 360-22 Chapter J and J10, LRFD) at both knees in both factored load cases shall have a ratio of at most 1.0.",
+          "metric": "max_connection_ratio",
+          "operator": "<=",
+          "limit": 1.0,
+          "units": "-",
+          "value": 0.5682976619936987,
+          "margin": 0.4317023380063013,
+          "verdict": "PASS"
+        }
+      ]
+    }
+  ],
+  "run_id": "20261127-105635_steel_frame_knee",
+  "generated_utc": "2026-11-27T15:56:35+00:00",
+  "verification_status": "PASS"
+}

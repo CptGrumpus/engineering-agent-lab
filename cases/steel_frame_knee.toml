@@ -27,6 +27,25 @@
 #   P4 bearing4_half_slip: beam 1.00-1.02, REQ-A1 FAIL (marginal).
 #   P5 Every check passes on rigid_sc6 and sc6; on the slip scenarios b1b2_vs_exact fails (Appendix 8's B1-B2 with
 #      the knees' secant springs is not the gap-then-spring frame), the rest pass. Under a minute.
+#
+# Results (run 20261127-105635_steel_frame_knee, 10:56, scored 2026-11-27 10:57). VERIFICATION PASS.
+#   P1 held: rigid_sc6 0.8006 / 4.10 mm / 2.613 mm (part 1 exactly); connection 0.968 (slip of the flange bolts at
+#      the leeward knee, gravity + lateral): every requirement passes.
+#   P2 held: sc6 beam 0.8345, live deflection 4.32 mm, drift 2.77 mm, connection 0.922 (knee moment 80.2 -> 76.4 kN m,
+#      knee rotations 0.66-1.0 mrad): every requirement passes.
+#   P3 held: bearing4_slip beam 1.174, REQ-A1 FAIL (knee moments 16.4 and 42.1 kN m, midspan 128.7 against phi Mn
+#      112.1 kN m, unbraced 6 m, Cb 1.17); live deflection 8.36 mm and drift 7.62 mm pass; connection 0.549.
+#   P4 held: bearing4_half_slip beam 1.006, REQ-A1 FAIL.
+#   P5 not held: every check passes on all four, b1b2_vs_exact too (0.1 % on the slip scenarios): the secant spring
+#      gives the knee moment it was computed from, so that check is weaker there than on the rigid frame.
+# Findings:
+#   1. The knee must be slip-critical (or the beam braced: part 1's midspan brace cuts the rigid frame's 0.80 to 0.48).
+#      Snug-tight bearing bolts slip 1/16 in. into bearing at each flange before the knee carries moment; the
+#      knees' moment moves to the unbraced beam's midspan and REQ-A1 fails (1.17; 1.01 with half the slip).
+#   2. With slip-critical bolts the measured stiffness changes little: beam 0.80 -> 0.83, drift 2.61 -> 2.77 mm. By
+#      AISC's index the knee is partially restrained (Ks L / EI 8.0), but against the centreline model it is a spring
+#      of k L / EI 23.7, and the frame's verdict stands.
+#   3. The knee's own design: slip governs (0.97 rigid, 0.92 with the spring); bearing-type bolt shear 0.77.
 
 [case]
 name = "steel_frame_knee"

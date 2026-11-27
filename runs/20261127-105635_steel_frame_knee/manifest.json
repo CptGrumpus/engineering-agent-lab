@@ -1,0 +1,1541 @@
+{
+  "run_id": "20261127-105635_steel_frame_knee",
+  "case_name": "steel_frame_knee",
+  "model": "aisc_portal_frame",
+  "case_source": "cases/steel_frame_knee.toml",
+  "case_sha256": "d42221efc1c3c96924c8eb70e5884e7461e106dddb45e825f4ec1c611cbefdb9",
+  "model_sources_sha256": {
+    "validation/frame2d.py": "610e3be3aabbfc869d314aaeb5e2c5d25ef21ceb99c7d9a4b61b2e6fb0025cc8",
+    "validation/aisc_frame.py": "48538fd1c7d5f61783f1a0fc5407bba509a29b372ed53d7ab1538a8887bcbf3a",
+    "validation/aisc360.py": "b18df6e815242b9173d451871baae292c2ddb3864959f9ccacc5f77120fc27ab",
+    "validation/aisc_shapes_subset.json": "b9a1258a6d96dd5de5f980a2583712d185df80de7a6d584fa94aa5619e4accd4",
+    "validation/aisc_connections.py": "71b81aebf1913c8b1d3274dabbba486ad52edcbe83b4206b76da022085ce3792",
+    "validation/flange_plated.py": "520576ecc6e6dbcd9f85ba59ce2f27590f53b109c489f3fb7cded333fbcbef0e"
+  },
+  "rerun_of": null,
+  "started_utc": "2026-11-27T15:56:35+00:00",
+  "environment": {
+    "python": "3.14.10",
+    "python_executable": "<repo>\\.venv\\Scripts\\python.exe",
+    "platform": "Windows-11-10.0.26100-SP0",
+    "machine": "AMD64",
+    "packages": {
+      "numpy": "2.5.5",
+      "scipy": "1.18.1",
+      "matplotlib": "3.11.2",
+      "cadquery": "2.8.0"
+    },
+    "git": {
+      "commit": "52552a1516cd1cf121cf00e65ad9866030322289",
+      "dirty": true
+    },
+    "tools": {}
+  },
+  "numerics": {},
+  "points": [
+    {
+      "label": "p00_rigid_sc6",
+      "parameters": {
+        "frame_height_m": 4.0,
+        "bay_span_m": 6.0,
+        "column_shape": "W10X33",
+        "beam_shape": "W14X30",
+        "youngs_modulus_MPa": 200000.0,
+        "yield_strength_MPa": 345.0,
+        "base": "fixed",
+        "factored_gravity_kN_per_m": 35.0,
+        "factored_lateral_kN": 15.0,
+        "service_live_kN_per_m": 12.0,
+        "service_lateral_kN": 10.0,
+        "beam_unbraced_length_m": 6.0,
+        "column_unbraced_length_weak_m": 4.0,
+        "knee_stiffness_ratio": 0.0,
+        "knee_slip_mrad": 0.0,
+        "knee_connection": "slip_critical6",
+        "scenario": "rigid_sc6"
+      },
+      "status": "completed",
+      "derived": {},
+      "solver": {
+        "success": true,
+        "message": "max H1 0.801 (beam, gravity_lateral); drift ratio 1.020",
+        "nfev": null
+      },
+      "solver_outputs": {
+        "member_checks": {
+          "gravity_notional": {
+            "left_column": {
+              "Pr_kN": 104.87582987806515,
+              "Mr_kNm": 66.5235748060388,
+              "Vr_kN": 24.896422782205512,
+              "Cb": 2.1622990721648594,
+              "phiPn_kN": 1201.1561642171403,
+              "phiMn_kNm": 197.41822395484093,
+              "flexure_regime": "inelastic LTB",
+              "phiVn_kN": 376.832730204,
+              "H1_equation": "H1-1b",
+              "H1_ratio": 0.38062395136085647,
+              "shear_ratio": 0.06606757000308261,
+              "alpha_Pr_over_Pns": 0.04852545901482823,
+              "web_slender_in_compression": false,
+              "moments_kNm": [
+                -33.03880470983421,
+                -20.557343836472114,
+                -8.028562592828825,
+                4.518699372726738,
+                17.055559871574403,
+                29.553160657936694,
+                41.9827338568623,
+                54.31566818418741,
+                66.5235748060388
+              ]
+            },
+            "right_column": {
+              "Pr_kN": 105.12417012194219,
+              "Mr_kNm": 67.26857044754934,
+              "Vr_kN": 25.316422782204114,
+              "Cb": 2.164027242806555,
+              "phiPn_kN": 1201.1561642171403,
+              "phiMn_kNm": 197.41822395484093,
+              "flexure_regime": "inelastic LTB",
+              "phiVn_kN": 376.832730204,
+              "H1_equation": "H1-1b",
+              "H1_ratio": 0.3845010192133672,
+              "shear_ratio": 0.06718212287053453,
+              "alpha_Pr_over_Pns": 0.0486403646545738,
+              "web_slender_in_compression": false,
+              "moments_kNm": [
+                34.00300813656505,
+                21.310436945087158,
+                8.568695724924236,
+                -4.192816230848253,
+                -16.944654011715173,
+                -29.657395028590678,
+                -42.301706901192304,
+                -54.848415137272596,
+                -67.26857044754934
+              ]
+            },
+            "beam": {
+              "Pr_kN": 25.316422782202892,
+              "Mr_kNm": 90.98400329123537,
+              "Vr_kN": 105.12417012194172,
+              "Cb": 1.2632374595134785,
+              "phiPn_kN": 353.93215229861397,
+              "phiMn_kNm": 120.72533277777436,
+              "flexure_regime": "elastic LTB",
+              "phiVn_kN": 497.6002951199999,
+              "H1_equation": "H1-1b",
+              "H1_ratio": 0.7894091815218056,
+              "shear_ratio": 0.21126227446587478,
+              "alpha_Pr_over_Pns": 0.0128520539731375,
+              "web_slender_in_compression": true,
+              "moments_kNm": [
+                66.52357480603881,
+                -2.417993149576301,
+                -51.6714899639787,
+                -81.20072572704882,
+                -90.98400329123537,
+                -81.01413421391717,
+                -51.29844403925126,
+                -1.8587669155923563,
+                67.26857044754942
+              ]
+            }
+          },
+          "gravity_lateral": {
+            "left_column": {
+              "Pr_kN": 100.56545216078625,
+              "Mr_kNm": 53.5986954769901,
+              "Vr_kN": 17.590474235356787,
+              "Cb": 2.07059338014519,
+              "phiPn_kN": 1201.1561642171403,
+              "phiMn_kNm": 197.41822395484093,
+              "flexure_regime": "inelastic LTB",
+              "phiVn_kN": 376.832730204,
+              "H1_equation": "H1-1b",
+              "H1_ratio": 0.31336015433185277,
+              "shear_ratio": 0.04667979404505046,
+              "alpha_Pr_over_Pns": 0.0465310713899443,
+              "web_slender_in_compression": false,
+              "moments_kNm": [
+                -16.252668975738832,
+                -7.4427305744462116,
+                1.383636037283361,
+                10.206948573124857,
+                19.007731487962097,
+                27.766558965921938,
+                36.464097798640935,
+                45.08115005912337,
+                53.5986954769901
+              ]
+            },
+            "right_column": {
+              "Pr_kN": 109.43454783921003,
+              "Mr_kNm": 80.20482899695587,
+              "Vr_kN": 32.59047423536144,
+              "Cb": 2.189070371345187,
+              "phiPn_kN": 1201.1561642171403,
+              "phiMn_kNm": 197.41822395484093,
+              "flexure_regime": "inelastic LTB",
+              "phiVn_kN": 376.832730204,
+              "H1_equation": "H1-1b",
+              "H1_ratio": 0.4518224564142303,
+              "shear_ratio": 0.08648525359704942,
+              "alpha_Pr_over_Pns": 0.050634752279452626,
+              "web_slender_in_compression": false,
+              "moments_kNm": [
+                50.689201203254754,
+                34.33961246310913,
+                17.90754309864849,
+                1.432461445207119,
+                -15.046060850275754,
+                -31.48844387675047,
+                -47.855194526405334,
+                -64.1070013535149,
+                -80.20482899695587
+              ]
+            },
+            "beam": {
+              "Pr_kN": 32.59047423536051,
+              "Mr_kNm": 91.08813488108058,
+              "Vr_kN": 109.43454783921014,
+              "Cb": 1.2631585630363829,
+              "phiPn_kN": 353.93215229861397,
+              "phiMn_kNm": 120.71779278330965,
+              "flexure_regime": "elastic LTB",
+              "phiVn_kN": 497.6002951199999,
+              "H1_equation": "H1-1b",
+              "H1_ratio": 0.8005949109026596,
+              "shear_ratio": 0.2199246039691741,
+              "alpha_Pr_over_Pns": 0.01654477559829067,
+              "web_slender_in_compression": true,
+              "moments_kNm": [
+                53.59869547699024,
+                -12.158082213768644,
+                -58.217411837937696,
+                -84.53572728928943,
+                -91.08813488108058,
+                -77.86843689206495,
+                -44.889137428785546,
+                7.818569401610961,
+                80.20482899695591
+              ]
+            }
+          }
+        },
+        "drift_ratio_2nd_1st": 1.0199233660347051,
+        "notional_load_kN": 0.42000000000000004,
+        "notional_in_lateral_case": false,
+        "equilibrium_rel": {
+          "gravity_notional": 3.312293085313979e-14,
+          "gravity_lateral": 1.940255363782247e-14
+        },
+        "live_deflection_mm": 4.100380602357884,
+        "service_drift_mm": 2.6126099994470477,
+        "service_drift_first_order_mm": 2.598542520917256,
+        "b1b2": {
+          "B1": 1.0,
+          "B2": 1.0204730120509273,
+          "Cm": 0.4020962548374736,
+          "M_amplified_kNm": 80.16671611291869,
+          "M_nt_kNm": -66.65053547932753,
+          "M_lt_kNm": -13.245015276226258
+        },
+        "exact_right_column_top_kNm": 80.20482899695587,
+        "segment_check_right_top_kNm": 80.20482902041017,
+        "frame_dims_mm": [
+          4000.0,
+          6000.0
+        ],
+        "knee": null,
+        "knee_connection": {
+          "gravity_notional": {
+            "left": {
+              "Mu_kNm": 66.52357480603881,
+              "Vu_kN": 104.8758298780649,
+              "Pu_kN": 25.316422782202864,
+              "max_ratio": 0.8279612499114495,
+              "governing": "web_bolts_slip",
+              "checks": {
+                "beam_flange_rupture": 0.3238,
+                "web_bolts": 0.4392,
+                "web_plate_shear_yield": 0.2329,
+                "web_plate_shear_rupture": 0.3372,
+                "web_plate_block_shear": 0.3035,
+                "web_plate_welds": 0.2352,
+                "column_flange_rupture_web_welds": 0.1029,
+                "flange_bolts": 0.4239,
+                "flange_bolts_slip": 0.7991,
+                "web_bolts_slip": 0.828,
+                "flange_plate_tension_yield": 0.3261,
+                "flange_plate_tension_rupture": 0.4249,
+                "flange_plate_compression": 0.3261,
+                "flange_plate_block_shear_1": 0.2257,
+                "flange_plate_block_shear_3": 0.2726,
+                "beam_flange_block_shear": 0.2876,
+                "flange_plate_welds": 0.4392,
+                "cap_plate_yield": 0.1105,
+                "cap_plate_width": 0.5487,
+                "cap_plate_thickness": 0.5,
+                "column_web_yielding_bottom": 0.5866,
+                "column_web_crippling": 0.5457,
+                "panel_zone_shear": 0.5239
+              }
+            },
+            "right": {
+              "Mu_kNm": 67.26857044754942,
+              "Vu_kN": 105.12417012194204,
+              "Pu_kN": 25.316422782202864,
+              "max_ratio": 0.8299218169836042,
+              "governing": "web_bolts_slip",
+              "checks": {
+                "beam_flange_rupture": 0.3275,
+                "web_bolts": 0.4403,
+                "web_plate_shear_yield": 0.2334,
+                "web_plate_shear_rupture": 0.338,
+                "web_plate_block_shear": 0.3042,
+                "web_plate_welds": 0.2358,
+                "column_flange_rupture_web_welds": 0.1032,
+                "flange_bolts": 0.4284,
+                "flange_bolts_slip": 0.8075,
+                "web_bolts_slip": 0.8299,
+                "flange_plate_tension_yield": 0.3295,
+                "flange_plate_tension_rupture": 0.4294,
+                "flange_plate_compression": 0.3295,
+                "flange_plate_block_shear_1": 0.2281,
+                "flange_plate_block_shear_3": 0.2754,
+                "beam_flange_block_shear": 0.2907,
+                "flange_plate_welds": 0.4438,
+                "cap_plate_yield": 0.1135,
+                "cap_plate_width": 0.5487,
+                "cap_plate_thickness": 0.5,
+                "column_web_yielding_bottom": 0.5928,
+                "column_web_crippling": 0.5514,
+                "panel_zone_shear": 0.5289
+              }
+            }
+          },
+          "gravity_lateral": {
+            "left": {
+              "Mu_kNm": 53.59869547699024,
+              "Vu_kN": 100.56545216078595,
+              "Pu_kN": 32.59047423535679,
+              "max_ratio": 0.7939321916762195,
+              "governing": "web_bolts_slip",
+              "checks": {
+                "beam_flange_rupture": 0.2609,
+                "web_bolts": 0.4212,
+                "web_plate_shear_yield": 0.2233,
+                "web_plate_shear_rupture": 0.3233,
+                "web_plate_block_shear": 0.291,
+                "web_plate_welds": 0.2256,
+                "column_flange_rupture_web_welds": 0.0987,
+                "flange_bolts": 0.3543,
+                "flange_bolts_slip": 0.6679,
+                "web_bolts_slip": 0.7939,
+                "flange_plate_tension_yield": 0.2729,
+                "flange_plate_tension_rupture": 0.3556,
+                "flange_plate_compression": 0.2729,
+                "flange_plate_block_shear_1": 0.1889,
+                "flange_plate_block_shear_3": 0.2281,
+                "beam_flange_block_shear": 0.2404,
+                "flange_plate_welds": 0.3675,
+                "cap_plate_yield": 0.0649,
+                "cap_plate_width": 0.5487,
+                "cap_plate_thickness": 0.5,
+                "column_web_yielding_bottom": 0.4909,
+                "column_web_crippling": 0.4567,
+                "panel_zone_shear": 0.4474
+              }
+            },
+            "right": {
+              "Mu_kNm": 80.20482899695591,
+              "Vu_kN": 109.43454783920997,
+              "Pu_kN": 32.59047423535679,
+              "max_ratio": 0.9675402990070168,
+              "governing": "flange_bolts_slip",
+              "checks": {
+                "beam_flange_rupture": 0.3904,
+                "web_bolts": 0.4583,
+                "web_plate_shear_yield": 0.243,
+                "web_plate_shear_rupture": 0.3518,
+                "web_plate_block_shear": 0.3166,
+                "web_plate_welds": 0.2454,
+                "column_flange_rupture_web_welds": 0.1074,
+                "flange_bolts": 0.5133,
+                "flange_bolts_slip": 0.9675,
+                "web_bolts_slip": 0.864,
+                "flange_plate_tension_yield": 0.3949,
+                "flange_plate_tension_rupture": 0.5146,
+                "flange_plate_compression": 0.3949,
+                "flange_plate_block_shear_1": 0.2734,
+                "flange_plate_block_shear_3": 0.3301,
+                "beam_flange_block_shear": 0.3483,
+                "flange_plate_welds": 0.5318,
+                "cap_plate_yield": 0.1695,
+                "cap_plate_width": 0.5487,
+                "cap_plate_thickness": 0.5,
+                "column_web_yielding_bottom": 0.7104,
+                "column_web_crippling": 0.6608,
+                "panel_zone_shear": 0.6271
+              }
+            }
+          }
+        }
+      },
+      "metrics": {
+        "max_interaction_ratio": 0.8005949109026596,
+        "column_interaction_max": 0.4518224564142303,
+        "beam_interaction_max": 0.8005949109026596,
+        "shear_ratio_max": 0.2199246039691741,
+        "live_deflection_mm": 4.100380602357884,
+        "service_drift_mm": 2.6126099994470477,
+        "drift_ratio_2nd_1st": 1.0199233660347051,
+        "max_connection_ratio": 0.9675402990070168
+      }
+    },
+    {
+      "label": "p01_sc6",
+      "parameters": {
+        "frame_height_m": 4.0,
+        "bay_span_m": 6.0,
+        "column_shape": "W10X33",
+        "beam_shape": "W14X30",
+        "youngs_modulus_MPa": 200000.0,
+        "yield_strength_MPa": 345.0,
+        "base": "fixed",
+        "factored_gravity_kN_per_m": 35.0,
+        "factored_lateral_kN": 15.0,
+        "service_live_kN_per_m": 12.0,
+        "service_lateral_kN": 10.0,
+        "beam_unbraced_length_m": 6.0,
+        "column_unbraced_length_weak_m": 4.0,
+        "knee_stiffness_ratio": 23.69,
+        "knee_slip_mrad": 0.0,
+        "knee_connection": "slip_critical6",
+        "scenario": "sc6"
+      },
+      "status": "completed",
+      "derived": {},
+      "solver": {
+        "success": true,
+        "message": "max H1 0.834 (beam, gravity_lateral); drift ratio 1.021",
+        "nfev": null
+      },
+      "solver_outputs": {
+        "member_checks": {
+          "gravity_notional": {
+            "left_column": {
+              "Pr_kN": 104.87955649441957,
+              "Mr_kNm": 63.12795136470515,
+              "Vr_kN": 23.617815214134055,
+              "Cb": 2.162195537534315,
+              "phiPn_kN": 1201.1561642171403,
+              "phiMn_kNm": 197.41822395484093,
+              "flexure_regime": "inelastic LTB",
+              "phiVn_kN": 376.832730204,
+              "H1_equation": "H1-1b",
+              "H1_ratio": 0.36342535071556814,
+              "shear_ratio": 0.06267453254750045,
+              "alpha_Pr_over_Pns": 0.048527183299340505,
+              "web_slender_in_compression": false,
+              "moments_kNm": [
+                -31.31955866473073,
+                -19.479133913035216,
+                -7.5938690991152376,
+                4.308876449033141,
+                16.201703163574336,
+                28.057234309367896,
+                39.84817900394082,
+                51.54739503983414,
+                63.12795136470515
+              ]
+            },
+            "right_column": {
+              "Pr_kN": 105.12044350558787,
+              "Mr_kNm": 63.850589290262874,
+              "Vr_kN": 24.037815214131026,
+              "Cb": 2.1641291160604363,
+              "phiPn_kN": 1201.1561642171403,
+              "phiMn_kNm": 197.41822395484093,
+              "flexure_regime": "inelastic LTB",
+              "phiVn_kN": 376.832730204,
+              "H1_equation": "H1-1b",
+              "H1_ratio": 0.3671860655265149,
+              "shear_ratio": 0.06378908541494804,
+              "alpha_Pr_over_Pns": 0.04863864037006158,
+              "web_slender_in_compression": false,
+              "moments_kNm": [
+                32.30788097036937,
+                20.256324456309958,
+                8.158031746470153,
+                -3.959083498015344,
+                -16.067064187914728,
+                -28.137974309600473,
+                -40.14396338013506,
+                -52.057330705004574,
+                -63.850589290262874
+              ]
+            },
+            "beam": {
+              "Pr_kN": 24.037815214130664,
+              "Mr_kNm": 94.39062882410525,
+              "Vr_kN": 105.12044350558898,
+              "Cb": 1.2513370791965863,
+              "phiPn_kN": 353.93215229861397,
+              "phiMn_kNm": 119.58803482708487,
+              "flexure_regime": "elastic LTB",
+              "phiVn_kN": 497.6002951199999,
+              "H1_equation": "H1-1b",
+              "H1_ratio": 0.8232564933581977,
+              "shear_ratio": 0.21125478528954333,
+              "alpha_Pr_over_Pns": 0.012202960156973301,
+              "web_slender_in_compression": true,
+              "moments_kNm": [
+                63.12795136470514,
+                -5.818238990605042,
+                -55.07401482759046,
+                -84.6050123135991,
+                -94.39062882410525,
+                -84.42403731633804,
+                -54.712191092260355,
+                -5.2758189475121435,
+                63.85058929026298
+              ]
+            }
+          },
+          "gravity_lateral": {
+            "left_column": {
+              "Pr_kN": 100.69853854831797,
+              "Mr_kNm": 50.593219312722205,
+              "Vr_kN": 16.312438507714308,
+              "Cb": 2.0292310911463165,
+              "phiPn_kN": 1201.1561642171403,
+              "phiMn_kNm": 197.41822395484093,
+              "flexure_regime": "inelastic LTB",
+              "phiVn_kN": 376.832730204,
+              "H1_equation": "H1-1b",
+              "H1_ratio": 0.2981916492382203,
+              "shear_ratio": 0.043288274080872706,
+              "alpha_Pr_over_Pns": 0.046592649715961935,
+              "web_slender_in_compression": false,
+              "moments_kNm": [
+                -14.11561789231874,
+                -5.946804151392184,
+                2.2351532353195025,
+                10.412170479115218,
+                18.566174710014792,
+                26.679143921471773,
+                34.73314680267323,
+                42.71038237038088,
+                50.593219312722205
+              ]
+            },
+            "right_column": {
+              "Pr_kN": 109.30146145167598,
+              "Mr_kNm": 76.40091300346518,
+              "Vr_kN": 31.31243850771617,
+              "Cb": 2.192097778733122,
+              "phiPn_kN": 1201.1561642171403,
+              "phiMn_kNm": 197.41822395484093,
+              "flexure_regime": "inelastic LTB",
+              "phiVn_kN": 376.832730204,
+              "H1_equation": "H1-1b",
+              "H1_ratio": 0.43249874482519,
+              "shear_ratio": 0.08309373363286425,
+              "alpha_Pr_over_Pns": 0.05057317395343391,
+              "web_slender_in_compression": false,
+              "moments_kNm": [
+                49.41349140518197,
+                33.704261300262914,
+                17.914175058106334,
+                2.0811129149487018,
+                -13.756941794282318,
+                -29.56199375754762,
+                -45.29612683601952,
+                -60.92159502446079,
+                -76.40091300346518
+              ]
+            },
+            "beam": {
+              "Pr_kN": 31.312438507717104,
+              "Mr_kNm": 94.49841397980556,
+              "Vr_kN": 109.30146145167177,
+              "Cb": 1.2512747417201364,
+              "phiPn_kN": 353.93215229861397,
+              "phiMn_kNm": 119.58207734653973,
+              "flexure_regime": "elastic LTB",
+              "phiVn_kN": 497.6002951199999,
+              "H1_equation": "H1-1b",
+              "H1_ratio": 0.8344740256181075,
+              "shear_ratio": 0.21965714756120258,
+              "alpha_Pr_over_Pns": 0.01589597208080407,
+              "web_slender_in_compression": true,
+              "moments_kNm": [
+                50.59321931272224,
+                -15.266978259860606,
+                -61.42729254500082,
+                -87.8457739794608,
+                -94.49841397980556,
+                -81.37916676085992,
+                -48.49995483001498,
+                4.109341847592883,
+                76.40091300346525
+              ]
+            }
+          }
+        },
+        "drift_ratio_2nd_1st": 1.0209759061284587,
+        "notional_load_kN": 0.42000000000000004,
+        "notional_in_lateral_case": false,
+        "equilibrium_rel": {
+          "gravity_notional": 3.3677289528506145e-14,
+          "gravity_lateral": 3.0766906482832774e-14
+        },
+        "live_deflection_mm": 4.317676734404291,
+        "service_drift_mm": 2.7678411116482544,
+        "service_drift_first_order_mm": 2.752179504313465,
+        "b1b2": {
+          "B1": 1.0,
+          "B2": 1.0217097429755393,
+          "Cm": 0.40209625483747347,
+          "M_amplified_kNm": 76.35367111021213,
+          "M_nt_kNm": -63.26755840531835,
+          "M_lt_kNm": -12.808053162714216
+        },
+        "exact_right_column_top_kNm": 76.40091300346518,
+        "segment_check_right_top_kNm": 76.4009129937807,
+        "frame_dims_mm": [
+          4000.0,
+          6000.0
+        ],
+        "knee": {
+          "k_nominal_Nmm_per_rad": 95647067982.90077,
+          "slip_rad": 0.0,
+          "springs_Nmm_per_rad": {
+            "gravity_notional": [
+              76517654386.32062,
+              76517654386.32062
+            ],
+            "gravity_lateral": [
+              76517654386.32062,
+              76517654386.32062
+            ]
+          },
+          "rotations_rad": {
+            "gravity_notional": [
+              0.0008250115855092232,
+              0.000834455653435161
+            ],
+            "gravity_lateral": [
+              0.0006611966835429682,
+              0.0009984743209421193
+            ]
+          }
+        },
+        "knee_connection": {
+          "gravity_notional": {
+            "left": {
+              "Mu_kNm": 63.12795136470513,
+              "Vu_kN": 104.87955649441942,
+              "Pu_kN": 24.037815214130447,
+              "max_ratio": 0.8279906703597875,
+              "governing": "web_bolts_slip",
+              "checks": {
+                "beam_flange_rupture": 0.3073,
+                "web_bolts": 0.4393,
+                "web_plate_shear_yield": 0.2329,
+                "web_plate_shear_rupture": 0.3372,
+                "web_plate_block_shear": 0.3035,
+                "web_plate_welds": 0.2352,
+                "column_flange_rupture_web_welds": 0.1029,
+                "flange_bolts": 0.4023,
+                "flange_bolts_slip": 0.7584,
+                "web_bolts_slip": 0.828,
+                "flange_plate_tension_yield": 0.3094,
+                "flange_plate_tension_rupture": 0.4032,
+                "flange_plate_compression": 0.3094,
+                "flange_plate_block_shear_1": 0.2142,
+                "flange_plate_block_shear_3": 0.2587,
+                "beam_flange_block_shear": 0.273,
+                "flange_plate_welds": 0.4168,
+                "cap_plate_yield": 0.0963,
+                "cap_plate_width": 0.5487,
+                "cap_plate_thickness": 0.5,
+                "column_web_yielding_bottom": 0.5567,
+                "column_web_crippling": 0.5179,
+                "panel_zone_shear": 0.4972
+              }
+            },
+            "right": {
+              "Mu_kNm": 63.85058929026299,
+              "Vu_kN": 105.12044350558766,
+              "Pu_kN": 24.037815214130447,
+              "max_ratio": 0.8298923965352673,
+              "governing": "web_bolts_slip",
+              "checks": {
+                "beam_flange_rupture": 0.3108,
+                "web_bolts": 0.4403,
+                "web_plate_shear_yield": 0.2334,
+                "web_plate_shear_rupture": 0.338,
+                "web_plate_block_shear": 0.3042,
+                "web_plate_welds": 0.2358,
+                "column_flange_rupture_web_welds": 0.1032,
+                "flange_bolts": 0.4066,
+                "flange_bolts_slip": 0.7665,
+                "web_bolts_slip": 0.8299,
+                "flange_plate_tension_yield": 0.3127,
+                "flange_plate_tension_rupture": 0.4076,
+                "flange_plate_compression": 0.3127,
+                "flange_plate_block_shear_1": 0.2165,
+                "flange_plate_block_shear_3": 0.2615,
+                "beam_flange_block_shear": 0.2759,
+                "flange_plate_welds": 0.4212,
+                "cap_plate_yield": 0.0991,
+                "cap_plate_width": 0.5487,
+                "cap_plate_thickness": 0.5,
+                "column_web_yielding_bottom": 0.5627,
+                "column_web_crippling": 0.5234,
+                "panel_zone_shear": 0.5021
+              }
+            }
+          },
+          "gravity_lateral": {
+            "left": {
+              "Mu_kNm": 50.59321931272224,
+              "Vu_kN": 100.69853854831767,
+              "Pu_kN": 31.312438507714308,
+              "max_ratio": 0.7949828662872817,
+              "governing": "web_bolts_slip",
+              "checks": {
+                "beam_flange_rupture": 0.2463,
+                "web_bolts": 0.4217,
+                "web_plate_shear_yield": 0.2236,
+                "web_plate_shear_rupture": 0.3237,
+                "web_plate_block_shear": 0.2914,
+                "web_plate_welds": 0.2259,
+                "column_flange_rupture_web_welds": 0.0988,
+                "flange_bolts": 0.335,
+                "flange_bolts_slip": 0.6316,
+                "web_bolts_slip": 0.795,
+                "flange_plate_tension_yield": 0.258,
+                "flange_plate_tension_rupture": 0.3363,
+                "flange_plate_compression": 0.258,
+                "flange_plate_block_shear_1": 0.1786,
+                "flange_plate_block_shear_3": 0.2157,
+                "beam_flange_block_shear": 0.2273,
+                "flange_plate_welds": 0.3475,
+                "cap_plate_yield": 0.0522,
+                "cap_plate_width": 0.5487,
+                "cap_plate_thickness": 0.5,
+                "column_web_yielding_bottom": 0.4642,
+                "column_web_crippling": 0.4318,
+                "panel_zone_shear": 0.424
+              }
+            },
+            "right": {
+              "Mu_kNm": 76.40091300346525,
+              "Vu_kN": 109.30146145167588,
+              "Pu_kN": 31.312438507714308,
+              "max_ratio": 0.9221805158294623,
+              "governing": "flange_bolts_slip",
+              "checks": {
+                "beam_flange_rupture": 0.3719,
+                "web_bolts": 0.4578,
+                "web_plate_shear_yield": 0.2427,
+                "web_plate_shear_rupture": 0.3514,
+                "web_plate_block_shear": 0.3163,
+                "web_plate_welds": 0.2451,
+                "column_flange_rupture_web_welds": 0.1073,
+                "flange_bolts": 0.4892,
+                "flange_bolts_slip": 0.9222,
+                "web_bolts_slip": 0.8629,
+                "flange_plate_tension_yield": 0.3763,
+                "flange_plate_tension_rupture": 0.4904,
+                "flange_plate_compression": 0.3763,
+                "flange_plate_block_shear_1": 0.2605,
+                "flange_plate_block_shear_3": 0.3146,
+                "beam_flange_block_shear": 0.3319,
+                "flange_plate_welds": 0.5069,
+                "cap_plate_yield": 0.1536,
+                "cap_plate_width": 0.5487,
+                "cap_plate_thickness": 0.5,
+                "column_web_yielding_bottom": 0.6771,
+                "column_web_crippling": 0.6299,
+                "panel_zone_shear": 0.597
+              }
+            }
+          }
+        }
+      },
+      "metrics": {
+        "max_interaction_ratio": 0.8344740256181075,
+        "column_interaction_max": 0.43249874482519,
+        "beam_interaction_max": 0.8344740256181075,
+        "shear_ratio_max": 0.21965714756120258,
+        "live_deflection_mm": 4.317676734404291,
+        "service_drift_mm": 2.7678411116482544,
+        "drift_ratio_2nd_1st": 1.0209759061284587,
+        "max_connection_ratio": 0.9221805158294623
+      }
+    },
+    {
+      "label": "p02_bearing4_slip",
+      "parameters": {
+        "frame_height_m": 4.0,
+        "bay_span_m": 6.0,
+        "column_shape": "W10X33",
+        "beam_shape": "W14X30",
+        "youngs_modulus_MPa": 200000.0,
+        "yield_strength_MPa": 345.0,
+        "base": "fixed",
+        "factored_gravity_kN_per_m": 35.0,
+        "factored_lateral_kN": 15.0,
+        "service_live_kN_per_m": 12.0,
+        "service_lateral_kN": 10.0,
+        "beam_unbraced_length_m": 6.0,
+        "column_unbraced_length_weak_m": 4.0,
+        "knee_stiffness_ratio": 21.33,
+        "knee_slip_mrad": 8.741,
+        "knee_connection": "bearing4",
+        "scenario": "bearing4_slip"
+      },
+      "status": "completed",
+      "derived": {},
+      "solver": {
+        "success": true,
+        "message": "max H1 1.174 (beam, gravity_lateral); drift ratio 1.021",
+        "nfev": null
+      },
+      "solver_outputs": {
+        "member_checks": {
+          "gravity_notional": {
+            "left_column": {
+              "Pr_kN": 104.8799169395006,
+              "Mr_kNm": 28.857119069402188,
+              "Vr_kN": 10.755221336460206,
+              "Cb": 2.1610103005220185,
+              "phiPn_kN": 1201.1561642171403,
+              "phiMn_kNm": 197.41822395484093,
+              "flexure_regime": "inelastic LTB",
+              "phiVn_kN": 376.832730204,
+              "H1_equation": "H1-1b",
+              "H1_ratio": 0.1898304211900335,
+              "shear_ratio": 0.028541101858742,
+              "alpha_Pr_over_Pns": 0.048527350075260434,
+              "web_slender_in_compression": false,
+              "moments_kNm": [
+                -14.1443530278791,
+                -8.752525815410356,
+                -3.3405506254997848,
+                2.0791143833345176,
+                7.493993350907087,
+                12.891621434315503,
+                18.259573501529157,
+                23.585492733563783,
+                28.857119069402188
+              ]
+            },
+            "right_column": {
+              "Pr_kN": 105.12008306048706,
+              "Mr_kNm": 29.57760672157112,
+              "Vr_kN": 11.175221336460556,
+              "Cb": 2.165265503751293,
+              "phiPn_kN": 1201.1561642171403,
+              "phiMn_kNm": 197.41822395484093,
+              "flexure_regime": "inelastic LTB",
+              "phiVn_kN": 376.832730204,
+              "H1_equation": "H1-1b",
+              "H1_ratio": 0.19357994394910977,
+              "shear_ratio": 0.029655654726198553,
+              "alpha_Pr_over_Pns": 0.0486384735941325,
+              "web_slender_in_compression": false,
+              "moments_kNm": [
+                15.135020857418239,
+                9.532099006068881,
+                3.907184392951958,
+                -1.7267450001709164,
+                -7.35669039235133,
+                -12.969662194654703,
+                -18.55270998015219,
+                -24.09295236355841,
+                -29.57760672157112
+              ]
+            },
+            "beam": {
+              "Pr_kN": 11.1752213364598,
+              "Mr_kNm": 128.54795773160347,
+              "Vr_kN": 105.1200830604874,
+              "Cb": 1.172776065439908,
+              "phiPn_kN": 353.93215229861397,
+              "phiMn_kNm": 112.08009999052052,
+              "flexure_regime": "elastic LTB",
+              "phiVn_kN": 497.6002951199999,
+              "H1_equation": "H1-1b",
+              "H1_ratio": 1.1627166001087617,
+              "shear_ratio": 0.2112540609228074,
+              "alpha_Pr_over_Pns": 0.005673177012942969,
+              "web_slender_in_compression": true,
+              "moments_kNm": [
+                28.8571190694021,
+                -40.058456117027816,
+                -89.27407033989655,
+                -118.7737603242892,
+                -128.54795773160347,
+                -118.59349226308143,
+                -88.91359268812549,
+                -39.5178857970151,
+                29.577606721571087
+              ]
+            }
+          },
+          "gravity_lateral": {
+            "left_column": {
+              "Pr_kN": 100.71141167763096,
+              "Mr_kNm": 16.382795517433404,
+              "Vr_kN": 3.4584854993661867,
+              "Cb": 1.4648448878414726,
+              "phiPn_kN": 1201.1561642171403,
+              "phiMn_kNm": 197.41822395484093,
+              "flexure_regime": "inelastic LTB",
+              "phiVn_kN": 376.832730204,
+              "H1_equation": "H1-1b",
+              "H1_ratio": 0.12490792083365745,
+              "shear_ratio": 0.009177773643743527,
+              "alpha_Pr_over_Pns": 0.046598606040785265,
+              "web_slender_in_compression": false,
+              "moments_kNm": [
+                3.0887576649505077,
+                4.813949462564059,
+                6.528500093568925,
+                8.228619568255871,
+                9.910549796781748,
+                11.570572896370232,
+                13.205019409642995,
+                14.810276415901303,
+                16.382795517433404
+              ]
+            },
+            "right_column": {
+              "Pr_kN": 109.2885883223688,
+              "Mr_kNm": 42.11369363108301,
+              "Vr_kN": 18.458485499365892,
+              "Cb": 2.216915943348857,
+              "phiPn_kN": 1201.1561642171403,
+              "phiMn_kNm": 197.41822395484093,
+              "flexure_regime": "inelastic LTB",
+              "phiVn_kN": 376.832730204,
+              "H1_equation": "H1-1b",
+              "H1_ratio": 0.25881529970610084,
+              "shear_ratio": 0.048983233195729343,
+              "alpha_Pr_over_Pns": 0.05056721762861327,
+              "web_slender_in_compression": false,
+              "moments_kNm": [
+                32.29288467186766,
+                23.028601354814096,
+                13.709079191908433,
+                4.356672977531851,
+                -5.006183614761829,
+                -14.357031844030976,
+                -23.67344177386761,
+                -32.933066075223685,
+                -42.11369363108301
+              ]
+            },
+            "beam": {
+              "Pr_kN": 18.458485499366187,
+              "Mr_kNm": 128.69046215186015,
+              "Vr_kN": 109.28858832236729,
+              "Cb": 1.172816977757927,
+              "phiPn_kN": 353.93215229861397,
+              "phiMn_kNm": 112.08400990719558,
+              "flexure_regime": "elastic LTB",
+              "phiVn_kN": 497.6002951199999,
+              "H1_equation": "H1-1b",
+              "H1_ratio": 1.1742370663563837,
+              "shear_ratio": 0.21963127713984082,
+              "alpha_Pr_over_Pns": 0.009370575532772318,
+              "web_slender_in_compression": true,
+              "moments_kNm": [
+                16.382795517433525,
+                -49.47728969099149,
+                -95.6242470681558,
+                -122.03335399734142,
+                -128.69046215186015,
+                -115.59200507491306,
+                -82.7450000901126,
+                -30.167044542066485,
+                42.113693631082775
+              ]
+            }
+          }
+        },
+        "drift_ratio_2nd_1st": 1.0209875099035632,
+        "notional_load_kN": 0.42000000000000004,
+        "notional_in_lateral_case": false,
+        "equilibrium_rel": {
+          "gravity_notional": 6.014791627724966e-14,
+          "gravity_lateral": 1.0169016951251598e-14
+        },
+        "live_deflection_mm": 8.35924735448106,
+        "service_drift_mm": 7.616506808866003,
+        "service_drift_first_order_mm": 7.49320736071756,
+        "b1b2": {
+          "B1": 1.0,
+          "B2": 1.0388895414464216,
+          "Cm": 0.40209625483747347,
+          "M_amplified_kNm": 42.06876660178707,
+          "M_nt_kNm": -36.83014597807693,
+          "M_lt_kNm": -5.042519358137467
+        },
+        "exact_right_column_top_kNm": 42.11369363108301,
+        "segment_check_right_top_kNm": 42.11369361377755,
+        "frame_dims_mm": [
+          4000.0,
+          6000.0
+        ],
+        "knee": {
+          "k_nominal_Nmm_per_rad": 86118698188.06558,
+          "slip_rad": 0.008741,
+          "springs_Nmm_per_rad": {
+            "gravity_notional": [
+              3150389774.3985987,
+              3225364476.443599
+            ],
+            "gravity_lateral": [
+              1824609835.3546877,
+              4503043200.432635
+            ]
+          },
+          "rotations_rad": {
+            "gravity_notional": [
+              0.009159856759283333,
+              0.009170314529595242
+            ],
+            "gravity_lateral": [
+              0.00897879382210436,
+              0.009352273952654207
+            ]
+          }
+        },
+        "knee_connection": {
+          "gravity_notional": {
+            "left": {
+              "Mu_kNm": 28.8571190694021,
+              "Vu_kN": 104.87991693950042,
+              "Pu_kN": 11.175221336459712,
+              "max_ratio": 0.5486968449931413,
+              "governing": "cap_plate_width",
+              "checks": {
+                "beam_flange_rupture": 0.1405,
+                "web_bolts": 0.4393,
+                "web_plate_shear_yield": 0.2329,
+                "web_plate_shear_rupture": 0.3372,
+                "web_plate_block_shear": 0.3035,
+                "web_plate_welds": 0.2352,
+                "column_flange_rupture_web_welds": 0.1029,
+                "flange_bolts": 0.2762,
+                "flange_plate_tension_yield": 0.1416,
+                "flange_plate_tension_rupture": 0.1845,
+                "flange_plate_compression": 0.1416,
+                "flange_plate_block_shear_1": 0.1439,
+                "flange_plate_block_shear_3": 0.1466,
+                "beam_flange_block_shear": 0.1791,
+                "flange_plate_welds": 0.1907,
+                "cap_plate_yield": 0.0,
+                "cap_plate_width": 0.5487,
+                "cap_plate_thickness": 0.5,
+                "column_web_yielding_bottom": 0.2548,
+                "column_web_crippling": 0.237,
+                "panel_zone_shear": 0.2277
+              }
+            },
+            "right": {
+              "Mu_kNm": 29.577606721571087,
+              "Vu_kN": 105.12008306048696,
+              "Pu_kN": 11.175221336459712,
+              "max_ratio": 0.5486968449931413,
+              "governing": "cap_plate_width",
+              "checks": {
+                "beam_flange_rupture": 0.144,
+                "web_bolts": 0.4403,
+                "web_plate_shear_yield": 0.2334,
+                "web_plate_shear_rupture": 0.338,
+                "web_plate_block_shear": 0.3042,
+                "web_plate_welds": 0.2358,
+                "column_flange_rupture_web_welds": 0.1032,
+                "flange_bolts": 0.2826,
+                "flange_plate_tension_yield": 0.1449,
+                "flange_plate_tension_rupture": 0.1888,
+                "flange_plate_compression": 0.1449,
+                "flange_plate_block_shear_1": 0.1473,
+                "flange_plate_block_shear_3": 0.15,
+                "beam_flange_block_shear": 0.1833,
+                "flange_plate_welds": 0.1952,
+                "cap_plate_yield": 0.0,
+                "cap_plate_width": 0.5487,
+                "cap_plate_thickness": 0.5,
+                "column_web_yielding_bottom": 0.2607,
+                "column_web_crippling": 0.2425,
+                "panel_zone_shear": 0.2325
+              }
+            }
+          },
+          "gravity_lateral": {
+            "left": {
+              "Mu_kNm": 16.382795517433525,
+              "Vu_kN": 100.71141167763064,
+              "Pu_kN": 18.458485499365256,
+              "max_ratio": 0.5486968449931413,
+              "governing": "cap_plate_width",
+              "checks": {
+                "beam_flange_rupture": 0.0798,
+                "web_bolts": 0.4218,
+                "web_plate_shear_yield": 0.2236,
+                "web_plate_shear_rupture": 0.3238,
+                "web_plate_block_shear": 0.2914,
+                "web_plate_welds": 0.2259,
+                "column_flange_rupture_web_welds": 0.0989,
+                "flange_bolts": 0.1758,
+                "flange_plate_tension_yield": 0.0905,
+                "flange_plate_tension_rupture": 0.1179,
+                "flange_plate_compression": 0.0905,
+                "flange_plate_block_shear_1": 0.0919,
+                "flange_plate_block_shear_3": 0.0937,
+                "beam_flange_block_shear": 0.114,
+                "flange_plate_welds": 0.1219,
+                "cap_plate_yield": 0.0,
+                "cap_plate_width": 0.5487,
+                "cap_plate_thickness": 0.5,
+                "column_web_yielding_bottom": 0.1628,
+                "column_web_crippling": 0.1514,
+                "panel_zone_shear": 0.1549
+              }
+            },
+            "right": {
+              "Mu_kNm": 42.113693631082775,
+              "Vu_kN": 109.28858832236867,
+              "Pu_kN": 18.458485499365256,
+              "max_ratio": 0.5486968449931413,
+              "governing": "cap_plate_width",
+              "checks": {
+                "beam_flange_rupture": 0.205,
+                "web_bolts": 0.4577,
+                "web_plate_shear_yield": 0.2427,
+                "web_plate_shear_rupture": 0.3514,
+                "web_plate_block_shear": 0.3162,
+                "web_plate_welds": 0.2451,
+                "column_flange_rupture_web_welds": 0.1073,
+                "flange_bolts": 0.4064,
+                "flange_plate_tension_yield": 0.2084,
+                "flange_plate_tension_rupture": 0.2716,
+                "flange_plate_compression": 0.2084,
+                "flange_plate_block_shear_1": 0.2118,
+                "flange_plate_block_shear_3": 0.2158,
+                "beam_flange_block_shear": 0.2635,
+                "flange_plate_welds": 0.2808,
+                "cap_plate_yield": 0.0097,
+                "cap_plate_width": 0.5487,
+                "cap_plate_thickness": 0.5,
+                "column_web_yielding_bottom": 0.375,
+                "column_web_crippling": 0.3489,
+                "panel_zone_shear": 0.3273
+              }
+            }
+          }
+        }
+      },
+      "metrics": {
+        "max_interaction_ratio": 1.1742370663563837,
+        "column_interaction_max": 0.25881529970610084,
+        "beam_interaction_max": 1.1742370663563837,
+        "shear_ratio_max": 0.21963127713984082,
+        "live_deflection_mm": 8.35924735448106,
+        "service_drift_mm": 7.616506808866003,
+        "drift_ratio_2nd_1st": 1.0209875099035632,
+        "max_connection_ratio": 0.5486968449931413
+      }
+    },
+    {
+      "label": "p03_bearing4_half_slip",
+      "parameters": {
+        "frame_height_m": 4.0,
+        "bay_span_m": 6.0,
+        "column_shape": "W10X33",
+        "beam_shape": "W14X30",
+        "youngs_modulus_MPa": 200000.0,
+        "yield_strength_MPa": 345.0,
+        "base": "fixed",
+        "factored_gravity_kN_per_m": 35.0,
+        "factored_lateral_kN": 15.0,
+        "service_live_kN_per_m": 12.0,
+        "service_lateral_kN": 10.0,
+        "beam_unbraced_length_m": 6.0,
+        "column_unbraced_length_weak_m": 4.0,
+        "knee_stiffness_ratio": 21.33,
+        "knee_slip_mrad": 4.371,
+        "knee_connection": "bearing4",
+        "scenario": "bearing4_half_slip"
+      },
+      "status": "completed",
+      "derived": {},
+      "solver": {
+        "success": true,
+        "message": "max H1 1.006 (beam, gravity_lateral); drift ratio 1.021",
+        "nfev": null
+      },
+      "solver_outputs": {
+        "member_checks": {
+          "gravity_notional": {
+            "left_column": {
+              "Pr_kN": 104.8799360495999,
+              "Mr_kNm": 45.823345251622975,
+              "Vr_kN": 17.122795143384952,
+              "Cb": 2.1618144317575565,
+              "phiPn_kN": 1201.1561642171403,
+              "phiMn_kNm": 197.41822395484093,
+              "flexure_regime": "inelastic LTB",
+              "phiVn_kN": 376.832730204,
+              "H1_equation": "H1-1b",
+              "H1_ratio": 0.2757709560240389,
+              "shear_ratio": 0.04543871529979749,
+              "alpha_Pr_over_Pns": 0.04852735891739633,
+              "web_slender_in_compression": false,
+              "moments_kNm": [
+                -22.646228187364102,
+                -14.062050158880771,
+                -5.4455018264525235,
+                3.1835818438007535,
+                11.805337029890179,
+                20.39991677971542,
+                28.947536697998284,
+                37.42852048920345,
+                45.823345251622975
+              ]
+            },
+            "right_column": {
+              "Pr_kN": 105.12006395039964,
+              "Mr_kNm": 46.543712142988205,
+              "Vr_kN": 17.542795143384254,
+              "Cb": 2.1644976793370754,
+              "phiPn_kN": 1201.1561642171403,
+              "phiMn_kNm": 197.41822395484093,
+              "flexure_regime": "inelastic LTB",
+              "phiVn_kN": 376.832730204,
+              "H1_equation": "H1-1b",
+              "H1_ratio": 0.27951985117298045,
+              "shear_ratio": 0.046553268167251256,
+              "alpha_Pr_over_Pns": 0.0486384647520021,
+              "web_slender_in_compression": false,
+              "moments_kNm": [
+                23.637013339421536,
+                14.841720938556524,
+                6.012185253670514,
+                -2.8312219335887434,
+                -11.668096836809516,
+                -20.47805074106908,
+                -29.24075704441929,
+                -37.93599815605759,
+                -46.543712142988205
+              ]
+            },
+            "beam": {
+              "Pr_kN": 17.542795143383714,
+              "Mr_kNm": 111.66412263156562,
+              "Vr_kN": 105.12006395039951,
+              "Cb": 1.2044094789186957,
+              "phiPn_kN": 353.93215229861397,
+              "phiMn_kNm": 115.10324844163947,
+              "flexure_regime": "elastic LTB",
+              "phiVn_kN": 497.6002951199999,
+              "H1_equation": "H1-1b",
+              "H1_ratio": 0.9949040926700512,
+              "shear_ratio": 0.21125402251831274,
+              "alpha_Pr_over_Pns": 0.008905719104239243,
+              "web_slender_in_compression": true,
+              "moments_kNm": [
+                45.82334525162292,
+                -23.11873774038522,
+                -72.36238493832784,
+                -101.88252340219788,
+                -111.66412263156562,
+                -101.70220221850974,
+                -72.00183438321407,
+                -22.57814139188295,
+                46.543712142988085
+              ]
+            }
+          },
+          "gravity_lateral": {
+            "left_column": {
+              "Pr_kN": 100.71209385686076,
+              "Mr_kNm": 33.33968459872246,
+              "Vr_kN": 9.82176950845169,
+              "Cb": 1.8509601809951117,
+              "phiPn_kN": 1201.1561642171403,
+              "phiMn_kNm": 197.41822395484093,
+              "flexure_regime": "inelastic LTB",
+              "phiVn_kN": 376.832730204,
+              "H1_equation": "H1-1b",
+              "H1_ratio": 0.21080143563691617,
+              "shear_ratio": 0.026064003259840603,
+              "alpha_Pr_over_Pns": 0.04659892168129362,
+              "web_slender_in_compression": false,
+              "moments_kNm": [
+                -5.405354007909972,
+                -0.4903043699787503,
+                4.425829086107548,
+                9.332179243882555,
+                14.217900612867606,
+                19.07219330253671,
+                23.884326895481706,
+                28.643664167007564,
+                33.33968459872246
+              ]
+            },
+            "right_column": {
+              "Pr_kN": 109.28790614314808,
+              "Mr_kNm": 59.06627196156478,
+              "Vr_kN": 24.82176950845495,
+              "Cb": 2.2010969204886357,
+              "phiPn_kN": 1201.1561642171403,
+              "phiMn_kNm": 197.41822395484093,
+              "flexure_regime": "inelastic LTB",
+              "phiVn_kN": 376.832730204,
+              "H1_equation": "H1-1b",
+              "H1_ratio": 0.34468641094632385,
+              "shear_ratio": 0.06586946281183585,
+              "alpha_Pr_over_Pns": 0.05056690198810912,
+              "web_slender_in_compression": false,
+              "moments_kNm": [
+                40.79118448818832,
+                28.336339051646537,
+                15.813523490790159,
+                3.2527761718607544,
+                -9.315773552325606,
+                -21.861977613393307,
+                -34.35574154331255,
+                -46.76709666172695,
+                -59.06627196156478
+              ]
+            },
+            "beam": {
+              "Pr_kN": 24.82176950845029,
+              "Mr_kNm": 111.7894805613834,
+              "Vr_kN": 109.28790614314954,
+              "Cb": 1.2044110249656403,
+              "phiPn_kN": 353.93215229861397,
+              "phiMn_kNm": 115.10339619456623,
+              "flexure_regime": "elastic LTB",
+              "phiVn_kN": 497.6002951199999,
+              "H1_equation": "H1-1b",
+              "H1_ratio": 1.0062749452090616,
+              "shear_ratio": 0.2196299062017115,
+              "alpha_Pr_over_Pns": 0.012600939879059143,
+              "web_slender_in_compression": true,
+              "moments_kNm": [
+                33.339684598722485,
+                -32.53694720271556,
+                -78.70382094424376,
+                -105.12767742429766,
+                -111.7894805613834,
+                -98.68443110797953,
+                -65.82197010804266,
+                -13.225772095423078,
+                59.06627196156508
+              ]
+            }
+          }
+        },
+        "drift_ratio_2nd_1st": 1.0210393224362166,
+        "notional_load_kN": 0.42000000000000004,
+        "notional_in_lateral_case": false,
+        "equilibrium_rel": {
+          "gravity_notional": 4.22671421672151e-15,
+          "gravity_lateral": 4.0468183301744006e-14
+        },
+        "live_deflection_mm": 8.280582480827453,
+        "service_drift_mm": 4.52388789700654,
+        "service_drift_first_order_mm": 4.4848626245850856,
+        "b1b2": {
+          "B1": 1.0,
+          "B2": 1.0292727361125986,
+          "Cm": 0.4020962548374736,
+          "M_amplified_kNm": 59.00771151397929,
+          "M_nt_kNm": -50.488401814160056,
+          "M_lt_kNm": -8.277018715170986
+        },
+        "exact_right_column_top_kNm": 59.06627196156478,
+        "segment_check_right_top_kNm": 59.066271995184856,
+        "frame_dims_mm": [
+          4000.0,
+          6000.0
+        ],
+        "knee": {
+          "k_nominal_Nmm_per_rad": 86118698188.06558,
+          "slip_rad": 0.004371000000000001,
+          "springs_Nmm_per_rad": {
+            "gravity_notional": [
+              9098940144.588335,
+              9222831737.037708
+            ],
+            "gravity_lateral": [
+              6867194718.916075,
+              11297332150.233019
+            ]
+          },
+          "rotations_rad": {
+            "gravity_notional": [
+              0.005036118990064651,
+              0.005046575007551586
+            ],
+            "gravity_lateral": [
+              0.004854920526264742,
+              0.005228338086912561
+            ]
+          }
+        },
+        "knee_connection": {
+          "gravity_notional": {
+            "left": {
+              "Mu_kNm": 45.82334525162292,
+              "Vu_kN": 104.87993604959966,
+              "Pu_kN": 17.542795143383497,
+              "max_ratio": 0.5486968449931413,
+              "governing": "cap_plate_width",
+              "checks": {
+                "beam_flange_rupture": 0.2231,
+                "web_bolts": 0.4393,
+                "web_plate_shear_yield": 0.2329,
+                "web_plate_shear_rupture": 0.3372,
+                "web_plate_block_shear": 0.3035,
+                "web_plate_welds": 0.2352,
+                "column_flange_rupture_web_welds": 0.1029,
+                "flange_bolts": 0.4382,
+                "flange_plate_tension_yield": 0.2247,
+                "flange_plate_tension_rupture": 0.2928,
+                "flange_plate_compression": 0.2247,
+                "flange_plate_block_shear_1": 0.2283,
+                "flange_plate_block_shear_3": 0.2326,
+                "beam_flange_block_shear": 0.2842,
+                "flange_plate_welds": 0.3026,
+                "cap_plate_yield": 0.0236,
+                "cap_plate_width": 0.5487,
+                "cap_plate_thickness": 0.5,
+                "column_web_yielding_bottom": 0.4042,
+                "column_web_crippling": 0.3761,
+                "panel_zone_shear": 0.3611
+              }
+            },
+            "right": {
+              "Mu_kNm": 46.543712142988085,
+              "Vu_kN": 105.12006395039947,
+              "Pu_kN": 17.542795143383497,
+              "max_ratio": 0.5486968449931413,
+              "governing": "cap_plate_width",
+              "checks": {
+                "beam_flange_rupture": 0.2266,
+                "web_bolts": 0.4403,
+                "web_plate_shear_yield": 0.2334,
+                "web_plate_shear_rupture": 0.338,
+                "web_plate_block_shear": 0.3042,
+                "web_plate_welds": 0.2358,
+                "column_flange_rupture_web_welds": 0.1032,
+                "flange_bolts": 0.4446,
+                "flange_plate_tension_yield": 0.228,
+                "flange_plate_tension_rupture": 0.2971,
+                "flange_plate_compression": 0.228,
+                "flange_plate_block_shear_1": 0.2317,
+                "flange_plate_block_shear_3": 0.236,
+                "beam_flange_block_shear": 0.2884,
+                "flange_plate_welds": 0.3071,
+                "cap_plate_yield": 0.0265,
+                "cap_plate_width": 0.5487,
+                "cap_plate_thickness": 0.5,
+                "column_web_yielding_bottom": 0.4102,
+                "column_web_crippling": 0.3816,
+                "panel_zone_shear": 0.3659
+              }
+            }
+          },
+          "gravity_lateral": {
+            "left": {
+              "Mu_kNm": 33.339684598722485,
+              "Vu_kN": 100.71209385686055,
+              "Pu_kN": 24.82176950844843,
+              "max_ratio": 0.5486968449931413,
+              "governing": "cap_plate_width",
+              "checks": {
+                "beam_flange_rupture": 0.1623,
+                "web_bolts": 0.4218,
+                "web_plate_shear_yield": 0.2236,
+                "web_plate_shear_rupture": 0.3238,
+                "web_plate_block_shear": 0.2914,
+                "web_plate_welds": 0.2259,
+                "column_flange_rupture_web_welds": 0.0989,
+                "flange_bolts": 0.3378,
+                "flange_plate_tension_yield": 0.1735,
+                "flange_plate_tension_rupture": 0.2261,
+                "flange_plate_compression": 0.1735,
+                "flange_plate_block_shear_1": 0.1763,
+                "flange_plate_block_shear_3": 0.1796,
+                "beam_flange_block_shear": 0.219,
+                "flange_plate_welds": 0.2337,
+                "cap_plate_yield": 0.0,
+                "cap_plate_width": 0.5487,
+                "cap_plate_thickness": 0.5,
+                "column_web_yielding_bottom": 0.3122,
+                "column_web_crippling": 0.2904,
+                "panel_zone_shear": 0.2883
+              }
+            },
+            "right": {
+              "Mu_kNm": 59.06627196156507,
+              "Vu_kN": 109.28790614314794,
+              "Pu_kN": 24.82176950844843,
+              "max_ratio": 0.5682976619936987,
+              "governing": "flange_bolts",
+              "checks": {
+                "beam_flange_rupture": 0.2875,
+                "web_bolts": 0.4577,
+                "web_plate_shear_yield": 0.2427,
+                "web_plate_shear_rupture": 0.3514,
+                "web_plate_block_shear": 0.3162,
+                "web_plate_welds": 0.2451,
+                "column_flange_rupture_web_welds": 0.1073,
+                "flange_bolts": 0.5683,
+                "flange_plate_tension_yield": 0.2915,
+                "flange_plate_tension_rupture": 0.3798,
+                "flange_plate_compression": 0.2915,
+                "flange_plate_block_shear_1": 0.2962,
+                "flange_plate_block_shear_3": 0.3017,
+                "beam_flange_block_shear": 0.3685,
+                "flange_plate_welds": 0.3926,
+                "cap_plate_yield": 0.0809,
+                "cap_plate_width": 0.5487,
+                "cap_plate_thickness": 0.5,
+                "column_web_yielding_bottom": 0.5244,
+                "column_web_crippling": 0.4878,
+                "panel_zone_shear": 0.4606
+              }
+            }
+          }
+        }
+      },
+      "metrics": {
+        "max_interaction_ratio": 1.0062749452090616,
+        "column_interaction_max": 0.34468641094632385,
+        "beam_interaction_max": 1.0062749452090616,
+        "shear_ratio_max": 0.2196299062017115,
+        "live_deflection_mm": 8.280582480827453,
+        "service_drift_mm": 4.52388789700654,
+        "drift_ratio_2nd_1st": 1.0210393224362166,
+        "max_connection_ratio": 0.5682976619936987
+      }
+    }
+  ],
+  "study": "steel_frame",
+  "status": "completed",
+  "finished_utc": "2026-11-27T15:56:35+00:00"
+}

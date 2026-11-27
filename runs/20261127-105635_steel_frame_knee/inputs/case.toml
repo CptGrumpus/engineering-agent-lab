@@ -1,0 +1,133 @@
+# Study 28 part 2: the portal with its knees as designed. Part 1 (cases/steel_frame_portal.toml) took the knees as
+# rigid and did not design them. The knee is a bolted flange-plated moment connection (cases/steel_knee_mesh.toml:
+# design, and its stiffness from a 3D solid): slip-critical with six bolts per flange (slip_critical6) or bearing-type
+# with four (bearing4). The solid gives the spring for the frame's centreline model, k L / EI 23.69 (slip-critical)
+# and 21.33 (bearing); AISC's classification index Ks L / EI is 8.0: partially restrained, so the knees' stiffness
+# belongs in the analysis. A bearing-type joint also slips into bearing before it carries moment: up to 1/16 in. at
+# each flange (8.741 mrad at the knee), which the frame takes as a gap before the spring (exact, monotonic loading).
+#
+# The client's questions for this part: with the knees as they will be built, does the frame still meet REQ-A1 to
+# REQ-A3, and do the knees themselves meet AISC 360-22 Chapter J (REQ-C1)? Which bolting does the knee need?
+#
+# Smoke (scratch, between 10:47 and 10:55, k L / EI 21 for both designs): rigid 0.801 (part 1); slip-critical 0.839,
+# drift 2.79 mm, connection 0.917 (slip); bearing with the full slip 1.175 (the beam), drift 7.62 mm; half the slip
+# 1.007. The slip takes moment out of the knees (80 to 42 kN m) into the unbraced beam's midspan (91 to 129 kN m),
+# where lateral-torsional buckling governs. Two solver faults fixed on the way (3ed6033): the secant iteration for the
+# slip converged with a factor near 1, and imposing a closed gap on a lightly loaded knee made the second-order solve
+# diverge; now gap states, the slip as a lack of fit, exact to 1e-15.
+#
+# Predictions, written BEFORE the run (2026-11-27 10:55):
+#   P1 rigid_sc6: part 1's metrics exactly (0.801, 4.10 mm, 2.61 mm); connection 0.96-0.98 (slip of the flange
+#      bolts at the leeward knee, 80.2 kN m): every requirement passes.
+#   P2 sc6: beam 0.83-0.84, live deflection 4.3-4.4 mm, drift 2.75-2.80 mm, connection 0.90-0.93 (the knee moment
+#      drops about 5 %): every requirement passes. The slip-critical knee keeps part 1's verdict.
+#   P3 bearing4_slip: beam 1.15-1.20, REQ-A1 FAIL; live deflection 8.3-8.4 mm (the knees never close under the live
+#      load alone: a simply supported beam, 5 w L^4 / 384 EI = 8.36 mm), drift 7.5-7.7 mm (both pass); connection
+#      0.50-0.60 (the knees carry little).
+#   P4 bearing4_half_slip: beam 1.00-1.02, REQ-A1 FAIL (marginal).
+#   P5 Every check passes on rigid_sc6 and sc6; on the slip scenarios b1b2_vs_exact fails (Appendix 8's B1-B2 with
+#      the knees' secant springs is not the gap-then-spring frame), the rest pass. Under a minute.
+
+[case]
+name = "steel_frame_knee"
+model = "aisc_portal_frame"
+description = "The portal (study 28 part 2) with its knees as designed: the flange-plated connection checked to AISC 360-22 Chapter J at both knees, and the knees' measured stiffness (and bolt slip, for bearing-type bolts) in the Direct Analysis Method."
+assumptions = [
+  "Plane frame; fixed bases; knees as rotational springs at the beam's ends, k L / EI from the knee solid (runs 20261127-104729 and -105017), x 0.8 in the factored cases (C2.3); rigid in the first scenario.",
+  "Bolt slip (bearing-type bolts, snug-tight, standard holes): 1/16 in. at each flange plate (the hole clearance, bolts centred at fit-up), a knee rotation of 2 x 1.5875 / (350.5 + 12.7) = 8.741 mrad before the spring engages; gap then spring, monotonic loading from zero.",
+  "Connection forces at each knee from each factored case: the beam's end moment and axial force, the column's axial force (the beam's shear) and shear.",
+  "Direct Analysis Method (C2): second-order analysis with P-Delta and P-delta (exact stability functions), all stiffnesses x 0.8, tau_b = 1 (checked: alpha Pr / Pns under 0.5), notional loads 0.002 Y in the lateral direction.",
+  "Effective length = unbraced length (C3). Columns braced out of plane at base and beam only (4.0 m); beam laterally unbraced over its 6.0 m span (conservative; the client has not specified the bracing).",
+  "Cb from each member's own second-order moment diagram (Eq. F1-1).",
+  "Factored loads as given by the client (LRFD); serviceability with nominal stiffness: live-load deflection first order, drift second order with the service live load on the beam.",
+  "Section properties from the AISC Shapes Database v16.0; ASTM A992 Fy 345 MPa, E 200,000 MPa.",
+]
+limitations = [
+  "Base plates and anchorage not designed; the knee's strength by Chapter J (validation/flange_plated.py), its stiffness from an elastic solid with bonded parts.",
+  "Service checks from zero load, the live load alone (as part 1): with slip, the dead load would close part of the gap first, so the live deflection and drift of the slipping knees are upper bounds.",
+  "The worst-case slip is 1/8 in. per flange (holes offset the other way at fit-up): not run; it is worse than the case shown.",
+  "Out-of-plane stability of the frame (bracing members) not checked.",
+  "No dynamic or fatigue assessment of the equipment loads.",
+  "Synthetic client and loads.",
+]
+
+[parameters]
+frame_height_m = 4.0
+bay_span_m = 6.0
+column_shape = "W10X33"
+beam_shape = "W14X30"
+youngs_modulus_MPa = 200000.0
+yield_strength_MPa = 345.0
+base = "fixed"
+factored_gravity_kN_per_m = 35.0
+factored_lateral_kN = 15.0
+service_live_kN_per_m = 12.0
+service_lateral_kN = 10.0
+beam_unbraced_length_m = 6.0
+column_unbraced_length_weak_m = 4.0
+knee_stiffness_ratio = 0.0          # 0: rigid knees (each scenario sets its own)
+knee_slip_mrad = 0.0
+knee_connection = ""                # "": no connection check
+
+[sweep]
+[[sweep.scenarios]]
+name = "rigid_sc6"
+knee_connection = "slip_critical6"
+
+[[sweep.scenarios]]
+name = "sc6"
+knee_stiffness_ratio = 23.69        # run 20261127-104729, finest mesh (slip-critical: no slip below its slip load)
+knee_connection = "slip_critical6"
+
+[[sweep.scenarios]]
+name = "bearing4_slip"
+knee_stiffness_ratio = 21.33        # run 20261127-105017, bearing4 at mesh scale 0.8 (0.3 % above the finest, by the mesh study)
+knee_slip_mrad = 8.741
+knee_connection = "bearing4"
+
+[[sweep.scenarios]]
+name = "bearing4_half_slip"
+knee_stiffness_ratio = 21.33
+knee_slip_mrad = 4.371
+knee_connection = "bearing4"
+
+[numerics]
+
+[verification]
+benchmark_rel_tol = 0.01        # AISC examples: forces within 1 %, C.1A drift within 2 % (scaled to 1 %)
+closed_form_rel_tol = 1e-6      # Kleinlogel, axially rigid model: exact up to round-off
+equilibrium_rel_tol = 1e-9
+b1b2_rel_tol = 0.02             # Appendix 8 is approximate; at a drift ratio near 1 it should be within 2 %
+segment_rel_tol = 1e-6          # the stability-function solution is exact at the nodes
+
+[[requirements]]
+id = "REQ-A1"
+text = "Every member's combined axial and flexural ratio by AISC 360-22 Eq. H1-1 (LRFD, Direct Analysis Method) shall be at most 1.0."
+metric = "max_interaction_ratio"
+operator = "<="
+limit = 1.0
+units = "-"
+
+[[requirements]]
+id = "REQ-A2"
+text = "The beam's live-load deflection shall be at most L/360 (6,000 / 360 = 16.7 mm)."
+metric = "live_deflection_mm"
+operator = "<="
+limit = 16.67
+units = "mm"
+
+[[requirements]]
+id = "REQ-A3"
+text = "The frame's drift under the service lateral load shall be at most H/400 (4,000 / 400 = 10.0 mm)."
+metric = "service_drift_mm"
+operator = "<="
+limit = 10.0
+units = "mm"
+
+[[requirements]]
+id = "REQ-C1"
+text = "Every limit state of the knee connection (AISC 360-22 Chapter J and J10, LRFD) at both knees in both factored load cases shall have a ratio of at most 1.0."
+metric = "max_connection_ratio"
+operator = "<="
+limit = 1.0
+units = "-"
