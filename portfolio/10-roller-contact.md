@@ -102,14 +102,20 @@ reached:
 |---|---|---|---|---|
 | 451 N/mm | 610 MPa | 580 MPa (FE +5.2 %) | 610 MPa (mid-length) | 612 MPa (0.2 mm from the end) |
 | 528 N/mm | 655 MPa | 622 MPa (FE +5.3 %) | 902 MPa (0.2 mm from the end) | 736 MPa (0.2 mm from the end) |
+| 605 N/mm | 698 MPa | 662 MPa (FE +5.4 %) | 1,229 MPa (0.2 mm from the end) | 901 MPa (0.1 mm from the end) |
 
-Both models say the gentle crown fails at the ends. But the FE reads 5 % higher at mid-length, of which about 2 % is
-the coarse contact mesh's known bias (study 10's own 2D runs at 0.08 mm read 2.2 % over Hertz). That leaves about
-3 % unexplained, against the crowned design's 5.1 % margin. Under the portfolio's standing rule that is too close to
+Both models say the gentle crown fails at the ends. But the FE reads 5 % higher at mid-length at every load. A
+closer look at the FE explains most of it: its nodal contact pressures integrate to 10-12 % more than the reaction
+(the coarse mesh smears the contact's edge), and corrected for that, its mid-length section carries about 514 N/mm
+at the 451 N/mm mean load, against the half-space's 458, with a mid-length pressure that matches Hertz for 514 within
+1 %. The FE puts more of the load in the middle. That is what the half-space's known limit predicts: it continues past
+the roller's end face, so it makes the ends too stiff and draws load to them. For the crowned design, whose peak is
+at mid-length, the effect raises the pressure, and its size (2-5 %) is comparable to the design's 5.1 % margin. Under the portfolio's standing rule that is too close to
 call. **The crowned design passes on the half-space model, which meets every one of its exact checks, but the
-independent 3D model has not confirmed it.** Before the crown is released, the 3D FE model needs a mesh study at the
-chosen crown (several hours of solving). Until then the recommendation is "crown it, about 3.7 µm at 1 mm from the
-end, subject to that check".
+independent 3D model has not confirmed it.** The 3D FE mesh study at the chosen crown (case `roller_fe_mesh`, three
+contact meshes, its predictions committed first: about 650 / 643 / 638 MPa) was started on 2026-11-27 at 18:09 and
+runs overnight. Until it lands the recommendation is "crown it, about 3.7 µm at 1 mm from the end, subject to that
+check"; if the FE puts the peak over 650 MPa, the crown gets stronger (the half-space window runs to 2.5 x).
 
 ### What the checks caught
 
