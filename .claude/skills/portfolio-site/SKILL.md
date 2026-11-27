@@ -196,7 +196,12 @@ A CAD hero render (no field) goes through `make_study_renders` like the rest: `w
 `gate()` then checks the geometry only, the tessellated volume against a volume worked out without the CAD kernel
 (for the keyed shaft, `intermediate_shaft.hand_volume` less the keyways). Each study has one viewer entry, so a
 second render for a study that already has one (the shaft's stress render) goes into the page as a figure, beside
-its drawing, not into the viewer.
+its drawing, not into the viewer. A contour render shown outside the viewer has no legend of its own: list it in
+`make_study_renders.PAGE_FIGURES`, which writes `fig_<id>_render.webp` with the legend and title drawn from the
+scene's own bands (the caption is left to the page). A camera picked blind for a small feature in a large part
+shows the part, not the feature: the surface crack's first view was the plate's face with the crack plane
+edge-on; `frame_box` round the feature fixed it. Check numbers in a handover against the run before captioning
+(the crack's message quoted the 2 mm shape's K for the 7.5 mm one).
 
 ## Editing the source safely
 

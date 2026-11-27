@@ -720,8 +720,12 @@ SCENES = {"cold_plate_3d": scene_cold_plate_3d, "strap_proof": scene_strap_proof
           "crack": lambda: __import__("scenes_24_26").scene_cracked_plate(),
           "oring": lambda: __import__("scenes_24_26").scene_oring(),
           "shaft": lambda: __import__("scenes_24_26").scene_shaft_fillet(),
-          "shaft_cad": scene_shaft_cad}
+          "shaft_cad": scene_shaft_cad,
+          "surface_crack": lambda: __import__("scenes_24_26").scene_surface_crack()}
 
+
+# renders shown as a figure in a study page (the study already has its viewer entry): written with their legend too
+PAGE_FIGURES = {"surface_crack"}
 
 # --------------------------------------------------------------------------- gates and page assets
 
@@ -1306,6 +1310,19 @@ def main():
             print(name, mr.render(blender, scene, args.samples)["seconds"], "s", flush=True)
         g = gate(scene)
         publish(name, scene, g)
+        if name in PAGE_FIGURES:          # shown in a study page, not the viewer: the legend goes on the picture
+            from PIL import Image
+            png = BUILD / f"{name}_annotated.png"
+            mj = scene.with_suffix(".json")
+            keep = mj.read_text(encoding="utf-8")
+            m2 = json.loads(keep)
+            m2["caption"] = None          # the page's figcaption carries it; one long line would run off the image
+            mj.write_text(json.dumps(m2, indent=2), encoding="utf-8")
+            try:
+                mr.annotate_single(scene, png)
+            finally:
+                mj.write_text(keep, encoding="utf-8")
+            Image.open(png).convert("RGB").save(SITE / f"fig_{name}_render.webp", "WEBP", quality=90, method=6)
         if g["color"] is None:
             print(name, f"volume {g['volume']['rel_error']:+.1e} (plain CAD render: geometry gate only)", flush=True)
         else:

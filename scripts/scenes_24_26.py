@@ -270,7 +270,8 @@ def scene_surface_crack():
     k_deep = K_rec[-1] / 31.6227766
     k_surf = K_rec[0] / 31.6227766
     return write_scene(BUILD / "surface_crack", xyz, tris, syy, field="opening stress σyy", units="MPa",
-                       **SCRACK_SCALE, elev=38, azim=-62, sharp_angle_deg=60, distance_factor=1.6,
+                       **SCRACK_SCALE, elev=52, azim=-66, sharp_angle_deg=60, distance_factor=3.0,
+                       frame_box=[[-22.0, -6.0, -14.0], [22.0, 6.0, 0.5]],      # the crack and its front, close up
                        resolution=[1400, 900], expected_volume_mm3=2 * Wh * H * t,
                        title=f"Surface crack {a:.1f} mm deep, {2 * c:.1f} mm long, at 150 MPa: opening stress on "
                              f"the crack plane",
