@@ -129,6 +129,10 @@ Traps found while building the studies in this repo, by tool.
   feature catches this only when the global peak lies outside the box; it passed in bending (slow variation) and
   failed in torsion. Never read a peak within about 1 mm of a driven face: those nodes carry the global error, and
   a feature of uniform stress along its length (a keyway's long side in torsion) puts its maximum on the cut.
+- Read a global-against-submodel gap together with the peak distance (keyed shaft, run 20261127-021152): a 2.18 %
+  gap at a 1.8 mm fillet (global 0.5 mm elements) had both peaks 0.4 mm apart, the same point, the coarser global
+  mesh reading high; r0's 6.4 % gap had them on opposite sides of the shaft, a missed peak. Same Kt gap, different
+  causes: record each peak's xyz and set the tolerance from the global mesh's own error at that radius.
 - A coarse global model still needs elements smaller than every small radius it holds: one quadratic tetrahedron
   across a 0.25 mm arc at a 0.3 mm size inverted (6 elements, minimum scaled Jacobian -0.18), and the submodels it
   drives inherit the error. Size small radii at no more than 0.75 r in the global model.
