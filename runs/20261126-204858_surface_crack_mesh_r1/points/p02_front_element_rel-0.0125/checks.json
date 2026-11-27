@@ -1,0 +1,114 @@
+{
+  "label": "p02_front_element_rel-0.0125",
+  "status": "FAIL",
+  "checks": [
+    {
+      "id": "newman_raju",
+      "description": "max |K (FE energy route, front average) / Newman-Raju - 1| over the crack shapes (Newman-Raju's stated accuracy 5 %)",
+      "kind": "numerical",
+      "value": 0.02125302730677503,
+      "tolerance": 0.05,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "profile_shape",
+      "description": "max over shapes of (max / min - 1) of K (crack opening) / Newman-Raju for phi >= 15.0 deg: the shape of K along the front",
+      "kind": "numerical",
+      "value": 0.06709135211951378,
+      "tolerance": 0.03,
+      "comparison": "<=",
+      "status": "FAIL"
+    },
+    {
+      "id": "k_routes",
+      "description": "max |front-average K, crack opening / energy - 1| over the shapes",
+      "kind": "numerical",
+      "value": 0.014247134538551198,
+      "tolerance": 0.03,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "equilibrium",
+      "description": "max |ligament reaction + applied load| / applied load",
+      "kind": "numerical",
+      "value": 0.0,
+      "tolerance": 1e-06,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "load_area",
+      "description": "max |sum of nodal loads / (sigma x loaded area) - 1|",
+      "kind": "numerical",
+      "value": 0.0,
+      "tolerance": 1e-06,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "energy_step",
+      "description": "|K (energy, eps) / K (eps / 2) - 1| at a = 2 mm (step and mesh noise)",
+      "kind": "numerical",
+      "value": 0.000329710502867786,
+      "tolerance": 0.005,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "life_integral",
+      "description": "|life by DOP853 - by LSODA| / DOP853",
+      "kind": "numerical",
+      "value": 2.0643665798599195e-09,
+      "tolerance": 0.0001,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "nr_range",
+      "description": "largest a/c on the path (Newman-Raju's equations used here hold for a/c <= 1)",
+      "kind": "validity",
+      "value": 0.7448906766152182,
+      "tolerance": 1.0,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "no_fracture_before_end",
+      "description": "max K at the end depth / Kmat (below 1: the crack reaches 0.8 t before fracture, so the life to 0.8 t is a lower bound)",
+      "kind": "validity",
+      "value": 0.24871676300497744,
+      "tolerance": 1.0,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "energy_additivity",
+      "description": "max |dU/deps (a alone) + (c alone) - (a and c together)| / together over the shapes (first-order consistency of the energy route, mesh noise included)",
+      "kind": "numerical",
+      "value": 0.002123608206252071,
+      "tolerance": 0.01,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "deep_routes",
+      "description": "max |depth-weighted K (sin^2 phi), crack opening / energy - 1| over the shapes: the opening route's profile towards the deepest point against an energy route",
+      "kind": "numerical",
+      "value": 0.01595776419472461,
+      "tolerance": 0.03,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "equilibrium_weighted",
+      "description": "max equilibrium error of the a-alone and c-alone solves",
+      "kind": "numerical",
+      "value": 0.0,
+      "tolerance": 1e-06,
+      "comparison": "<=",
+      "status": "PASS"
+    }
+  ]
+}

@@ -62,6 +62,13 @@ anything. Each row below happened in this repo.
 - I declared `mesh_noise_rel = 1e-4` in `surface_crack_mesh` without measuring it, the mistake study F's note above
   warns against, and found it only after the run had started. Write the floor only from a noise case; otherwise
   leave the key out (the study's default applies) and say so in the case header.
+- A local result that only one route sees needs a second route before it goes on a page. The deep shapes' K fell
+  under Newman-Raju towards the deepest point in the crack opening only; growing a alone and c alone weights the
+  energy route by sin^2 phi and cos^2 phi (they add up to the self-similar derivative, a free consistency check) and
+  confirmed it (0.965 at the deepest weighting against a 0.984 average, predicted 0.955-0.970). Measured, the
+  floor was 0.24-0.85 %; with it two of the run-level checks that had "no order" read as converged within noise.
+- Gmsh with a fixed seed is deterministic here: a revision that only adds solves repeats every earlier number to
+  all digits, which makes "nothing else changed" checkable.
 
 ## Machine-elements shaft: peak nodal stress on tetrahedra has a noise floor too
 

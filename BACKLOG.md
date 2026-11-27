@@ -80,9 +80,19 @@ commit). Rules that bind:
   `*.inp`, `*.dat`, `__pycache__`, files > 600 kB, then `tests/test_privacy.py`; never two FEMM cases at once; check
   free RAM on long runs.
 
-### Running at 18:40, 2026-11-26
+### Running at 21:08, 2026-11-26
 
 Nothing.
+
+Study 24 part 2 (user's go-ahead 2026-11-26 evening, "keep working"): semi-elliptical surface crack, 3D FE against
+Newman-Raju. surface_crack_mesh (r0) scored: requirements pass, Newman-Raju within 2.4 % on the front average; the
+deep shapes' K profile falls under Newman-Raju at the deepest point (r1 tests it with energy alone).
+surface_crack_noise measured the floor (0.24-0.85 %).
+DONE 21:08, 2026-11-26: surface_crack_mesh_r1 (run 20261126-204858) confirmed the deep profile with energy alone
+(depth-weighted 0.965 of Newman-Raju at a/t 0.75, surface-weighted 1.000); Newman-Raju conservative at the deepest
+point of deep cracks. Answer: K 11.3 MPa sqrt m at the 2 x 10 mm surface flaw, life to 0.8 t at least 133,400 cycles
+(1.45 x part 1), so part 1's edge crack is the conservative case. Page 24 part 2 written. Open (offered, not run):
+a gated 3D render of the crack plane for the site.
 
 DONE 18:40, 2026-11-26: study 6 closed. FSI3 dt_c at alpha -0.05 (run 20261126-011226, 17 h 19 min) reached 8 s,
 VERIFICATION PASS, every requirement PASS, 2 Newton iterations in all 272,980 solid attempts, tip record within

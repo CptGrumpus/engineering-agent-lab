@@ -22,6 +22,23 @@
 #   P4 With the measured floor the smallest energy ratio and the FE-scaled life read as converged within the floor or
 #      with GCI under 1 % (reported as found).
 #   P5 About 15 min (26 solves per level).
+#
+# Results (run 20261126-204858_surface_crack_mesh_r1, 20:48-21:06, scored 2026-11-26 21:07). VERIFICATION FAIL:
+# profile_shape on every point (as surface_crack_mesh) and the FE-scaled life's GCI; every requirement PASSES.
+#   P1 HELD, the profile is real. Finest level, a = 7.5 mm: depth-weighted energy ratio 0.965 (predicted 0.955-0.970),
+#      surface-weighted 1.000 (0.995-1.010), front average 0.984. a = 2 mm: 0.978 and 0.979 against 0.979. By
+#      energy alone, Newman-Raju over-reads K towards the deepest point of the deep crack and is right towards the
+#      surface. All three levels agree (deepest shape's depth-weighted ratio 0.957 / 0.961 / 0.965).
+#   P2 HELD: deep_routes 2.4 / 1.9 / 1.6 % (the crack opening's profile towards the deepest point agrees with the
+#      energy route), energy additivity 0.60 / 0.19 / 0.21 %.
+#   P3 HELD, exactly: every quantity surface_crack_mesh measured repeats to all printed digits (the meshes are
+#      deterministic): profile_shape 6.1 / 6.3 / 6.7 %, K at the detectable flaw 11.27, life 133,423.
+#   P4 HELD in part: with the measured floor the smallest energy ratio converges within it (spread 0.24 %), the
+#      deepest-weighted ratio too (spread 0.78 % against 0.85 %), K at the detectable flaw GCI 0.03 %. NOT HELD for
+#      the FE-scaled life: 141,300 / 140,300 / 139,700, monotone at order 0.63, GCI 1.05 % (spread 1.1 %, four times
+#      the floor), extrapolated 138,500. It stays a supporting number: the answer's life is Newman-Raju's 133,423,
+#      which the FE shows is conservative (FE K 1-4 % lower, so the life is longer).
+#   P5 HELD: 17 min.
 
 [case]
 name = "surface_crack_mesh_r1"
