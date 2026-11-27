@@ -281,7 +281,10 @@ class KeyedShaftStudy(Study):
                                     abs(m[f"kt_fillet_{ld}"] / float(p[f"kt_reference_{ld}"]) - 1),
                                     tol["reference_rel_tol"]))
         if float(p.get("kt_key_reference_bending", 0) or 0) > 0:   # Le and Le (ASEE 2013), isolated profile keyseat
-            for ld, metric in (("bending", "kt_key_bending_far"), ("torsion", "kt_key_torsion_middle")):
+            # their definitions (Le and Le 2013, eqs. 1 and 2, read 2026-11-27): KTB from "the maximum bending
+            # stress" at the middle of the bottom fillet of an end, i.e. the normal stress along the shaft (axial);
+            # Ks from the maximum shear stress at the middle of the long side's bottom fillet
+            for ld, metric in (("bending", "kt_key_bending_far_axial"), ("torsion", "kt_key_torsion_middle")):
                 checks.append(check(f"keyseat_reference_{ld}", f"{metric} against Le and Le's FE value ({ld})",
                                     abs(m[metric] / float(p[f"kt_key_reference_{ld}"]) - 1),
                                     tol["key_reference_rel_tol"]))

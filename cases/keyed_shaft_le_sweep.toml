@@ -1,0 +1,157 @@
+# Study 26 part 2: Le and Le's keyseat factors, the open difference. keyed_shaft_check_r1 (run 20261127-015248) put
+# the isolated ANSI profile keyseat of Le and Le (ASEE 2013, Table 2, r/B 0.05) at Ks 2.616 (+4.2 % on their 2.511)
+# and KTB 2.917 by the maximum principal stress (+13.9 % on 2.560), 2.700 by the axial stress (+5.5 %).
+#
+# The paper, read 2026-11-27 (peer.asee.org PDF): KTB is "the maximum bending stress ... at the middle of the bottom
+# fillet surfaces on both ends" over 32 M / pi D^3 (eq. 2): the normal stress along the shaft, so the axial reading
+# is the comparable one, and the reference check now uses it (studies/keyed_shaft.py). Ks: the maximum shear stress
+# at the middle of the long side's bottom fillet over 16 T / pi D^3 (eq. 1). Their model: SolidWorks, a plain shaft
+# five keyseat lengths long, one end fixed, the load on the other; keyseat 4 B long; at least 5 elements along the
+# fillet's arc, p-adaptive to 2 % in total strain energy (a global criterion: loose for a local peak, which an
+# under-resolved mesh reads low). Their own tables agree on KTB (2 in. shaft at r/B 0.0832: 2.249 in Table 1, 2.235
+# in Table 2, 0.6 %) but not on Ks (2.045 against 2.258, 10 %).
+#
+# This case: our isolated keyseat (the ANSI geometry of check_r1: 2 in. shaft, 1/2 x 1/4 in. deep keyseat, 2 in.
+# long, read at its far end and the middle of its long side) at three of Table 2's ratios. If the gap is their mesh
+# (a fixed number of elements per arc reads every r/B about equally low) or a definition, it is about constant; if it
+# varies by several points across r/B, something in the geometry or the reading differs.
+#
+# Predictions, written BEFORE the run (2026-11-27 11:08):
+#   P1 le_r050 repeats check_r1 to four digits (the same geometry and meshes): KTB axial 2.700, Ks 2.616.
+#   P2 Our axial KTB over theirs 1.03-1.08 at every r/B, varying by under 3 points across the three (a near-constant
+#      offset); Ks over theirs 1.02-1.06 at every r/B. keyseat_reference_bending fails at r/B 0.05 (+5.5 %, as
+#      before) and may pass or fail at the other two; keyseat_reference_torsion passes at all three.
+#   P3 The principal-stress KTB stays 12-16 % above their bending factor at every r/B (it is not their quantity).
+#   P4 Every other check passes; 30-60 min (the 0.381 mm corner meshes finer).
+
+[case]
+name = "keyed_shaft_le_sweep"
+model = "ccx_keyed_shaft"
+description = "Le and Le's isolated profile keyseat (ASEE 2013, Table 2: 2 in. shaft, 1/2 x 1/2 in. key) at r/B 0.03, 0.05 and 0.0832 (study 26 part 2): is the 5 % gap to their bending factor a constant offset or does it vary?"
+assumptions = [
+  "Linear elastic, small strain; Kt from gross nominal stresses at the small diameter; the fatigue and overload checks of part 1 (Shigley: Marin factors, Neuber notch sensitivity with each feature's own radius, von Mises combination, modified Goodman; Kf applied to the overload).",
+  "Rotating bending 300 N m (fully reversed) and steady torque 500 N m act at the keyway as at the fillet (the keyway's end is 2 mm from the fillet; conservative).",
+  "The key's bearing pressure on the keyway wall and any press fit of the gear are not modelled (Shigley's practice for keyseat factors).",
+  "DIN 6885 form A keyway dimensions from published reproductions of the table (the current DIN 6885-1:2021 was not read); corner radius 0.25-0.40 mm.",
+]
+limitations = [
+  "Submodels driven by a coarse global model; their boxes keep 3 mm (or more) of material between the keyway's corners and the cut faces.",
+  "Stress at nodes (CalculiX's extrapolation, averaged), as part 1.",
+]
+
+[parameters]
+D_mm = 45.0
+d_mm = 36.0
+fillet_radius_mm = 1.6
+small_length_mm = 90.0
+large_length_mm = 60.0
+bending_moment_Nm = 300.0
+torque_Nm = 500.0
+youngs_modulus_MPa = 210000.0
+poisson_ratio = 0.3
+ultimate_MPa = 1000.0
+yield_MPa = 750.0
+overload_factor = 1.5
+key_width_mm = 10.0
+key_depth_mm = 5.0
+key_corner_radius_mm = 0.4
+key_gap_mm = 2.0
+key_length_mm = 40.0
+global_key_size_mm = 0.3
+global_fillet_size_mm = 0.5
+far_size_mm = 4.0
+sub_key_size_rel = 0.333
+sub_fillet_size_mm = 0.2
+mesh_scale = 0.8
+box_margin_mm = 3.0
+sub_far_size_mm = 1.5
+kt_reference_bending = 0.0
+kt_reference_torsion = 0.0
+kt_key_reference_bending = 0.0
+kt_key_reference_torsion = 0.0
+
+[sweep]
+[[sweep.scenarios]]
+name = "le_r030"
+d_mm = 50.8
+D_mm = 63.5
+fillet_radius_mm = 2.54
+small_length_mm = 180.0
+large_length_mm = 60.0
+key_width_mm = 12.7
+key_depth_mm = 6.35
+key_gap_mm = 20.0
+key_length_mm = 50.8
+global_key_size_mm = 0.45
+global_fillet_size_mm = 0.7
+sub_fillet_size_mm = 0.3
+key_corner_radius_mm = 0.381   # r/B 0.03
+kt_key_reference_bending = 2.981   # Le and Le 2013, Table 2, r/B = 0.03
+kt_key_reference_torsion = 2.888
+
+[[sweep.scenarios]]
+name = "le_r050"
+d_mm = 50.8
+D_mm = 63.5
+fillet_radius_mm = 2.54
+small_length_mm = 180.0
+large_length_mm = 60.0
+key_width_mm = 12.7
+key_depth_mm = 6.35
+key_gap_mm = 20.0
+key_length_mm = 50.8
+global_key_size_mm = 0.45
+global_fillet_size_mm = 0.7
+sub_fillet_size_mm = 0.3
+key_corner_radius_mm = 0.635   # r/B 0.05
+kt_key_reference_bending = 2.56   # Le and Le 2013, Table 2, r/B = 0.05
+kt_key_reference_torsion = 2.511
+
+[[sweep.scenarios]]
+name = "le_r0832"
+d_mm = 50.8
+D_mm = 63.5
+fillet_radius_mm = 2.54
+small_length_mm = 180.0
+large_length_mm = 60.0
+key_width_mm = 12.7
+key_depth_mm = 6.35
+key_gap_mm = 20.0
+key_length_mm = 50.8
+global_key_size_mm = 0.45
+global_fillet_size_mm = 0.7
+sub_fillet_size_mm = 0.3
+key_corner_radius_mm = 1.0566   # r/B 0.0832
+kt_key_reference_bending = 2.235   # Le and Le 2013, Table 2, r/B = 0.0832
+kt_key_reference_torsion = 2.258
+
+[numerics]
+parallel_solves = 6
+solve_timeout_s = 7200
+solver_timeout_s = 43200
+driven_skip_mm = 1.0
+
+[verification]
+equilibrium_rel_tol = 1e-6
+load_rel_tol = 1e-4          # 7-point rule on curved end faces: 8e-6 measured
+global_sub_rel_tol = 0.02    # fillet Kt, global model against its submodel (smoke: 0.2 % bending, 1.5 % torsion)
+reference_rel_tol = 0.01     # keyless fillet Kt against part 1's verified value
+key_reference_rel_tol = 0.05 # Le and Le's keyseat factors (their own FE, p-adaptive to 2 % in strain energy)
+min_scaled_jacobian = 0.1
+gci_max = 0.01
+
+[[requirements]]
+id = "REQ-S1"
+text = "The fatigue safety factor (modified Goodman, Shigley's method) shall be at least 1.5 at the shoulder fillet and at the keyway."
+metric = "fatigue_safety"
+operator = ">="
+limit = 1.5
+units = ""
+
+[[requirements]]
+id = "REQ-S2"
+text = "The first-cycle yield safety factor at a 1.5 x overload shall be at least 2.0 at the shoulder fillet and at the keyway."
+metric = "static_safety"
+operator = ">="
+limit = 2.0
+units = ""
