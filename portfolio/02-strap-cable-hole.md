@@ -110,6 +110,13 @@ off centre) takes 16 mm over; 14 mm is the safer call.
   stress recovery favours. The failure stays on record with its tolerance unchanged; the thin-plate checks it was
   run for pass.
 
+### The strap as a part
+
+The strap is delivered as a part ([`models/cad/strap.py`](../models/cad/strap.py), [STEP](cad/strap_d16.step)):
+160 x 40 x 4 mm with the recommended 16 mm cable hole (a 14 mm design, the cautious alternative, is in the same
+builder), smooth and unchamfered as analysed, and a 10.5 mm pin hole 15 mm from each end, for which the studies'
+uniform end traction stands in, 65 mm from the cable hole. Its volume matches the hand formula to 10⁻¹⁶.
+
 ### Limits (part 2)
 
 - Linear elastic, a smooth and straight hole, as part 1: no drilling finish, burr, chamfer or residual stress.

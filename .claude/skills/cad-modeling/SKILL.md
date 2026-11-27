@@ -55,6 +55,10 @@ for the whole part, `tests/test_intermediate_shaft.py`).
   asin(rho / R) (across it): 0.8 % at a 10 mm fillet on a 112 mm nozzle, shrinking as f^2; test that shrinkage too
   (`models/cad/vessel_nozzle.py`). Saddle-cut layers (shell, pad) integrate exactly over the disk in the (y, z)
   plane: wall thickness sqrt(R2^2 - y^2) - sqrt(R1^2 - y^2), with y = a sin(theta) to keep the integrand smooth.
+- **Check a deliverable's supports against the analysis's end conditions, not only its volume.** Study 13's strut
+  was first drawn with its pins through the 16 mm thickness, which clamps the weak axis the analysis assumed
+  pinned (the buckling load would be about 4x the analysed); the volume test passed. Pins across the width, eyes in
+  the plane of the thickness (models/cad/strut.py, tested by a probe along the pin axis).
 - A hand volume catches a drill that breaks out of a face: a 6 mm port centred 2.5 mm under a cold plate's top
   face cut through it under the brazed cover (a leak path); the CAD removed less than the hand formula, 3e-4 off
   (models/cad/cold_plate.py, 2026-11-27). Intended overlaps (an O-ring drawn free against its cover, a screw's

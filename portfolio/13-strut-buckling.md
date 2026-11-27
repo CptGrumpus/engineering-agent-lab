@@ -34,6 +34,15 @@ A 6061-T6 strut with a solid 25 × 16 mm section, pinned at both ends, carries 8
 - **The wrong eigenvector.** The mode-shape check failed at first. CalculiX prints the static pre-buckling solution before the first eigenvector, and the parser was reading that as mode 1. The real mode was then an exact half sine. Two wrong explanations came first (solver accuracy, support layout); the changes they prompted were kept because they are harmless, and the record says which was the cause.
 - **Equilibrium a few parts per million out.** The nonlinear solver's default convergence criterion left the global balance 3 × 10⁻⁶ out. Tighter criteria brought it to 2 × 10⁻⁷ without moving the tolerance.
 
+## The strut as a part
+
+The strut is delivered as a part ([`models/cad/strut.py`](../models/cad/strut.py), [STEP](cad/strut_l587.step)):
+the 25 x 16 mm bar, 587 mm between its pins, with a rounded eye at each end and an 8 mm pin hole across the width,
+so it turns freely about the weak axis it buckles about (the pins in double shear at 159 MPa and bearing at 80 MPa
+at 16 kN). A first draft put the pins through the thickness, which would have clamped the weak axis; checking the
+drawing against the study's end condition caught it. The eyes and pins are synthetic; their fit is the end fixity
+named in the limits.
+
 ## Limits
 
 - Capacity is defined as first yield; the plastic reserve beyond it is not used.
