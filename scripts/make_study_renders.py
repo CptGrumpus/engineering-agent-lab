@@ -730,6 +730,26 @@ def _knee_type(name: str) -> str:
     return name
 
 
+def scene_rotor_cad():
+    """Study 23 part 2: the fan rotor as it would be built (models/cad/fan_rotor.py, d65), plain material. Gate: the
+    tessellated assembly against fan_rotor.hand_volumes, part for part by name (the keyway by quadrature, the rest
+    closed form). CAD has the shaft along z; turned (x, y, z) -> (z - L/2, y, -x), det +1, so it lies along x."""
+    from models.cad import fan_rotor as R
+    parts = R.build("d65")
+    hv = R.hand_volumes("d65")
+    assert set(parts) == set(hv), (set(parts) ^ set(hv))
+    L = R.DESIGNS["d65"]["L"]
+    xyz, tris, n0 = [], [], 0
+    for name, w in parts.items():
+        verts, faces = w.val().tessellate(0.02, 0.1)
+        p = np.array([v.toTuple() for v in verts])
+        xyz.append(np.c_[p[:, 2] - L / 2, p[:, 1], -p[:, 0]])
+        tris.append(np.array(faces) + n0)
+        n0 += len(p)
+    return write_scene(BUILD / "rotor_cad", np.vstack(xyz), np.vstack(tris), elev=22, azim=-62, resolution=[1600, 900],
+                       sharp_angle_deg=40, title="rotor_cad", expected_volume_mm3=float(sum(hv.values())))
+
+
 def scene_knee_cad():
     """Study 28 part 2: the portal's bolted knee as designed (slip-critical, six bolts per flange plate), plain
     material. Gate: the tessellated assembly's volume against the sum of every part's hand volume
@@ -756,7 +776,7 @@ SCENES = {"cold_plate_3d": scene_cold_plate_3d, "strap_proof": scene_strap_proof
           "crack": lambda: __import__("scenes_24_26").scene_cracked_plate(),
           "oring": lambda: __import__("scenes_24_26").scene_oring(),
           "shaft": lambda: __import__("scenes_24_26").scene_shaft_fillet(),
-          "shaft_cad": scene_shaft_cad, "knee_cad": scene_knee_cad,
+          "shaft_cad": scene_shaft_cad, "knee_cad": scene_knee_cad, "rotor_cad": scene_rotor_cad,
           "surface_crack": lambda: __import__("scenes_24_26").scene_surface_crack()}
 
 

@@ -591,7 +591,8 @@ REQS = [
         ("Critical speeds 15 % clear of 1,000–3,000 rpm, 50 mm shaft as drawn", "≥ 15 %", "first critical speed 2,710–2,911 rpm, inside the range", "fail"),
         ("Same, 60 mm shaft", "≥ 15 %", "14.3 % on soft bearings, 31.9 % on stiff", "fail"),
         ("Same, 65 mm shaft", "≥ 15 %", "23.8 % on soft bearings, 49.8 % on stiff", "met"),
-        ("Impeller vibration under the standard unbalance, 65 mm shaft", "≤ 50 µm", "5.0 µm (the 50 mm shaft: 345 µm)", "met")]),
+        ("Impeller vibration under the standard unbalance, 65 mm shaft", "≤ 50 µm", "5.0 µm (the 50 mm shaft: 345 µm)", "met"),
+        ("Part 2: the rotor as built (hub, journals), 3D solid, 65 mm shaft", "≥ 15 %", "22.9 % on soft bearings (3,686 rpm), 52.6 % on stiff", "met")]),
     ("crack", "24", "Cracked plate", [
         ("Stress intensity at the detectable 2 mm crack", "≤ 50 MPa√m", "13.4 MPa√m", "met"),
         ("Crack growth life from 2 mm to critical", "≥ 80,000 cycles", "about 92,000 cycles, ±0.2 %; critical crack 37.0 mm", "met"),

@@ -1491,6 +1491,49 @@ def steel_frame():
            units="dimensions in mm, frame to scale", source="Drawn from the case file's inputs and the AISC Shapes Database")
 
 
+def rotor_detail():
+    # study 23 part 2: the fan rotor as it would be built (models/cad/fan_rotor.py, d65), side view, with part 2's result
+    from models.cad import fan_rotor as R
+    s = R.DESIGNS["d65"]
+    L, d, dj, lj, dh, lh, D, w = (s[k] for k in ("L", "d", "dj", "lj", "dh", "lh", "D", "w"))
+    m = L / 2
+    fig, ax = new(9.5, (-150, 1100), (-330, 300))
+    top = [(0, dj / 2), (lj, dj / 2), (lj, d / 2), (m - lh / 2, d / 2), (m - lh / 2, dh / 2), (m - w / 2, dh / 2),
+           (m - w / 2, D / 2), (m + w / 2, D / 2), (m + w / 2, dh / 2), (m + lh / 2, dh / 2), (m + lh / 2, d / 2),
+           (L - lj, d / 2), (L - lj, dj / 2), (L, dj / 2)]
+    poly(ax, top + [(x, -y) for x, y in reversed(top)], fc=FILL, lw=1.2)
+    for xx in (m - lh / 2, m + lh / 2):                     # the hub's ends, the disc's faces behind them
+        ax.plot([xx, xx], [-dh / 2, dh / 2], color=INK, lw=0.6, zorder=3)
+    rect(ax, m - w / 2, -D / 2, m + w / 2, D / 2, fc="#f3d9c6", ec=HOT, lw=1.1, z=3)
+    rect(ax, m - lh / 2, -dh / 2, m + lh / 2, dh / 2, fc="#c9d3e3", ec=INK, lw=1.0, z=4)
+    rect(ax, m - s["key_l"] / 2, d / 2 - s["t1"], m + s["key_l"] / 2, d / 2 + s["t2"], fc=INK, ec=INK, lw=0.4, z=5)
+    centre(ax, (-40, 0), (L + 40, 0))
+    for x0 in (0.0, L):                                     # bearings: springs to ground at the journal centres
+        xb = x0 + (lj / 2 if x0 == 0 else -lj / 2)
+        ax.plot([xb, xb], [-dj / 2, -dj / 2 - 40], color=ACC, lw=1.1, zorder=4)
+        for k in range(4):
+            y0 = -dj / 2 - 40 - 12 * k
+            ax.plot([xb - 10, xb + 10, xb - 10], [y0, y0 - 6, y0 - 12], color=ACC, lw=1.0, zorder=4)
+        ax.plot([xb - 25, xb + 25], [-dj / 2 - 88, -dj / 2 - 88], color=INK, lw=1.6, zorder=4)
+    text(ax, 0, -dj / 2 - 110, "bearing: 1 × 10⁷ to 1 × 10⁸ N/m", fs=7, color=ACC, ha="left", box=False)
+    dim(ax, (0, -D / 2 - 30), (L, -D / 2 - 30), -12, f"{L:g} span")
+    dim(ax, (m + 130, -D / 2), (m + 130, D / 2), 0, f"Ø{D:g}")
+    dim(ax, (m - w / 2, D / 2 + 5), (m + w / 2, D / 2 + 5), 14, f"{w:g}", outside=True)
+    dim(ax, (m - lh / 2, -dh / 2 - 5), (m + lh / 2, -dh / 2 - 5), -14, f"{lh:g}")
+    dim(ax, (m - 75, -dh / 2), (m - 75, dh / 2), 0, f"Ø{dh:g}")
+    dim(ax, (250, -d / 2), (250, d / 2), 0, f"Ø{d:g}")
+    dim(ax, (L - lj / 2, -dj / 2), (L - lj / 2, dj / 2), 0, f"Ø{dj:g}")
+    dim(ax, (L - lj, dj / 2 + 5), (L, dj / 2 + 5), 16, f"{lj:g}")
+    note(ax, (m + w / 2, D / 2 - 40), (m + 120, 250), "impeller disc, welded to the hub (6 mm fillets)", ha="left", color=HOT)
+    note(ax, (m + lh / 2 - 10, dh / 2 - 10), (m + 160, 160), f"hub Ø{dh:g} × {lh:g}, keyed: DIN 6885, 18 × 11 key", ha="left")
+    text(ax, -140, 290, "First critical speed, soft bearings:\n3,686 rpm, 22.9 % above the 3,000 rpm top speed\n"
+         "(beam model 3,714 rpm; stiff bearings 4,578 rpm)", fs=7.5, color=INK, ha="left", va="top", box=False)
+    text(ax, -140, -300, "From the study: the span, the 65 mm shaft, the disc, and part 2's hub and journals. Fillets, "
+         "chamfers, welds and the key's length are made up for the drawing.", fs=6.8, ha="left", box=False)
+    finish(fig, "rotor_detail", "Study 23 · the fan rotor as it would be built: 65 mm shaft, journals, keyed hub and welded disc · side view",
+           source="Drawn from models/cad/fan_rotor.py")
+
+
 def knee():
     # study 28 part 2: the portal's bolted knee as designed (models/cad/portal_knee.py, slip_critical6): elevation and
     # the top flange plate in plan; labelled in inches, as the AISC design is
@@ -1651,7 +1694,7 @@ def keyed_shaft():
 
 ALL = {f.__name__: f for f in (fea, cantilever_opt, strap, modal, strut, contact, bolted_joint, pv_nozzle, bracket_opt, cad,
                                cfd, thermal, heat, cold_plate, pipe, suspension, baseline, motor, step, random_vib, fan_rotor,
-                               fatigue, strap_proof, bracket_uq, crack, flag, motor_stops, oring, shaft, enclosure, steel_frame, keyed_shaft, knee)}
+                               fatigue, strap_proof, bracket_uq, crack, flag, motor_stops, oring, shaft, enclosure, steel_frame, keyed_shaft, knee, rotor_detail)}
 
 if __name__ == "__main__":
     for name in sys.argv[1:] or ALL:

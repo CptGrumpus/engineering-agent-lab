@@ -2412,6 +2412,14 @@ def keyed_shaft():
     print("fig keyed_shaft")
 
 
+def rotor_solid():
+    """Study 23 part 2: the study session's figure (scripts/make_rotor_solid_figure.py), converted for the site."""
+    from PIL import Image
+    src = REPO / "portfolio" / "img" / "rotor_solid.png"
+    Image.open(src).convert("RGB").save(fk.OUT / "fig_rotor_solid.webp", "WEBP", quality=90, method=6)
+    print("fig rotor_solid")
+
+
 def steel_knee():
     """Study 28 part 2: the study session's figure (scripts/make_steel_knee_figure.py), converted for the site."""
     from PIL import Image
@@ -2596,7 +2604,7 @@ ALL = {f.__name__: f for f in (cfd_tolerance, cfd_duct, cfd_response, cfd_field,
                                qc_liftoff, qc_iso, coldplate_response, pipe_friction, motor_comparison,
                                motor_rotor, pv_nozzle, step_comparison, random_vibration, bracket_uncertainty,
                                fan_rotor, fan_rotor_campbell, crack_growth, motor_efficiency, motor_airgap, oring_seal, shaft_fillet,
-                               enclosure_revb, enclosure_field, steel_frame, flag_fsi, crack_surface, keyed_shaft, steel_knee)}
+                               enclosure_revb, enclosure_field, steel_frame, flag_fsi, crack_surface, keyed_shaft, steel_knee, rotor_solid)}
 # not on the site (the earlier model's thermal result): motor_thermal
 
 if __name__ == "__main__":
