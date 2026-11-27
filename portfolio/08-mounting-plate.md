@@ -25,6 +25,12 @@ The plate is generated in code with CadQuery, and every number is measured back 
 
 ![Mass and edge distance against hole size](../runs/20261119-090540_mounting_plate/sweep.png)
 
+## The plate as a part
+
+The chosen plate is delivered as a STEP ([STEP](cad/mounting_plate_d9.step), from the study's own builder
+[`models/cad/mounting_plate.py`](../models/cad/mounting_plate.py) at the case's parameters): 120 x 80 x 6 mm,
+8 mm corner radii, six 9 mm (M8 clearance) holes on a 40 mm grid. Its volume matches the hand formula to 10⁻¹⁶.
+
 ## Limits
 
 - Geometry only: no stress analysis of the plate.
