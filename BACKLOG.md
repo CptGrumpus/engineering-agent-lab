@@ -80,9 +80,10 @@ commit). Rules that bind:
   `*.inp`, `*.dat`, `__pycache__`, files > 600 kB, then `tests/test_privacy.py`; never two FEMM cases at once; check
   free RAM on long runs.
 
-### Running at 21:08, 2026-11-26
+### Running at 01:15, 2026-11-27
 
-Nothing.
+Study 26 part 2 r1, in sequence (started 01:07): keyed_shaft_noise -> keyed_shaft_check_r1 -> keyed_shaft_design_r1;
+then keyed_shaft_mesh_r1, to be written once the noise floor is measured (its predictions before its run).
 
 ### Detailed CAD for every study (user's direction, 2026-11-26 evening)
 
@@ -93,7 +94,7 @@ change:
 
 | Study | Now | Detailed CAD | What it could change |
 |---|---|---|---|
-| 26 shaft | 3D revolved step, Gmsh | **In progress:** DIN 6885 keyway at the gear seat (CadQuery, global + submodels) | prototype: keyway Kt about 3.1, fatigue safety about 1.2 < 1.5: the recommended shaft may fail once keyed |
+| 26 shaft | 3D revolved step, Gmsh | **In progress:** DIN 6885 keyway at the gear seat (CadQuery, global + 5 submodels); whole intermediate shaft as a detailed part (models/cad/intermediate_shaft.py, STEP in portfolio/cad/, b9b6a6e); render and drawing offered to the dashboard session | r0 scored (2282626): the keyway fails the 36 mm seat (fatigue 1.18, yield 1.72); 40 mm passes at a 0.40 mm corner; r1 fixes the fillet boxes and settles the 0.25 mm corner (40 or 42 mm) |
 | 28 frame | beam elements | bolted end-plate beam-column connection (plates, bolts, welds) | connection capacity against AISC; prying |
 | 16 bolted joint | axisymmetric | 3D lap joint, bolts, nuts, washers, contact | slip and bolt bending |
 | 23 fan rotor | ROSS beam | shaft with impeller hub, keyway, bearing seats; 3D solid modal check | the 1D model's critical speeds |
