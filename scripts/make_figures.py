@@ -2428,6 +2428,141 @@ def strap_3d():
     print("fig strap_3d")
 
 
+NOZZLE_MESH, NOZZLE_WALLS = "20261127-143302_nozzle_limit_mesh", "20261127-143302_nozzle_limit_thickness"
+
+
+def _nozzle_points(run: str) -> list[tuple[str, dict, bool]]:
+    """(label, point.json, every check passed) for each point of a limit-load run."""
+    v = json.loads((RUNS / run / "verification.json").read_text(encoding="utf-8"))
+    ok = {p["label"]: all(c["status"] == "PASS" for c in p.get("checks", [])) for p in v["points"]}
+    return [(lab, point(run, lab), ok[lab]) for lab in sorted(ok)]
+
+
+def nozzle_limit():
+    """Study 18 part 2: the 12 mm nozzle pushed to collapse (finest mesh), and the collapse load against the nozzle
+    wall with part 1's three elastic answers. A point that missed a check is drawn hollow (here the far-mesh
+    self-balance check, 1.1-1.5e-5 against 1e-5): the 12 mm design is one of them, and the chart says so."""
+    lab, fine, _ = _nozzle_points(NOZZLE_MESH)[-1]
+    assert lab.startswith("p02"), lab
+    h = fine["solver_outputs"]["history"]
+    lam_c = fine["solver_outputs"]["collapse_load_factor"]
+    walls = sorted(_nozzle_points(NOZZLE_WALLS), key=lambda q: float(q[1]["parameters"]["nozzle_thickness_mm"]))
+    tn = [float(p["parameters"]["nozzle_thickness_mm"]) for _, p, _ in walls]
+    lc = [p["metrics"]["collapse_load_factor"] for _, p, _ in walls]
+    cyl = walls[0][1]["solver_outputs"]["cylinder_collapse_pressure_MPa"] / 3.5
+    assert [round(x, 3) for x in lc] == [1.527, 1.614, 1.683, 1.784] and round(lam_c, 3) == 1.675
+
+    fig, gs = fk.new(FULL, 4.1, 1, 2, wspace=0.42, top=0.95, width_ratios=[1.0, 1.25])
+    fk.heading(fig, "Limit load: the 12 mm nozzle needs no pad",
+               "It collapses at 1.675 times the design pressure; the code asks for 1.5. Every wall swept passes.")
+    fk.key(fig, [("all checks passed", "meets", None), ("one balance check just missed", "held", None)], y_in=0.20)
+
+    ax = fig.add_subplot(gs[0, 0])
+    fk.style(ax, grid="y")
+    u, lam = [0.0] + h["u_crotch_mm"], [0.0] + h["lambda"]
+    ax.plot([0, u[1] * 1.9], [0, 1.9], color=MUTED, linewidth=1.0, linestyle=(0, (2, 2)), zorder=2)
+    fk.label(ax, u[1] * 1.85, 1.85, "elastic", dx=5, ha="left", size=8.2, color=INK2)
+    ax.plot(u, lam, color=MODEL, linewidth=1.8, zorder=3)
+    for x, y in zip(u[1:], lam[1:]):
+        fk.status_dot(ax, x, y, "held", size=46)
+    ax.axhline(lam_c, color=MODEL, linewidth=1.0, linestyle=(0, (5, 3)), zorder=2)
+    fk.label(ax, 3.9, lam_c, f"collapse {lam_c:.3f} × ({lam_c * 3.5:.2f} MPa)", dy=4, ha="right", va="bottom", size=8.2,
+             color=MODEL)
+    ax.axhline(1.5, color=INK2, linewidth=1.1, zorder=1)
+    fk.label(ax, 3.9, 1.5, "required 1.5 ×", dy=-4, ha="right", va="top", size=8.2, color=INK2)
+    ax.set_xlim(0, 4.0)
+    ax.set_ylim(0, 2.0)
+    ax.set_xlabel("crotch corner displacement, mm")
+    ax.set_ylabel("pressure ÷ design pressure")
+    fk.panel(ax, "Pushed to collapse, 12 mm, finest mesh")
+
+    bx = fig.add_subplot(gs[0, 1])
+    fk.style(bx, grid="y")
+    bx.set_xlim(6.5, 21.5)
+    bx.set_ylim(1.3, 2.25)
+    fk.limit(bx, 1.5, "required 1.5 ×", "below", axis="y", at=0.885)
+    bx.axhline(cyl, color=MUTED, linewidth=1.0, linestyle=(0, (2, 2)), zorder=1)
+    fk.label(bx, 6.7, cyl, f"the shell with no nozzle, {cyl:.2f}", dy=4, va="bottom", size=8.2, color=INK2)
+    for x, nm in ((11.7, "toe line"), (16.0, "area rule"), (20.1, "corner line")):
+        bx.plot([x, x], [1.3, 1.92], color=REF, linewidth=1.0, linestyle=(0, (4, 2, 1, 2)), zorder=1)
+        fk.label(bx, x, 1.92, f"{nm}\n{x:g} mm", dy=3, ha="center", va="bottom", size=7.8, color=REF)
+    bx.plot(tn, lc, color=MODEL, linewidth=1.8, zorder=3)
+    for (_, _, ok), x, y in zip(walls, tn, lc):
+        fk.status_dot(bx, x, y, "meets" if ok else "held", size=50)
+        fk.label(bx, x, y, f"{y:.3f}", dx=7, dy=-7, ha="left", va="top", size=8, color=INK2)
+    fk.label(bx, 12, 1.683, "the design", dx=-14, dy=8, ha="right", va="bottom", size=8.2, color=MODEL, bold=True)
+    bx.set_xlabel("nozzle wall, mm")
+    bx.set_ylabel("collapse pressure ÷ design")
+    fk.panel(bx, "Collapse load against the wall")
+    fk.save(fig, "nozzle_limit")
+
+
+def nozzle_yield():
+    """Study 18 part 2: where the 12 mm nozzle has yielded at 1.5 times the design pressure, on the section through
+    both axes (y = 0), finest mesh. The colour scale runs to the true peak: nothing is clipped."""
+    import csv
+    import matplotlib.tri as mtri
+    from matplotlib.patches import Polygon as MPoly
+    lab, fine, _ = _nozzle_points(NOZZLE_MESH)[-1]
+    d = RUNS / NOZZLE_MESH / "points" / lab
+    rows = list(csv.DictReader(next(d.rglob("plastic_zone.csv")).open(encoding="utf-8")))
+    key15 = next(k for k in rows[0] if k.startswith("peeq_at_1.5"))
+    a = np.array([[float(r["z_mm"]), float(r["x_mm"]), 100 * float(r[key15])] for r in rows if abs(float(r["y_mm"])) < 1e-6])
+    peak = 100 * fine["solver_outputs"]["peeq_max_at_1p5"]
+    assert abs(a[:, 2].max() - peak) < 1e-9, (a[:, 2].max(), peak)
+    Ri, Ro, rni, rno, rf = 500.0, 516.0, 100.0, 112.0, 10.0
+    Z1, X1 = 345.0, 600.0
+
+    def metal(z, x):
+        shell = (x >= Ri - 1e-6) & (x <= Ro + 1e-6) & (z >= rni - 1e-6)
+        nozzle = (z >= rni - 1e-6) & (z <= rno + 1e-6) & (x >= Ri - 1e-6)
+        box = (z >= rno) & (z <= rno + rf) & (x >= Ro) & (x <= Ro + rf)
+        fillet = box & ((z - rno - rf) ** 2 + (x - Ro - rf) ** 2 >= rf ** 2 - 1e-6)
+        return shell | nozzle | fillet
+
+    tri = mtri.Triangulation(a[:, 0], a[:, 1])
+    t = tri.triangles
+    cz, cx = a[t, 0].mean(axis=1), a[t, 1].mean(axis=1)
+    p = a[:, :2]
+    edge = np.max([np.linalg.norm(p[t[:, k]] - p[t[:, (k + 1) % 3]], axis=1) for k in range(3)], axis=0)
+    zero = (a[t, 2] <= 0).all(axis=1)                       # no plastic strain: left as plain metal, not colour
+    tri.set_mask(~metal(cz, cx) | (edge > 12) | zero)
+
+    fig, gs = fk.new(FULL, 4.3, 1, 1, top=0.95)
+    gs.update(right=0.88)
+    fk.heading(fig, "Where it yields at 1.5 times the design pressure",
+               f"Section through both axes, 12 mm nozzle. The shell has yielded through its whole wall beside the "
+               "opening.")
+    ax = fig.add_subplot(gs[0, 0])
+    for s in ax.spines.values():
+        s.set_visible(False)
+    ax.tick_params(length=0, pad=4)
+    arc = [(rno + rf - rf * np.cos(q), Ro + rf - rf * np.sin(q)) for q in np.linspace(0, np.pi / 2, 20)]
+    outline = [(rni, X1), (rni, Ri), (Z1, Ri), (Z1, Ro)] + arc[::-1] + [(rno, X1)]
+    ax.add_patch(MPoly(outline, closed=True, fc=GRID, ec=fk.AXIS, lw=0.8, zorder=1))
+    lv = [0, 0.1, 0.25, 0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0, 2.25, 2.5, peak]
+    cs = ax.tricontourf(tri, a[:, 2], levels=lv, cmap=fk.SEQ, zorder=2)
+    zmax = a[a[:, 2] > 0.1, 0].max()
+    ax.plot([zmax, zmax], [Ro, Ro + 5], color=INK2, linewidth=1.0, zorder=4)
+    fk.callout(ax, (zmax, Ro + 5), (0, 26), f"above 0.1 % for about {zmax:.0f} mm along the vessel", ha="center", va="bottom")
+    i = a[:, 2].argmax()
+    fk.callout(ax, (a[i, 0], a[i, 1]), (40, 30), f"peak {peak:.1f} %, outer fillet near its toe")
+    fk.label(ax, rno + 2, 590, "nozzle wall", dx=6, ha="left", size=8.2, color=INK2)
+    fk.label(ax, 220, Ri - 2, "shell wall, 16 mm", va="top", dy=-4, ha="center", size=8.2, color=INK2)
+    ax.set_xlim(60, Z1)
+    ax.set_ylim(480, X1 + 2)
+    ax.set_aspect("equal")
+    ax.set_xlabel("along the vessel from the nozzle axis, mm")
+    ax.set_ylabel("radius, mm")
+    cax = fig.add_axes([0.905, 0.2, 0.016, 0.55])
+    cb = fig.colorbar(cs, cax=cax, ticks=[0.1, 0.5, 1, 1.5, 2, 2.5, peak])
+    cb.ax.set_yticklabels(["0.1", "0.5", "1", "1.5", "2", "2.5", f"{peak:.1f} peak"])
+    cb.outline.set_visible(False)
+    cb.ax.tick_params(length=0, labelsize=8.5, colors=INK2)
+    cb.set_label("plastic strain, %", color=INK2, fontsize=9)
+    fk.save(fig, "nozzle_yield")
+
+
 def steel_knee():
     """Study 28 part 2: the study session's figure (scripts/make_steel_knee_figure.py), converted for the site."""
     from PIL import Image
@@ -2612,7 +2747,7 @@ ALL = {f.__name__: f for f in (cfd_tolerance, cfd_duct, cfd_response, cfd_field,
                                qc_liftoff, qc_iso, coldplate_response, pipe_friction, motor_comparison,
                                motor_rotor, pv_nozzle, step_comparison, random_vibration, bracket_uncertainty,
                                fan_rotor, fan_rotor_campbell, crack_growth, motor_efficiency, motor_airgap, oring_seal, shaft_fillet,
-                               enclosure_revb, enclosure_field, steel_frame, flag_fsi, crack_surface, keyed_shaft, steel_knee, rotor_solid, strap_3d)}
+                               enclosure_revb, enclosure_field, steel_frame, flag_fsi, crack_surface, keyed_shaft, steel_knee, rotor_solid, strap_3d, nozzle_limit, nozzle_yield)}
 # not on the site (the earlier model's thermal result): motor_thermal
 
 if __name__ == "__main__":

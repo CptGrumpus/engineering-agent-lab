@@ -658,9 +658,10 @@ REQS = [
     ("pv_nozzle", "18", "Pressure vessel nozzle", [
         ("General membrane stress away from the nozzle, Pm", "≤ 138 MPa", "96.2 MPa", "met"),
         ("Local membrane stress, PL, on lines at the weld toes", "≤ 207 MPa", "205.1 MPa, mesh uncertainty 0.03 %; about 11.7 mm would do", "met"),
-        ("Local membrane stress, PL, on the line through the inner corner", "≤ 207 MPa", "256.7 MPa, 24 % over; needs about 21 mm or a pad (the line I judge it by)", "fail"),
+        ("Local membrane stress, PL, on the line through the inner corner", "≤ 207 MPa", "256.7 MPa, 24 % over; overruled by the Part 2 limit load", "fail"),
         ("Membrane plus bending at the junction, P + Q", "≤ 414 MPa", "240 MPa at the toe (unverified, 42 % margin); 352 MPa through the corner", "met"),
-        ("Hemispherical head: membrane, and the junction with the shell", "≤ 138 / 207 / 414 MPa", "about 6.5 mm; the head's own membrane governs (135.5 MPa at 6.5 mm)", "met")]),
+        ("Hemispherical head: membrane, and the junction with the shell", "≤ 138 / 207 / 414 MPa", "about 6.5 mm; the head's own membrane governs (135.5 MPa at 6.5 mm)", "met"),
+        ("Part 2: plastic collapse by limit load, 12 mm nozzle, no pad", "≥ 1.5 × design pressure", "1.675 × (5.86 MPa) on the finest mesh, 1.663 extrapolated; one balance check failed at 1.08 × 10⁻⁵", "met")]),
     ("pipe", "19", "Turbulent pipe friction", [
         ("Friction factor against Prandtl's law, Re 10⁵", "within 5 %", "+2.4 % extrapolated to zero cell size, mesh uncertainty 0.5 %", "met"),
         ("Same, with wall functions", "within 5 %", "5.0 to 5.4 % low at every Reynolds number", "fail")]),
@@ -820,7 +821,7 @@ CAPS = """<div class="table-wrap">
           <tr><td>Contact between separate parts, with the contact pressure and the stress below the surface checked against Hertz</td><td>Gmsh, CalculiX</td><td><a href="#contact">10</a></td></tr>
           <tr><td>Elastomer seals: nearly incompressible rubber at large strain in contact, across a tolerance stack, checked against Hertz, Lindley's force-squeeze relation and Parker's measured loads</td><td>Gmsh, CalculiX, Python</td><td><a href="#oring">25</a></td></tr>
           <tr><td>Friction contact and preloaded bolted joints, checked against the VDI 2230 joint diagram</td><td>CalculiX</td><td><a href="#bolted_joint">16</a></td></tr>
-          <tr><td>Pressure equipment: design by analysis with stress linearisation on classification lines, in the manner of ASME VIII-2 Part 5, against a design-by-rule check</td><td>CadQuery, Gmsh, CalculiX</td><td><a href="#pv_nozzle">18</a></td></tr>
+          <tr><td>Pressure equipment: design by analysis with stress linearisation on classification lines, in the manner of ASME VIII-2 Part 5, against a design-by-rule check; limit-load analysis (elastic-perfectly plastic)</td><td>CadQuery, Gmsh, CalculiX</td><td><a href="#pv_nozzle">18</a></td></tr>
           <tr><td>Buckling: linear eigenvalue and geometrically nonlinear with imperfections, checked against Euler, Southwell and Perry-Robertson</td><td>CalculiX</td><td><a href="#strut">13</a></td></tr>
           <tr><td>Plasticity with loading and unloading, and the residual stress left behind, checked against Neuber and Glinka</td><td>CadQuery, Gmsh, CalculiX</td><td><a href="#strap_proof">14</a></td></tr>
           <tr><td>Electric machines: back-EMF, torque and efficiency maps from 2D magnetostatics, a lumped thermal network and rotor stress at overspeed, checked against a laboratory's test data</td><td>Pyleecan, FEMM, CalculiX</td><td><a href="#motor">20</a></td></tr>

@@ -4,11 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Every Requirement · Justin Smith</title>
-<meta name="description" content="All 95 requirements across the simulation studies, each with its limit, result and verdict.">
+<meta name="description" content="All 96 requirements across the simulation studies, each with its limit, result and verdict.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://cptgrumpus.github.io/engineering-agent-lab/requirements.html">
 <meta property="og:title" content="Every Requirement in One Table">
-<meta property="og:description" content="All 95 requirements across the simulation studies, each with its limit, result and verdict.">
+<meta property="og:description" content="All 96 requirements across the simulation studies, each with its limit, result and verdict.">
 <meta property="og:image" content="https://cptgrumpus.github.io/engineering-agent-lab/v2/og_card.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -23,7 +23,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
-<link rel="stylesheet" href="assets/site.css?v=f28fdda096">
+<link rel="stylesheet" href="assets/site.css?v=6c94e8c492">
 </head>
 <body>
 <nav class="topbar" aria-label="Site">
@@ -57,7 +57,7 @@
     <div class="page-head">
       <p class="eyebrow">Requirements</p>
       <h1>Every Requirement in One Table</h1>
-      <p>95 requirements across the studies: <b class="c-pass">66 met</b>, <b class="c-fail">26 not met</b>, <b class="c-warn">3 withheld</b>. "Not met" is still a verified answer: the design fails, and the study explains what would fix it. "Withheld" means the checks didn't support calling it either way, or that the result waits on open work. Each study's name links to its page.</p>
+      <p>96 requirements across the studies: <b class="c-pass">67 met</b>, <b class="c-fail">26 not met</b>, <b class="c-warn">3 withheld</b>. "Not met" is still a verified answer: the design fails, and the study explains what would fix it. "Withheld" means the checks didn't support calling it either way, or that the result waits on open work. Each study's name links to its page.</p>
     </div>
     <div class="reqs open">
       <div class="table-wrap">
@@ -135,9 +135,10 @@
           <tr><td></td><td>Peak wall temperature</td><td class="num">≤ 45 °C</td><td>44.03 °C, mesh uncertainty 0.23 % of the rise</td><td><span class="chip pass">Met</span></td></tr>
           <tr class="r-first"><td><a href="pressure-vessel-nozzle.html"><span class="r-no">18</span> Pressure Vessel Nozzle</a></td><td>General membrane stress away from the nozzle, Pm</td><td class="num">≤ 138 MPa</td><td>96.2 MPa</td><td><span class="chip pass">Met</span></td></tr>
           <tr><td></td><td>Local membrane stress, PL, on lines at the weld toes</td><td class="num">≤ 207 MPa</td><td>205.1 MPa, mesh uncertainty 0.03 %; about 11.7 mm would do</td><td><span class="chip pass">Met</span></td></tr>
-          <tr><td></td><td>Local membrane stress, PL, on the line through the inner corner</td><td class="num">≤ 207 MPa</td><td>256.7 MPa, 24 % over; needs about 21 mm or a pad (the line I judge it by)</td><td><span class="chip fail">Not met</span></td></tr>
+          <tr><td></td><td>Local membrane stress, PL, on the line through the inner corner</td><td class="num">≤ 207 MPa</td><td>256.7 MPa, 24 % over; overruled by the Part 2 limit load</td><td><span class="chip fail">Not met</span></td></tr>
           <tr><td></td><td>Membrane plus bending at the junction, P + Q</td><td class="num">≤ 414 MPa</td><td>240 MPa at the toe (unverified, 42 % margin); 352 MPa through the corner</td><td><span class="chip pass">Met</span></td></tr>
           <tr><td></td><td>Hemispherical head: membrane, and the junction with the shell</td><td class="num">≤ 138 / 207 / 414 MPa</td><td>about 6.5 mm; the head&#x27;s own membrane governs (135.5 MPa at 6.5 mm)</td><td><span class="chip pass">Met</span></td></tr>
+          <tr><td></td><td>Part 2: plastic collapse by limit load, 12 mm nozzle, no pad</td><td class="num">≥ 1.5 × design pressure</td><td>1.675 × (5.86 MPa) on the finest mesh, 1.663 extrapolated; one balance check failed at 1.08 × 10⁻⁵</td><td><span class="chip pass">Met</span></td></tr>
           <tr class="r-first"><td><a href="turbulent-pipe-friction.html#pipe"><span class="r-no">19</span> Turbulent Pipe Friction</a></td><td>Friction factor against Prandtl&#x27;s law, Re 10⁵</td><td class="num">within 5 %</td><td>+2.4 % extrapolated to zero cell size, mesh uncertainty 0.5 %</td><td><span class="chip pass">Met</span></td></tr>
           <tr><td></td><td>Same, with wall functions</td><td class="num">within 5 %</td><td>5.0 to 5.4 % low at every Reynolds number</td><td><span class="chip fail">Not met</span></td></tr>
           <tr class="r-first"><td><a href="turbulent-pipe-friction.html#step"><span class="r-no">19</span> Backward-Facing Step</a></td><td>Reattachment length against the measured 6.26 step heights</td><td class="num">within 10 %</td><td>6.40 step heights, 2.3 % long</td><td><span class="chip pass">Met</span></td></tr>
@@ -195,6 +196,6 @@
   </div>
 </footer>
 
-<script src="assets/site.js?v=f28fdda096"></script>
+<script src="assets/site.js?v=6c94e8c492"></script>
 </body>
 </html>

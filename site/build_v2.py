@@ -49,7 +49,8 @@ VP = [
      "model": "Shell with a radial nozzle · steel, 1000 mm bore × 16 mm, 200 mm nozzle × 12 mm, 3.5 MPa inside",
      "lines": ["Solver: CalculiX 2.22 · C3D10 · the mesh study's finest mesh, a quarter model mirrored into the whole vessel",
                "Range stops at 240 MPa · the inner corner peaks at 351 MPa, a peak stress the membrane limits exclude",
-               "Linearised beside the weld: PL 205.1 MPa, passes · through the corner: 256.7 MPa, fails · limit 207"]},
+               "Linearised beside the weld: PL 205.1 MPa, passes · through the corner: 256.7 MPa, fails · limit 207",
+               "Part 2, by limit load: collapses at 1.675 × the design pressure, needs 1.5 · no pad"]},
     {"id": "strap_proof", "study": "strap_proof", "tab": "Plasticity", "legend": "S11", "unit": "MPa",
      "model": "Strap through its proof test · 6061-T6, 40 × 4 mm, 16 mm hole, loaded to 15 kN and back",
      "lines": ["Solver: CalculiX 2.22 · elastic-plastic, quarter model mirrored",
@@ -202,7 +203,7 @@ for v in VP:
 # --- case gallery ---------------------------------------------------------------
 CARDS = [
     ("bracket_opt", "12", "struct", "Featured · Design automation", "Bracket optimisation loop, driven by the agent", "The agent searched 78 designs over three runs for the lightest machined clevis bracket that stays under 100 MPa. The checks threw out its first two answers. The final one is 372 g, 4 % lighter than the start, at 98.3 MPa, and its own mesh study confirms it.", "pass", "CadQuery · Gmsh · CalculiX · SciPy"),
-    ("pv_nozzle", "18", "struct", "New · Design code", "Pressure vessel nozzle, design code check", "Passes ASME-style design by analysis on lines at the weld toes (205.1 MPa against 207), fails by 24 % on a line through the corner. I'd judge it by the corner: about 21 mm, or a pad.", "line", "CadQuery · Gmsh · CalculiX"),
+    ("pv_nozzle", "18", "struct", "New · Design code", "Pressure vessel nozzle, design code check", "An elastic code check passed on one line through the wall and failed by 24 % on another, so I ran a limit-load analysis, which needs no line: the 12 mm nozzle carries the code load with 11 % to spare. No pad needed.", "onecheck", "CadQuery · Gmsh · CalculiX"),
     ("bolted_joint", "16", "struct", "New · Friction contact", "Bolted joint, slip and opening", "Fails narrowly: once the joint settles it slips at 2.39 kN, 4.4 % short of the 2.5 kN it must carry. A 15.6 kN preload fixes it, and it stays closed to 13.1 kN.", "fail", "CalculiX"),
     ("strap_proof", "14", "struct", "New · Plasticity", "Strap proof test, notch plasticity", "A 15 kN proof test strains the hole edge to 0.58 %, inside a 1 % limit, and leaves −77 MPa of compression behind, which helps fatigue.", "pass", "CadQuery · Gmsh · CalculiX"),
     ("strut", "13", "struct", "New · Stability", "Strut buckling, with an imperfect strut", "The longest acceptable strut is about 587 mm. The bow costs 4 to 7 % of the buckling load, so a buckling check alone would overstate the capacity.", "pass", "CalculiX"),
@@ -233,7 +234,7 @@ CARDS = [
     ("baseline", "09", "workflow", "Workflow", "Mass-spring-damper baseline", "All 72 checks pass, and the two tools agree to a few parts per million.", "pass", "SciPy · OpenModelica"),
 ]
 VERDICT = {"pass": "Passes", "fail": "Fails", "mixed": "Depends on speed", "held": "One result on hold",
-           "wip": "In progress", "closed": "Closed, with client questions", "checkmiss": "Passes; two cross-checks just missed", "fix": "Fails as drawn; fix found", "partfix": "Fails; the fix covers one limit of two", "line": "Depends on one judgement call", "most": "Passes, with one miss", "limits": "Passes; three results not verified"}
+           "wip": "In progress", "closed": "Closed, with client questions", "checkmiss": "Passes; two cross-checks just missed", "fix": "Fails as drawn; fix found", "partfix": "Fails; the fix covers one limit of two", "line": "Depends on one judgement call", "most": "Passes, with one miss", "limits": "Passes; three results not verified", "onecheck": "Passes; one check just missed"}
 
 # studies of the same part, shown as one card and one panel; each study keeps its own write-up, viewer
 # result, requirements rows and evidence, and links to a study land on its part of the panel
@@ -411,9 +412,9 @@ LEAD = [
     dict(key="bracket_opt", number="78 designs", unit="searched by an AI agent", quotes=["78 designs", "372 g", "98.3 MPa"],
          line="The lightest machined bracket that stays under 100 MPa: 372 g at 98.3 MPa. The checks threw out the "
               "agent's first two answers before this one stood."),
-    dict(key="pv_nozzle", number="24 %", unit="over the limit, or 0.9 % under", quotes=["fails by 24 %", "0.9 %"],
-         line="A pressure vessel nozzle that passes its design code on one line and fails on another, on the same "
-              "converged model. I'd judge it by the line that fails."),
+    dict(key="pv_nozzle", number="11 %", unit="to spare, with no pad", quotes=["24 %", "11 %"],
+         line="A pressure vessel nozzle that passed its design code on one line through the wall and failed on "
+              "another. A limit-load analysis, which needs no line, settled it: no reinforcing pad."),
 ]
 # a lead study can show a different picture from its study page's viewer: the motor's field map catches the eye
 LEAD_VIEW = {"motor": ("v2/fig_motor_field.webp", "The motor's cross-section coloured by flux density with no current in the "

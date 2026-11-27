@@ -208,6 +208,12 @@ leave room round the framed feature; framing the whole vessel instead made the n
 whose feature is small against the part (10 mm welds on a 1 m section) needs an enlarged detail: an inset axes at
 an exact scale (`make_drawings.nozzle_pad`, 4 : 1), and `note(..., scale=k)` in it so the leader dots stay the size
 of the main view's.
+Check a study-session colour scale before using its figure: the nozzle's plastic-strain panel capped the scale at
+the 98th percentile without saying so, so the brightest colour stood for everything from 1.6 to 2.7 %. Run the scale to
+the true peak (label it "peak") and leave zero as plain metal, not the colour map's lightest step. When a Part 2
+changes a lead study's answer, the home page's LEAD entry changes too: its number, line and quotes (the build checks
+the quotes against the card). A design whose runs missed one check is drawn hollow on its chart and marked
+"unverified" in the text, even when the miss is tiny.
 
 ## Editing the source safely
 

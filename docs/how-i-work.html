@@ -23,7 +23,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
-<link rel="stylesheet" href="assets/site.css?v=f28fdda096">
+<link rel="stylesheet" href="assets/site.css?v=6c94e8c492">
 </head>
 <body>
 <nav class="topbar" aria-label="Site">
@@ -107,7 +107,7 @@
           <tr><td>Contact between separate parts, with the contact pressure and the stress below the surface checked against Hertz</td><td>Gmsh, CalculiX</td><td><a href="#contact">10</a></td></tr>
           <tr><td>Elastomer seals: nearly incompressible rubber at large strain in contact, across a tolerance stack, checked against Hertz, Lindley's force-squeeze relation and Parker's measured loads</td><td>Gmsh, CalculiX, Python</td><td><a href="o-ring-face-seal.html">25</a></td></tr>
           <tr><td>Friction contact and preloaded bolted joints, checked against the VDI 2230 joint diagram</td><td>CalculiX</td><td><a href="bolted-joint.html">16</a></td></tr>
-          <tr><td>Pressure equipment: design by analysis with stress linearisation on classification lines, in the manner of ASME VIII-2 Part 5, against a design-by-rule check</td><td>CadQuery, Gmsh, CalculiX</td><td><a href="pressure-vessel-nozzle.html">18</a></td></tr>
+          <tr><td>Pressure equipment: design by analysis with stress linearisation on classification lines, in the manner of ASME VIII-2 Part 5, against a design-by-rule check; limit-load analysis (elastic-perfectly plastic)</td><td>CadQuery, Gmsh, CalculiX</td><td><a href="pressure-vessel-nozzle.html">18</a></td></tr>
           <tr><td>Buckling: linear eigenvalue and geometrically nonlinear with imperfections, checked against Euler, Southwell and Perry-Robertson</td><td>CalculiX</td><td><a href="strut-buckling.html">13</a></td></tr>
           <tr><td>Plasticity with loading and unloading, and the residual stress left behind, checked against Neuber and Glinka</td><td>CadQuery, Gmsh, CalculiX</td><td><a href="aluminium-strap.html#strap_proof">14</a></td></tr>
           <tr><td>Electric machines: back-EMF, torque and efficiency maps from 2D magnetostatics, a lumped thermal network and rotor stress at overspeed, checked against a laboratory's test data</td><td>Pyleecan, FEMM, CalculiX</td><td><a href="traction-motor.html">20</a></td></tr>
@@ -130,7 +130,7 @@
         </tbody>
       </table>
     </div>
-    <p class="code-facts">It's all Python, about 119,000 lines across 630 files: the harness that runs and checks everything, the models, the independent reference solutions and the graders, with 491 automated tests that run on every push.</p>
+    <p class="code-facts">It's all Python, about 120,000 lines across 636 files: the harness that runs and checks everything, the models, the independent reference solutions and the graders, with 491 automated tests that run on every push.</p>
       <h3 class="sub" id="images">How the Images Are Checked</h3>
     <p class="sub-lede">These images are rendered in Blender straight from the solver output. Before one goes on the page it has to pass three checks. The rendered surface has to enclose the part's actual volume, which catches missing or flipped faces. Every coloured pixel has to match a colour in the legend, which catches a shader that has shifted the contours. And the lit image has to read as the right band, which catches a shaded face that looks like a different value. Most results can also be turned in 3D: that view uses the same surface and colour bands, and it's checked the same way from four angles.</p>
   </div>
@@ -200,6 +200,6 @@
   </div>
 </footer>
 
-<script src="assets/site.js?v=f28fdda096"></script>
+<script src="assets/site.js?v=6c94e8c492"></script>
 </body>
 </html>
