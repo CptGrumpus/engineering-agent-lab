@@ -877,13 +877,24 @@ def scene_enclosure_cad():
                        sharp_angle_deg=40, title="enclosure_cad", expected_volume_mm3=float(sum(hv.values())))
 
 
+def scene_lap_cad():
+    """Study 16: the bolted lap joint as built (models/cad/bolted_lap.py, m8: two 6 mm plates, M8 x 25 bolt and nut),
+    assembled, plain material. Gate: the sum of bolted_lap.hand_volumes. CAD axes kept: bolt along z."""
+    from models.cad import bolted_lap as B
+    parts, hv = B.build("m8"), B.hand_volumes("m8")
+    assert set(parts) == set(hv), (set(parts) ^ set(hv))
+    xyz, tris = _cad_mesh(parts, lambda n, p: p + [0.0, 0.0, {"bolt": 26.0, "nut": -18.0}.get(n, 0.0)])   # exploded
+    return write_scene(BUILD / "lap_cad", xyz, tris, elev=30, azim=-48, resolution=[1600, 1150], distance_factor=3.4,
+                       sharp_angle_deg=40, title="lap_cad", expected_volume_mm3=float(sum(hv.values())))
+
+
 SCENES = {"cold_plate_3d": scene_cold_plate_3d, "strap_proof": scene_strap_proof, "bolted_joint_pressure": scene_bolted_joint, "joint_section": scene_joint_section, "cold_plate": scene_cold_plate,
           "strut": scene_strut, "pv_nozzle": lambda: scene_pv_nozzle(), "steel_frame": scene_steel_frame, "fan_rotor": scene_fan_rotor, "enclosure": scene_enclosure,
           # studies 24-26: the study session's scenes (scripts/scenes_24_26.py imports from here, so imported lazily)
           "crack": lambda: __import__("scenes_24_26").scene_cracked_plate(),
           "oring": lambda: __import__("scenes_24_26").scene_oring(),
           "shaft": lambda: __import__("scenes_24_26").scene_shaft_fillet(),
-          "shaft_cad": scene_shaft_cad, "knee_cad": scene_knee_cad, "rotor_cad": scene_rotor_cad, "nozzle_cad": scene_nozzle_cad, "nozzle_t12_cad": lambda: scene_nozzle_cad("t12", "nozzle_t12_cad"), "roller_cad": scene_roller_cad, "seal_cad": scene_seal_cad, "plate_cad": scene_plate_cad, "enclosure_cad": scene_enclosure_cad,
+          "shaft_cad": scene_shaft_cad, "knee_cad": scene_knee_cad, "rotor_cad": scene_rotor_cad, "nozzle_cad": scene_nozzle_cad, "nozzle_t12_cad": lambda: scene_nozzle_cad("t12", "nozzle_t12_cad"), "roller_cad": scene_roller_cad, "seal_cad": scene_seal_cad, "plate_cad": scene_plate_cad, "enclosure_cad": scene_enclosure_cad, "lap_cad": scene_lap_cad,
           "surface_crack": lambda: __import__("scenes_24_26").scene_surface_crack()}
 
 
