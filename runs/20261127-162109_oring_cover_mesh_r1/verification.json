@@ -1,0 +1,180 @@
+{
+  "run_id": "20261127-162109_oring_cover_mesh_r1",
+  "verified_utc": "2026-11-27T21:22:09+00:00",
+  "tolerances": {
+    "equilibrium_rel_tol": 1e-06,
+    "sample_violation_tol": 1e-06,
+    "plate_rel_tol": 0.02,
+    "mesh_noise_rel": 0.001,
+    "gci_max": 0.03
+  },
+  "points": [
+    {
+      "label": "p00_element_size_mm-2",
+      "status": "PASS",
+      "checks": [
+        {
+          "id": "cad_valid",
+          "description": "CadQuery B-rep valid, one solid (0 = yes)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "equilibrium",
+          "description": "|reaction at the washer footprints + applied load| / applied load (the footprints carry no load, so RF is the reaction)",
+          "kind": "numerical",
+          "value": 8.485060564519445e-09,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "seal_line_inside_mesh",
+          "description": "max barycentric violation of the points sampled on the seal circle (0 = inside an element; the underside is flat)",
+          "kind": "validity",
+          "value": 3.851742580361404e-13,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "lifts_everywhere",
+          "description": "the cover lifts (does not press down) all along the seal line (min lift / max lift >= 0; 0 = yes)",
+          "kind": "validity",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p01_element_size_mm-1.333",
+      "status": "PASS",
+      "checks": [
+        {
+          "id": "cad_valid",
+          "description": "CadQuery B-rep valid, one solid (0 = yes)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "equilibrium",
+          "description": "|reaction at the washer footprints + applied load| / applied load (the footprints carry no load, so RF is the reaction)",
+          "kind": "numerical",
+          "value": 8.485060564519445e-09,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "seal_line_inside_mesh",
+          "description": "max barycentric violation of the points sampled on the seal circle (0 = inside an element; the underside is flat)",
+          "kind": "validity",
+          "value": 1.154759109551232e-15,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "lifts_everywhere",
+          "description": "the cover lifts (does not press down) all along the seal line (min lift / max lift >= 0; 0 = yes)",
+          "kind": "validity",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p02_element_size_mm-0.889",
+      "status": "PASS",
+      "checks": [
+        {
+          "id": "cad_valid",
+          "description": "CadQuery B-rep valid, one solid (0 = yes)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "equilibrium",
+          "description": "|reaction at the washer footprints + applied load| / applied load (the footprints carry no load, so RF is the reaction)",
+          "kind": "numerical",
+          "value": 8.485060564519445e-09,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "seal_line_inside_mesh",
+          "description": "max barycentric violation of the points sampled on the seal circle (0 = inside an element; the underside is flat)",
+          "kind": "validity",
+          "value": 7.632932576283295e-16,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "lifts_everywhere",
+          "description": "the cover lifts (does not press down) all along the seal line (min lift / max lift >= 0; 0 = yes)",
+          "kind": "validity",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ]
+    }
+  ],
+  "run_checks": [
+    {
+      "id": "discretization_loosest_squeeze_with_lift_pct",
+      "description": "relative discretization uncertainty of loosest_squeeze_with_lift_pct, converged to within the noise floor (spread 5.4e-04 <= 0.001)",
+      "kind": "numerical",
+      "value": 0.000336516896907761,
+      "tolerance": 0.03,
+      "comparison": "<=",
+      "status": "PASS",
+      "metric": "loosest_squeeze_with_lift_pct"
+    },
+    {
+      "id": "discretization_max_seal_lift_um",
+      "description": "relative discretization uncertainty of max_seal_lift_um, divergent (R = 2.079): no estimate",
+      "kind": "numerical",
+      "value": Infinity,
+      "tolerance": 0.03,
+      "comparison": "<=",
+      "status": "FAIL",
+      "metric": "max_seal_lift_um"
+    }
+  ],
+  "run_check_detail": {
+    "meshes_used": [
+      "p02_element_size_mm-0.889",
+      "p01_element_size_mm-1.333",
+      "p00_element_size_mm-2"
+    ],
+    "loosest_squeeze_with_lift_pct": {
+      "regime": "converged",
+      "uncertainty": 0.000336516896907761,
+      "relative_spread": 0.0005384270350524175,
+      "noise_floor": 0.001
+    },
+    "max_seal_lift_um": {
+      "regime": "divergent",
+      "uncertainty": Infinity,
+      "convergence_ratio": 2.0785288270377302
+    }
+  },
+  "status": "FAIL"
+}

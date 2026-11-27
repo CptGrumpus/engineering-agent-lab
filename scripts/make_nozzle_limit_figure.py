@@ -74,9 +74,9 @@ def main(out: Path) -> None:
     bx.text(tn[0], cyl, f" the shell without a nozzle: {cyl:.2f}", fontsize=7.5, va="bottom", color=TEXT_2)
     if lc.min() >= 1.5:
         pe = [q["solver_outputs"].get("peeq_max_at_1p5", float("nan")) for q in pts]
-        note = "\n".join([f"every wall swept passes; at {tn[0]:g} mm", f"the plastic strain at 1.5 reaches "
-                          f"{100 * pe[0]:.0f} %", f"({tn[2]:g} mm: {100 * pe[2]:.1f} %)"])
-        bx.text(tn[0] - 0.8, 1.30, note, fontsize=7.5, color=SERIES_1, va="bottom")
+        note = "\n".join(["every wall passes;", "plastic strain at 1.5:", f"{tn[0]:g} mm {100 * pe[0]:.0f} %,",
+                          f"{tn[2]:g} mm {100 * pe[2]:.1f} %"])
+        bx.text(tn[0] - 0.85, 1.30, note, fontsize=7.5, color=SERIES_1, va="bottom")
     if lc.min() < 1.5 < lc.max():
         t15 = float(np.interp(1.5, lc, tn))
         bx.plot([t15], [1.5], "o", color=SERIES_1, mfc=SURFACE, ms=8)
@@ -89,9 +89,7 @@ def main(out: Path) -> None:
     bx.set_ylim(1.1, 2.25)
     bx.set_xlabel("nozzle wall (mm)")
     bx.set_ylabel("collapse load factor")
-    bx.set_title("(b) The wall each method asks for", loc="left", fontsize=10, color=TEXT)
-    bx.text(0.98, 0.02, "dash-dot: part 1's elastic answers", transform=bx.transAxes, fontsize=7, color=SERIES_2,
-            ha="right")
+    bx.set_title("(b) The wall each method asks for (dash-dot: part 1)", loc="left", fontsize=10, color=TEXT)
 
     cx = fig.add_subplot(gs[2])
     _style(cx)
@@ -103,8 +101,12 @@ def main(out: Path) -> None:
     # the section outline: shell wall (x 500-516) and nozzle wall (z 100-112), with the 10 mm fillet
     cx.fill_between([100, 260], 500, 516, color=GRID, lw=0)          # the shell wall from the bore's edge
     cx.fill_betweenx([500, 700], 100, 112, color=GRID, lw=0)
-    s = cx.scatter(z, x, c=100 * e, s=7, cmap="viridis", vmin=0, vmax=max(0.5, 100 * float(np.percentile(e, 98))))
-    cb = fig.colorbar(s, ax=cx, fraction=0.05, pad=0.02)
+    vmax = max(0.5, 100 * float(np.percentile(e, 98)))     # the colours resolve the zone; the peak is named
+    s = cx.scatter(z, x, c=100 * e, s=7, cmap="viridis", vmin=0, vmax=vmax)
+    cb = fig.colorbar(s, ax=cx, fraction=0.05, pad=0.02, extend="max" if 100 * e.max() > vmax else "neither")
+    k = int(np.argmax(e))
+    cx.annotate(f"peak {100 * e[k]:.1f} %" + "\n(weld fillet)", (z[k], x[k]), xytext=(z[k] + 45, x[k] + 40), fontsize=7.5,
+                color=TEXT, arrowprops={"arrowstyle": "-", "color": TEXT, "lw": 0.7})
     cb.set_label("equivalent plastic strain (%)", fontsize=8)
     cx.set_xlim(60, 260)
     cx.set_ylim(470, 600)

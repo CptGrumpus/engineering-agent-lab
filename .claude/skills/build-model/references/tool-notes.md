@@ -333,6 +333,14 @@ Traps found while building the studies in this repo, by tool.
   NLGEOM=NO (study 18 part 2, 2026-11-27). A collapse mechanism need not stay local: the nozzle's plastic zone at
   1.5 x design ran 290 mm along the shell; save the plastic strain on the symmetry cut faces (small, and it shows
   the mechanism) rather than predicting where it sits.
+- **CalculiX's RF is a node's internal force, not only its reaction**: at a support node that also carries load
+  (a pressure face touching the support), the printed RF includes that node's share of the load, so a support's
+  RF total falls short of the applied load (0.8 % for an edge-supported plate under pressure; summed over every
+  node, RF is zero to 1e-12). Check equilibrium on supports that carry no load, or subtract the load on them
+  (study 25 part 2, 2026-11-27).
+- **A long solve: no `timeout` inside the command.** The Bash tool moves a long command to the background at its
+  own limit, but a `timeout 1800` inside the command still kills it, solver and all, at 30 minutes (the 3D roller
+  trial, 2026-11-27, lost at 47 %). Run long solves with run_in_background and no inner timeout.
 - **CalculiX 2.22 `*SPRING` (SPRING1) wants a decimal point in its stiffness**: `50000` gives "*SPRING card without data", `50000.` works (rotor solid, 2026-11-27); write it with `f"{k:.14e}"`.
 - **A hub on a beam model**: as a shaft section of the hub's diameter it over-stiffens (+2.0 to +3.2 % on f1 for a 130 x 100 mm hub on a 65 mm shaft), as mass only it under-stiffens (-5.9 to -8.8 %); the 3D solid sits between (study 23 part 2). Check a hub's effect with a solid before trusting either.
 - **Coulomb friction itself is exact in CalculiX 2.22 surface-to-surface penalty contact.** A

@@ -15,6 +15,24 @@
 #      monotone this time; GCI under 1 %.
 #   P3 REQ-E1L passes: loosest squeeze about 16.78 % (the flat cover's 17.20 less 0.42 points).
 #   P4 Seconds.
+#
+# Results (run 20261127-162109_oring_cover_mesh_r1): verification FAIL, on one run-level check: the GCI of the
+# largest lift reads divergent; every point check passes (the circle's points inside the mesh to 4e-13), and the GCI
+# of the requirement metric passes (squeeze 16.779 / 16.776 / 16.770 %, inside its floor).
+#   P1 HELD for the point checks.
+#   P2 NOT HELD: largest lift 14.496 / 14.597 / 14.806 um at 2.0 / 1.333 / 0.889 mm (predicted 14.50 / 14.56 / 14.58),
+#      smooth now and at 0 deg (midway between bolts), but growing as the mesh refines, the second step twice the
+#      first: divergent on these three levels. Not loosened; diagnosed in scratch (2026-11-27, 16:25-16:30), not
+#      guessed: (a) the coarse level's mesh was set partly by Gmsh's curvature sizing (10,412 nodes against 10,210
+#      without it; the two finer levels are identical either way), the trap the build-model skill records from the
+#      rotor study and this case repeated; (b) the lift converges slowly: with curvature sizing off, four levels give
+#      14.366 / 14.597 / 14.806 / 14.921 um (steps 0.231, 0.209, 0.115), the whole cover tilting a little more as the
+#      singular edge of the rigid washer patch is resolved (the lift at the bolt grows by the same steps). Extrapolated
+#      from the last three, about 15.1 um, 2 % over the finest evidence value.
+#   P3 HELD: REQ-E1L passes, loosest squeeze 16.77 %.
+#   P4 HELD.
+# Answer: a 4 mm cover lifts about 15 um at the seal between its bolts (14.8 on the finest evidence mesh, converging
+# slowly towards about 15.1): a fifth of the 75.5 um the loosest corner can give up.
 
 [case]
 name = "oring_cover_mesh_r1"
