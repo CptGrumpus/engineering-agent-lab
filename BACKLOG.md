@@ -84,8 +84,8 @@ commit). Rules that bind:
 
 r1 runs scored: noise (010741), check_r1 (015248), design_r1 (021152), mesh_r1 (031958, VERIFICATION PASS). Page 26
 Part 2 written. Open: Le and Le's bending keyseat factor (+5.5 % on the axial stress; open difference, not a pass);
-the global-against-submodel check should record the peak distance beside the Kt gap (d40_rk025 missed 2 % by 0.18
-points with both peaks at the same spot); render and drawing of the detailed shaft asked of the dashboard session.
+the global-against-submodel check now reports the peak distance, and a new check `fillet_peak_covered_*` tests
+that the global peak lies inside a fillet box (replayed: fails every r0 point, passes every r1 point); render and drawing of the detailed shaft asked of the dashboard session.
 
 ### Detailed CAD for every study (user's direction, 2026-11-26 evening)
 

@@ -54,7 +54,8 @@ for the whole part, `tests/test_intermediate_shaft.py`).
     keyway moved the shoulder fillet's torsion peak to the far side of the shaft).
   - Read no peak within about 1 mm of a driven face.
   - Check the path with a case the idealised model already answered (the keyless shaft, within 0.4 %), and compare
-    the global and submodel peaks where the global mesh resolves the feature, with the distance between the peaks.
+    the global and submodel peaks where the global mesh resolves the feature; check separately that the global
+    peak lies inside a submodel box (a small Kt gap does not prove it: r0's near box missed the peak at 1 %).
 - Decks: at most 20 characters per field; write numbers with `f"{v:.14g}"`.
 
 ## Deliver

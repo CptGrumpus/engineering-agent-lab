@@ -6,7 +6,7 @@ import numpy as np
 import pytest
 
 from models.fea import keyed_shaft as ks
-from studies.keyed_shaft import boxes, safety
+from studies.keyed_shaft import boxes, fillet_coverage, safety
 
 P = {"D_mm": 45.0, "d_mm": 36.0, "fillet_radius_mm": 1.8, "small_length_mm": 90.0, "large_length_mm": 60.0,
      "key_width_mm": 10.0, "key_depth_mm": 5.0, "key_corner_radius_mm": 0.4, "key_gap_mm": 2.0, "key_length_mm": 40.0}
@@ -69,3 +69,19 @@ def test_safety_reproduces_part1_at_the_fillet():
     s = safety(p, {"kt_fillet_bending": 2.2246154438973256, "kt_fillet_torsion": 1.5923779246662075})
     assert s["fatigue_safety"] == pytest.approx(1.6179705406171383, rel=1e-9)   # part 1, p03_d36
     assert s["static_safety"] == pytest.approx(2.518655464778272, rel=1e-9)
+
+
+def test_fillet_coverage_tells_a_missed_peak_from_mesh_error():
+    quarter = {"fillet_a": {"box": (0.0, 23.5, 0.0, 23.5, 85.4, 93.0)},
+               "fillet_b": {"box": (-23.5, 0.0, 0.0, 23.5, 85.4, 93.0)}}
+    sub = {"fillet_a/torsion": {"fillet": {"k": 1.69, "xyz": [1.0, 20.0, 88.7]}}}
+
+    def out(g_xyz, subs):
+        return {"peaks": {"global/torsion": {"fillet": {"k": 1.70, "xyz": g_xyz}}} | sub, "subs": subs}
+
+    dist, ok = fillet_coverage(out([-9.3, 17.8, 88.8], quarter), "torsion", False, 1.0)   # far side: covered
+    assert ok and dist == pytest.approx(math.dist([-9.3, 17.8, 88.8], [1.0, 20.0, 88.7]))
+    assert not fillet_coverage(out([-0.5, 20.2, 88.8], quarter), "torsion", False, 1.0)[1]  # on the shared cut face
+    near_only = {"fillet": {"box": (12.0, 23.5, 0.0, 8.0, 85.4, 93.0)}}                     # r0's near-box layout
+    assert not fillet_coverage(out([-9.3, 17.8, 88.8], near_only), "torsion", False, 1.0)[1]
+    assert fillet_coverage(out([-9.3, 17.8, 88.8], near_only), "torsion", True, 1.0)[1]     # keyless: axisymmetric

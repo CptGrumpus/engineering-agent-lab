@@ -14,6 +14,7 @@ Run-level: GCI on the Kt values and the safety factors when the sweep is mesh_sc
 from __future__ import annotations
 
 import importlib.util
+import math
 import subprocess
 import tempfile
 from concurrent.futures import ThreadPoolExecutor
@@ -176,6 +177,22 @@ def fillet_peak(pk: dict, load: str) -> dict:
                 and "fillet" in reg), key=lambda v: v["k"])
 
 
+def fillet_coverage(out: dict, load: str, keyless: bool, skip: float) -> tuple[float, bool]:
+    """Distance (mm) from the global model's fillet peak to the fillet submodels' peak, and whether the global peak
+    lies where a fillet submodel reads peaks: inside its box, clear of the faces driven_clear skips. A Kt gap with
+    the global peak covered is the global mesh's error; with it outside every box, a missed peak (r0's near box).
+    Keyless the shaft is axisymmetric, so the global peak is first turned onto the box's plane (y = 0)."""
+    g = out["peaks"][f"global/{load}"]["fillet"]["xyz"]
+    s = fillet_peak(out["peaks"], load)["xyz"]
+    x, y, z = (math.hypot(g[0], g[1]), 0.0, g[2]) if keyless else g
+
+    def readable(b):
+        x0, x1, y0, y1, z0, z1 = b
+        return x0 + skip < x < x1 - skip and y < y1 - skip and z0 + skip < z < z1 - skip
+
+    return math.dist(g, s), any(readable(v["box"]) for k, v in out["subs"].items() if k.startswith("fillet"))
+
+
 def kt_values(out: dict) -> dict:
     """Kt (gross nominal stresses) at the keyway (the largest over its submodels) and at the fillet (its own
     submodel). The fillet box's keyway nodes are coarse there and never count."""
@@ -239,17 +256,25 @@ class KeyedShaftStudy(Study):
                          "about z by the outward normal, so magnitudes are compared; 7-point rule on curved faces)",
                          abs(abs(eq[ld]["applied"]) / eq[ld]["target"] - 1), tol["load_rel_tol"]) for ld in LOADS]
         pk = out["peaks"]
+        p = point["parameters"]
+        keyless = float(p.get("key_width_mm", 0) or 0) <= 0
+        skip = float(case.get("numerics", {}).get("driven_skip_mm", 1.0))
         for ld in LOADS:
             g, sb = pk[f"global/{ld}"]["fillet"]["k"], fillet_peak(pk, ld)["k"]
+            dist, covered = fillet_coverage(out, ld, keyless, skip)
             checks.append(check(f"global_vs_sub_fillet_{ld}", f"fillet Kt, global model against its submodel ({ld}): "
-                                "the global mesh resolves the fillet, so the two must agree", abs(g / sb - 1),
-                                tol["global_sub_rel_tol"]))
+                                f"the global mesh resolves the fillet, so the two must agree (peaks {dist:.1f} mm "
+                                "apart)", abs(g / sb - 1), tol["global_sub_rel_tol"]))
+            checks.append(check(f"fillet_peak_covered_{ld}", f"the global model's fillet peak ({ld}) lies inside a "
+                                f"fillet submodel, more than {skip:g} mm from its driven faces (1 = outside every "
+                                "box: the submodels miss the peak)" + (", turned onto y = 0 (axisymmetric)" if keyless
+                                                                       else ""),
+                                0.0 if covered else 1.0, 0.0, kind="validity"))
         sj = min([out["global"]["mesh"]["min_scaled_jacobian"]] + [v["mesh"]["min_scaled_jacobian"]
                                                                     for v in out["subs"].values()])
         checks.append(check("mesh_quality", f"{tol['min_scaled_jacobian']} - the smallest scaled Jacobian over the "
                             "global and submodel meshes (at or below 0: every element above the threshold)",
                             float(tol["min_scaled_jacobian"]) - sj, 0.0, kind="validity"))
-        p = point["parameters"]
         if float(p.get("kt_reference_bending", 0) or 0) > 0:   # the keyless case: part 1's verified fillet Kt
             for ld in LOADS:
                 checks.append(check(f"part1_{ld}", f"fillet Kt against part 1's verified value ({ld})",
