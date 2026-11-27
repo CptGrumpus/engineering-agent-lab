@@ -85,7 +85,10 @@ per problem type:
    simple model, so a disagreement points at its cause. Study 23's beam model got the hub's effect
    backwards (+1.1 % against the solid's -1.6 %), harmless at a 23 % margin, a wrong verdict near 15 %.
    Where the margin is wide, say so on the page with the estimate; no fuller model needed. Plan the fuller
-   check in the case's "Why" and its predictions, not after the result.
+   check in the case's "Why" and its predictions, not after the result. When the fullest model is too slow for a
+   mesh study (3D contact FE: an hour per solve), use the discipline's standard reduced 3D method if one exists
+   and is exact against a closed form (roller profiles: half-space influence coefficients against Hertz line and
+   elliptical contact, seconds per design), and keep one FE solve as a cross-check (study 10 part 2).
 
 ## Procedure
 

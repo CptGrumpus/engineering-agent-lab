@@ -155,6 +155,11 @@ Predict convergence on the reported quantity, not the solver's residual norm (El
   8.7 %): not a fixed definition offset but most likely the reference's peak resolution (a global strain-energy
   criterion). One point cannot tell an offset from a trend; three can.
 
+- **Test a reference against its own limit before trusting it against the model.** The Hertz elliptical-contact
+  reference first disagreed with the half-space solver by 2.4x; its long-ellipse limit (minor semi-axis -> 2 p0 R
+  / E*, Hertz's line contact) showed the reference was the one wrong (a factor I had "fixed" in), and the test
+  case's load was wrong too (15 kN for 20). Both found in minutes, before any run, because the limit was cheap to
+  write (study 10 part 2; tests/test_roller_halfspace.py keeps it).
 - **A check that fails by the same amount on every mesh points at what the refinement does not touch.** The
   nozzle limit-load runs' axial self-balance read 1.08e-5 at every mesh and every load step: the refinement stays
   at the junction, so all three meshes share the coarse far end, whose curved end face carries 5.5e-6 too much

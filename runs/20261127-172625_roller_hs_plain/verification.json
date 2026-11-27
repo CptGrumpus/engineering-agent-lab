@@ -1,0 +1,136 @@
+{
+  "run_id": "20261127-172625_roller_hs_plain",
+  "verified_utc": "2026-11-27T22:28:22+00:00",
+  "tolerances": {
+    "hertz_rel_tol": 0.003,
+    "load_rel_tol": 1e-05,
+    "mesh_noise_rel": 1e-06,
+    "gci_max": 0.01
+  },
+  "points": [
+    {
+      "label": "p00_grid_scale-1",
+      "status": "PASS",
+      "checks": [
+        {
+          "id": "hertz_line_mid",
+          "description": "|long straight roller's mid-length pressure - Hertz line contact for the line load that section carries| / Hertz",
+          "kind": "numerical",
+          "value": 0.0008912940015047832,
+          "tolerance": 0.003,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "hertz_ellipse",
+          "description": "|circularly crowned roller's peak - Hertz elliptical contact| / Hertz",
+          "kind": "numerical",
+          "value": 0.0005540223977186232,
+          "tolerance": 0.003,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "load",
+          "description": "max |total contact force / target - 1| over the design and reference solves",
+          "kind": "numerical",
+          "value": 7.376316435436792e-07,
+          "tolerance": 1e-05,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p01_grid_scale-1.5",
+      "status": "PASS",
+      "checks": [
+        {
+          "id": "hertz_line_mid",
+          "description": "|long straight roller's mid-length pressure - Hertz line contact for the line load that section carries| / Hertz",
+          "kind": "numerical",
+          "value": 0.0005732105863920367,
+          "tolerance": 0.003,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "hertz_ellipse",
+          "description": "|circularly crowned roller's peak - Hertz elliptical contact| / Hertz",
+          "kind": "numerical",
+          "value": 0.00016946575634202432,
+          "tolerance": 0.003,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "load",
+          "description": "max |total contact force / target - 1| over the design and reference solves",
+          "kind": "numerical",
+          "value": 2.220446049250313e-16,
+          "tolerance": 1e-05,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p02_grid_scale-2.25",
+      "status": "PASS",
+      "checks": [
+        {
+          "id": "hertz_line_mid",
+          "description": "|long straight roller's mid-length pressure - Hertz line contact for the line load that section carries| / Hertz",
+          "kind": "numerical",
+          "value": 0.0002422418328968945,
+          "tolerance": 0.003,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "hertz_ellipse",
+          "description": "|circularly crowned roller's peak - Hertz elliptical contact| / Hertz",
+          "kind": "numerical",
+          "value": 0.00010093817618517242,
+          "tolerance": 0.003,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "load",
+          "description": "max |total contact force / target - 1| over the design and reference solves",
+          "kind": "numerical",
+          "value": 5.614416709320835e-10,
+          "tolerance": 1e-05,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ]
+    }
+  ],
+  "run_checks": [
+    {
+      "id": "discretization_peak_contact_pressure_MPa",
+      "description": "relative discretization uncertainty of peak_contact_pressure_MPa, divergent (R = 1.362): no estimate",
+      "kind": "numerical",
+      "value": Infinity,
+      "tolerance": 0.01,
+      "comparison": "<=",
+      "status": "FAIL",
+      "metric": "peak_contact_pressure_MPa"
+    }
+  ],
+  "run_check_detail": {
+    "meshes_used": [
+      "p02_grid_scale-2.25",
+      "p01_grid_scale-1.5",
+      "p00_grid_scale-1"
+    ],
+    "peak_contact_pressure_MPa": {
+      "regime": "divergent",
+      "uncertainty": Infinity,
+      "convergence_ratio": 1.3622286515342252
+    }
+  },
+  "status": "FAIL"
+}
