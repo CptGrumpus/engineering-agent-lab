@@ -69,10 +69,12 @@ def fixed_end_local(w, L, P, EI):
 
 
 def _springs(kl, fe, springs):
-    """Rotational springs at member ends ({2: k_i, 5: k_j}, moment per radian): the member's end rotation becomes an
-    internal dof joined to the node's rotation through the spring, and is condensed out (exact, also under the
-    second-order stiffness; k = 0 is a hinge, k -> infinity a rigid joint). The condensed end moment is the
-    spring's moment, which equals the member's."""
+    """Rotational springs at member ends ({2: k_i, 5: k_j}, moment per radian; or (k, offset)): the member's end
+    rotation becomes an internal dof joined to the node's rotation through the spring, and is condensed out (exact,
+    also under the second-order stiffness; k = 0 is a hinge, k -> infinity a rigid joint). The condensed end moment
+    is the spring's moment, which equals the member's. An offset delta makes the spring M = k (theta_node -
+    theta_end - delta): a rotation the joint takes before the spring engages (bolt slip into bearing), loaded as a
+    lack of fit."""
     sd = sorted(springs)
     n = 6 + len(sd)
     idx = list(range(6))
@@ -82,15 +84,20 @@ def _springs(kl, fe, springs):
     K[np.ix_(idx, idx)] += kl
     F[idx] += fe
     for a, d in enumerate(sd):
-        k, j = float(springs[d]), 6 + a
+        v = springs[d]
+        k, off = (float(v[0]), float(v[1])) if isinstance(v, (tuple, list)) else (float(v), 0.0)
+        j = 6 + a
         K[d, d] += k
         K[j, j] += k
         K[d, j] -= k
         K[j, d] -= k
+        F[d] -= k * off                  # the spring's moment at zero displacement: k (0 - 0 - delta) on the node
+        F[j] += k * off
     keep, rel = list(range(6)), list(range(6, n))
     krr_inv = np.linalg.inv(K[np.ix_(rel, rel)])
     kar = K[np.ix_(keep, rel)]
-    return K[np.ix_(keep, keep)] - kar @ krr_inv @ K[np.ix_(rel, keep)], F[keep] - kar @ krr_inv @ F[rel]
+    recover = (sd, krr_inv, K[np.ix_(rel, keep)], F[rel])   # the member-end rotations from the end displacements
+    return K[np.ix_(keep, keep)] - kar @ krr_inv @ K[np.ix_(rel, keep)], F[keep] - kar @ krr_inv @ F[rel], recover
 
 
 def _condense(kl, fe, rel):
@@ -123,7 +130,8 @@ class Frame:
         P-Delta string stiffness -P/L). A node whose every member is released there has no rotational stiffness:
         give it support(n, ux=False, uy=False, rz=True).
         spring_i / spring_j: a rotational spring (moment per radian) between the member's end and its node: a
-        semi-rigid connection (not with a release at the same end)."""
+        semi-rigid connection (not with a release at the same end); or (k, delta), the spring engaging only after a
+        relative rotation delta (signed as the member's end moment, counterclockwise positive)."""
         if (release_i and spring_i is not None) or (release_j and spring_j is not None):
             raise ValueError("an end takes a release or a spring, not both")
         self.members.append({"i": i, "j": j, "E": E, "A": A, "I": I, "w": float(w),
@@ -162,14 +170,15 @@ class Frame:
                 Pe = P[e] if second_order else 0.0
                 kl = member_stiffness_local(m["E"], m["A"], m["I"], L, Pe)
                 fe = fixed_end_local(m["w"], L, Pe, m["E"] * m["I"])
+                rec = None
                 if m.get("springs"):
-                    kl, fe = _springs(kl, fe, m["springs"])
+                    kl, fe, rec = _springs(kl, fe, m["springs"])
                 if m.get("release"):
                     kl, fe = _condense(kl, fe, m["release"])
                 dofs = [3 * m["i"], 3 * m["i"] + 1, 3 * m["i"] + 2, 3 * m["j"], 3 * m["j"] + 1, 3 * m["j"] + 2]
                 K[np.ix_(dofs, dofs)] += T.T @ kl @ T
                 F[dofs] -= T.T @ fe            # equivalent nodal loads
-                local.append((dofs, T, kl, fe))
+                local.append((dofs, T, kl, fe, rec))
             free = np.ones(3 * n, bool)
             for nd, fl in self.fixed.items():
                 for d in range(3):
@@ -177,7 +186,7 @@ class Frame:
                         free[3 * nd + d] = False
             U = np.zeros(3 * n)
             U[free] = np.linalg.solve(K[np.ix_(free, free)], F[free])
-            ends = [kl @ (T @ U[dofs]) + fe for dofs, T, kl, fe in local]
+            ends = [kl @ (T @ U[dofs]) + fe for dofs, T, kl, fe, _ in local]
             P_new = np.array([(f[0] - f[3]) / 2 for f in ends])
             done = not second_order or np.max(np.abs(P_new - P)) <= tol * max(1.0, float(np.max(np.abs(P_new))))
             P = P_new
@@ -186,8 +195,18 @@ class Frame:
         else:
             raise RuntimeError("second-order iteration did not converge (near or past the buckling load?)")
         R = np.zeros(3 * n)
-        for (dofs, T, kl, fe), f in zip(local, ends):
+        for (dofs, T, kl, fe, _), f in zip(local, ends):
             R[dofs] += T.T @ f
+        # each spring's relative rotation theta_node - theta_member_end (the member-end rotation recovered from the
+        # condensation)
+        self.spring_rotations = {}
+        for e, (dofs, T, kl, fe, rec) in enumerate(local):
+            if rec is None:
+                continue
+            sd, krr_inv, krk, fr = rec
+            u = T @ U[dofs]
+            th = -krr_inv @ (krk @ u + fr)
+            self.spring_rotations[e] = {d: float(u[d] - th[a]) for a, d in enumerate(sd)}
         F_applied = np.zeros(3 * n)
         for nd, f in self.loads.items():
             F_applied[3 * nd:3 * nd + 3] += f

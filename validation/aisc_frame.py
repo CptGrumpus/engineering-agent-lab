@@ -18,8 +18,7 @@ from validation.frame2d import Frame
 
 def portal(*, H: float, L: float, E: float, col: dict, beam: dict, w: float, P_tops=(0.0, 0.0), H_left: float = 0.0,
            base: str = "fixed", stiffness_factor: float = 1.0, second_order: bool = True, P_leaning: float = 0.0,
-           n_col: int = 1, n_beam: int = 2, knee_k: float | None = None, knee_slip: float = 0.0,
-           max_slip_iter: int = 200) -> dict:
+           n_col: int = 1, n_beam: int = 2, knee_k: float | None = None, knee_slip: float = 0.0) -> dict:
     """Portal: columns of height H at x = 0 and x = L, beam of span L between their tops (rigid joints).
 
     col, beam: section dicts with A and Ix. w: uniform gravity load on the beam (positive down). P_tops: point loads
@@ -30,28 +29,47 @@ def portal(*, H: float, L: float, E: float, col: dict, beam: dict, w: float, P_t
     at the nodes either way).
     knee_k: rotational stiffness of each knee connection (moment per radian, nominal: stiffness_factor applies to it
     as to the members, C2.3) as a spring at each end of the beam; None: rigid knees. knee_slip: a rotation the knee
-    takes before its spring engages (bolt slip into bearing), solved as the secant spring M / (slip + M / k) at each
-    knee, iterated with the frame until the knee moments settle (monotonic loading).
+    takes before its spring engages (bolt slip into bearing): M = k (theta - slip), solved exactly as a lack of fit
+    (monotonic loading); a knee whose gap never closes is a hinge. knee_springs reports each knee's secant
+    stiffness M / theta, knee_rotations its rotation.
     """
     if knee_k is None and knee_slip:
         raise ValueError("knee_slip needs knee_k")
-    ks = None if knee_k is None else [knee_k * stiffness_factor] * 2
-    for it_slip in range(max_slip_iter):
-        r = _portal_once(H=H, L=L, E=E, col=col, beam=beam, w=w, P_tops=P_tops, H_left=H_left, base=base,
-                         stiffness_factor=stiffness_factor, second_order=second_order, P_leaning=P_leaning,
-                         n_col=n_col, n_beam=n_beam, springs=ks)
-        if not knee_slip:
-            break
-        k_el = knee_k * stiffness_factor
-        new = [k_el / (1 + k_el * knee_slip / max(abs(m), 1e-30)) for m in r["beam_end_moments"]]
-        done = max(abs(a - b) / b for a, b in zip(new, ks)) < 1e-10
-        ks = new
-        if done:
-            break
+    common = dict(H=H, L=L, E=E, col=col, beam=beam, w=w, P_tops=P_tops, H_left=H_left, base=base,
+                  stiffness_factor=stiffness_factor, second_order=second_order, P_leaning=P_leaning, n_col=n_col,
+                  n_beam=n_beam)
+    if knee_k is None:
+        r = _portal_once(**common, springs=None)
+        r["knee_springs"] = r["knee_rotations"] = None
+        return r
+    k_el = knee_k * stiffness_factor
+    if not knee_slip:
+        r = _portal_once(**common, springs=[k_el, k_el])
     else:
-        raise RuntimeError("knee slip iteration did not settle")
-    r["knee_springs"] = ks
-    r["knee_rotations"] = None if ks is None else [abs(m) / k for m, k in zip(r["beam_end_moments"], ks)]
+        # a gap, then the spring: M = k (theta - slip) once a knee's gap has closed, linear with the slip as a lack
+        # of fit (monotonic loading). Start from both knees open (hinges); a knee whose hinge rotation exceeds the
+        # slip closes, its lack of fit signed as that rotation; solve again until no knee changes state.
+        state = [None, None]                                   # None: open; +1 / -1: closed, the gap's sign
+        for _ in range(6):
+            sp = [0.0 if st is None else (k_el, st * knee_slip) for st in state]
+            r = _portal_once(**common, springs=sp)
+            rot = r["spring_rotations"]
+            new = list(state)
+            for i in range(2):
+                if state[i] is None and abs(rot[i]) > knee_slip:
+                    new[i] = 1.0 if rot[i] > 0 else -1.0
+                elif state[i] is not None and rot[i] * state[i] < knee_slip:
+                    new[i] = None                              # the spring would pull: the gap reopens
+            if new == state:
+                break
+            state = new
+        else:
+            raise RuntimeError("knee slip states did not settle")
+        r["knee_open"] = [st is None for st in state]
+    m = [abs(v) for v in r["beam_end_moments"]]
+    rot = [knee_slip + mi / k_el if knee_slip else mi / k_el for mi in m]
+    r["knee_rotations"] = rot
+    r["knee_springs"] = [mi / ti if ti > 0 else 0.0 for mi, ti in zip(m, rot)]       # secant
     return r
 
 
@@ -105,6 +123,8 @@ def _portal_once(*, H, L, E, col, beam, w, P_tops, H_left, base, stiffness_facto
     out["reactions"] = {"left": [float(v) for v in f.reactions[3 * left[0]:3 * left[0] + 3]],
                         "right": [float(v) for v in f.reactions[3 * right[0]:3 * right[0] + 3]]}
     out["frame"] = f
+    sr = getattr(f, "spring_rotations", {})
+    out["spring_rotations"] = [sr.get(first_beam, {}).get(2, 0.0), sr.get(first_beam + n_beam - 1, {}).get(5, 0.0)]
     return out
 
 

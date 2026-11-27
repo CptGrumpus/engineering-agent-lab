@@ -140,3 +140,19 @@ def test_end_takes_release_or_spring_not_both():
     a, b = f.node(0, 0), f.node(1000, 0)
     with pytest.raises(ValueError):
         f.member(a, b, E, A, I, release_i=True, spring_i=1e9)
+
+
+def test_spring_with_slip_offset_exact():
+    """Fixed beam, end springs that engage after a rotation delta: the spring rotation M / k + delta equals the beam's
+    end rotation w L^3 / 24 EI - M L / 2 EI, so M = (w L^3 / 24 EI - delta) / (1 / k + L / 2 EI)."""
+    L, w, delta = 6000.0, 20.0, 1e-3
+    k = 5 * E * I / L
+    f = Frame()
+    a, b = f.node(0, 0), f.node(L, 0)
+    # hogging at both ends: the member-end moment is counterclockwise at i (positive) and clockwise at j (negative)
+    f.member(a, b, E, A, I, w=-w, spring_i=(k, delta), spring_j=(k, -delta))
+    f.support(a); f.support(b)
+    f.solve()
+    want = (w * L ** 3 / (24 * E * I) - delta) / (1 / k + L / (2 * E * I))
+    assert f.end_forces[0][2] == pytest.approx(want, rel=1e-10)
+    assert -f.end_forces[0][5] == pytest.approx(want, rel=1e-10)
