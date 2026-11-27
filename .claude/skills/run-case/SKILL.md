@@ -192,6 +192,10 @@ the grid check.
 ## Failure handling
 
 - Never delete or overwrite a run directory, including failed ones. Failed runs are evidence.
+- **A sweep must be numeric.** The harness formats sweep values as numbers for the point labels; a sweep over a text
+  parameter (`bc = ["H2", "H1"]`) stops before any point runs ("Unknown format code 'g' for object of type 'str'").
+  Sweep a numeric parameter that selects the case instead (study 11 part 2: the plate's conductivity, 0 and 1e9, for
+  the two bounds).
 - **Every failed run gets a row in `FAILURES.md` in the same session** (software and version, what happened, cause
   or "not diagnosed", status), and its lesson goes into the matching skill. `tests/test_failures_ledger.py` fails
   when a committed run with a failed point is missing; `python scripts/list_failures.py --all` lists every failed
