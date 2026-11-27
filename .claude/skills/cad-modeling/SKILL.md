@@ -48,6 +48,15 @@ for the whole part, `tests/test_intermediate_shaft.py`).
   form. Test by part type (plate with holes, hex head and nut with
   its hole, washer annulus, shank from the grip, weld triangle x length) against hand volumes, and pairs of
   neighbours for interference (`a.intersect(b)` empty). See `models/cad/portal_knee.py`.
+- Welds on a saddle (a nozzle in a shell): fuse the parts, fillet the corner edge (select it as the edges lying on
+  both cylinders), and take the weld as the filleted union minus the union: the weld then matches the analysed
+  model's fillet exactly. Hand volume: Pappus in each meridional plane of the nozzle, V = integral of A(phi)
+  rho_c(phi) d phi, the section a fillet spandrel whose corner opens from 90 deg (plane along the shell) to 90 deg +
+  asin(rho / R) (across it): 0.8 % at a 10 mm fillet on a 112 mm nozzle, shrinking as f^2; test that shrinkage too
+  (`models/cad/vessel_nozzle.py`). Saddle-cut layers (shell, pad) integrate exactly over the disk in the (y, z)
+  plane: wall thickness sqrt(R2^2 - y^2) - sqrt(R1^2 - y^2), with y = a sin(theta) to keep the integrand smooth.
+- OpenCASCADE's default `Volume()` is good to only about 1e-6 on saddle-cut faces; for a 1e-8 test call
+  `BRepGProp.VolumeProperties_s(shape, props, 1e-9)` (agrees with the quadrature to 1e-13).
 
 ## Mesh
 
