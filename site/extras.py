@@ -652,10 +652,13 @@ REQS = [
         ("Overshoot, settling time, deflection", "≤ 20 %, ≤ 0.5 s, ≤ 12 mm", "all met for damping ratio ≥ 0.5", "met")]),
     ("contact", "10", "Roller contact", [
         ("Peak contact pressure", "≤ 650 MPa", "609 MPa", "met"),
-        ("Max shear below the surface", "≤ 200 MPa", "184 MPa", "met")]),
+        ("Max shear below the surface", "≤ 200 MPa", "184 MPa", "met"),
+        ("Part 2: peak contact pressure along a 30 mm roller, straight", "≤ 650 MPa", "over 2,000 MPa at the ends, growing as the grid refines", "fail"),
+        ("Part 2: peak contact pressure, logarithmic crown (A = 1.79 µm)", "≤ 650 MPa", "617 MPa at mid-length, mesh uncertainty 0.03 %", "met")]),
     ("heat", "11", "Cold-plate heat transfer", [
         ("Coolant temperature rise", "≤ 10 K", "7.2 K", "met"),
-        ("Peak wall temperature", "≤ 45 °C", "44.03 °C, mesh uncertainty 0.23 % of the rise", "met")]),
+        ("Peak wall temperature", "≤ 45 °C", "44.03 °C, mesh uncertainty 0.23 % of the rise", "met"),
+        ("Part 2: peak wall temperature with the side walls, 2 mm aluminium plate", "≤ 45 °C", "44.25 °C; fails below about 0.23 mm of aluminium", "met")]),
     ("pv_nozzle", "18", "Pressure vessel nozzle", [
         ("General membrane stress away from the nozzle, Pm", "≤ 138 MPa", "96.2 MPa", "met"),
         ("Local membrane stress, PL, on lines at the weld toes", "≤ 207 MPa", "205.1 MPa, mesh uncertainty 0.03 %; about 11.7 mm would do", "met"),

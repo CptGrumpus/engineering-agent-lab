@@ -7,9 +7,10 @@
     <p>A cold-plate passage, 1 mm deep, carries water at 25 °C and 0.1 m/s. Electronics heat both walls at 30 kW/m² over 50 mm. Does the wall stay at or under 45 °C, does the coolant warm up by no more than 10 K, and how much heat flux could the passage take?</p>
     <h3>The answer</h3>
     <div class="answer">
-      <div class="chips"><span class="chip pass">Coolant rise 7.2 K: verified</span><span class="chip pass">Wall 44.03 °C: verified</span><span class="chip pass">Rated about 31 kW/m²</span></div>
+      <div class="chips"><span class="chip pass">Coolant rise 7.2 K: verified</span><span class="chip pass">Wall 44.03 °C: verified</span><span class="chip pass">Rated about 31 kW/m²</span><span class="chip pass">Part 2, with side walls: 44.25 °C on a 2 mm plate</span></div>
       <p><strong>The coolant warms up by 7.2 K</strong>, inside its 10 K budget, and that result is verified. The energy balance closes to about one part in a trillion on every mesh.</p>
       <p><strong>The wall peaks at 44.03 °C, 0.97 K under the limit,</strong> and it matches the independent reference within 0.6 %. My first mesh study couldn't put a number on the peak's uncertainty, so I held that verdict back. A rerun on finer meshes (40, 80 and 160 cells across the gap) settled it: 44.097, 44.029 and 44.029 °C, an uncertainty of 0.23 % of the temperature rise. With 40 cells across the gap, the wall reaches 45 °C at about 31 kW/m².</p>
+      <p><strong>Part 2 added the passage's side walls.</strong> Near them the flow slows and the wall runs hotter. With a 2 mm aluminium plate it peaks at 44.25 °C, so the verdict stands, with 0.75 K to spare instead of 0.97. A plate thinner than about 0.23 mm of aluminium, or 2 mm of stainless, would fail at the corners.</p>
     </div>
     <h3>Why it matters</h3>
     <p>Liquid cooling works by two things happening at once. The coolant warms as it picks up heat, which a simple energy balance gives. And the wall has to be hotter than the coolant to push the heat in, by an amount that depends on how well the flow carries heat away from the wall. That second part is the hard one, and it's what limits the electronics.</p>
@@ -42,10 +43,34 @@
         <li><strong>A fix that made it worse.</strong> I tried four bounded schemes that get rid of the overshoot. All of them flip-flopped from one iteration to the next and never closed the energy balance, and damping the iterations just hid the problem. I went back to the scheme that converges exactly and let the checks bound its error. I kept every failed run and didn't change any tolerances.</li>
       </ul>
     </div>
+    <h3>Part 2: The Side Walls</h3>
+    <p>The model above is 2D, as if the passage were infinitely wide. The real one is 1 mm deep and 20 mm wide, and near its side walls the coolant slows down. A heated wall over slow coolant runs hot, and part 1 had only 0.97 K to spare out of a 19 K rise. Does the wall still pass?</p>
+    <div class="answer">
+      <div class="chips"><span class="chip pass">2 mm aluminium plate: 44.25 °C, limit 45</span><span class="chip warn">Fails below about 0.23 mm of aluminium</span><span class="chip warn">One exact check missed on the coarsest grid, reported</span></div>
+      <p><strong>For any real aluminium plate, yes.</strong> How hot the wall gets near the side walls depends on how well the plate spreads heat across the width. A 2 mm aluminium plate peaks at 44.25 °C, so the margin shrinks from 0.97 to 0.75 K. The rating barely moves, from 31.5 to 31.2 kW/m², still about 31.</p>
+      <p><strong>The plate is now part of the answer.</strong> Below about 0.23 mm of aluminium, or about 2 mm of stainless steel, the corners fail. A wall that spreads no heat at all would reach 143 °C there. The parallel-plate model could never have shown that.</p>
+    </div>
+    <figure><div class="plate"><img src="v2/fig_duct_section.webp" alt="Left: the wall's excess over the coolant across the passage for aluminium plates from 0.1 to 4 mm, rising towards the side wall, most for the thinnest plate. Right: the peak wall temperature against plate thickness, 45.86 °C at 0.1 mm, above the 45 °C limit, falling to 44.25 at 2 mm and 44.20 at 4 mm" loading="lazy"></div><figcaption><b>Left: the wall across the passage</b>, hottest at the side wall, most for a thin plate. <b>Right: the peak wall temperature</b> against the aluminium plate's thickness.</figcaption></figure>
+    <div class="table-wrap"><table>
+      <thead><tr><th>The heated wall</th><th>Peak wall temperature (limit 45 °C)</th><th>Share of part 1's 0.97 K margin</th></tr></thead>
+      <tbody>
+        <tr><td>Spreads no heat at all</td><td>143 °C, at the corners</td><td>fails by 98 K</td></tr>
+        <tr><td>Aluminium, 0.1 mm</td><td>45.86 °C</td><td>fails</td></tr>
+        <tr><td>Aluminium, 0.25 mm</td><td>44.85 °C</td><td>84 %</td></tr>
+        <tr><td>Aluminium, 1 mm</td><td>44.33 °C</td><td>31 %</td></tr>
+        <tr><td><b>Aluminium, 2 mm</b></td><td><b>44.25 °C</b></td><td><b>22 %</b></td></tr>
+        <tr><td>Aluminium, 4 mm</td><td>44.20 °C</td><td>18 %</td></tr>
+        <tr><td>Spreads heat perfectly</td><td>44.16 °C</td><td>13 %</td></tr>
+      </tbody>
+    </table></div>
+    <p><strong>The model.</strong> The flow and temperature are solved over a quarter of the 1 × 20 mm cross-section, fully developed, with the plate as a conducting sheet that spreads heat across the width. The extra peak over parallel plates is added to part 1's verified wall temperature, which already includes the entry effects.</p>
+    <p><strong>How I checked it.</strong> Every point checks itself against exact answers. With the side walls removed it must give parallel plates, and it does within 1 part in 10⁴. Its friction factor matches the exact rectangular-duct series within 3 parts in 10⁴. For ducts heated on all four walls it gives Nusselt numbers of 5.332 and 6.491 against Incropera's 5.33 and 6.49. Three grids give the wall's peak excess as 12.215, 12.220 and 12.221 K.</p>
+    <p><strong>What I caught.</strong> The coarsest grid missed one exact check: its friction factor is 1.3 parts in 10³ from the exact series, against a tolerance of 1 in 10³. The error falls with the square of the cell size, as it should, but that run is reported as failing, with the tolerance unchanged. And one effect I hadn't predicted: away from the side walls a thin plate runs cooler than parallel plates, because the flow the side walls hold back goes faster down the middle.</p>
     <h3>Limits, and what I'd do next</h3>
     <ul>
+      <li>Part 2 solves the cross-section fully developed and adds its correction to part 1's 2D value; it doesn't solve the passage in 3D along its length. The side walls are taken as insulated, which is conservative.</li>
       <li>The heat is applied as a fixed flux straight at the channel wall, so the plate's own conduction isn't in this model. In a real plate that conduction smooths the wall temperature along the length. <a href="#cold_plate">Study 15</a>, the next one on this page, adds it.</li>
-      <li>2D: the passage is much wider than it is deep, so the side walls are left out. The 3D check in study 5 showed a 3 % effect on the flow.</li>
+      <li>2D in part 1: the side walls are left out there, and part 2 measures what they add.</li>
       <li>Constant water properties, reasonable for a rise under 20 K.</li>
       <li>The geometry and loads are made up, and there's no test data.</li>
     </ul>

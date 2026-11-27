@@ -4,11 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Every Requirement · Justin Smith</title>
-<meta name="description" content="All 97 requirements across the simulation studies, each with its limit, result and verdict.">
+<meta name="description" content="All 100 requirements across the simulation studies, each with its limit, result and verdict.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://cptgrumpus.github.io/engineering-agent-lab/requirements.html">
 <meta property="og:title" content="Every Requirement in One Table">
-<meta property="og:description" content="All 97 requirements across the simulation studies, each with its limit, result and verdict.">
+<meta property="og:description" content="All 100 requirements across the simulation studies, each with its limit, result and verdict.">
 <meta property="og:image" content="https://cptgrumpus.github.io/engineering-agent-lab/v2/og_card.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -57,7 +57,7 @@
     <div class="page-head">
       <p class="eyebrow">Requirements</p>
       <h1>Every Requirement in One Table</h1>
-      <p>97 requirements across the studies: <b class="c-pass">68 met</b>, <b class="c-fail">26 not met</b>, <b class="c-warn">3 withheld</b>. "Not met" is still a verified answer: the design fails, and the study explains what would fix it. "Withheld" means the checks didn't support calling it either way, or that the result waits on open work. Each study's name links to its page.</p>
+      <p>100 requirements across the studies: <b class="c-pass">70 met</b>, <b class="c-fail">27 not met</b>, <b class="c-warn">3 withheld</b>. "Not met" is still a verified answer: the design fails, and the study explains what would fix it. "Withheld" means the checks didn't support calling it either way, or that the result waits on open work. Each study's name links to its page.</p>
     </div>
     <div class="reqs open">
       <div class="table-wrap">
@@ -132,8 +132,11 @@
           <tr class="r-first"><td><a href="mass-spring-damper.html"><span class="r-no">09</span> Mass-Spring-Damper</a></td><td>Overshoot, settling time, deflection</td><td class="num">≤ 20 %, ≤ 0.5 s, ≤ 12 mm</td><td>all met for damping ratio ≥ 0.5</td><td><span class="chip pass">Met</span></td></tr>
           <tr class="r-first"><td><a href="roller-contact.html"><span class="r-no">10</span> Roller Contact</a></td><td>Peak contact pressure</td><td class="num">≤ 650 MPa</td><td>609 MPa</td><td><span class="chip pass">Met</span></td></tr>
           <tr><td></td><td>Max shear below the surface</td><td class="num">≤ 200 MPa</td><td>184 MPa</td><td><span class="chip pass">Met</span></td></tr>
+          <tr><td></td><td>Part 2: peak contact pressure along a 30 mm roller, straight</td><td class="num">≤ 650 MPa</td><td>over 2,000 MPa at the ends, growing as the grid refines</td><td><span class="chip fail">Not met</span></td></tr>
+          <tr><td></td><td>Part 2: peak contact pressure, logarithmic crown (A = 1.79 µm)</td><td class="num">≤ 650 MPa</td><td>617 MPa at mid-length, mesh uncertainty 0.03 %</td><td><span class="chip pass">Met</span></td></tr>
           <tr class="r-first"><td><a href="cold-plate.html#heat"><span class="r-no">11</span> Cold-Plate Heat Transfer</a></td><td>Coolant temperature rise</td><td class="num">≤ 10 K</td><td>7.2 K</td><td><span class="chip pass">Met</span></td></tr>
           <tr><td></td><td>Peak wall temperature</td><td class="num">≤ 45 °C</td><td>44.03 °C, mesh uncertainty 0.23 % of the rise</td><td><span class="chip pass">Met</span></td></tr>
+          <tr><td></td><td>Part 2: peak wall temperature with the side walls, 2 mm aluminium plate</td><td class="num">≤ 45 °C</td><td>44.25 °C; fails below about 0.23 mm of aluminium</td><td><span class="chip pass">Met</span></td></tr>
           <tr class="r-first"><td><a href="pressure-vessel-nozzle.html"><span class="r-no">18</span> Pressure Vessel Nozzle</a></td><td>General membrane stress away from the nozzle, Pm</td><td class="num">≤ 138 MPa</td><td>96.2 MPa</td><td><span class="chip pass">Met</span></td></tr>
           <tr><td></td><td>Local membrane stress, PL, on lines at the weld toes</td><td class="num">≤ 207 MPa</td><td>205.1 MPa, mesh uncertainty 0.03 %; about 11.7 mm would do</td><td><span class="chip pass">Met</span></td></tr>
           <tr><td></td><td>Local membrane stress, PL, on the line through the inner corner</td><td class="num">≤ 207 MPa</td><td>256.7 MPa, 24 % over; overruled by the Part 2 limit load</td><td><span class="chip fail">Not met</span></td></tr>

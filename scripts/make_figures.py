@@ -2571,6 +2571,22 @@ def oring_cover():
     print("fig oring_cover")
 
 
+def duct_section():
+    """Study 11 part 2: the study session's figure (scripts/make_duct_section_figure.py), converted for the site."""
+    from PIL import Image
+    Image.open(REPO / "portfolio" / "img" / "duct_section.png").convert("RGB").save(
+        fk.OUT / "fig_duct_section.webp", "WEBP", quality=90, method=6)
+    print("fig duct_section")
+
+
+def roller_halfspace():
+    """Study 10 part 2: the study session's figure (scripts/make_roller_halfspace_figure.py), converted for the site."""
+    from PIL import Image
+    Image.open(REPO / "portfolio" / "img" / "roller_halfspace.png").convert("RGB").save(
+        fk.OUT / "fig_roller_halfspace.webp", "WEBP", quality=90, method=6)
+    print("fig roller_halfspace")
+
+
 def steel_knee():
     """Study 28 part 2: the study session's figure (scripts/make_steel_knee_figure.py), converted for the site."""
     from PIL import Image
@@ -2755,7 +2771,7 @@ ALL = {f.__name__: f for f in (cfd_tolerance, cfd_duct, cfd_response, cfd_field,
                                qc_liftoff, qc_iso, coldplate_response, pipe_friction, motor_comparison,
                                motor_rotor, pv_nozzle, step_comparison, random_vibration, bracket_uncertainty,
                                fan_rotor, fan_rotor_campbell, crack_growth, motor_efficiency, motor_airgap, oring_seal, shaft_fillet,
-                               enclosure_revb, enclosure_field, steel_frame, flag_fsi, crack_surface, keyed_shaft, steel_knee, rotor_solid, strap_3d, nozzle_limit, nozzle_yield, oring_cover)}
+                               enclosure_revb, enclosure_field, steel_frame, flag_fsi, crack_surface, keyed_shaft, steel_knee, rotor_solid, strap_3d, nozzle_limit, nozzle_yield, oring_cover, duct_section, roller_halfspace)}
 # not on the site (the earlier model's thermal result): motor_thermal
 
 if __name__ == "__main__":
