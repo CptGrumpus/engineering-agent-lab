@@ -129,7 +129,7 @@ change:
 | 25 O-ring | axisymmetric (right) | **Done (2026-11-27):** flange with groove and tapped holes, free O-ring, 6 mm cover, M6 screws and washers, STEP (models/cad/oring_cover.py); squeeze overlap and thread engagement measured against hand formulas | none (visual, drawing); the cover's stiffness checked in part 2 |
 | 24 cracked plate | 2D, 3D surface crack | weld toe of a T-joint (with weld fatigue I) | crack initiation site, life |
 | 20 motor | 2D EM | 3D lamination stack and housing for the render | none (visual) |
-| 01-14, 21, 22 | CadQuery single parts | chamfers, real hole patterns, STEP + drawing links | small; deliverable set |
+| 01-14, 21, 22 | CadQuery single parts | chamfers, real hole patterns, STEP + drawing links. **Done 2026-11-27:** the strap (2/3/14) and the strut (13, pinned about its weak axis), STEP; open: 1, 4/21/22, 8, 12 | small; deliverable set |
 
 ### Simple first, then verify where the margin is thin (standing rule, user, 2026-11-27)
 
