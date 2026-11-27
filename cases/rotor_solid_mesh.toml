@@ -1,0 +1,91 @@
+# Study 23 part 2: the fan rotor as a 3D solid. Part 1 (cases/rotor_fan_design.toml, page 23) recommends a 65 mm shaft
+# from a ROSS beam model: a uniform shaft, the impeller a rigid 400 x 25 mm disc bored to it, point bearings at the
+# shaft's ends; first forward critical 3714 rpm on the soft bearings (1e7 N/m), 23.8 % over the 3000 rpm top speed
+# (REQ-G1: at least 15 %). A real rotor has its impeller on a hub and smaller bearing journals, and a disc that is not
+# rigid: does the recommendation hold?
+#
+# Model (models/fea/rotor_solid.py, studies/rotor_solid.py): the rotor as a 3D solid (CadQuery, Gmsh C3D10, CalculiX
+# *FREQUENCY), half model about a plane through the axis (the lateral bending modes in that plane), bearings as point
+# springs on rigid end faces, everything bonded. In each point ROSS runs on the same rotor (models/rotor/fan_rotor.py,
+# now with an optional hub, taken as shaft elements of the hub's diameter, and journals). The solid checks ROSS at
+# rest; ROSS's critical speed (with the gyroscopic terms a modal solid at rest lacks) is then corrected by the solid's
+# ratio of the first frequencies at rest.
+#
+# Smoke (scratch, between 11:36 and 11:58; 8 mm elements, 53-61 k nodes, 25-33 s a solve): ROSS's builder reproduces part 1 (3714
+# rpm, 61.88 Hz at rest, 1e7); the solid on the uniform rotor 62.38 Hz (+0.8 %); with a 130 x 100 mm hub and 55 x 50
+# mm journals the solid gives 61.41 Hz (-1.6 % on its uniform rotor) where ROSS gives 62.64 Hz (+1.2 % on its own):
+# the beam model gets the detail's direction wrong. Corrected critical about 3685 rpm. Two CalculiX traps: *SPRING
+# reads "card without data" unless the stiffness has a decimal point; the hub and journal lengths must fall on ROSS's
+# element nodes (50 mm elements).
+#
+# This case: the mesh study of the solid on the rotor exactly as ROSS idealises it (uniform 65 mm shaft, rigid disc
+# bored to it), soft bearings; elements 10 mm x 1.0 / 0.8 / 0.64.
+#
+# Predictions, written BEFORE the run (2026-11-27 11:58):
+#   P1 The solid's first lateral frequency 62.2-62.5 Hz at every level, within 0.3 % between levels (the
+#      discretization check passes 1 %).
+#   P2 Against ROSS (61.88 Hz) the solid is 0.5-1.0 % higher at every level (solid_vs_ross passes 2 %): the beam model
+#      holds for the rotor as idealised, the small gap being the disc's thickness and the end faces' rigid bodies.
+#   P3 Corrected critical 3730-3755 rpm, margin 24-25 % (REQ-G1 passes); every check passes; under 5 minutes.
+
+[case]
+name = "rotor_solid_mesh"
+model = "ccx_rotor_solid"
+description = "Fan rotor (study 23 part 2): the 3D solid on the rotor as ROSS idealises it, mesh study, soft bearings."
+assumptions = [
+  "Linear elastic steel (E 205 GPa, density 7850 kg/m^3, Poisson 0.29), as part 1; every part bonded (a hub shrunk or tightly keyed on the shaft); the disc elastic in the solid, rigid in ROSS.",
+  "Bearings as point springs at the shaft's end faces (rigid end faces on a reference node, free to rotate), stiffness 1e7 (soft) or 1e8 N/m, as part 1's band; damping left out (natural frequencies).",
+  "Half model about a plane through the axis: its modes are the lateral bending modes in that plane (axisymmetric rotor: the other plane is the same).",
+  "The solid is at rest; the gyroscopic stiffening at speed comes from ROSS, whose critical speed is scaled by the solid's ratio of first frequencies at rest.",
+]
+limitations = [
+  "Hub and journal sizes are synthetic (a plausible layout, not a drawing); the keyway and key are left out of the solid (a tight key restores the section).",
+  "No blades or aerodynamic loads; linear bearings, as part 1.",
+]
+
+[parameters]
+density_kg_per_m3 = 7850.0
+youngs_modulus_Pa = 205000000000.0
+poisson_ratio = 0.29
+n_elements = 20
+bearing_span_m = 1.0
+shaft_diameter_m = 0.065
+disc_width_m = 0.025
+disc_diameter_m = 0.4
+bearing_stiffness_N_per_m = 10000000.0
+bearing_damping_Ns_per_m = 500.0
+speed_min_rpm = 1000.0
+speed_max_rpm = 3000.0
+campbell_max_rpm = 9000.0
+campbell_points = 91
+modes = 6
+response_points = 41
+hub_diameter_m = 0.0
+hub_length_m = 0.0
+journal_diameter_m = 0.0
+journal_length_m = 0.0
+element_size_mm = 10.0
+mesh_scale = 1.0
+
+[sweep]
+parameter = "mesh_scale"
+values = [1.0, 0.8, 0.64]
+
+[numerics]
+solver_timeout_s = 1800
+solve_timeout_s = 3600
+solid_modes = 6
+
+[verification]
+volume_rel_tol = 1e-9
+min_scaled_jacobian = 0.1
+ross_rel_tol = 0.02
+gci_max = 0.01
+
+[[requirements]]
+id = "REQ-G1"
+text = "Every forward critical speed shall lie at least 15 % outside the 1000-3000 rpm operating range (part 1's REQ-G1): here the first forward critical, ROSS's corrected by the solid at rest."
+metric = "corrected_margin_pct"
+operator = ">="
+limit = 15.0
+units = "%"

@@ -62,6 +62,7 @@ The intended user is an automotive engineer with a master's degree in mechanical
 | Surface crack in the same plate (K along a 3D crack front against Newman-Raju, BS 7910 two-point growth life) | `gmsh_ccx_surface_crack` | Gmsh quarter model, quadratic tetrahedra refined at the front -> CalculiX; energy release and crack opening; growth in Python | `surface_crack_mesh`, `surface_crack_noise`, `surface_crack_mesh_r1` |
 | Backward-facing step, separated turbulent flow (reattachment, skin friction, pressure recovery) | `openfoam_step_rans` | OpenFOAM 14 (in WSL), k-omega SST | `step_mesh`, `step_inlet_tu`, `step_outlet` |
 | Fan rotor critical speeds (Campbell diagram, unbalance response) | `ross_rotor` | ROSS 3.1 (own environment), Timoshenko shaft elements | `rotor_fan_mesh`, `rotor_fan_design` |
+| The same rotor as a 3D solid with its hub and journals (natural frequencies against the beam model) | `ccx_rotor_solid` | CadQuery solid -> Gmsh -> CalculiX *FREQUENCY, point bearings on rigid end faces; ROSS on the same rotor in each point | `rotor_solid_mesh`, `rotor_solid_detail` |
 
 ## Project folders
 

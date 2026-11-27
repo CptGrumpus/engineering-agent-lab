@@ -57,7 +57,10 @@ class RossRotor(Backend):
 
     def solve(self, params, numerics, tolerance_scale=1.0):
         work = Path(tempfile.mkdtemp(prefix="rotor_"))
-        (work / "params.json").write_text(json.dumps({k: params[k] for k in PARAMS}), encoding="utf-8")
+        # the optional detail (hub, journals; study 23 part 2) goes to ROSS when the case gives it
+        opt = {k: params[k] for k in ("hub_diameter_m", "hub_length_m", "journal_diameter_m", "journal_length_m")
+               if params.get(k) not in (None, "", 0, 0.0)}
+        (work / "params.json").write_text(json.dumps({k: params[k] for k in PARAMS} | opt), encoding="utf-8")
         r = subprocess.run([str(self.python), str(self.runner), "params.json", "out.json"], cwd=work,
                            capture_output=True, text=True, timeout=float(numerics.get("solver_timeout_s", 1800)))
         # ROSS's import prints a warning about an optional fluid-property library (REFPROP); keep only the rest

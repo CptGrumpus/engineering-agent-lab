@@ -28,6 +28,33 @@ import ross as rs  # noqa: E402
 
 RPM = 2 * math.pi / 60
 RIGID = 1e13  # N/m, "rigid" support for the reference models
+# optional detail (study 23 part 2): a hub bonded to the shaft under the disc (the shaft elements under it take the
+# hub's diameter; the disc's bore is the hub's), and smaller bearing journals at both ends
+OPTIONAL = ("hub_diameter_m", "hub_length_m", "journal_diameter_m", "journal_length_m")
+
+
+def diameters(p) -> list[float]:
+    """Each shaft element's outer diameter: the shaft's, the hub's under the hub, the journal's at the ends. The
+    hub and journal lengths must be whole numbers of elements (the element nodes fall on their ends)."""
+    n, L, d = int(p["n_elements"]), float(p["bearing_span_m"]), float(p["shaft_diameter_m"])
+    le = L / n
+    out = [d] * n
+    for key_d, key_l, where in (("journal_diameter_m", "journal_length_m", "ends"),
+                                ("hub_diameter_m", "hub_length_m", "middle")):
+        dd, ll = float(p.get(key_d, 0) or 0), float(p.get(key_l, 0) or 0)
+        if dd <= 0:
+            continue
+        k = ll / le
+        if abs(k - round(k)) > 1e-9 or round(k) < 1:
+            raise ValueError(f"{key_l} {ll} is not a whole number of {le} m elements")
+        k = round(k)
+        idx = (list(range(k)) + list(range(n - k, n))) if where == "ends" else \
+            list(range(n // 2 - k // 2, n // 2 + (k - k // 2)))
+        if where == "middle" and k % 2:
+            raise ValueError("the hub must span an even number of elements (centred on the disc's node)")
+        for i in idx:
+            out[i] = dd
+    return out
 
 
 def build(p, *, kb=None, cb=None, disc=True, shaft_rho=None):
@@ -39,9 +66,10 @@ def build(p, *, kb=None, cb=None, disc=True, shaft_rho=None):
     n, L, d = int(p["n_elements"]), float(p["bearing_span_m"]), float(p["shaft_diameter_m"])
     if n % 2:
         raise ValueError("n_elements must be even (the disc sits on the mid-span node)")
-    shaft = [rs.ShaftElement(L=L / n, idl=0.0, odl=d, material=shaft_mat, shear_effects=True, rotary_inertia=True,
-                             gyroscopic=True) for _ in range(n)]
-    disks = [rs.DiskElement.from_geometry(n=n // 2, material=steel, width=float(p["disc_width_m"]), i_d=d,
+    shaft = [rs.ShaftElement(L=L / n, idl=0.0, odl=di, material=shaft_mat, shear_effects=True, rotary_inertia=True,
+                             gyroscopic=True) for di in diameters(p)]
+    bore = float(p.get("hub_diameter_m", 0) or 0) or d
+    disks = [rs.DiskElement.from_geometry(n=n // 2, material=steel, width=float(p["disc_width_m"]), i_d=bore,
                                           o_d=float(p["disc_diameter_m"]))] if disc else []
     k = float(p["bearing_stiffness_N_per_m"]) if kb is None else kb
     c = float(p["bearing_damping_Ns_per_m"]) if cb is None else cb
@@ -90,7 +118,8 @@ def main(pfile, ofile):
     amp_x = np.abs(resp[ndof * disc_node + 0, :])
     amp_y = np.abs(resp[ndof * disc_node + 1, :])
 
-    # closed-form references on companion models
+    # closed-form references on companion models (the uniform rotor: the closed forms know no hub or journals)
+    p = {k: v for k, v in p.items() if k not in OPTIONAL}
     d, L, E = float(p["shaft_diameter_m"]), float(p["bearing_span_m"]), float(p["youngs_modulus_Pa"])
     I = math.pi * d ** 4 / 64
     jeff = build(p, kb=RIGID, cb=0.0, shaft_rho=1e-6)
@@ -114,6 +143,7 @@ def main(pfile, ofile):
            "ref": {"jeffcott_ross_rpm": jeff_ross, "jeffcott_cf_rpm": jeff_cf, "series_ross_rpm": ser_ross,
                    "series_cf_rpm": ser_cf, "bare_ross_rpm": bare_ross, "bare_cf_rpm": bare_cf,
                    "shaft_stiffness_N_per_m": ks},
+           "frequency_0rpm_hz": [float(v) / (2 * math.pi) for v in rotor.run_modal(speed=0).wn[:4]],
            "ross_version": rs.__version__, "wall_s": time.time() - t0}
     open(ofile, "w", encoding="utf-8").write(json.dumps(out))
 
