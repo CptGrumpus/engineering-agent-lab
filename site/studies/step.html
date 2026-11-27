@@ -10,6 +10,7 @@
       <div class="chips"><span class="chip pass">Reattachment 2.3 % long, limit 10 %</span><span class="chip pass">Skin friction 7.0 % rms, limit 15 %</span><span class="chip fail">Pressure recovery 0.023 high, limit 0.02</span></div>
       <p><strong>Two of three.</strong> The flow reattaches 6.40 step heights downstream against a measured 6.26, and the skin friction after it is 1 to 10 % low at every measured station, 7.0 % rms. Both pass. The pressure recovers to 0.153 against a measured 0.131, which misses the 0.02 limit by 0.003.</p>
       <p><strong>The miss has a likely cause, and it's one I'd stated before the comparison.</strong> The pressure peak behind reattachment is close (about 0.177 against 0.163). Further downstream the measured pressure falls back faster than mine. That's what the tunnel's side walls do: their boundary layers thicken, squeeze the core flow and lower the pressure. The tunnel is 12 step heights wide, and a 2D model has no side walls at all.</p>
+      <p><strong>A hand estimate says the cause is big enough.</strong> I grew each side wall's boundary layer from my own 2D wall pressure. By 30 step heights downstream, the core runs 1.6 to 3.0 % faster and the pressure recovery drops by 0.028 to 0.052, depending on how thick the side walls' boundary layers are to begin with. Every case is at least as large as the miss. The estimate can't size the effect exactly, though; a 3D model with the side walls would.</p>
     </div>
     <figure><div class="plate"><img src="v2/fig_step_comparison.svg" alt="Skin friction and pressure along the floor behind the step, the model's curve against the measured points: friction agrees, the model's pressure stays higher downstream" loading="lazy"></div><figcaption><b>The one comparison.</b> Left: skin friction along the floor, with the scored range shaded and the reattachment point marked. Right: the pressure along the floor. Up to the peak the model follows the measurements; after it, the measured pressure falls away and mine doesn't.</figcaption></figure>
     <h3>Why It Matters</h3>
@@ -40,7 +41,7 @@
     </div>
     <h3>Limits, and What I'd Do Next</h3>
     <ul>
-      <li>2D: no tunnel side walls, which is the likely cause of the pressure miss. A 3D model of the full span, or a correction for side-wall blockage, would test that directly.</li>
+      <li>2D: no tunnel side walls, which is the likely cause of the pressure miss. A hand estimate of their blockage is big enough to explain it; a 3D model of the full span would size it.</li>
       <li>One geometry, one Reynolds number and one turbulence model. Steady flow, so the shear layer's unsteadiness isn't resolved.</li>
       <li>The model's boundary layer is fuller than the measured one at the same momentum thickness. The reattachment was insensitive to that in the smoke tests, but it's a stated difference.</li>
     </ul>
