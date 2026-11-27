@@ -94,3 +94,49 @@ def test_portal_frame_equilibrium_and_symmetry():
     second_sway = f.U[3 * n1]
     f.solve(second_order=False)
     assert second_sway > f.U[3 * n1]                                            # P-Delta increases the sway
+
+
+@pytest.mark.parametrize("ratio", [0.5, 2.0, 20.0])
+def test_beam_with_end_springs_exact(ratio):
+    """Fixed beam under a uniform load with rotational springs k at both ends: M = (w L^2 / 12) / (1 + 2 EI / (k L))
+    (spring rotation M / k equal to the beam's end rotation w L^3 / 24 EI - M L / 2 EI); k given as ratio x EI / L."""
+    L, w = 6000.0, 20.0
+    k = ratio * E * I / L
+    f = Frame()
+    a, b = f.node(0, 0), f.node(L, 0)
+    f.member(a, b, E, A, I, w=-w, spring_i=k, spring_j=k)
+    f.support(a); f.support(b)
+    f.solve()
+    assert abs(f.end_forces[0][2]) == pytest.approx(w * L * L / 12 / (1 + 2 / ratio), rel=1e-10)
+    assert abs(f.end_forces[0][5]) == pytest.approx(w * L * L / 12 / (1 + 2 / ratio), rel=1e-10)
+
+
+def test_springs_tend_to_rigid_and_to_hinge_also_second_order():
+    """A sway portal with springs at the beam's ends: k -> infinity gives the rigid frame, k = 0 the pinned beam,
+    under the second-order stiffness too."""
+    H, B, w, Hx = 4000.0, 6000.0, 35.0, 15e3
+
+    def portal(**ends):
+        f = Frame()
+        n0, n1, n2, n3 = f.node(0, 0), f.node(0, H), f.node(B, H), f.node(B, 0)
+        f.member(n0, n1, E, A, I)
+        f.member(n1, n2, E, A, I, w=-w, **ends)
+        f.member(n2, n3, E, A, I)
+        f.support(n0); f.support(n3)
+        f.load(n1, fx=Hx)
+        return f.solve(second_order=True)
+
+    rigid, hinge = portal(), portal(release_i=True, release_j=True)
+    k_big = 1e9 * E * I / B
+    assert portal(spring_i=k_big, spring_j=k_big) == pytest.approx(rigid, rel=1e-6, abs=1e-9)
+    soft = portal(spring_i=0.0, spring_j=0.0)
+    assert soft[[0, 1, 3, 4, 6, 7, 9, 10]] == pytest.approx(hinge[[0, 1, 3, 4, 6, 7, 9, 10]], rel=1e-9, abs=1e-9)
+    mid = portal(spring_i=20 * E * I / B, spring_j=20 * E * I / B)
+    assert rigid[3] < mid[3] < hinge[3]          # sway between the two limits
+
+
+def test_end_takes_release_or_spring_not_both():
+    f = Frame()
+    a, b = f.node(0, 0), f.node(1000, 0)
+    with pytest.raises(ValueError):
+        f.member(a, b, E, A, I, release_i=True, spring_i=1e9)

@@ -68,6 +68,31 @@ def fixed_end_local(w, L, P, EI):
     return np.array([0.0, -w * L / 2, -M, 0.0, -w * L / 2, M])
 
 
+def _springs(kl, fe, springs):
+    """Rotational springs at member ends ({2: k_i, 5: k_j}, moment per radian): the member's end rotation becomes an
+    internal dof joined to the node's rotation through the spring, and is condensed out (exact, also under the
+    second-order stiffness; k = 0 is a hinge, k -> infinity a rigid joint). The condensed end moment is the
+    spring's moment, which equals the member's."""
+    sd = sorted(springs)
+    n = 6 + len(sd)
+    idx = list(range(6))
+    for a, d in enumerate(sd):
+        idx[d] = 6 + a
+    K, F = np.zeros((n, n)), np.zeros(n)
+    K[np.ix_(idx, idx)] += kl
+    F[idx] += fe
+    for a, d in enumerate(sd):
+        k, j = float(springs[d]), 6 + a
+        K[d, d] += k
+        K[j, j] += k
+        K[d, j] -= k
+        K[j, d] -= k
+    keep, rel = list(range(6)), list(range(6, n))
+    krr_inv = np.linalg.inv(K[np.ix_(rel, rel)])
+    kar = K[np.ix_(keep, rel)]
+    return K[np.ix_(keep, keep)] - kar @ krr_inv @ K[np.ix_(rel, keep)], F[keep] - kar @ krr_inv @ F[rel]
+
+
 def _condense(kl, fe, rel):
     """Static condensation of the released end rotations: k* = kaa - kar krr^-1 kra, f* = fa - kar krr^-1 fr, put
     back as 6 x 6 / 6 with zero rows and columns at the released dofs (their end moments are then exactly zero)."""
@@ -91,14 +116,19 @@ class Frame:
         self.nodes.append((float(x), float(y)))
         return len(self.nodes) - 1
 
-    def member(self, i, j, E, A, I, w=0.0, release_i=False, release_j=False):
+    def member(self, i, j, E, A, I, w=0.0, release_i=False, release_j=False, spring_i=None, spring_j=None):
         """w: uniform load per length in the member's local +y (perpendicular, to the left of i -> j).
         release_i / release_j: a moment release (hinge) at that end; its rotation is condensed out of the member
         (exact under the second-order stiffness too: a pinned-pinned strut keeps only its axial stiffness and the
         P-Delta string stiffness -P/L). A node whose every member is released there has no rotational stiffness:
-        give it support(n, ux=False, uy=False, rz=True)."""
+        give it support(n, ux=False, uy=False, rz=True).
+        spring_i / spring_j: a rotational spring (moment per radian) between the member's end and its node: a
+        semi-rigid connection (not with a release at the same end)."""
+        if (release_i and spring_i is not None) or (release_j and spring_j is not None):
+            raise ValueError("an end takes a release or a spring, not both")
         self.members.append({"i": i, "j": j, "E": E, "A": A, "I": I, "w": float(w),
-                             "release": [d for d, r in ((2, release_i), (5, release_j)) if r]})
+                             "release": [d for d, r in ((2, release_i), (5, release_j)) if r],
+                             "springs": {d: k for d, k in ((2, spring_i), (5, spring_j)) if k is not None}})
 
     def support(self, n, ux=True, uy=True, rz=True):
         self.fixed[n] = (ux, uy, rz)
@@ -132,6 +162,8 @@ class Frame:
                 Pe = P[e] if second_order else 0.0
                 kl = member_stiffness_local(m["E"], m["A"], m["I"], L, Pe)
                 fe = fixed_end_local(m["w"], L, Pe, m["E"] * m["I"])
+                if m.get("springs"):
+                    kl, fe = _springs(kl, fe, m["springs"])
                 if m.get("release"):
                     kl, fe = _condense(kl, fe, m["release"])
                 dofs = [3 * m["i"], 3 * m["i"] + 1, 3 * m["i"] + 2, 3 * m["j"], 3 * m["j"] + 1, 3 * m["j"] + 2]
