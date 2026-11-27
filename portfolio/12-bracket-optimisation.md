@@ -49,6 +49,15 @@ This study took three optimisation runs. Each failure was caught by a check, not
 5. **The optimiser stalled in mesh noise.** With the fillet refined locally, the peak converged: 96.6 to 97.6 MPa at fillet elements of 1.0 mm and finer. But it still scattered 1.5 % between designs a tenth of a millimetre apart. The optimiser's last candidates all sat just over the limit, so the best point that met it was the start. A linear fit of the stress over those 15 candidates averages the noise (0.5 MPa). The chosen design sits two standard deviations inside the limit, within the region the candidates sampled.
 6. **The final mesh study first read "divergent"**: 97.36, 97.54, 98.33 MPa. Once resolved, the peak is a maximum over nodes and jitters from mesh to mesh by as much as one refinement step changes it. That jitter had been measured beforehand (1.5 %). Declared as the study's noise floor, it classes the three values as converged; a peak that kept rising would still be caught.
 
+## The bracket as a part
+
+The chosen bracket is delivered as a part ([`models/cad/clevis.py`](../models/cad/clevis.py), [STEP](cad/clevis_D.step)):
+the very solid the optimiser and the mesh study analysed (the same CadQuery function, at design D), with the base's
+mounting pattern added: four 9 mm bolt holes and two 8 mm dowel holes, clear of the lug and the gussets, which the
+study's fixed base stands in for. Its volume equals the analysed solid's less the six holes to 10⁻¹³. The holes are
+synthetic and take about 10 g off the base: the part weighs 362.4 g against the 371.9 g optimised with a plain
+base.
+
 ## Limits
 
 - Static load; the fatigue rating is folded into the 100 MPa allowable.
