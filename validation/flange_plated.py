@@ -131,3 +131,20 @@ def checks(beam: dict, col: dict, g: dict, Mu: float, Vu: float, Pu: float = 0.0
     add("panel_zone_shear", "column panel-zone shear, flange force less the column shear (J10.6a)",
         max(Pf_bolts - abs(Vc), 1e-12), c.panel_zone_shear(FY, col["d"], col["tw"], abs(Vu), Pc))
     return out
+
+
+#: Study 28 part 2's knee (W14x30 beam to the top of a W10x33 column), inch: 6 x 1/2 in. flange plates, 3/4 in.
+#: Group A bolts at 3 in. on a 3.5 in. gage, 1 1/2 in. edges, 1/2 in. setback (lev_beam 1 1/4 in. with 1/4 in.
+#: underrun); 9 x 3/8 in. shear tab with three bolts; 1/4 in. fillet welds; a pair of 1/2 in. continuity plates
+#: (3 1/2 in. wide) at the top plate's level, flush with the column's top. z_top / z_bot: the plates' mid-thickness
+#: from the column's top.
+DESIGNS = {
+    "bearing4": {"bolt": {"d": 0.75, "Fnv": 54.0, "slip_critical": False},
+                 "fp": {"b": 6.0, "t": 0.5, "Fy": 50.0, "Fu": 65.0, "gage": 3.5, "n": 2, "s": 3.0, "le": 1.5,
+                        "lev_beam": 1.25, "D16": 4},
+                 "wp": {"L": 9.0, "t": 0.375, "Fy": 50.0, "Fu": 65.0, "n": 3, "s": 3.0, "le": 1.5, "leh": 1.5,
+                        "D16": 4},
+                 "col": {"z_top": 0.25, "z_bot": 13.8 + 0.75}, "cap": {"t": 0.5, "b": 3.5, "Fy": 50.0}},
+}
+DESIGNS["slip_critical6"] = {**DESIGNS["bearing4"], "bolt": {"d": 0.75, "Fnv": 54.0, "slip_critical": True},
+                             "fp": {**DESIGNS["bearing4"]["fp"], "n": 3}}

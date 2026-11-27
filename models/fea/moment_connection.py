@@ -36,7 +36,13 @@ def g14(v) -> str:
 def section_mm(shape: dict) -> dict:
     """A Shapes Database W-shape (inch) in mm, with its root fillet radius r = kdes - tf."""
     d, bf, tf, tw, k = (shape[k] * INCH for k in ("d", "bf", "tf", "tw", "kdes"))
-    return {"d": d, "bf": bf, "tf": tf, "tw": tw, "r": k - tf, "Ix": shape["Ix"] * INCH ** 4,
+    r = k - tf
+    # the modelled section's own Ix (flanges, web, the four root fillet spandrels about their centroids' level):
+    # 0.3-0.8 % below the tabulated Ix, which is the rolled profile's; beam theory checked against the solid model
+    # uses this one, so the joint's spring holds only the joint (the frame keeps the tabulated Ix for its members)
+    spandrel, yc = r * r * (1 - math.pi / 4), d / 2 - tf - r * (10 - 3 * math.pi) / (3 * (4 - math.pi))
+    Im = bf * d ** 3 / 12 - (bf - tw) * (d - 2 * tf) ** 3 / 12 + 4 * spandrel * yc ** 2
+    return {"d": d, "bf": bf, "tf": tf, "tw": tw, "r": r, "Ix": shape["Ix"] * INCH ** 4, "Ix_model": Im,
             "A": shape["A"] * INCH ** 2}
 
 
@@ -188,12 +194,12 @@ def write_deck(p: dict, mesh_inp: Path, deck: Path) -> dict:
     lines = ["*NODE"] + [f"{int(n)}, {g14(x)}, {g14(y)}, {g14(z)}" for n, (x, y, z) in zip(ids, xyz)]
     lines.append("*ELEMENT, TYPE=C3D10, ELSET=KNEE")
     lines += [f"{e}, " + ", ".join(str(v) for v in c) for e, c in zip(eids, elems)]
-    lines += [nset("SYM", sym), nset("BASE", base),
+    lines += [nset("SYM", sym), nset("CLAMP", base),
               f"*MATERIAL, NAME=STEEL\n*ELASTIC\n{g14(p['youngs_modulus_MPa'])}, {g14(p['poisson_ratio'])}",
-              "*SOLID SECTION, ELSET=KNEE, MATERIAL=STEEL", "*BOUNDARY", "SYM, 3, 3, 0.", "BASE, 1, 3, 0.",
+              "*SOLID SECTION, ELSET=KNEE, MATERIAL=STEEL", "*BOUNDARY", "SYM, 3, 3, 0.", "CLAMP, 1, 3, 0.",
               "*STEP", "*STATIC", "*CLOAD"]
     lines += [f"{int(ids[n])}, {k + 1}, {g14(v)}" for n, f in sorted(F.items()) for k, v in enumerate(f) if v != 0.0]
-    lines += ["*NODE FILE", "U", "*NODE PRINT, NSET=BASE", "RF", "*END STEP"]
+    lines += ["*NODE FILE", "U", "*NODE PRINT, NSET=CLAMP", "RF", "*END STEP"]
     deck.write_text("\n".join(lines) + "\n", encoding="utf-8")
     Fa = np.array(list(F.values()))
     return {"nodes": int(len(ids)), "elements": int(len(eids)), "applied_force_N": Fa.sum(axis=0).tolist(),
@@ -224,8 +230,8 @@ def centreline_rotations(p: dict, x_b: float, y_c: float) -> dict:
     g = dims(p)
     E, P = float(p["youngs_modulus_MPa"]), float(p["tip_load_kN"]) * 1e3
     a = g["x_tip"]
-    db = P / (E * g["beam"]["Ix"]) * (a * x_b - x_b ** 2 / 2)          # int_0^x_b P (a - x) dx / EI
-    dc = P * a * (g["y_beam_cl"] - y_c) / (E * g["col"]["Ix"])
+    db = P / (E * g["beam"]["Ix_model"]) * (a * x_b - x_b ** 2 / 2)          # int_0^x_b P (a - x) dx / EI
+    dc = P * a * (g["y_beam_cl"] - y_c) / (E * g["col"]["Ix_model"])
     return {"beam": db, "column": dc, "M_joint_Nmm": P * a}
 
 
@@ -237,8 +243,8 @@ def aisc_index(p: dict, theta_b: float, x_b: float, theta_c: float, y_c: float) 
     g = dims(p)
     E, P = float(p["youngs_modulus_MPa"]), float(p["tip_load_kN"]) * 1e3
     a, xf = g["x_tip"], g["face"]
-    db = P / (E * g["beam"]["Ix"]) * ((a * x_b - x_b ** 2 / 2) - (a * xf - xf ** 2 / 2))      # face -> station
+    db = P / (E * g["beam"]["Ix_model"]) * ((a * x_b - x_b ** 2 / 2) - (a * xf - xf ** 2 / 2))      # face -> station
     tb = abs(theta_b) - db
-    tc = abs(theta_c) + P * a * (g["y_plate_bot"] - y_c) / (E * g["col"]["Ix"])            # station -> joint bottom
+    tc = abs(theta_c) + P * a * (g["y_plate_bot"] - y_c) / (E * g["col"]["Ix_model"])            # station -> joint bottom
     M = P * (a - xf)
     return {"theta_rad": tb - tc, "M_face_Nmm": M, "Ks_Nmm_per_rad": M / (tb - tc)}

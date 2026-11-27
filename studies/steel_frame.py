@@ -29,9 +29,11 @@ from validation.frame2d import Frame
 
 PARAMS = ("frame_height_m", "bay_span_m", "column_shape", "beam_shape", "youngs_modulus_MPa", "yield_strength_MPa",
           "base", "factored_gravity_kN_per_m", "factored_lateral_kN", "service_live_kN_per_m", "service_lateral_kN",
-          "beam_unbraced_length_m", "column_unbraced_length_weak_m")
+          "beam_unbraced_length_m", "column_unbraced_length_weak_m", "knee_stiffness_ratio", "knee_slip_mrad",
+          "knee_connection")
 SOURCES = ("validation/frame2d.py", "validation/aisc_frame.py", "validation/aisc360.py",
-           "validation/aisc_shapes_subset.json")
+           "validation/aisc_shapes_subset.json", "validation/aisc_connections.py", "validation/flange_plated.py")
+KIP_IN, KIP = 112984.829, 4448.2216          # N mm per kip-in, N per kip
 N_SEG = 8          # members per column and per beam: moments sampled at 1/8 points (Cb needs the quarter points)
 
 
@@ -67,7 +69,25 @@ def _member_checks(r, col, beam, E, Fy, H, L, Lb_beam, Lc_col_weak):
     return out
 
 
-def _b1b2(col, beam, E, H, L, w, H_lat, base):
+def _knee_checks(r, design: str, col_shape: str, beam_shape: str) -> dict:
+    """validation/flange_plated.checks at both knees of one analysed load case (N-mm in, kip-in to the checks)."""
+    from validation import flange_plated as fpc
+
+    g = fpc.DESIGNS[design]
+    col, beam = A.shape(col_shape), A.shape(beam_shape)
+    out = {}
+    for k, side in enumerate(("left", "right")):
+        Mu = abs(r["beam_end_moments"][k]) / KIP_IN
+        Vu, Pu, Vc = abs(r[side]["N"]) / KIP, abs(r["beam_N"]) / KIP, abs(r[side]["V_base"]) / KIP
+        rows = fpc.checks(beam, col, g, Mu, Vu, Pu, Vc)
+        worst = max(rows, key=lambda x: x["ratio"])
+        out[side] = {"Mu_kNm": Mu * KIP_IN / 1e6, "Vu_kN": Vu * KIP / 1e3, "Pu_kN": Pu * KIP / 1e3,
+                     "max_ratio": worst["ratio"], "governing": worst["id"],
+                     "checks": {x["id"]: round(x["ratio"], 4) for x in rows}}
+    return out
+
+
+def _b1b2(col, beam, E, H, L, w, H_lat, base, springs=None):
     """Appendix 8 approximate second-order analysis (80 % stiffness, as used with the direct analysis method): the
     first-order 'no translation' case (sway held at the beam) and 'lateral translation' case (the holding force
     reversed, plus the lateral loads); B2 = 1 / (1 - P_story / P_e,story), P_e,story = R_M H_L L / Delta_H with R_M
@@ -78,7 +98,9 @@ def _b1b2(col, beam, E, H, L, w, H_lat, base):
     def frame(hold):                                   # nt: gravity, sway held; lt: lateral loads only
         f = Frame()
         a, b, c, d = f.node(0, 0), f.node(0, H), f.node(L, H), f.node(L, 0)
-        f.member(a, b, Es, col["A"], col["Ix"]); f.member(b, c, Es, beam["A"], beam["Ix"], w=-w if hold else 0.0)
+        f.member(a, b, Es, col["A"], col["Ix"])
+        f.member(b, c, Es, beam["A"], beam["Ix"], w=-w if hold else 0.0, spring_i=springs[0] if springs else None,
+                 spring_j=springs[1] if springs else None)
         f.member(d, c, Es, col["A"], col["Ix"])
         f.support(a, rz=base != "pinned"); f.support(d, rz=base != "pinned")
         if hold:
@@ -123,6 +145,14 @@ class PythonSteelFrame(Backend):
             Lb_beam = 1e3 * float(params["beam_unbraced_length_m"])
             Lc_weak = 1e3 * float(params["column_unbraced_length_weak_m"])
             kw = dict(H=H, L=L, E=E, col=col, beam=beam, base=base, n_col=N_SEG, n_beam=N_SEG)
+            # semi-rigid knees: the spring k = ratio x EI / L of the beam (nominal; x 0.8 in the DAM cases), and a
+            # bolt-slip rotation before it engages (study 28 part 2)
+            kr = params.get("knee_stiffness_ratio")
+            knee = {}
+            if kr not in (None, "", 0, 0.0):
+                knee = {"knee_k": float(kr) * E * beam["Ix"] / L,
+                        "knee_slip": 1e-3 * float(params.get("knee_slip_mrad", 0.0) or 0.0)}
+            kw |= knee
             notional = 0.002 * 1.0 * w_u * L                                  # C2-1, alpha 1.0 (LRFD)
             first = portal(w=w_u, H_left=notional, stiffness_factor=0.8, second_order=False, **kw)
             second = portal(w=w_u, H_left=notional, stiffness_factor=0.8, second_order=True, **kw)
@@ -144,9 +174,13 @@ class PythonSteelFrame(Backend):
                           second_order=True, **kw)
             serv1 = portal(w=w_live, H_left=1e3 * float(params["service_lateral_kN"]), stiffness_factor=1.0,
                            second_order=False, **kw)
-            b1b2 = _b1b2(col, beam, E, H, L, w_u, H_u, base)
+            b1b2 = _b1b2(col, beam, E, H, L, w_u, H_u, base,
+                         springs=cases["gravity_lateral"][0]["knee_springs"])
             seg = portal(w=w_u, H_left=H_u, stiffness_factor=0.8, second_order=True, H=H, L=L, E=E, col=col,
-                         beam=beam, base=base, n_col=2, n_beam=2)
+                         beam=beam, base=base, n_col=2, n_beam=2, **knee)
+            design = params.get("knee_connection")
+            knees = ({c_: _knee_checks(r, design, params["column_shape"], params["beam_shape"])
+                      for c_, (r, _, _) in cases.items()} if design else None)
         except Exception as e:  # noqa: BLE001 - recorded as the point's failure
             return failed(f"{type(e).__name__}: {e}")
         gl = cases["gravity_lateral"][0]
@@ -161,7 +195,14 @@ class PythonSteelFrame(Backend):
                    "b1b2": b1b2,
                    "exact_right_column_top_kNm": abs(gl["right"]["M_top"]) / 1e6,
                    "segment_check_right_top_kNm": abs(seg["right"]["M_top"]) / 1e6,
-                   "frame_dims_mm": [H, L]}
+                   "frame_dims_mm": [H, L],
+                   "knee": None if not knee else {"k_nominal_Nmm_per_rad": knee["knee_k"],
+                                                  "slip_rad": knee["knee_slip"],
+                                                  "springs_Nmm_per_rad": {c_: r["knee_springs"] for c_, (r, _, _)
+                                                                          in cases.items()},
+                                                  "rotations_rad": {c_: r["knee_rotations"] for c_, (r, _, _)
+                                                                    in cases.items()}},
+                   "knee_connection": knees}
         worst = max((d["H1_ratio"], c, m) for c, mc in checks_by_case.items() for m, d in mc.items())
         return {"success": True, "message": f"max H1 {worst[0]:.3f} ({worst[2]}, {worst[1]}); drift ratio {ratio:.3f}",
                 "nfev": None, "series": series, "outputs": outputs}
@@ -205,7 +246,8 @@ class SteelFrameStudy(Study):
     name = "steel_frame"
     models = {"aisc_portal_frame": PythonSteelFrame}
     metrics = frozenset({"max_interaction_ratio", "column_interaction_max", "beam_interaction_max",
-                         "shear_ratio_max", "live_deflection_mm", "service_drift_mm", "drift_ratio_2nd_1st"})
+                         "shear_ratio_max", "live_deflection_mm", "service_drift_mm", "drift_ratio_2nd_1st",
+                         "max_connection_ratio"})
     param_names = PARAMS
     series_file = "moment_diagrams.csv"
 
@@ -217,7 +259,9 @@ class SteelFrameStudy(Study):
                 "beam_interaction_max": max(v for (c, m), v in h1.items() if m == "beam"),
                 "shear_ratio_max": max(d["shear_ratio"] for ms in mc.values() for d in ms.values()),
                 "live_deflection_mm": outputs["live_deflection_mm"], "service_drift_mm": outputs["service_drift_mm"],
-                "drift_ratio_2nd_1st": outputs["drift_ratio_2nd_1st"]}
+                "drift_ratio_2nd_1st": outputs["drift_ratio_2nd_1st"]} | (
+            {"max_connection_ratio": max(k["max_ratio"] for c in outputs["knee_connection"].values()
+                                         for k in c.values())} if outputs.get("knee_connection") else {})
 
     def verify_point(self, case, point, pdir: Path, series, backend):
         tol = case["verification"]

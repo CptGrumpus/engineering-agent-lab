@@ -30,5 +30,12 @@ def test_centreline_rotations_by_hand():
     g = mc.dims(P)
     E, Pn, a = 200000.0, 10e3, g["x_tip"]
     r = mc.centreline_rotations(P, 600.0, -700.0)
-    assert r["beam"] == pytest.approx(Pn * (a * 600 - 600 ** 2 / 2) / (E * g["beam"]["Ix"]), rel=1e-12)
+    assert r["beam"] == pytest.approx(Pn * (a * 600 - 600 ** 2 / 2) / (E * g["beam"]["Ix_model"]), rel=1e-12)
     assert r["M_joint_Nmm"] == pytest.approx(Pn * a)
+
+
+def test_modelled_ix_is_close_to_the_tabulated():
+    """The solid's section (root fillets from kdes) is 0.3-0.8 % less stiff than the rolled profile's tabulated Ix."""
+    for label, rel in (("W14X30", 0.0081), ("W10X33", 0.0030)):
+        s = mc.section_mm(aisc360.shape(label))
+        assert 1 - s["Ix_model"] / s["Ix"] == pytest.approx(rel, abs=0.0005)

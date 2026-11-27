@@ -1,0 +1,122 @@
+# Study 28 part 2: the portal's knee. Part 1 (cases/steel_frame_portal.toml, page 28) analysed the frame with rigid
+# knees and listed the connections as not designed. The knee is the beam (W14x30) bolted to the column (W10x33) flange
+# at the column's top: a bolted flange-plated FR moment connection (AISC Design Examples II.B-1 type), designed by
+# hand to AISC 360-22 Chapter J for part 1's governing knee forces (gravity + lateral, leeward knee: Mu 80.2 kN m,
+# Vu 109.4 kN, beam axial 32.6 kN; validation/flange_plated.py, tested end to end against Example II.B-1):
+#   flange plates 6 x 1/2 in. (A572 Gr. 50), 3/4 in. Group A bolts at 3 in. pitch on a 3.5 in. gage, 1 1/2 in. edges,
+#   1/2 in. setback; slip-critical (Class A) with three bolts per line (plates 9 1/2 in. long; slip governs, 0.97),
+#   or bearing-type with two per line (plates 6 1/2 in.; bolt shear governs, 0.77); shear tab 9 x 3/8 in., three
+#   bolts; 1/4 in. fillet welds; a pair of 1/2 in. continuity plates at the top plate's level (the column's top: its
+#   flange alone, J10.1 at the end, would carry 26.6 of 55.1 kips).
+# The client's question for this part: is the knee stiff enough to be analysed as rigid (fully restrained), as part 1
+# did? AISC 360-22 Commentary B3.4b: the connection may be taken as FR when Ks L / EI >= 20 (Ks the secant stiffness at
+# service load, L and EI the beam's), as simple when <= 2, partially restrained between (its stiffness then belongs in
+# the analysis). The Commentary's rotation includes the connecting elements, the member ends and the panel zone.
+#
+# Model (models/fea/moment_connection.py, studies/steel_knee.py): the knee as a 3D solid, every part bonded (no bolt
+# slip: the slip-critical joint below its slip load), half model about the webs' plane; column stub clamped 1.2 m
+# below the joint, beam stub 1.5 m from the column face with a tip load. Two measures from the rotations of a beam
+# section and a column section clear of the joint (300 mm, and 700 mm as a check):
+#   - aisc_index_ratio: Ks L / EI, the beam at the column face against the column at the joint's bottom (as a test
+#     would measure it): the Commentary's classification;
+#   - knee_stiffness_ratio: k L / EI of the spring that, at the beam's end in the frame's centreline model (members
+#     flexible up to the column and beam centrelines), reproduces the solid: what a semi-rigid frame analysis needs.
+#     The centreline model already counts the members as flexible inside the joint, so k is much larger than Ks.
+#
+# Smoke tests and prototypes, 2026-11-27 10:00-10:30 (scratch, 4-bolt plates):
+#   - the solid's volume matches a hand volume to 1e-15 after one fix (the root fillets were drawn convex: +4.7 %);
+#   - 45 then 23 inverted quadratic elements at a 25 mm far size (one element across a root fillet, and 25 mm
+#     elements meeting the 3.4 mm half-web): curvature sizing (10 per circle) and a 12 mm far size fix it (minimum
+#     scaled Jacobian 0.24); 204 k nodes solve in 67 s;
+#   - beam theory between two sections was 0.8 % (beam) and 0.3 % (column) off, exactly the solid's own Ix against
+#     the tabulated Ix (root fillets from kdes): with the solid's Ix both agree to 0.01 %;
+#   - k L / EI 21.3, Ks L / EI 7.7 (the near and the far sections agree to 0.1 %); a coarse 10 / 25 mm mesh gave
+#     within 0.1 % of the 8 / 12 mm mesh.
+#   - a 399 k-node mesh (5.8 / 8.6 mm) crashed CalculiX (segmentation fault after 2 min, 10:34): SPOOLES's limit is
+#     about 350 k nodes here too, so the levels are 11 / 16.5 mm x 1.0 / 0.8 / 0.64 (124 k, 180 k, 268 k nodes,
+#     minimum scaled Jacobian 0.13 / 0.135 / 0.38).
+#
+# This case: the designs at mesh scale 0.8: bearing4 (plates 6 1/2 in.), slip_critical6 (9 1/2 in., as the mesh
+# study), sc6_no_continuity (the same without the continuity plates: what they do for the stiffness; the Chapter J
+# design needs them for strength).
+#
+# Predictions, written BEFORE the run (2026-11-27 10:35):
+#   P1 bearing4 and slip_critical6 within 5 % of each other on both ratios (the extra bonded plate length adds
+#      little: most of the flexibility is the panel zone and the column flange); both Ks L / EI 7.3-8.5: REQ-C2 FAIL.
+#   P2 sc6_no_continuity clearly softer: k L / EI 10-18 and Ks L / EI 5-7 (the column's flange bends under the top
+#      plate at the column's end, unstiffened).
+#   P3 Every point check passes; 5-15 min.
+
+[case]
+name = "steel_knee_design"
+model = "ccx_knee"
+description = "Portal knee (study 28 part 2): stiffness of the two bolt designs (bearing-type, 4 bolts per flange; slip-critical, 6) and of the slip-critical design without its continuity plates; mesh scale 0.8."
+assumptions = [
+  "Linear elastic; every contact bonded: bolts neither slip nor deform (a slip-critical joint below its slip load); welds not modelled (parts fused along their weld lines); bolt holes not cut.",
+  "Half model about the plane of both webs (exact for in-plane loading); the single shear tab as two half-thickness tabs, one each side of the beam web (same in-plane stiffness, symmetric).",
+  "W-shape root fillets r = kdes - tf (reproduces the tabulated area within 0.5 %; the section's own Ix is 0.3-0.8 % below the tabulated one, and beam theory against the solid uses the solid's).",
+  "Column stub 1.2 m below the joint, clamped; beam stub 1.5 m from the column face, shear load at its tip: the knee carries moment, the beam's shear as column axial force, as in the frame. Linear, so the stiffness does not depend on the load.",
+]
+limitations = [
+  "No bolt slip, bolt deformation or bearing deformation at holes: an upper bound for a bearing-type joint (its slip into bearing is a separate, hand-calculated rotation in the frame case).",
+  "Elastic: the stiffness at service load, as the Commentary's index; no strength from the solid (strength is the Chapter J design).",
+  "Synthetic client and loads (part 1).",
+]
+
+[parameters]
+column_shape = "W10X33"
+beam_shape = "W14X30"
+youngs_modulus_MPa = 200000.0
+poisson_ratio = 0.3
+plate_thickness_mm = 12.7          # 1/2 in.
+plate_width_mm = 152.4             # 6 in.
+plate_length_mm = 241.3            # 9 1/2 in.: 1/2 setback + 1 1/2 edge + 2 x 3 pitch + 1 1/2 edge
+setback_mm = 12.7
+tab_width_mm = 88.9                # 3 1/2 in.
+tab_height_mm = 228.6              # 9 in.
+tab_thickness_mm = 9.525           # 3/8 in.
+continuity_plate_thickness_mm = 12.7
+column_length_mm = 1200.0
+beam_length_mm = 1500.0
+tip_load_kN = 10.0
+bay_span_mm = 6000.0
+joint_size_mm = 11.0
+far_size_mm = 16.5
+mesh_scale = 1.0
+station_near_mm = 300.0            # beam sections beyond the plates' end, column sections below the bottom plate
+station_far_mm = 700.0
+
+[sweep]
+[[sweep.scenarios]]
+name = "bearing4"
+plate_length_mm = 165.1          # 6 1/2 in.: two bolts per line
+mesh_scale = 0.8
+
+[[sweep.scenarios]]
+name = "slip_critical6"
+mesh_scale = 0.8
+
+[[sweep.scenarios]]
+name = "sc6_no_continuity"
+continuity_plate_thickness_mm = 0.0
+mesh_scale = 0.8
+
+[numerics]
+solve_timeout_s = 7200
+solver_timeout_s = 43200
+
+[verification]
+volume_rel_tol = 1e-9
+beam_theory_rel_tol = 0.005      # smoke: 0.01 % with the solid's own Ix
+equilibrium_rel_tol = 1e-6
+stations_rel_tol = 0.03          # smoke: 0.1 %
+min_scaled_jacobian = 0.1
+gci_max = 0.02
+
+[[requirements]]
+id = "REQ-C2"
+text = "The knee may be analysed as fully restrained (rigid), as part 1 did, only if its secant stiffness meets AISC 360-22 Commentary B3.4b: Ks L / EI >= 20 (L and EI the beam's)."
+metric = "aisc_index_ratio"
+operator = ">="
+limit = 20.0
+units = ""
