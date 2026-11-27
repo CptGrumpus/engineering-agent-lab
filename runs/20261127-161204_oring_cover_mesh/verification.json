@@ -1,0 +1,152 @@
+{
+  "run_id": "20261127-161204_oring_cover_mesh",
+  "verified_utc": "2026-11-27T21:13:06+00:00",
+  "tolerances": {
+    "equilibrium_rel_tol": 1e-06,
+    "plate_rel_tol": 0.02,
+    "mesh_noise_rel": 0.001,
+    "gci_max": 0.03
+  },
+  "points": [
+    {
+      "label": "p00_element_size_mm-2",
+      "status": "PASS",
+      "checks": [
+        {
+          "id": "cad_valid",
+          "description": "CadQuery B-rep valid, one solid (0 = yes)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "equilibrium",
+          "description": "|reaction at the washer footprints + applied load| / applied load (the footprints carry no load, so RF is the reaction)",
+          "kind": "numerical",
+          "value": 8.485060564519445e-09,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "lifts_everywhere",
+          "description": "the cover lifts (does not press down) all along the seal line (min lift / max lift >= 0; 0 = yes)",
+          "kind": "validity",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p01_element_size_mm-1.333",
+      "status": "PASS",
+      "checks": [
+        {
+          "id": "cad_valid",
+          "description": "CadQuery B-rep valid, one solid (0 = yes)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "equilibrium",
+          "description": "|reaction at the washer footprints + applied load| / applied load (the footprints carry no load, so RF is the reaction)",
+          "kind": "numerical",
+          "value": 8.485060564519445e-09,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "lifts_everywhere",
+          "description": "the cover lifts (does not press down) all along the seal line (min lift / max lift >= 0; 0 = yes)",
+          "kind": "validity",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p02_element_size_mm-0.889",
+      "status": "PASS",
+      "checks": [
+        {
+          "id": "cad_valid",
+          "description": "CadQuery B-rep valid, one solid (0 = yes)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "equilibrium",
+          "description": "|reaction at the washer footprints + applied load| / applied load (the footprints carry no load, so RF is the reaction)",
+          "kind": "numerical",
+          "value": 8.485060564519445e-09,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "lifts_everywhere",
+          "description": "the cover lifts (does not press down) all along the seal line (min lift / max lift >= 0; 0 = yes)",
+          "kind": "validity",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ]
+    }
+  ],
+  "run_checks": [
+    {
+      "id": "discretization_loosest_squeeze_with_lift_pct",
+      "description": "relative discretization uncertainty of loosest_squeeze_with_lift_pct, converged to within the noise floor (spread 1.7e-04 <= 0.001)",
+      "kind": "numerical",
+      "value": 0.00010928008671092221,
+      "tolerance": 0.03,
+      "comparison": "<=",
+      "status": "PASS",
+      "metric": "loosest_squeeze_with_lift_pct"
+    },
+    {
+      "id": "discretization_max_seal_lift_um",
+      "description": "relative discretization uncertainty of max_seal_lift_um, oscillatory (R = -0.179): 1.25 x half-range of the 3 finest solutions",
+      "kind": "numerical",
+      "value": 0.004128191646676097,
+      "tolerance": 0.03,
+      "comparison": "<=",
+      "status": "PASS",
+      "metric": "max_seal_lift_um"
+    }
+  ],
+  "run_check_detail": {
+    "meshes_used": [
+      "p02_element_size_mm-0.889",
+      "p01_element_size_mm-1.333",
+      "p00_element_size_mm-2"
+    ],
+    "loosest_squeeze_with_lift_pct": {
+      "regime": "converged",
+      "uncertainty": 0.00010928008671092221,
+      "relative_spread": 0.00017484813873747555,
+      "noise_floor": 0.001
+    },
+    "max_seal_lift_um": {
+      "regime": "oscillatory",
+      "convergence_ratio": -0.17910447761194662,
+      "uncertainty": 0.004128191646676097
+    }
+  },
+  "status": "PASS"
+}

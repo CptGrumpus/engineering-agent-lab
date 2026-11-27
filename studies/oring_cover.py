@@ -103,8 +103,10 @@ class CalculiXCover(Backend):
             outputs["mindlin_centre_deflection_mm"] = W.mindlin_centre_deflection(params)
             series = {"r_mm": np.array([0.0]), "uz_mm": np.array([outputs["centre_deflection_mm"]])}
         else:
-            th_deg, w = W.seal_line_lift(ids, xyz, uz, params)
+            mids, mxyz, _, melems = W.read_mesh(work / "mesh.inp")
+            th_deg, w, viol = W.seal_line_lift(mids, mxyz, melems, uz, params)
             outputs["seal_line_deg"], outputs["seal_line_lift_mm"] = th_deg.tolist(), w.tolist()
+            outputs["seal_line_sample_violation"] = viol
             series = {"angle_deg": th_deg, "lift_mm": w}
         return {"success": True, "message": f"CalculiX: {info['elements']} C3D10, {info['nodes']} nodes",
                 "nfev": None, "series": series, "outputs": outputs, "files": files(), "cleanup": work}
@@ -149,6 +151,11 @@ class CoverStudy(Study):
                                 "(the footprints carry no load, so RF is the reaction)",
                                 abs(rz + out["applied_quarter_load_N"]) / out["applied_quarter_load_N"],
                                 tol["equilibrium_rel_tol"]))
+            if "seal_line_sample_violation" in out:
+                checks.append(check("seal_line_inside_mesh", "max barycentric violation of the points sampled on "
+                                    "the seal circle (0 = inside an element; the underside is flat)",
+                                    out["seal_line_sample_violation"], tol.get("sample_violation_tol", 1e-6),
+                                    kind="validity"))
             lift = np.asarray(out["seal_line_lift_mm"])
             checks.append(check("lifts_everywhere", "the cover lifts (does not press down) all along the seal line "
                                 "(min lift / max lift >= 0; 0 = yes)", 0.0 if lift.min() >= 0 else 1.0, 0.0,

@@ -1,0 +1,33 @@
+{
+  "label": "p02_element_size_mm-0.889",
+  "status": "PASS",
+  "checks": [
+    {
+      "id": "cad_valid",
+      "description": "CadQuery B-rep valid, one solid (0 = yes)",
+      "kind": "numerical",
+      "value": 0.0,
+      "tolerance": 0.0,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "equilibrium",
+      "description": "|reaction at the washer footprints + applied load| / applied load (the footprints carry no load, so RF is the reaction)",
+      "kind": "numerical",
+      "value": 8.485060564519445e-09,
+      "tolerance": 1e-06,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "lifts_everywhere",
+      "description": "the cover lifts (does not press down) all along the seal line (min lift / max lift >= 0; 0 = yes)",
+      "kind": "validity",
+      "value": 0.0,
+      "tolerance": 0.0,
+      "comparison": "<=",
+      "status": "PASS"
+    }
+  ]
+}

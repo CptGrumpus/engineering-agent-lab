@@ -1,0 +1,75 @@
+# Study 25 part 2, case 2, revision 1: the lift sampled exactly on the seal circle.
+#
+# Why the rerun (2026-11-27, after oring_cover_mesh, run 20261127-161204, which PASSED and is kept as evidence): that
+# run read the lift at the nodes within half an element of the seal circle. Those nodes sit at slightly different
+# radii, so the lift around the seal came out as a sawtooth (up to 5 % at 3 mm), its maximum took the highest tooth,
+# and the three meshes oscillated (15.30 / 15.20 / 15.22 um). The model now interpolates the displacement with the
+# elements' quadratic shape functions at 181 points exactly on the circle (models/fea/oring_cover.seal_line_lift),
+# with a validity check that the points lie inside the mesh. Nothing else changes.
+# Scratch check of the new sampling on the scratch meshes (2026-11-27): 4 mm 14.50 / 14.56 um at h 2.0 / 1.33 mm,
+# smooth (largest step between neighbouring points 0.11 um), points inside to 4e-13.
+#
+# Predictions, written BEFORE the evidence run:
+#   P1 Every check passes at every mesh, seal_line_inside_mesh within 1e-6.
+#   P2 Largest lift about 14.50 / 14.56 / 14.58 um at 2.0 / 1.333 / 0.889 mm, at 0 or 90 deg (midway between bolts),
+#      monotone this time; GCI under 1 %.
+#   P3 REQ-E1L passes: loosest squeeze about 16.78 % (the flat cover's 17.20 less 0.42 points).
+#   P4 Seconds.
+
+[case]
+name = "oring_cover_mesh_r1"
+model = "ccx_oring_cover"
+description = "Study 25's pump cover (synthetic: 6061-T6, 96 mm across, 4 mm thick, 4 x M6 on a 76 mm circle) lifted by 3 bar and the O-ring's reaction at the loosest corner; element size 2.0 / 1.333 / 0.889 mm."
+assumptions = [
+  "The cover [synthetic, part 1 never drew it]: 6061-T6 aluminium, 96 mm across, held by 4 M6 bolts on a 76 mm circle with 12 mm washers; the groove is in the pump, the cover's underside flat.",
+  "Loads: 3 bar out to the groove's outer radius (conservative) and the O-ring's reaction from part 1 at the loosest corner, 1.887 N/mm over its 1.68 mm contact; both push the cover up.",
+  "The washer footprints held against lifting only (free to slide and pivot: the softer support); the pump flange rigid; the rim beyond the bolts unsupported (a real flange pushes back on it, which lowers the lift).",
+  "The O-ring's reaction held at its part 1 value as the cover lifts (it falls as the squeeze falls: conservative).",
+  "Linear elastic, small displacement.",
+]
+limitations = [
+  "No bolt stretch or flange flexibility, no flatness tolerance on the machined faces (a flatness callout adds to the lift directly).",
+  "The cover geometry is synthetic: the answer is the lift per thickness, read against the 75.5 um the loosest corner can give up.",
+]
+
+[parameters]
+cover_diameter_mm = 96.0
+cover_thickness_mm = 4.0
+bolt_count = 4
+bolt_circle_diameter_mm = 76.0
+bolt_hole_diameter_mm = 6.6
+washer_diameter_mm = 12.0
+pressure_MPa = 0.3
+pressure_radius_mm = 28.53        # the groove's outer radius: the pressure taken out to the ring's outer contact
+oring_line_load_N_per_mm = 1.887  # part 1, loosest corner (run 20261124-100619_oring_seal_corners, p00)
+oring_radius_mm = 26.8            # the loosest ring's centroid: 57.06 / 2 - 3.43 / 2
+oring_contact_width_mm = 1.68     # part 1, loosest corner
+youngs_modulus_MPa = 68900.0      # aluminium cover (6061-T6)
+poisson_ratio = 0.33
+element_size_mm = 1.333
+support = "bolts"
+loosest_cross_section_mm = 3.43
+loosest_groove_depth_mm = 2.84
+
+[sweep]
+parameter = "element_size_mm"
+values = [2.0, 1.333, 0.889]
+
+[numerics]
+solver_timeout_s = 3600
+threads = 4
+
+[verification]
+equilibrium_rel_tol = 1e-6
+sample_violation_tol = 1e-6   # the seal-circle points on the flat underside
+plate_rel_tol = 0.02          # Mindlin's plate against the 3D solid, supported at the underside's edge
+mesh_noise_rel = 1e-3         # declared before the run: Gmsh regenerates the tetrahedra at each size
+gci_max = 0.03
+
+[[requirements]]
+id = "REQ-E1L"
+text = "With the cover's lift between the bolts, the squeeze at the loosest corner of the stack stays at or above 15 % (REQ-E1 of part 1, at the worst point around the seal)."
+metric = "loosest_squeeze_with_lift_pct"
+operator = ">="
+limit = 15.0
+units = "%"

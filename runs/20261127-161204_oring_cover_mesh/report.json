@@ -1,0 +1,220 @@
+{
+  "points": [
+    {
+      "label": "p00_element_size_mm-2",
+      "parameters": {
+        "cover_diameter_mm": 96.0,
+        "cover_thickness_mm": 4.0,
+        "bolt_count": 4,
+        "bolt_circle_diameter_mm": 76.0,
+        "bolt_hole_diameter_mm": 6.6,
+        "washer_diameter_mm": 12.0,
+        "pressure_MPa": 0.3,
+        "pressure_radius_mm": 28.53,
+        "oring_line_load_N_per_mm": 1.887,
+        "oring_radius_mm": 26.8,
+        "oring_contact_width_mm": 1.68,
+        "youngs_modulus_MPa": 68900.0,
+        "poisson_ratio": 0.33,
+        "element_size_mm": 2.0,
+        "support": "bolts",
+        "loosest_cross_section_mm": 3.43,
+        "loosest_groove_depth_mm": 2.84
+      },
+      "derived": {
+        "loosest_squeeze_flat_pct": 17.201166180758026,
+        "allowed_lift_for_15pct_mm": 0.07550000000000034,
+        "mindlin_centre_deflection_mm": 0.24382029840348335
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "cad_valid",
+          "description": "CadQuery B-rep valid, one solid (0 = yes)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "equilibrium",
+          "description": "|reaction at the washer footprints + applied load| / applied load (the footprints carry no load, so RF is the reaction)",
+          "kind": "numerical",
+          "value": 8.485060564519445e-09,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "lifts_everywhere",
+          "description": "the cover lifts (does not press down) all along the seal line (min lift / max lift >= 0; 0 = yes)",
+          "kind": "validity",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-E1L",
+          "text": "With the cover's lift between the bolts, the squeeze at the loosest corner of the stack stays at or above 15 % (REQ-E1 of part 1, at the worst point around the seal).",
+          "metric": "loosest_squeeze_with_lift_pct",
+          "operator": ">=",
+          "limit": 15.0,
+          "units": "%",
+          "value": 16.755160349854233,
+          "margin": 1.7551603498542327,
+          "verdict": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p01_element_size_mm-1.333",
+      "parameters": {
+        "cover_diameter_mm": 96.0,
+        "cover_thickness_mm": 4.0,
+        "bolt_count": 4,
+        "bolt_circle_diameter_mm": 76.0,
+        "bolt_hole_diameter_mm": 6.6,
+        "washer_diameter_mm": 12.0,
+        "pressure_MPa": 0.3,
+        "pressure_radius_mm": 28.53,
+        "oring_line_load_N_per_mm": 1.887,
+        "oring_radius_mm": 26.8,
+        "oring_contact_width_mm": 1.68,
+        "youngs_modulus_MPa": 68900.0,
+        "poisson_ratio": 0.33,
+        "element_size_mm": 1.333,
+        "support": "bolts",
+        "loosest_cross_section_mm": 3.43,
+        "loosest_groove_depth_mm": 2.84
+      },
+      "derived": {
+        "loosest_squeeze_flat_pct": 17.201166180758026,
+        "allowed_lift_for_15pct_mm": 0.07550000000000034,
+        "mindlin_centre_deflection_mm": 0.24382029840348335
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "cad_valid",
+          "description": "CadQuery B-rep valid, one solid (0 = yes)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "equilibrium",
+          "description": "|reaction at the washer footprints + applied load| / applied load (the footprints carry no load, so RF is the reaction)",
+          "kind": "numerical",
+          "value": 8.485060564519445e-09,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "lifts_everywhere",
+          "description": "the cover lifts (does not press down) all along the seal line (min lift / max lift >= 0; 0 = yes)",
+          "kind": "validity",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-E1L",
+          "text": "With the cover's lift between the bolts, the squeeze at the loosest corner of the stack stays at or above 15 % (REQ-E1 of part 1, at the worst point around the seal).",
+          "metric": "loosest_squeeze_with_lift_pct",
+          "operator": ">=",
+          "limit": 15.0,
+          "units": "%",
+          "value": 16.758090379008756,
+          "margin": 1.758090379008756,
+          "verdict": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p02_element_size_mm-0.889",
+      "parameters": {
+        "cover_diameter_mm": 96.0,
+        "cover_thickness_mm": 4.0,
+        "bolt_count": 4,
+        "bolt_circle_diameter_mm": 76.0,
+        "bolt_hole_diameter_mm": 6.6,
+        "washer_diameter_mm": 12.0,
+        "pressure_MPa": 0.3,
+        "pressure_radius_mm": 28.53,
+        "oring_line_load_N_per_mm": 1.887,
+        "oring_radius_mm": 26.8,
+        "oring_contact_width_mm": 1.68,
+        "youngs_modulus_MPa": 68900.0,
+        "poisson_ratio": 0.33,
+        "element_size_mm": 0.889,
+        "support": "bolts",
+        "loosest_cross_section_mm": 3.43,
+        "loosest_groove_depth_mm": 2.84
+      },
+      "derived": {
+        "loosest_squeeze_flat_pct": 17.201166180758026,
+        "allowed_lift_for_15pct_mm": 0.07550000000000034,
+        "mindlin_centre_deflection_mm": 0.24382029840348335
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "cad_valid",
+          "description": "CadQuery B-rep valid, one solid (0 = yes)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "equilibrium",
+          "description": "|reaction at the washer footprints + applied load| / applied load (the footprints carry no load, so RF is the reaction)",
+          "kind": "numerical",
+          "value": 8.485060564519445e-09,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "lifts_everywhere",
+          "description": "the cover lifts (does not press down) all along the seal line (min lift / max lift >= 0; 0 = yes)",
+          "kind": "validity",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-E1L",
+          "text": "With the cover's lift between the bolts, the squeeze at the loosest corner of the stack stays at or above 15 % (REQ-E1 of part 1, at the worst point around the seal).",
+          "metric": "loosest_squeeze_with_lift_pct",
+          "operator": ">=",
+          "limit": 15.0,
+          "units": "%",
+          "value": 16.757565597667643,
+          "margin": 1.757565597667643,
+          "verdict": "PASS"
+        }
+      ]
+    }
+  ],
+  "run_id": "20261127-161204_oring_cover_mesh",
+  "generated_utc": "2026-11-27T21:13:06+00:00",
+  "verification_status": "PASS"
+}

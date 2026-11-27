@@ -1,0 +1,69 @@
+{
+  "points": [
+    {
+      "label": "p00_baseline",
+      "parameters": {
+        "cover_diameter_mm": 96.0,
+        "cover_thickness_mm": 6.0,
+        "bolt_count": 4,
+        "bolt_circle_diameter_mm": 76.0,
+        "bolt_hole_diameter_mm": 6.6,
+        "washer_diameter_mm": 12.0,
+        "pressure_MPa": 0.3,
+        "pressure_radius_mm": 28.53,
+        "oring_line_load_N_per_mm": 1.887,
+        "oring_radius_mm": 26.8,
+        "oring_contact_width_mm": 1.68,
+        "youngs_modulus_MPa": 68900.0,
+        "poisson_ratio": 0.33,
+        "element_size_mm": 1.5,
+        "support": "edge",
+        "loosest_cross_section_mm": 3.43,
+        "loosest_groove_depth_mm": 2.84
+      },
+      "derived": {
+        "loosest_squeeze_flat_pct": 17.201166180758026,
+        "allowed_lift_for_15pct_mm": 0.07550000000000034,
+        "mindlin_centre_deflection_mm": 0.07298429956458635
+      },
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "cad_valid",
+          "description": "CadQuery B-rep valid, one solid (0 = yes)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "plate_theory",
+          "description": "|centre deflection (mid-plane) - Mindlin plate| / Mindlin",
+          "kind": "numerical",
+          "value": 0.005054517719762286,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-REF",
+          "text": "Reference only: the edge-supported plate's centre deflection (no design limit; the plate_theory check is the point of this case), recorded against 1 mm.",
+          "metric": "centre_deflection_um",
+          "operator": "<=",
+          "limit": 1000.0,
+          "units": "um",
+          "value": 73.35319999999999,
+          "margin": 926.6468,
+          "verdict": "PASS"
+        }
+      ]
+    }
+  ],
+  "run_id": "20261127-161150_oring_cover_reference",
+  "generated_utc": "2026-11-27T21:12:00+00:00",
+  "verification_status": "PASS"
+}

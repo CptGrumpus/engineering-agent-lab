@@ -1,0 +1,99 @@
+{
+  "run_id": "20261127-161150_oring_cover_reference",
+  "case_name": "oring_cover_reference",
+  "model": "ccx_oring_cover",
+  "case_source": "cases/oring_cover_reference.toml",
+  "case_sha256": "25e770e1a99a3d505b789e700b0cbe712bf827e6e778793f03b42a3b2703cfef",
+  "model_sources_sha256": {
+    "models/fea/oring_cover.py": "5f3858c9680631c04047d2304d71280743387810ce5ee267111665b0d43512cb",
+    "models/fea/pressure_vessel.py": "aee06b59014c46b32b4ca22e10e6740e9b017a3a2511d23540c657d142651865"
+  },
+  "rerun_of": null,
+  "started_utc": "2026-11-27T21:11:50+00:00",
+  "environment": {
+    "python": "3.14.10",
+    "python_executable": "<repo>\\.venv\\Scripts\\python.exe",
+    "platform": "Windows-11-10.0.26100-SP0",
+    "machine": "AMD64",
+    "packages": {
+      "numpy": "2.5.5",
+      "scipy": "1.18.1",
+      "matplotlib": "3.11.2",
+      "cadquery": "2.8.0"
+    },
+    "git": {
+      "commit": "51861052fd56a511b6e4ed1c648d6ad8c09b3331",
+      "dirty": true
+    },
+    "tools": {
+      "cadquery": "2.8.0",
+      "gmsh": "4.15.0",
+      "CalculiX": "This is Version 2.22"
+    }
+  },
+  "numerics": {
+    "solver_timeout_s": 3600,
+    "threads": 4
+  },
+  "points": [
+    {
+      "label": "p00_baseline",
+      "parameters": {
+        "cover_diameter_mm": 96.0,
+        "cover_thickness_mm": 6.0,
+        "bolt_count": 4,
+        "bolt_circle_diameter_mm": 76.0,
+        "bolt_hole_diameter_mm": 6.6,
+        "washer_diameter_mm": 12.0,
+        "pressure_MPa": 0.3,
+        "pressure_radius_mm": 28.53,
+        "oring_line_load_N_per_mm": 1.887,
+        "oring_radius_mm": 26.8,
+        "oring_contact_width_mm": 1.68,
+        "youngs_modulus_MPa": 68900.0,
+        "poisson_ratio": 0.33,
+        "element_size_mm": 1.5,
+        "support": "edge",
+        "loosest_cross_section_mm": 3.43,
+        "loosest_groove_depth_mm": 2.84
+      },
+      "status": "completed",
+      "derived": {
+        "loosest_squeeze_flat_pct": 17.201166180758026,
+        "allowed_lift_for_15pct_mm": 0.07550000000000034,
+        "mindlin_centre_deflection_mm": 0.07298429956458635
+      },
+      "solver": {
+        "success": true,
+        "message": "CalculiX: 16052 C3D10, 26426 nodes",
+        "nfev": null
+      },
+      "solver_outputs": {
+        "nodes": 26426,
+        "elements": 16052,
+        "loaded_faces": 1923,
+        "support_nodes": 103,
+        "applied_quarter_load_N": 542.8672105403163,
+        "cad_volume_mm3": 10857.344210806325,
+        "cad_solids": 1,
+        "cad_valid": true,
+        "cad_bolt_angles_deg": [],
+        "reaction_totals_N": {
+          "SUPPORT": [
+            -0.3819245,
+            -0.3960711,
+            -538.3745
+          ]
+        },
+        "centre_deflection_mm": 0.0733532,
+        "mindlin_centre_deflection_mm": 0.07298429956458635
+      },
+      "metrics": {
+        "centre_deflection_um": 73.35319999999999
+      }
+    }
+  ],
+  "study": "oring_cover",
+  "status": "completed",
+  "finished_utc": "2026-11-27T21:12:00+00:00"
+}

@@ -170,13 +170,16 @@ def write_deck(p: dict, mesh_inp: Path, deck: Path) -> dict:
             "support_nodes": int(len(sets["SUPPORT"])), "applied_quarter_load_N": applied}
 
 
-def seal_line_lift(ids, xyz, uz: dict, p: dict, n: int = 91) -> tuple[np.ndarray, np.ndarray]:
-    """The underside's upward displacement along the O-ring's centroid circle (0 to 90 deg), from the nodes nearest the
-    circle (within half an element)."""
-    ro, h = float(p["oring_radius_mm"]), float(p["element_size_mm"])
-    x, y, z = xyz[:, 0], xyz[:, 1], xyz[:, 2]
-    m = (np.abs(z) < 1e-6) & (np.abs(np.hypot(x, y) - ro) < 0.5 * h)
-    th = np.degrees(np.arctan2(y[m], x[m]))
-    w = np.array([uz[int(k)] for k in ids[m]])
-    o = np.argsort(th)
-    return th[o], w[o]
+def seal_line_lift(ids, xyz, elems, uz: dict, p: dict, n: int = 181) -> tuple[np.ndarray, np.ndarray, float]:
+    """The underside's upward displacement on the O-ring's centroid circle (0 to 90 deg), interpolated with the
+    elements' quadratic shape functions at n points exactly on the circle; and the largest barycentric violation of
+    those points. (The first evidence runs, 20261127-161204 and -161311, read the nodes within half an element of the
+    circle instead: nodes at slightly different radii, a sawtooth of up to 5 % in the lift and in its maximum.)"""
+    from harness.linearize import Tet10Sampler
+
+    ro = float(p["oring_radius_mm"])
+    th = np.linspace(0.0, 90.0, n)
+    pts = np.column_stack([ro * np.cos(np.radians(th)), ro * np.sin(np.radians(th)), np.zeros(n)])
+    field = np.array([[uz[int(k)]] for k in ids])
+    vals, viol = Tet10Sampler(ids, xyz, elems).sample(pts, field)
+    return th, vals[:, 0], float(viol)
