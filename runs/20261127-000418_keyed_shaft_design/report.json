@@ -1,0 +1,385 @@
+{
+  "points": [
+    {
+      "label": "p00_rk025",
+      "parameters": {
+        "D_mm": 45.0,
+        "d_mm": 36.0,
+        "fillet_radius_mm": 1.6,
+        "small_length_mm": 90.0,
+        "large_length_mm": 60.0,
+        "bending_moment_Nm": 300.0,
+        "torque_Nm": 500.0,
+        "youngs_modulus_MPa": 210000.0,
+        "poisson_ratio": 0.3,
+        "ultimate_MPa": 1000.0,
+        "yield_MPa": 750.0,
+        "overload_factor": 1.5,
+        "key_width_mm": 10.0,
+        "key_depth_mm": 5.0,
+        "key_corner_radius_mm": 0.25,
+        "key_gap_mm": 2.0,
+        "key_length_mm": 40.0,
+        "global_key_size_mm": 0.3,
+        "global_fillet_size_mm": 0.5,
+        "far_size_mm": 4.0,
+        "sub_key_size_rel": 0.333,
+        "sub_fillet_size_mm": 0.2,
+        "mesh_scale": 0.8,
+        "box_margin_mm": 3.0,
+        "kt_reference_bending": 0.0,
+        "kt_reference_torsion": 0.0,
+        "kt_key_reference_bending": 0.0,
+        "kt_key_reference_torsion": 0.0,
+        "scenario": "rk025"
+      },
+      "derived": {},
+      "simulation_status": "completed",
+      "verification_status": "FAIL",
+      "checks": [
+        {
+          "id": "equilibrium_bending",
+          "description": "global model: |clamp reaction moment - applied| / target (bending)",
+          "kind": "numerical",
+          "value": 5.775935035975029e-08,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "equilibrium_torsion",
+          "description": "global model: |clamp reaction moment - applied| / target (torsion)",
+          "kind": "numerical",
+          "value": 1.3222099200356752e-07,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "load_bending",
+          "description": "|applied end moment| against the target (bending; the end face's moment is -T about z by the outward normal, so magnitudes are compared; 7-point rule on curved faces)",
+          "kind": "numerical",
+          "value": 8.007900419548797e-06,
+          "tolerance": 0.0001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "load_torsion",
+          "description": "|applied end moment| against the target (torsion; the end face's moment is -T about z by the outward normal, so magnitudes are compared; 7-point rule on curved faces)",
+          "kind": "numerical",
+          "value": 8.007900421769243e-06,
+          "tolerance": 0.0001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "global_vs_sub_fillet_bending",
+          "description": "fillet Kt, global model against its submodel (bending): the global mesh resolves the fillet, so the two must agree",
+          "kind": "numerical",
+          "value": 0.005555124902615449,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "global_vs_sub_fillet_torsion",
+          "description": "fillet Kt, global model against its submodel (torsion): the global mesh resolves the fillet, so the two must agree",
+          "kind": "numerical",
+          "value": 0.01518427535510325,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "mesh_quality",
+          "description": "0.1 - the smallest scaled Jacobian over the global and submodel meshes (at or below 0: every element above the threshold)",
+          "kind": "validity",
+          "value": 0.2810739481521256,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "FAIL"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-S1",
+          "text": "The fatigue safety factor (modified Goodman, Shigley's method) shall be at least 1.5 at the shoulder fillet and at the keyway.",
+          "metric": "fatigue_safety",
+          "operator": ">=",
+          "limit": 1.5,
+          "units": "",
+          "value": 1.0377506830641043,
+          "margin": -0.46224931693589566,
+          "verdict": "FAIL (unverified)"
+        },
+        {
+          "id": "REQ-S2",
+          "text": "The first-cycle yield safety factor at a 1.5 x overload shall be at least 2.0 at the shoulder fillet and at the keyway.",
+          "metric": "static_safety",
+          "operator": ">=",
+          "limit": 2.0,
+          "units": "",
+          "value": 1.5331358967176274,
+          "margin": -0.4668641032823726,
+          "verdict": "FAIL (unverified)"
+        }
+      ]
+    },
+    {
+      "label": "p01_d38",
+      "parameters": {
+        "D_mm": 47.5,
+        "d_mm": 38.0,
+        "fillet_radius_mm": 1.7,
+        "small_length_mm": 90.0,
+        "large_length_mm": 60.0,
+        "bending_moment_Nm": 300.0,
+        "torque_Nm": 500.0,
+        "youngs_modulus_MPa": 210000.0,
+        "poisson_ratio": 0.3,
+        "ultimate_MPa": 1000.0,
+        "yield_MPa": 750.0,
+        "overload_factor": 1.5,
+        "key_width_mm": 10.0,
+        "key_depth_mm": 5.0,
+        "key_corner_radius_mm": 0.4,
+        "key_gap_mm": 2.0,
+        "key_length_mm": 40.0,
+        "global_key_size_mm": 0.3,
+        "global_fillet_size_mm": 0.5,
+        "far_size_mm": 4.0,
+        "sub_key_size_rel": 0.333,
+        "sub_fillet_size_mm": 0.2,
+        "mesh_scale": 0.8,
+        "box_margin_mm": 3.0,
+        "kt_reference_bending": 0.0,
+        "kt_reference_torsion": 0.0,
+        "kt_key_reference_bending": 0.0,
+        "kt_key_reference_torsion": 0.0,
+        "scenario": "d38"
+      },
+      "derived": {},
+      "simulation_status": "completed",
+      "verification_status": "PASS",
+      "checks": [
+        {
+          "id": "equilibrium_bending",
+          "description": "global model: |clamp reaction moment - applied| / target (bending)",
+          "kind": "numerical",
+          "value": 1.19702058727853e-07,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "equilibrium_torsion",
+          "description": "global model: |clamp reaction moment - applied| / target (torsion)",
+          "kind": "numerical",
+          "value": 1.0984443232882769e-07,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "load_bending",
+          "description": "|applied end moment| against the target (bending; the end face's moment is -T about z by the outward normal, so magnitudes are compared; 7-point rule on curved faces)",
+          "kind": "numerical",
+          "value": 8.00790046162625e-06,
+          "tolerance": 0.0001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "load_torsion",
+          "description": "|applied end moment| against the target (torsion; the end face's moment is -T about z by the outward normal, so magnitudes are compared; 7-point rule on curved faces)",
+          "kind": "numerical",
+          "value": 8.007900465401008e-06,
+          "tolerance": 0.0001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "global_vs_sub_fillet_bending",
+          "description": "fillet Kt, global model against its submodel (bending): the global mesh resolves the fillet, so the two must agree",
+          "kind": "numerical",
+          "value": 0.009741140958958394,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "global_vs_sub_fillet_torsion",
+          "description": "fillet Kt, global model against its submodel (torsion): the global mesh resolves the fillet, so the two must agree",
+          "kind": "numerical",
+          "value": 0.008006928158178273,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "mesh_quality",
+          "description": "0.1 - the smallest scaled Jacobian over the global and submodel meshes (at or below 0: every element above the threshold)",
+          "kind": "validity",
+          "value": -0.34141762541087783,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-S1",
+          "text": "The fatigue safety factor (modified Goodman, Shigley's method) shall be at least 1.5 at the shoulder fillet and at the keyway.",
+          "metric": "fatigue_safety",
+          "operator": ">=",
+          "limit": 1.5,
+          "units": "",
+          "value": 1.3774121859328687,
+          "margin": -0.12258781406713126,
+          "verdict": "FAIL"
+        },
+        {
+          "id": "REQ-S2",
+          "text": "The first-cycle yield safety factor at a 1.5 x overload shall be at least 2.0 at the shoulder fillet and at the keyway.",
+          "metric": "static_safety",
+          "operator": ">=",
+          "limit": 2.0,
+          "units": "",
+          "value": 2.0170029877337208,
+          "margin": 0.017002987733720776,
+          "verdict": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p02_d40",
+      "parameters": {
+        "D_mm": 50.0,
+        "d_mm": 40.0,
+        "fillet_radius_mm": 1.8,
+        "small_length_mm": 90.0,
+        "large_length_mm": 60.0,
+        "bending_moment_Nm": 300.0,
+        "torque_Nm": 500.0,
+        "youngs_modulus_MPa": 210000.0,
+        "poisson_ratio": 0.3,
+        "ultimate_MPa": 1000.0,
+        "yield_MPa": 750.0,
+        "overload_factor": 1.5,
+        "key_width_mm": 12.0,
+        "key_depth_mm": 5.0,
+        "key_corner_radius_mm": 0.4,
+        "key_gap_mm": 2.0,
+        "key_length_mm": 40.0,
+        "global_key_size_mm": 0.3,
+        "global_fillet_size_mm": 0.5,
+        "far_size_mm": 4.0,
+        "sub_key_size_rel": 0.333,
+        "sub_fillet_size_mm": 0.2,
+        "mesh_scale": 0.8,
+        "box_margin_mm": 3.0,
+        "kt_reference_bending": 0.0,
+        "kt_reference_torsion": 0.0,
+        "kt_key_reference_bending": 0.0,
+        "kt_key_reference_torsion": 0.0,
+        "scenario": "d40"
+      },
+      "derived": {},
+      "simulation_status": "completed",
+      "verification_status": "FAIL",
+      "checks": [
+        {
+          "id": "equilibrium_bending",
+          "description": "global model: |clamp reaction moment - applied| / target (bending)",
+          "kind": "numerical",
+          "value": 9.033101591436813e-08,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "equilibrium_torsion",
+          "description": "global model: |clamp reaction moment - applied| / target (torsion)",
+          "kind": "numerical",
+          "value": 7.262981124222278e-08,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "load_bending",
+          "description": "|applied end moment| against the target (bending; the end face's moment is -T about z by the outward normal, so magnitudes are compared; 7-point rule on curved faces)",
+          "kind": "numerical",
+          "value": 6.187161573079081e-06,
+          "tolerance": 0.0001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "load_torsion",
+          "description": "|applied end moment| against the target (torsion; the end face's moment is -T about z by the outward normal, so magnitudes are compared; 7-point rule on curved faces)",
+          "kind": "numerical",
+          "value": 6.187161577297928e-06,
+          "tolerance": 0.0001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "global_vs_sub_fillet_bending",
+          "description": "fillet Kt, global model against its submodel (bending): the global mesh resolves the fillet, so the two must agree",
+          "kind": "numerical",
+          "value": 0.005722004422402227,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "global_vs_sub_fillet_torsion",
+          "description": "fillet Kt, global model against its submodel (torsion): the global mesh resolves the fillet, so the two must agree",
+          "kind": "numerical",
+          "value": 0.064415740637495,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "FAIL"
+        },
+        {
+          "id": "mesh_quality",
+          "description": "0.1 - the smallest scaled Jacobian over the global and submodel meshes (at or below 0: every element above the threshold)",
+          "kind": "validity",
+          "value": -0.32508280058586914,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-S1",
+          "text": "The fatigue safety factor (modified Goodman, Shigley's method) shall be at least 1.5 at the shoulder fillet and at the keyway.",
+          "metric": "fatigue_safety",
+          "operator": ">=",
+          "limit": 1.5,
+          "units": "",
+          "value": 1.535475060182995,
+          "margin": 0.035475060182994955,
+          "verdict": "PASS (unverified)"
+        },
+        {
+          "id": "REQ-S2",
+          "text": "The first-cycle yield safety factor at a 1.5 x overload shall be at least 2.0 at the shoulder fillet and at the keyway.",
+          "metric": "static_safety",
+          "operator": ">=",
+          "limit": 2.0,
+          "units": "",
+          "value": 2.355342256667919,
+          "margin": 0.3553422566679192,
+          "verdict": "PASS (unverified)"
+        }
+      ]
+    }
+  ],
+  "run_id": "20261127-000418_keyed_shaft_design",
+  "generated_utc": "2026-11-27T05:27:56+00:00",
+  "verification_status": "FAIL"
+}

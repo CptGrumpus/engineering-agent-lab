@@ -42,6 +42,20 @@
 #      stops at 2 % in strain energy, which under-resolves a peak more often than it over-resolves it).
 #   P3 margin3 against margin5: every Kt within 0.5 %.
 #   P4 Every equilibrium, load and global-against-submodel check passes; under 1 h.
+#
+# Results (run 20261126-234913_keyed_shaft_check, 23:49-00:04, scored 2026-11-27 00:55). VERIFICATION FAIL
+# (keyseat_reference_bending).
+#   P1 held: keyless fillet Kt 2.2333 (bending) and 1.6017 (torsion), 0.39 % and 0.58 % above part 1's verified values.
+#   P2 half held: torsion Ks 2.616 against Le and Le's 2.511 (+4.2 %, above them as predicted); bending KTB 2.917
+#      at the isolated end against 2.560 (+13.9 %): not held. Two things weaken the reference: (a) their own Table 1
+#      gives Ks 2.045 and their Table 2 2.258 for the same 2 in shaft at r/B 0.0832 (10 % apart), so their FE
+#      carries 10 % scatter; (b) they define KTB by the maximum "bending stress", which may be the axial stress, not
+#      the maximum principal stress used here. r1 reports the axial-stress peak beside it.
+#   P3 half held: keyway torsion 2.776 / 2.763 (0.47 %) and fillet torsion 1.688 / 1.689 within 0.5 %; keyway bending
+#      3.203 / 3.232 (0.9 %) and fillet bending 2.139 / 2.123 (0.75 %) not. The fillet's bending peak lies on the
+#      cut face of both boxes (finding 1 of keyed_shaft_mesh); the keyway's 0.9 % is of the size of peak-node noise,
+#      to be measured (keyed_shaft_noise).
+#   P4 not held: keyseat_reference_bending fails; 15 min.
 
 [case]
 name = "keyed_shaft_check"

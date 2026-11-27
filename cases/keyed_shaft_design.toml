@@ -43,6 +43,19 @@
 #      passes is 40 mm (four sizes above part 1's keyless answer of 36 mm: the keyway, not the fillet, sizes the
 #      shaft). With the 0.25 mm corner the 40 mm seat's fatigue safety drops by the rk025 ratio, still above 1.5.
 #   P4 Every equilibrium, load, mesh-quality and global-against-submodel check passes; under 1.5 h.
+#
+# Results (run 20261127-000418_keyed_shaft_design, 00:04-00:28, scored 2026-11-27 00:55). VERIFICATION FAIL; rk025
+# and d40 are not valid as they stand, so keyed_shaft_design_r1 repeats them.
+#   P1 not valid: keyway Kt 3.856 (bending, above 3.5-3.8) and 3.185 (torsion); fatigue safety 1.038, yield 1.533;
+#      but the global mesh has 6 inverted elements (minimum scaled Jacobian -0.18): its 0.3 mm keyway size puts
+#      one quadratic element across the 0.25 mm corner arc. Fix (r1): global keyway size at most 0.75 r_k.
+#   P2 held: d38 keyway fatigue safety 1.377 (REQ-S1 FAIL), yield 2.017 (passes by 0.8 %).
+#   P3 half held: d40 keyway fatigue safety 1.535 (below the predicted 1.55-1.70, still a PASS) and yield 2.355:
+#      the smallest keyed seat that passes with a 0.40 mm corner is 40 mm. Its last clause is not held: scaled by the
+#      rk025 ratio (1.038 / 1.180) the 40 mm seat's fatigue safety would be 1.35, a FAIL, so the corner radius
+#      decides it (r1 runs d40 and d42 at 0.25 mm). d40's fillet torsion check fails (global 1.701 against the
+#      submodel's 1.598: the peak is on the far side, outside the near box; finding 1 of keyed_shaft_mesh).
+#   P4 not held: mesh_quality (rk025) and global_vs_sub_fillet_torsion (d40) fail; 24 min.
 
 [case]
 name = "keyed_shaft_design"

@@ -1,0 +1,69 @@
+{
+  "label": "p01_d38",
+  "status": "PASS",
+  "checks": [
+    {
+      "id": "equilibrium_bending",
+      "description": "global model: |clamp reaction moment - applied| / target (bending)",
+      "kind": "numerical",
+      "value": 1.19702058727853e-07,
+      "tolerance": 1e-06,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "equilibrium_torsion",
+      "description": "global model: |clamp reaction moment - applied| / target (torsion)",
+      "kind": "numerical",
+      "value": 1.0984443232882769e-07,
+      "tolerance": 1e-06,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "load_bending",
+      "description": "|applied end moment| against the target (bending; the end face's moment is -T about z by the outward normal, so magnitudes are compared; 7-point rule on curved faces)",
+      "kind": "numerical",
+      "value": 8.00790046162625e-06,
+      "tolerance": 0.0001,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "load_torsion",
+      "description": "|applied end moment| against the target (torsion; the end face's moment is -T about z by the outward normal, so magnitudes are compared; 7-point rule on curved faces)",
+      "kind": "numerical",
+      "value": 8.007900465401008e-06,
+      "tolerance": 0.0001,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "global_vs_sub_fillet_bending",
+      "description": "fillet Kt, global model against its submodel (bending): the global mesh resolves the fillet, so the two must agree",
+      "kind": "numerical",
+      "value": 0.009741140958958394,
+      "tolerance": 0.02,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "global_vs_sub_fillet_torsion",
+      "description": "fillet Kt, global model against its submodel (torsion): the global mesh resolves the fillet, so the two must agree",
+      "kind": "numerical",
+      "value": 0.008006928158178273,
+      "tolerance": 0.02,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "mesh_quality",
+      "description": "0.1 - the smallest scaled Jacobian over the global and submodel meshes (at or below 0: every element above the threshold)",
+      "kind": "validity",
+      "value": -0.34141762541087783,
+      "tolerance": 0.0,
+      "comparison": "<=",
+      "status": "PASS"
+    }
+  ]
+}

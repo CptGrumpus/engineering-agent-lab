@@ -41,6 +41,28 @@
 #   P3 The keyway's Kt values rise monotonically with refinement; GCI 0.5-2 % (may exceed the 1 % target; the
 #      verdict is not near the limits).
 #   P4 Every equilibrium, load, mesh-quality and global-against-submodel check passes; 1-2 h.
+#
+# Results (run 20261126-232303_keyed_shaft_mesh, 23:23-23:49, scored 2026-11-27 00:55). VERIFICATION FAIL on two
+# run-level checks; the fillet values are not valid (finding 1), so keyed_shaft_mesh_r1 repeats the study.
+#   P1 held as written: keyway Kt 3.203 / 3.184 / 3.170 (bending) and 2.776 / 2.761 / 2.763 (torsion); fillet
+#      2.139 / 2.117 / 2.136 and 1.688 / 1.687 / 1.687. But see finding 1: the fillet numbers are the near box's.
+#   P2 held: keyway fatigue safety 1.184 and yield 1.724 at the finest level (REQ-S1 and REQ-S2 FAIL, set by the
+#      keyway); fillet 1.644 and 2.486.
+#   P3 not held as written: the keyway's bending Kt falls with refinement (it was predicted to rise); its GCI is
+#      1.41 % (inside the predicted 0.5-2 %, above the 1 % target: FAIL). Torsion oscillatory (0.34 %), fatigue
+#      safety 0.36 %; static safety "anomalous order" (p = 6.8 from 1.7128 / 1.7217 / 1.7237: no estimate, FAIL).
+#   P4 not held: the two run-level checks above fail; 26 min, not 1-2 h.
+# Findings:
+#   1. The near box cannot see the fillet's peaks. A global-only scan of the fillet by angle (scratch, 00:35): with the
+#      keyway 2 mm away, the bending peak sits about 27 deg from the keyway, on the near box's cut face (y = 8 mm),
+#      and the torsion peak is on the far side of the shaft (1.68-1.71 from 90 to 180 deg, against 1.60 keyless):
+#      the keyed seat is weaker in torsion, so the side away from the keyway carries more shear into the fillet.
+#      Fix (r1): a fillet submodel over the whole half ring; keyless stays an 8 mm sector (axisymmetric).
+#   2. Peaks next to a driven face: the near and far boxes' torsion maxima lay on their cut faces (the keyway's
+#      long-side corner carries the same shear along its length; the middle box, which set the metric, had its
+#      maximum inside). Fix (r1): no peak is read within 1 mm of a driven face.
+#   3. The spread between levels (0.5-1 %) is the size of peak-node noise, not a trend: measure it
+#      (keyed_shaft_noise) and declare it before the r1 run, as study 24 part 2 learned.
 
 [case]
 name = "keyed_shaft_mesh"

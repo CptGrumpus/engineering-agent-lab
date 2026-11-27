@@ -2,6 +2,7 @@
 
 import math
 
+import numpy as np
 import pytest
 
 from models.fea import keyed_shaft as ks
@@ -36,11 +37,30 @@ def test_cad_volumes_by_hand(tmp_path):
 def test_boxes_clear_the_keyway():
     g = ks.dims(P)
     b = boxes(ks, P)
-    assert set(b) == {"near", "far", "middle"}
+    assert set(b) == {"fillet_a", "fillet_b", "near", "far", "middle"}
     x0, x1, y0, y1, z0, z1 = b["near"]
     assert x0 == pytest.approx(g["R"] - g["t1"] - 3.0) and y1 == pytest.approx(g["B"] / 2 + 3.0)
     assert z0 < g["z_k1"] - g["B"] / 2 and z1 > g["zs"]
     assert x1 > g["D"] / 2                            # not a cut
+    for name in ("fillet_a", "fillet_b"):             # together the whole half ring, 3 mm either side of the fillet
+        x0, x1, y0, y1, z0, z1 = b[name]
+        assert y1 > g["D"] / 2 and z0 == pytest.approx(g["zc"] - 3.0) and z1 == pytest.approx(g["zs"] + 3.0)
+    assert b["fillet_a"][0] == b["fillet_b"][1] == 0.0
+    assert b["fillet_a"][1] > g["D"] / 2 and b["fillet_b"][0] < -g["D"] / 2
+
+
+def test_driven_clear_skips_cut_faces_only():
+    box = (0.0, 30.0, 0.0, 30.0, 10.0, 20.0)
+    X = np.array([[0.5, 5, 15], [5, 5, 15], [5, 5, 10.8], [5, 5, 19.5], [5, 29.5, 15], [5, 0.0, 15]])
+    assert ks.driven_clear(X, box, 1.0).tolist() == [False, True, False, False, False, True]   # y = 0: symmetry
+    assert ks.driven_clear(X, None, 1.0).all() and ks.driven_clear(X, box, 0.0).all()
+
+
+def test_fillet_peak_is_the_max_over_fillet_boxes():
+    from studies.keyed_shaft import fillet_peak
+    pk = {"fillet_a/torsion": {"fillet": {"k": 1.6}}, "fillet_b/torsion": {"fillet": {"k": 1.7}},
+          "near/torsion": {"fillet": {"k": 9.0}}, "fillet_b/bending": {"fillet": {"k": 2.1}}}
+    assert fillet_peak(pk, "torsion")["k"] == 1.7 and fillet_peak(pk, "bending")["k"] == 2.1
 
 
 def test_safety_reproduces_part1_at_the_fillet():

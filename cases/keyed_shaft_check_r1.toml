@@ -1,0 +1,138 @@
+# Study 26 part 2, r1 (the keyed gear seat; problem, model and assumptions in cases/keyed_shaft_mesh.toml). The first
+# runs (20261126-232303 mesh, 20261126-234913 check, 20261127-000418 design) showed four faults, fixed in r1:
+#   (1) the near box could not see the shoulder fillet's peaks (bending about 27 deg from the keyway, on its cut face;
+#       torsion on the far side of the shaft): two fillet submodels now cover the whole half ring, one quarter ring
+#       each (keyless: the same 8 mm sector as before, the shaft being axisymmetric);
+#   (2) peaks were read on driven faces: no peak is now read within 1 mm of one (numerics.driven_skip_mm);
+#   (3) the global keyway size (0.3 mm) inverted elements at a 0.25 mm corner: now at most 0.75 r_k (0.4 mm corner:
+#       unchanged);
+#   (4) Le and Le's bending factor may be the axial stress: kt_key_bending_far_axial reports it beside the principal.
+# Mesh-only smoke of the fillet box (00:45-01:00): the whole half ring as one box is 327 k nodes at scale 0.8 and 566
+#   k at 0.64 (d36), past what SPOOLES solves; as two quarter rings 281-289 k each at 0.64 (d36) and 195-200 k at 0.8
+#   (d40). The rk 0.25 global mesh at 0.1875 mm: no inverted element (minimum scaled Jacobian 0.24).
+#
+# This case: keyed_shaft_check repeated with the r1 model. keyless: the global-submodel path against part 1's verified
+# fillet Kt; ansi_le: Le and Le's isolated profile keyseat (Table 2, r/B 0.05: KTB 2.560, Ks 2.511); margin3 /
+# margin5: the DIN keyed shaft at scale 1.0 with every box 3 and 5 mm clear of its feature.
+#
+# Predictions, written BEFORE the run (2026-11-27 01:05):
+#   P1 keyless: as before (2.2333 / 1.6017, within 0.6 % of part 1): its box is unchanged and both peaks are well
+#      inside it.
+#   P2 ansi_le: Ks 2.616 again (+4.2 %, PASS); KTB by the principal stress 2.917 again (+13.9 %, FAIL); by the
+#      axial stress 2.70-2.90, still more than 5 % above Le and Le (FAIL): their bending value stays unexplained
+#      by the definition, and their 10 % internal scatter (Table 1 against Table 2) is the likelier cause.
+#   P3 margin3 against margin5: every Kt within the noise measured by keyed_shaft_noise (expected under 1 %); the
+#      fillet now from the half-ring box in both.
+#   P4 Every check passes except keyseat_reference_bending; 20-40 min.
+
+[case]
+name = "keyed_shaft_check_r1"
+model = "ccx_keyed_shaft"
+description = "Checks of the keyed-shaft model, r1 (study 26 part 2): the keyless 36 mm shaft through the global-submodel path against part 1's verified fillet Kt; Le and Le's isolated ANSI profile keyseat (principal and axial bending stress); the DIN keyed shaft with boxes 3 and 5 mm clear."
+assumptions = [
+  "Linear elastic, small strain; Kt from gross nominal stresses at the small diameter; the fatigue and overload checks of part 1 (Shigley: Marin factors, Neuber notch sensitivity with each feature's own radius, von Mises combination, modified Goodman; Kf applied to the overload).",
+  "Rotating bending 300 N m (fully reversed) and steady torque 500 N m act at the keyway as at the fillet (the keyway's end is 2 mm from the fillet; conservative).",
+  "The key's bearing pressure on the keyway wall and any press fit of the gear are not modelled (Shigley's practice for keyseat factors).",
+  "DIN 6885 form A keyway dimensions from published reproductions of the table (the current DIN 6885-1:2021 was not read); corner radius 0.25-0.40 mm.",
+]
+limitations = [
+  "Submodels driven by a coarse global model; their boxes keep 3 mm (or more) of material between the keyway's corners and the cut faces.",
+  "Stress at nodes (CalculiX's extrapolation, averaged), as part 1.",
+]
+
+[parameters]
+D_mm = 45.0
+d_mm = 36.0
+fillet_radius_mm = 1.6
+small_length_mm = 90.0
+large_length_mm = 60.0
+bending_moment_Nm = 300.0
+torque_Nm = 500.0
+youngs_modulus_MPa = 210000.0
+poisson_ratio = 0.3
+ultimate_MPa = 1000.0
+yield_MPa = 750.0
+overload_factor = 1.5
+key_width_mm = 10.0
+key_depth_mm = 5.0
+key_corner_radius_mm = 0.4
+key_gap_mm = 2.0
+key_length_mm = 40.0
+global_key_size_mm = 0.3
+global_fillet_size_mm = 0.5
+far_size_mm = 4.0
+sub_key_size_rel = 0.333
+sub_fillet_size_mm = 0.2
+mesh_scale = 0.8
+box_margin_mm = 3.0
+sub_far_size_mm = 1.5
+kt_reference_bending = 0.0
+kt_reference_torsion = 0.0
+kt_key_reference_bending = 0.0
+kt_key_reference_torsion = 0.0
+
+[sweep]
+[[sweep.scenarios]]
+name = "keyless"
+key_width_mm = 0.0
+mesh_scale = 0.5
+kt_reference_bending = 2.2246154438973256   # part 1, run 20261124-155125_shaft_fillet_size, point p03_d36
+kt_reference_torsion = 1.5923779246662075
+
+[[sweep.scenarios]]
+name = "ansi_le"
+d_mm = 50.8
+D_mm = 63.5
+fillet_radius_mm = 2.54
+small_length_mm = 180.0
+large_length_mm = 60.0
+key_width_mm = 12.7
+key_depth_mm = 6.35
+key_corner_radius_mm = 0.635
+key_gap_mm = 20.0
+key_length_mm = 50.8
+global_key_size_mm = 0.45
+global_fillet_size_mm = 0.7
+sub_fillet_size_mm = 0.3
+kt_key_reference_bending = 2.560   # Le and Le 2013, Table 2, r/B = 0.0500
+kt_key_reference_torsion = 2.511
+
+[[sweep.scenarios]]
+name = "margin3"
+mesh_scale = 1.0
+
+[[sweep.scenarios]]
+name = "margin5"
+mesh_scale = 1.0
+box_margin_mm = 5.0
+
+[numerics]
+parallel_solves = 6
+solve_timeout_s = 7200
+solver_timeout_s = 43200
+driven_skip_mm = 1.0
+
+[verification]
+equilibrium_rel_tol = 1e-6
+load_rel_tol = 1e-4          # 7-point rule on curved end faces: 8e-6 measured
+global_sub_rel_tol = 0.02    # fillet Kt, global model against its submodel (smoke: 0.2 % bending, 1.5 % torsion)
+reference_rel_tol = 0.01     # keyless fillet Kt against part 1's verified value
+key_reference_rel_tol = 0.05 # Le and Le's keyseat factors (their own FE, p-adaptive to 2 % in strain energy)
+min_scaled_jacobian = 0.1
+gci_max = 0.01
+
+[[requirements]]
+id = "REQ-S1"
+text = "The fatigue safety factor (modified Goodman, Shigley's method) shall be at least 1.5 at the shoulder fillet and at the keyway."
+metric = "fatigue_safety"
+operator = ">="
+limit = 1.5
+units = ""
+
+[[requirements]]
+id = "REQ-S2"
+text = "The first-cycle yield safety factor at a 1.5 x overload shall be at least 2.0 at the shoulder fillet and at the keyway."
+metric = "static_safety"
+operator = ">="
+limit = 2.0
+units = ""

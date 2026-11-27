@@ -229,11 +229,24 @@ def nominal(p: dict, load: str) -> float:
     return float(p["torque_Nm"]) * 1e3 * 16 / (math.pi * d ** 3)
 
 
-def region_peaks(p: dict, X: np.ndarray, ev: np.ndarray, load: str) -> dict:
+def driven_clear(X: np.ndarray, box, skip: float) -> np.ndarray:
+    """Nodes farther than `skip` from every driven (cut) face of a submodel box; all nodes without a box. The
+    stresses next to a driven face carry the global model's displacement error, so peaks are not read there."""
+    if box is None or skip <= 0:
+        return np.ones(len(X), bool)
+    x0, x1, y0, y1, z0, z1 = box
+    ok = (X[:, 0] > x0 + skip) & (X[:, 2] > z0 + skip) & (X[:, 2] < z1 - skip)
+    ok &= (X[:, 0] < x1 - skip) & (X[:, 1] < y1 - skip)   # beyond the surface on most boxes: no nodes there
+    return ok
+
+
+def region_peaks(p: dict, X: np.ndarray, ev: np.ndarray, load: str, *, szz: np.ndarray | None = None,
+                 box=None, skip: float = 0.0) -> dict:
     """Peak stress / nominal in each region (gross nominal stresses 32 M / pi d^3, 16 T / pi d^3): the maximum
     principal stress in bending, the maximum shear (s1 - s3) / 2 in torsion. Regions: the keyway's corner band
     (r_k-wide strip at its bottom) near its shoulder end, near its far end and in its middle third; the shoulder
-    fillet's surface."""
+    fillet's surface. With a submodel box, nodes within `skip` of its driven faces are left out. In bending, given
+    szz, each region also reports the axial stress peak (k_axial: Le and Le's "bending stress" definition)."""
     from models.fea import shaft_fillet_ccx as sf
 
     g = dims(p)
@@ -241,19 +254,23 @@ def region_peaks(p: dict, X: np.ndarray, ev: np.ndarray, load: str) -> dict:
     nom = nominal(p, load)
     pf = {"D_mm": g["D"], "d_mm": g["d"], "fillet_radius_mm": g["rf"], "small_length_mm": g["zs"],
           "large_length_mm": g["z_end"] - g["zs"]}
+    clear = driven_clear(X, box, skip)
     out = {}
-    fil = sf.fillet_surface_mask(X, pf)
-    if fil.any():
-        k = np.flatnonzero(fil)[np.argmax(v[fil])]
-        out["fillet"] = {"k": float(v[k] / nom), "xyz": X[k].tolist(), "nodes": int(fil.sum())}
+
+    def peak(name, m):
+        m = m & clear
+        if m.any():
+            k = np.flatnonzero(m)[np.argmax(v[m])]
+            out[name] = {"k": float(v[k] / nom), "xyz": X[k].tolist(), "nodes": int(m.sum())}
+            if szz is not None and load == "bending":
+                out[name]["k_axial"] = float(szz[m].max() / nom)
+
+    peak("fillet", sf.fillet_surface_mask(X, pf))
     if "B" in g:
         corner = (X[:, 0] > g["R"] - g["t1"] - 1e-6) & (X[:, 0] < g["R"] - g["t1"] + g["rk"] + 1e-6)
         L = g["z_k1"] - g["z_k0"]
         for name, lo, hi in (("key_near_end", g["z_k1"] - g["B"], g["z_k1"] + 1e-6),
                              ("key_far_end", g["z_k0"] - 1e-6, g["z_k0"] + g["B"]),
                              ("key_middle", g["z_k0"] + L / 3, g["z_k1"] - L / 3)):
-            m = corner & (X[:, 2] >= lo) & (X[:, 2] <= hi)
-            if m.any():
-                k = np.flatnonzero(m)[np.argmax(v[m])]
-                out[name] = {"k": float(v[k] / nom), "xyz": X[k].tolist(), "nodes": int(m.sum())}
+            peak(name, corner & (X[:, 2] >= lo) & (X[:, 2] <= hi))
     return out

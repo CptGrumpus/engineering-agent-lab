@@ -122,6 +122,16 @@ Traps found while building the studies in this repo, by tool.
   350 k nodes. Past that, submodel (`*SUBMODEL, TYPE=NODE, INPUT=global.frd`, then `*BOUNDARY, SUBMODEL, STEP=1` on
   the cut-face nodes): a 154 k-node submodel solves in about 3.5 min, and the keyless shaft through a coarse global
   model and a fine submodel reproduced the verified half model's fillet Kt within 0.4-0.6 %.
+- Submodel boxes (keyed shaft, run 20261127-000418): before boxing a feature, scan the global model's peak along it
+  (by angle, by length). A neighbouring feature moves the peak: with a keyway 2 mm off, the shoulder fillet's bending
+  peak moved to about 27 deg from the keyway, and its torsion peak to the far side of the shaft (+6 %, the keyed seat
+  being weaker in torsion), both outside a box drawn around the keyway. A global-against-submodel check at the
+  feature catches this only when the global peak lies outside the box; it passed in bending (slow variation) and
+  failed in torsion. Never read a peak within about 1 mm of a driven face: those nodes carry the global error, and
+  a feature of uniform stress along its length (a keyway's long side in torsion) puts its maximum on the cut.
+- A coarse global model still needs elements smaller than every small radius it holds: one quadratic tetrahedron
+  across a 0.25 mm arc at a 0.3 mm size inverted (6 elements, minimum scaled Jacobian -0.18), and the submodels it
+  drives inherit the error. Size small radii at no more than 0.75 r in the global model.
 - `models/fea/shaft_fillet_ccx.write_deck` writes loads with `repr`: fine for its own meshes so far, but a 22-character
   value (`-2.751132655021138e-13`) broke the keyed shaft's first deck. New writers use `f"{v:.14g}"`.
 - Gmsh's MathEval parser rejects `*-1` (a negative coefficient right after an operator) and has no `Atan2`: put

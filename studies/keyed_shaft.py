@@ -44,16 +44,23 @@ def _writer(path: Path):
 
 
 def boxes(ks, p: dict) -> dict:
-    """The submodel boxes (x0, x1, y0, y1, z0, z1): each cut face 3-4 mm or more from the feature it surrounds."""
+    """The submodel boxes (x0, x1, y0, y1, z0, z1): each cut face 3-4 mm or more from the feature it surrounds.
+    "fillet*": the shoulder fillet. Keyless, the shaft is axisymmetric and a sector 8 mm wide at +x holds both peaks
+    (bending at +x, torsion anywhere); keyed, the whole half ring, because the keyway moves the peaks: bending to
+    about 27 deg from the keyway, torsion to the far side (the keyed seat is weaker in torsion, which raises the
+    shear on the side away from it; run 20261127-000418, d40). The half ring is two quarter rings (x >= 0, x <= 0):
+    as one box it is 330 k nodes at scale 0.8 and 570 k at 0.64, past what SPOOLES solves."""
     g = ks.dims(p)
     x_out = g["D"] / 2 + 1.0                         # beyond the surface: not a cut
     if "B" not in g:
-        return {"near": (g["R"] - 6.0, x_out, 0.0, 8.0, g["zc"] - 6.0, g["zs"] + 5.0)}
+        return {"fillet": (g["R"] - 6.0, x_out, 0.0, 8.0, g["zc"] - 6.0, g["zs"] + 5.0)}
     m = float(p.get("box_margin_mm", 3.0))           # clear distance from the keyway's corner to the cut faces
     x0 = g["R"] - g["t1"] - m
     y1 = g["B"] / 2 + m
     zm = 0.5 * (g["z_k0"] + g["z_k1"])
-    return {"near": (x0, x_out, 0.0, y1, g["z_k1"] - g["B"] / 2 - m - 1.0, g["zs"] + m),
+    return {"fillet_a": (0.0, x_out, 0.0, x_out, g["zc"] - m, g["zs"] + m),
+            "fillet_b": (-x_out, 0.0, 0.0, x_out, g["zc"] - m, g["zs"] + m),
+            "near": (x0, x_out, 0.0, y1, g["z_k1"] - g["B"] / 2 - m - 1.0, g["zs"] + m),
             "far": (x0, x_out, 0.0, y1, g["z_k0"] - m, g["z_k0"] + g["B"] / 2 + m + 1.0),
             "middle": (x0, x_out, 0.0, y1, zm - m - 1.0, zm + m + 1.0)}
 
@@ -85,14 +92,14 @@ class CalculiXKeyedShaft(Backend):
         if r.returncode != 0 or "Job finished" not in r.stdout:
             raise RuntimeError(f"CalculiX failed: {work.name}/{name} (exit {r.returncode})")
 
-    def _peaks(self, frd: Path, p: dict, load: str) -> dict:
+    def _peaks(self, frd: Path, p: dict, load: str, box=None, skip: float = 0.0) -> dict:
         from harness.calculix import read_frd
 
         fr = read_frd(frd)
         S = fr["STRESS"]
         row = {int(n): k for k, n in enumerate(fr["nodes"])}
         X = fr["coords"][[row[int(n)] for n in S["ids"]]]
-        return self.ks.region_peaks(p, X, self.ks.principal(S), load)
+        return self.ks.region_peaks(p, X, self.ks.principal(S), load, szz=np.asarray(S["SZZ"]), box=box, skip=skip)
 
     def solve(self, params, numerics, tolerance_scale=1.0):
         ks, p = self.ks, params
@@ -100,10 +107,15 @@ class CalculiXKeyedShaft(Backend):
         s = float(p["mesh_scale"])
         rk = float(p.get("key_corner_radius_mm", 0) or 0)
         timeout = float(numerics.get("solve_timeout_s", 7200))
+        skip = float(numerics.get("driven_skip_mm", 1.0))     # peaks are not read this close to a driven face
+        h_sub_far = float(p.get("sub_far_size_mm", 1.5))
+        # the global keyway size at most 0.75 r_k: one quadratic element across a smaller corner arc inverts
+        # (rk 0.25 at 0.3 mm: 6 inverted elements, run 20261127-000418)
+        h_key_global = min(float(p["global_key_size_mm"]), 0.75 * rk) if rk > 0 else float(p["global_key_size_mm"])
         try:
             gm = {"cad": ks.build_cad(p, work / "global.step")}
             gm["mesh"] = ks.build_mesh(p, work / "global.step", work / "global_mesh.inp",
-                                       h_key=float(p["global_key_size_mm"]), h_fillet=float(p["global_fillet_size_mm"]),
+                                       h_key=h_key_global, h_fillet=float(p["global_fillet_size_mm"]),
                                        h_far=float(p["far_size_mm"]), growth=0.4, band_deg=180.0)
             info = {}
             for load in LOADS:
@@ -114,16 +126,20 @@ class CalculiXKeyedShaft(Backend):
             subs = {}
             for name, box in boxes(ks, p).items():
                 subs[name] = {"box": box, "cad": ks.build_cad(p, work / f"{name}.step", box=box)}
-                subs[name]["mesh"] = ks.build_mesh(p, work / f"{name}.step", work / f"{name}_mesh.inp",
-                                                   h_key=s * float(p["sub_key_size_rel"]) * max(rk, 1e-9),
-                                                   h_fillet=s * float(p["sub_fillet_size_mm"]), h_far=1.5, growth=0.45)
+                # the fillet box holds the keyway's end too, but no keyway peak is read from it: coarser there
+                fil = name.startswith("fillet")
+                hk = min(s * 0.3, 0.75 * rk) if fil else s * float(p["sub_key_size_rel"]) * max(rk, 1e-9)
+                subs[name]["mesh"] = ks.build_mesh(p, work / f"{name}.step", work / f"{name}_mesh.inp", h_key=hk,
+                                                   h_fillet=s * float(p["sub_fillet_size_mm"]), h_far=h_sub_far,
+                                                   growth=0.45, band_deg=180.0 if fil else 60.0)
                 for load in LOADS:
                     info[(name, load)] = ks.write_deck(p, work / f"{name}_mesh.inp", work / load / f"{name}.inp", load,
                                                        box=box, global_frd="global.frd")
             jobs = [(load, name) for name in subs for load in LOADS]
             with ThreadPoolExecutor(max_workers=int(numerics.get("parallel_solves", 6))) as ex:
                 list(ex.map(lambda j: self._ccx(work / j[0], j[1], timeout), jobs))
-            peaks = {(name, load): self._peaks(work / load / f"{name}.frd", p, load)
+            peaks = {(name, load): self._peaks(work / load / f"{name}.frd", p, load,
+                                               box=subs[name]["box"] if name in subs else None, skip=skip)
                      for name in ["global", *subs] for load in LOADS}
             from models.fea import shaft_fillet_ccx as sf
             rf = {load: sf.read_node_forces(work / load / "global.dat") for load in LOADS}
@@ -146,7 +162,7 @@ class CalculiXKeyedShaft(Backend):
                "subs": {n: {"box": v["box"], "cad": v["cad"], "mesh": v["mesh"], "nodes": info[(n, "bending")]["nodes"],
                             "driven_nodes": info[(n, "bending")]["driven_nodes"]} for n, v in subs.items()},
                "peaks": {f"{n}/{ld}": v for (n, ld), v in peaks.items()}, "equilibrium": eq}
-        series = {"case": np.array([0.0]), "kt_fillet_bending": np.array([peaks[("near", "bending")]["fillet"]["k"]])}
+        series = {"case": np.array([0.0]), "kt_fillet_bending": np.array([fillet_peak(out["peaks"], "bending")["k"]])}
         return {"success": True, "message": f"global {out['global']['nodes']} nodes + {len(subs)} submodels",
                 "nfev": 2 * (1 + len(subs)), "series": series, "outputs": out, "files": {}, "cleanup": work}
 
@@ -154,19 +170,26 @@ class CalculiXKeyedShaft(Backend):
         return self._versions
 
 
+def fillet_peak(pk: dict, load: str) -> dict:
+    """The fillet's peak over the fillet submodels (keys "fillet*/<load>")."""
+    return max((reg["fillet"] for key, reg in pk.items() if key.startswith("fillet") and key.endswith(load)
+                and "fillet" in reg), key=lambda v: v["k"])
+
+
 def kt_values(out: dict) -> dict:
-    """Kt (gross nominal stresses) at the keyway (the largest over its submodels) and at the fillet (near submodel)."""
+    """Kt (gross nominal stresses) at the keyway (the largest over its submodels) and at the fillet (its own
+    submodel). The fillet box's keyway nodes are coarse there and never count."""
     pk = out["peaks"]
-    res = {"kt_fillet_bending": pk["near/bending"]["fillet"]["k"], "kt_fillet_torsion": pk["near/torsion"]["fillet"]["k"]}
-    kb = [v["k"] for key, reg in pk.items() if not key.startswith("global") and key.endswith("bending")
-          for name, v in reg.items() if name.startswith("key_")]
-    kt = [v["k"] for key, reg in pk.items() if not key.startswith("global") and key.endswith("torsion")
-          for name, v in reg.items() if name.startswith("key_")]
+    res = {"kt_fillet_bending": fillet_peak(pk, "bending")["k"], "kt_fillet_torsion": fillet_peak(pk, "torsion")["k"]}
+    keyed = lambda key, ld: not key.startswith(("global", "fillet")) and key.endswith(ld)  # noqa: E731
+    kb = [v["k"] for key, reg in pk.items() if keyed(key, "bending") for name, v in reg.items() if name.startswith("key_")]
+    kt = [v["k"] for key, reg in pk.items() if keyed(key, "torsion") for name, v in reg.items() if name.startswith("key_")]
     if kb:
         res |= {"kt_key_bending": max(kb), "kt_key_torsion": max(kt),
                 # Le and Le's definitions: bending at an isolated end, torsion at the long side's middle
                 "kt_key_bending_far": pk["far/bending"]["key_far_end"]["k"],
-                "kt_key_torsion_middle": pk["middle/torsion"]["key_middle"]["k"]}
+                "kt_key_torsion_middle": pk["middle/torsion"]["key_middle"]["k"],
+                "kt_key_bending_far_axial": pk["far/bending"]["key_far_end"]["k_axial"]}
     return res
 
 
@@ -191,7 +214,7 @@ class KeyedShaftStudy(Study):
     name = "keyed_shaft"
     models = {"ccx_keyed_shaft": CalculiXKeyedShaft}
     metrics = frozenset({"kt_fillet_bending", "kt_fillet_torsion", "kt_key_bending", "kt_key_torsion",
-                         "kt_key_bending_far", "kt_key_torsion_middle",
+                         "kt_key_bending_far", "kt_key_torsion_middle", "kt_key_bending_far_axial",
                          "fatigue_safety_fillet", "static_safety_fillet", "fatigue_safety_key", "static_safety_key",
                          "fatigue_safety", "static_safety"})
     param_names = PARAMS
@@ -217,7 +240,7 @@ class KeyedShaftStudy(Study):
                          abs(abs(eq[ld]["applied"]) / eq[ld]["target"] - 1), tol["load_rel_tol"]) for ld in LOADS]
         pk = out["peaks"]
         for ld in LOADS:
-            g, sb = pk[f"global/{ld}"]["fillet"]["k"], pk[f"near/{ld}"]["fillet"]["k"]
+            g, sb = pk[f"global/{ld}"]["fillet"]["k"], fillet_peak(pk, ld)["k"]
             checks.append(check(f"global_vs_sub_fillet_{ld}", f"fillet Kt, global model against its submodel ({ld}): "
                                 "the global mesh resolves the fillet, so the two must agree", abs(g / sb - 1),
                                 tol["global_sub_rel_tol"]))
