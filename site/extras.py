@@ -602,7 +602,8 @@ REQS = [
         ("Squeeze at every corner of the tolerance stack", "15 to 30 %", "17.2 % at the loosest, 24.5 % at the tightest", "met"),
         ("Peak contact pressure on the cover, loosest corner", "≥ 0.6 MPa (2 × 3 bar)", "1.50 MPa", "met"),
         ("Closing force, tightest corner", "≤ 12 N/mm", "5.94 N/mm (mesh uncertainty 1.1 %)", "met"),
-        ("Groove fill, tightest corner", "≤ 85 %", "80.4 %; the hand cross-check differs by 1.05 %, just over its 1 %", "met")]),
+        ("Groove fill, tightest corner", "≤ 85 %", "80.4 %; the hand cross-check differs by 1.05 %, just over its 1 %", "met"),
+        ("Part 2: squeeze at the loosest corner with the cover lifting between its bolts, 4 mm cover", "≥ 15 %", "16.77 % (lift 14.8 µm against a 75.5 µm allowance); 16.35 % at 3 mm", "met")]),
     ("flag", "17", "Flexible flag behind a cylinder", [
         ("Solid on its own (CSM1-3): the tip's displacement and the swing's frequency", "within 1 % (2 % along the flow)", "0.03 % still; 0.08 % from the published band swinging", "met"),
         ("Fluid on its own (CFD1, CFD2): drag", "within 1 %", "0.22 % and 0.10 % on the finest meshes", "met"),
