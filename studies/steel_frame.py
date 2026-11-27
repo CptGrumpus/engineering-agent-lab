@@ -29,8 +29,9 @@ from validation.frame2d import Frame
 
 PARAMS = ("frame_height_m", "bay_span_m", "column_shape", "beam_shape", "youngs_modulus_MPa", "yield_strength_MPa",
           "base", "factored_gravity_kN_per_m", "factored_lateral_kN", "service_live_kN_per_m", "service_lateral_kN",
-          "beam_unbraced_length_m", "column_unbraced_length_weak_m", "knee_stiffness_ratio", "knee_slip_mrad",
-          "knee_connection")
+          "beam_unbraced_length_m", "column_unbraced_length_weak_m")
+# optional (study 28 part 2; absent or 0 / "": rigid knees, no slip, no connection check): knee_stiffness_ratio,
+# knee_slip_mrad, knee_connection
 SOURCES = ("validation/frame2d.py", "validation/aisc_frame.py", "validation/aisc360.py",
            "validation/aisc_shapes_subset.json", "validation/aisc_connections.py", "validation/flange_plated.py")
 KIP_IN, KIP = 112984.829, 4448.2216          # N mm per kip-in, N per kip
