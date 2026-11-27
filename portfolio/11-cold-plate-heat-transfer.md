@@ -110,6 +110,16 @@ of 31.5 (still "about 31").
   the side walls hold back goes faster down the middle (panel a). It does not change the verdict, which is set at the
   hottest point.
 
+### The cold plate as built
+
+The passage is delivered inside a detailed CadQuery assembly ([`models/cad/cold_plate.py`](../models/cad/cold_plate.py),
+[STEP](cad/cold_plate_study11.step)): an aluminium base with the 60 x 20 x 1 mm passage milled into it, a manifold
+well at each end fed by a port drilled from the base's end, the brazed 3 mm cover of study 15, two hose fittings,
+and the two heated components over the 50 mm footprint. Every part matches a hand volume (the base, with its wells
+and the drills' lens-shaped ends, to 10⁻¹¹) and nothing overlaps. The hand volume caught the first draft's port
+breaking out through the base's top face under the cover, a leak path; the port now sits 0.75 mm under it. The base,
+the ports and the fittings are synthetic.
+
 ### Limits (part 2)
 
 - Fully developed in the section; the side-wall correction is added to part 1's developing 2D value, not solved in
