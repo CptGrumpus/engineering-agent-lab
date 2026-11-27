@@ -136,6 +136,16 @@ every design (60.6-84.5 C). Revision B replaced both: the 60 C air limit had no 
   low emissivity the bridges ran 2.5-22 K hotter than at high emissivity, not "a few K"; the shell alone helped 8.6 K at
   low emissivity against 2.8 K at high. Each miss is written into its case file next to the prediction.
 
+## The enclosure as built
+
+The box is delivered as a detailed CadQuery assembly ([`models/cad/enclosure.py`](../models/cad/enclosure.py),
+[STEP](cad/enclosure_as_drawn.step)): the extruded aluminium housing (150 x 60 mm, 2 mm walls, corner bosses, 200 mm
+deep), two end caps on M3 screws, a cable gland, the 100 mm board at mid-height on four standoffs, the regulator U1 at
+its middle and the bulk capacitor C1 5-15 mm from its left end, where the client's footprint puts it. Every part
+matches a hand volume to 10⁻⁸; the only overlaps are the twelve screws' thread engagements, each equal to its hand
+formula. In the 2D model U1 is the board's own middle 20 mm; here it is drawn as a 20 x 20 x 4 mm package. The
+board's depth, the packages, the bosses, the screws and the gland are synthetic.
+
 ## Limits
 
 - 2D section: the box's end walls are left out (less wall area, conservative); a 3D model would credit them.
