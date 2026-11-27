@@ -5,6 +5,12 @@
 # zero and to infinity (scratch: it does, to the digits printed).
 # Scratch trials (2026-11-27, 40 cells): H2 peak excess 111.1 K at the corner (wall 143 C); H1 12.133 K (44.16 C).
 #
+# Revision before any run completed (2026-11-27 17:05): the first attempt (run dir 20261127-170430, not kept: no point
+# ran) stopped in the harness, which formats sweep values as numbers for the point labels and cannot sweep the text
+# parameter bc. The bounds are now the plate model's limits instead, which it reproduces (tests/test_duct_section:
+# conductance 0 gives H2 exactly, 1e7 gives H1 to 1e-5): bc = "plate" with the plate's conductivity swept over 0 (no
+# spreading, H2) and 1e9 W/m K (perfect spreading, H1 to about 1e-9). Predictions unchanged.
+#
 # Predictions, written BEFORE the evidence run:
 #   P1 Every check passes at both.
 #   P2 H2: peak excess about 111 K, at the corner where the broad wall meets the side wall, where the flow stops: REQ-T1-3D
@@ -33,7 +39,7 @@ width_mm = 20.0                   # synthetic, as study 5's 3D duct check (the r
 cells_across_half_gap = 40
 side_growth = 1.08
 dz_max_over_dy = 8.0
-bc = "H2"
+bc = "plate"
 plate_conductivity_W_per_mK = 167.0   # 6061-T6 aluminium
 plate_thickness_mm = 2.0
 fluid_conductivity_W_per_mK = 0.607   # water, as study 11
@@ -42,8 +48,8 @@ wall_temperature_2D_C = 44.029        # study 11's verified 2D peak (run 2026112
 wall_limit_C = 45.0
 
 [sweep]
-parameter = "bc"
-values = ["H2", "H1"]
+parameter = "plate_conductivity_W_per_mK"
+values = [0.0, 1.0e9]                 # no spreading (H2), perfect spreading (H1)
 
 [numerics]
 solver = "SciPy sparse direct, finite volumes"
