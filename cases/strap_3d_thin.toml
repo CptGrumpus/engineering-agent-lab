@@ -1,0 +1,57 @@
+# Study 2 part 2, case 3: the 3D pipeline in the thin-plate limit, where it must reproduce plane stress.
+#
+# Why: the 3D model's own reference. As t / d -> 0 the 3D solution tends to plane stress, uniform through the
+# thickness, so a 0.04 mm strap (t / d = 0.0025) with the load scaled by the same factor (50 N: the same stresses)
+# must give study 2's plane-stress peak at mid-thickness and at the face alike. Scratch trial (hole-edge elements
+# 0.4 mm, 2 layers): 117.168 MPa at mid-thickness and face (study 2: 116.988, +0.15 %), face / mid 1 - 1e-5.
+#
+# Predictions, written BEFORE the evidence run:
+#   P1 Every check passes, thin_plate_limit within its 3e-3 (the 3D quads and study 2's triangles at a similar size:
+#      about 0.1 %); thin_plate_uniform within it by far (about 1e-5).
+#   P2 Under a minute.
+
+[case]
+name = "strap_3d_thin"
+model = "cadquery_ccx_strap_3d"
+description = "Study 2's strap geometry in plan (160 x 40 mm, 16 mm hole) at 0.04 mm thickness with 50 N (the same stresses as 4 mm and 5 kN), as a 3D solid: the thin-plate limit of the 3D pipeline against study 2's plane stress."
+assumptions = [
+  "Linear elastic, E = 68.9 GPa, nu = 0.33; load scaled with the thickness so the stresses are those of the real strap.",
+  "Two element layers through the half thickness: in the thin limit the stresses do not vary through it.",
+]
+limitations = [
+  "A reference for the 3D pipeline only.",
+]
+
+[parameters]
+length_mm = 160.0
+width_mm = 40.0
+thickness_mm = 0.04
+hole_diameter_mm = 16.0
+axial_load_N = 50.0
+youngs_modulus_MPa = 68900.0
+poisson_ratio = 0.33
+yield_strength_MPa = 276.0
+hole_element_size_mm = 0.267
+far_element_size_mm = 4.0
+z_layers = 2
+z_ratio = 1.0
+plane_stress_peak_MPa = 116.988   # study 2, run 20261119-235211_strap_hole_size, p05
+
+[numerics]
+solver_timeout_s = 3600
+threads = 4
+
+[verification]
+equilibrium_rel_tol = 1e-6
+ligament_force_rel_tol = 0.01
+far_field_rel_tol = 1e-3
+kt_rel_tol = 0.02
+thin_plate_rel_tol = 3e-3
+
+[[requirements]]
+id = "REQ-H1"
+text = "Reference only: the hole-edge peak in the thin-plate limit stays under 120 MPa, as plane stress does."
+metric = "peak_hole_stress_MPa"
+operator = "<="
+limit = 120.0
+units = "MPa"
