@@ -24,6 +24,18 @@
 #   P3 margin3 against margin5: every Kt within the noise measured by keyed_shaft_noise (expected under 1 %); the
 #      fillet now from the half-ring box in both.
 #   P4 Every check passes except keyseat_reference_bending; 20-40 min.
+#
+# Results (run 20261127-015248_keyed_shaft_check_r1, 01:52-02:11, scored 2026-11-27 02:14). VERIFICATION FAIL on
+# keyseat_reference_bending only, as predicted.
+#   P1 held: keyless fillet Kt 2.2333 (bending, +0.38 % on part 1) and 1.599 (torsion, +0.42 %; r0's 1.6017 was a
+#      node on the sector's cut face, now skipped).
+#   P2 held: Ks 2.616 (+4.2 %, PASS); KTB 2.917 by the principal stress (+13.9 %, FAIL) and 2.700 by the axial stress
+#      (+5.5 %, just outside 5 %). The definition explains about 60 % of the gap; the rest is within Le and Le's own
+#      10 % scatter between their tables. Reported as an open difference with the reference, not a pass.
+#   P3 held, with one note: margin3 against margin5, keyway bending 0.90 % (under its 1.76 % noise floor), fillet
+#      0.33 % (bending, floor 0.46 %) and 0.06 % (torsion); keyway torsion 0.47 %, over its 0.23 % floor: the middle
+#      box's size moves the long-side shear by about 0.5 %, the smaller box reading higher (conservative).
+#   P4 held: every other check passes (global against fillet submodel within 1.1 %); 19 min.
 
 [case]
 name = "keyed_shaft_check_r1"
