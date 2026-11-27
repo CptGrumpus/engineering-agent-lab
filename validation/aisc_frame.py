@@ -18,7 +18,8 @@ from validation.frame2d import Frame
 
 def portal(*, H: float, L: float, E: float, col: dict, beam: dict, w: float, P_tops=(0.0, 0.0), H_left: float = 0.0,
            base: str = "fixed", stiffness_factor: float = 1.0, second_order: bool = True, P_leaning: float = 0.0,
-           n_col: int = 1, n_beam: int = 2) -> dict:
+           n_col: int = 1, n_beam: int = 2, knee_k: float | None = None, knee_slip: float = 0.0,
+           max_slip_iter: int = 200) -> dict:
     """Portal: columns of height H at x = 0 and x = L, beam of span L between their tops (rigid joints).
 
     col, beam: section dicts with A and Ix. w: uniform gravity load on the beam (positive down). P_tops: point loads
@@ -27,7 +28,35 @@ def portal(*, H: float, L: float, E: float, col: dict, beam: dict, w: float, P_t
     P_leaning: gravity on a leaning column (pinned both ends, height H) tied to the right column top by a pinned link.
     n_col, n_beam: members per column / beam (for force and deflection output along them; the solution is exact
     at the nodes either way).
+    knee_k: rotational stiffness of each knee connection (moment per radian, nominal: stiffness_factor applies to it
+    as to the members, C2.3) as a spring at each end of the beam; None: rigid knees. knee_slip: a rotation the knee
+    takes before its spring engages (bolt slip into bearing), solved as the secant spring M / (slip + M / k) at each
+    knee, iterated with the frame until the knee moments settle (monotonic loading).
     """
+    if knee_k is None and knee_slip:
+        raise ValueError("knee_slip needs knee_k")
+    ks = None if knee_k is None else [knee_k * stiffness_factor] * 2
+    for it_slip in range(max_slip_iter):
+        r = _portal_once(H=H, L=L, E=E, col=col, beam=beam, w=w, P_tops=P_tops, H_left=H_left, base=base,
+                         stiffness_factor=stiffness_factor, second_order=second_order, P_leaning=P_leaning,
+                         n_col=n_col, n_beam=n_beam, springs=ks)
+        if not knee_slip:
+            break
+        k_el = knee_k * stiffness_factor
+        new = [k_el / (1 + k_el * knee_slip / max(abs(m), 1e-30)) for m in r["beam_end_moments"]]
+        done = max(abs(a - b) / b for a, b in zip(new, ks)) < 1e-10
+        ks = new
+        if done:
+            break
+    else:
+        raise RuntimeError("knee slip iteration did not settle")
+    r["knee_springs"] = ks
+    r["knee_rotations"] = None if ks is None else [abs(m) / k for m, k in zip(r["beam_end_moments"], ks)]
+    return r
+
+
+def _portal_once(*, H, L, E, col, beam, w, P_tops, H_left, base, stiffness_factor, second_order, P_leaning, n_col,
+                 n_beam, springs) -> dict:
     f = Frame()
     Es = E * stiffness_factor
     bl, tl = f.node(0, 0), None
@@ -41,8 +70,11 @@ def portal(*, H: float, L: float, E: float, col: dict, beam: dict, w: float, P_t
     for a, b in zip(right, right[1:]):
         f.member(a, b, Es, col["A"], col["Ix"])
     first_beam = len(f.members)
-    for a, b in zip(beam_nodes, beam_nodes[1:]):
-        f.member(a, b, Es, beam["A"], beam["Ix"], w=-w)
+    pairs = list(zip(beam_nodes, beam_nodes[1:]))
+    for k, (a, b) in enumerate(pairs):
+        f.member(a, b, Es, beam["A"], beam["Ix"], w=-w,
+                 spring_i=springs[0] if springs and k == 0 else None,
+                 spring_j=springs[1] if springs and k == len(pairs) - 1 else None)
     pinned = base == "pinned"
     f.support(left[0], rz=not pinned)
     f.support(right[0], rz=not pinned)

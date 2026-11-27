@@ -53,3 +53,40 @@ def test_c1a_equilibrium_and_tau_b():
 
 def test_second_order_drift_ratio():
     assert run(True)["drift"] / run(False)["drift"] == pytest.approx(1.60, rel=0.02)
+
+
+# ---------------------------------------------------------------- knee springs and slip (study 28 part 2)
+def _sec(A, I):
+    return {"A": A, "Ix": I}
+
+
+@pytest.mark.parametrize("k_ratio", [2.0, 20.0, 1e9])
+def test_semi_rigid_portal_symmetric_gravity_closed_form(k_ratio):
+    """Fixed-base portal, symmetric UDL, axially rigid, first order: compatibility at the knee (column top
+    stiffness 4 EIc / h, beam end rotation w L^3 / 24 EIb - M L / 2 EIb, spring M / k) gives
+    M = (w L^2 / 12)(L / 2 EIb) / (h / 4 EIc + L / 2 EIb + 1 / k); k -> infinity is Kleinlogel's w L^2 / (6 (k + 2))."""
+    from validation.aisc_frame import portal
+
+    E, H, L, w, Ic, Ib = 200e3, 4000.0, 6000.0, 35.0, 7.1e7, 1.2e8
+    k = k_ratio * E * Ib / L
+    r = portal(H=H, L=L, E=E, col=_sec(1e9, Ic), beam=_sec(1e9, Ib), w=w, second_order=False, knee_k=k)
+    want = (w * L * L / 12) * (L / (2 * E * Ib)) / (H / (4 * E * Ic) + L / (2 * E * Ib) + 1 / k)
+    # A = 1e9 mm2 is stiff, not rigid: the beam's thrust still shortens it (2e-8 here)
+    assert abs(r["beam_end_moments"][0]) == pytest.approx(want, rel=1e-6)
+    assert abs(r["beam_end_moments"][1]) == pytest.approx(want, rel=1e-6)
+
+
+def test_knee_slip_secant_and_pinned_limit():
+    from validation.aisc_frame import portal
+
+    E, H, L, w, Ic, Ib = 200e3, 4000.0, 6000.0, 35.0, 7.1e7, 1.2e8
+    k, slip = 20 * E * Ib / L, 0.004
+    r = portal(H=H, L=L, E=E, col=_sec(6000.0, Ic), beam=_sec(5700.0, Ib), w=w, H_left=15e3, stiffness_factor=0.8,
+               knee_k=k, knee_slip=slip)
+    for m, ks in zip(r["beam_end_moments"], r["knee_springs"]):          # rotation = slip + M / (0.8 k)
+        assert abs(m) / ks == pytest.approx(slip + abs(m) / (0.8 * k), rel=1e-8)
+    rigid = portal(H=H, L=L, E=E, col=_sec(6000.0, Ic), beam=_sec(5700.0, Ib), w=w, H_left=15e3, stiffness_factor=0.8)
+    assert abs(r["drift"]) > abs(rigid["drift"])
+    pinned = portal(H=H, L=L, E=E, col=_sec(1e9, Ic), beam=_sec(1e9, Ib), w=w, second_order=False, knee_k=k,
+                    knee_slip=10.0, n_beam=2)
+    assert abs(pinned["beam_M_mid"]) == pytest.approx(w * L * L / 8, rel=2e-3)
