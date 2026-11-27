@@ -48,7 +48,11 @@ A single command runs the whole chain at three mesh densities (40, 60 and 80 cel
 
 ## Limits
 
-- 2D: a slice through the plate and channel; no side walls or manifolds.
+- 2D: a slice through the plate and channel; no side walls or manifolds. Checked against a fuller model, as the
+  portfolio's standing rule asks where a margin is thin: study 11 part 2 solved this passage with its side walls
+  and the plate as a conducting sheet, and for a 3 mm aluminium plate the wall's hot spot near the side walls is
+  0.19 K above the 2D value. Against this study's 4.0 K margin on the component face that does not need a 3D
+  model.
 - Constant fluid properties; laminar flow.
 - The plate ends are rigidly clamped; a real bolted end has some give, which would lower the stress.
 - Synthetic limits; no test data.

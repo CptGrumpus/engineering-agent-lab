@@ -37,6 +37,10 @@ A 6061-T6 strut with a solid 25 × 16 mm section, pinned at both ends, carries 8
 ## Limits
 
 - Capacity is defined as first yield; the plastic reserve beyond it is not used.
+- A beam model. At the answer's length the strut's slenderness is 127, where beam theory with its shear
+  correction (already in the checks) and a 3D solid agree to well under the mesh effects reported; a fuller model
+  of the strut itself would not move the answer. What would is the end fixity: the pins are taken as ideal, and
+  a real end fitting's stiffness needs its drawing.
 - No residual stresses or load eccentricity beyond the bow.
 - No test data.
 
