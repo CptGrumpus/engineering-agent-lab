@@ -118,6 +118,15 @@ Traps found while building the studies in this repo, by tool.
   deflection, with no tolerance setting in the deck: not for verification evidence.
 - `SOLVER=PARDISO` fails: "the PARDISO library is not linked".
 - For throughput, run independent solves as parallel processes (24 cores here).
+- A 540 k-node submodel (keyed shaft, 2026-11-26) ended after 25 min with no output: plan meshes under about
+  350 k nodes. Past that, submodel (`*SUBMODEL, TYPE=NODE, INPUT=global.frd`, then `*BOUNDARY, SUBMODEL, STEP=1` on
+  the cut-face nodes): a 154 k-node submodel solves in about 3.5 min, and the keyless shaft through a coarse global
+  model and a fine submodel reproduced the verified half model's fillet Kt within 0.4-0.6 %.
+- `models/fea/shaft_fillet_ccx.write_deck` writes loads with `repr`: fine for its own meshes so far, but a 22-character
+  value (`-2.751132655021138e-13`) broke the keyed shaft's first deck. New writers use `f"{v:.14g}"`.
+- Gmsh's MathEval parser rejects `*-1` (a negative coefficient right after an operator) and has no `Atan2`: put
+  coefficients in parentheses, write angular bands as distances outside a wedge. A parser error aborts the whole
+  Python process (C++ terminate), so the harness records nothing: test new size formulas by hand first.
 
 ## CalculiX frequency (modal) analysis
 

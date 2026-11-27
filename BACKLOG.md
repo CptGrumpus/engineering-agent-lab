@@ -84,6 +84,27 @@ commit). Rules that bind:
 
 Nothing.
 
+### Detailed CAD for every study (user's direction, 2026-11-26 evening)
+
+"We need to start building much more detailed cad for all of these studies, it is a helpful skill." Each study
+gets the real part in CadQuery (STEP), meshed from the STEP, checked against its verified idealised model, with a
+drawing and a render. A feature goes on the page with what it did to the answer. Order by what a feature could
+change:
+
+| Study | Now | Detailed CAD | What it could change |
+|---|---|---|---|
+| 26 shaft | 3D revolved step, Gmsh | **In progress:** DIN 6885 keyway at the gear seat (CadQuery, global + submodels) | prototype: keyway Kt about 3.1, fatigue safety about 1.2 < 1.5: the recommended shaft may fail once keyed |
+| 28 frame | beam elements | bolted end-plate beam-column connection (plates, bolts, welds) | connection capacity against AISC; prying |
+| 16 bolted joint | axisymmetric | 3D lap joint, bolts, nuts, washers, contact | slip and bolt bending |
+| 23 fan rotor | ROSS beam | shaft with impeller hub, keyway, bearing seats; 3D solid modal check | the 1D model's critical speeds |
+| 18 nozzle | CadQuery 3D | reinforcing pad and fillet welds | peak stress at the weld toe |
+| 27 enclosure | 3D CFD boxes | housing with fins, board, components, cable glands | U1 and board temperatures |
+| 11/15 cold plate | CFD channel | serpentine channel plate with ports and screws | pressure drop, hot spot |
+| 25 O-ring | axisymmetric (right) | flange and groove assembly for the drawing and render | none expected (visual, drawing) |
+| 24 cracked plate | 2D, 3D surface crack | weld toe of a T-joint (with weld fatigue I) | crack initiation site, life |
+| 20 motor | 2D EM | 3D lamination stack and housing for the render | none (visual) |
+| 01-14, 21, 22 | CadQuery single parts | chamfers, real hole patterns, STEP + drawing links | small; deliverable set |
+
 Study 24 part 2 (user's go-ahead 2026-11-26 evening, "keep working"): semi-elliptical surface crack, 3D FE against
 Newman-Raju. surface_crack_mesh (r0) scored: requirements pass, Newman-Raju within 2.4 % on the front average; the
 deep shapes' K profile falls under Newman-Raju at the deepest point (r1 tests it with energy alone).

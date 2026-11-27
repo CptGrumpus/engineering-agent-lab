@@ -1,0 +1,153 @@
+# Study 26 part 2: the keyed gear seat. Part 1 (cases/shaft_fillet_size.toml, page 26) sized the gearbox intermediate
+# shaft's step: a 36 mm seat with a 45 mm shoulder passes both requirements at the shoulder fillet (fatigue safety
+# 1.62, overload yield safety 2.52 at the fillet's lower tolerance, 1.6 mm). The gear on that seat is driven by a key,
+# so the seat has a keyway running towards the shoulder: DIN 6885 form A, 10 x 8 key for 30-38 mm shafts, keyway
+# 10 mm wide and 5.0 mm deep, end-milled (semicircular ends), bottom corner radius 0.25-0.40 mm (the range the
+# published tables give for this size; DIN 6885-1 itself is a paid standard and was not read), 40 mm long, ending
+# 2 mm before the fillet starts [the length and the gap are synthetic: a drawing would give them].
+# The client's question: does the shaft still meet REQ-S1 (fatigue safety >= 1.5, modified Goodman) and REQ-S2
+# (first-cycle yield safety >= 2.0 at a 1.5 x overload) once the keyway is cut, and if not, what seat does?
+#
+# Model (models/fea/keyed_shaft.py, studies/keyed_shaft.py): the shaft built in CadQuery (STEP), half model about the
+# plane through the keyway's centre (bending symmetric, torsion antisymmetric), meshed in Gmsh (10-node tetrahedra),
+# solved by CalculiX: a coarse global model drives three fine submodels cut by boxes around the keyway's end at the
+# shoulder (with the fillet), its far end and its middle (*SUBMODEL). Kt from gross nominal stresses (32 M / pi d^3,
+# 16 T / pi d^3) as part 1 and Le and Le; fatigue by part 1's Shigley method with the keyway's own Kt and its corner
+# radius for the notch sensitivity. Assumptions: the same rotating bending moment (300 N m) and steady torque
+# (500 N m) act at the keyway as at the fillet a few mm away (conservative); the key's bearing load on the keyway
+# wall is not modelled (Shigley's practice for keyseat factors).
+#
+# Smoke tests and prototypes, 2026-11-26 21:50-23:15 (scratch):
+#   - a single fine mesh of the keyed half shaft is 440-510 k nodes at the part 1 fillet size: past what SPOOLES
+#     solves (a 540 k-node submodel failed after 25 min), hence the global-submodel approach;
+#   - keyless shaft through global + near submodel: fillet Kt 2.260 / 2.2365 / 2.2333 (bending) and 1.603 / 1.600 /
+#     1.602 (torsion) at mesh scale 1.0 / 0.7 / 0.5, against part 1's verified 2.2246 / 1.5924: within 0.4-0.6 % from
+#     scale 0.7. The global model's own fillet value is within 0.2 % (bending) and 1.5 % (torsion) of its submodel's;
+#   - keyed, gap 2 mm, corner 0.4 mm, scale 1.0 (larger boxes than now): keyway Kt 3.16 (bending, at the end near the
+#     shoulder), 2.77 (torsion); fillet Kt 2.12 (bending, below the keyless 2.26: the keyway unloads it) and 1.69
+#     (torsion, above 1.60); fatigue safety at the keyway 1.19, overload yield safety 1.72: both requirements fail;
+#   - two harness bugs fixed: the torsion load check compared a signed moment (the end face's moment is -T), and
+#     Gmsh's expression parser rejects "*-1" (coefficients now in parentheses).
+#
+# This case: three checks before the evidence runs. (1) keyless: the global-submodel path must reproduce part 1's
+# verified fillet Kt (2.2246 bending, 1.5924 torsion) at mesh scale 0.5. (2) ansi_le: Le and Le's geometry
+# (Table 2: shaft 2 in = 50.8 mm, key 1/2 x 1/2 in, keyseat 12.7 mm wide, 6.35 mm deep, corner r/B = 0.05 =
+# 0.635 mm; seat length four key widths), keyway far from the shoulder: KTB 2.560 (bending, at the keyseat's end),
+# Ks 2.511 (torsion, max shear at the long side's middle). (3) margin3 / margin5: the DIN keyed shaft at scale 1.0
+# with submodel boxes 3 and 5 mm clear of the keyway: the cut faces must not change the peaks.
+#
+# Predictions, written BEFORE the run (2026-11-26 23:17):
+#   P1 keyless: fillet Kt within 0.6 % of part 1 in bending and torsion (smoke: 0.39 % and 0.58 % at this scale).
+#   P2 ansi_le: KTB and Ks within 5 % of Le and Le's 2.560 and 2.511, most likely above them (their p-adaptive FE
+#      stops at 2 % in strain energy, which under-resolves a peak more often than it over-resolves it).
+#   P3 margin3 against margin5: every Kt within 0.5 %.
+#   P4 Every equilibrium, load and global-against-submodel check passes; under 1 h.
+
+[case]
+name = "keyed_shaft_check"
+model = "ccx_keyed_shaft"
+description = "Checks of the keyed-shaft model (study 26 part 2): the keyless 36 mm shaft through the global-submodel path against part 1's verified fillet Kt; an isolated ANSI-proportioned profile keyseat against Le and Le (ASEE 2013); the DIN keyed shaft with submodel boxes 3 and 5 mm clear of the keyway."
+assumptions = [
+  "Linear elastic, small strain; Kt from gross nominal stresses at the small diameter; the fatigue and overload checks of part 1 (Shigley: Marin factors, Neuber notch sensitivity with each feature's own radius, von Mises combination, modified Goodman; Kf applied to the overload).",
+  "Rotating bending 300 N m (fully reversed) and steady torque 500 N m act at the keyway as at the fillet (the keyway's end is 2 mm from the fillet; conservative).",
+  "The key's bearing pressure on the keyway wall and any press fit of the gear are not modelled (Shigley's practice for keyseat factors).",
+  "DIN 6885 form A keyway dimensions from published reproductions of the table (the current DIN 6885-1:2021 was not read); corner radius 0.25-0.40 mm.",
+]
+limitations = [
+  "Submodels driven by a coarse global model; their boxes keep 3 mm (or more) of material between the keyway's corners and the cut faces.",
+  "Stress at nodes (CalculiX's extrapolation, averaged), as part 1.",
+]
+
+[parameters]
+D_mm = 45.0
+d_mm = 36.0
+fillet_radius_mm = 1.6
+small_length_mm = 90.0
+large_length_mm = 60.0
+bending_moment_Nm = 300.0
+torque_Nm = 500.0
+youngs_modulus_MPa = 210000.0
+poisson_ratio = 0.3
+ultimate_MPa = 1000.0
+yield_MPa = 750.0
+overload_factor = 1.5
+key_width_mm = 10.0
+key_depth_mm = 5.0
+key_corner_radius_mm = 0.4
+key_gap_mm = 2.0
+key_length_mm = 40.0
+global_key_size_mm = 0.3
+global_fillet_size_mm = 0.5
+far_size_mm = 4.0
+sub_key_size_rel = 0.333
+sub_fillet_size_mm = 0.2
+mesh_scale = 0.8
+box_margin_mm = 3.0
+kt_reference_bending = 0.0
+kt_reference_torsion = 0.0
+kt_key_reference_bending = 0.0
+kt_key_reference_torsion = 0.0
+
+[[sweep.scenarios]]
+name = "keyless"
+key_width_mm = 0.0
+mesh_scale = 0.5
+kt_reference_bending = 2.2246154438973256   # part 1, run 20261124-155125_shaft_fillet_size, point p03_d36
+kt_reference_torsion = 1.5923779246662075
+
+[[sweep.scenarios]]
+name = "ansi_le"
+d_mm = 50.8
+D_mm = 63.5
+fillet_radius_mm = 2.54
+small_length_mm = 180.0
+large_length_mm = 60.0
+key_width_mm = 12.7
+key_depth_mm = 6.35
+key_corner_radius_mm = 0.635
+key_gap_mm = 20.0
+key_length_mm = 50.8
+global_key_size_mm = 0.45
+global_fillet_size_mm = 0.7
+sub_fillet_size_mm = 0.3
+kt_key_reference_bending = 2.560   # Le and Le 2013, Table 2, r/B = 0.0500
+kt_key_reference_torsion = 2.511
+
+[[sweep.scenarios]]
+name = "margin3"
+mesh_scale = 1.0
+
+[[sweep.scenarios]]
+name = "margin5"
+mesh_scale = 1.0
+box_margin_mm = 5.0
+
+[numerics]
+parallel_solves = 6
+solve_timeout_s = 7200
+solver_timeout_s = 43200
+
+[verification]
+equilibrium_rel_tol = 1e-6
+load_rel_tol = 1e-4          # 7-point rule on curved end faces: 8e-6 measured
+global_sub_rel_tol = 0.02    # fillet Kt, global model against its submodel (smoke: 0.2 % bending, 1.5 % torsion)
+reference_rel_tol = 0.01     # keyless fillet Kt against part 1's verified value
+key_reference_rel_tol = 0.05 # Le and Le's keyseat factors (their own FE, p-adaptive to 2 % in strain energy)
+min_scaled_jacobian = 0.1
+gci_max = 0.01
+
+[[requirements]]
+id = "REQ-S1"
+text = "The fatigue safety factor (modified Goodman, Shigley's method) shall be at least 1.5 at the shoulder fillet and at the keyway."
+metric = "fatigue_safety"
+operator = ">="
+limit = 1.5
+units = ""
+
+[[requirements]]
+id = "REQ-S2"
+text = "The first-cycle yield safety factor at a 1.5 x overload shall be at least 2.0 at the shoulder fillet and at the keyway."
+metric = "static_safety"
+operator = ">="
+limit = 2.0
+units = ""
