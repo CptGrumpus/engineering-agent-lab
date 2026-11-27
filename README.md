@@ -63,6 +63,7 @@ The intended user is an automotive engineer with a master's degree in mechanical
 | Backward-facing step, separated turbulent flow (reattachment, skin friction, pressure recovery) | `openfoam_step_rans` | OpenFOAM 14 (in WSL), k-omega SST | `step_mesh`, `step_inlet_tu`, `step_outlet` |
 | Fan rotor critical speeds (Campbell diagram, unbalance response) | `ross_rotor` | ROSS 3.1 (own environment), Timoshenko shaft elements | `rotor_fan_mesh`, `rotor_fan_design` |
 | The same rotor as a 3D solid with its hub and journals (natural frequencies against the beam model) | `ccx_rotor_solid` | CadQuery solid -> Gmsh -> CalculiX *FREQUENCY, point bearings on rigid end faces; ROSS on the same rotor in each point | `rotor_solid_mesh`, `rotor_solid_detail` |
+| Pressure vessel nozzle by limit load (study 18 part 2: collapse under rising pressure, no classification line) | `ccx_nozzle_limit` | Part 1's CadQuery quarter model and Gmsh mesh, CalculiX elastic-perfectly plastic, one step per load factor to non-convergence; checked on the exact plain-cylinder collapse | `nozzle_limit_reference`, `nozzle_limit_mesh`, `nozzle_limit_thickness` |
 
 ## Project folders
 

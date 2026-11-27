@@ -1,0 +1,69 @@
+# Study 18 part 2, case 3: the thinnest nozzle wall that passes by limit load.
+#
+# Why: part 1's thickness answers were about 11.7 mm (classification line at the weld toes), about 16 mm (a simplified
+# pressure-area rule) and about 20 mm (line through the crotch corner). This case finds the wall the limit-load route
+# asks for, with no line to place. Mesh h_local 9 mm, the middle of nozzle_limit_mesh (run in parallel; that case gives
+# this mesh's uncertainty at 12 mm). Scratch trial at 12 mm, h_local 10: collapse load factor 1.687.
+#
+# Predictions, written BEFORE the evidence run:
+#   P1 Every point check passes at every wall.
+#   P2 The collapse load factor rises with the wall, more slowly as the shell's own collapse (2.151, the plain shell)
+#      is approached: about 1.45 / 1.58 / 1.69 / 1.86 at 8 / 10 / 12 / 16 mm.
+#   P3 REQ-NL1 fails at 8 mm and passes from 10 mm; interpolated, the wall where the factor is 1.5 is about 9 mm, below
+#      all three of part 1's answers: the elastic routes are conservative here, the crotch line by more than 2x.
+#   P4 About 1 hour (four points at h_local 9, run alongside the mesh case).
+
+[case]
+name = "nozzle_limit_thickness"
+model = "ccx_nozzle_limit"
+description = "Limit load of the study-18 nozzle (shell Ri 500 x 16 mm, set-in nozzle ri 100 mm, 10 mm weld fillet, no pad) with nozzle walls of 8 / 10 / 12 / 16 mm; elastic-perfectly plastic at 1.5 S = 207 MPa, small displacement; pressure stepped to 2.4 times 3.5 MPa; local element size 9 mm."
+assumptions = [
+  "Elastic-perfectly plastic steel, von Mises, yield 1.5 S = 207 MPa, E 200 GPa, nu 0.3; small displacement (NLGEOM off), as Part 5.2.3 specifies.",
+  "Closed vessel: end thrusts as uniform axial tractions on the cut ends, ramped with the pressure.",
+  "The collapse load is the last converged increment's load factor (method checked on the exact plain cylinder, nozzle_limit_reference).",
+  "Geometry as part 1: outer weld a 10 mm fillet at every wall, inner corner sharp; quarter model by symmetry.",
+  "Allowable S = 138 MPa: synthetic, as part 1.",
+]
+limitations = [
+  "Plastic collapse only (Part 5.2.3): local strain (5.3), ratcheting and fatigue are separate checks. A thinner nozzle raises the elastic P + Q at the junction; part 1 checked it at 12 mm and up only.",
+  "Pressure only: no piping loads, which a thin nozzle carries less well.",
+  "Mesh h_local 9 mm: its uncertainty comes from nozzle_limit_mesh at 12 mm.",
+]
+
+[parameters]
+shell_inner_radius_mm = 500.0
+shell_thickness_mm = 16.0
+shell_half_length_mm = 1000.0
+nozzle_inner_radius_mm = 100.0
+nozzle_thickness_mm = 12.0
+nozzle_length_mm = 350.0
+weld_fillet_radius_mm = 10.0
+pressure_MPa = 3.5
+youngs_modulus_MPa = 200000.0
+poisson_ratio = 0.3
+element_size_local_mm = 9.0
+element_size_far_mm = 24.0
+refine_radius_mm = 140.0
+mesh_growth = 0.08
+allowable_stress_MPa = 138.0
+load_factor_max = 2.4
+
+[sweep]
+parameter = "nozzle_thickness_mm"
+values = [8.0, 10.0, 12.0, 16.0]
+
+[numerics]
+solver_timeout_s = 14400
+threads = 8
+
+[verification]
+volume_rel_tol = 0.01
+equilibrium_rel_tol = 1e-5
+
+[[requirements]]
+id = "REQ-NL1"
+text = "Protection against plastic collapse by limit load (the method of Part 5.2.3): the nozzle without a pad carries 1.5 times the design pressure (collapse load factor >= 1.5, yield 1.5 S)."
+metric = "collapse_load_factor"
+operator = ">="
+limit = 1.5
+units = "-"

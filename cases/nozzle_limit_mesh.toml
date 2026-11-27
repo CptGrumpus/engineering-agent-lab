@@ -1,0 +1,78 @@
+# Study 18 part 2, case 2: the 12 mm nozzle without a pad, by limit load, at three meshes.
+#
+# Why: part 1 left the verdict on the analyst's judgement. With the classification line at the weld toes the 12 mm
+# nozzle passes (PL 205.1 against 207 MPa); through the crotch corner it fails by 24 % (256.7 MPa) and the wall needs
+# about 20 mm; a simplified pressure-area rule asks for about 16 mm. The limit-load route of Part 5.2.3 needs no line:
+# the design passes if an elastic-perfectly plastic model (yield 1.5 S = 207 MPa, small displacement) carries 1.5 times
+# the design pressure. Method checked on the plain shell (nozzle_limit_reference). Same CAD and mesh route as part 1.
+# Scratch trial (2026-11-27, h_local 10 mm, 48 k nodes, 13 min): collapse load factor 1.6873 (5.905 MPa, 78 % of the
+# plain shell's 7.529 MPa); at 1.5 the weld toe has moved 1.84 times its elastic value, 4.2 times by 1.6: a collapse
+# mechanism, not a numerical stop; peak plastic strain 2.2 % at 1.5.
+#
+# Predictions, written BEFORE the evidence run:
+#   P1 Every point check passes at every mesh (equilibrium at every completed step within 1e-5, collapse found).
+#   P2 Collapse load factor about 1.70 / 1.69 / 1.68 at h_local 13.5 / 9 / 6 mm: falling slightly as the mesh refines
+#      (a displacement-based limit load is an upper bound), all within 2 % of each other; the GCI verifies it (under
+#      3 %), against the declared mesh noise floor of 0.3 %.
+#   P3 REQ-NL1 passes at every mesh: the 12 mm nozzle carries 1.5 times the design pressure without a pad, by about
+#      12 %. The limit load sides with the toe-line verdict of part 1, not the crotch line's.
+#   P4 At 1.5 the yielding is local to the junction (peak plastic strain 1-3 %, at the crotch corner); by the last
+#      completed step it reaches through the shell wall around the nozzle.
+#   P5 About 1 hour (the finest mesh dominates).
+
+[case]
+name = "nozzle_limit_mesh"
+model = "ccx_nozzle_limit"
+description = "Limit load of the study-18 nozzle (shell Ri 500 x 16 mm, set-in nozzle ri 100 x 12 mm, 10 mm weld fillet, no pad), elastic-perfectly plastic at 1.5 S = 207 MPa, small displacement; pressure stepped 1, 1.5, then 0.1 apart to 2.4 times 3.5 MPa; local element size 13.5 / 9 / 6 mm."
+assumptions = [
+  "Elastic-perfectly plastic steel, von Mises, yield 1.5 S = 207 MPa (the limit-load route's yield), E 200 GPa, nu 0.3; small displacement (NLGEOM off), as Part 5.2.3 specifies.",
+  "Closed vessel: the shell's and the nozzle's end thrusts applied as uniform axial tractions on their cut ends, ramped with the pressure.",
+  "The collapse load is the last converged increment's load factor; the minimum increment (1e-4 of a 0.1 load step) brackets it to 1e-5. The method's stop was checked against the exact plain cylinder (nozzle_limit_reference).",
+  "Geometry as part 1: outer weld a 10 mm fillet, inner corner sharp, weld metal the same steel; quarter model by symmetry.",
+  "Allowable S = 138 MPa: synthetic, as part 1.",
+]
+limitations = [
+  "Part 5.2.3 protects against plastic collapse only. The local strain limit (Part 5.3), ratcheting (part 1's P + Q check passed) and fatigue are separate checks, not made here.",
+  "Pressure only: no piping loads on the nozzle, no thermal loads.",
+  "The plastic strains near the sharp inner corner are mesh dependent; the collapse load is a global quantity and is not.",
+]
+
+[parameters]
+shell_inner_radius_mm = 500.0
+shell_thickness_mm = 16.0
+shell_half_length_mm = 1000.0
+nozzle_inner_radius_mm = 100.0
+nozzle_thickness_mm = 12.0
+nozzle_length_mm = 350.0
+weld_fillet_radius_mm = 10.0
+pressure_MPa = 3.5
+youngs_modulus_MPa = 200000.0
+poisson_ratio = 0.3
+element_size_local_mm = 9.0
+element_size_far_mm = 24.0
+refine_radius_mm = 140.0
+mesh_growth = 0.08
+allowable_stress_MPa = 138.0
+load_factor_max = 2.4
+
+[sweep]
+parameter = "element_size_local_mm"
+values = [13.5, 9.0, 6.0]
+
+[numerics]
+solver_timeout_s = 14400
+threads = 8
+
+[verification]
+volume_rel_tol = 0.01        # straight-sided tets on curved surfaces
+equilibrium_rel_tol = 1e-5   # exact resultants times the load factor, at every completed step
+mesh_noise_rel = 3e-3        # declared before the run: part 1 measured 0.08-0.3 % scatter between regenerated meshes
+gci_max = 0.03
+
+[[requirements]]
+id = "REQ-NL1"
+text = "Protection against plastic collapse by limit load (the method of Part 5.2.3): the nozzle without a pad carries 1.5 times the design pressure (collapse load factor >= 1.5, yield 1.5 S)."
+metric = "collapse_load_factor"
+operator = ">="
+limit = 1.5
+units = "-"
