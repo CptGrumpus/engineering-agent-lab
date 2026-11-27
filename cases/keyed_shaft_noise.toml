@@ -22,6 +22,24 @@
 #      boxes and their meshes are unchanged and both peaks are more than 1 mm inside), within 0.1 %; fillet Kt from
 #      the new box 2.11-2.15 (bending, about 27 deg from the keyway) and 1.67-1.72 (torsion, on the far side).
 #   P3 Every equilibrium, load, mesh-quality and global-against-fillet-submodel check passes; 45-75 min.
+#
+# Results (run 20261127-010741_keyed_shaft_noise, 01:07-01:52, scored 2026-11-27 01:55). VERIFICATION FAIL on one
+# mesh-quality check (far3.8, below).
+#   P1 half held. Relative spread over the five meshes (over the four valid ones in brackets): keyway Kt 1.76 %
+#      (1.56 %) in bending, above the predicted 0.4-1.5 %, and 0.23 % in torsion; fillet Kt 0.46 % (bending) and
+#      0.21 % (torsion); fatigue safety 1.23 % (1.07 %), above 0.2-1.0 %; static safety 0.73 %. The axial keyseat
+#      factor at the far end 2.1 %.
+#   P2 held: the base mesh gives keyway Kt 3.184 and 2.761 exactly as run 20261126-232303; fillet Kt from the new
+#      boxes 2.118 (bending, in 2.11-2.15) and 1.702 (torsion, on the far side, in 1.67-1.72); global against fillet
+#      submodel within 0.03-1.7 % (bending) and 0.07-0.76 % (torsion), where r0's near box missed by 6.4 % at d40.
+#   P3 not held: far3.8's global mesh has one inverted element (minimum scaled Jacobian -0.10) at the 0.3 mm keyway
+#      size on the 0.40 mm corner; every submodel mesh is sound. 45 min (held).
+# Findings:
+#   1. The keyway's bending Kt carries 1.6-1.8 % mesh-to-mesh noise at r_k / 3 x 0.8 elements: a 1 % GCI target is
+#      below what three meshes can resolve. keyed_shaft_mesh_r1 declares the five-mesh spreads as its floors.
+#   2. The global keyway size 0.75 r_k still lets an element invert now and then (1 in 54 k here); the mesh-quality
+#      check catches it. mesh_r1 keeps the base global mesh (mesh_scale does not change the global model), which is
+#      sound (0.43).
 
 [case]
 name = "keyed_shaft_noise"
