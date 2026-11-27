@@ -101,7 +101,7 @@ aluminium, 96 mm across, with 4 M6 bolts on a 76 mm circle.
 | Cover | Lift at the seal | Share of the 75 µm allowance | Squeeze at the loosest corner (15 % minimum) |
 |---|---|---|---|
 | 3 mm | 29 µm | 39 % | 16.35 % |
-| 4 mm | about 15 µm | 20 % | 16.77 % |
+| 4 mm | 15.1 µm | 20 % | 16.77 % |
 | 6 mm | 5.9 µm | 8 % | 17.03 % |
 | 8 mm | 3.3 µm | 4 % | 17.11 % |
 | flat and rigid (part 1) | 0 | 0 | 17.20 % |
@@ -131,10 +131,10 @@ faces' flatness to well under that, rather than thicken the cover.
   73.35 µm at the centre; Mindlin's plate (Kirchhoff plus the transverse-shear term) gives 72.98 µm, 0.5 % apart.
 - **Equilibrium.** The reaction at the washers equals the applied load to 1 part in 10⁸ on every mesh.
 - **Mesh refinement, and what it showed.** The lift converges slowly: four meshes of the 4 mm cover give 14.37,
-  14.60, 14.81 and 14.92 µm, steps of 0.23, 0.21 and 0.12, heading for about 15.1 µm. The washer patch is held rigidly
-  over a sharp-edged circle, which concentrates its reaction at the edge, and the whole cover tilts a little more as
-  that edge is resolved. The three-mesh evidence run did not pass its convergence check (below); the four-mesh study
-  shows where the lift is going, and the verdict uses a fifth of the margin.
+  14.60, 14.81 and 14.92 µm, steps of 0.23, 0.21 and 0.12; the three finest give a mesh uncertainty of 1.2 % and an
+  extrapolated **15.06 µm**. The washer patch is held rigidly over a sharp-edged circle, which concentrates its
+  reaction at the edge, and the whole cover tilts a little more as that edge is resolved (observed order 1.5, not 2).
+  An earlier three-mesh run failed its convergence check; why is below.
 
 ### What the checks caught
 
@@ -146,8 +146,8 @@ faces' flatness to well under that, rather than thicken the cover.
   14.50, 14.60, 14.81 µm: growing, the second step twice the first, so the check called it divergent and the run
   fails. In scratch: the coarsest mesh had been shaped partly by Gmsh's curvature sizing (10,412 nodes against
   10,210 without it; the two finer meshes are the same either way). That is a trap the rotor study had already
-  recorded, repeated here. And the lift converges slowly toward about 15.1 µm, as above. The failure stands; the
-  tolerance is unchanged.
+  recorded, repeated here. And the lift converges slowly, as above. The failure stands, its tolerance unchanged; the
+  four-mesh rerun with curvature sizing off, its values predicted from the scratch diagnosis, passes.
 - **CalculiX's reaction includes the load on a support node.** The plate-theory case's edge supports also carry
   pressure, so their printed reaction came out 0.8 % short of the load. CalculiX prints a node's internal force,
   which at a loaded support node includes its own share of the load. The washer footprints carry no load, so there
@@ -171,7 +171,8 @@ faces' flatness to well under that, rather than thicken the cover.
 - Cases with predictions and results: `cases/oring_*.toml`; model `models/fea/oring_ccx.py`, study
   `studies/oring_seal.py`, references `validation/oring.py`
 - Part 2: [plate theory](../runs/20261127-161150_oring_cover_reference/report.md) (PASS),
-  [the 4 mm cover at three meshes](../runs/20261127-162109_oring_cover_mesh_r1/report.md) (FAIL on the convergence
+  [the 4 mm cover at four meshes](../runs/20261127-164826_oring_cover_mesh_r2/report.md) (PASS),
+  [the earlier three-mesh run](../runs/20261127-162109_oring_cover_mesh_r1/report.md) (FAIL on the convergence
   check, above), [four thicknesses](../runs/20261127-162214_oring_cover_thickness_r1/report.md) (PASS); the first
   runs with the node sampling: [mesh](../runs/20261127-161204_oring_cover_mesh/report.md),
   [thicknesses](../runs/20261127-161311_oring_cover_thickness/report.md); cases `cases/oring_cover_*.toml`; code
