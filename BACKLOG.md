@@ -95,8 +95,12 @@ Done today, each with predictions committed first, runs scored, page section, fi
   below about 0.23 mm of aluminium; grid run FAILS one exact check at the coarsest grid.
 - **Study 10 part 2** (roller with its ends, half-space contact): straight roller fails (singular ends); log crown
   A = 1.3 x Lundberg passes at 617 MPa, window 1.1-2.5 x. The 3D FE roller (models/fea/roller_3d.py) is built but
-  takes about an hour per solve; a crowned trial (Lundberg A, approaches 0.014/0.016/0.018 mm, scratch dir r3_log3)
-  was still running at 17:34 as a cross-check: compare it with the half-space model at the FE's own loads.
+  takes about an hour per solve. Its crowned trial (Lundberg A, scratch r3_log3) read 5 % higher than the half-space
+  model at mid-length (2 % known mesh bias) and 23 % at the end (18:00): the crowned verdict is CONDITIONAL on a 3D FE
+  mesh study at the chosen crown (A = 1.3 x Lundberg), the next job for study 10. Script: scratch fe_vs_hs.py.
+- **Also done later the same day:** detailed CAD with STEP and hand-volume tests for studies 10 (track roller), 25
+  (seal), 11/15 (cold plate), 27 (enclosure), 16 (bolted lap), 2/3/14 (strap), 13 (strut, pinned about its weak axis),
+  8 (mounting plate), 12 (clevis); the bracket arm (4/21/22) deliberately not drawn (see the CAD roadmap row).
 - **Standing rule adopted** (user, 2026-11-27): simple model first, a fuller check where the margin is as small as the
   simplification's likely error (build-model skill "Choosing checks" item 5; memory simple-first-verify-fuller). The
   revisit list (2, 10, 25, 11; notes on 15 and 13) is done.
