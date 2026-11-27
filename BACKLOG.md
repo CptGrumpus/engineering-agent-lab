@@ -100,13 +100,30 @@ change:
 | 28 frame | beam elements | **Done (part 2):** the knee as a bolted flange-plated moment connection (the user chose it over the end plate: AISC 358 is behind a browser-only download, II.B-1 is on disk); Chapter J design against II.B-1; 3D CalculiX solid for its stiffness; detailed assembly with bolts, STEP (models/cad/portal_knee.py, portfolio/cad/); render and drawing to offer the dashboard session | Ks L/EI 8.0 (partially restrained by AISC's index), k L/EI 23.7 for the frame: slip-critical knees keep the verdict (beam 0.83); slipping bearing bolts fail the beam (1.17). Open: an extended end plate as part 3 once the user downloads AISC 358 |
 | 16 bolted joint | axisymmetric | 3D lap joint, bolts, nuts, washers, contact | slip and bolt bending |
 | 23 fan rotor | ROSS beam | **Done (part 2):** the rotor as a 3D solid (CalculiX modal) against ROSS, hub and journals one at a time; detailed assembly with keyed hub and welded disc, STEP (models/cad/fan_rotor.py); render and drawing to offer the dashboard session | 65 mm holds: corrected first critical 3686 rpm (22.9 %); the beam model gets the hub backwards (+1.1 % where the solid gives -1.6 %) |
-| 18 nozzle | CadQuery 3D | reinforcing pad and fillet welds | peak stress at the weld toe |
+| 18 nozzle | CadQuery 3D | **In progress (part 2):** limit load (no classification line) at three meshes and four walls, plain-cylinder reference; detailed assembly as analysed and with a pad, welds, tell-tale hole, flange, STEP (models/cad/vessel_nozzle.py); runs 20261127-143302 | part 1's verdict turned on the line placement; the coarse trial collapses at 1.687 x design (passes 1.5 without a pad) |
 | 27 enclosure | 3D CFD boxes | housing with fins, board, components, cable glands | U1 and board temperatures |
 | 11/15 cold plate | CFD channel | serpentine channel plate with ports and screws | pressure drop, hot spot |
 | 25 O-ring | axisymmetric (right) | flange and groove assembly for the drawing and render | none expected (visual, drawing) |
 | 24 cracked plate | 2D, 3D surface crack | weld toe of a T-joint (with weld fatigue I) | crack initiation site, life |
 | 20 motor | 2D EM | 3D lamination stack and housing for the render | none (visual) |
 | 01-14, 21, 22 | CadQuery single parts | chamfers, real hole patterns, STEP + drawing links | small; deliverable set |
+
+### Simple first, then verify where the margin is thin (standing rule, user, 2026-11-27)
+
+"Start with 2D studies but verify with 3D ... consider doing this with the other studies we did." Every study starts
+with the cheapest model that answers the question; where the verdict's margin is comparable to the plausible error of
+the simplification it rests on, a fuller model (3D, real detail, or another method) checks it before the verdict
+stands (build-model skill, "Choosing checks" item 5). Finished studies to revisit, in order:
+
+| Study | Simplification | Margin | Fuller check | Status |
+|---|---|---|---|---|
+| 2 strap cable hole (3, 14 share the model) | plane stress (thin analysed layer) | 16 mm hole: 117 MPa, about 2.5 % under the allowable; the page itself says the mid-thickness peak in the 4 mm plate "runs a few percent higher" | 3D solid through the 4 mm thickness, the peak at mid-thickness against plane stress; does 16 mm still pass, and what hole size does | next |
+| 10 roller contact | plane strain (no roller ends) | 609 against 650 MPa (6 %), shear 184 against 200 (8 %) | 3D roller of real length with its ends (edge loading), then crowning if the ends fail | after 2 |
+| 25 O-ring face seal | axisymmetric, flat rigid cover | squeeze 17.2 % against 15 % minimum | 3D cover segment between two bolts: the gap opens between bolts, squeeze at the worst point | after 10 |
+| 11 cold-plate channel | 2D, side walls neglected | wall 44.03 against 45 C (about 1 K) | 3D duct with side walls (the 3D duct check showed 3 % on the flow) | after 25 |
+| 15, 21, 22, 4, 13 | various | wide | none needed: say so on the page with the estimate | page notes |
+| 16, 20 | axisymmetric bolt, 2D motor | - | 16: shown it cannot change the verdict; 20: closed | none |
+| 18, 23, 24, 26, 28 | - | - | already checked with a fuller model (18 in progress) | done |
 
 Study 24 part 2 (user's go-ahead 2026-11-26 evening, "keep working"): semi-elliptical surface crack, 3D FE against
 Newman-Raju. surface_crack_mesh (r0) scored: requirements pass, Newman-Raju within 2.4 % on the front average; the

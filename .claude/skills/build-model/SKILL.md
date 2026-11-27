@@ -77,6 +77,15 @@ per problem type:
    finer meshes; only the field comparison exposed it.
 4. **Valid for this point?** One validity check per assumption that can fail
    (wheel lift, yield, small deflection, laminar, fully developed).
+5. **Does the simplification hold where the verdict is decided?** (Standing rule, 2026-11-27.) Start with
+   the cheapest model that answers the question (1D, 2D, axisymmetric, idealised geometry, elastic), then
+   name the simplification the verdict rests on and estimate its plausible error. Where that error is
+   comparable to the margin, verify with a fuller model before the verdict stands: 3D, the real detail, or
+   a different method (limit load for an elastic line placement). Add one detail at a time against the
+   simple model, so a disagreement points at its cause. Study 23's beam model got the hub's effect
+   backwards (+1.1 % against the solid's -1.6 %), harmless at a 23 % margin, a wrong verdict near 15 %.
+   Where the margin is wide, say so on the page with the estimate; no fuller model needed. Plan the fuller
+   check in the case's "Why" and its predictions, not after the result.
 
 ## Procedure
 
