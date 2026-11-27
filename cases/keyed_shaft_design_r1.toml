@@ -26,6 +26,28 @@
 #   P4 d42_rk025: fatigue safety 1.50-1.60 (marginal PASS), yield 2.35-2.50: with the corner at the bottom of its
 #      tolerance the smallest keyed seat is 42 mm; with "r 0.4 min" on the drawing it is 40 mm.
 #   P5 Every check passes; 50-80 min.
+#
+# Results (run 20261127-021152_keyed_shaft_design_r1, 02:11-03:19, scored 2026-11-27 03:20). VERIFICATION FAIL on one
+# global-against-submodel check (d40_rk025, below); no verdict depends on it.
+#   P1 held: rk025 keyway Kt 3.857 (bending) and 3.186 (torsion); fatigue safety 1.037, yield 1.533; mesh_quality
+#      passes (minimum scaled Jacobian 0.14) where r0's global mesh inverted.
+#   P2 held: d38 1.377 / 2.017 and d40 1.535 / 2.355, as run 20261127-000418 to four digits; fillet torsion Kt 1.690
+#      and 1.687, fillet safety 1.94 / 2.27 (fatigue), not governing.
+#   P3 held: d40_rk025 keyway Kt 4.158, fatigue safety 1.357 (REQ-S1 FAIL), yield 2.103.
+#   P4 held: d42_rk025 fatigue safety 1.545 (PASS, margin 3.0 %, above the 1.23 % noise floor), yield 2.411.
+#   P5 not held: d40_rk025's global fillet bending Kt 2.132 against its submodel's 2.087, 2.18 % apart (tolerance
+#      2 %). Both peaks are the same point (0.4 mm apart, 29.5 and 28.3 deg from the keyway), so the box sees the
+#      peak; the coarser global mesh reads high (d40: 1.88 %, d42_rk025: 1.13 %). Fillet fatigue safety 2.27 against
+#      the keyway's 1.357. 68 min (held).
+# Findings:
+#   1. The keyway's corner radius moves the answer by one seat size: at 0.25 mm the fatigue safety drops 12 % (36 mm:
+#      1.180 to 1.037; 40 mm: 1.535 to 1.357). With the corner at the bottom of its DIN tolerance the smallest keyed
+#      seat is 42 mm (1.545); with "keyway corner r 0.4 min" on the drawing it is 40 mm (1.535).
+#   2. On a larger seat with the same 12 x 8 key the keyway Kt rises slightly (4.158 at 40 mm, 4.228 at 42 mm, the
+#      key being relatively narrower), but the nominal stress falls faster: fatigue safety 1.357 to 1.545.
+#   3. The global-against-submodel tolerance of 2 % is tight for a fillet the global mesh resolves with about six
+#      0.5 mm quadratic elements on its quarter arc: when the two peaks coincide, a 2-3 % gap is the global mesh's
+#      error, not a missed peak. The check should report the peak distance beside the Kt gap, to tell the two apart.
 
 [case]
 name = "keyed_shaft_design_r1"
