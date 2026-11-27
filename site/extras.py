@@ -654,7 +654,7 @@ REQS = [
         ("Peak contact pressure", "≤ 650 MPa", "609 MPa", "met"),
         ("Max shear below the surface", "≤ 200 MPa", "184 MPa", "met"),
         ("Part 2: peak contact pressure along a 30 mm roller, straight", "≤ 650 MPa", "over 2,000 MPa at the ends, growing as the grid refines", "fail"),
-        ("Part 2: peak contact pressure, logarithmic crown (A = 1.79 µm)", "≤ 650 MPa", "617 MPa at mid-length, mesh uncertainty 0.03 %", "met")]),
+        ("Part 2: peak contact pressure, logarithmic crown (A = 1.79 µm)", "≤ 650 MPa", "617 MPa at mid-length on the half-space model (mesh uncertainty 0.03 %); one coarse 3D FE check reads about 5 % higher, not yet settled", "unconfirmed")]),
     ("heat", "11", "Cold-plate heat transfer", [
         ("Coolant temperature rise", "≤ 10 K", "7.2 K", "met"),
         ("Peak wall temperature", "≤ 45 °C", "44.03 °C, mesh uncertainty 0.23 % of the rise", "met"),
@@ -698,9 +698,10 @@ REQS = [
 CHIP = {"met": ("pass", "Met"), "fail": ("fail", "Not met"), "held": ("warn", "Withheld"),
         "open": ("warn", "Open"), "finding": ("note", "Finding, confirmed by test"), "cond": ("warn", "Depends on steel grade"),
         "provisional": ("warn", "Met; depends on the flux"), "nominal": ("warn", "Met at the nominal fit"),
-        "unsettled": ("warn", "Met; run not settled"), "approval": ("warn", "Met, if the client approves the part change")}
+        "unsettled": ("warn", "Met; run not settled"), "approval": ("warn", "Met, if the client approves the part change"),
+        "unconfirmed": ("warn", "Met on one model; 3D check pending")}
 # how each status counts in the summary line: a design finding is still a requirement the design doesn't meet
-COUNT_AS = {"met": "met", "fail": "fail", "held": "held", "open": "held", "finding": "fail", "cond": "fail", "provisional": "held", "nominal": "met", "unsettled": "held", "approval": "held"}
+COUNT_AS = {"met": "met", "fail": "fail", "held": "held", "open": "held", "finding": "fail", "cond": "fail", "provisional": "held", "nominal": "met", "unsettled": "held", "approval": "held", "unconfirmed": "held"}
 
 
 def reqs_html() -> str:
