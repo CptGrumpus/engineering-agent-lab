@@ -1,13 +1,13 @@
-# Gearbox shaft shoulder: fatigue and overload safety at the fillet, and the step that passes
+# Gearbox shaft: fatigue and overload safety at the shoulder fillet and the keyway, and the seat that passes
 
 [Portfolio index](../PORTFOLIO.md) · Structures and vibration
 
 | | |
 |---|---|
-| **Answer** | The intermediate shaft as drawn (42CrMo4 Q&T, D 40 -> d 32 mm, fillet 1.6 +0.4 / -0.2 mm; rotating bending 300 N m, steady torque 500 N m) **fails both requirements**: fatigue safety **1.19** at the nominal fillet and **1.15** at its lower tolerance (limit 1.5, modified Goodman), first-cycle yield safety at a 1.5 x overload **1.83 / 1.77** (limit 2.0). **No fillet that fits under the 4 mm shoulder reaches 1.5** (1.47 at 3.9 mm). Scaling the step does: the smallest small diameter meeting both is **35.1 mm**, so a **36 mm seat with a 45 mm shoulder** (fillet 1.8 mm) gives fatigue safety **1.62** and yield safety **2.52** across the fillet tolerance. Verification: two checks fail, neither on a verdict: the mesh study's check on the torsion factor Kts (it creeps up 0.12 % at the finest level, against a measured noise floor of 0.11 %; no requirement uses Kts directly) and the element quality at a 3.7 mm fillet (0.065 against 0.1; that point is unverified, its neighbours at 3.5 and 3.9 mm pass). The client, loads and limits are synthetic; the material values are catalogue values and every fatigue relation is from a fetched, published source. |
+| **Answer** | The intermediate shaft as drawn (42CrMo4 Q&T, D 40 -> d 32 mm, fillet 1.6 +0.4 / -0.2 mm; rotating bending 300 N m, steady torque 500 N m) **fails both requirements**: fatigue safety **1.19** at the nominal fillet and **1.15** at its lower tolerance (limit 1.5, modified Goodman), first-cycle yield safety at a 1.5 x overload **1.83 / 1.77** (limit 2.0). **No fillet that fits under the 4 mm shoulder reaches 1.5** (1.47 at 3.9 mm). Scaling the step does: the smallest small diameter meeting both is **35.1 mm**, so a **36 mm seat with a 45 mm shoulder** (fillet 1.8 mm) gives fatigue safety **1.62** and yield safety **2.52** across the fillet tolerance. Verification: two checks fail, neither on a verdict: the mesh study's check on the torsion factor Kts (it creeps up 0.12 % at the finest level, against a measured noise floor of 0.11 %; no requirement uses Kts directly) and the element quality at a 3.7 mm fillet (0.065 against 0.1; that point is unverified, its neighbours at 3.5 and 3.9 mm pass). The client, loads and limits are synthetic; the material values are catalogue values and every fatigue relation is from a fetched, published source. **Part 2, the keyed gear seat:** the gear's DIN 6885 keyway, ending 2 mm before the fillet, governs: at the 36 mm seat it drops the fatigue safety to **1.18** and the yield safety to **1.72** (both fail; the fillet alone 1.65 / 2.48). The smallest keyed seat is **40 mm with "keyway bottom corner r 0.4 min" on the drawing** (1.535 / 2.36), or **42 mm** if the corner may sit at the bottom of its 0.25-0.40 mm tolerance (1.545 / 2.41). The shaft is delivered as a detailed CadQuery part with STEP files. |
 | **Discipline** | Machine elements: shaft fatigue at a stress concentration |
-| **Tools** | Gmsh (Python API), CalculiX, Python |
-| **Methods** | 3D half model (symmetry for bending, antisymmetry for torsion), Kt and Kts from FE, Shigley's stress-life method (Marin factors, Neuber notch sensitivity, von Mises combined stresses, modified Goodman, ASME elliptic), mesh study with a measured noise floor, published Kt fits (Pilkey, Roark) |
+| **Tools** | CadQuery (STEP), Gmsh (Python API), CalculiX, Python |
+| **Methods** | 3D half model (symmetry for bending, antisymmetry for torsion), Kt and Kts from FE, Shigley's stress-life method (Marin factors, Neuber notch sensitivity, von Mises combined stresses, modified Goodman, ASME elliptic), mesh study with a measured noise floor, published Kt fits (Pilkey, Roark); part 2: global model driving five submodels (`*SUBMODEL`), keyseat factors against Le and Le (ASEE 2013), detailed parametric CAD checked against hand volumes |
 
 ![Stress along the fillet, bending and torsion, at the recommended 36 mm step](../runs/20261124-155125_shaft_fillet_size/points/p03_d36/response.png)
 
@@ -113,6 +113,109 @@ margin; a stronger steel or a rolled fillet are the other levers, not assessed h
 - Elastic Kt; the yield check applies Kf to the overload (conservative).
 - No physical test data.
 
+## Part 2: the keyed gear seat
+
+![Fatigue and overload yield safety against the seat diameter: without a keyway (part 1), and with the DIN keyway at corner radius 0.40 and 0.25 mm](img/keyed_shaft_seat.png)
+
+### The question
+
+The gear on the 36 mm seat is driven by a key, so the seat carries a keyway (DIN 6885 form A, end-milled; 10 x 8 key
+for 30-38 mm shafts, 12 x 8 for 38-44 mm; keyway 5.0 mm deep; bottom corner radius 0.25-0.40 mm). It is 40 mm long and
+ends 2 mm before the shoulder fillet starts; the length and the gap are synthetic, as a drawing would give them. Same
+loads, material and requirements as part 1. Does the 36 mm seat still pass once the keyway is cut, and if not, which
+seat does?
+
+### The answer
+
+| Seat d / shoulder D | Key | Keyway corner | Keyway Kt (bending / torsion) | Fatigue safety | Yield safety at 1.5 x | |
+|---|---|---|---|---|---|---|
+| 36 / 45 mm (part 1's choice) | 10 x 8 | 0.40 mm | 3.18 / 2.76 | **1.18** | **1.72** | fails both |
+| 36 / 45 mm | 10 x 8 | 0.25 mm | 3.86 / 3.19 | **1.04** | **1.53** | fails both |
+| 38 / 47.5 mm | 10 x 8 | 0.40 mm | 3.20 / 2.77 | **1.38** | 2.02 | fails fatigue |
+| **40 / 50 mm** | **12 x 8** | **0.40 mm** | 3.46 / 2.63 | **1.535** | **2.36** | **passes** |
+| 40 / 50 mm | 12 x 8 | 0.25 mm | 4.16 / 3.02 | **1.36** | 2.10 | fails fatigue |
+| **42 / 52.5 mm** | **12 x 8** | **0.25 mm** | 4.23 / 3.03 | **1.545** | **2.41** | **passes** |
+
+The keyway, not the fillet, now sets the seat: at every point the fillet's own fatigue safety (1.65-2.61) is well above
+the keyway's. The keyway's bottom corner moves the answer by one seat size: at 0.25 mm its fatigue safety is 12 % lower
+than at 0.40 mm. So the recommendation is a **40 mm seat with a 50 mm shoulder and "keyway bottom corner r 0.4 min" on
+the drawing**, or a **42 mm seat** if the corner may sit anywhere in its tolerance. The 40 mm margin is thin (2.4 % on
+fatigue, against a measured mesh noise of 1.2 %); a stronger steel, a keyway that stops further from the shoulder, or a
+rolled keyway corner are the other levers, not assessed here.
+
+### The detailed part
+
+The shaft is delivered as a detailed CadQuery part, not just the analysed stub
+([`models/cad/intermediate_shaft.py`](../models/cad/intermediate_shaft.py)). STEP files:
+[36 mm seat (fails)](cad/intermediate_shaft_d36.step), [40 mm seat, corner r 0.4](cad/intermediate_shaft_d40.step),
+[42 mm seat, corner r 0.25](cad/intermediate_shaft_d42.step).
+
+- Bearing journals (6206 / 6207 deep-groove ball bearings) with DIN 471 circlip grooves and 1 x 45 deg end chamfers;
+  the gear seat with its end-milled keyway; the analysed shoulder fillet; the collar; the pinion seat with its own
+  keyway.
+- The dimensions the study analysed (seat, shoulder, fillet, keyway width, depth, corner, length and gap) come from
+  the study's own model; everything else is a plausible layout, marked synthetic in the source.
+- Checked by hand, not by eye: the revolved body matches a hand volume (cylinders, Pappus for the fillets and
+  chamfers, the grooves) to 1e-9, and the keyways remove the same volume as the study's half model to 1e-4.
+
+### How it works
+
+- **One CAD model through to the solver.** The analysed half shaft (cut through the keyway's centre plane: symmetric in
+  bending, antisymmetric in torsion) is built in CadQuery, written as STEP, meshed by Gmsh (10-node tetrahedra) and
+  solved by CalculiX.
+- **Global model and submodels.** A single fine mesh would be 440-510 k nodes, past what CalculiX's SPOOLES solver
+  handles (a 540 k-node trial ran 25 min without output). So a coarse global model (84 k nodes) drives five fine
+  submodels through their cut faces (`*SUBMODEL`): the shoulder fillet in two quarter rings, the keyway's end at the
+  shoulder, its far end and its middle (97-186 k nodes each).
+- **Kt and fatigue as in part 1**: Kt from the gross nominal stresses at the seat diameter, Shigley's method with the
+  keyway's own corner radius for the notch sensitivity. The bending peak is at the bottom corner of the keyway's end
+  nearest the shoulder; the torsion peak along the bottom corner of its long side.
+
+### How I know it's right
+
+- **The same path without a keyway** reproduces part 1's verified fillet Kt within 0.38 % (bending) and 0.42 %
+  (torsion).
+- **Published keyseat factors** ([Le and Le, ASEE 2013](https://peer.asee.org/22476), an isolated profile keyseat at
+  ANSI proportions): torsion
+  +4.2 %, inside the 5 % tolerance. Bending is +13.9 % on the maximum principal stress used here and +5.5 % on the axial
+  stress, which is probably their definition: just outside 5 %, and within the 10 % their own two tables differ by.
+  Reported as an open difference, not a pass. The verdicts use the higher, principal value, so a lower reference
+  value could only raise the safety factors.
+- **Equilibrium and load** of the global model: reaction against applied moment within 4e-7, the applied end loads
+  within 1.1e-5, in both load cases.
+- **Global against submodel** at the fillet, where the global mesh resolves it: within 2 % (one point at 2.18 %, with
+  both peaks at the same spot, 0.4 mm apart).
+- **A measured noise floor.** Five meshes differing only in their far-field sizes: the keyway's bending Kt scatters
+  1.8 %, the fatigue safety 1.2 %. This is the resolution of a peak-node value at this mesh, declared before the mesh
+  study.
+- **Mesh study** (submodel sizes x 1.0 / 0.8 / 0.64), judged against that floor: the keyway's Kt, the fatigue and the
+  yield safety settle within 0.34-0.64 %, the fillet's Kt within 0.24 %; every check passes the 1 % target. At the
+  36 mm seat the fatigue safety is 1.174-1.184 on all three meshes, against the 1.5 it needs.
+- **Box size**: submodels 3 and 5 mm clear of their features agree within the noise floor (keyway torsion 0.47 %, the
+  smaller box reading higher).
+
+### What the checks caught
+
+- **The fillet's peaks were outside the box.** The first runs boxed the fillet with the keyway's end. A scan of the
+  global model showed the keyway moves the fillet's peaks: in bending to about 27 deg from the keyway, onto the box's
+  cut face; in torsion to the far side of the shaft (+6 %: the keyed section is weaker in torsion, so the side away
+  from the keyway carries more shear into the fillet). The global-against-submodel check caught the torsion one (6.4 %
+  apart). The fillet now has its own submodels over the whole half ring.
+- **Peaks read on driven faces.** Those nodes carry the global model's error, and a long side under uniform shear puts
+  its maximum there. No peak is now read within 1 mm of a cut face.
+- **A small corner inverted the coarse mesh.** One quadratic element across the 0.25 mm corner turned inside out, and
+  the submodels it drives inherit the error. The global mesh now uses at most 0.75 x the corner radius there.
+- **Noise read as a trend.** Between mesh levels the keyway's Kt moved 0.5-1 %, and one safety factor came out with a
+  convergence order of 6.8, a nonsense value. Measuring the noise first showed that a 1 % convergence target was below
+  what three meshes can resolve here.
+
+### Limits (part 2)
+
+- The key's bearing pressure on the keyway wall and any press fit of the gear are not modelled (Shigley's practice for
+  keyseat factors).
+- The full bending moment and torque are taken at the keyway's end, 2 mm from the fillet (conservative).
+- DIN 6885 dimensions from published reproductions of the table; the standard itself (a paid document) was not read.
+
 ## Evidence
 
 - Mesh study [`shaft_fillet_mesh_r2`](../runs/20261124-160912_shaft_fillet_mesh_r2/report.md) (with the measured noise floor), noise
@@ -123,3 +226,12 @@ margin; a stronger steel or a rolled fillet are the other levers, not assessed h
   (`runs/20261124-151223_shaft_fillet_mesh`, `runs/20261124-152823_shaft_fillet_mesh_r1`)
 - Cases with predictions and results: `cases/shaft_fillet_*.toml`; model `models/fea/shaft_fillet_ccx.py`, study
   `studies/shaft_fillet.py`, references `validation/shaft_fatigue.py`
+- Part 2: mesh study [`keyed_shaft_mesh_r1`](../runs/20261127-031958_keyed_shaft_mesh_r1/report.md), noise
+  [`keyed_shaft_noise`](../runs/20261127-010741_keyed_shaft_noise/report.md), checks
+  [`keyed_shaft_check_r1`](../runs/20261127-015248_keyed_shaft_check_r1/report.md), seat and corner radius
+  [`keyed_shaft_design_r1`](../runs/20261127-021152_keyed_shaft_design_r1/report.md); the first runs, whose fillet
+  boxes missed the peaks, are kept (`runs/20261126-232303_keyed_shaft_mesh`, `runs/20261126-234913_keyed_shaft_check`,
+  `runs/20261127-000418_keyed_shaft_design`)
+- Part 2 cases with predictions and results: `cases/keyed_shaft_*.toml`; model `models/fea/keyed_shaft.py`, study
+  `studies/keyed_shaft.py`; the detailed part `models/cad/intermediate_shaft.py` (tests
+  `tests/test_intermediate_shaft.py`); figure `scripts/make_keyed_shaft_figure.py`

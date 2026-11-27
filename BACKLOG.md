@@ -80,10 +80,12 @@ commit). Rules that bind:
   `*.inp`, `*.dat`, `__pycache__`, files > 600 kB, then `tests/test_privacy.py`; never two FEMM cases at once; check
   free RAM on long runs.
 
-### Running at 01:15, 2026-11-27
+### Study 26 part 2 done (03:58, 2026-11-27)
 
-Study 26 part 2 r1, in sequence (started 01:07): keyed_shaft_noise -> keyed_shaft_check_r1 -> keyed_shaft_design_r1;
-then keyed_shaft_mesh_r1, to be written once the noise floor is measured (its predictions before its run).
+r1 runs scored: noise (010741), check_r1 (015248), design_r1 (021152), mesh_r1 (031958, VERIFICATION PASS). Page 26
+Part 2 written. Open: Le and Le's bending keyseat factor (+5.5 % on the axial stress; open difference, not a pass);
+the global-against-submodel check should record the peak distance beside the Kt gap (d40_rk025 missed 2 % by 0.18
+points with both peaks at the same spot); render and drawing of the detailed shaft asked of the dashboard session.
 
 ### Detailed CAD for every study (user's direction, 2026-11-26 evening)
 
@@ -94,7 +96,7 @@ change:
 
 | Study | Now | Detailed CAD | What it could change |
 |---|---|---|---|
-| 26 shaft | 3D revolved step, Gmsh | **In progress:** DIN 6885 keyway at the gear seat (CadQuery, global + 5 submodels); whole intermediate shaft as a detailed part (models/cad/intermediate_shaft.py, STEP in portfolio/cad/, b9b6a6e); render and drawing offered to the dashboard session | r0 scored (2282626): the keyway fails the 36 mm seat (fatigue 1.18, yield 1.72); 40 mm passes at a 0.40 mm corner; r1 fixes the fillet boxes and settles the 0.25 mm corner (40 or 42 mm) |
+| 26 shaft | 3D revolved step, Gmsh | **Done (part 2):** DIN 6885 keyway at the gear seat (CadQuery, global + 5 submodels); whole intermediate shaft as a detailed part, STEP for the 36, 40 and 42 mm seats (models/cad/intermediate_shaft.py, portfolio/cad/); render and drawing asked of the dashboard session | The keyway fails the 36 mm seat (fatigue 1.18, yield 1.72); the smallest keyed seat is 40 mm with r 0.4 min on the keyway corner (1.535), 42 mm at the 0.25 mm lower tolerance (1.545) |
 | 28 frame | beam elements | bolted end-plate beam-column connection (plates, bolts, welds) | connection capacity against AISC; prying |
 | 16 bolted joint | axisymmetric | 3D lap joint, bolts, nuts, washers, contact | slip and bolt bending |
 | 23 fan rotor | ROSS beam | shaft with impeller hub, keyway, bearing seats; 3D solid modal check | the 1D model's critical speeds |

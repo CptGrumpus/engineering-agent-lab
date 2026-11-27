@@ -1,0 +1,318 @@
+{
+  "run_id": "20261127-031958_keyed_shaft_mesh_r1",
+  "verified_utc": "2026-11-27T08:58:02+00:00",
+  "tolerances": {
+    "equilibrium_rel_tol": 1e-06,
+    "load_rel_tol": 0.0001,
+    "global_sub_rel_tol": 0.02,
+    "reference_rel_tol": 0.01,
+    "key_reference_rel_tol": 0.05,
+    "min_scaled_jacobian": 0.1,
+    "gci_max": 0.01,
+    "mesh_noise_rel": {
+      "kt_key_bending": 0.0176,
+      "kt_key_torsion": 0.0023,
+      "kt_fillet_bending": 0.0046,
+      "fatigue_safety": 0.0123,
+      "static_safety": 0.0073
+    }
+  },
+  "points": [
+    {
+      "label": "p00_mesh_scale-1",
+      "status": "PASS",
+      "checks": [
+        {
+          "id": "equilibrium_bending",
+          "description": "global model: |clamp reaction moment - applied| / target (bending)",
+          "kind": "numerical",
+          "value": 1.6471828566864132e-08,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "equilibrium_torsion",
+          "description": "global model: |clamp reaction moment - applied| / target (torsion)",
+          "kind": "numerical",
+          "value": 1.2473284371662886e-07,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "load_bending",
+          "description": "|applied end moment| against the target (bending; the end face's moment is -T about z by the outward normal, so magnitudes are compared; 7-point rule on curved faces)",
+          "kind": "numerical",
+          "value": 8.007900420103908e-06,
+          "tolerance": 0.0001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "load_torsion",
+          "description": "|applied end moment| against the target (torsion; the end face's moment is -T about z by the outward normal, so magnitudes are compared; 7-point rule on curved faces)",
+          "kind": "numerical",
+          "value": 8.007900420992087e-06,
+          "tolerance": 0.0001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "global_vs_sub_fillet_bending",
+          "description": "fillet Kt, global model against its submodel (bending): the global mesh resolves the fillet, so the two must agree",
+          "kind": "numerical",
+          "value": 0.002111745384572039,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "global_vs_sub_fillet_torsion",
+          "description": "fillet Kt, global model against its submodel (torsion): the global mesh resolves the fillet, so the two must agree",
+          "kind": "numerical",
+          "value": 0.0030052513119611657,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "mesh_quality",
+          "description": "0.1 - the smallest scaled Jacobian over the global and submodel meshes (at or below 0: every element above the threshold)",
+          "kind": "validity",
+          "value": -0.326977791031298,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p01_mesh_scale-0.8",
+      "status": "PASS",
+      "checks": [
+        {
+          "id": "equilibrium_bending",
+          "description": "global model: |clamp reaction moment - applied| / target (bending)",
+          "kind": "numerical",
+          "value": 1.6471828566864132e-08,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "equilibrium_torsion",
+          "description": "global model: |clamp reaction moment - applied| / target (torsion)",
+          "kind": "numerical",
+          "value": 1.2473284371662886e-07,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "load_bending",
+          "description": "|applied end moment| against the target (bending; the end face's moment is -T about z by the outward normal, so magnitudes are compared; 7-point rule on curved faces)",
+          "kind": "numerical",
+          "value": 8.007900420103908e-06,
+          "tolerance": 0.0001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "load_torsion",
+          "description": "|applied end moment| against the target (torsion; the end face's moment is -T about z by the outward normal, so magnitudes are compared; 7-point rule on curved faces)",
+          "kind": "numerical",
+          "value": 8.007900420992087e-06,
+          "tolerance": 0.0001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "global_vs_sub_fillet_bending",
+          "description": "fillet Kt, global model against its submodel (bending): the global mesh resolves the fillet, so the two must agree",
+          "kind": "numerical",
+          "value": 0.00029220173455590803,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "global_vs_sub_fillet_torsion",
+          "description": "fillet Kt, global model against its submodel (torsion): the global mesh resolves the fillet, so the two must agree",
+          "kind": "numerical",
+          "value": 0.00522777346615122,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "mesh_quality",
+          "description": "0.1 - the smallest scaled Jacobian over the global and submodel meshes (at or below 0: every element above the threshold)",
+          "kind": "validity",
+          "value": -0.326977791031298,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p02_mesh_scale-0.64",
+      "status": "PASS",
+      "checks": [
+        {
+          "id": "equilibrium_bending",
+          "description": "global model: |clamp reaction moment - applied| / target (bending)",
+          "kind": "numerical",
+          "value": 1.6471828566864132e-08,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "equilibrium_torsion",
+          "description": "global model: |clamp reaction moment - applied| / target (torsion)",
+          "kind": "numerical",
+          "value": 1.2473284371662886e-07,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "load_bending",
+          "description": "|applied end moment| against the target (bending; the end face's moment is -T about z by the outward normal, so magnitudes are compared; 7-point rule on curved faces)",
+          "kind": "numerical",
+          "value": 8.007900420103908e-06,
+          "tolerance": 0.0001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "load_torsion",
+          "description": "|applied end moment| against the target (torsion; the end face's moment is -T about z by the outward normal, so magnitudes are compared; 7-point rule on curved faces)",
+          "kind": "numerical",
+          "value": 8.007900420992087e-06,
+          "tolerance": 0.0001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "global_vs_sub_fillet_bending",
+          "description": "fillet Kt, global model against its submodel (bending): the global mesh resolves the fillet, so the two must agree",
+          "kind": "numerical",
+          "value": 0.00415257304170602,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "global_vs_sub_fillet_torsion",
+          "description": "fillet Kt, global model against its submodel (torsion): the global mesh resolves the fillet, so the two must agree",
+          "kind": "numerical",
+          "value": 0.0053251905591957804,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "mesh_quality",
+          "description": "0.1 - the smallest scaled Jacobian over the global and submodel meshes (at or below 0: every element above the threshold)",
+          "kind": "validity",
+          "value": -0.326977791031298,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ]
+    }
+  ],
+  "run_checks": [
+    {
+      "id": "discretization_kt_key_bending",
+      "description": "relative discretization uncertainty of kt_key_bending, converged to within the noise floor (spread 1.0e-02 <= 0.018)",
+      "kind": "numerical",
+      "value": 0.006385339763913197,
+      "tolerance": 0.01,
+      "comparison": "<=",
+      "status": "PASS",
+      "metric": "kt_key_bending"
+    },
+    {
+      "id": "discretization_kt_key_torsion",
+      "description": "relative discretization uncertainty of kt_key_torsion, oscillatory (R = -0.097): 1.25 x half-range of the 3 finest solutions",
+      "kind": "numerical",
+      "value": 0.003448869068027621,
+      "tolerance": 0.01,
+      "comparison": "<=",
+      "status": "PASS",
+      "metric": "kt_key_torsion"
+    },
+    {
+      "id": "discretization_kt_fillet_bending",
+      "description": "relative discretization uncertainty of kt_fillet_bending, converged to within the noise floor (spread 3.9e-03 <= 0.0046)",
+      "kind": "numerical",
+      "value": 0.00241202726841724,
+      "tolerance": 0.01,
+      "comparison": "<=",
+      "status": "PASS",
+      "metric": "kt_fillet_bending"
+    },
+    {
+      "id": "discretization_fatigue_safety",
+      "description": "relative discretization uncertainty of fatigue_safety, converged to within the noise floor (spread 8.0e-03 <= 0.012)",
+      "kind": "numerical",
+      "value": 0.005008555779491383,
+      "tolerance": 0.01,
+      "comparison": "<=",
+      "status": "PASS",
+      "metric": "fatigue_safety"
+    },
+    {
+      "id": "discretization_static_safety",
+      "description": "relative discretization uncertainty of static_safety, converged to within the noise floor (spread 6.3e-03 <= 0.0073)",
+      "kind": "numerical",
+      "value": 0.003957217561059681,
+      "tolerance": 0.01,
+      "comparison": "<=",
+      "status": "PASS",
+      "metric": "static_safety"
+    }
+  ],
+  "run_check_detail": {
+    "levels_used": [
+      "p02_mesh_scale-0.64",
+      "p01_mesh_scale-0.8",
+      "p00_mesh_scale-1"
+    ],
+    "kt_key_bending": {
+      "regime": "converged",
+      "uncertainty": 0.006385339763913197,
+      "relative_spread": 0.010216543622261116,
+      "noise_floor": 0.0176
+    },
+    "kt_key_torsion": {
+      "regime": "oscillatory",
+      "convergence_ratio": -0.0969369482412948,
+      "uncertainty": 0.003448869068027621
+    },
+    "kt_fillet_bending": {
+      "regime": "converged",
+      "uncertainty": 0.00241202726841724,
+      "relative_spread": 0.003859243629467584,
+      "noise_floor": 0.0046
+    },
+    "fatigue_safety": {
+      "regime": "converged",
+      "uncertainty": 0.005008555779491383,
+      "relative_spread": 0.008013689247186213,
+      "noise_floor": 0.0123
+    },
+    "static_safety": {
+      "regime": "converged",
+      "uncertainty": 0.003957217561059681,
+      "relative_spread": 0.00633154809769549,
+      "noise_floor": 0.0073
+    }
+  },
+  "status": "PASS"
+}
