@@ -9,6 +9,7 @@ automatically. This file tracks the skill plan and the standard each skill must 
 |---|---|---|
 | Requirements and assumptions | **Built**: decision, metric definitions, input ranges, assumptions with validity checks, tolerances and predictions fixed before running | [frame-requirements](../.claude/skills/frame-requirements/SKILL.md) |
 | Model preparation | **Built**: file layout and contracts, check selection, smoke test, failure classification; references for checks, convergence diagnosis, and tool traps | [build-model](../.claude/skills/build-model/SKILL.md) |
+| Detailed CAD | **Built** 2026-11-27: the real part in CadQuery as named designs, STEP deliverables, hand-volume and feature-volume tests against the analysed model, meshing traps, submodeling when the part outgrows the solver; from study 26's keyed shaft | [cad-modeling](../.claude/skills/cad-modeling/SKILL.md) |
 | Simulation execution | **Built** | [run-case](../.claude/skills/run-case/SKILL.md) |
 | Verification and evidence | **Built** | [verify-against-reference](../.claude/skills/verify-against-reference/SKILL.md) |
 | Engineering review report | **Built** | [requirements-report](../.claude/skills/requirements-report/SKILL.md) |
