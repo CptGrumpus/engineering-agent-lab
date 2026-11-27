@@ -1491,6 +1491,90 @@ def steel_frame():
            units="dimensions in mm, frame to scale", source="Drawn from the case file's inputs and the AISC Shapes Database")
 
 
+def knee():
+    # study 28 part 2: the portal's bolted knee as designed (models/cad/portal_knee.py, slip_critical6): elevation and
+    # the top flange plate in plan; labelled in inches, as the AISC design is
+    from fractions import Fraction
+    from models.cad import portal_knee as K
+    L = K.layout("slip_critical6")
+    col, beam, c = L["col"], L["beam"], L["c"]
+    IN = K.IN
+    face, tp, bp = L["face"], c["plate_t"], c["plate_b"]
+    xi = col["d"] / 2 - col["tf"]
+    y_bt, y_bb, y_cl, Lp = L["y_bt"], L["y_bb"], L["y_cl"], L["Lp"]
+    x_b0 = face + c["setback"]
+    assert len(L["flange_bolts"]) == 6 and len(L["web_bolts"]) == 3
+
+    def inch(mm):
+        f = Fraction(mm / IN).limit_denominator(16)
+        w, r = divmod(f.numerator, f.denominator)
+        return (f"{w} {r}/{f.denominator}" if w and r else f"{r}/{f.denominator}" if r else f"{w}") + " in."
+
+    y_break, x_break = y_bb - tp - 170, x_b0 + 560
+    fig, ax = new(9.5, (-300, 1150), (-640, 200))
+    # column: flanges and web line, broken below
+    rect(ax, -col["d"] / 2, y_break, col["d"] / 2, 0, fc=FILL, lw=1.2)
+    for xf in (-xi, xi):
+        ax.plot([xf, xf], [y_break, 0], color=INK, lw=0.7, zorder=3)
+    ax.plot([-col["d"] / 2 - 10, col["d"] / 2 + 10], [y_break, y_break], color=INK, lw=0.8, ls=(0, (6, 2, 1, 2)), zorder=4)
+    # continuity plates (seen edge-on between the flanges, at the top plate's level)
+    rect(ax, -xi, -c["cont_t"], xi, 0, fc="#c9d3e3", ec=INK, lw=0.8, z=3)
+    # beam: flanges and web, broken at the far end
+    rect(ax, x_b0, y_bb, x_break, y_bt, fc=FILL, lw=1.2)
+    for yf in (y_bt - beam["tf"], y_bb + beam["tf"]):
+        ax.plot([x_b0, x_break], [yf, yf], color=INK, lw=0.7, zorder=3)
+    ax.plot([x_break, x_break], [y_bb - 10, y_bt + 10], color=INK, lw=0.8, ls=(0, (6, 2, 1, 2)), zorder=4)
+    # flange plates, shear tab, welds
+    for y0, y1 in ((y_bt, 0.0), (y_bb - tp, y_bb)):
+        rect(ax, face, y0, face + Lp, y1, fc="#f3d9c6", ec=HOT, lw=1.1, z=4)
+    rect(ax, face, y_cl - c["tab_h"] / 2, face + c["tab_w"], y_cl + c["tab_h"] / 2, fc="#f3d9c6", ec=HOT, lw=1.0, z=4)
+    w = K.WELD_LEG
+    for (yy, s) in ((y_bt, -1), (y_bb, 1), (y_bb - tp, -1)):
+        poly(ax, [(face, yy), (face + w, yy), (face, yy + s * w)], fc=INK, ec=INK, lw=0.4, z=5)
+    # bolts: flange bolts as their axes with head and nut, web bolts as circles
+    for x in sorted({x for x, _ in L["flange_bolts"]}):
+        for ya, yb in ((y_bt - beam["tf"] - 14, 12), (y_bb + beam["tf"] + 14, y_bb - tp - 12)):
+            ax.plot([x, x], [ya, yb], color=INK, lw=1.0, zorder=5)
+            for yh in (ya, yb):
+                rect(ax, x - 16, yh - 4, x + 16, yh + 4, fc=INK, ec=INK, lw=0.3, z=5)
+    for x, y in L["web_bolts"]:
+        ax.add_patch(Circle((x, y), K.BOLT["d"] / 2, fc=PLATE, ec=INK, lw=1.0, zorder=5))
+    centre(ax, (-20 - col["d"] / 2, y_cl), (x_break + 20, y_cl))
+    # dimensions (inches)
+    xs = sorted({x for x, _ in L["flange_bolts"]})
+    dim(ax, (face, 0), (face + Lp, 0), 45, inch(Lp))
+    dim(ax, (face, 0), (x_b0, 0), 22, inch(c["setback"]), outside=True)
+    dim(ax, (xs[0], y_bb - tp), (xs[1], y_bb - tp), -30, inch(c["pitch"]))
+    dim(ax, (xs[1], y_bb - tp), (xs[2], y_bb - tp), -30, inch(c["pitch"]))
+    dim(ax, (xs[2], y_bb - tp), (face + Lp, y_bb - tp), -30, inch(c["edge"]), outside=True)
+    dim(ax, (x_break + 25, y_cl - c["pitch"]), (x_break + 25, y_cl), 0, inch(c["pitch"]))
+    note(ax, (face + Lp * 0.7, -tp / 2), (420, 120), f"flange plates {inch(bp)[:-4]} × {inch(tp)[:-4]} × {inch(Lp)}, "
+         "top and bottom,\nshop-welded to the column, 1/4 in. fillets", ha="left", color=HOT)
+    note(ax, (xs[2], 12), (720, 60), "slip-critical bolts, Class A: 3/4 in. heavy-hex,\nsix per flange plate in two rows of three",
+         ha="left")
+    note(ax, (face + c["tab_w"] * 0.6, y_cl + c["tab_h"] / 2 - 10), (420, -120),
+         f"shear tab {inch(c['tab_h'])[:-4]} × {inch(c['tab_t'])}, three bolts", ha="left", color=HOT)
+    note(ax, (-xi * 0.4, -c["cont_t"] / 2), (-290, 120), f"continuity plates {inch(c['cont_t'])}, a pair,\n"
+         "at the top plate's level", ha="left")
+    text(ax, 0, y_break - 25, "W10x33 column", fs=7.5, color=INK, bold=True, box=False)
+    text(ax, x_break - 10, y_bb - 40, "W14x30 beam", fs=7.5, color=INK, bold=True, box=False, ha="right")
+    # the top flange plate in plan
+    ox, oy = 760, -420
+    rect(ax, ox, oy - bp / 2, ox + Lp, oy + bp / 2, fc="#f3d9c6", ec=HOT, lw=1.1)
+    wall(ax, (ox, oy - bp / 2 - 15), (ox, oy + bp / 2 + 15), side=-1)
+    for x, z in L["flange_bolts"]:
+        ax.add_patch(Circle((ox + x - face, oy + z), K.BOLT["hole"] / 2, fc=PLATE, ec=INK, lw=0.9, zorder=5))
+    dim(ax, (ox + xs[0] - face, oy - c["gage"] / 2), (ox + xs[0] - face, oy + c["gage"] / 2), -25, inch(c["gage"]))
+    dim(ax, (ox + Lp, oy - bp / 2), (ox + Lp, oy + bp / 2), -22, inch(bp))
+    dim(ax, (ox + xs[2] - face, oy - bp / 2), (ox + Lp, oy - bp / 2), -22, inch(c["edge"]), outside=True)
+    text(ax, ox + Lp / 2, oy + bp / 2 + 45, "top flange plate, plan", fs=7.5, color=INK, bold=True, box=False)
+    text(ax, ox - 5, oy - bp / 2 - 35, "welded to the column face", fs=6.8, ha="left", box=False)
+    text(ax, -290, -600, "From the study: plate sizes, bolt layout, tab, continuity plates, welds (AISC 360-22 Chapter J; "
+         "connection ratio 0.92, set by slip). Stub lengths are made up for the drawing.", fs=6.8, ha="left", box=False)
+    finish(fig, "knee", "Study 28 · the portal's bolted knee, slip-critical flange-plated moment connection · elevation and plan",
+           units="dimensions in inches", source="Drawn from models/cad/portal_knee.py")
+
+
 def keyed_shaft():
     # study 26 part 2: the detailed intermediate shaft with the recommended 40 mm keyed seat (models/cad/intermediate_shaft.py,
     # DESIGNS["d40"]); the seat, collar, fillet and seat keyway are the study's, the rest a plausible layout
@@ -1567,7 +1651,7 @@ def keyed_shaft():
 
 ALL = {f.__name__: f for f in (fea, cantilever_opt, strap, modal, strut, contact, bolted_joint, pv_nozzle, bracket_opt, cad,
                                cfd, thermal, heat, cold_plate, pipe, suspension, baseline, motor, step, random_vib, fan_rotor,
-                               fatigue, strap_proof, bracket_uq, crack, flag, motor_stops, oring, shaft, enclosure, steel_frame, keyed_shaft)}
+                               fatigue, strap_proof, bracket_uq, crack, flag, motor_stops, oring, shaft, enclosure, steel_frame, keyed_shaft, knee)}
 
 if __name__ == "__main__":
     for name in sys.argv[1:] or ALL:

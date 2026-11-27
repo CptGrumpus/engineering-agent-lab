@@ -714,13 +714,49 @@ def scene_shaft_cad():
                        sharp_angle_deg=40, title="shaft_cad", expected_volume_mm3=float(S.hand_volume("d40") - keys))
 
 
+def _knee_type(name: str) -> str:
+    """The hand-volume type of one part of models/cad/portal_knee.build()."""
+    if name.startswith("bolt_"):
+        kind = name.rsplit("_", 1)[1]
+        return ("shank_web" if name.startswith("bolt_w") else "shank_flange") if kind == "shank" else kind
+    if name in ("top_plate", "bottom_plate"):
+        return "plate"
+    if name.startswith("continuity_plate"):
+        return "continuity_plate"
+    if name.startswith("weld_tab"):
+        return "weld_tab"
+    if name.startswith("weld_") and "plate" in name:
+        return "weld_plate"
+    return name
+
+
+def scene_knee_cad():
+    """Study 28 part 2: the portal's bolted knee as designed (slip-critical, six bolts per flange plate), plain
+    material. Gate: the tessellated assembly's volume against the sum of every part's hand volume
+    (portal_knee.hand_volumes, computed without the CAD kernel). CAD axes are Y up; turned (x, y, z) -> (x, -z, y),
+    det +1, so the column stands on the renderer's +z."""
+    from models.cad import portal_knee as K
+    parts = K.build("slip_critical6")
+    hv = K.hand_volumes("slip_critical6")
+    xyz, tris, n0, expected = [], [], 0, 0.0
+    for name, w in parts.items():
+        expected += hv[_knee_type(name)]
+        verts, faces = w.val().tessellate(0.02, 0.1)
+        p = np.array([v.toTuple() for v in verts])
+        xyz.append(np.c_[p[:, 0], -p[:, 2], p[:, 1]])
+        tris.append(np.array(faces) + n0)
+        n0 += len(p)
+    return write_scene(BUILD / "knee_cad", np.vstack(xyz), np.vstack(tris), elev=28, azim=-58, resolution=[1600, 1100],
+                       sharp_angle_deg=40, title="knee_cad", expected_volume_mm3=float(expected))
+
+
 SCENES = {"cold_plate_3d": scene_cold_plate_3d, "strap_proof": scene_strap_proof, "bolted_joint_pressure": scene_bolted_joint, "joint_section": scene_joint_section, "cold_plate": scene_cold_plate,
           "strut": scene_strut, "pv_nozzle": lambda: scene_pv_nozzle(), "steel_frame": scene_steel_frame, "fan_rotor": scene_fan_rotor, "enclosure": scene_enclosure,
           # studies 24-26: the study session's scenes (scripts/scenes_24_26.py imports from here, so imported lazily)
           "crack": lambda: __import__("scenes_24_26").scene_cracked_plate(),
           "oring": lambda: __import__("scenes_24_26").scene_oring(),
           "shaft": lambda: __import__("scenes_24_26").scene_shaft_fillet(),
-          "shaft_cad": scene_shaft_cad,
+          "shaft_cad": scene_shaft_cad, "knee_cad": scene_knee_cad,
           "surface_crack": lambda: __import__("scenes_24_26").scene_surface_crack()}
 
 
