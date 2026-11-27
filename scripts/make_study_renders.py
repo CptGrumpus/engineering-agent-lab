@@ -770,15 +770,15 @@ def scene_knee_cad():
                        sharp_angle_deg=40, title="knee_cad", expected_volume_mm3=float(expected))
 
 
-def scene_nozzle_cad():
-    """Study 18 part 2: the nozzle with its reinforcing pad as it would be built (models/cad/vessel_nozzle.py,
-    t12_pad: shell course, set-in nozzle, pad with its two fillet welds and tell-tale hole, weld-neck flange), plain
-    material. Gate: the tessellated assembly against the sum of vessel_nozzle.hand_volumes (quadrature and Pappus,
+def scene_nozzle_cad(design: str = "t12_pad", key: str = "nozzle_cad"):
+    """Study 18 part 2: the nozzle as it would be built (models/cad/vessel_nozzle.py): t12 as analysed (shell course,
+    set-in nozzle, its weld fillet, weld-neck flange) or t12_pad, the alternative with a reinforcing pad, its two
+    fillet welds and tell-tale hole. Same camera for both, so they compare side by side. Plain material. Gate: the tessellated assembly against the sum of vessel_nozzle.hand_volumes (quadrature and Pappus,
     without the CAD kernel; the welds' hand volumes are a 1 % approximation, but they are 0.03 % of the metal). CAD
     axes kept: the shell stands along z, the nozzle along +x."""
     from models.cad import vessel_nozzle as V
-    parts = V.build("t12_pad")
-    hv = V.hand_volumes("t12_pad")
+    parts = V.build(design)
+    hv = V.hand_volumes(design)
     assert set(parts) == set(hv), (set(parts) ^ set(hv))
     xyz, tris, n0 = [], [], 0
     for name, w in parts.items():
@@ -786,8 +786,8 @@ def scene_nozzle_cad():
         xyz.append(np.array([v.toTuple() for v in verts]))
         tris.append(np.array(faces) + n0)
         n0 += len(xyz[-1])
-    return write_scene(BUILD / "nozzle_cad", np.vstack(xyz), np.vstack(tris), elev=16, azim=-68, resolution=[1600, 1100], distance_factor=3.6,
-                       sharp_angle_deg=40, title="nozzle_cad", expected_volume_mm3=float(sum(hv.values())),
+    return write_scene(BUILD / key, np.vstack(xyz), np.vstack(tris), elev=16, azim=-68, resolution=[1600, 1100], distance_factor=3.6,
+                       sharp_angle_deg=40, title=key, expected_volume_mm3=float(sum(hv.values())),
                        # the shell's long faces carry vertices only at their ends, so the nozzle, pad and flange set
                        # the framing; fill leaves room for the shell's curve round it
                        frame_box=[[0.0, -520.0, -560.0], [960.0, 520.0, 560.0]], fill=0.72)
@@ -799,7 +799,7 @@ SCENES = {"cold_plate_3d": scene_cold_plate_3d, "strap_proof": scene_strap_proof
           "crack": lambda: __import__("scenes_24_26").scene_cracked_plate(),
           "oring": lambda: __import__("scenes_24_26").scene_oring(),
           "shaft": lambda: __import__("scenes_24_26").scene_shaft_fillet(),
-          "shaft_cad": scene_shaft_cad, "knee_cad": scene_knee_cad, "rotor_cad": scene_rotor_cad, "nozzle_cad": scene_nozzle_cad,
+          "shaft_cad": scene_shaft_cad, "knee_cad": scene_knee_cad, "rotor_cad": scene_rotor_cad, "nozzle_cad": scene_nozzle_cad, "nozzle_t12_cad": lambda: scene_nozzle_cad("t12", "nozzle_t12_cad"),
           "surface_crack": lambda: __import__("scenes_24_26").scene_surface_crack()}
 
 
