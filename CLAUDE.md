@@ -17,7 +17,7 @@ same commit as the work that taught it.
   advice the evidence has disproved.
 - **Prune** notes the code now enforces (a test or check exists), duplicates, and one-run trivia.
   Git keeps the history.
-- **Optimise** for the reader: keep each SKILL.md lean (Anthropic: under 500 lines; ours are 44-164)
+- **Optimise** for the reader: keep each SKILL.md lean (Anthropic: under 500 lines; ours are 60-300)
   with detail in `references/`; merge overlapping notes; keep each `description` line accurate so the
   skill triggers when it should.
 - When a lesson is a trap an agent would plausibly fall into, propose an eval case for it
