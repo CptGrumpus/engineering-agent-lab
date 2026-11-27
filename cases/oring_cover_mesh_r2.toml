@@ -1,0 +1,76 @@
+# Study 25 part 2, case 2, revision 2: four meshes with curvature sizing off, as evidence.
+#
+# Why: oring_cover_mesh_r1 (run 20261127-162109) FAILED its convergence check on the largest lift (14.50 / 14.60 /
+# 14.81 um, divergent on three levels). Diagnosed in scratch (2026-11-27, 16:25-16:30): the coarse level was shaped by
+# Gmsh's curvature sizing, and the lift converges slowly towards the rigid washer patch's singular edge. That
+# diagnosis was a scratch run; this case makes it evidence (the dashboard session's review asked whether it should
+# be): the same cover and loads, curvature sizing off (curvature_elements_per_circle = 0, a new optional parameter of
+# models/fea/oring_cover.write_geo; 12 in every earlier run), four element sizes. The GCI uses the three finest.
+# Scratch values (2026-11-27, same settings): 14.366 / 14.597 / 14.806 / 14.921 um at 2.0 / 1.333 / 0.889 / 0.593 mm.
+#
+# Predictions, written BEFORE the evidence run:
+#   P1 Every point check passes at every mesh.
+#   P2 Largest lift 14.366 / 14.597 / 14.806 / 14.921 um (the scratch values: the same meshes and solver); the three
+#      finest converge (steps 0.209, 0.115: ratio 0.55, observed order about 1.5), extrapolated about 15.06 um; the GCI
+#      passes, at about 1.2 %.
+#   P3 REQ-E1L passes at every mesh: loosest squeeze 16.77-16.79 %.
+#   P4 About two minutes (the finest mesh has about 243 k nodes).
+
+[case]
+name = "oring_cover_mesh_r2"
+model = "ccx_oring_cover"
+description = "Study 25's pump cover (synthetic: 6061-T6, 96 mm across, 4 mm thick, 4 x M6 on a 76 mm circle) lifted by 3 bar and the O-ring's reaction at the loosest corner; element size 2.0 / 1.333 / 0.889 / 0.593 mm, curvature sizing off."
+assumptions = [
+  "The cover [synthetic, part 1 never drew it]: 6061-T6 aluminium, 96 mm across, held by 4 M6 bolts on a 76 mm circle with 12 mm washers; the groove is in the pump, the cover's underside flat.",
+  "Loads: 3 bar out to the groove's outer radius (conservative) and the O-ring's reaction from part 1 at the loosest corner, 1.887 N/mm over its 1.68 mm contact; both push the cover up.",
+  "The washer footprints held against lifting only (free to slide and pivot: the softer support); the pump flange rigid; the rim beyond the bolts unsupported (a real flange pushes back on it, which lowers the lift).",
+  "The O-ring's reaction held at its part 1 value as the cover lifts (it falls as the squeeze falls: conservative).",
+  "Linear elastic, small displacement.",
+]
+limitations = [
+  "No bolt stretch or flange flexibility, no flatness tolerance on the machined faces (a flatness callout adds to the lift directly).",
+  "The cover geometry is synthetic: the answer is the lift per thickness, read against the 75.5 um the loosest corner can give up.",
+]
+
+[parameters]
+cover_diameter_mm = 96.0
+cover_thickness_mm = 4.0
+bolt_count = 4
+bolt_circle_diameter_mm = 76.0
+bolt_hole_diameter_mm = 6.6
+washer_diameter_mm = 12.0
+pressure_MPa = 0.3
+pressure_radius_mm = 28.53        # the groove's outer radius: the pressure taken out to the ring's outer contact
+oring_line_load_N_per_mm = 1.887  # part 1, loosest corner (run 20261124-100619_oring_seal_corners, p00)
+oring_radius_mm = 26.8            # the loosest ring's centroid: 57.06 / 2 - 3.43 / 2
+oring_contact_width_mm = 1.68     # part 1, loosest corner
+youngs_modulus_MPa = 68900.0      # aluminium cover (6061-T6)
+poisson_ratio = 0.33
+element_size_mm = 1.333
+support = "bolts"
+curvature_elements_per_circle = 0   # off: a strict refinement (12 in r0 and r1)
+loosest_cross_section_mm = 3.43
+loosest_groove_depth_mm = 2.84
+
+[sweep]
+parameter = "element_size_mm"
+values = [2.0, 1.333, 0.889, 0.593]
+
+[numerics]
+solver_timeout_s = 3600
+threads = 4
+
+[verification]
+equilibrium_rel_tol = 1e-6
+sample_violation_tol = 1e-6   # the seal-circle points on the flat underside
+plate_rel_tol = 0.02          # Mindlin's plate against the 3D solid, supported at the underside's edge
+mesh_noise_rel = 1e-3         # declared before the run: Gmsh regenerates the tetrahedra at each size
+gci_max = 0.03
+
+[[requirements]]
+id = "REQ-E1L"
+text = "With the cover's lift between the bolts, the squeeze at the loosest corner of the stack stays at or above 15 % (REQ-E1 of part 1, at the worst point around the seal)."
+metric = "loosest_squeeze_with_lift_pct"
+operator = ">="
+limit = 15.0
+units = "%"

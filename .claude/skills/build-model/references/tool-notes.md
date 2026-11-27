@@ -171,7 +171,10 @@ Traps found while building the studies in this repo, by tool.
   with effective mass = Gamma_i^2 (study C prototype, 2026-11-23).
 - **Input fields are at most 20 characters.** A node line rewritten with Python's `repr` (e.g. `1.2371056560109001e-15`,
   22 characters) stops ccx with a bare "*ERROR reading *NODE. Card image:" and exit 201. Write coordinates with
-  `:.12g` (study H's thickness scaling, 2026-11-23).
+  `:.12g` (study H's thickness scaling, 2026-11-23). **Worse at 21 characters: no error at all.** The field is cut
+  at 20, so `8.726785618316274e-05` is read as `8.726785618316274e-0`, a node moved by five orders of magnitude, and
+  ccx reports only "nonpositive jacobian" in the elements around it (the 3D roller's crowned profile, 2026-11-27: an
+  hour lost suspecting the mesh, the contact and NLGEOM). Any deck that rewrites coordinates uses `:.12g`.
 - **`*NODE FILE` / `*EL FILE` requests carry over into later steps.** A `*STEADY STATE DYNAMICS` step after a
   `*FREQUENCY` step that wrote U and S writes them again for the whole mesh at every frequency point, real and
   imaginary: 16.5 GB of .frd on study C's 1.22 mm mesh, and reading it took 38 of 64 GB of RAM before the run was

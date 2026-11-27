@@ -39,7 +39,7 @@ def main(out: Path) -> None:
     ax.set_xlim(0, 90)
     ax.set_ylim(0, None)
     ax.set_xlabel("angle around the seal (deg): the quarter between two bolt gaps")
-    ax.set_ylabel("lift of the cover at the seal (um)")
+    ax.set_ylabel("lift of the cover at the seal (µm)")
     ax.set_title("(a) The cover lifts most midway between bolts", loc="left", fontsize=10, color=TEXT)
     ax.legend(frameon=False, fontsize=8, loc="upper center", ncol=2)
 

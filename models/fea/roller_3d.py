@@ -29,7 +29,8 @@ PARAMS = ("roller_radius_mm", "roller_length_mm", "plate_width_mm", "block_half_
           "youngs_modulus_MPa", "poisson_ratio", "yield_strength_MPa", "contact_element_size_mm",
           "far_element_size_mm", "refined_zone_mm", "end_layer_mm", "layer_growth", "penalty_stiffness_factor",
           "line_load_N_per_mm", "profile")
-OPTIONAL = {"edge_radius_mm": 1.0, "crown_A_um": 0.0, "crown_zm_um": 30.0, "cap_um": 60.0, "approach_mm": 0.016}
+OPTIONAL = {"edge_radius_mm": 1.0, "crown_A_um": 0.0, "crown_zm_um": 30.0, "cap_um": 60.0, "approach_mm": 0.016,
+            "z_fine_mm": 0.0, "max_layer_mm": 2.0}
 HEX_FACES = {"S1": (0, 1, 2, 3), "S2": (4, 7, 6, 5), "S3": (0, 4, 5, 1), "S4": (1, 5, 6, 2), "S5": (2, 6, 7, 3),
              "S6": (3, 7, 4, 0)}
 
@@ -60,7 +61,11 @@ def layers(p: dict) -> tuple[list[float], list[float]]:
     L2, B2 = float(p["roller_length_mm"]) / 2, float(p["plate_width_mm"]) / 2
     h, g = float(p["end_layer_mm"]), float(p["layer_growth"])
     hmax = max(float(p["far_element_size_mm"]), 4 * h)
-    roller = graded(L2, h, g, min(hmax, 2.0), fine_at_end=True)
+    zf = min(float(opt(p, "z_fine_mm")) if float(opt(p, "z_fine_mm")) > 0 else L2, L2)
+    hr = float(opt(p, "max_layer_mm"))          # the roller's longest layer (a crowned contact starts mid-length)
+    roller = graded(zf, h, g, hr, fine_at_end=True)
+    if zf < L2 - 1e-9:   # fine layers where the profile changes (the start of an edge radius), growing both ways
+        roller += graded(L2 - zf, h, g, hr, fine_at_end=False)
     beyond = graded(B2 - L2, h, g, hmax, fine_at_end=False) if B2 > L2 + 1e-9 else []
     return roller, beyond
 
@@ -180,7 +185,9 @@ def write_deck(p: dict, mesh_inp: Path, deck: Path, approach) -> dict:
     head, rest = text.split("*NODE", 1)
     rest = rest.split("\n", 1)[1]
     k = rest.index("*")
-    node_block = "*NODE\n" + "\n".join(f"{int(n)}, {float(a)!r}, {float(b)!r}, {float(c)!r}"
+    # 12 significant digits: CalculiX cuts input fields at 20 characters, silently at 21 (a repr such as
+    # 8.726785618316274e-05 is read as ...e-0 and the node jumps)
+    node_block = "*NODE\n" + "\n".join(f"{int(n)}, {float(a):.12g}, {float(b):.12g}, {float(c):.12g}"
                                        for n, (a, b, c) in zip(ids, shifted)) + "\n"
     (deck.parent / "mesh_profiled.inp").write_text(head + node_block + rest[k:], encoding="latin-1")
     lines = ["*INCLUDE, INPUT=mesh_profiled.inp"]

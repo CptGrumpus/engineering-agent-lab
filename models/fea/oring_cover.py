@@ -96,9 +96,12 @@ def build_step(p: dict, path: Path) -> dict:
 
 def write_geo(p: dict, path: Path, step_name: str = "cover.step") -> None:
     h = float(p["element_size_mm"])
+    # curvature sizing (elements per circle): 12 in the first runs; 0 (off) for a mesh study, where it would keep the
+    # bolt holes' and washers' element counts fixed while the rest refines (oring_cover_mesh_r1)
+    nc = int(p.get("curvature_elements_per_circle", 12))
     path.write_text(f"""SetFactory("OpenCASCADE");
 Merge "{step_name}";
-Mesh.MeshSizeMax = {h!r}; Mesh.MeshSizeMin = {0.2 * h!r}; Mesh.MeshSizeFromCurvature = 12;
+Mesh.MeshSizeMax = {h!r}; Mesh.MeshSizeMin = {0.2 * h!r}; Mesh.MeshSizeFromCurvature = {nc};
 Mesh.ElementOrder = 2; Mesh.SecondOrderLinear = 0; Mesh.Optimize = 1;
 Physical Volume("COVER") = Volume{{:}};
 """, encoding="utf-8")
