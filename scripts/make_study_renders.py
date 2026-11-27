@@ -793,13 +793,59 @@ def scene_nozzle_cad(design: str = "t12_pad", key: str = "nozzle_cad"):
                        frame_box=[[0.0, -520.0, -560.0], [960.0, 520.0, 560.0]], fill=0.72)
 
 
+def _cad_mesh(parts: dict, place) -> tuple[np.ndarray, np.ndarray]:
+    """Tessellate named CadQuery parts into one mesh; place(name, xyz) returns each part's points moved into the
+    render frame (a rigid motion, so volumes are kept)."""
+    xyz, tris, n0 = [], [], 0
+    for name, w in parts.items():
+        verts, faces = w.val().tessellate(0.01, 0.1)
+        p = place(name, np.array([v.toTuple() for v in verts]))
+        xyz.append(p)
+        tris.append(np.array(faces) + n0)
+        n0 += len(p)
+    return np.vstack(xyz), np.vstack(tris)
+
+
+def scene_roller_cad():
+    """Study 10 part 2: the crowned track roller as built (models/cad/track_roller.py, crowned: outer ring with the
+    log crown in its profile, 26 needles, inner ring, washers) on its rail, plain material. Gate: the sum of
+    track_roller.hand_volumes, part for part by name. CAD has the roller axis along z; turned (x, y, z) -> (x, -z, y),
+    det +1, so the axis lies across the view and the rail sits below."""
+    from models.cad import track_roller as T
+    parts, hv = T.build("crowned"), T.hand_volumes("crowned")
+    assert set(parts) == set(hv), (set(parts) ^ set(hv))
+    xyz, tris = _cad_mesh(parts, lambda n, p: np.c_[p[:, 0], -p[:, 2], p[:, 1]])
+    return write_scene(BUILD / "roller_cad", xyz, tris, elev=20, azim=-35, resolution=[1600, 1100], distance_factor=3.4,
+                       sharp_angle_deg=40, title="roller_cad", expected_volume_mm3=float(sum(hv.values())))
+
+
+SEAL_EXPLODE = {"cover": 62.0, "washer": 78.0, "screw": 92.0}       # mm lifted along the seal axis, by part type
+
+
+def scene_seal_cad():
+    """Study 25: the face seal as built (models/cad/oring_cover.py, nominal: flange with its groove, the free O-ring,
+    cover, washers, M6 screws), exploded along the seal axis so the ring in its groove shows. Gate: the sum of
+    oring_cover.hand_volumes; the parts' overlaps (the squeeze, the thread engagement) are counted in both, as each
+    part's closed surface encloses its own volume. Lifting a part is a translation, so volumes are unchanged."""
+    from models.cad import oring_cover as C
+    parts, hv = C.build("nominal"), C.hand_volumes("nominal")
+    assert set(parts) == set(hv), (set(parts) ^ set(hv))
+
+    def place(name, p):
+        dz = next((v for k, v in SEAL_EXPLODE.items() if name.startswith(k)), 0.0)
+        return p + [0.0, 0.0, dz]
+    xyz, tris = _cad_mesh(parts, place)
+    return write_scene(BUILD / "seal_cad", xyz, tris, elev=28, azim=-50, resolution=[1300, 1400], distance_factor=3.4,
+                       sharp_angle_deg=40, title="seal_cad", expected_volume_mm3=float(sum(hv.values())))
+
+
 SCENES = {"cold_plate_3d": scene_cold_plate_3d, "strap_proof": scene_strap_proof, "bolted_joint_pressure": scene_bolted_joint, "joint_section": scene_joint_section, "cold_plate": scene_cold_plate,
           "strut": scene_strut, "pv_nozzle": lambda: scene_pv_nozzle(), "steel_frame": scene_steel_frame, "fan_rotor": scene_fan_rotor, "enclosure": scene_enclosure,
           # studies 24-26: the study session's scenes (scripts/scenes_24_26.py imports from here, so imported lazily)
           "crack": lambda: __import__("scenes_24_26").scene_cracked_plate(),
           "oring": lambda: __import__("scenes_24_26").scene_oring(),
           "shaft": lambda: __import__("scenes_24_26").scene_shaft_fillet(),
-          "shaft_cad": scene_shaft_cad, "knee_cad": scene_knee_cad, "rotor_cad": scene_rotor_cad, "nozzle_cad": scene_nozzle_cad, "nozzle_t12_cad": lambda: scene_nozzle_cad("t12", "nozzle_t12_cad"),
+          "shaft_cad": scene_shaft_cad, "knee_cad": scene_knee_cad, "rotor_cad": scene_rotor_cad, "nozzle_cad": scene_nozzle_cad, "nozzle_t12_cad": lambda: scene_nozzle_cad("t12", "nozzle_t12_cad"), "roller_cad": scene_roller_cad, "seal_cad": scene_seal_cad,
           "surface_crack": lambda: __import__("scenes_24_26").scene_surface_crack()}
 
 
