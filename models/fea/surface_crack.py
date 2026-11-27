@@ -242,8 +242,12 @@ def newman_raju_F(a: float, c: float, t: float, b: float, phi):
     return (M1 + M2 * at ** 2 + M3 * at ** 4) * g * fphi * fw / np.sqrt(Q)
 
 
-def energy_integral(phi_deg, K, a: float, c: float, E: float, nu: float) -> float:
-    """1/2 a c int G dphi over [0, pi/2] (trapezoid on the given stations, which must span 0-90 degrees)."""
+def energy_integral(phi_deg, K, a: float, c: float, E: float, nu: float, weight: str = "all") -> float:
+    """1/2 a c int G w dphi over [0, pi/2] (trapezoid on the given stations, which must span 0-90 degrees).
+    weight "all" (w = 1): scaling a and c together, dU_q/deps; "depth" (w = sin^2 phi): a alone, a dU_q/da at fixed c
+    (the front point moves by eps a sin phi in z, and its normal component per unit phi is c sin phi); "surface"
+    (w = cos^2 phi): c alone, c dU_q/dc at fixed a. The two weighted ones add up to the first."""
     ph = np.radians(np.asarray(phi_deg, float))
     G = np.asarray(K, float) ** 2 * (1 - nu ** 2) / E
-    return float(0.5 * a * c * np.trapezoid(G, ph))
+    w = {"all": np.ones_like(ph), "depth": np.sin(ph) ** 2, "surface": np.cos(ph) ** 2}[weight]
+    return float(0.5 * a * c * np.trapezoid(G * w, ph))

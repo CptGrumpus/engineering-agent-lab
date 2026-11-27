@@ -1,0 +1,123 @@
+# Study 24 part 2: the plate of part 1 (cases/edge_crack_mesh_r2.toml) with the flaw inspection actually finds, a
+# semi-elliptical surface crack on the plate's face, in place of part 1's through-thickness edge crack.
+#
+# The question a client would ask: part 1 sized the inspection interval from a 2 mm through-thickness edge crack.
+# Magnetic-particle inspection finds surface-breaking cracks on the face. Is part 1's answer conservative for that
+# flaw (K at detection, growth life), and does the life still meet REQ-F2 (twice the 40,000-cycle interval)?
+#
+# Method: the BS 7910 surface-crack procedure (Newman-Raju K at the deepest and surface points, the BS 7910 / IIW law
+# of part 1) from the detectable flaw to a = 0.8 t, the end of Newman-Raju's range; that life is a lower bound (the
+# growth after breakthrough is left out; K stays under Kmat to 0.8 t, a validity check). A 3D FE model (Gmsh quarter
+# model, quadratic tetrahedra, CalculiX) checks Newman-Raju's K on four shapes on the growth path, (a, c) = (2, 5),
+# (4, 6.17), (6, 8.15), (7.5, 10.08) mm (c from integrating the path with Newman-Raju, scratch, before this case):
+# the energy route (front average, three solves per shape) and the crack-opening route (K along the front). The life
+# is also reported with K scaled by the FE's energy ratio.
+#
+# Smoke tests, 2026-11-26 19:10-19:45, shape (2, 5) only, by hand (scratch scripts; these levels are this case's
+# points for that shape, so its results for (2, 5) are already known; the other three shapes are not):
+#   - the deck: equilibrium exact, loads sum to sigma x area to 1e-16;
+#   - opening route fitted from r = h: 7 % under Newman-Raju at every size (0.2 / 0.1 / 0.05 mm). The apparent K
+#     rises over the first 3 elements behind the front (0.76 at r = 0.34 h, 0.95 by 3 h), where the regular elements
+#     cannot follow sqrt(r); beyond it lies on a straight line in r. Fit window moved to [3 h, max(0.3 a, 6 h)];
+#   - energy route, K ratio to Newman-Raju (sqrt of dU/deps over Newman-Raju's integral), eps = 0.02:
+#     h = 0.1 / 0.05 / 0.025 mm: 0.9750 / 0.9782 / 0.9796 (converging, about 2 % under Newman-Raju);
+#     opening route front average with the new window: 0.951 / 0.960 / 0.965 (approaching the energy route);
+#     deepest point 0.951 / 0.961 / 0.963.
+#   - cost: 105k nodes and 2 min per solve at h = 0.025 mm on one core (SPOOLES).
+#
+#   - harness smoke run at h = 0.1 a (one point, all four shapes, 31 s; run deleted, not a sweep level): every part
+#     of the pipeline runs; energy-route ratios 0.968 / 0.988 / 0.965 / 0.977 (about +-1 % scatter at that size);
+#     the coarsest stations had too few fit points (NaN, and the checks then FAIL, as they should); on the deeper
+#     shapes the opening route reads above Newman-Raju near the surface (plane strain does not hold there).
+#
+# Predictions, written BEFORE the run (2026-11-26 20:05):
+#   P1 All three points complete, equilibrium and load sums exact; on the two finer levels every per-point check
+#      passes. On the coarsest (h = 0.05 a) the crack-opening vs energy check (3 %) may fail (smoke, shape (2, 5):
+#      2.5 % there).
+#   P2 Energy route at the finest level: FE / Newman-Raju between 0.96 and 1.00 on every shape (Newman-Raju over
+#      by 0-4 %), so the Newman-Raju check (5 %) passes at every level.
+#   P3 Crack opening at the finest level: the K / Newman-Raju ratio varies along the front (15-90 deg) by under 3 %
+#      on every shape; its front average sits 1-2 % under the energy route. Near the surface (0-10 deg) the deeper
+#      shapes read above Newman-Raju (reported, not checked).
+#   P4 Answer. K at the detectable flaw (FE, deepest point) 11.2-11.4 MPa sqrt m (Newman-Raju 11.71; part 1's edge
+#      crack 13.36): REQ-F1s PASS. Life to 0.8 t by Newman-Raju 133,423 cycles (a hand calculation, fixed by the
+#      inputs): REQ-F2s PASS, 1.45 x part 1's life, so part 1's edge-crack answer is conservative for the surface
+#      flaw. With K scaled by the FE energy ratio the life is 3-13 % longer (139,000-151,000).
+#   P5 Mesh study: the smallest energy ratio converges (GCI under 1 %); K at the detectable flaw converges (GCI
+#      under 1 %; smoke, deepest point: 0.951 / 0.961 / 0.963 of Newman-Raju); the FE-scaled life may read as
+#      oscillatory (it goes as K^-3, and the ratios scatter about +-1 % at the coarse level), reported if so.
+#   P6 Under 30 min in all (14 solves per level, 6 at a time).
+
+[case]
+name = "surface_crack_mesh"
+model = "gmsh_ccx_surface_crack"
+description = "Semi-elliptical surface crack in the S355 plate of part 1 (100 mm wide, 10 mm thick, 150 MPa maximum, R = 0.1): K along the crack front by 3D FE (CalculiX, Gmsh quarter model, quadratic tetrahedra refined at the front; energy release and crack opening) on four shapes of the growth path against Newman-Raju (BS 7910); growth life from the detectable flaw (2 mm deep, 10 mm long) to 0.8 t by the BS 7910 two-point procedure; front element size 0.05 / 0.025 / 0.0125 of the crack depth."
+assumptions = [
+  "Linear elastic fracture mechanics; plane strain along the front for K from the crack opening and for G = K^2 (1 - nu^2) / E (not at the free surface, where the surface point is reported, not checked). [model form]",
+  "Uniform remote tension on the plate's ends, free to rotate, as in Newman and Raju's solution; quarter model by symmetry (crack plane and the crack's mid-plane), half height 100 mm (2 x the half width).",
+  "Detectable flaw: 2 mm deep, 10 mm surface length (a/2c = 0.2) [synthetic: a client's inspection procedure would give the detectable length and the depth to assume].",
+  "Crack growth by the BS 7910 / IIW simplified law for steels in air, as part 1, at the deepest and the surface point (BS 7910's two-point procedure); the crack stays semi-elliptical.",
+  "Newman and Raju (1981), Engineering Fracture Mechanics 15, 185-192: K = sigma sqrt(pi a / Q) F, stated accuracy +-5 % for a/c <= 1, a/t < 0.8. [published]",
+]
+limitations = [
+  "The life stops at a = 0.8 t (end of Newman-Raju's range): breakthrough and the through crack's growth are left out, so it is a lower bound.",
+  "No crack closure, sequence effects or environment; no residual stress (a weld toe would need it).",
+  "The FE checks Newman-Raju at four shapes on the path; between them the ratio is interpolated linearly in a.",
+]
+
+[parameters]
+half_width_mm = 50.0
+half_height_mm = 100.0
+thickness_mm = 10.0
+sigma_max_MPa = 150.0
+stress_ratio = 0.1
+youngs_modulus_MPa = 210000.0
+poisson_ratio = 0.3
+k_mat_MPa_sqrt_m = 100.0
+paris_C = 5.21e-13
+paris_m = 3.0
+dK_threshold = 63.0
+initial_depth_mm = 2.0
+initial_half_length_mm = 5.0
+end_depth_ratio = 0.8
+front_element_rel = 0.025
+far_element_size_mm = 5.0
+edge_crack_life_cycles = 91963.0   # part 1, run 20261123-164649_edge_crack_mesh_r2, finest tip mesh
+
+[sweep]
+parameter = "front_element_rel"
+values = [0.05, 0.025, 0.0125]
+
+[numerics]
+crack_shapes_mm = [[2.0, 5.0], [4.0, 6.17], [6.0, 8.15], [7.5, 10.08]]
+energy_eps = 0.02
+parallel_solves = 6
+solve_timeout_s = 7200
+solver_timeout_s = 21600
+
+[verification]
+newman_raju_rel_tol = 0.05    # Newman and Raju's stated accuracy
+profile_from_deg = 15.0       # the shape of K along the front is checked from 15 deg to the deepest point
+profile_rel_tol = 0.03
+routes_rel_tol = 0.03         # crack opening against energy (front averages)
+equilibrium_rel_tol = 1e-6
+energy_step_rel_tol = 0.005   # K by the energy route with eps halved
+integral_rel_tol = 1e-4
+gci_max = 0.01
+mesh_noise_rel = 1e-4
+
+[[requirements]]
+id = "REQ-F1s"
+text = "At the detectable surface flaw the maximum stress intensity (deepest point) shall not exceed half the fracture toughness (Kmat / 2 = 50 MPa sqrt m)."
+metric = "K_a0_MPa_sqrt_m"
+operator = "<="
+limit = 50.0
+units = "MPa sqrt m"
+
+[[requirements]]
+id = "REQ-F2s"
+text = "The crack growth life from the detectable surface flaw shall be at least twice the planned inspection interval of 40,000 cycles (lower bound: to a = 0.8 t)."
+metric = "growth_life_cycles"
+operator = ">="
+limit = 80000.0
+units = "cycles"

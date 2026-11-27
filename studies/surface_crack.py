@@ -93,10 +93,15 @@ class GmshCalculiXSurfaceCrack(Backend):
         eps = float(numerics["energy_eps"])
         shapes = [(float(a), float(c)) for a, c in numerics["crack_shapes_mm"]]
         a_chk, c_chk = shapes[0]
+        weighted = bool(numerics.get("weighted_energy", False))   # r1: a alone and c alone as well
         plan = []
         for k, (a, c) in enumerate(shapes):
             for tag, f in (("mid", 1.0), ("lo", 1 - eps), ("hi", 1 + eps)):
                 plan.append((f"s{k}_{tag}", a * f, c * f))
+            if weighted:
+                for tag, fa, fc in (("alo", 1 - eps, 1.0), ("ahi", 1 + eps, 1.0), ("clo", 1.0, 1 - eps),
+                                    ("chi", 1.0, 1 + eps)):
+                    plan.append((f"s{k}_{tag}", a * fa, c * fc))
         for tag, f in (("chk_lo", 1 - eps / 2), ("chk_hi", 1 + eps / 2)):   # the step check at the first shape
             plan.append((tag, a_chk * f, c_chk * f))
         try:
@@ -117,7 +122,14 @@ class GmshCalculiXSurfaceCrack(Backend):
             K_nr = sig * np.sqrt(np.pi * a) * sc.newman_raju_F(a, c, t, b, np.radians(STATIONS))
             dU = (hi["U"] - lo["U"]) / (2 * eps)
             nr_int = sc.energy_integral(STATIONS, K_nr, a, c, E, nu)
-            rows.append({"a_mm": a, "c_mm": c, "h_front_mm": h, "nodes": mid["info"]["nodes"],
+            extra = {}
+            if weighted:
+                for wname, lo_, hi_ in (("depth", "alo", "ahi"), ("surface", "clo", "chi")):
+                    extra[f"dU_{wname}"] = (done[f"s{k}_{hi_}"]["U"] - done[f"s{k}_{lo_}"]["U"]) / (2 * eps)
+                    extra[f"nr_{wname}"] = sc.energy_integral(STATIONS, K_nr, a, c, E, nu, weight=wname)
+                    extra[f"opening_{wname}"] = sc.energy_integral(STATIONS, K_fe, a, c, E, nu, weight=wname)
+                extra["equilibrium_weighted"] = max(done[f"s{k}_{t}"]["eq"] for t in ("alo", "ahi", "clo", "chi"))
+            rows.append(extra | {"a_mm": a, "c_mm": c, "h_front_mm": h, "nodes": mid["info"]["nodes"],
                          "elements": mid["info"]["elements"], "dU_deps": dU, "nr_integral": nr_int,
                          "opening_integral": sc.energy_integral(STATIONS, K_fe, a, c, E, nu),
                          "K_fe": K_fe.tolist(), "K_nr": K_nr.tolist(), "points": [q["points"] for q in prof],
@@ -129,6 +141,11 @@ class GmshCalculiXSurfaceCrack(Backend):
                   "K_deep_nr": np.array([r["K_nr"][-1] for r in rows]),
                   "energy_ratio": np.array([np.sqrt(r["dU_deps"] / r["nr_integral"]) for r in rows]),
                   "opening_ratio": np.array([np.sqrt(r["opening_integral"] / r["nr_integral"]) for r in rows])}
+        if weighted:
+            for wname, key in (("depth", "deep"), ("surface", "surf")):
+                series[f"{key}_energy_ratio"] = np.array([np.sqrt(r[f"dU_{wname}"] / r[f"nr_{wname}"]) for r in rows])
+                series[f"{key}_opening_ratio"] = np.array([np.sqrt(r[f"opening_{wname}"] / r[f"nr_{wname}"])
+                                                           for r in rows])
         return {"success": True, "message": f"{len(shapes)} shapes x 3 solves + step check, h/a "
                 f"{float(p['front_element_rel'])}", "nfev": len(plan), "series": series,
                 "outputs": {"rows": rows, "stations_deg": list(STATIONS),
@@ -189,7 +206,8 @@ class SurfaceCrackStudy(Study):
     name = "surface_crack"
     models = {"gmsh_ccx_surface_crack": GmshCalculiXSurfaceCrack}
     metrics = frozenset({"K_a0_MPa_sqrt_m", "K_a0_nr_MPa_sqrt_m", "energy_ratio_min", "energy_ratio_max",
-                         "growth_life_cycles", "growth_life_fe_cycles", "life_over_edge_crack"})
+                         "growth_life_cycles", "growth_life_fe_cycles", "life_over_edge_crack",
+                         "deep_energy_ratio_min", "surf_energy_ratio_max"})
     param_names = PARAMS
     series_file = "k_shapes.csv"
     compare_description = "FE / Newman-Raju K ratio (energy route) per crack shape"
@@ -202,7 +220,11 @@ class SurfaceCrackStudy(Study):
     def compute_metrics(self, series, params, case, outputs=None):
         g = growth(params)
         gf = growth(params, ratio_function(series["a_mm"], series["energy_ratio"]))
-        return {"K_a0_MPa_sqrt_m": float(series["K_deep_fe"][0]) / MPA_SQRT_M,
+        out = {}
+        if "deep_energy_ratio" in series:
+            out = {"deep_energy_ratio_min": float(np.min(series["deep_energy_ratio"])),
+                   "surf_energy_ratio_max": float(np.max(series["surf_energy_ratio"]))}
+        return out | {"K_a0_MPa_sqrt_m": float(series["K_deep_fe"][0]) / MPA_SQRT_M,
                 "K_a0_nr_MPa_sqrt_m": g["K_deep_a0"] / MPA_SQRT_M,
                 "energy_ratio_min": float(np.min(series["energy_ratio"])),
                 "energy_ratio_max": float(np.max(series["energy_ratio"])),
@@ -243,6 +265,20 @@ class SurfaceCrackStudy(Study):
                   "fracture, so the life to 0.8 t is a lower bound)", max(g["K_deep_end"], g["K_surf_end"]) / kmat, 1.0,
                   kind="validity"),
         ]
+        if "deep_energy_ratio" in series:
+            add = max(abs(r["dU_depth"] + r["dU_surface"] - r["dU_deps"]) / r["dU_deps"] for r in rows)
+            deep = float(np.max(np.abs(np.asarray(series["deep_opening_ratio"]) / np.asarray(series["deep_energy_ratio"])
+                                       - 1)))
+            checks += [
+                check("energy_additivity", "max |dU/deps (a alone) + (c alone) - (a and c together)| / together over "
+                      "the shapes (first-order consistency of the energy route, mesh noise included)", add,
+                      tol["additivity_rel_tol"]),
+                check("deep_routes", "max |depth-weighted K (sin^2 phi), crack opening / energy - 1| over the shapes: "
+                      "the opening route's profile towards the deepest point against an energy route",
+                      deep, tol["routes_rel_tol"]),
+                check("equilibrium_weighted", "max equilibrium error of the a-alone and c-alone solves",
+                      max(r["equilibrium_weighted"] for r in rows), tol["equilibrium_rel_tol"]),
+            ]
         figure(pdir / "response.png", out, series, p, g, title=point["label"])
         return checks
 
@@ -257,9 +293,13 @@ class SurfaceCrackStudy(Study):
         fine = done[:3]
         hs = tuple(float(pt["parameters"]["front_element_rel"]) for pt in fine)
         checks, detail = [], {"levels_used": [pt["label"] for pt in fine]}
-        for metric in ("K_a0_MPa_sqrt_m", "energy_ratio_min", "growth_life_fe_cycles"):
+        metrics = ["K_a0_MPa_sqrt_m", "energy_ratio_min", "growth_life_fe_cycles"]
+        if "deep_energy_ratio_min" in fine[0]["metrics"]:
+            metrics.append("deep_energy_ratio_min")
+        for metric in metrics:
+            nf = tol.get("mesh_noise_rel", 1e-5)          # one value, or a table per metric (measured noise)
             u = discretization_uncertainty(hs, tuple(pt["metrics"][metric] for pt in fine), design_order=2,
-                                           noise_floor=float(tol.get("mesh_noise_rel", 1e-5)))
+                                           noise_floor=float(nf[metric] if isinstance(nf, dict) else nf))
             detail[metric] = u
             checks.append(check(f"discretization_{metric}", f"relative discretization uncertainty of {metric}, "
                                 f"{describe(u)}", u["uncertainty"], tol["gci_max"]) | {"metric": metric})
@@ -285,6 +325,11 @@ def figure(path, out, series, p, g, *, title):
     a = np.asarray(series["a_mm"])
     a2.plot(a, 100 * (np.asarray(series["energy_ratio"]) - 1), "o-", color=SERIES_1, ms=5, label="energy route (average)")
     a2.plot(a, 100 * (np.asarray(series["opening_ratio"]) - 1), "x-", color=SERIES_2, ms=6, label="crack opening (average)")
+    if "deep_energy_ratio" in series:
+        a2.plot(a, 100 * (np.asarray(series["deep_energy_ratio"]) - 1), "s--", color=SERIES_1, ms=4, mfc="none",
+                label="energy route, weighted to the deepest point")
+        a2.plot(a, 100 * (np.asarray(series["deep_opening_ratio"]) - 1), "+--", color=SERIES_2, ms=6,
+                label="crack opening, weighted to the deepest point")
     a2.axhspan(-5, 5, color=TEXT_2, alpha=0.15, label="Newman-Raju's stated accuracy")
     a2.set_xlabel("crack depth a (mm)")
     a2.set_ylabel("FE / Newman-Raju - 1 (%)")

@@ -47,6 +47,32 @@
 #      under 1 %; smoke, deepest point: 0.951 / 0.961 / 0.963 of Newman-Raju); the FE-scaled life may read as
 #      oscillatory (it goes as K^-3, and the ratios scatter about +-1 % at the coarse level), reported if so.
 #   P6 Under 30 min in all (14 solves per level, 6 at a time).
+#
+# Results (run 20261126-200939_surface_crack_mesh, 20:09-20:17, scored 2026-11-26 20:20). VERIFICATION FAIL: every
+# point fails profile_shape; the run-level checks fail on the smallest energy ratio and the FE-scaled life. Every
+# requirement PASSES at every level: K at the detectable flaw 11.27 MPa sqrt m (finest; limit 50), life to 0.8 t
+# 133,423 cycles (limit 80,000), 1.45 x part 1's edge crack.
+#   P1 HELD in part: all points completed, equilibrium and load sums exact, the coarsest level's crack-opening vs
+#      energy check passed (2.6 %); NOT predicted: profile_shape fails on every level (6.1 / 6.3 / 6.7 %).
+#   P2 HELD: energy route at the finest level 0.979 / 0.987 / 0.990 / 0.984 of Newman-Raju for a = 2 / 4 / 6 /
+#      7.5 mm; the Newman-Raju check passes at every level (2.4 / 2.3 / 2.1 %).
+#   P3 NOT HELD for the deep shapes: along the front (15-90 deg) the FE / Newman-Raju ratio is flat within 1.4 % for
+#      a = 2 and 4 mm, but falls towards the deepest point for a = 6 and 7.5 mm (a/t 0.6, 0.75): 0.988 at 20 deg to
+#      0.928 at 90 deg for a = 7.5 (shape check 6.7 %), and the gap grows with refinement. Opening front average
+#      1.0-1.4 % under the energy route (predicted 1-2 %). Near the surface the deep shapes read 8 % above
+#      Newman-Raju (predicted, not checked). Re-solved by hand (a = 7.5, finest): the apparent K at the deepest point
+#      keeps rising beyond 3 elements (0.929 at 3 h, 0.947 at 8.5 h of Newman-Raju), where the shallow crack's fell.
+#      So the deep profile rests on the crack-opening fit alone (the energy route checks only the front average);
+#      surface_crack_mesh_r1 adds energy derivatives weighted towards the deepest point (a alone) and the surface
+#      (c alone) to test it.
+#   P4 HELD: K at the detectable flaw 11.27 (11.2-11.4); life 133,423, 1.451 x part 1; FE-scaled life 139,700
+#      (4.7 % longer; predicted 3-13 %).
+#   P5 HELD for K at the detectable flaw (GCI 0.03 %); NOT HELD for the smallest energy ratio: 0.9764 / 0.9774 /
+#      0.9787, increments growing, so no order (GCI not evaluable): changes of 0.1 % per level, the size of the
+#      energy step check's own scatter (0.03-0.23 %). The FE-scaled life converges monotonically (141,300 / 140,300 /
+#      139,700) with GCI 1.05 %, just over 1 %. The noise floor declared (mesh_noise_rel 1e-4) was never measured,
+#      the mistake study F's case recorded; r1 measures it first (surface_crack_noise).
+#   P6 HELD: 8 min.
 
 [case]
 name = "surface_crack_mesh"

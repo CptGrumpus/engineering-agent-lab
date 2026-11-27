@@ -50,6 +50,19 @@ anything. Each row below happened in this repo.
   0.2 % K scatter), and (b) small against the scale on which K changes, or truncation enters (10 % of a = 4.5 mm at
   45 mm: +1.2 % on K). A fixed absolute step of a few tip elements (0.2 mm here) satisfies both; check it by halving.
 
+## Study 24 part 2 (3D surface crack): where to fit the crack opening
+
+- On regular (not quarter-point) quadratic tetrahedra the apparent K from the crack opening,
+  K_app = uy E / (4 (1 - nu^2)) sqrt(2 pi / r), is low for the first 3 elements behind the front (0.76 of the energy
+  route's K at r = 0.34 h, 0.95 by 3 h), then lies on a straight line in r. A fit from r = h read 7 % under
+  Newman-Raju at every size (0.2 / 0.1 / 0.05 mm: refinement did not cure it, because the bad zone shrinks with h
+  and the fit window did too). Fit from 3 h to max(0.3 a, 6 h), and print K_app against r/h once before choosing.
+- Check the opening route against an energy route that does not depend on the fit: self-similar scaling of the
+  ellipse by (1 + eps) gives dU_q/deps = 1/2 a c int G dphi (X.n ds = a c dphi on an ellipse), three solves per shape.
+- I declared `mesh_noise_rel = 1e-4` in `surface_crack_mesh` without measuring it, the mistake study F's note above
+  warns against, and found it only after the run had started. Write the floor only from a noise case; otherwise
+  leave the key out (the study's default applies) and say so in the case header.
+
 ## Machine-elements shaft: peak nodal stress on tetrahedra has a noise floor too
 
 - A peak read from nodal stresses (extrapolated and averaged C3D10 values) moves by about 0.1-0.2 % from mesh to mesh as

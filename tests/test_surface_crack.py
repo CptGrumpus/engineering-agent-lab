@@ -77,3 +77,16 @@ def test_deck_loads_and_crack_face(tmp_path):
     assert np.all((xyz[:, 0] / c) ** 2 + (xyz[:, 2] / a) ** 2 < 1)
     assert info["crack_nodes"] > 20 and info["ligament_nodes"] > 100
     assert "np.float" not in (tmp_path / "job.inp").read_text()
+
+
+def test_weighted_energy_integrals_add_up():
+    a, c, E, nu = 2.0, 5.0, 210000.0, 0.3
+    st = np.linspace(0, 90, 19)
+    K = 150 * np.sqrt(np.pi * a) * sc.newman_raju_F(a, c, 10, 50, np.radians(st))
+    total = sc.energy_integral(st, K, a, c, E, nu)
+    parts = sc.energy_integral(st, K, a, c, E, nu, weight="depth") + sc.energy_integral(st, K, a, c, E, nu, weight="surface")
+    assert parts == pytest.approx(total, rel=1e-12)
+    # constant K on a quarter circle: the depth and surface weights each take half
+    Kc = np.full(19, 400.0)
+    assert sc.energy_integral(st, Kc, 3, 3, E, nu, weight="depth") == pytest.approx(
+        0.5 * sc.energy_integral(st, Kc, 3, 3, E, nu), rel=1e-3)
