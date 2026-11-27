@@ -575,7 +575,8 @@ REQS = [
         ("Tip deflection", "≤ 1.0 mm", "0.917 mm", "met"),
         ("Mass against beam-theory optimum", "independent check", "546.0 g against 545.2 g, 0.13 %", "met")]),
     ("strap", "02", "Cable hole in a strap", [
-        ("Hole-edge stress, 16 mm hole", "≤ 120 MPa", "117 MPa", "met")]),
+        ("Hole-edge stress, 16 mm hole", "≤ 120 MPa", "117 MPa", "met"),
+        ("Part 2: hole-edge stress at mid-thickness, 3D solid, 16 mm hole", "≤ 120 MPa", "118.8 MPa (largest hole about 16.3 mm)", "met")]),
     ("fatigue", "03", "Strap fatigue life", [
         ("Life at the 0–5 kN service cycle", "≥ 3 × 10⁷ cycles", "about 8 × 10⁹", "met")]),
     ("modal", "04", "Bracket arm modal", [
