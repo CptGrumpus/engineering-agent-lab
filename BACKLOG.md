@@ -98,6 +98,9 @@ Done today, each with predictions committed first, runs scored, page section, fi
   takes about an hour per solve. Its crowned trial (Lundberg A, scratch r3_log3) read 5 % higher than the half-space
   model at mid-length (2 % known mesh bias) and 23 % at the end (18:00): the crowned verdict is CONDITIONAL on a 3D FE
   mesh study at the chosen crown (A = 1.3 x Lundberg), the next job for study 10. Script: scratch fe_vs_hs.py.
+  **Running overnight since 18:09:** `harness pipeline cases/roller_fe_mesh.toml` (three contact meshes, about 12 h,
+  predictions in the case: about 650 / 643 / 638 MPa). When it lands: score it, update page 10's cross-check and
+  verdict (crown confirmed, or a stronger crown), send the dashboard session the numbers.
 - **Also done later the same day:** detailed CAD with STEP and hand-volume tests for studies 10 (track roller), 25
   (seal), 11/15 (cold plate), 27 (enclosure), 16 (bolted lap), 2/3/14 (strap), 13 (strut, pinned about its weak axis),
   8 (mounting plate), 12 (clevis); the bracket arm (4/21/22) deliberately not drawn (see the CAD roadmap row).
