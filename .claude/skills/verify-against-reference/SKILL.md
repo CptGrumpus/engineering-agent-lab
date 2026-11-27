@@ -62,6 +62,8 @@ points). References live in `validation/` and must not import from `models/`; ke
 | fan rotor, 3D (`rotor_solid`) | ROSS at rest on the identical rotor (cross-tool, on the rotor ROSS idealises exactly); the solid's volume against a hand volume; mesh quality | GCI over mesh_scale on the solid's first frequency |
 | nozzle by limit load (`nozzle_limit`) | the plain closed-end cylinder's exact collapse pressure (2 / sqrt 3) sigma_y ln(Ro / Ri) with the same solver settings (shows the non-convergence stop is the collapse); reactions against load factor x exact resultants at every completed step; CAD and mesh volume | GCI on the collapse load factor over element_size_local_mm, noise floor declared in the case |
 | strap hole in 3D (`strap_3d`) | the thin-plate limit (t / d 0.0025, load scaled) against study 2's plane stress, uniform through t; reaction and ligament force F / 4; loaded area exact; Peterson for the through-thickness mean (model form: at finite t the mean differs from plane stress by order (t / r)^2) | GCI over hole_element_size_mm (layers refined with it) |
+| roller in 3D (`roller_3d`) | Hertz line contact at mid-length for the local line load there (long-roller limit); roller and plate reactions; the target load bracketed by the steps | GCI over contact_element_size_mm |
+| O-ring cover (`oring_cover`) | the edge-supported plate against Mindlin's plate (Kirchhoff plus the shear term); the washer reaction against the applied load (exact: the footprints carry no load) | GCI over element_size_mm |
 
 Two kinds of check, both gating verification:
 - **numerical**: were the equations solved correctly?

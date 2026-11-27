@@ -1,0 +1,71 @@
+# Study 25 part 2, case 3: the cover's lift against its thickness.
+#
+# Why: the answer to "how thin can the cover be": the lift between 4 bolts at 3 / 4 / 6 / 8 mm, element size 1.0 mm
+# (finer than the middle of oring_cover_mesh, which gives the uncertainty at 4 mm).
+# Scratch trials (2026-11-27): 30.2 um at 3 mm (h 1.0), 15.2 at 4, 6.0 at 6 (h 1.5), 3.4 at 8 (h 1.33).
+#
+# Predictions, written BEFORE the evidence run:
+#   P1 Every check passes at every thickness.
+#   P2 Largest lift about 30.2 / 15.1 / 6.0 / 3.4 um at 3 / 4 / 6 / 8 mm: falling more slowly than 1 / t^3 (the
+#      washers' footprints and transverse shear take a larger share as the plate thickens).
+#   P3 REQ-E1L passes at every thickness: loosest squeeze about 16.32 / 16.76 / 17.03 / 17.10 % (flat cover 17.20 %).
+#      Even a 3 mm cover uses only 40 % of the 75.5 um allowance: part 1's flat rigid cover is a sound assumption for
+#      any practical cover; the machined flatness callout matters more than the cover's stiffness.
+#   P4 Under two minutes.
+
+[case]
+name = "oring_cover_thickness"
+model = "ccx_oring_cover"
+description = "Study 25's pump cover (synthetic: 6061-T6, 96 mm across, 4 x M6 on a 76 mm circle) at 3 / 4 / 6 / 8 mm thickness, lifted by 3 bar and the O-ring's reaction at the loosest corner; element size 1.0 mm."
+assumptions = [
+  "The cover [synthetic, part 1 never drew it]: 6061-T6 aluminium, 96 mm across, held by 4 M6 bolts on a 76 mm circle with 12 mm washers; the groove is in the pump, the cover's underside flat.",
+  "Loads: 3 bar out to the groove's outer radius (conservative) and the O-ring's reaction from part 1 at the loosest corner, 1.887 N/mm over its 1.68 mm contact; both push the cover up.",
+  "The washer footprints held against lifting only (free to slide and pivot: the softer support); the pump flange rigid; the rim beyond the bolts unsupported (a real flange pushes back on it, which lowers the lift).",
+  "The O-ring's reaction held at its part 1 value as the cover lifts (it falls as the squeeze falls: conservative).",
+  "Linear elastic, small displacement.",
+]
+limitations = [
+  "No bolt stretch or flange flexibility, no flatness tolerance on the machined faces (a flatness callout adds to the lift directly).",
+  "The cover geometry is synthetic: the answer is the lift per thickness, read against the 75.5 um the loosest corner can give up.",
+]
+
+[parameters]
+cover_diameter_mm = 96.0
+cover_thickness_mm = 4.0
+bolt_count = 4
+bolt_circle_diameter_mm = 76.0
+bolt_hole_diameter_mm = 6.6
+washer_diameter_mm = 12.0
+pressure_MPa = 0.3
+pressure_radius_mm = 28.53        # the groove's outer radius: the pressure taken out to the ring's outer contact
+oring_line_load_N_per_mm = 1.887  # part 1, loosest corner (run 20261124-100619_oring_seal_corners, p00)
+oring_radius_mm = 26.8            # the loosest ring's centroid: 57.06 / 2 - 3.43 / 2
+oring_contact_width_mm = 1.68     # part 1, loosest corner
+youngs_modulus_MPa = 68900.0      # aluminium cover (6061-T6)
+poisson_ratio = 0.33
+element_size_mm = 1.0
+support = "bolts"
+loosest_cross_section_mm = 3.43
+loosest_groove_depth_mm = 2.84
+
+[sweep]
+parameter = "cover_thickness_mm"
+values = [3.0, 4.0, 6.0, 8.0]
+
+[numerics]
+solver_timeout_s = 3600
+threads = 4
+
+[verification]
+equilibrium_rel_tol = 1e-6
+plate_rel_tol = 0.02          # Mindlin's plate against the 3D solid, supported at the underside's edge
+mesh_noise_rel = 1e-3         # declared before the run: Gmsh regenerates the tetrahedra at each size
+gci_max = 0.03
+
+[[requirements]]
+id = "REQ-E1L"
+text = "With the cover's lift between the bolts, the squeeze at the loosest corner of the stack stays at or above 15 % (REQ-E1 of part 1, at the worst point around the seal)."
+metric = "loosest_squeeze_with_lift_pct"
+operator = ">="
+limit = 15.0
+units = "%"

@@ -1,0 +1,62 @@
+# Study 25 part 2, case 1: the cover model against plate theory.
+#
+# Why (standing rule, 2026-11-27): part 1 took the cover as flat and rigid; at the loosest corner the squeeze is
+# 17.2 % against a 15 % minimum, so the cover may lift only 75.5 um at the seal before REQ-E1 fails. A hand estimate
+# (Roark, a circular plate simply supported at the bolt circle) gave about 12 um for 8 mm, with discrete bolts several
+# times more: the same order as the margin, so the cover is modelled. This case checks the model on the plate it can be
+# compared with exactly: the same cover, simply supported along its underside's edge, 3 bar over the whole underside,
+# against Mindlin's plate (Kirchhoff plus the transverse-shear term, 3.3 % at t / a = 0.125).
+# Scratch trial (2026-11-27, h 1.5 mm): centre deflection 73.35 um against 72.98 (+0.5 %).
+#
+# Predictions, written BEFORE the evidence run:
+#   P1 plate_theory within 0.6 % (the solid's support on the underside edge rather than the mid-plane: a few tenths of
+#      a percent).
+#   P2 Seconds.
+
+[case]
+name = "oring_cover_reference"
+model = "ccx_oring_cover"
+description = "Study 25's synthetic pump cover (6061-T6, 96 mm across, 6 mm thick) simply supported along its underside's edge under 3 bar over the whole underside: the 3D solid against Mindlin's plate."
+assumptions = [
+  "Linear elastic aluminium, E 68.9 GPa, nu 0.33; small displacement.",
+  "Simple support along the underside's outer edge (vertical only); quarter model by symmetry.",
+]
+limitations = [
+  "A reference for the model only.",
+]
+
+[parameters]
+cover_diameter_mm = 96.0
+cover_thickness_mm = 6.0
+bolt_count = 4
+bolt_circle_diameter_mm = 76.0
+bolt_hole_diameter_mm = 6.6
+washer_diameter_mm = 12.0
+pressure_MPa = 0.3
+pressure_radius_mm = 28.53        # the groove's outer radius: the pressure taken out to the ring's outer contact
+oring_line_load_N_per_mm = 1.887  # part 1, loosest corner (run 20261124-100619_oring_seal_corners, p00)
+oring_radius_mm = 26.8            # the loosest ring's centroid: 57.06 / 2 - 3.43 / 2
+oring_contact_width_mm = 1.68     # part 1, loosest corner
+youngs_modulus_MPa = 68900.0      # aluminium cover (6061-T6)
+poisson_ratio = 0.33
+element_size_mm = 1.5
+support = "edge"
+loosest_cross_section_mm = 3.43
+loosest_groove_depth_mm = 2.84
+[numerics]
+solver_timeout_s = 3600
+threads = 4
+
+[verification]
+equilibrium_rel_tol = 1e-6
+plate_rel_tol = 0.02          # Mindlin's plate against the 3D solid, supported at the underside's edge
+mesh_noise_rel = 1e-3         # declared before the run: Gmsh regenerates the tetrahedra at each size
+gci_max = 0.03
+
+[[requirements]]
+id = "REQ-REF"
+text = "Reference only: the edge-supported plate's centre deflection (no design limit; the plate_theory check is the point of this case), recorded against 1 mm."
+metric = "centre_deflection_um"
+operator = "<="
+limit = 1000.0
+units = "um"
