@@ -2404,13 +2404,191 @@ def steel_frame():
     print("fig steel_frame")
 
 
+def keyed_shaft():
+    """Study 26 part 2: the study session's figure (scripts/make_keyed_shaft_figure.py), converted for the site."""
+    from PIL import Image
+    src = REPO / "portfolio" / "img" / "keyed_shaft_seat.png"
+    Image.open(src).convert("RGB").save(fk.OUT / "fig_keyed_shaft.webp", "WEBP", quality=90, method=6)
+    print("fig keyed_shaft")
+
+
+def crack_surface():
+    """Study 24 part 2: the semi-elliptical surface crack. K along the front for the four shapes on the growth path,
+    FE against Newman-Raju, and the FE / Newman-Raju ratio by two independent routes against the stated accuracy."""
+    import csv
+    run, lab = "20261126-204858_surface_crack_mesh_r1", "p02_front_element_rel-0.0125"
+    v = json.loads((RUNS / run / "verification.json").read_text(encoding="utf-8"))
+    pv = next(p for p in v["points"] if p["label"] == lab)
+    failed = [c["id"] for c in pv.get("checks", []) if c["status"] != "PASS"]
+    assert all("profile" in c for c in failed), failed          # only the front-shape check, a finding about the reference
+    pt = point(run, lab)
+    so, m = pt["solver_outputs"], pt["metrics"]
+    phi = np.array(so["stations_deg"])
+    rows = list(csv.DictReader((RUNS / run / "points" / lab / "k_shapes.csv").open(encoding="utf-8")))
+    k = 1 / np.sqrt(1000.0)                                      # MPa√mm to MPa√m
+    assert abs(so["rows"][0]["K_fe"][-1] * k - m["K_a0_MPa_sqrt_m"]) < 1e-9
+
+    fig, gs = fk.new(FULL, 3.9, 1, 2, wspace=0.62, top=0.80, width_ratios=[1.35, 1.0])
+    gs.update(right=0.84)
+    ax = fig.add_subplot(gs[0, 0])
+    fk.style(ax, grid="y")
+    for r in so["rows"]:
+        kf, kn = np.array(r["K_fe"]) * k, np.array(r["K_nr"]) * k
+        ax.plot(phi, kn, color=MUTED, linewidth=1.6, zorder=2)
+        fk.dots(ax, phi, kf, color=MODEL, size=22)
+        fk.label(ax, 90, kn[-1], f"a {r['a_mm']:g} mm", dx=8, size=8.2, color=INK2)
+    ax.set_xlim(-3, 93)
+    ax.set_xticks([0, 30, 60, 90], ["0\nsurface", "30", "60", "90\ndeepest"])
+    ax.set_xlabel("position along the crack front, °")
+    ax.set_ylabel("K, MPa√m")
+    fk.panel(ax, "K along the front, four shapes as the crack grows")
+
+    bx = fig.add_subplot(gs[0, 1])
+    fk.style(bx, grid="y")
+    a = [float(r["a_mm"]) for r in rows]
+    bx.set_xlim(1.4, 8.1)
+    bx.set_ylim(-6.5, 3)
+    bx.axhspan(-5, 5, color=GRID, alpha=0.45, linewidth=0, zorder=0)
+    bx.axhline(0, color=INK2, linewidth=1.0, zorder=1)
+    fk.label(bx, 1.5, 0, "Newman-Raju", dy=5, va="bottom", size=8.2, color=INK2)
+    fk.label(bx, 1.5, -5, "its stated accuracy, ±5 %", dy=4, va="bottom", size=8.2, color=INK2)
+    series = [("energy_ratio", "energy, whole front", MODEL, "-"), ("opening_ratio", "crack opening", MUTED, "-"),
+              ("deep_energy_ratio", "energy, deepest point", MODEL, (0, (4, 2)))]
+    for key_, name, col, ls in series:
+        y = [100 * (float(r[key_]) - 1) for r in rows]
+        bx.plot(a, y, color=col, linestyle=ls, linewidth=1.8, zorder=3)
+        fk.dots(bx, a, y, color=col, size=24)
+        fk.label(bx, a[-1], y[-1], name, dx=7, size=8.2, color=INK2)
+    bx.set_xticks(a, [f"{x:g}" for x in a])
+    bx.set_xlabel("crack depth a, mm (plate 10 mm)")
+    bx.set_ylabel("FE against Newman-Raju, %")
+    fk.panel(bx, "Two independent routes")
+    fk.heading(fig, f"The surface flaw: K {m['K_a0_MPa_sqrt_m']:.1f} MPa√m, and at least {round(m['growth_life_cycles'], -2):,.0f} cycles to 80 % of the thickness",
+               f"2 mm deep, 10 mm long · {m['life_over_edge_crack']:.2f} × the edge crack's life, so Part 1 is the conservative answer · "
+               "dots: FE · lines: Newman-Raju")
+    fig.savefig(fk.OUT / "fig_crack_surface.svg", format="svg", dpi=300, metadata={"Date": None, "Creator": None})
+    fk.plt.close(fig)
+    print("fig crack_surface")
+
+
+FLAG_STAGES = [   # (row label, run, point): each stage of the Turek-Hron benchmark on its finest level
+    ("Solid, static (CSM1)", "20261121-131111_flag_csm1_mesh", "p02_element_size_mm-1.25"),
+    ("Solid, static (CSM2)", "20261121-131133_flag_csm2_mesh", "p02_element_size_mm-1.25"),
+    ("Solid, swinging (CSM3)", "20261121-184353_flag_csm3_dt_r3", "p02_time_step_s-0.000625"),
+    ("Fluid, Re 20 (CFD1)", "20261125-185354_turek_hron_cfd1_nested", "p02_cell_size_m-0.000625"),
+    ("Fluid, Re 100 (CFD2)", "20261125-193110_turek_hron_cfd2_nested_r1", "p02_cell_size_m-0.0003125"),
+    ("Coupled, steady (FSI1)", "20261123-070600_turek_hron_fsi1_mesh_r2", "p02_fluid_cell_size_m-0.00125"),
+    ("Coupled, slow swing (FSI2)", "20261126-011223_turek_hron_fsi2_mesh_c_alpha", "p00_baseline"),
+    ("Coupled, fast swing (FSI3)", "20261123-161128_turek_hron_fsi3_mesh_c", "p00_baseline")]
+FLAG_WORD = {"uy_A": "tip", "ux_A": "tip, along", "drag": "drag", "lift": "lift", "uy_A_amp": "tip swing",
+             "uy_A_freq_Hz": "frequency", "drag_mean": "mean drag", "drag_amp": "drag swing", "lift_amp": "lift swing",
+             "ux_A_mean": "tip, along", "frequency_band": "frequency", "uy_mean_band": "tip mean",
+             "uy_amplitude_band": "tip swing", "ux_mean_band": "tip, along"}
+
+
+def flag_fsi():
+    """Study 17, the Turek-Hron flag: every stage against its published values as a share of the limit, the
+    damped FSI3 time-step check against the 1 % target, and FSI2's swing drifting from the benchmark as the mesh
+    is refined (the stated limit)."""
+    H = 6.3
+    fig, gs = fk.new(FULL, H, 2, 2, wspace=0.62, hspace=0.50, top=0.80, height_ratios=[1.15, 1.0])
+    gs.update(left=0.20, right=0.86, bottom=0.55 / H)
+
+    # every stage against the benchmark, each requirement as a share of its limit
+    ax = fig.add_subplot(gs[0, :])
+    fk.style(ax, grid="x")
+    ax.set_xlim(0, 1.25)
+    ax.set_ylim(len(FLAG_STAGES) - 0.45, -0.7)
+    fk.limit(ax, 1.0, "limit", "above", at=0.995)
+    for i, (name, run, lab) in enumerate(FLAG_STAGES):
+        ok = verified(run)[lab]                 # CFD2's finest: forces settled to 2.4e-6 against 1e-6, so held
+        assert ok or run.endswith("cfd2_nested_r1"), (run, lab)
+        m = point(run, lab)["metrics"]
+        lim = limits(run.split("_", 1)[1])
+        share = []
+        for metric, (op, L) in lim.items():
+            assert op == "<=" and m[metric] <= L, (run, metric)      # every published-value requirement passes
+            share.append((m[metric] / L, metric, m[metric], L))
+        share.sort()
+        ax.plot([0, share[-1][0]], [i, i], color=fk.AXIS, linewidth=2.2, zorder=2)
+        for s, *_ in share[:-1]:
+            ax.scatter([s], [i], s=26, facecolor=SURFACE, edgecolor=MODEL, linewidth=1.2, zorder=4)
+        s, metric, v, L = share[-1]
+        fk.status_dot(ax, s, i, "meets" if ok else "held", size=50)
+        word = FLAG_WORD[metric.replace("_deviation_pct", "").replace("_dev_pct", "")]
+        fk.label(ax, s, i, f"{word}: {v:.2f} % off, limit {L:g} %" + ("" if ok else ", not verified"), dx=8,
+                 size=8.2, color=INK2)
+        ax.text(-0.03, i, name, transform=ax.get_yaxis_transform(), ha="right", va="center", fontsize=8.8, color=INK)
+    ax.set_yticks([])
+    ax.set_xlabel("distance from the published value, share of the limit")
+    fk.panel(ax, "Each stage against the benchmark")
+
+    # the damped FSI3 time-step check
+    dt = json.loads((RUNS / "20261126-011226_turek_hron_fsi3_dt_c_alpha" / "fsi3_dt_alpha_3level_t7999.json").read_text(encoding="utf-8"))
+    rows = [(c["metric"].replace("_deviation_pct", ""), 100 * c["value"], 100 * c["tolerance"], c["status"]) for c in dt["run_checks"]
+            if c["id"].startswith("discretization_")]
+    assert len(rows) == 6 and sum(r[3] == "FAIL" for r in rows) == 1
+    rows.sort(key=lambda r: r[1])
+    bx = fig.add_subplot(gs[1, 0])
+    fk.style(bx, grid="x")
+    tol = rows[0][2]
+    assert all(r[2] == tol for r in rows)
+    bx.set_xlim(0, 1.6)
+    bx.set_ylim(len(rows) - 0.45, -0.7)
+    fk.limit(bx, tol, f"target {tol:g} %", "above", at=0.995)
+    for i, (q, u, _, st) in enumerate(rows):
+        ok = st == "PASS"
+        assert ok == (u <= tol)
+        bx.plot([0, u], [i, i], color=fk.AXIS, linewidth=2.2, zorder=2)
+        fk.status_dot(bx, u, i, "meets" if ok else "misses", size=50)
+        fk.label(bx, u, i, f"{u:.2f} %", dx=8 if u < 1.3 else -6, dy=0 if u < 1.3 else 10, ha="left", size=8.2, color=INK2)
+    bx.set_yticks(range(len(rows)), [FLAG_WORD[r[0]] for r in rows])
+    bx.set_xlabel("time-step uncertainty, %")
+    fk.panel(bx, "FSI3: three time steps")
+
+    # FSI2: the swing moves away from the benchmark as the mesh is refined
+    cx = fig.add_subplot(gs[1, 1])
+    fk.style(cx, grid="y")
+    f2 = [("20261126-011217_turek_hron_fsi2_mesh_a_alpha", 3.54), ("20261126-011220_turek_hron_fsi2_mesh_b_alpha", 2.5),
+          ("20261126-011223_turek_hron_fsi2_mesh_c_alpha", 1.77)]
+    series = {"uy_A_amp": [], "drag_amp": [], "lift_amp": [], "uy_A_freq_Hz": []}
+    for run, h in f2:
+        p = point(run, "p00_baseline")
+        assert verified(run)["p00_baseline"] and abs(p["parameters"]["fluid_cell_size_m"] * 1000 - h) < 0.01
+        for q in series:
+            series[q].append(100 * (p["metrics"][q] / p["parameters"][f"benchmark_{q}"] - 1))
+    hs = [h for _, h in f2]
+    cx.axhline(0, color=INK2, linewidth=1.1, zorder=1)
+    fk.label(cx, hs[1], 0, "published", dy=-6, ha="center", va="top", size=8.2, color=INK2)
+    styles = {"uy_A_amp": (MODEL, "-"), "drag_amp": (MODEL, (0, (4, 2))), "lift_amp": (MUTED, "-"), "uy_A_freq_Hz": (MUTED, (0, (1.5, 2)))}
+    nudge = {"lift_amp": 5, "drag_amp": -5, "uy_A_amp": 0, "uy_A_freq_Hz": 0}      # the two top ends sit 0.2 % apart
+    for q, ys in series.items():
+        col, ls = styles[q]
+        cx.plot(hs, ys, color=col, linestyle=ls, linewidth=1.8, zorder=3)
+        fk.dots(cx, hs, ys, color=col, size=26)
+        fk.label(cx, hs[-1], ys[-1], f"{FLAG_WORD[q]} {ys[-1]:+.1f} %", dx=7, dy=nudge[q], size=8.2, color=INK2)
+    cx.set_xlim(3.8, 1.5)
+    cx.set_xticks(hs, [f"{h:g}" for h in hs])
+    cx.set_xlabel("fluid cell size, mm (finer →)")
+    cx.set_ylabel("from the published value, %")
+    fk.panel(cx, "FSI2: finer isn't closer")
+
+    fk.heading(fig, "Every stage reproduces the published benchmark; three convergence results are reported, not tuned",
+               "Turek-Hron flag behind a cylinder · CalculiX, OpenFOAM, preCICE · filled: largest share of its limit · "
+               "ring: the stage's other checks")
+    thumb(fig, ax, "flag")
+    fig.savefig(fk.OUT / "fig_flag.svg", format="svg", dpi=300, metadata={"Date": None, "Creator": None})
+    fk.plt.close(fig)
+    print("fig flag_fsi")
+
+
 ALL = {f.__name__: f for f in (cfd_tolerance, cfd_duct, cfd_response, cfd_field, fea_tet4, strap_sweep, fatigue_sweep,
                                strut_sweep, strut_response, proof_response, joint_response, contact_response, fea_response, strap_response,
                                fatigue_sn, fin_response, fin_h_sweep, qc_bump_sweep, cad_sweep, heat_response,
                                qc_liftoff, qc_iso, coldplate_response, pipe_friction, motor_comparison,
                                motor_rotor, pv_nozzle, step_comparison, random_vibration, bracket_uncertainty,
                                fan_rotor, fan_rotor_campbell, crack_growth, motor_efficiency, motor_airgap, oring_seal, shaft_fillet,
-                               enclosure_revb, enclosure_field, steel_frame)}
+                               enclosure_revb, enclosure_field, steel_frame, flag_fsi, crack_surface, keyed_shaft)}
 # not on the site (the earlier model's thermal result): motor_thermal
 
 if __name__ == "__main__":

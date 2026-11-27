@@ -38,7 +38,7 @@ STUDY_DOCS = {
     "pipe": "19-turbulent-pipe-friction", "motor": "20-prius-traction-motor", "step": "19-turbulent-pipe-friction",
     "random_vib": "21-bracket-random-vibration", "bracket_uq": "22-bracket-random-uncertainty",
     "fan_rotor": "23-fan-rotor-critical-speeds", "crack": "24-cracked-plate-growth", "oring": "25-oring-face-seal", "shaft": "26-shaft-shoulder-fatigue",
-    "enclosure": "27-sealed-enclosure-thermal", "steel_frame": "28-steel-portal-frame-aisc",
+    "enclosure": "27-sealed-enclosure-thermal", "steel_frame": "28-steel-portal-frame-aisc", "flag": "17-fsi-flag-turek-hron",
 }
 RUN_PREFIX = {"pipe": "pipe_", "step": "step_"}
 # runs a write-up cites by a pattern instead of one by one: listed with the ones it names
@@ -594,12 +594,21 @@ REQS = [
         ("Impeller vibration under the standard unbalance, 65 mm shaft", "≤ 50 µm", "5.0 µm (the 50 mm shaft: 345 µm)", "met")]),
     ("crack", "24", "Cracked plate", [
         ("Stress intensity at the detectable 2 mm crack", "≤ 50 MPa√m", "13.4 MPa√m", "met"),
-        ("Crack growth life from 2 mm to critical", "≥ 80,000 cycles", "about 92,000 cycles, ±0.2 %; critical crack 37.0 mm", "met")]),
+        ("Crack growth life from 2 mm to critical", "≥ 80,000 cycles", "about 92,000 cycles, ±0.2 %; critical crack 37.0 mm", "met"),
+        ("Part 2: the 2 × 10 mm surface flaw, life to 80 % of the thickness", "≥ 80,000 cycles", "at least 133,400 cycles; K 11.3 MPa√m, within 2.4 % of Newman-Raju", "met")]),
     ("oring", "25", "O-ring face seal", [
         ("Squeeze at every corner of the tolerance stack", "15 to 30 %", "17.2 % at the loosest, 24.5 % at the tightest", "met"),
         ("Peak contact pressure on the cover, loosest corner", "≥ 0.6 MPa (2 × 3 bar)", "1.50 MPa", "met"),
         ("Closing force, tightest corner", "≤ 12 N/mm", "5.94 N/mm (mesh uncertainty 1.1 %)", "met"),
         ("Groove fill, tightest corner", "≤ 85 %", "80.4 %; the hand cross-check differs by 1.05 %, just over its 1 %", "met")]),
+    ("flag", "17", "Flexible flag behind a cylinder", [
+        ("Solid on its own (CSM1-3): the tip's displacement and the swing's frequency", "within 1 % (2 % along the flow)", "0.03 % still; 0.08 % from the published band swinging", "met"),
+        ("Fluid on its own (CFD1, CFD2): drag", "within 1 %", "0.22 % and 0.10 % on the finest meshes", "met"),
+        ("Fluid on its own (CFD1, CFD2): lift", "within 2 %", "0.53 %, verified; 0.98 % at Re 100, not verified (turns back up on the finest mesh)", "met"),
+        ("Coupled, steady (FSI1): drag, lift and the tip", "1 %, 5 % and 3 %", "0.03 %, 0.18 % and 0.96 %", "met"),
+        ("Coupled, swinging (FSI3): tip swing on the finest mesh", "within 5 %", "1.1 %; extrapolated 0.02 %", "met"),
+        ("FSI3 converged in time step, six quantities", "uncertainty ≤ 1 %", "0.09-0.71 % for five; the drag swing 1.39 %", "fail"),
+        ("FSI2 converged in mesh, six quantities", "uncertainty ≤ 1 %", "frequency 0.07 %; the swings and mean drag move away as the mesh is refined (every value within 3.4 % of the benchmark)", "fail")]),
     ("steel_frame", "28", "Steel portal frame", [
         ("Each member's combined ratio, AISC 360-22 Eq. H1-1, Direct Analysis Method", "≤ 1.0", "0.80, the beam unbraced over 6 m; columns 0.45", "met"),
         ("Beam deflection under the service live load", "≤ L/360 = 16.7 mm", "4.1 mm", "met"),
@@ -608,7 +617,10 @@ REQS = [
         ("Fatigue safety at the fillet, as drawn (fillet 1.4 to 2.0 mm)", "≥ 1.5", "1.15 to 1.26; 1.19 at the nominal 1.6 mm", "fail"),
         ("Yield safety at a 1.5 × overload, as drawn", "≥ 2.0", "1.77 to 1.92; 1.83 at the nominal", "fail"),
         ("Smallest fillet meeting the fatigue limit", "under the 4 mm shoulder", "none: 1.47 at 3.9 mm", "fail"),
-        ("The fix: d 36 / D 45 mm, fillet 1.8 mm, at its lower tolerance", "≥ 1.5 and ≥ 2.0", "fatigue 1.62, yield 2.52", "met")]),
+        ("The fix without a keyway: d 36 / D 45 mm, fillet 1.8 mm, at its lower tolerance", "≥ 1.5 and ≥ 2.0", "fatigue 1.62, yield 2.52", "met"),
+        ("Part 2, with the gear's DIN 6885 keyway: the 36 mm seat", "≥ 1.5 and ≥ 2.0", "fatigue 1.18, yield 1.72 at the keyway", "fail"),
+        ("Part 2: the 40 / 50 mm seat, keyway corner r 0.4 min", "≥ 1.5 and ≥ 2.0", "fatigue 1.535, yield 2.36", "met"),
+        ("Part 2: the 42 / 52.5 mm seat, keyway corner at its 0.25 mm lower tolerance", "≥ 1.5 and ≥ 2.0", "fatigue 1.545, yield 2.41", "met")]),
     ("enclosure", "27", "Sealed enclosure", [
         ("U1's case as drawn, bare or painted inside", "≤ 115 °C", "94 to 98 °C painted, 157 to 164 °C bare", "fail"),
         ("The board, anywhere, as drawn", "≤ 105 °C", "93 to 96 °C painted, 156 to 161 °C bare", "fail"),

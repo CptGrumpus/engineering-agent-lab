@@ -183,6 +183,15 @@ peak hidden behind the shoulder. `make_study_renders.publish` writes `th_<id>.we
 `make_figures.thumb()`; for a study with a render, remove its `thumb()` call or the next figure run swaps the
 card back to the chart.
 
+When the last in-progress study closes, the in-progress page doesn't go away: it became "Recently finished" at the
+same address (in-progress.html, so old links still work), a newest-first list linking each study's page, with the
+menu and home links renamed. Read a Part 2 for whether it overturns Part 1's recommendation, not only for what it
+adds: the keyed shaft's Part 2 made the site's "36 mm passes" wrong, so the card, the viewer line and the
+requirement rows changed with it. A benchmark study with many stages (the flag) charts best as one row per stage,
+each requirement as a share of its limit, read from the case files' own limits; a stage whose finest point failed
+a check is drawn hollow and labelled, never swapped for a coarser point that passed. A study-session figure with a
+harness title (the run label as its heading) isn't client-ready; redraw it in figkit from the run's saved data.
+
 ## Editing the source safely
 
 - Write patch scripts with the Write tool, not a Git Bash heredoc: the heredoc turns `\\n` into a real newline

@@ -4,11 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Every Requirement · Justin Smith</title>
-<meta name="description" content="All 79 requirements across the simulation studies, each with its limit, result and verdict.">
+<meta name="description" content="All 90 requirements across the simulation studies, each with its limit, result and verdict.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://cptgrumpus.github.io/engineering-agent-lab/requirements.html">
 <meta property="og:title" content="Every Requirement in One Table">
-<meta property="og:description" content="All 79 requirements across the simulation studies, each with its limit, result and verdict.">
+<meta property="og:description" content="All 90 requirements across the simulation studies, each with its limit, result and verdict.">
 <meta property="og:image" content="https://cptgrumpus.github.io/engineering-agent-lab/v2/og_card.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -23,7 +23,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
-<link rel="stylesheet" href="assets/site.css?v=8e64ba5049">
+<link rel="stylesheet" href="assets/site.css?v=f28fdda096">
 </head>
 <body>
 <nav class="topbar" aria-label="Site">
@@ -57,7 +57,7 @@
     <div class="page-head">
       <p class="eyebrow">Requirements</p>
       <h1>Every Requirement in One Table</h1>
-      <p>79 requirements across the studies: <b class="c-pass">54 met</b>, <b class="c-fail">22 not met</b>, <b class="c-warn">3 withheld</b>. "Not met" is still a verified answer: the design fails, and the study explains what would fix it. "Withheld" means the checks didn't support calling it either way, or that the result waits on open work. Each study's name links to its page.</p>
+      <p>90 requirements across the studies: <b class="c-pass">62 met</b>, <b class="c-fail">25 not met</b>, <b class="c-warn">3 withheld</b>. "Not met" is still a verified answer: the design fails, and the study explains what would fix it. "Withheld" means the checks didn't support calling it either way, or that the result waits on open work. Each study's name links to its page.</p>
     </div>
     <div class="reqs open">
       <div class="table-wrap">
@@ -85,17 +85,28 @@
           <tr><td></td><td>Impeller vibration under the standard unbalance, 65 mm shaft</td><td class="num">≤ 50 µm</td><td>5.0 µm (the 50 mm shaft: 345 µm)</td><td><span class="chip pass">Met</span></td></tr>
           <tr class="r-first"><td><a href="cracked-plate.html"><span class="r-no">24</span> Cracked Plate</a></td><td>Stress intensity at the detectable 2 mm crack</td><td class="num">≤ 50 MPa√m</td><td>13.4 MPa√m</td><td><span class="chip pass">Met</span></td></tr>
           <tr><td></td><td>Crack growth life from 2 mm to critical</td><td class="num">≥ 80,000 cycles</td><td>about 92,000 cycles, ±0.2 %; critical crack 37.0 mm</td><td><span class="chip pass">Met</span></td></tr>
+          <tr><td></td><td>Part 2: the 2 × 10 mm surface flaw, life to 80 % of the thickness</td><td class="num">≥ 80,000 cycles</td><td>at least 133,400 cycles; K 11.3 MPa√m, within 2.4 % of Newman-Raju</td><td><span class="chip pass">Met</span></td></tr>
           <tr class="r-first"><td><a href="o-ring-face-seal.html"><span class="r-no">25</span> O-Ring Face Seal</a></td><td>Squeeze at every corner of the tolerance stack</td><td class="num">15 to 30 %</td><td>17.2 % at the loosest, 24.5 % at the tightest</td><td><span class="chip pass">Met</span></td></tr>
           <tr><td></td><td>Peak contact pressure on the cover, loosest corner</td><td class="num">≥ 0.6 MPa (2 × 3 bar)</td><td>1.50 MPa</td><td><span class="chip pass">Met</span></td></tr>
           <tr><td></td><td>Closing force, tightest corner</td><td class="num">≤ 12 N/mm</td><td>5.94 N/mm (mesh uncertainty 1.1 %)</td><td><span class="chip pass">Met</span></td></tr>
           <tr><td></td><td>Groove fill, tightest corner</td><td class="num">≤ 85 %</td><td>80.4 %; the hand cross-check differs by 1.05 %, just over its 1 %</td><td><span class="chip pass">Met</span></td></tr>
+          <tr class="r-first"><td><a href="flexible-flag-fsi.html"><span class="r-no">17</span> Flexible Flag Behind a Cylinder</a></td><td>Solid on its own (CSM1-3): the tip&#x27;s displacement and the swing&#x27;s frequency</td><td class="num">within 1 % (2 % along the flow)</td><td>0.03 % still; 0.08 % from the published band swinging</td><td><span class="chip pass">Met</span></td></tr>
+          <tr><td></td><td>Fluid on its own (CFD1, CFD2): drag</td><td class="num">within 1 %</td><td>0.22 % and 0.10 % on the finest meshes</td><td><span class="chip pass">Met</span></td></tr>
+          <tr><td></td><td>Fluid on its own (CFD1, CFD2): lift</td><td class="num">within 2 %</td><td>0.53 %, verified; 0.98 % at Re 100, not verified (turns back up on the finest mesh)</td><td><span class="chip pass">Met</span></td></tr>
+          <tr><td></td><td>Coupled, steady (FSI1): drag, lift and the tip</td><td class="num">1 %, 5 % and 3 %</td><td>0.03 %, 0.18 % and 0.96 %</td><td><span class="chip pass">Met</span></td></tr>
+          <tr><td></td><td>Coupled, swinging (FSI3): tip swing on the finest mesh</td><td class="num">within 5 %</td><td>1.1 %; extrapolated 0.02 %</td><td><span class="chip pass">Met</span></td></tr>
+          <tr><td></td><td>FSI3 converged in time step, six quantities</td><td class="num">uncertainty ≤ 1 %</td><td>0.09-0.71 % for five; the drag swing 1.39 %</td><td><span class="chip fail">Not met</span></td></tr>
+          <tr><td></td><td>FSI2 converged in mesh, six quantities</td><td class="num">uncertainty ≤ 1 %</td><td>frequency 0.07 %; the swings and mean drag move away as the mesh is refined (every value within 3.4 % of the benchmark)</td><td><span class="chip fail">Not met</span></td></tr>
           <tr class="r-first"><td><a href="steel-portal-frame.html"><span class="r-no">28</span> Steel Portal Frame</a></td><td>Each member&#x27;s combined ratio, AISC 360-22 Eq. H1-1, Direct Analysis Method</td><td class="num">≤ 1.0</td><td>0.80, the beam unbraced over 6 m; columns 0.45</td><td><span class="chip pass">Met</span></td></tr>
           <tr><td></td><td>Beam deflection under the service live load</td><td class="num">≤ L/360 = 16.7 mm</td><td>4.1 mm</td><td><span class="chip pass">Met</span></td></tr>
           <tr><td></td><td>Frame drift under the service sideways load</td><td class="num">≤ H/400 = 10.0 mm</td><td>2.6 mm</td><td><span class="chip pass">Met</span></td></tr>
           <tr class="r-first"><td><a href="shaft-shoulder-fatigue.html"><span class="r-no">26</span> Gearbox Shaft Shoulder</a></td><td>Fatigue safety at the fillet, as drawn (fillet 1.4 to 2.0 mm)</td><td class="num">≥ 1.5</td><td>1.15 to 1.26; 1.19 at the nominal 1.6 mm</td><td><span class="chip fail">Not met</span></td></tr>
           <tr><td></td><td>Yield safety at a 1.5 × overload, as drawn</td><td class="num">≥ 2.0</td><td>1.77 to 1.92; 1.83 at the nominal</td><td><span class="chip fail">Not met</span></td></tr>
           <tr><td></td><td>Smallest fillet meeting the fatigue limit</td><td class="num">under the 4 mm shoulder</td><td>none: 1.47 at 3.9 mm</td><td><span class="chip fail">Not met</span></td></tr>
-          <tr><td></td><td>The fix: d 36 / D 45 mm, fillet 1.8 mm, at its lower tolerance</td><td class="num">≥ 1.5 and ≥ 2.0</td><td>fatigue 1.62, yield 2.52</td><td><span class="chip pass">Met</span></td></tr>
+          <tr><td></td><td>The fix without a keyway: d 36 / D 45 mm, fillet 1.8 mm, at its lower tolerance</td><td class="num">≥ 1.5 and ≥ 2.0</td><td>fatigue 1.62, yield 2.52</td><td><span class="chip pass">Met</span></td></tr>
+          <tr><td></td><td>Part 2, with the gear&#x27;s DIN 6885 keyway: the 36 mm seat</td><td class="num">≥ 1.5 and ≥ 2.0</td><td>fatigue 1.18, yield 1.72 at the keyway</td><td><span class="chip fail">Not met</span></td></tr>
+          <tr><td></td><td>Part 2: the 40 / 50 mm seat, keyway corner r 0.4 min</td><td class="num">≥ 1.5 and ≥ 2.0</td><td>fatigue 1.535, yield 2.36</td><td><span class="chip pass">Met</span></td></tr>
+          <tr><td></td><td>Part 2: the 42 / 52.5 mm seat, keyway corner at its 0.25 mm lower tolerance</td><td class="num">≥ 1.5 and ≥ 2.0</td><td>fatigue 1.545, yield 2.41</td><td><span class="chip pass">Met</span></td></tr>
           <tr class="r-first"><td><a href="sealed-enclosure.html"><span class="r-no">27</span> Sealed Enclosure</a></td><td>U1&#x27;s case as drawn, bare or painted inside</td><td class="num">≤ 115 °C</td><td>94 to 98 °C painted, 157 to 164 °C bare</td><td><span class="chip fail">Not met</span></td></tr>
           <tr><td></td><td>The board, anywhere, as drawn</td><td class="num">≤ 105 °C</td><td>93 to 96 °C painted, 156 to 161 °C bare</td><td><span class="chip fail">Not met</span></td></tr>
           <tr><td></td><td>Capacitor C1 as drawn (50,000 h of life)</td><td class="num">≤ 70 °C</td><td>89 to 91 °C painted, 149 to 153 °C bare</td><td><span class="chip fail">Not met</span></td></tr>
@@ -172,13 +183,13 @@
       <a href="requirements.html">Every requirement</a>
       <a href="how-i-work.html">How I work</a>
       <a href="grading.html">Grading tasks</a>
-      <a href="in-progress.html">In progress</a>
+      <a href="in-progress.html">Recently finished</a>
       <a href="https://github.com/CptGrumpus/engineering-agent-lab">Source on GitHub ↗</a>
       <span>Open-source tools throughout: CalculiX, OpenFOAM, Gmsh, CadQuery, OpenModelica, Blender.</span>
     </div>
   </div>
 </footer>
 
-<script src="assets/site.js?v=8e64ba5049"></script>
+<script src="assets/site.js?v=f28fdda096"></script>
 </body>
 </html>

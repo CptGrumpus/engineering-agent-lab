@@ -1,0 +1,78 @@
+  <section class="study" id="flag">
+    <div class="study-head">
+      <span class="label">Study 17 · CalculiX, OpenFOAM and preCICE, fluid-structure interaction</span>
+      <h2>Flexible Flag Behind a Cylinder: Fluid and Structure Solved Together</h2>
+    </div>
+    <h3>The Question</h3>
+    <p>A flexible flag is clamped behind a cylinder in a channel. The flow bends the flag, and the bent flag changes the flow. Fast enough, the flag starts swinging by itself. Can a coupled model built from open-source solvers reproduce the standard benchmark for this, Turek and Hron's (2006), and can each result be shown to be converged rather than a lucky match? The benchmark publishes values for each half on its own (the solid tests CSM1 to CSM3 and the fluid tests CFD1 and CFD2) and for the coupled problem (FSI1 to FSI3).</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Requirement</th><th>Limit</th></tr></thead>
+        <tbody>
+          <tr><td>Solid on its own: the tip's displacement, still and swinging, and the swing's frequency</td><td>within 1 % of the published values (2 % along the flow)</td></tr>
+          <tr><td>Fluid on its own: drag and lift on the cylinder and flag</td><td>drag within 1 %, lift within 2 %</td></tr>
+          <tr><td>Coupled, steady (FSI1): drag, lift and the tip's position</td><td>drag within 1 %, the tip 3 %, lift 5 %</td></tr>
+          <tr><td>Coupled, swinging (FSI2, FSI3): the tip's swing and frequency, the drag and the lift</td><td>frequency within 3 %, tip swing and mean drag 5 %, the force swings 10 to 25 %</td></tr>
+          <tr><td>Every result converged in mesh and time step</td><td>uncertainty within 1 %</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <h3>The Answer</h3>
+    <div class="answer">
+      <div class="chips"><span class="chip pass">Every published value reproduced, at every stage</span><span class="chip pass">FSI3 tip swing on the finest mesh 1.1 % off (limit 5)</span><span class="chip pass">FSI3 over three time steps: five of six within 0.71 %</span><span class="chip note">FSI3 drag swing 1.39 % (target 1)</span><span class="chip note">FSI2's swing doesn't converge with the mesh</span><span class="chip note">CFD2's lift not verified</span></div>
+      <p><strong>Yes: every stage reproduces the published benchmark, and most of it is verified.</strong> I built it one stage at a time. The solid and the fluid each had to match their own published tests before I coupled them, so a coupled mismatch couldn't hide in either half. The still flag lands within 0.03 % of the published tip drop, and the solid swings at 1.0946 Hz, 0.09 % from the published band. The fluid's drag is verified within 0.07 % at the lower flow speed and 0.02 % at the higher. Coupled and steady, drag and lift are verified at 0.03 % and 0.18 %.</p>
+      <p><strong>The swinging flag, the hard case, passes everything it's scored on.</strong> In the faster swing (FSI3) the finest of three meshes passes every published quantity, the tip's swing within 1.1 %. Extrapolated to a fine mesh, the swing lands 0.02 % from the published 34.99 mm. Over three time steps, the tip's swing, its frequency, the mean drag and the lift's swing converge with uncertainties of 0.09 to 0.71 %.</p>
+      <p><strong>Three results I report as they are rather than tune.</strong> The drag's swing converges in time step too, but with a 1.39 % uncertainty, over my 1 % target. In the slower swing (FSI2) every published quantity is within 3.4 % on all three meshes, but the swings move away from the benchmark as the mesh gets finer, so that mesh study fails verification. The benchmark's own values come from finer meshes and another code. And the fluid's lift at the higher flow speed sits 1.0 to 1.5 % under the published value, inside its 2 % limit, but turns back up on the finest of four meshes, so it has no convergence order.</p>
+    </div>
+    <h3>Why It Matters</h3>
+    <p>Coupled problems are where simulations go quietly wrong. When a coupled answer doesn't match, the error could be in the fluid, the solid or the coupling, and a match can come from errors that cancel. Building it stage by stage, with each half checked against its own reference first, is how I keep the error findable. The same approach carries over to any flow-induced vibration question: a flexible seal, a heat exchanger tube, a sensor in a pipe.</p>
+    <h3>The Model</h3>
+    <dl class="spec">
+      <dt>Geometry</dt><dd>The benchmark's 2.5 × 0.41 m channel with a 0.1 m cylinder set slightly off the channel's middle, so the flow isn't symmetric, and a 350 × 20 mm elastic flag clamped behind it. 2D, as the benchmark defines it.</dd>
+      <dt>Solid</dt><dd>CalculiX, a structured hex mesh one element thick and held in plane strain, geometrically nonlinear with the benchmark's St. Venant-Kirchhoff material. Swinging runs use a small amount of standard numerical damping (HHT, alpha -0.05).</dd>
+      <dt>Fluid</dt><dd>OpenFOAM, laminar, on Gmsh meshes, with the benchmark's exact parabolic inflow. For the fluid-only tests, nested meshes: each level splits every cell of the one below into four.</dd>
+      <dt>Coupling</dt><dd>preCICE 3.4 with its official OpenFOAM and CalculiX adapters, implicit coupling with quasi-Newton acceleration, the force passed to the solid and the displacement back to the fluid mesh.</dd>
+    </dl>
+    {{CASE}}
+    <h3>How It Works</h3>
+    <figure><div class="plate"><img src="v2/fig_flag.svg" alt="Top: each of the eight benchmark stages as a share of its limit, every one well inside, the largest the fluid's lift at Re 100 at about half its limit. Bottom left: the FSI3 time-step uncertainty of six quantities against a 1 % target, five under it and the drag's swing at 1.39 %. Bottom right: FSI2's swings moving away from the published values as the fluid mesh is refined from 3.54 to 1.77 mm, while the frequency stays within 0.2 %" loading="lazy"></div><figcaption><b>Top: every stage against the benchmark</b>, each check as a share of its limit; the hollow dot is CFD2's lift, inside its limit but not verified. <b>Bottom left: FSI3 over three time steps.</b> Five quantities converge under the 1 % target; the drag's swing doesn't. <b>Bottom right: FSI2 on three meshes.</b> The frequency holds, but the swings drift away from the published values as the mesh gets finer.</figcaption></figure>
+    <p>The FSI3 time-step study, all three steps with the damped solid over the full 8 s:</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Quantity</th><th>Time-step uncertainty</th><th>Target</th></tr></thead>
+        <tbody>
+          <tr><td>Mean drag</td><td>0.09 %</td><td>≤ 1 %</td></tr>
+          <tr><td>Frequency</td><td>0.24 %</td><td>≤ 1 %</td></tr>
+          <tr><td>Tip swing</td><td>0.45 %</td><td>≤ 1 %</td></tr>
+          <tr><td>Lift swing</td><td>0.47 %</td><td>≤ 1 %</td></tr>
+          <tr><td>Tip's mean position along the flow</td><td>0.71 %</td><td>≤ 1 %</td></tr>
+          <tr><td>Drag swing</td><td><strong>1.39 %</strong></td><td>≤ 1 %, missed</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <h3>How I Checked It</h3>
+    <ul class="proof">
+      <li><strong>An independent reference for the solid.</strong> A large-deflection beam solved separately in Python agrees with the FE to 0.7 % on the tip drop. It also settled what the benchmark leaves unsaid: plane strain matches, plane stress misses by 17 %.</li>
+      <li><strong>The time integrator on its own.</strong> A run at a thousandth of the gravity swings at the linear natural frequency to 0.1 %.</li>
+      <li><strong>The inflow, face by face.</strong> The inlet matches the benchmark's parabola at every face to 6 × 10⁻⁸, and mass is conserved to 10⁻¹³.</li>
+      <li><strong>The force passed between the solvers:</strong> each coupling window, the force the solid receives against the fluid's force at the same instant.</li>
+      <li><strong>Mesh and time-step refinement on every requirement</strong>, with the published values as the pass criterion, and a check on the cells next to the flag after one mesh fooled every other check.</li>
+    </ul>
+    <div class="caught">
+      <h3>What I Caught Along the Way</h3>
+      <ul>
+        <li><strong>A standard inflow condition that isn't the profile it claims.</strong> OpenFOAM's parabolic inlet was 1.6 % low at mid-channel, because it scales by the largest face distance on the inlet rather than the true half-height. My first explanation was tested and was wrong. The inlet now sets the exact parabola, checked face by face.</li>
+        <li><strong>A force check that couldn't measure what it claimed.</strong> Under the coupling adapter the solid writes its reaction only at the very last step, so the check quietly fell back to end-of-run values and failed both swinging runs. I replaced it with one that compares the forces in each window, and reran both cases on three meshes.</li>
+        <li><strong>A mesh that fooled every check but one.</strong> One regenerated mesh wrapped a single cell around the flag's tip corner and read the tip deflection 28 % low, with every other check passing. The new cell check scanned 24 earlier meshes; only that one was affected.</li>
+        <li><strong>Crashes late in long runs, traced to two causes.</strong> FSI2's finest mesh crashed at 8.8 s: a cell under the tip collapsed through an oscillation inside the mesh-motion solve, cured by freezing that solve's stiffness field. Later crashes at 6.9 and 14 s shared one signature, the solid needing more and more iterations per step. Undamped time integration, the same cause that had broken the solid's own swinging test. With a little numerical damping every rerun took 2 iterations in all of its roughly 750,000 solid attempts, and the results moved by about 0.1 % or less. A separate rounding fault, a last sub-step of 10⁻¹² s read as zero, is fixed too.</li>
+        <li><strong>Lift scattering with the mesh.</strong> Regenerated meshes scattered the fluid's lift by up to 2.45 % at one size, as large as the whole mesh study's spread. I didn't declare that as a noise floor, which would have turned the check green. Nested meshes verified the lift at the lower speed instead.</li>
+      </ul>
+    </div>
+    <h3>Limits</h3>
+    <ul>
+      <li>2D and laminar, as the benchmark defines it.</li>
+      <li>FSI2's mesh study fails verification for the swings and the mean drag, though every published quantity is within 3.4 % on every mesh. FSI3's drag swing has a 1.39 % time-step uncertainty. CFD2's lift is reported, not verified.</li>
+      <li>The force swings in FSI3 have no mesh uncertainty: they change too fast between meshes for a clean estimate.</li>
+      <li>The published values are themselves numerical, and not every row says which time step it used.</li>
+    </ul>
+  </section>

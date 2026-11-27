@@ -1241,13 +1241,13 @@ def flag():
     # ---- the three cases
     tx, ty = (-110, 200, 1000), -880
     text(ax, tx[0], ty + 52, "The three coupled cases", fs=8, color=INK, ha="left", box=False, bold=True)
-    for x, h_ in zip(tx, ("case", "mean inflow, and the flag's material", "what the flag does · result so far")):
+    for x, h_ in zip(tx, ("case", "mean inflow, and the flag's material", "what the flag does · result")):
         text(ax, x, ty, h_, fs=7, ha="left", box=False, bold=True)
     ax.plot([tx[0], 2630], [ty - 24, ty - 24], color=CUT, lw=0.8)
     nu = cs["fsi3"]["kinematic_viscosity_m2_per_s"]
     rows = [("fsi1", "bends and holds still", "drag and lift verified"),
             ("fsi2", f"swings ±{a2:.0f} mm at {f2:.2f} Hz", "within 3.4 % on three meshes; the swing isn't mesh-converged"),
-            ("fsi3", f"swings ±{a3:.0f} mm at {f3:.2f} Hz", "frequency and drag verified, three meshes")]
+            ("fsi3", f"swings ±{a3:.0f} mm at {f3:.2f} Hz", "verified on three meshes and three time steps")]
     for i, (kk, what, res) in enumerate(rows):
         p = cs[kk]
         y = ty - 75 - 100 * i

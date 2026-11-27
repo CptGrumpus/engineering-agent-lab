@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Flexible Flag Behind a Cylinder, Fluid and Structure Solved Together · Justin Smith</title>
+<meta name="description" content="Every stage of the Turek-Hron benchmark reproduced: the solid and the fluid each against their own published tests, then coupled. The swinging flag&#x27;s tip lands within 1.1 % on the finest mesh and converges over three time steps to 0.71 %. Three results are reported, not tuned: one force swing&#x27;s 1.39 % uncertainty, FSI2&#x27;s mesh study and one lift.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://cptgrumpus.github.io/engineering-agent-lab/flexible-flag-fsi.html">
+<meta property="og:title" content="Flexible Flag Behind a Cylinder, Fluid and Structure Solved Together">
+<meta property="og:description" content="Every stage of the Turek-Hron benchmark reproduced: the solid and the fluid each against their own published tests, then coupled. The swinging flag&#x27;s tip lands within 1.1 % on the finest mesh and converges over three time steps to 0.71 %. Three results are reported, not tuned: one force swing&#x27;s 1.39 % uncertainty, FSI2&#x27;s mesh study and one lift.">
+<meta property="og:image" content="https://cptgrumpus.github.io/engineering-agent-lab/v2/og_flexible-flag-fsi.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Flexible flag behind a cylinder, fluid and structure solved together: result render">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://cptgrumpus.github.io/engineering-agent-lab/flexible-flag-fsi.html">
+<meta name="theme-color" content="#0b0f15" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#f5f6f8" media="(prefers-color-scheme: light)">
+<meta name="color-scheme" content="dark light">
+<script>try{var t=localStorage.getItem("theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3CclipPath id='c'%3E%3Crect width='24' height='24' rx='5'/%3E%3C/clipPath%3E%3Cg clip-path='url(%23c)'%3E%3Crect width='4' height='24' fill='%2330123b'/%3E%3Crect x='4' width='4' height='24' fill='%234686fb'/%3E%3Crect x='8' width='4' height='24' fill='%231ae4b6'/%3E%3Crect x='12' width='4' height='24' fill='%23a2fc3c'/%3E%3Crect x='16' width='4' height='24' fill='%23fb8022'/%3E%3Crect x='20' width='4' height='24' fill='%237a0403'/%3E%3C/g%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="assets/site.css?v=f28fdda096">
+</head>
+<body>
+<nav class="topbar" aria-label="Site">
+  <div class="wrap">
+    <a class="brand" href="index.html"><span class="brand-mark" aria-hidden="true"><i style="background:#30123b"></i><i style="background:#4686fb"></i><i style="background:#1ae4b6"></i><i style="background:#a2fc3c"></i><i style="background:#fb8022"></i><i style="background:#7a0403"></i></span>Justin Smith <small>Simulation Portfolio</small></a>
+    <div class="navgroup">
+      <div class="topnav">
+        <a href="index.html#cases">Case Studies</a>
+        <a href="index.html#work" aria-current="page">All Work</a>
+        <a href="index.html#offer">Working Together</a>
+        <a href="how-i-work.html">How I Work</a>
+      </div>
+      <a class="nav-contact" href="#contact">Get in Touch</a>
+      <button class="theme-toggle" type="button" aria-label="Switch between light and dark" title="Light or dark"><svg class="i-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg><svg class="i-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg></button>
+      <details class="menu">
+        <summary>Menu</summary>
+        <div class="menu-panel">
+        <a href="index.html#cases">Case Studies</a>
+        <a href="index.html#work" aria-current="page">All Work</a>
+        <a href="index.html#offer">Working Together</a>
+        <a href="how-i-work.html">How I Work</a>
+          <a href="#contact">Get in Touch</a>
+        </div>
+      </details>
+    </div>
+  </div>
+</nav>
+
+<main id="top">
+  <div class="wrap">
+    <nav class="crumbs" aria-label="Breadcrumb"><a href="index.html#work">All studies</a><span>/</span><span>Thermal and fluids</span></nav>
+    <header class="study-hero">
+      <p class="eyebrow">Study 17 · CalculiX, OpenFOAM and preCICE, fluid-structure interaction</p>
+      <h1>Flexible Flag Behind a Cylinder, Fluid and Structure Solved Together</h1>
+      <p class="study-q"><span class="k">The question</span>Can a coupled model built from open-source solvers reproduce the standard benchmark for a flexible flag swinging behind a cylinder, and is each result converged?</p>
+    </header>
+    <figure class="study-setup"><a class="plate" href="v2/dwg_flag.webp" title="Open the drawing full size"><img src="v2/dwg_flag.webp" alt="The benchmark&#x27;s 2.5 m channel with a parabolic inflow, a rigid cylinder and a 350 by 20 mm elastic flag behind it; enlarged, the flag&#x27;s tip paths from the runs trace figure eights, 82 mm either way in FSI2 and 35 mm in FSI3; and a table of the three coupled cases"></a><figcaption><b>The setup.</b> The channel, the cylinder and the flag to scale, with the cylinder and flag enlarged. The tip paths are drawn from the runs: the tip moves along the flag twice for every swing across it. Below, the three coupled cases and how each came out.</figcaption></figure>
+    <div class="study-answer">
+      <p class="k">The answer</p>
+      <span class="v v-limits">Passes; three results not verified</span>
+      <p class="study-lede">Every stage of the Turek-Hron benchmark reproduced: the solid and the fluid each against their own published tests, then coupled. The swinging flag&#x27;s tip lands within 1.1 % on the finest mesh and converges over three time steps to 0.71 %. Three results are reported, not tuned: one force swing&#x27;s 1.39 % uncertainty, FSI2&#x27;s mesh study and one lift.</p>
+    </div>
+    <div class="vp" id="vp" role="region" aria-label="Result viewer">
+      <div class="legend">
+        <div class="legend-title" id="lg-title"></div>
+        <div class="legend-body"><div class="swatches" id="lg-sw"></div><div class="ticks" id="lg-ticks"></div></div>
+      </div>
+      <div class="stage"><div class="vp-parts" id="vp-parts" role="group" aria-label="Results on this page" hidden></div><button class="vp-3d" id="vp-3d" type="button" aria-pressed="false" hidden>Rotate in 3D</button>
+      <p class="vp-hint" id="vp-hint" hidden><span class="long">Same surface and colour bands as the render · </span>Drag to turn · <span class="long">scroll or </span>pinch to zoom<span class="long"> · double-click to reset</span></p>
+      <img id="vp-img" src="v2/fig_flag.svg" alt="Turek-Hron benchmark: a 350 × 20 mm elastic flag behind a 0.1 m cylinder in a 2.5 m channel · CSM1-3, CFD1-2, FSI1-3">
+      <svg class="triad" viewBox="0 0 54 54" aria-hidden="true">
+        <g stroke-width="1.6" fill="none" stroke-linecap="round">
+          <line x1="14" y1="40" x2="44" y2="46" stroke="#ff8f6b"/><line x1="14" y1="40" x2="34" y2="28" stroke="#8fe3a8"/><line x1="14" y1="40" x2="14" y2="8" stroke="#8fb4ff"/>
+        </g>
+        <g font-family="JetBrains Mono, monospace" font-size="8" fill="#edf1f8"><text x="46" y="50">X</text><text x="36" y="27">Y</text><text x="11" y="6">Z</text></g>
+      </svg>
+      </div>
+      <div class="vp-scrub" id="vp-scrub" hidden>
+        <button type="button" class="vp-play" id="vp-play" aria-label="Play the analysis step by step">▶</button>
+        <input type="range" id="vp-range" min="0" max="0" step="1" value="0" aria-label="Load step">
+        <output id="vp-step" for="vp-range"></output>
+      </div>
+      <div class="status" id="vp-status" aria-live="polite"></div>
+    </div>
+
+    <div class="study-layout">
+      <article class="study-main">
+
+    <h2 id="the-question">The Question</h2>
+    <p>A flexible flag is clamped behind a cylinder in a channel. The flow bends the flag, and the bent flag changes the flow. Fast enough, the flag starts swinging by itself. Can a coupled model built from open-source solvers reproduce the standard benchmark for this, Turek and Hron's (2006), and can each result be shown to be converged rather than a lucky match? The benchmark publishes values for each half on its own (the solid tests CSM1 to CSM3 and the fluid tests CFD1 and CFD2) and for the coupled problem (FSI1 to FSI3).</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Requirement</th><th>Limit</th></tr></thead>
+        <tbody>
+          <tr><td>Solid on its own: the tip's displacement, still and swinging, and the swing's frequency</td><td>within 1 % of the published values (2 % along the flow)</td></tr>
+          <tr><td>Fluid on its own: drag and lift on the cylinder and flag</td><td>drag within 1 %, lift within 2 %</td></tr>
+          <tr><td>Coupled, steady (FSI1): drag, lift and the tip's position</td><td>drag within 1 %, the tip 3 %, lift 5 %</td></tr>
+          <tr><td>Coupled, swinging (FSI2, FSI3): the tip's swing and frequency, the drag and the lift</td><td>frequency within 3 %, tip swing and mean drag 5 %, the force swings 10 to 25 %</td></tr>
+          <tr><td>Every result converged in mesh and time step</td><td>uncertainty within 1 %</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <h2 id="the-answer">The Answer</h2>
+    <div class="answer">
+      <div class="chips"><span class="chip pass">Every published value reproduced, at every stage</span><span class="chip pass">FSI3 tip swing on the finest mesh 1.1 % off (limit 5)</span><span class="chip pass">FSI3 over three time steps: five of six within 0.71 %</span><span class="chip note">FSI3 drag swing 1.39 % (target 1)</span><span class="chip note">FSI2's swing doesn't converge with the mesh</span><span class="chip note">CFD2's lift not verified</span></div>
+      <p><strong>Yes: every stage reproduces the published benchmark, and most of it is verified.</strong> I built it one stage at a time. The solid and the fluid each had to match their own published tests before I coupled them, so a coupled mismatch couldn't hide in either half. The still flag lands within 0.03 % of the published tip drop, and the solid swings at 1.0946 Hz, 0.09 % from the published band. The fluid's drag is verified within 0.07 % at the lower flow speed and 0.02 % at the higher. Coupled and steady, drag and lift are verified at 0.03 % and 0.18 %.</p>
+      <p><strong>The swinging flag, the hard case, passes everything it's scored on.</strong> In the faster swing (FSI3) the finest of three meshes passes every published quantity, the tip's swing within 1.1 %. Extrapolated to a fine mesh, the swing lands 0.02 % from the published 34.99 mm. Over three time steps, the tip's swing, its frequency, the mean drag and the lift's swing converge with uncertainties of 0.09 to 0.71 %.</p>
+      <p><strong>Three results I report as they are rather than tune.</strong> The drag's swing converges in time step too, but with a 1.39 % uncertainty, over my 1 % target. In the slower swing (FSI2) every published quantity is within 3.4 % on all three meshes, but the swings move away from the benchmark as the mesh gets finer, so that mesh study fails verification. The benchmark's own values come from finer meshes and another code. And the fluid's lift at the higher flow speed sits 1.0 to 1.5 % under the published value, inside its 2 % limit, but turns back up on the finest of four meshes, so it has no convergence order.</p>
+    </div>
+    <h2 id="the-model">The Model</h2>
+    <dl class="spec">
+      <dt>Geometry</dt><dd>The benchmark's 2.5 × 0.41 m channel with a 0.1 m cylinder set slightly off the channel's middle, so the flow isn't symmetric, and a 350 × 20 mm elastic flag clamped behind it. 2D, as the benchmark defines it.</dd>
+      <dt>Solid</dt><dd>CalculiX, a structured hex mesh one element thick and held in plane strain, geometrically nonlinear with the benchmark's St. Venant-Kirchhoff material. Swinging runs use a small amount of standard numerical damping (HHT, alpha -0.05).</dd>
+      <dt>Fluid</dt><dd>OpenFOAM, laminar, on Gmsh meshes, with the benchmark's exact parabolic inflow. For the fluid-only tests, nested meshes: each level splits every cell of the one below into four.</dd>
+      <dt>Coupling</dt><dd>preCICE 3.4 with its official OpenFOAM and CalculiX adapters, implicit coupling with quasi-Newton acceleration, the force passed to the solid and the displacement back to the fluid mesh.</dd>
+    </dl>
+    <details class="record"><summary>The case file: recorded assumptions, limits and inputs</summary><div class="record-body"><p>This is the study's own record, written before the run and saved with it, in the shorthand of the case file.</p><p class="case"><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/cases/turek_hron_fsi3_mesh_c.toml">cases/turek_hron_fsi3_mesh_c.toml ↗</a></p><p>Turek-Hron FSI3: self-excited periodic oscillation of the elastic flag behind the cylinder (Re 200, density ratio 1); OpenFOAM v2512 (moving mesh) coupled to CalculiX through preCICE; fluid 1.77 mm at the body (mesh study level c), solid 2.5 mm, dt 0.0005 s to 8 s; mean, amplitude and frequency of the tip displacements, drag and lift over the last periods against the published benchmark.</p><h3>Assumptions, and How Each Is Checked</h3><ul><li>2D: one cell deep in the fluid, plane strain in the solid (one element layer, as deep as the fluid).</li><li>St. Venant-Kirchhoff solid (CalculiX *ELASTIC under NLGEOM), no gravity, as the FSI tests define it.</li><li>No numerical damping in the solid (HHT alpha 0).</li><li>Inflow: the benchmark&#x27;s parabola with its (1 - cos) ramp over 2 s.</li><li>Statistics from the last whole periods (benchmark definition); the oscillation is periodic (checked: last two periods).</li></ul><h3>Limits</h3><ul><li>One level of a three-level mesh study run as separate cases side by side (scripts/combine_mesh_levels.py applies the study&#x27;s run-level check to the three runs).</li><li>The fluid mesh is regenerated per size (FSI1: about +-0.5 % mesh-to-mesh scatter on the tip displacement).</li></ul><h3>Inputs</h3><div class="table-wrap"><table><thead><tr><th>Input</th><th>Value</th></tr></thead><tbody><tr><td>solid_density_kg_per_m3</td><td>1000</td></tr><tr><td>shear_modulus_Pa</td><td>2e+06</td></tr><tr><td>poisson_ratio</td><td>0.4</td></tr><tr><td>fluid_density_kg_per_m3</td><td>1000</td></tr><tr><td>kinematic_viscosity_m2_per_s</td><td>0.001</td></tr><tr><td>mean_velocity_m_per_s</td><td>2</td></tr><tr><td>fluid_cell_size_m</td><td>0.00176777</td></tr><tr><td>solid_element_size_mm</td><td>2.5</td></tr><tr><td>time_step_s</td><td>0.0005</td></tr><tr><td>end_time_s</td><td>8</td></tr><tr><td>benchmark_ux_A_m</td><td>-0.00288</td></tr><tr><td>benchmark_uy_A_m</td><td>0.00147</td></tr><tr><td>benchmark_drag_N_per_m</td><td>460.5</td></tr><tr><td>benchmark_lift_N_per_m</td><td>2.5</td></tr><tr><td>benchmark_ux_A_mean</td><td>-0.00288</td></tr><tr><td>benchmark_ux_A_amp</td><td>0.00272</td></tr><tr><td>benchmark_ux_A_freq_Hz</td><td>10.93</td></tr><tr><td>benchmark_uy_A_mean</td><td>0.00147</td></tr><tr><td>benchmark_uy_A_amp</td><td>0.03499</td></tr><tr><td>benchmark_uy_A_freq_Hz</td><td>5.46</td></tr><tr><td>benchmark_drag_mean</td><td>460.5</td></tr><tr><td>benchmark_drag_amp</td><td>27.74</td></tr><tr><td>benchmark_drag_freq_Hz</td><td>10.93</td></tr><tr><td>benchmark_lift_mean</td><td>2.5</td></tr><tr><td>benchmark_lift_amp</td><td>153.91</td></tr><tr><td>benchmark_lift_freq_Hz</td><td>5.46</td></tr></tbody></table></div><p class="case"><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/cases/turek_hron_fsi3_dt_c_alpha.toml">cases/turek_hron_fsi3_dt_c_alpha.toml ↗</a></p><p>Turek-Hron FSI3: self-excited periodic oscillation of the elastic flag behind the cylinder (Re 200, density ratio 1); OpenFOAM v2512 (moving mesh) coupled to CalculiX through preCICE; fluid 2.5 mm at the body (time-step study level c, dt 0.00025 s), solid 2.5 mm, dt 0.0005 s to 8 s; mean, amplitude and frequency of the tip displacements, drag and lift over the last periods against the published benchmark.</p><h3>Assumptions, and How Each Is Checked</h3><ul><li>2D: one cell deep in the fluid, plane strain in the solid (one element layer, as deep as the fluid).</li><li>St. Venant-Kirchhoff solid (CalculiX *ELASTIC under NLGEOM), no gravity, as the FSI tests define it.</li><li>A little numerical damping in the solid: HHT alpha -0.05 (CalculiX&#x27;s default), which damps the stiff high-frequency modes and leaves the 5.46 Hz motion practically undamped (well under 0.1 % of critical).</li><li>Inflow: the benchmark&#x27;s parabola with its (1 - cos) ramp over 2 s.</li><li>Statistics from the last whole periods (benchmark definition); the oscillation is periodic (checked: last two periods).</li></ul><h3>Limits</h3><ul><li>One level of a three-level mesh study run as separate cases side by side (scripts/combine_mesh_levels.py applies the study&#x27;s run-level check to the three runs).</li><li>The fluid mesh is regenerated per size (FSI1: about +-0.5 % mesh-to-mesh scatter on the tip displacement).</li></ul><h3>Inputs</h3><div class="table-wrap"><table><thead><tr><th>Input</th><th>Value</th></tr></thead><tbody><tr><td>solid_density_kg_per_m3</td><td>1000</td></tr><tr><td>shear_modulus_Pa</td><td>2e+06</td></tr><tr><td>poisson_ratio</td><td>0.4</td></tr><tr><td>fluid_density_kg_per_m3</td><td>1000</td></tr><tr><td>kinematic_viscosity_m2_per_s</td><td>0.001</td></tr><tr><td>mean_velocity_m_per_s</td><td>2</td></tr><tr><td>fluid_cell_size_m</td><td>0.0025</td></tr><tr><td>solid_element_size_mm</td><td>2.5</td></tr><tr><td>time_step_s</td><td>0.00025</td></tr><tr><td>end_time_s</td><td>8</td></tr><tr><td>benchmark_ux_A_m</td><td>-0.00288</td></tr><tr><td>benchmark_uy_A_m</td><td>0.00147</td></tr><tr><td>benchmark_drag_N_per_m</td><td>460.5</td></tr><tr><td>benchmark_lift_N_per_m</td><td>2.5</td></tr><tr><td>benchmark_ux_A_mean</td><td>-0.00288</td></tr><tr><td>benchmark_ux_A_amp</td><td>0.00272</td></tr><tr><td>benchmark_ux_A_freq_Hz</td><td>10.93</td></tr><tr><td>benchmark_uy_A_mean</td><td>0.00147</td></tr><tr><td>benchmark_uy_A_amp</td><td>0.03499</td></tr><tr><td>benchmark_uy_A_freq_Hz</td><td>5.46</td></tr><tr><td>benchmark_drag_mean</td><td>460.5</td></tr><tr><td>benchmark_drag_amp</td><td>27.74</td></tr><tr><td>benchmark_drag_freq_Hz</td><td>10.93</td></tr><tr><td>benchmark_lift_mean</td><td>2.5</td></tr><tr><td>benchmark_lift_amp</td><td>153.91</td></tr><tr><td>benchmark_lift_freq_Hz</td><td>5.46</td></tr></tbody></table></div></div></details>
+    <h2 id="why-it-matters">Why It Matters</h2>
+    <p>Coupled problems are where simulations go quietly wrong. When a coupled answer doesn't match, the error could be in the fluid, the solid or the coupling, and a match can come from errors that cancel. Building it stage by stage, with each half checked against its own reference first, is how I keep the error findable. The same approach carries over to any flow-induced vibration question: a flexible seal, a heat exchanger tube, a sensor in a pipe.</p>
+    <h2 id="how-it-works">How It Works</h2>
+    <figure><div class="plate"><img src="v2/fig_flag.svg" alt="Top: each of the eight benchmark stages as a share of its limit, every one well inside, the largest the fluid's lift at Re 100 at about half its limit. Bottom left: the FSI3 time-step uncertainty of six quantities against a 1 % target, five under it and the drag's swing at 1.39 %. Bottom right: FSI2's swings moving away from the published values as the fluid mesh is refined from 3.54 to 1.77 mm, while the frequency stays within 0.2 %" loading="lazy"></div><figcaption><b>Top: every stage against the benchmark</b>, each check as a share of its limit; the hollow dot is CFD2's lift, inside its limit but not verified. <b>Bottom left: FSI3 over three time steps.</b> Five quantities converge under the 1 % target; the drag's swing doesn't. <b>Bottom right: FSI2 on three meshes.</b> The frequency holds, but the swings drift away from the published values as the mesh gets finer.</figcaption></figure>
+    <p>The FSI3 time-step study, all three steps with the damped solid over the full 8 s:</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Quantity</th><th>Time-step uncertainty</th><th>Target</th></tr></thead>
+        <tbody>
+          <tr><td>Mean drag</td><td>0.09 %</td><td>≤ 1 %</td></tr>
+          <tr><td>Frequency</td><td>0.24 %</td><td>≤ 1 %</td></tr>
+          <tr><td>Tip swing</td><td>0.45 %</td><td>≤ 1 %</td></tr>
+          <tr><td>Lift swing</td><td>0.47 %</td><td>≤ 1 %</td></tr>
+          <tr><td>Tip's mean position along the flow</td><td>0.71 %</td><td>≤ 1 %</td></tr>
+          <tr><td>Drag swing</td><td><strong>1.39 %</strong></td><td>≤ 1 %, missed</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <h2 id="how-i-checked-it">How I Checked It</h2>
+    <ul class="proof">
+      <li><strong>An independent reference for the solid.</strong> A large-deflection beam solved separately in Python agrees with the FE to 0.7 % on the tip drop. It also settled what the benchmark leaves unsaid: plane strain matches, plane stress misses by 17 %.</li>
+      <li><strong>The time integrator on its own.</strong> A run at a thousandth of the gravity swings at the linear natural frequency to 0.1 %.</li>
+      <li><strong>The inflow, face by face.</strong> The inlet matches the benchmark's parabola at every face to 6 × 10⁻⁸, and mass is conserved to 10⁻¹³.</li>
+      <li><strong>The force passed between the solvers:</strong> each coupling window, the force the solid receives against the fluid's force at the same instant.</li>
+      <li><strong>Mesh and time-step refinement on every requirement</strong>, with the published values as the pass criterion, and a check on the cells next to the flag after one mesh fooled every other check.</li>
+    </ul>
+    <div class="caught">
+      <h2 id="what-i-caught-along-the-way">What I Caught Along the Way</h2>
+      <ul>
+        <li><strong>A standard inflow condition that isn't the profile it claims.</strong> OpenFOAM's parabolic inlet was 1.6 % low at mid-channel, because it scales by the largest face distance on the inlet rather than the true half-height. My first explanation was tested and was wrong. The inlet now sets the exact parabola, checked face by face.</li>
+        <li><strong>A force check that couldn't measure what it claimed.</strong> Under the coupling adapter the solid writes its reaction only at the very last step, so the check quietly fell back to end-of-run values and failed both swinging runs. I replaced it with one that compares the forces in each window, and reran both cases on three meshes.</li>
+        <li><strong>A mesh that fooled every check but one.</strong> One regenerated mesh wrapped a single cell around the flag's tip corner and read the tip deflection 28 % low, with every other check passing. The new cell check scanned 24 earlier meshes; only that one was affected.</li>
+        <li><strong>Crashes late in long runs, traced to two causes.</strong> FSI2's finest mesh crashed at 8.8 s: a cell under the tip collapsed through an oscillation inside the mesh-motion solve, cured by freezing that solve's stiffness field. Later crashes at 6.9 and 14 s shared one signature, the solid needing more and more iterations per step. Undamped time integration, the same cause that had broken the solid's own swinging test. With a little numerical damping every rerun took 2 iterations in all of its roughly 750,000 solid attempts, and the results moved by about 0.1 % or less. A separate rounding fault, a last sub-step of 10⁻¹² s read as zero, is fixed too.</li>
+        <li><strong>Lift scattering with the mesh.</strong> Regenerated meshes scattered the fluid's lift by up to 2.45 % at one size, as large as the whole mesh study's spread. I didn't declare that as a noise floor, which would have turned the check green. Nested meshes verified the lift at the lower speed instead.</li>
+      </ul>
+    </div>
+    <h2 id="limits">Limits</h2>
+    <ul>
+      <li>2D and laminar, as the benchmark defines it.</li>
+      <li>FSI2's mesh study fails verification for the swings and the mean drag, though every published quantity is within 3.4 % on every mesh. FSI3's drag swing has a 1.39 % time-step uncertainty. CFD2's lift is reported, not verified.</li>
+      <li>The force swings in FSI3 have no mesh uncertainty: they change too fast between meshes for a clean estimate.</li>
+      <li>The published values are themselves numerical, and not every row says which time step it used.</li>
+    </ul>
+    <h2 id="evidence">Evidence</h2>
+    <div class="side-card"><ul class="ev-list"><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/portfolio/17-fsi-flag-turek-hron.md">Full write-up on GitHub</a></li></ul><p class="label">Run reports, with every check and the saved inputs</p><ul class="ev-list ev-runs"><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261121-131111_flag_csm1_mesh/report.md">flag_csm1_mesh</a></li><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261121-131133_flag_csm2_mesh/report.md">flag_csm2_mesh</a></li><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261121-132448_flag_csm3_dt/report.md">flag_csm3_dt</a></li><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261121-140245_turek_hron_cfd1_mesh/report.md">turek_hron_cfd1_mesh</a></li><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261121-140657_turek_hron_cfd1_mesh_r1/report.md">turek_hron_cfd1_mesh_r1</a></li><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261121-142836_flag_csm3_dt_r1/report.md">flag_csm3_dt_r1</a></li><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261121-151947_turek_hron_cfd2_mesh/report.md">turek_hron_cfd2_mesh</a></li><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261121-164522_flag_csm3_dt_r2/report.md">flag_csm3_dt_r2</a></li><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261121-184353_flag_csm3_dt_r3/report.md">flag_csm3_dt_r3</a></li><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261121-203031_turek_hron_fsi1_mesh/report.md">turek_hron_fsi1_mesh</a></li><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261122-125809_turek_hron_fsi1_mesh_r1/report.md">turek_hron_fsi1_mesh_r1</a></li><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261122-184933_turek_hron_fsi2/report.md">turek_hron_fsi2</a></li><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261122-185044_turek_hron_fsi3/report.md">turek_hron_fsi3</a></li><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261123-123332_turek_hron_fsi2_mesh_a/report.md">turek_hron_fsi2_mesh_a</a></li><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261123-123352_turek_hron_fsi2_mesh_b/report.md">turek_hron_fsi2_mesh_b</a></li><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261123-161047_turek_hron_fsi3_mesh_a/report.md">turek_hron_fsi3_mesh_a</a></li><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261123-161107_turek_hron_fsi3_mesh_b/report.md">turek_hron_fsi3_mesh_b</a></li><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261123-161128_turek_hron_fsi3_mesh_c/report.md">turek_hron_fsi3_mesh_c</a></li><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261123-180658_turek_hron_fsi2_mesh_c/report.md">turek_hron_fsi2_mesh_c</a></li><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261124-082453_turek_hron_fsi2_mesh_a_r1/report.md">turek_hron_fsi2_mesh_a_r1</a></li><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261124-082457_turek_hron_fsi2_mesh_b_r1/report.md">turek_hron_fsi2_mesh_b_r1</a></li><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261124-082500_turek_hron_fsi2_mesh_c_r1/report.md">turek_hron_fsi2_mesh_c_r1</a></li><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261124-103347_turek_hron_fsi3_dt_a/report.md">turek_hron_fsi3_dt_a · 10:33</a></li><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261124-103350_turek_hron_fsi3_dt_c/report.md">turek_hron_fsi3_dt_c</a></li><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261124-175934_turek_hron_fsi3_dt_a/report.md">turek_hron_fsi3_dt_a · 17:59</a></li><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261125-113046_turek_hron_fsi3_dt_a_r1/report.md">turek_hron_fsi3_dt_a_r1</a></li><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261125-154325_turek_hron_cfd1_noise_a/report.md">turek_hron_cfd1_noise_a</a></li><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261125-154328_turek_hron_cfd1_noise_b/report.md">turek_hron_cfd1_noise_b</a></li><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261125-154331_turek_hron_cfd1_noise_c/report.md">turek_hron_cfd1_noise_c</a></li><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261125-154335_turek_hron_cfd1_noise_d/report.md">turek_hron_cfd1_noise_d</a></li><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261125-154338_turek_hron_cfd2_noise_a/report.md">turek_hron_cfd2_noise_a</a></li><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261125-154342_turek_hron_cfd2_noise_b/report.md">turek_hron_cfd2_noise_b</a></li><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261125-154346_turek_hron_cfd2_noise_c/report.md">turek_hron_cfd2_noise_c</a></li><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261125-154348_turek_hron_cfd2_noise_d/report.md">turek_hron_cfd2_noise_d</a></li><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261125-162526_turek_hron_fsi3_dt_a_r2/report.md">turek_hron_fsi3_dt_a_r2</a></li><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261125-185354_turek_hron_cfd1_nested/report.md">turek_hron_cfd1_nested</a></li><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261125-185358_turek_hron_cfd2_nested/report.md">turek_hron_cfd2_nested</a></li><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261125-193110_turek_hron_cfd2_nested_r1/report.md">turek_hron_cfd2_nested_r1</a></li><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261125-220709_turek_hron_fsi3_dt_a_alpha/report.md">turek_hron_fsi3_dt_a_alpha</a></li><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261126-011217_turek_hron_fsi2_mesh_a_alpha/report.md">turek_hron_fsi2_mesh_a_alpha</a></li><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261126-011220_turek_hron_fsi2_mesh_b_alpha/report.md">turek_hron_fsi2_mesh_b_alpha</a></li><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261126-011223_turek_hron_fsi2_mesh_c_alpha/report.md">turek_hron_fsi2_mesh_c_alpha</a></li><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261126-011226_turek_hron_fsi3_dt_c_alpha/report.md">turek_hron_fsi3_dt_c_alpha</a></li><li><a class="ext" href="https://github.com/CptGrumpus/engineering-agent-lab/blob/main/runs/20261126-083740_turek_hron_fsi3_dt_b_alpha/report.md">turek_hron_fsi3_dt_b_alpha</a></li></ul></div>
+      </article>
+      <aside class="study-side" aria-label="Summary of this study">
+        <div class="side-card"><h2>At a Glance</h2><dl><div><dt>Study</dt><dd>17</dd></div><div><dt>Discipline</dt><dd>Thermal and fluids</dd></div><div><dt>Tools</dt><dd>CalculiX · OpenFOAM · preCICE</dd></div><div><dt>Verdict</dt><dd><span class="v v-limits">Passes; three results not verified</span></dd></div></dl></div><div class="side-card"><h2>Requirements</h2><ul class="side-reqs"><li><span class="r-what">Solid on its own (CSM1-3): the tip&#x27;s displacement and the swing&#x27;s frequency</span><span class="r-num">within 1 % (2 % along the flow) · 0.03 % still; 0.08 % from the published band swinging</span><span class="chip pass">Met</span></li><li><span class="r-what">Fluid on its own (CFD1, CFD2): drag</span><span class="r-num">within 1 % · 0.22 % and 0.10 % on the finest meshes</span><span class="chip pass">Met</span></li><li><span class="r-what">Fluid on its own (CFD1, CFD2): lift</span><span class="r-num">within 2 % · 0.53 %, verified; 0.98 % at Re 100, not verified (turns back up on the finest mesh)</span><span class="chip pass">Met</span></li><li><span class="r-what">Coupled, steady (FSI1): drag, lift and the tip</span><span class="r-num">1 %, 5 % and 3 % · 0.03 %, 0.18 % and 0.96 %</span><span class="chip pass">Met</span></li><li><span class="r-what">Coupled, swinging (FSI3): tip swing on the finest mesh</span><span class="r-num">within 5 % · 1.1 %; extrapolated 0.02 %</span><span class="chip pass">Met</span></li><li><span class="r-what">FSI3 converged in time step, six quantities</span><span class="r-num">uncertainty ≤ 1 % · 0.09-0.71 % for five; the drag swing 1.39 %</span><span class="chip fail">Not met</span></li><li><span class="r-what">FSI2 converged in mesh, six quantities</span><span class="r-num">uncertainty ≤ 1 % · frequency 0.07 %; the swings and mean drag move away as the mesh is refined (every value within 3.4 % of the benchmark)</span><span class="chip fail">Not met</span></li></ul></div><div class="side-card side-toc"><h2>On This Page</h2><ul class="toc"><li><a href="#the-question">The Question</a></li><li><a href="#the-answer">The Answer</a></li><li><a href="#the-model">The Model</a></li><li><a href="#why-it-matters">Why It Matters</a></li><li><a href="#how-it-works">How It Works</a></li><li><a href="#how-i-checked-it">How I Checked It</a></li><li><a href="#what-i-caught-along-the-way">What I Caught Along the Way</a></li><li><a href="#limits">Limits</a></li><li><a href="#evidence">Evidence</a></li></ul></div>
+      </aside>
+    </div>
+    <nav class="pager" aria-label="More studies"><a class="prev" href="cantilever-bracket.html"><small>← Previous study</small><b>Cantilever Bracket: Stress Check, Then Optimised</b></a><a class="next" href="coolant-channel.html"><small>Next study →</small><b>Coolant Channel Pressure Budget</b></a></nav>
+  </div>
+
+</main>
+
+<footer class="site-foot">
+  <div class="wrap">
+    <section class="contact" id="contact" aria-labelledby="contact-title">
+      <div class="band-head">
+        <p class="eyebrow">Contact</p>
+        <h2 id="contact-title">Have a Part That Needs an Answer?</h2>
+        <p class="contact-name"><b>Justin Smith</b>, mechanical engineer (MS), with a background in automotive. Available for remote contract work.</p>
+        <p>Send me the requirement and whatever drawings or data you have. I'll tell you what I'd model, what I'd check it against and what you'd get back.</p>
+      </div>
+      <div class="contact-actions">
+        <!-- the address is stored reversed and base64-encoded so scrapers reading the page or the repository don't pick it up; site.js decodes it -->
+        <a class="cta" id="contact-mail" href="#contact" data-m="bW9jLmxpYW1nQDg1MW5pdHN1amh0aW1z">Email me</a>
+        <button class="cta-2" id="contact-show" type="button">Show the address</button>
+        <span class="contact-addr" id="contact-addr" hidden></span>
+      </div>
+    </section>
+    <div class="foot-nav">
+      <a href="index.html#work">All studies</a>
+      <a href="requirements.html">Every requirement</a>
+      <a href="how-i-work.html">How I work</a>
+      <a href="grading.html">Grading tasks</a>
+      <a href="in-progress.html">Recently finished</a>
+      <a href="https://github.com/CptGrumpus/engineering-agent-lab">Source on GitHub ↗</a>
+      <span>Open-source tools throughout: CalculiX, OpenFOAM, Gmsh, CadQuery, OpenModelica, Blender.</span>
+    </div>
+  </div>
+</footer>
+<script>window.VP = [{"id": "flag", "study": "flag", "kind": "figure", "img": "v2/fig_flag.svg", "model": "Turek-Hron benchmark: a 350 × 20 mm elastic flag behind a 0.1 m cylinder in a 2.5 m channel · CSM1-3, CFD1-2, FSI1-3", "lines": ["CalculiX (solid) and OpenFOAM (fluid), coupled by preCICE · each half checked on its own before coupling", "Top: every stage against its published values, as a share of the limit. Bottom: FSI3 over three time steps; FSI2 on three meshes", "Every published value within its limit · FSI3 tip swing 1.1 % off (limit 5) · time-step uncertainty 0.09-0.71 %, drag swing 1.39 % (target 1)"], "check": "", "card": "flag"}];</script>
+<script src="assets/viewer.js?v=f28fdda096"></script>
+<script src="assets/site.js?v=f28fdda096"></script>
+</body>
+</html>
