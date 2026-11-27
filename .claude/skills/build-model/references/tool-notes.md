@@ -136,6 +136,14 @@ Traps found while building the studies in this repo, by tool.
   0.5 % gap): test whether the global peak lies inside a submodel box, clear of its driven faces
   (`studies/keyed_shaft.fillet_coverage`, check `fillet_peak_covered_*`). Replayed on every run, it fails all of
   r0's points, including four bending points whose Kt gap was under 1 %, and passes every r1 point.
+- A gap then a spring (bolt slip into bearing, a support with clearance) is not a secant iteration: M = k (theta -
+  gap) is linear once the gap has closed, so solve it as a lack of fit (`validation/frame2d.py`, a spring with an
+  offset), starting from the gap open and closing it only where the open rotation exceeds it (portal knee,
+  3ed6033). The secant fixed point crawled (factor near 1) and, started closed, a lightly loaded knee's imposed lack
+  of fit drove the second-order iteration to diverge.
+- Equilibrium tolerances on big solids: the base-reaction moment of a 268 k-node knee summed to 1.4e-6 (3,000 nodes,
+  1.5 m levers) while its force balanced to 7e-8; round-off, not a missing load. Set moment checks near 1e-5 for
+  models of that size, or normalise by the sum of |r x F| terms.
 - A coarse global model still needs elements smaller than every small radius it holds: one quadratic tetrahedron
   across a 0.25 mm arc at a 0.3 mm size inverted (6 elements, minimum scaled Jacobian -0.18), and the submodels it
   drives inherit the error. Size small radii at no more than 0.75 r in the global model.

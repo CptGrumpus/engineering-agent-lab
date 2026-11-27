@@ -37,6 +37,15 @@ for the whole part, `tests/test_intermediate_shaft.py`).
   - each cut feature against the analysed model's (twice the half model's removed volume): agrees to about 1e-4,
     OpenCASCADE's volume integration on blended faces differs 1-2.5e-5 between a whole and a half solid.
   Parametrize the tests over `DESIGNS`, so a new design is checked without new code.
+- Sketch signs: `radiusArc(end, r)` bulges one way, `-r` the other. A W-section's root fillets drawn with the wrong
+  sign came out 4.7 % heavy (portal knee): only the hand volume showed it.
+- Rolled shapes: root fillets r = kdes - tf reproduce the tabulated area (0.5 %) but not the tabulated Ix (0.3-0.8 %
+  low: the rolled profile differs). Beam theory checked against the solid uses the drawn section's own Ix, or the gap
+  lands in whatever the check is meant to measure (a 4 % bias on the knee's spring).
+- Assemblies (bolted joints): each part a separate solid in a `cq.Assembly`, saved as one STEP (`asm.save(...,
+  exportType="STEP")`; 1.2-1.6 MB for a 56-72 part knee). Test by part type (plate with holes, hex head and nut with
+  its hole, washer annulus, shank from the grip, weld triangle x length) against hand volumes, and pairs of
+  neighbours for interference (`a.intersect(b)` empty). See `models/cad/portal_knee.py`.
 
 ## Mesh
 
@@ -47,7 +56,11 @@ for the whole part, `tests/test_intermediate_shaft.py`).
 - Quadratic tetrahedra invert where one element spans a small arc: size every small radius at no more than 0.75 r,
   also in a coarse global model, run `optimize("HighOrderElastic")` and check the minimum scaled Jacobian. A rare
   inversion can still occur (1 in 54 k elements on the keyed shaft): keep the mesh-quality check on every point.
-- CalculiX's SPOOLES (the FreeCAD build) stalls past about 350 k nodes (a 540 k-node solve gave nothing in 25 min).
+- Thin walls (a W-shape's half web is 3.4 mm in a half model) and fillets: let Gmsh size by curvature
+  (`Mesh.MeshSizeFromCurvature` 10 per circle) and keep the far size near 4 x the wall; 25 mm elements on the knee's
+  3.4 mm half web inverted 23-45 elements.
+- CalculiX's SPOOLES (the FreeCAD build) stalls past about 350 k nodes (a 540 k-node solve gave nothing in 25 min; a
+  399 k-node knee crashed with a segmentation fault after 2 min). Plan mesh studies to finish under about 300 k.
   Past that, submodel: a coarse global model, then the part cut by a box around each feature, meshed finely, its cut
   faces driven by the global displacements (`*SUBMODEL, TYPE=NODE, INPUT=global.frd`, `*BOUNDARY, SUBMODEL, STEP=1`).
   - Scan the global model's peak along each feature before drawing the box: a neighbouring feature moves it (the

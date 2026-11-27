@@ -97,7 +97,7 @@ change:
 | Study | Now | Detailed CAD | What it could change |
 |---|---|---|---|
 | 26 shaft | 3D revolved step, Gmsh | **Done (part 2):** DIN 6885 keyway at the gear seat (CadQuery, global + 5 submodels); whole intermediate shaft as a detailed part, STEP for the 36, 40 and 42 mm seats (models/cad/intermediate_shaft.py, portfolio/cad/); render and drawing asked of the dashboard session | The keyway fails the 36 mm seat (fatigue 1.18, yield 1.72); the smallest keyed seat is 40 mm with r 0.4 min on the keyway corner (1.535), 42 mm at the 0.25 mm lower tolerance (1.545) |
-| 28 frame | beam elements | bolted end-plate beam-column connection (plates, bolts, welds) | connection capacity against AISC; prying |
+| 28 frame | beam elements | **Done (part 2):** the knee as a bolted flange-plated moment connection (the user chose it over the end plate: AISC 358 is behind a browser-only download, II.B-1 is on disk); Chapter J design against II.B-1; 3D CalculiX solid for its stiffness; detailed assembly with bolts, STEP (models/cad/portal_knee.py, portfolio/cad/); render and drawing to offer the dashboard session | Ks L/EI 8.0 (partially restrained by AISC's index), k L/EI 23.7 for the frame: slip-critical knees keep the verdict (beam 0.83); slipping bearing bolts fail the beam (1.17). Open: an extended end plate as part 3 once the user downloads AISC 358 |
 | 16 bolted joint | axisymmetric | 3D lap joint, bolts, nuts, washers, contact | slip and bolt bending |
 | 23 fan rotor | ROSS beam | shaft with impeller hub, keyway, bearing seats; 3D solid modal check | the 1D model's critical speeds |
 | 18 nozzle | CadQuery 3D | reinforcing pad and fillet welds | peak stress at the weld toe |

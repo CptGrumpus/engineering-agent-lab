@@ -40,8 +40,8 @@ def test_bolt_count_and_the_analysed_plate_length(built):
 def test_no_part_overlaps_its_neighbours(built):
     _, parts, _ = built
     pairs = [("top_plate", "bolt_t0_shank"), ("beam", "bolt_t0_shank"), ("beam", "bolt_b1_shank"),
-             ("beam", "bolt_t0_nut"), ("beam", "bolt_w1_shank"), ("shear_tab", "bolt_w1_shank"), ("column", "top_plate"),
-             ("column", "bottom_plate"), ("shear_tab", "beam"), ("weld_tab_inner", "beam"),
+             ("beam", "bolt_t0_nut"), ("beam", "bolt_w1_shank"), ("shear_tab", "bolt_w1_shank"),
+             ("column", "top_plate"), ("column", "bottom_plate"), ("shear_tab", "beam"), ("weld_tab_inner", "beam"),
              ("weld_top_plate_lower", "beam"), ("continuity_plate_front", "column"), ("bolt_t0_nut", "bolt_t0_shank")]
     for a, b in pairs:
         common = parts[a].intersect(parts[b]).vals()

@@ -1,13 +1,13 @@
-# Steel portal frame to AISC 360-22, by the Direct Analysis Method
+# Steel portal frame to AISC 360-22, by the Direct Analysis Method, and its bolted knee
 
 [Portfolio index](../PORTFOLIO.md) · Structures and machines
 
 | | |
 |---|---|
-| **Answer** | The equipment-platform frame (W10x33 columns 4.0 m, W14x30 beam 6.0 m, fixed bases, ASTM A992) **passes all three of the client's requirements** under their factored loads (35 kN/m on the beam, 15 kN lateral): the largest combined axial-and-bending ratio (AISC Eq. H1-1) is **0.80**, in the beam under gravity plus wind, governed by lateral-torsional buckling over its unbraced 6.0 m span; the columns reach 0.45. Live-load deflection **4.1 mm** (limit L/360 = 16.7 mm), service drift **2.6 mm** (limit H/400 = 10.0 mm). The beam's bracing was not specified, so it was taken as unbraced (conservative): bracing it at midspan cuts the largest ratio to **0.48**, and the verdict does not depend on it. Verification: the analysis reproduces AISC's own worked Direct Analysis Method example (C.1A) within 0.7 % on forces and 1.7 % on drift; the member checks reproduce 12 worked answers of the AISC Design Examples within 0.5 %; first-order moments match the closed-form portal solution to 4e-9; AISC's approximate B1-B2 method agrees with the exact second-order moment to 0.05 %. The client and loads are synthetic. |
+| **Answer** | The equipment-platform frame (W10x33 columns 4.0 m, W14x30 beam 6.0 m, fixed bases, ASTM A992) **passes all three of the client's requirements** under their factored loads (35 kN/m on the beam, 15 kN lateral): the largest combined axial-and-bending ratio (AISC Eq. H1-1) is **0.80**, in the beam under gravity plus wind, governed by lateral-torsional buckling over its unbraced 6.0 m span; the columns reach 0.45. Live-load deflection **4.1 mm** (limit L/360 = 16.7 mm), service drift **2.6 mm** (limit H/400 = 10.0 mm). The beam's bracing was not specified, so it was taken as unbraced (conservative): bracing it at midspan cuts the largest ratio to **0.48**, and the verdict does not depend on it. Verification: the analysis reproduces AISC's own worked Direct Analysis Method example (C.1A) within 0.7 % on forces and 1.7 % on drift; the member checks reproduce 12 worked answers of the AISC Design Examples within 0.5 %; first-order moments match the closed-form portal solution to 4e-9; AISC's approximate B1-B2 method agrees with the exact second-order moment to 0.05 %. The client and loads are synthetic. **Part 2, the knee:** the beam-to-column joint designed as a bolted flange-plated moment connection (AISC 360-22 Chapter J; the method reproduces Design Example II.B-1's 18 capacities) and modelled as a 3D solid. By AISC's classification index it is partially restrained (Ks L/EI **8.0** against 20 for fully restrained), but as a spring in the frame's own centreline model (k L/EI **23.7**) it changes little: beam **0.80 to 0.83**, drift 2.6 to 2.8 mm, all pass. **The bolts must be slip-critical** (six 3/4 in. per flange; slip governs at 0.97): snug-tight bearing bolts that slip 1/16 in. into bearing move the knees' moment to the unbraced midspan and the beam **fails (1.17)**. Detailed CAD of the knee with STEP files. |
 | **Discipline** | Structural steel design: frame stability and member design to a building code |
-| **Tools** | Python (a plane-frame solver written and verified for this study), AISC 360-22 and the v16.0 Design Examples |
-| **Methods** | Second-order plane-frame analysis by the direct stiffness method with exact stability functions (P-Delta and P-delta); the Direct Analysis Method (80 % stiffness, notional loads, effective length = unbraced length); AISC 360-22 Chapters E (with slender-web effective area), F, G and H; serviceability |
+| **Tools** | Python (a plane-frame solver written and verified for this study), AISC 360-22 and the v16.0 Design Examples; part 2: CadQuery (STEP), Gmsh, CalculiX |
+| **Methods** | Second-order plane-frame analysis by the direct stiffness method with exact stability functions (P-Delta and P-delta); the Direct Analysis Method (80 % stiffness, notional loads, effective length = unbraced length); AISC 360-22 Chapters E (with slender-web effective area), F, G and H; serviceability; part 2: AISC Chapter J and J10 connection design, the knee as a 3D solid for its rotational stiffness (section rotations against beam theory), semi-rigid knees and bolt slip (a gap, then the spring) in the Direct Analysis Method |
 
 ## The question
 
@@ -91,12 +91,114 @@ its plane at the beam level, as assumed for the columns' weak axis?
 
 ## Limits
 
-- Plane frame; rigid knees and fixed bases assumed adequate (connections, base plates and anchors not designed).
+- Plane frame; rigid knees and fixed bases assumed adequate (base plates and anchors not designed; the knees are designed and their stiffness checked in part 2).
 - The bracing assumptions above (beam unbraced; columns braced out of plane at the beam).
 - Loads as given by the client (no load derivation); no dynamic, fatigue or vibration assessment of the equipment.
 - The prediction for the base case was not blind (a development run printed the values first; the case file says
   so); the evidence is the checks above, and the bracing sensitivity's predictions were made before its run.
 - Synthetic client and loads.
+
+## Part 2: the knee
+
+![The beam's moment with rigid, slip-critical and slipping knees, and each scenario's ratios against the limit](img/steel_knee_frame.png)
+
+### The question
+
+Part 1 analysed the frame with rigid knees and left the knees undesigned. As built, each knee is the W14x30 beam
+bolted to the top of a W10x33 column through flange plates. Does that joint carry its forces (AISC 360-22 Chapter J),
+is it stiff enough to be analysed as rigid, and does the frame still meet its three requirements with the knee as it
+really is?
+
+### The answer
+
+| Knee | Knee stiffness in the frame | Beam (H1-1) | Live deflection | Service drift | Connection (Chapter J) |
+|---|---|---|---|---|---|
+| Rigid (part 1's analysis) | infinite | 0.80 | 4.1 mm | 2.6 mm | 0.97 (slip-critical bolts) |
+| **Slip-critical bolts, 6 per flange** | **k L/EI 23.7** | **0.83** | **4.3 mm** | **2.8 mm** | **0.92** (slip) |
+| Bearing bolts, 4 per flange, half the slip | k L/EI 21.3 after 4.4 mrad | **1.01** | 8.3 mm | 4.5 mm | 0.57 |
+| Bearing bolts, 1/16 in. slip per flange | k L/EI 21.3 after 8.7 mrad | **1.17** | 8.4 mm | 7.6 mm | 0.55 |
+
+Limits: 1.0, 16.7 mm (L/360), 10.0 mm (H/400), 1.0.
+
+**Recommendation: slip-critical bolts** (3/4 in. Group A, Class A faying surfaces, three per line, plates 6 x 1/2 x
+9 1/2 in.), a pair of 1/2 in. continuity plates at the top plate's level, and part 1's verdict stands. With snug-tight
+bearing bolts the knees act as hinges until the bolts slip into bearing; the moment they don't take goes to the
+beam's midspan, where its unbraced 6 m governs, and the beam fails. Bracing the beam at midspan (part 1: 0.48) is the
+other way out.
+
+AISC's classification index puts the knee at Ks L/EI 8.0: partially restrained, not fully restrained (20). That does
+not make part 1 wrong, but it means the knee's stiffness belongs in the analysis, which this part does.
+
+### The detailed part
+
+The knee is delivered as a detailed CadQuery assembly ([`models/cad/portal_knee.py`](../models/cad/portal_knee.py)).
+STEP files: [slip-critical, 15 bolts](cad/portal_knee_slip_critical6.step), [bearing, 11
+bolts](cad/portal_knee_bearing4.step).
+
+- Column and beam stubs with their root fillets, the flange plates and the single shear tab with standard holes,
+  clipped continuity plates, 1/4 in. fillet welds, heavy-hex structural bolts with nuts and hardened washers (lengths
+  from the grip).
+- Checked by hand, not by eye: every part's volume against a hand calculation (to 1e-9), no interference between
+  bolts, plates, beam and welds, and the plate lengths equal to the analysed ones.
+- Stub lengths and weld returns are layout, marked synthetic in the source; bolt, nut and washer sizes are the
+  nominal values of published tables.
+
+### How it works
+
+- **Connection design** ([`validation/flange_plated.py`](../validation/flange_plated.py)): every limit state of the
+  flange-plated connection (bolts in shear, bearing and tearout, slip for slip-critical bolts, plates in tension,
+  compression and block shear, welds with the directional factor, the beam's flange holes) and of the column at a knee
+  (J10 in its column-end forms, panel-zone shear, the continuity plates as stiffeners), for the forces part 1's frame
+  puts on each knee in each factored case.
+- **The knee as a solid** ([`models/fea/moment_connection.py`](../models/fea/moment_connection.py)): column and beam
+  stubs with every plate, bonded, as 10-node tetrahedra in CalculiX (half model about the webs' plane). A tip load on
+  the beam; the rotations of a beam section and a column section clear of the joint give two numbers:
+  - AISC's index Ks L/EI (Commentary B3.4b), the beam at the column face against the column at the joint's bottom,
+    as a test would measure it;
+  - the spring k L/EI that, put at the beam's end in the frame's centreline model, reproduces the solid. The
+    centreline model already treats the members as flexible inside the joint, so k is three times Ks.
+- **The frame with its knees**: the spring at each beam end, times 0.8 as the Direct Analysis Method requires for
+  every stiffness (C2.3); for bearing bolts a gap of the hole clearance first. A gap then a spring is linear once the
+  gap has closed, so it is solved exactly as a lack of fit, knee by knee, from an open start.
+
+### How I know it's right
+
+- **The connection method against AISC's own worked example**: fed Example II.B-1's geometry and forces, it returns
+  the example's 18 capacities within 0.5 % and its weld size; slip resistance against Examples J.4A and J.4B.
+- **The solid**: its volume against a hand volume to 1e-15; beam theory between two sections of each member within
+  0.2 % (with the solid's own section stiffness); base reactions balance the tip load to about 1e-6; the joint's
+  stiffness from two pairs of sections, 300 and 700 mm out, agrees within 0.08 %.
+- **Mesh study** (124 k, 180 k, 268 k nodes): k L/EI 23.88 / 23.77 / 23.69, converged within 0.97 %; Ks L/EI
+  8.01 / 8.00 / 7.99, within 0.36 %. One check failed: moment equilibrium at the finest mesh, 1.4e-6 against 1e-6,
+  round-off over 3,000 base nodes (the force balance is 7e-8).
+- **The frame**: with rigid knees it reproduces part 1 exactly; the spring against the closed form of a semi-rigid
+  portal (Kleinlogel's rigid frame in the limit); the slip law M = k (theta - slip) holds to 1e-15; every part 1 check
+  (AISC C.1A rerun, closed forms, equilibrium, B1-B2) passes in all four scenarios.
+
+### What the checks caught
+
+- **The fillets were drawn inside out.** The first solid was 4.7 % heavier than its hand volume: the root fillets
+  bulged the wrong way. One sign fixed it to 1e-15.
+- **A tabulated section is not the drawn one.** Beam theory missed the solid by 0.8 % (beam) and 0.3 % (column):
+  exactly the drawn section's Ix (root fillets from kdes) against the tabulated one. Left in, it would have biased the
+  joint's spring by 4 %; beam theory now uses the drawn section, the frame the tabulated one.
+- **Coarse elements on thin walls inverted** (25 mm elements against a 3.4 mm half web and 10 mm fillets): curvature
+  sizing and a finer far field fixed it. A 399 k-node mesh crashed CalculiX, so the finest level stays at 268 k.
+- **The slip would not converge.** Iterating a secant spring crawled, then diverged when a lightly loaded knee was
+  forced closed; a gap and a spring are linear once the gap is known, so the knees now start open and close only when
+  their rotation passes the slip.
+- **One mesh-quality check failed** on the variant without continuity plates (one element far from the joint): that
+  point is reported unverified.
+
+### Limits (part 2)
+
+- The solid is bonded: no bolt deformation or bearing at holes, so its stiffness is an upper bound below slip.
+- The slip is the hole clearance with holes aligned at fit-up (1/16 in. per flange); offset holes could double it
+  (worse), half of it is shown. Service checks run from zero load with the live load alone, as part 1: the dead load
+  would close part of the gap first, so the slipping knees' deflection and drift are upper bounds.
+- Continuity-plate welds are not designed; the panel zone is checked by J10.6(a) only. AISC J3.1 leaves when
+  slip-critical bolts are required to the RCSC Specification, which was not read; the requirement here comes from the
+  frame's own behaviour.
 
 ## Evidence
 
@@ -108,3 +210,11 @@ its plane at the beam level, as assumed for the columns' weak axis?
   `tests/test_aisc360.py` against the Design Examples), `studies/steel_frame.py`
 - References: ANSI/AISC 360-22 and the v16.0 Companion Design Examples, free from AISC (not redistributed); section
   properties from the AISC Shapes Database v16.0 (the shapes used: `validation/aisc_shapes_subset.json`)
+- Part 2: knee mesh study [`steel_knee_mesh`](../runs/20261127-104729_steel_knee_mesh/report.md), designs
+  [`steel_knee_design`](../runs/20261127-105017_steel_knee_design/report.md), the frame with its knees
+  [`steel_frame_knee`](../runs/20261127-105635_steel_frame_knee/report.md); cases with predictions and results:
+  `cases/steel_knee_mesh.toml`, `cases/steel_knee_design.toml`, `cases/steel_frame_knee.toml`
+- Part 2 code: `validation/aisc_connections.py` and `validation/flange_plated.py` (tests in
+  `tests/test_aisc_connections.py` against Examples II.B-1, J.4A, J.4B), `models/fea/moment_connection.py` and
+  `studies/steel_knee.py` (the solid), knee springs and slip in `validation/frame2d.py` and `validation/aisc_frame.py`,
+  the CAD `models/cad/portal_knee.py` (`tests/test_portal_knee.py`), figure `scripts/make_steel_knee_figure.py`
