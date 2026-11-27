@@ -72,8 +72,10 @@
       <tbody>
         <tr><td>451 N/mm</td><td>610 MPa</td><td>580 MPa (FE +5.2 %)</td><td>610 MPa, mid-length</td><td>612 MPa, 0.2 mm from the end</td></tr>
         <tr><td>528 N/mm</td><td>655 MPa</td><td>622 MPa (FE +5.3 %)</td><td>902 MPa, 0.2 mm from the end</td><td>736 MPa, 0.2 mm from the end</td></tr>
+        <tr><td>605 N/mm</td><td>698 MPa</td><td>662 MPa (FE +5.4 %)</td><td>1,229 MPa, near the end</td><td>901 MPa, near the end</td></tr>
       </tbody>
     </table></div>
+    <p><strong>Why the 3D model reads higher.</strong> It puts more of the load in the middle of the roller. Corrected for the coarse mesh's smeared contact edge, its mid-length carries about 514 N/mm when the average is 451, against 458 in the half-space model, and its mid pressure matches Hertz for 514 N/mm within 1 %. That is the half-space method's known limit: it carries on past the roller's end face, which makes the ends too stiff. For the crowned design, whose peak is at mid-length, that adds 2 to 5 % to the pressure, the same size as its 5.1 % margin. The 3D mesh study now running settles it.</p>
     <p><strong>What I caught.</strong> My Hertz elliptical reference first came out 2.4 times off. Checking it against its own long-ellipse limit showed a factor I'd wrongly "fixed"; the original was right, and the limit is now a test. On the 3D model, a crowned trial stopped on inverted elements because CalculiX cut node coordinates at 20 characters, so 8.73e-05 became 8.73e-0. The model now writes 12 significant digits.</p>
     <h3>Limits, and what I'd do next</h3>
     <ul>
