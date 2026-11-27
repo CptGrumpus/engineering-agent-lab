@@ -13,6 +13,20 @@
 #   P3 The new checks pass on every mesh: energy additivity under 1 %, depth-weighted crack opening against energy
 #      under 3 %.
 #   P4 Under 20 min (26 solves per point).
+#
+# Results (run 20261126-202527_surface_crack_noise, 20:25-20:47, scored 2026-11-26 20:48). VERIFICATION FAIL on
+# profile_shape only (6.0-6.3 % on every mesh); every requirement passes on every mesh.
+#   P1 HELD: all five completed; every other check passes.
+#   P2 HELD except one: peak-to-peak / mean over the five meshes: K at the detectable flaw 2.6e-3 (under 0.3 %),
+#      FE-scaled life 2.6e-3 (under 1 %), Newman-Raju life 0 exactly; energy ratios per shape 0.11-0.25 % (smallest
+#      ratio 2.4e-3, largest 1.4e-3), inside 0.05-0.3 %. Not predicted: the depth-weighted ratio of the deepest shape
+#      scatters 0.85 % (0.959-0.968), the a-alone difference being the smallest signal.
+#   P3 HELD: energy additivity 0.15-0.63 %, depth-weighted crack opening against energy 1.8-1.9 %.
+#   P4 NOT HELD: 22 min (predicted under 20).
+# Already visible here (middle level), for r1's P1: the deepest shape's depth-weighted energy ratio is 0.959-0.968
+# against its front average 0.982, the surface-weighted 0.996-1.000; for a = 2 mm both within 0.3 % of the average.
+# Floor written into surface_crack_mesh_r1 before its run: K 2.6e-3, smallest energy ratio 2.4e-3, FE-scaled life
+# 2.6e-3, smallest depth-weighted ratio 8.5e-3. surface_crack_mesh's guessed 1e-4 was 25-85 times too small.
 
 [case]
 name = "surface_crack_noise"

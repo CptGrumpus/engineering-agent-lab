@@ -1,0 +1,90 @@
+# Study 24 part 2, mesh noise: surface_crack_mesh (read it) at its middle front size (h = 0.025 a) on five meshes
+# whose far-field size is perturbed (4.8-5.2 mm), as part 1 measured its noise (cases/edge_crack_noise.toml), with the
+# r1 additions (a-alone and c-alone energy solves). Why: surface_crack_mesh declared a noise floor it never measured
+# (1e-4), and its smallest energy ratio moved by 0.1 % per level with no order; the floor has to be measured before
+# surface_crack_mesh_r1 uses one. The spread over these five meshes is the floor (peak to peak / mean, per metric).
+#
+# Predictions, written BEFORE the run (2026-11-26 20:22):
+#   P1 All five points complete; every point check except profile_shape passes (that one fails as in
+#      surface_crack_mesh, about 6.3 %: Newman-Raju's shape at the deep shapes, not noise).
+#   P2 Peak-to-peak scatter over the five meshes: energy ratios (each shape) 0.05-0.3 % (the energy step check
+#      scattered 0.03-0.23 %); K at the detectable flaw under 0.3 %; FE-scaled life under 1 % (it goes as K^-3);
+#      the Newman-Raju life exactly zero (no FE in it).
+#   P3 The new checks pass on every mesh: energy additivity under 1 %, depth-weighted crack opening against energy
+#      under 3 %.
+#   P4 Under 20 min (26 solves per point).
+
+[case]
+name = "surface_crack_noise"
+model = "gmsh_ccx_surface_crack"
+description = "Semi-elliptical surface crack in the S355 plate of part 1 (100 mm wide, 10 mm thick, 150 MPa maximum, R = 0.1): K along the crack front by 3D FE (CalculiX, Gmsh quarter model, quadratic tetrahedra refined at the front; energy release and crack opening) on four shapes of the growth path against Newman-Raju (BS 7910); growth life from the detectable flaw (2 mm deep, 10 mm long) to 0.8 t by the BS 7910 two-point procedure; five meshes at front element size 0.025 of the crack depth, far-field size 4.8-5.2 mm (noise measurement)."
+assumptions = [
+  "Linear elastic fracture mechanics; plane strain along the front for K from the crack opening and for G = K^2 (1 - nu^2) / E (not at the free surface, where the surface point is reported, not checked). [model form]",
+  "Uniform remote tension on the plate's ends, free to rotate, as in Newman and Raju's solution; quarter model by symmetry (crack plane and the crack's mid-plane), half height 100 mm (2 x the half width).",
+  "Detectable flaw: 2 mm deep, 10 mm surface length (a/2c = 0.2) [synthetic: a client's inspection procedure would give the detectable length and the depth to assume].",
+  "Crack growth by the BS 7910 / IIW simplified law for steels in air, as part 1, at the deepest and the surface point (BS 7910's two-point procedure); the crack stays semi-elliptical.",
+  "Newman and Raju (1981), Engineering Fracture Mechanics 15, 185-192: K = sigma sqrt(pi a / Q) F, stated accuracy +-5 % for a/c <= 1, a/t < 0.8. [published]",
+]
+limitations = [
+  "The life stops at a = 0.8 t (end of Newman-Raju's range): breakthrough and the through crack's growth are left out, so it is a lower bound.",
+  "No crack closure, sequence effects or environment; no residual stress (a weld toe would need it).",
+  "The FE checks Newman-Raju at four shapes on the path; between them the ratio is interpolated linearly in a.",
+]
+
+[parameters]
+half_width_mm = 50.0
+half_height_mm = 100.0
+thickness_mm = 10.0
+sigma_max_MPa = 150.0
+stress_ratio = 0.1
+youngs_modulus_MPa = 210000.0
+poisson_ratio = 0.3
+k_mat_MPa_sqrt_m = 100.0
+paris_C = 5.21e-13
+paris_m = 3.0
+dK_threshold = 63.0
+initial_depth_mm = 2.0
+initial_half_length_mm = 5.0
+end_depth_ratio = 0.8
+front_element_rel = 0.025
+far_element_size_mm = 5.0
+edge_crack_life_cycles = 91963.0   # part 1, run 20261123-164649_edge_crack_mesh_r2, finest tip mesh
+
+[sweep]
+parameter = "far_element_size_mm"
+values = [4.8, 4.9, 5.0, 5.1, 5.2]
+
+[numerics]
+crack_shapes_mm = [[2.0, 5.0], [4.0, 6.17], [6.0, 8.15], [7.5, 10.08]]
+energy_eps = 0.02
+weighted_energy = true   # r1: a alone and c alone, the energy route weighted to the deepest point and the surface
+parallel_solves = 6
+solve_timeout_s = 7200
+solver_timeout_s = 21600
+
+[verification]
+newman_raju_rel_tol = 0.05    # Newman and Raju's stated accuracy
+profile_from_deg = 15.0       # the shape of K along the front is checked from 15 deg to the deepest point
+profile_rel_tol = 0.03
+routes_rel_tol = 0.03         # crack opening against energy (front averages, and weighted to the deepest point)
+additivity_rel_tol = 0.01     # dU/deps, a alone + c alone against both together
+equilibrium_rel_tol = 1e-6
+energy_step_rel_tol = 0.005   # K by the energy route with eps halved
+integral_rel_tol = 1e-4
+gci_max = 0.01
+
+[[requirements]]
+id = "REQ-F1s"
+text = "At the detectable surface flaw the maximum stress intensity (deepest point) shall not exceed half the fracture toughness (Kmat / 2 = 50 MPa sqrt m)."
+metric = "K_a0_MPa_sqrt_m"
+operator = "<="
+limit = 50.0
+units = "MPa sqrt m"
+
+[[requirements]]
+id = "REQ-F2s"
+text = "The crack growth life from the detectable surface flaw shall be at least twice the planned inspection interval of 40,000 cycles (lower bound: to a = 0.8 t)."
+metric = "growth_life_cycles"
+operator = ">="
+limit = 80000.0
+units = "cycles"
