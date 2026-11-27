@@ -104,6 +104,15 @@ long roller.
 - **A trial lost to a timeout.** The first 3D FE trial was killed at 30 minutes by a time limit inside the command,
   at 47 % of its load; long solves now run in the background with none.
 
+### The roller as built
+
+The crowned roller is delivered as a detailed CadQuery assembly ([`models/cad/track_roller.py`](../models/cad/track_roller.py),
+[STEP](cad/track_roller_crowned.step)): the outer ring with the logarithmic crown in its profile (3.7 µm of drop
+1 mm from each end: invisible in a render, exact in the STEP), a full complement of 26 needle rollers, the inner ring,
+two side washers and a length of the rail. Every part matches a hand volume (the crowned ring by integrating the
+same drop function, to 10⁻⁶) and no two parts overlap. Everything but the outer diameter, the width and the crown is
+synthetic.
+
 ### Limits (part 2)
 
 - Both bodies are half-spaces: the roller's end face and the plate's edges are left out. That overstates a sharp end's
