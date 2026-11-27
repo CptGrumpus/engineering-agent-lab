@@ -14,6 +14,7 @@ Run-level: GCI over contact_element_size_mm (layers along the roller refined wit
 from __future__ import annotations
 
 import importlib.util
+import math
 import os
 import re
 import subprocess
@@ -72,6 +73,58 @@ def tresca_max(S: dict, ids_sel: list[int]) -> tuple[float, int]:
     return float(tau[k]), int(np.asarray(S["ids"])[rows][k])
 
 
+def read_steps(W, params, work: Path, approaches) -> list[dict]:
+    """Per completed step (a step's total time at its end is its number): the reactions, the contact pressure on the
+    roller (peak and where, mid-length peak and line load, the peak along the roller) and the largest Tresca shear
+    below the contact. Kept apart from the solve so it can be tested on a finished work directory."""
+    ids, xyz, elems = W.read_mesh(work / "mesh.inp")
+    frd = read_frd(work / "job.frd")
+    times = frd_block_times(work / "job.frd")
+    dat = read_dat_blocks(work / "job.dat")
+    R = float(params["roller_radius_mm"])
+    coord = dict(zip(ids.tolist(), xyz))
+    roller = set(np.unique(elems["ROLLER"][:, 1:]).tolist())
+    block = set(np.unique(elems["BLOCK"][:, 1:]).tolist())
+    below = [n for n in block if coord[n][1] < 0 and coord[n][1] > -0.06 * R and abs(coord[n][0]) < 0.06 * R]
+    steps = []
+    blocks = list(zip(times, frd.get("blocks", [])))
+    for k, a in enumerate(approaches, start=1):
+        tops = [b for b in dat if b["set"] == "TOP" and round(b["time"]) == k and b["kind"] == "total"]
+        bots = [b for b in dat if b["set"] == "BOTTOM" and round(b["time"]) == k and b["kind"] == "total"]
+        C = [b for t, (nm, b) in blocks if nm == "CONTACT" and round(t) == k]
+        S = [b for t, (nm, b) in blocks if nm == "STRESS" and round(t) == k]
+        if not (tops and bots and C and S):
+            break
+        C, S = C[-1], S[-1]
+        # CalculiX writes the contact block for every roller node (zeros inside): keep the surface arc, or the
+        # line-load integral across x zigzags through the interior column at x = 0 (found on the trial's output)
+        on = [(coord[int(n)], float(p)) for n, p in zip(C["ids"], C["CPRESS"]) if int(n) in roller
+              and abs(math.hypot(coord[int(n)][0], coord[int(n)][1] - R) - R) < 1e-4 * R]
+        P = np.array([[q[0], q[2], p] for q, p in on])            # x, z, pressure
+        kmax = int(np.argmax(P[:, 2]))
+        mid = P[np.abs(P[:, 1]) < 1e-9]
+        mid = mid[np.argsort(mid[:, 0])]
+        q0 = 2 * float(np.trapezoid(mid[:, 2], mid[:, 0]))          # both halves in x, per mm of length
+        tau, tau_node = tresca_max(S, below)
+        zs = sorted({round(float(z), 6) for z in P[:, 1]})
+        # the contact pressure integrated over the quarter patch (trapezoid across x on each layer, then along z):
+        # against the reaction it measures how far the nodal pressures smear the contact edge (12 % on the 0.08 mm
+        # trial mesh), and it corrects the mid-length line load for the Hertz check
+        lines = []
+        for z in zs:
+            Q = P[np.abs(P[:, 1] - z) < 1e-6]
+            Q = Q[np.argsort(Q[:, 0])]
+            lines.append(float(np.trapezoid(Q[:, 2], Q[:, 0])))
+        integral = float(np.trapezoid(lines, zs))
+        steps.append({"approach_mm": float(a), "F_top_N": float(tops[-1]["rows"][0][1]),
+                      "F_bottom_N": float(bots[-1]["rows"][0][1]), "p_peak_MPa": float(P[kmax, 2]),
+                      "p_peak_z_mm": float(P[kmax, 1]), "p_mid_MPa": float(mid[:, 2].max()),
+                      "q_mid_N_per_mm": q0, "contact_integral_N": integral, "tau_max_MPa": tau,
+                      "tau_max_xyz_mm": [float(v) for v in coord[tau_node]], "z_profile_mm": zs,
+                      "p_along_z_MPa": [float(P[np.abs(P[:, 1] - z) < 1e-6, 2].max()) for z in zs]})
+    return steps
+
+
 class CalculiXRoller3D(Backend):
     sources = (WRITER, SECTION)
 
@@ -115,43 +168,10 @@ class CalculiXRoller3D(Backend):
             (work / "ccx.log").write_text(c.stdout + c.stderr, encoding="utf-8")
             if c.returncode != 0 or not (work / "job.frd").exists():
                 return failed(f"CalculiX failed (exit {c.returncode})") | {"files": files(), "cleanup": work}
-            ids, xyz, elems = W.read_mesh(work / "mesh.inp")
-            frd = read_frd(work / "job.frd")
-            times = frd_block_times(work / "job.frd")
-            dat = read_dat_blocks(work / "job.dat")
+            steps = read_steps(W, params, work, approaches)
         except Exception as e:  # noqa: BLE001
             return failed(f"{type(e).__name__}: {e}") | {"files": files(), "cleanup": work}
 
-        R = float(params["roller_radius_mm"])
-        coord = dict(zip(ids.tolist(), xyz))
-        roller = set(np.unique(elems["ROLLER"][:, 1:]).tolist())
-        block = set(np.unique(elems["BLOCK"][:, 1:]).tolist())
-        below = [n for n in block if coord[n][1] < 0 and coord[n][1] > -0.06 * R and abs(coord[n][0]) < 0.06 * R]
-        steps = []
-        blocks = list(zip(times, frd.get("blocks", [])))
-        for k, a in enumerate(approaches, start=1):
-            tops = [b for b in dat if b["set"] == "TOP" and round(b["time"]) == k and b["kind"] == "total"]
-            bots = [b for b in dat if b["set"] == "BOTTOM" and round(b["time"]) == k and b["kind"] == "total"]
-            C = [b for t, (nm, b) in blocks if nm == "CONTACT" and round(t) == k]
-            S = [b for t, (nm, b) in blocks if nm == "STRESS" and round(t) == k]
-            if not (tops and bots and C and S):
-                break
-            C, S = C[-1], S[-1]
-            on = [(coord[int(n)], float(p)) for n, p in zip(C["ids"], C["CPRESS"]) if int(n) in roller]
-            P = np.array([[q[0], q[2], p] for q, p in on])            # x, z, pressure
-            kmax = int(np.argmax(P[:, 2]))
-            mid = P[np.abs(P[:, 1]) < 1e-9]
-            mid = mid[np.argsort(mid[:, 0])]
-            q0 = 2 * float(np.trapezoid(mid[:, 2], mid[:, 0]))          # both halves in x, per mm of length
-            tau, tau_node = tresca_max(S, below)
-            steps.append({"approach_mm": a, "F_top_N": float(tops[-1]["rows"][0][1]),
-                          "F_bottom_N": float(bots[-1]["rows"][0][1]), "p_peak_MPa": float(P[kmax, 2]),
-                          "p_peak_z_mm": float(P[kmax, 1]), "p_mid_MPa": float(mid[:, 2].max()),
-                          "q_mid_N_per_mm": q0, "tau_max_MPa": tau,
-                          "tau_max_xyz_mm": [float(v) for v in coord[tau_node]],
-                          "z_profile_mm": sorted({round(float(z), 6) for z in P[:, 1]}),
-                          "p_along_z_MPa": [float(P[np.abs(P[:, 1] - z) < 1e-6, 2].max())
-                                            for z in sorted({round(float(z), 6) for z in P[:, 1]})]})
         if len(steps) < 2:
             return failed(f"only {len(steps)} steps completed") | {"files": files(), "cleanup": work}
         target = info["target_quarter_load_N"]
@@ -162,6 +182,7 @@ class CalculiXRoller3D(Backend):
         w = (target - F[j - 1]) / (F[j] - F[j - 1])
         interp = {k: float((1 - w) * steps[j - 1][k] + w * steps[j][k])
                   for k in ("approach_mm", "F_top_N", "F_bottom_N", "p_peak_MPa", "p_mid_MPa", "q_mid_N_per_mm",
+                            "contact_integral_N",
                             "tau_max_MPa")}
         interp["p_peak_z_mm"] = steps[j]["p_peak_z_mm"]
         outputs = {**info, "steps": steps, "bracketed": bool(bracketed), "interp_weight": float(w),
@@ -206,7 +227,9 @@ class Roller3DStudy(Study):
         p, out, m = point["parameters"], point["solver_outputs"], point["metrics"]
         t = out["at_target"]
         R, E, nu = (float(p[k]) for k in ("roller_radius_mm", "youngs_modulus_MPa", "poisson_ratio"))
-        loc = hertz.line_contact(t["q_mid_N_per_mm"], R, E, nu)
+        # the mid-length line load from the nodal pressures, scaled by reaction / pressure integral (the smearing)
+        q_corr = t["q_mid_N_per_mm"] * abs(t["F_top_N"]) / t["contact_integral_N"]
+        loc = hertz.line_contact(q_corr, R, E, nu)
         target = out["target_quarter_load_N"]
         checks = [
             check("load_bracketed", "the target load lies between two completed steps (0 = yes)",
@@ -214,6 +237,9 @@ class Roller3DStudy(Study):
             check("equilibrium", "max over the steps of |roller reaction + plate reaction| / roller reaction",
                   max(abs(s["F_top_N"] + s["F_bottom_N"]) / abs(s["F_top_N"]) for s in out["steps"]),
                   tol["equilibrium_rel_tol"]),
+            check("contact_integral", "|contact pressure integrated over the patch / roller reaction - 1| at the target "
+                  "load (the nodal pressures' smearing of the contact edge)",
+                  abs(t["contact_integral_N"] / abs(t["F_top_N"]) - 1), tol["integral_rel_tol"]),
             check("hertz_mid_pressure", "|peak pressure at mid-length - Hertz p0 for the local line load there| / p0 "
                   "(long-roller limit)", abs(t["p_mid_MPa"] / loc["peak_pressure_MPa"] - 1), tol["hertz_rel_tol"]),
             check("elastic", "max subsurface shear / shear yield (Tresca, yield / 2)",

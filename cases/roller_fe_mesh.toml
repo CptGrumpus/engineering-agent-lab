@@ -1,0 +1,87 @@
+# Study 10 part 2, the 3D FE check of the crowned design: three contact meshes (overnight).
+#
+# Why: the half-space model (roller_hs_*) passes the crowned roller (log crown, A = 1.3 x Lundberg = 1.793 um, z_m 30
+# um) at 616.8 MPa against 650, a 5.1 % margin, and meets every one of its exact checks. The one coarse 3D FE solve
+# (scratch r3_log3, 2026-11-27: Lundberg's A, 0.08 mm contact elements) read 5 % higher at mid-length than the
+# half-space at the same load. Re-read at 18:05: its nodal contact pressures integrate to 12 % MORE than the
+# reaction (the coarse mesh smears the contact edge); corrected for that, its mid-length line load is about 514 N/mm
+# against the half-space's 458 at the same mean load, and its mid-length pressure (610 MPa) matches Hertz for 514
+# within 1 %. So the FE carries more of the load at mid-length: consistent with the half-space's known limit (it
+# continues past the roller's end face, so it makes the ends too stiff). For the crowned design, whose peak is at
+# mid-length, that pushes the FE above the half-space. This case measures by how much: the chosen crown on three
+# in-plane contact meshes (refined zone 1.6 mm, layers along the roller fixed: end 0.2 mm, at most 1.0 mm), four
+# approach steps bracketing 500 N/mm, the results interpolated to it. The steps run one after another (about 1.5, 3
+# and 7 hours).
+#
+# Predictions, written BEFORE the evidence run (uncertain: the trial was at a different crown):
+#   P1 Equilibrium, the load bracket and the elastic check pass at every mesh; contact_integral FAILS at every mesh
+#      (12 % on the trial mesh, falling roughly with the element size: about 12 / 9 / 7 %); hertz_mid_pressure (with
+#      the corrected line load) passes at the two finer meshes (within 3 %).
+#   P2 Peak contact pressure at mid-length, about 650 / 643 / 638 MPa at 0.08 / 0.06 / 0.045 mm (+-15 MPa), falling as
+#      the mesh refines, towards about 630 (2-3 % over the half-space's 617: the end-compliance effect); the GCI may or
+#      may not pass (three levels at refinement ratio 1.33).
+#   P3 REQ-C1-3D passes at the two finer meshes and is borderline at the coarsest; if the extrapolated peak is over
+#      650 MPa the crown recommendation changes (a stronger crown: the half-space window runs to 2.5 x).
+#   P4 About 12 hours in all.
+
+[case]
+name = "roller_fe_mesh"
+model = "ccx_roller_3d"
+description = "Study 10's track roller (100 mm diameter, 30 mm long [synthetic], 500 N/mm) with the chosen logarithmic crown (A = 1.793 um, z_m 30 um) on a 60 mm plate, 3D CalculiX penalty contact; contact elements 0.08 / 0.06 / 0.045 mm; four approach steps bracketing the load."
+assumptions = [
+  "Linear elastic steel (E 210 GPa, nu 0.3), frictionless penalty contact as study 10 (50 E / h).",
+  "Quarter model: symmetric about the plane through the roller's axis and about its mid-length; the plate 60 mm wide, 50 mm deep, 120 mm long (study 10's section).",
+  "The crown applied as a micron drop of the roller's nodes (each slice shifted), capped at 60 um.",
+  "The results interpolated linearly in load between the two steps that bracket 500 N/mm.",
+]
+limitations = [
+  "Layers along the roller are not refined with the contact mesh (end 0.2 mm, at most 1.0 mm): the mid-length value is what this case measures; the end region is resolved by the end layers only.",
+  "No misalignment; contact pressure and the shear below it only.",
+]
+
+[parameters]
+roller_radius_mm = 50.0
+roller_length_mm = 30.0
+plate_width_mm = 60.0
+block_half_width_mm = 60.0
+block_depth_mm = 50.0
+youngs_modulus_MPa = 210000.0
+poisson_ratio = 0.3
+yield_strength_MPa = 1200.0
+contact_element_size_mm = 0.08
+far_element_size_mm = 4.0
+refined_zone_mm = 1.6
+end_layer_mm = 0.2
+layer_growth = 1.3
+max_layer_mm = 1.0
+penalty_stiffness_factor = 50.0
+line_load_N_per_mm = 500.0
+profile = "log"
+crown_A_um = 1.793145692168688       # 1.3 x Lundberg's 1.379 um (roller_hs_mesh)
+crown_zm_um = 30.0
+cap_um = 60.0
+approach_mm = 0.0155
+approach_factors = [0.92, 0.97, 1.02, 1.07]
+
+[sweep]
+parameter = "contact_element_size_mm"
+values = [0.08, 0.06, 0.045]
+
+[numerics]
+solver_timeout_s = 64800
+threads = 16
+
+[verification]
+equilibrium_rel_tol = 1e-5
+hertz_rel_tol = 0.03
+integral_rel_tol = 0.03
+mesh_noise_rel = 1e-3
+gci_max = 0.03
+
+[[requirements]]
+id = "REQ-C1-3D"
+text = "The peak contact pressure anywhere along the crowned roller shall not exceed 650 MPa (study 10's REQ on the peak pressure), on the 3D finite-element model."
+metric = "peak_contact_pressure_MPa"
+operator = "<="
+limit = 650.0
+units = "MPa"
