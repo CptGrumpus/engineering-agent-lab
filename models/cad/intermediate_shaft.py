@@ -30,6 +30,11 @@ DESIGNS = {
     "d40": {"journal": 35.0, "bearing_width": 17.0, "groove_d": 33.0, "groove_m": 1.6,      # 6207 [synthetic]
             "seat": 40.0, "collar": 50.0, "fillet": 2.0, "key_seat": (12.0, 5.0, 0.4),
             "pinion": 45.0, "key_pinion": (14.0, 5.5, 0.4)},
+    # the smallest keyed seat that passes with the keyway corner at the bottom of its tolerance, 0.25 mm (study 26
+    # part 2, design_r1)
+    "d42": {"journal": 35.0, "bearing_width": 17.0, "groove_d": 33.0, "groove_m": 1.6,      # 6207 [synthetic]
+            "seat": 42.0, "collar": 52.5, "fillet": 2.1, "key_seat": (12.0, 5.0, 0.25),
+            "pinion": 47.0, "key_pinion": (14.0, 5.5, 0.25)},
 }
 # axial layout [synthetic except the shoulder at 90 and the seat keyway's 40 mm / 2 mm gap]
 Z_SEAT, Z_SHOULDER, Z_COLLAR_END, Z_PINION_END, Z_END = 20.0, 90.0, 100.0, 150.0, 170.0
