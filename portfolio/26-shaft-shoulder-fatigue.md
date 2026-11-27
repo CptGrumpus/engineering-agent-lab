@@ -176,11 +176,12 @@ The shaft is delivered as a detailed CadQuery part, not just the analysed stub
 - **The same path without a keyway** reproduces part 1's verified fillet Kt within 0.38 % (bending) and 0.42 %
   (torsion).
 - **Published keyseat factors** ([Le and Le, ASEE 2013](https://peer.asee.org/22476), an isolated profile keyseat at
-  ANSI proportions): torsion
-  +4.2 %, inside the 5 % tolerance. Bending is +13.9 % on the maximum principal stress used here and +5.5 % on the axial
-  stress, which is probably their definition: just outside 5 %, and within the 10 % their own two tables differ by.
-  Reported as an open difference, not a pass. The verdicts use the higher, principal value, so a lower reference
-  value could only raise the safety factors.
+  ANSI proportions), at three of their corner ratios. Their bending factor is the axial stress (their eq. 2); ours
+  is above theirs by 3.5 %, 5.5 % and 8.7 % at r/B 0.083, 0.05 and 0.03, and in torsion by 1.7-4.8 %. The gap grows
+  as the corner sharpens, so it is not a fixed difference of definition; the likelier cause is their peak reading (a
+  2 % strain-energy convergence criterion converges the model, not a local peak). Reported as an open difference,
+  measured, not a pass. Our factors are the higher at every ratio, and the verdicts use the higher principal stress,
+  so a lower reference value could only raise the safety factors.
 - **Equilibrium and load** of the global model: reaction against applied moment within 4e-7, the applied end loads
   within 1.1e-5, in both load cases.
 - **Global against submodel** at the fillet, where the global mesh resolves it: within 2 % (one point at 2.18 %, with
@@ -228,7 +229,8 @@ The shaft is delivered as a detailed CadQuery part, not just the analysed stub
   `studies/shaft_fillet.py`, references `validation/shaft_fatigue.py`
 - Part 2: mesh study [`keyed_shaft_mesh_r1`](../runs/20261127-031958_keyed_shaft_mesh_r1/report.md), noise
   [`keyed_shaft_noise`](../runs/20261127-010741_keyed_shaft_noise/report.md), checks
-  [`keyed_shaft_check_r1`](../runs/20261127-015248_keyed_shaft_check_r1/report.md), seat and corner radius
+  [`keyed_shaft_check_r1`](../runs/20261127-015248_keyed_shaft_check_r1/report.md), Le and Le at three ratios
+  [`keyed_shaft_le_sweep`](../runs/20261127-110904_keyed_shaft_le_sweep/report.md), seat and corner radius
   [`keyed_shaft_design_r1`](../runs/20261127-021152_keyed_shaft_design_r1/report.md); the first runs, whose fillet
   boxes missed the peaks, are kept (`runs/20261126-232303_keyed_shaft_mesh`, `runs/20261126-234913_keyed_shaft_check`,
   `runs/20261127-000418_keyed_shaft_design`)

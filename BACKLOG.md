@@ -83,7 +83,7 @@ commit). Rules that bind:
 ### Study 26 part 2 done (03:58, 2026-11-27)
 
 r1 runs scored: noise (010741), check_r1 (015248), design_r1 (021152), mesh_r1 (031958, VERIFICATION PASS). Page 26
-Part 2 written. Open: Le and Le's bending keyseat factor (+5.5 % on the axial stress; open difference, not a pass);
+Part 2 written. Le and Le measured at three r/B (run 20261127-110904): ours above theirs by 3.5-8.7 % (bending, axial) and 1.7-4.8 % (torsion), growing as the corner sharpens: an open difference, on the safe side;
 the global-against-submodel check now reports the peak distance, and a new check `fillet_peak_covered_*` tests
 that the global peak lies inside a fillet box (replayed: fails every r0 point, passes every r1 point); render and drawing of the detailed shaft asked of the dashboard session.
 

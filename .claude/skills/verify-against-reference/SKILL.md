@@ -142,6 +142,11 @@ Predict convergence on the reported quantity, not the solver's residual norm (El
 - **A comparison between two methods can pass because of a shared mistake.** Check that each side has its own
   inputs: the B1-B2 "lateral translation" frame first carried the gravity load again, and that error put the two
   methods 85 % apart; had the exact side shared it, they would have agreed.
+- **Read the reference's own definition before comparing, and compare at more than one point.** A published FE
+  value (Le and Le's keyseat factors, study 26) defined KTB by the axial "bending stress", not the principal stress:
+  that halved the gap (13.9 to 5.5 %). Three ratios then showed the rest growing as the corner sharpened (3.5, 5.5,
+  8.7 %): not a fixed definition offset but most likely the reference's peak resolution (a global strain-energy
+  criterion). One point cannot tell an offset from a trend; three can.
 
 ## Artifacts
 

@@ -23,6 +23,24 @@
 #      before) and may pass or fail at the other two; keyseat_reference_torsion passes at all three.
 #   P3 The principal-stress KTB stays 12-16 % above their bending factor at every r/B (it is not their quantity).
 #   P4 Every other check passes; 30-60 min (the 0.381 mm corner meshes finer).
+#
+# Results (run 20261127-110904_keyed_shaft_le_sweep, 11:09-11:35, scored 2026-11-27 11:35). VERIFICATION FAIL on
+# keyseat_reference_bending at r/B 0.03 and 0.05 (the comparison this case is about).
+#   P1 held: le_r050 KTB axial 2.700, Ks 2.616, as run 20261127-015248 to four digits.
+#   P2 not held: our axial KTB over theirs 1.087 / 1.055 / 1.035 at r/B 0.03 / 0.05 / 0.0832, a 5.2-point trend, not
+#      a constant offset; Ks over theirs 1.048 / 1.042 / 1.017 (in 1.02-1.06, but the same trend). Bending passes the
+#      5 % check at 0.0832 only, torsion at all three.
+#   P3 not held: principal KTB over their bending factor 1.178 / 1.139 / 1.102 (10-18 %, wider than 12-16 %).
+#   P4 half held: every other check passes (equilibrium, loads, global against fillet submodel, the fillet peak inside
+#      its box, mesh quality); 26 min, not 30-60.
+# Findings:
+#   1. The gap to Le and Le grows as the corner sharpens, in bending and torsion alike: their values fall further
+#      below ours at smaller r/B. A pure definition difference would be about constant. The likelier cause is their
+#      peak reading: a global strain-energy criterion (2 %) converges a model, not a local peak, and leaves a sharper
+#      peak more under-resolved. Not provable from the paper; our own values are mesh-checked (keyed_shaft_mesh_r1,
+#      the noise floor). Their tables' internal 10 % scatter (Ks) points the same way.
+#   2. For study 26 the difference is on the safe side: our Kt is the higher at every ratio, and the DIN keyways
+#      there (r/B 0.02-0.04) sit where the gap is largest. The open difference stays open, now measured.
 
 [case]
 name = "keyed_shaft_le_sweep"

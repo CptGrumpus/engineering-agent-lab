@@ -1,0 +1,1316 @@
+{
+  "run_id": "20261127-110904_keyed_shaft_le_sweep",
+  "case_name": "keyed_shaft_le_sweep",
+  "model": "ccx_keyed_shaft",
+  "case_source": "cases/keyed_shaft_le_sweep.toml",
+  "case_sha256": "fa54c32c63f8f50755a9b54afea3d590c957fc8b5ca057b4b455a4e78cf9b72f",
+  "model_sources_sha256": {
+    "models/fea/keyed_shaft.py": "bfc75a5157eaa7637c2b5016e7e60a260a769978b8452b9c84439fce9360f0b2"
+  },
+  "rerun_of": null,
+  "started_utc": "2026-11-27T16:09:04+00:00",
+  "environment": {
+    "python": "3.14.10",
+    "python_executable": "<repo>\\.venv\\Scripts\\python.exe",
+    "platform": "Windows-11-10.0.26100-SP0",
+    "machine": "AMD64",
+    "packages": {
+      "numpy": "2.5.5",
+      "scipy": "1.18.1",
+      "matplotlib": "3.11.2",
+      "cadquery": "2.8.0"
+    },
+    "git": {
+      "commit": "aafbcfc9e898fa04f8ce1a5c419d48d772e0655e",
+      "dirty": true
+    },
+    "tools": {
+      "cadquery": "2.8.0",
+      "gmsh (Python API)": "4.15.0",
+      "calculix": "This is Version 2.22"
+    }
+  },
+  "numerics": {
+    "parallel_solves": 6,
+    "solve_timeout_s": 7200,
+    "solver_timeout_s": 43200,
+    "driven_skip_mm": 1.0
+  },
+  "points": [
+    {
+      "label": "p00_le_r030",
+      "parameters": {
+        "D_mm": 63.5,
+        "d_mm": 50.8,
+        "fillet_radius_mm": 2.54,
+        "small_length_mm": 180.0,
+        "large_length_mm": 60.0,
+        "bending_moment_Nm": 300.0,
+        "torque_Nm": 500.0,
+        "youngs_modulus_MPa": 210000.0,
+        "poisson_ratio": 0.3,
+        "ultimate_MPa": 1000.0,
+        "yield_MPa": 750.0,
+        "overload_factor": 1.5,
+        "key_width_mm": 12.7,
+        "key_depth_mm": 6.35,
+        "key_corner_radius_mm": 0.381,
+        "key_gap_mm": 20.0,
+        "key_length_mm": 50.8,
+        "global_key_size_mm": 0.45,
+        "global_fillet_size_mm": 0.7,
+        "far_size_mm": 4.0,
+        "sub_key_size_rel": 0.333,
+        "sub_fillet_size_mm": 0.3,
+        "mesh_scale": 0.8,
+        "box_margin_mm": 3.0,
+        "sub_far_size_mm": 1.5,
+        "kt_reference_bending": 0.0,
+        "kt_reference_torsion": 0.0,
+        "kt_key_reference_bending": 2.981,
+        "kt_key_reference_torsion": 2.888,
+        "scenario": "le_r030"
+      },
+      "status": "completed",
+      "derived": {},
+      "solver": {
+        "success": true,
+        "message": "global 115605 nodes + 5 submodels",
+        "nfev": 12
+      },
+      "solver_outputs": {
+        "global": {
+          "cad": {
+            "volume_mm3": 275675.9010891821,
+            "faces": 14
+          },
+          "mesh": {
+            "elements": 74244,
+            "min_scaled_jacobian": 0.34764574111427116,
+            "inverted_elements": 0,
+            "keyway_fillet_faces": 3,
+            "shoulder_fillet_faces": 1,
+            "gmsh": "4.15.0"
+          },
+          "nodes": 115605
+        },
+        "subs": {
+          "fillet_a": {
+            "box": [
+              0.0,
+              32.75,
+              0.0,
+              32.75,
+              174.46,
+              183.0
+            ],
+            "cad": {
+              "volume_mm3": 5238.824729875219,
+              "faces": 8
+            },
+            "mesh": {
+              "elements": 77654,
+              "min_scaled_jacobian": 0.9346592948782005,
+              "inverted_elements": 0,
+              "keyway_fillet_faces": 0,
+              "shoulder_fillet_faces": 1,
+              "gmsh": "4.15.0"
+            },
+            "nodes": 121471,
+            "driven_nodes": 4659
+          },
+          "fillet_b": {
+            "box": [
+              -32.75,
+              0.0,
+              0.0,
+              32.75,
+              174.46,
+              183.0
+            ],
+            "cad": {
+              "volume_mm3": 5238.824729875219,
+              "faces": 8
+            },
+            "mesh": {
+              "elements": 77502,
+              "min_scaled_jacobian": 0.9318788869333837,
+              "inverted_elements": 0,
+              "keyway_fillet_faces": 0,
+              "shoulder_fillet_faces": 1,
+              "gmsh": "4.15.0"
+            },
+            "nodes": 121304,
+            "driven_nodes": 4679
+          },
+          "near": {
+            "box": [
+              16.049999999999997,
+              32.75,
+              0.0,
+              9.35,
+              147.11,
+              183.0
+            ],
+            "cad": {
+              "volume_mm3": 2786.892069236543,
+              "faces": 14
+            },
+            "mesh": {
+              "elements": 141256,
+              "min_scaled_jacobian": 0.8035018039649116,
+              "inverted_elements": 0,
+              "keyway_fillet_faces": 2,
+              "shoulder_fillet_faces": 1,
+              "gmsh": "4.15.0"
+            },
+            "nodes": 202628,
+            "driven_nodes": 4399
+          },
+          "far": {
+            "box": [
+              16.049999999999997,
+              32.75,
+              0.0,
+              9.35,
+              103.66000000000001,
+              117.01
+            ],
+            "cad": {
+              "volume_mm3": 745.1174264378186,
+              "faces": 11
+            },
+            "mesh": {
+              "elements": 121944,
+              "min_scaled_jacobian": 0.8145316385636553,
+              "inverted_elements": 0,
+              "keyway_fillet_faces": 2,
+              "shoulder_fillet_faces": 0,
+              "gmsh": "4.15.0"
+            },
+            "nodes": 171709,
+            "driven_nodes": 2568
+          },
+          "middle": {
+            "box": [
+              16.049999999999997,
+              32.75,
+              0.0,
+              9.35,
+              128.06,
+              136.06
+            ],
+            "cad": {
+              "volume_mm3": 346.7934360026585,
+              "faces": 9
+            },
+            "mesh": {
+              "elements": 71284,
+              "min_scaled_jacobian": 0.8387143567795753,
+              "inverted_elements": 0,
+              "keyway_fillet_faces": 1,
+              "shoulder_fillet_faces": 0,
+              "gmsh": "4.15.0"
+            },
+            "nodes": 101270,
+            "driven_nodes": 3797
+          }
+        },
+        "peaks": {
+          "global/bending": {
+            "fillet": {
+              "k": 2.087429821711172,
+              "xyz": [
+                25.2062,
+                4.34872,
+                178.396
+              ],
+              "nodes": 3419,
+              "k_axial": 1.951105186078758
+            },
+            "key_near_end": {
+              "k": 3.300952046991077,
+              "xyz": [
+                19.073,
+                1.21908,
+                157.086
+              ],
+              "nodes": 3111,
+              "k_axial": 3.0149013257494484
+            },
+            "key_far_end": {
+              "k": 3.324732414677144,
+              "xyz": [
+                19.101,
+                -2.11497e-15,
+                106.851
+              ],
+              "nodes": 3187,
+              "k_axial": 2.9998301225156596
+            },
+            "key_middle": {
+              "k": 0.9314458217539806,
+              "xyz": [
+                19.4124,
+                7.9491,
+                123.825
+              ],
+              "nodes": 3483,
+              "k_axial": 0.9313428721956014
+            }
+          },
+          "global/torsion": {
+            "fillet": {
+              "k": 1.5991471019547232,
+              "xyz": [
+                -25.4118,
+                1.75351,
+                178.062
+              ],
+              "nodes": 3419
+            },
+            "key_near_end": {
+              "k": 2.786401142387614,
+              "xyz": [
+                19.0789,
+                6.11447,
+                144.783
+              ],
+              "nodes": 3111
+            },
+            "key_far_end": {
+              "k": 2.7732630842016666,
+              "xyz": [
+                19.0804,
+                6.11808,
+                119.055
+              ],
+              "nodes": 3187
+            },
+            "key_middle": {
+              "k": 2.9134164818334654,
+              "xyz": [
+                19.0759,
+                6.10718,
+                127.725
+              ],
+              "nodes": 3483
+            }
+          },
+          "fillet_a/bending": {
+            "fillet": {
+              "k": 2.069609466450182,
+              "xyz": [
+                25.5056,
+                0.486016,
+                178.2
+              ],
+              "nodes": 13298,
+              "k_axial": 1.9602345685101563
+            }
+          },
+          "fillet_a/torsion": {
+            "fillet": {
+              "k": 1.5930493870595737,
+              "xyz": [
+                25.4917,
+                0.414049,
+                178.148
+              ],
+              "nodes": 13298
+            }
+          },
+          "fillet_b/bending": {
+            "fillet": {
+              "k": 0.10180701432220673,
+              "xyz": [
+                -27.8821,
+                1.79745,
+                180.0
+              ],
+              "nodes": 13339,
+              "k_axial": 0.008794538306036083
+            }
+          },
+          "fillet_b/torsion": {
+            "fillet": {
+              "k": 1.5898796537568507,
+              "xyz": [
+                -24.8106,
+                5.90403,
+                178.177
+              ],
+              "nodes": 13339
+            }
+          },
+          "near/bending": {
+            "fillet": {
+              "k": 2.0738316314770127,
+              "xyz": [
+                25.4665,
+                1.68284,
+                178.238
+              ],
+              "nodes": 2857,
+              "k_axial": 1.9629459264503086
+            },
+            "key_near_end": {
+              "k": 3.493024193065393,
+              "xyz": [
+                19.0912,
+                0.507848,
+                157.23
+              ],
+              "nodes": 27736,
+              "k_axial": 3.192306505403198
+            }
+          },
+          "near/torsion": {
+            "fillet": {
+              "k": 1.5913671732652113,
+              "xyz": [
+                25.4859,
+                0.525202,
+                178.135
+              ],
+              "nodes": 2857
+            },
+            "key_near_end": {
+              "k": 2.8109565690909184,
+              "xyz": [
+                19.109,
+                6.17261,
+                148.214
+              ],
+              "nodes": 27736
+            }
+          },
+          "far/bending": {
+            "key_far_end": {
+              "k": 3.513422940900952,
+              "xyz": [
+                19.0699,
+                0.648529,
+                106.954
+              ],
+              "nodes": 27797,
+              "k_axial": 3.2412482322722727
+            }
+          },
+          "far/torsion": {
+            "key_far_end": {
+              "k": 2.804328589754088,
+              "xyz": [
+                19.1096,
+                6.1736,
+                115.468
+              ],
+              "nodes": 27797
+            }
+          },
+          "middle/bending": {
+            "key_middle": {
+              "k": 0.9217282767403433,
+              "xyz": [
+                19.4037,
+                8.05676,
+                129.197
+              ],
+              "nodes": 14248,
+              "k_axial": 0.9217201255820553
+            }
+          },
+          "middle/torsion": {
+            "key_middle": {
+              "k": 3.0265043379360983,
+              "xyz": [
+                19.1134,
+                6.1794,
+                130.605
+              ],
+              "nodes": 14248
+            }
+          }
+        },
+        "equilibrium": {
+          "bending": {
+            "applied": 149999.61959924086,
+            "reaction": 149999.62116601007,
+            "target": 150000.0
+          },
+          "torsion": {
+            "applied": -249999.36599873507,
+            "reaction": -249999.35811700937,
+            "target": 250000.0
+          }
+        }
+      },
+      "metrics": {
+        "kt_fillet_bending": 2.069609466450182,
+        "kt_fillet_torsion": 1.5930493870595737,
+        "kt_key_bending": 3.513422940900952,
+        "kt_key_torsion": 3.0265043379360983,
+        "kt_key_bending_far": 3.513422940900952,
+        "kt_key_torsion_middle": 3.0265043379360983,
+        "kt_key_bending_far_axial": 3.2412482322722727,
+        "fatigue_safety_fillet": 4.601710764324342,
+        "static_safety_fillet": 7.2247074037928884,
+        "fatigue_safety_key": 2.9625631681293534,
+        "static_safety_key": 4.447413681308249,
+        "fatigue_safety": 2.9625631681293534,
+        "static_safety": 4.447413681308249
+      }
+    },
+    {
+      "label": "p01_le_r050",
+      "parameters": {
+        "D_mm": 63.5,
+        "d_mm": 50.8,
+        "fillet_radius_mm": 2.54,
+        "small_length_mm": 180.0,
+        "large_length_mm": 60.0,
+        "bending_moment_Nm": 300.0,
+        "torque_Nm": 500.0,
+        "youngs_modulus_MPa": 210000.0,
+        "poisson_ratio": 0.3,
+        "ultimate_MPa": 1000.0,
+        "yield_MPa": 750.0,
+        "overload_factor": 1.5,
+        "key_width_mm": 12.7,
+        "key_depth_mm": 6.35,
+        "key_corner_radius_mm": 0.635,
+        "key_gap_mm": 20.0,
+        "key_length_mm": 50.8,
+        "global_key_size_mm": 0.45,
+        "global_fillet_size_mm": 0.7,
+        "far_size_mm": 4.0,
+        "sub_key_size_rel": 0.333,
+        "sub_fillet_size_mm": 0.3,
+        "mesh_scale": 0.8,
+        "box_margin_mm": 3.0,
+        "sub_far_size_mm": 1.5,
+        "kt_reference_bending": 0.0,
+        "kt_reference_torsion": 0.0,
+        "kt_key_reference_bending": 2.56,
+        "kt_key_reference_torsion": 2.511,
+        "scenario": "le_r050"
+      },
+      "status": "completed",
+      "derived": {},
+      "solver": {
+        "success": true,
+        "message": "global 95363 nodes + 5 submodels",
+        "nfev": 12
+      },
+      "solver_outputs": {
+        "global": {
+          "cad": {
+            "volume_mm3": 275679.08567789034,
+            "faces": 14
+          },
+          "mesh": {
+            "elements": 60534,
+            "min_scaled_jacobian": 0.523485150636367,
+            "inverted_elements": 0,
+            "keyway_fillet_faces": 3,
+            "shoulder_fillet_faces": 1,
+            "gmsh": "4.15.0"
+          },
+          "nodes": 95363
+        },
+        "subs": {
+          "fillet_a": {
+            "box": [
+              0.0,
+              32.75,
+              0.0,
+              32.75,
+              174.46,
+              183.0
+            ],
+            "cad": {
+              "volume_mm3": 5238.824729875219,
+              "faces": 8
+            },
+            "mesh": {
+              "elements": 77654,
+              "min_scaled_jacobian": 0.9346592948782005,
+              "inverted_elements": 0,
+              "keyway_fillet_faces": 0,
+              "shoulder_fillet_faces": 1,
+              "gmsh": "4.15.0"
+            },
+            "nodes": 121471,
+            "driven_nodes": 4659
+          },
+          "fillet_b": {
+            "box": [
+              -32.75,
+              0.0,
+              0.0,
+              32.75,
+              174.46,
+              183.0
+            ],
+            "cad": {
+              "volume_mm3": 5238.824729875219,
+              "faces": 8
+            },
+            "mesh": {
+              "elements": 77502,
+              "min_scaled_jacobian": 0.9318788869333837,
+              "inverted_elements": 0,
+              "keyway_fillet_faces": 0,
+              "shoulder_fillet_faces": 1,
+              "gmsh": "4.15.0"
+            },
+            "nodes": 121304,
+            "driven_nodes": 4679
+          },
+          "near": {
+            "box": [
+              16.049999999999997,
+              32.75,
+              0.0,
+              9.35,
+              147.11,
+              183.0
+            ],
+            "cad": {
+              "volume_mm3": 2787.6508791401166,
+              "faces": 14
+            },
+            "mesh": {
+              "elements": 93453,
+              "min_scaled_jacobian": 0.8376179067583698,
+              "inverted_elements": 0,
+              "keyway_fillet_faces": 2,
+              "shoulder_fillet_faces": 1,
+              "gmsh": "4.15.0"
+            },
+            "nodes": 135941,
+            "driven_nodes": 4386
+          },
+          "far": {
+            "box": [
+              16.049999999999997,
+              32.75,
+              0.0,
+              9.35,
+              103.66000000000001,
+              117.01
+            ],
+            "cad": {
+              "volume_mm3": 745.8762368950731,
+              "faces": 11
+            },
+            "mesh": {
+              "elements": 73643,
+              "min_scaled_jacobian": 0.8277274904307588,
+              "inverted_elements": 0,
+              "keyway_fillet_faces": 2,
+              "shoulder_fillet_faces": 0,
+              "gmsh": "4.15.0"
+            },
+            "nodes": 104310,
+            "driven_nodes": 2570
+          },
+          "middle": {
+            "box": [
+              16.049999999999997,
+              32.75,
+              0.0,
+              9.35,
+              128.06,
+              136.06
+            ],
+            "cad": {
+              "volume_mm3": 347.23648406954646,
+              "faces": 9
+            },
+            "mesh": {
+              "elements": 42840,
+              "min_scaled_jacobian": 0.8456376525152434,
+              "inverted_elements": 0,
+              "keyway_fillet_faces": 1,
+              "shoulder_fillet_faces": 0,
+              "gmsh": "4.15.0"
+            },
+            "nodes": 61577,
+            "driven_nodes": 3625
+          }
+        },
+        "peaks": {
+          "global/bending": {
+            "fillet": {
+              "k": 2.0908646195354237,
+              "xyz": [
+                25.2062,
+                4.34872,
+                178.396
+              ],
+              "nodes": 3407,
+              "k_axial": 1.9608437660220261
+            },
+            "key_near_end": {
+              "k": 2.8081317596299256,
+              "xyz": [
+                19.0664,
+                1.48192,
+                156.778
+              ],
+              "nodes": 2125,
+              "k_axial": 2.609450350736956
+            },
+            "key_far_end": {
+              "k": 2.793850087140184,
+              "xyz": [
+                19.1147,
+                1.19899,
+                107.137
+              ],
+              "nodes": 2118,
+              "k_axial": 2.6177474492436876
+            },
+            "key_middle": {
+              "k": 0.9437910099833097,
+              "xyz": [
+                19.6758,
+                7.9885,
+                140.243
+              ],
+              "nodes": 2463,
+              "k_axial": 0.9436898471192688
+            }
+          },
+          "global/torsion": {
+            "fillet": {
+              "k": 1.5953046379195666,
+              "xyz": [
+                -22.7245,
+                11.708,
+                178.356
+              ],
+              "nodes": 3407
+            },
+            "key_near_end": {
+              "k": 2.42928329444675,
+              "xyz": [
+                19.0663,
+                5.85793,
+                145.191
+              ],
+              "nodes": 2125
+            },
+            "key_far_end": {
+              "k": 2.461084995750795,
+              "xyz": [
+                19.13,
+                6.02361,
+                117.056
+              ],
+              "nodes": 2118
+            },
+            "key_middle": {
+              "k": 2.593459608846933,
+              "xyz": [
+                19.1539,
+                6.0631,
+                127.842
+              ],
+              "nodes": 2463
+            }
+          },
+          "fillet_a/bending": {
+            "fillet": {
+              "k": 2.0704651761425534,
+              "xyz": [
+                25.5056,
+                0.486016,
+                178.2
+              ],
+              "nodes": 13298,
+              "k_axial": 1.9609767598450396
+            }
+          },
+          "fillet_a/torsion": {
+            "fillet": {
+              "k": 1.5927442807936463,
+              "xyz": [
+                25.4917,
+                0.414049,
+                178.148
+              ],
+              "nodes": 13298
+            }
+          },
+          "fillet_b/bending": {
+            "fillet": {
+              "k": 0.10207951827968226,
+              "xyz": [
+                -27.94,
+                3.42166e-15,
+                180.0
+              ],
+              "nodes": 13339,
+              "k_axial": 0.008847392625375757
+            }
+          },
+          "fillet_b/torsion": {
+            "fillet": {
+              "k": 1.5896242122062245,
+              "xyz": [
+                -24.8106,
+                5.90403,
+                178.177
+              ],
+              "nodes": 13339
+            }
+          },
+          "near/bending": {
+            "fillet": {
+              "k": 2.073743208181877,
+              "xyz": [
+                25.4665,
+                1.68284,
+                178.238
+              ],
+              "nodes": 2857,
+              "k_axial": 1.9647778091092403
+            },
+            "key_near_end": {
+              "k": 2.9465317142584433,
+              "xyz": [
+                19.0871,
+                1.07449,
+                156.941
+              ],
+              "nodes": 16165,
+              "k_axial": 2.6954630332402942
+            }
+          },
+          "near/torsion": {
+            "fillet": {
+              "k": 1.5912516559693084,
+              "xyz": [
+                25.4859,
+                0.525202,
+                178.135
+              ],
+              "nodes": 2857
+            },
+            "key_near_end": {
+              "k": 2.4365116564259526,
+              "xyz": [
+                19.115,
+                5.99496,
+                148.428
+              ],
+              "nodes": 16165
+            }
+          },
+          "far/bending": {
+            "key_far_end": {
+              "k": 2.917489087343343,
+              "xyz": [
+                19.0809,
+                0.443434,
+                107.116
+              ],
+              "nodes": 16015,
+              "k_axial": 2.700074915812546
+            }
+          },
+          "far/torsion": {
+            "key_far_end": {
+              "k": 2.4182679307726045,
+              "xyz": [
+                19.0876,
+                5.93023,
+                115.973
+              ],
+              "nodes": 16015
+            }
+          },
+          "middle/bending": {
+            "key_middle": {
+              "k": 0.9339981134395821,
+              "xyz": [
+                19.6753,
+                8.02919,
+                134.98
+              ],
+              "nodes": 8491,
+              "k_axial": 0.9339898782859083
+            }
+          },
+          "middle/torsion": {
+            "key_middle": {
+              "k": 2.615717113590714,
+              "xyz": [
+                19.1159,
+                5.99661,
+                133.726
+              ],
+              "nodes": 8491
+            }
+          }
+        },
+        "equilibrium": {
+          "bending": {
+            "applied": 149999.6195992408,
+            "reaction": 149999.61473765888,
+            "target": 150000.0
+          },
+          "torsion": {
+            "applied": -249999.36599873513,
+            "reaction": -249999.37436260868,
+            "target": 250000.0
+          }
+        }
+      },
+      "metrics": {
+        "kt_fillet_bending": 2.0704651761425534,
+        "kt_fillet_torsion": 1.5927442807936463,
+        "kt_key_bending": 2.9465317142584433,
+        "kt_key_torsion": 2.615717113590714,
+        "kt_key_bending_far": 2.917489087343343,
+        "kt_key_torsion_middle": 2.615717113590714,
+        "kt_key_bending_far_axial": 2.700074915812546,
+        "fatigue_safety_fillet": 4.600537083462812,
+        "static_safety_fillet": 7.224208004159492,
+        "fatigue_safety_key": 3.3554883370578823,
+        "static_safety_key": 5.000587157327916,
+        "fatigue_safety": 3.3554883370578823,
+        "static_safety": 5.000587157327916
+      }
+    },
+    {
+      "label": "p02_le_r0832",
+      "parameters": {
+        "D_mm": 63.5,
+        "d_mm": 50.8,
+        "fillet_radius_mm": 2.54,
+        "small_length_mm": 180.0,
+        "large_length_mm": 60.0,
+        "bending_moment_Nm": 300.0,
+        "torque_Nm": 500.0,
+        "youngs_modulus_MPa": 210000.0,
+        "poisson_ratio": 0.3,
+        "ultimate_MPa": 1000.0,
+        "yield_MPa": 750.0,
+        "overload_factor": 1.5,
+        "key_width_mm": 12.7,
+        "key_depth_mm": 6.35,
+        "key_corner_radius_mm": 1.0566,
+        "key_gap_mm": 20.0,
+        "key_length_mm": 50.8,
+        "global_key_size_mm": 0.45,
+        "global_fillet_size_mm": 0.7,
+        "far_size_mm": 4.0,
+        "sub_key_size_rel": 0.333,
+        "sub_fillet_size_mm": 0.3,
+        "mesh_scale": 0.8,
+        "box_margin_mm": 3.0,
+        "sub_far_size_mm": 1.5,
+        "kt_reference_bending": 0.0,
+        "kt_reference_torsion": 0.0,
+        "kt_key_reference_bending": 2.235,
+        "kt_key_reference_torsion": 2.258,
+        "scenario": "le_r0832"
+      },
+      "status": "completed",
+      "derived": {},
+      "solver": {
+        "success": true,
+        "message": "global 132656 nodes + 5 submodels",
+        "nfev": 12
+      },
+      "solver_outputs": {
+        "global": {
+          "cad": {
+            "volume_mm3": 275687.8309832883,
+            "faces": 14
+          },
+          "mesh": {
+            "elements": 87462,
+            "min_scaled_jacobian": 0.6952650083856697,
+            "inverted_elements": 0,
+            "keyway_fillet_faces": 3,
+            "shoulder_fillet_faces": 1,
+            "gmsh": "4.15.0"
+          },
+          "nodes": 132656
+        },
+        "subs": {
+          "fillet_a": {
+            "box": [
+              0.0,
+              32.75,
+              0.0,
+              32.75,
+              174.46,
+              183.0
+            ],
+            "cad": {
+              "volume_mm3": 5238.824729875219,
+              "faces": 8
+            },
+            "mesh": {
+              "elements": 77654,
+              "min_scaled_jacobian": 0.9346592948782005,
+              "inverted_elements": 0,
+              "keyway_fillet_faces": 0,
+              "shoulder_fillet_faces": 1,
+              "gmsh": "4.15.0"
+            },
+            "nodes": 121471,
+            "driven_nodes": 4659
+          },
+          "fillet_b": {
+            "box": [
+              -32.75,
+              0.0,
+              0.0,
+              32.75,
+              174.46,
+              183.0
+            ],
+            "cad": {
+              "volume_mm3": 5238.824729875219,
+              "faces": 8
+            },
+            "mesh": {
+              "elements": 77502,
+              "min_scaled_jacobian": 0.9318788869333837,
+              "inverted_elements": 0,
+              "keyway_fillet_faces": 0,
+              "shoulder_fillet_faces": 1,
+              "gmsh": "4.15.0"
+            },
+            "nodes": 121304,
+            "driven_nodes": 4679
+          },
+          "near": {
+            "box": [
+              16.049999999999997,
+              32.75,
+              0.0,
+              9.35,
+              147.11,
+              183.0
+            ],
+            "cad": {
+              "volume_mm3": 2789.720137479671,
+              "faces": 14
+            },
+            "mesh": {
+              "elements": 63437,
+              "min_scaled_jacobian": 0.8306735933743412,
+              "inverted_elements": 0,
+              "keyway_fillet_faces": 2,
+              "shoulder_fillet_faces": 1,
+              "gmsh": "4.15.0"
+            },
+            "nodes": 94190,
+            "driven_nodes": 4604
+          },
+          "far": {
+            "box": [
+              16.049999999999997,
+              32.75,
+              0.0,
+              9.35,
+              103.66000000000001,
+              117.01
+            ],
+            "cad": {
+              "volume_mm3": 747.945496153652,
+              "faces": 11
+            },
+            "mesh": {
+              "elements": 43949,
+              "min_scaled_jacobian": 0.8472775728711464,
+              "inverted_elements": 0,
+              "keyway_fillet_faces": 2,
+              "shoulder_fillet_faces": 0,
+              "gmsh": "4.15.0"
+            },
+            "nodes": 63071,
+            "driven_nodes": 2893
+          },
+          "middle": {
+            "box": [
+              16.049999999999997,
+              32.75,
+              0.0,
+              9.35,
+              128.06,
+              136.06
+            ],
+            "cad": {
+              "volume_mm3": 348.460879499959,
+              "faces": 9
+            },
+            "mesh": {
+              "elements": 25543,
+              "min_scaled_jacobian": 0.8335949552528279,
+              "inverted_elements": 0,
+              "keyway_fillet_faces": 1,
+              "shoulder_fillet_faces": 0,
+              "gmsh": "4.15.0"
+            },
+            "nodes": 37416,
+            "driven_nodes": 3569
+          }
+        },
+        "peaks": {
+          "global/bending": {
+            "fillet": {
+              "k": 2.076307654265194,
+              "xyz": [
+                25.5344,
+                0.230887,
+                178.278
+              ],
+              "nodes": 3415,
+              "k_axial": 1.956313395792911
+            },
+            "key_near_end": {
+              "k": 2.452161141078221,
+              "xyz": [
+                19.1498,
+                0.328672,
+                156.842
+              ],
+              "nodes": 3714,
+              "k_axial": 2.2299674921987376
+            },
+            "key_far_end": {
+              "k": 2.4092872841365134,
+              "xyz": [
+                19.1082,
+                0.155693,
+                107.373
+              ],
+              "nodes": 3756,
+              "k_axial": 2.245853818863901
+            },
+            "key_middle": {
+              "k": 0.9633832781904135,
+              "xyz": [
+                20.0744,
+                7.72072,
+                123.603
+              ],
+              "nodes": 4466,
+              "k_axial": 0.9632914205821723
+            }
+          },
+          "global/torsion": {
+            "fillet": {
+              "k": 1.5995488587359352,
+              "xyz": [
+                -25.5106,
+                1.65468,
+                178.358
+              ],
+              "nodes": 3415
+            },
+            "key_near_end": {
+              "k": 2.170695813152339,
+              "xyz": [
+                19.2137,
+                5.85835,
+                145.617
+              ],
+              "nodes": 3714
+            },
+            "key_far_end": {
+              "k": 2.168893964995367,
+              "xyz": [
+                19.1273,
+                5.69002,
+                119.278
+              ],
+              "nodes": 3756
+            },
+            "key_middle": {
+              "k": 2.289276533667551,
+              "xyz": [
+                19.1251,
+                5.68458,
+                128.696
+              ],
+              "nodes": 4466
+            }
+          },
+          "fillet_a/bending": {
+            "fillet": {
+              "k": 2.071505376844197,
+              "xyz": [
+                25.5056,
+                0.486016,
+                178.2
+              ],
+              "nodes": 13298,
+              "k_axial": 1.962053580799119
+            }
+          },
+          "fillet_a/torsion": {
+            "fillet": {
+              "k": 1.591910004008622,
+              "xyz": [
+                25.4917,
+                0.414049,
+                178.148
+              ],
+              "nodes": 13298
+            }
+          },
+          "fillet_b/bending": {
+            "fillet": {
+              "k": 0.10195252879738302,
+              "xyz": [
+                -27.94,
+                3.42166e-15,
+                180.0
+              ],
+              "nodes": 13339,
+              "k_axial": 0.008826800033425236
+            }
+          },
+          "fillet_b/torsion": {
+            "fillet": {
+              "k": 1.5892884063746344,
+              "xyz": [
+                -24.8106,
+                5.90403,
+                178.177
+              ],
+              "nodes": 13339
+            }
+          },
+          "near/bending": {
+            "fillet": {
+              "k": 2.0703792059725776,
+              "xyz": [
+                25.5099,
+                0.598443,
+                178.222
+              ],
+              "nodes": 2857,
+              "k_axial": 1.952645340351724
+            },
+            "key_near_end": {
+              "k": 2.4647908791682234,
+              "xyz": [
+                19.1009,
+                0.357995,
+                156.716
+              ],
+              "nodes": 8778,
+              "k_axial": 2.2880900829790867
+            }
+          },
+          "near/torsion": {
+            "fillet": {
+              "k": 1.5899232982508171,
+              "xyz": [
+                25.5008,
+                0.706437,
+                178.201
+              ],
+              "nodes": 2857
+            },
+            "key_near_end": {
+              "k": 2.1498262392307015,
+              "xyz": [
+                19.1501,
+                5.7422,
+                148.314
+              ],
+              "nodes": 8778
+            }
+          },
+          "far/bending": {
+            "key_far_end": {
+              "k": 2.4620660840556705,
+              "xyz": [
+                19.118,
+                0.574237,
+                107.373
+              ],
+              "nodes": 8844,
+              "k_axial": 2.3127068106066067
+            }
+          },
+          "far/torsion": {
+            "key_far_end": {
+              "k": 2.134191251344419,
+              "xyz": [
+                19.1143,
+                5.65645,
+                116.002
+              ],
+              "nodes": 8844
+            }
+          },
+          "middle/bending": {
+            "key_middle": {
+              "k": 0.9534357520882881,
+              "xyz": [
+                20.1019,
+                8.15881,
+                129.231
+              ],
+              "nodes": 4636,
+              "k_axial": 0.9534284270625367
+            }
+          },
+          "middle/torsion": {
+            "key_middle": {
+              "k": 2.2965968078260093,
+              "xyz": [
+                19.1639,
+                5.77054,
+                130.295
+              ],
+              "nodes": 4636
+            }
+          }
+        },
+        "equilibrium": {
+          "bending": {
+            "applied": 149999.61959924083,
+            "reaction": 149999.61063956635,
+            "target": 150000.0
+          },
+          "torsion": {
+            "applied": -249999.36599873504,
+            "reaction": -249999.37169175915,
+            "target": 250000.0
+          }
+        }
+      },
+      "metrics": {
+        "kt_fillet_bending": 2.071505376844197,
+        "kt_fillet_torsion": 1.591910004008622,
+        "kt_key_bending": 2.4647908791682234,
+        "kt_key_torsion": 2.2965968078260093,
+        "kt_key_bending_far": 2.4620660840556705,
+        "kt_key_torsion_middle": 2.2965968078260093,
+        "kt_key_bending_far_axial": 2.3127068106066067,
+        "fatigue_safety_fillet": 4.599413703042957,
+        "static_safety_fillet": 7.224720106629985,
+        "fatigue_safety_key": 3.8255865327712777,
+        "static_safety_key": 5.619019712424458,
+        "fatigue_safety": 3.8255865327712777,
+        "static_safety": 5.619019712424458
+      }
+    }
+  ],
+  "study": "keyed_shaft",
+  "status": "completed",
+  "finished_utc": "2026-11-27T16:35:17+00:00"
+}

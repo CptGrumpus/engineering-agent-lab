@@ -1,0 +1,105 @@
+{
+  "label": "p02_le_r0832",
+  "status": "PASS",
+  "checks": [
+    {
+      "id": "equilibrium_bending",
+      "description": "global model: |clamp reaction moment - applied| / target (bending)",
+      "kind": "numerical",
+      "value": 5.97311632009223e-08,
+      "tolerance": 1e-06,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "equilibrium_torsion",
+      "description": "global model: |clamp reaction moment - applied| / target (torsion)",
+      "kind": "numerical",
+      "value": 2.2772096446715294e-08,
+      "tolerance": 1e-06,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "load_bending",
+      "description": "|applied end moment| against the target (bending; the end face's moment is -T about z by the outward normal, so magnitudes are compared; 7-point rule on curved faces)",
+      "kind": "numerical",
+      "value": 2.5360050611711316e-06,
+      "tolerance": 0.0001,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "load_torsion",
+      "description": "|applied end moment| against the target (torsion; the end face's moment is -T about z by the outward normal, so magnitudes are compared; 7-point rule on curved faces)",
+      "kind": "numerical",
+      "value": 2.536005059838864e-06,
+      "tolerance": 0.0001,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "global_vs_sub_fillet_bending",
+      "description": "fillet Kt, global model against its submodel (bending): the global mesh resolves the fillet, so the two must agree (peaks 0.3 mm apart)",
+      "kind": "numerical",
+      "value": 0.002318254866571001,
+      "tolerance": 0.02,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "fillet_peak_covered_bending",
+      "description": "the global model's fillet peak (bending) lies inside a fillet submodel, more than 1 mm from its driven faces (1 = outside every box: the submodels miss the peak)",
+      "kind": "validity",
+      "value": 0.0,
+      "tolerance": 0.0,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "global_vs_sub_fillet_torsion",
+      "description": "fillet Kt, global model against its submodel (torsion): the global mesh resolves the fillet, so the two must agree (peaks 51.0 mm apart)",
+      "kind": "numerical",
+      "value": 0.00479854684503378,
+      "tolerance": 0.02,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "fillet_peak_covered_torsion",
+      "description": "the global model's fillet peak (torsion) lies inside a fillet submodel, more than 1 mm from its driven faces (1 = outside every box: the submodels miss the peak)",
+      "kind": "validity",
+      "value": 0.0,
+      "tolerance": 0.0,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "mesh_quality",
+      "description": "0.1 - the smallest scaled Jacobian over the global and submodel meshes (at or below 0: every element above the threshold)",
+      "kind": "validity",
+      "value": -0.5952650083856698,
+      "tolerance": 0.0,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "keyseat_reference_bending",
+      "description": "kt_key_bending_far_axial against Le and Le's FE value (bending)",
+      "kind": "numerical",
+      "value": 0.03476814792241911,
+      "tolerance": 0.05,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "keyseat_reference_torsion",
+      "description": "kt_key_torsion_middle against Le and Le's FE value (torsion)",
+      "kind": "numerical",
+      "value": 0.017093360418958925,
+      "tolerance": 0.05,
+      "comparison": "<=",
+      "status": "PASS"
+    }
+  ]
+}
