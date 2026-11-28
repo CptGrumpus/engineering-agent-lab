@@ -86,7 +86,7 @@ class OpenFOAMStep(Backend):
         files = {str(f.relative_to(case)).replace("\\", "/"): f
                  for f in sorted(case.glob("system/*")) + sorted(case.glob("constant/*")) + sorted(case.glob("0/*"))
                  + sorted(case.glob("log.*")) + sorted(case.glob("versions.txt"))
-                 + sorted(case.glob("postProcessing/*/0/*.dat")) if f.is_file() and f.stat().st_size < 5e6}
+                 + sorted(case.glob("postProcessing/*/*/*.dat")) if f.is_file() and f.stat().st_size < 5e6}
         if r.returncode != 0:
             return failed(f"OpenFOAM stage failed (exit {r.returncode}) {r.stderr.strip()[:300]}") | {
                 "files": files, "cleanup": work}
@@ -137,7 +137,11 @@ class OpenFOAMStep(Backend):
         cp30 = float(np.interp(30 * H, xp, cp))
         cf20 = float(np.interp(20 * H, xw, cf))
         yp = {}
-        for ln in (case / "postProcessing/yPlus/0/yPlus.dat").read_text(encoding="utf-8").splitlines():
+        # each foamRun stage writes postProcessing/yPlus/<its start time>/: read the last stage's (fixed 2026-11-27:
+        # this read yPlus/0/, the start-up stage's y+ at iteration 500, in every part 2 run)
+        ydirs = sorted((d for d in (case / "postProcessing/yPlus").iterdir() if d.name.replace(".", "", 1).isdigit()),
+                       key=lambda d: float(d.name))
+        for ln in (ydirs[-1] / "yPlus.dat").read_text(encoding="utf-8").splitlines():
             parts = ln.split()
             if ln.strip() and not ln.startswith("#") and len(parts) >= 5:
                 yp[parts[1]] = (float(parts[2]), float(parts[3]), float(parts[4]))

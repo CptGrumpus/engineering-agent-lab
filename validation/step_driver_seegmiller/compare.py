@@ -5,8 +5,10 @@ alpha 0), once, with the limits agreed before the data was opened (PROTOCOL.md):
   REQ-S3  pressure recovery Cp(30 H) - Cp(-4 H) within 0.02 of measured (Table 2, step-side wall, alpha 0)
 
 usage: .venv/Scripts/python.exe validation/step_driver_seegmiller/compare.py RUN_ID POINT_LABEL [--data DIR]
-Writes comparison.json, comparison.png and RESULTS.md beside this file. The data stays outside the repo (DIR,
-default ~/data/ercoftac_case030/files); only the values compared are copied into the results.
+       [--out DIR] [--title TEXT]
+Writes comparison.json, comparison.png and RESULTS.md beside this file (or in --out: part 3's 3D model, whose point
+files carry the same keys at mid-span). The data stays outside the repo (DIR, default ~/data/ercoftac_case030/files);
+only the values compared are copied into the results.
 """
 
 from __future__ import annotations
@@ -85,7 +87,11 @@ def main():
     ap.add_argument("run_id")
     ap.add_argument("label")
     ap.add_argument("--data", default=str(Path.home() / "data" / "ercoftac_case030" / "files"))
+    ap.add_argument("--out", default=str(HERE))
+    ap.add_argument("--title", default="Study 19 part 2: the step against Driver and Seegmiller (alpha 0)")
     a = ap.parse_args()
+    out = Path(a.out)
+    out.mkdir(parents=True, exist_ok=True)
     d = Path(a.data)
     m = ours(a.run_id, a.label)
     xr_meas, xr_unc = measured_xr(d)
@@ -113,10 +119,10 @@ def main():
                       "pass": abs(s3) <= LIMITS["REQ-S3"]},
            "upstream_cf_at_minus4h": {"ours": float(np.interp(-3.956, m["x_up"], m["cf_up"])),
                                       "measured": float(cf[np.argmin(np.abs(cf[:, 0] + 3.956)), 1])}}
-    (HERE / "comparison.json").write_text(json.dumps(res, indent=2), encoding="utf-8")
-    figure(m, cf, cp, res)
+    (out / "comparison.json").write_text(json.dumps(res, indent=2), encoding="utf-8")
+    figure(m, cf, cp, res, out)
     v = lambda ok: "PASS" if ok else "FAIL"  # noqa: E731
-    md = [f"# Study 19 part 2: the step against Driver and Seegmiller (alpha 0)\n",
+    md = [f"# {a.title}\n",
           f"Model: run `{a.run_id}`, point `{a.label}`. Limits agreed before the data was opened (PROTOCOL.md).\n",
           "| Requirement | Ours | Measured | Error | Limit | Verdict |", "|---|---|---|---|---|---|",
           f"| REQ-S1 reattachment Xr/H | {m['xr_over_h']:.3f} | {xr_meas:.2f} +- {xr_unc:.2f} | {100 * s1:+.1f} % | 10 % | **{v(res['REQ-S1']['pass'])}** |",
@@ -126,11 +132,11 @@ def main():
     md += [f"- x/H {x:.2f}: {o_:.5f} / {c:.5f} ({100 * e:+.1f} %)" for x, o_, c, e in
            zip(cf[sel, 0], cf_ours, cf[sel, 1], rel)]
     md += ["", "![comparison](comparison.png)", ""]
-    (HERE / "RESULTS.md").write_text("\n".join(md), encoding="utf-8")
+    (out / "RESULTS.md").write_text("\n".join(md), encoding="utf-8")
     print("\n".join(md[:8]))
 
 
-def figure(m, cf, cp, res):
+def figure(m, cf, cp, res, out=HERE):
     import sys
 
     sys.path.insert(0, str(REPO))
@@ -162,7 +168,7 @@ def figure(m, cf, cp, res):
     fig.suptitle(f"Backward-facing step: Xr/H {res['REQ-S1']['ours']:.2f} against {res['REQ-S1']['measured']:.2f} "
                  f"measured", fontsize=10, color=TEXT)
     fig.tight_layout()
-    fig.savefig(HERE / "comparison.png", dpi=130)
+    fig.savefig(Path(out) / "comparison.png", dpi=130)
     plt.close(fig)
 
 

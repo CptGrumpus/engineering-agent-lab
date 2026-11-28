@@ -16,7 +16,8 @@ def _studies() -> list[Study]:
                          motor_thermal, vessel_head, step_flow, bracket_random, bracket_random_uq,
                          rotor_critical, edge_crack, oring_seal, cavity_convection, annulus_radiation, enclosure_thermal,
                          shaft_fillet, steel_frame, surface_crack, keyed_shaft, steel_knee, rotor_solid,
-                         nozzle_limit, strap_3d, roller_3d, oring_cover, duct_section, roller_halfspace)
+                         nozzle_limit, strap_3d, roller_3d, oring_cover, duct_section, roller_halfspace,
+                         step_flow_3d)
 
     return [msd.STUDY, quarter_car.STUDY, cantilever.STUDY, mounting_plate.STUDY,
             channel_flow.STUDY, duct_flow.STUDY, fin.STUDY, strap_hole.STUDY, bracket_modal.STUDY,
@@ -28,7 +29,8 @@ def _studies() -> list[Study]:
             motor_thermal.STUDY, vessel_head.STUDY, step_flow.STUDY, bracket_random.STUDY, bracket_random_uq.STUDY,
             rotor_critical.STUDY, edge_crack.STUDY, oring_seal.STUDY, cavity_convection.STUDY, annulus_radiation.STUDY, enclosure_thermal.STUDY,
             shaft_fillet.STUDY, steel_frame.STUDY, surface_crack.STUDY, keyed_shaft.STUDY,
-            steel_knee.STUDY, rotor_solid.STUDY, nozzle_limit.STUDY, strap_3d.STUDY, roller_3d.STUDY, oring_cover.STUDY, duct_section.STUDY, roller_halfspace.STUDY]
+            steel_knee.STUDY, rotor_solid.STUDY, nozzle_limit.STUDY, strap_3d.STUDY, roller_3d.STUDY, oring_cover.STUDY, duct_section.STUDY, roller_halfspace.STUDY,
+            step_flow_3d.STUDY]
 
 
 def models() -> dict[str, tuple[Study, type[Backend]]]:

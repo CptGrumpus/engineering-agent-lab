@@ -1,0 +1,108 @@
+# Study 19 part 3: the backward-facing step (Driver and Seegmiller, ERCOFTAC classic case 030) in 3D, with the wind
+# tunnel's side walls. Decision, model and what is not blind: see cases/step3d_symmetry.toml.
+#
+# Case 3: a bracket on the one input the case description does not give, the side walls' own boundary layer at the
+# step. step3d_sidewalls grows it from the inlet, like the floor's (theta about 1.7 mm at x = -4 H). Here the side wall
+# is a symmetry plane (slip) upstream of x = -0.30 m and a no-slip wall downstream, so its layer grows over about
+# 0.25 m instead of 1.10 m before x = -4 H: theta about a quarter to a third of the floor's (theta ~ length^0.8), the
+# thin end of the hand estimate's bracket (a quarter to one and a half times the floor's: recovery lower by 0.028 to
+# 0.052; a quarter: 0.028). A thicker side-wall layer than the floor's would need the side walls to start upstream of
+# the inlet; its direction is known (a larger fall in recovery) and is stated, not run.
+# Spanwise level 1, x-y level 0.5 (step3d_sidewalls' coarser point); the 2D stage is part 2's model as there.
+# Inflow re-matched as in step3d_sidewalls, for the thinner layer: the side wall's displacement at x = -4 H is about a
+# third of step3d_sidewalls' (2.27 mm in the scratch test), so the core speeds up by about 1.1 % instead of 2.8 %: U_in
+# = 41.95 x 44.2 / 44.56 = 41.61 m/s (inflow_velocity, 2 %, checks it).
+# Numerics: SIMPLEC (consistent; relaxation p 1, U 0.9, k / omega 0.7) in the 3D stage, part 2's residual targets (p
+# 1e-6, U 2e-7, k / omega 2e-6), 300 start-up iterations (first-order k, omega) from the 2D field, then to the targets
+# or 20,000 iterations; the 2D stage keeps part 2's SIMPLE (the steady solution does not depend on the relaxation:
+# step3d_symmetry checks it). Scratch tests from the 2D field with the side walls (2026-11-27 19:12-19:40, 6 ranks):
+# after 300 stage-2 iterations SIMPLEC had p 1.2e-4 against SIMPLE's (part 2's numerics) 4.8e-4, and its p and U
+# residuals fell a decade per about 500-600 iterations against SIMPLE's 1,100-2,300, at 0.89 s per iteration against
+# 0.78; its probe recovery was flat to 1e-4 from the 20th stage-2 iteration, while SIMPLE's still rose from 0.135 to
+# 0.139 over 300. SIMPLEC is used. Besides the residuals, recovery_settled: the probe recovery Cp(30 H) - Cp(-4 H) at
+# mid-span may move at most 2e-4 over the last 10 % of the iterations (a tenth of what would matter here).
+# Predictions, written BEFORE the evidence run:
+#   P1 Every point check passes.
+#   P2 The side wall's momentum thickness at x = -4 H is 0.2-0.45 of the floor's (if its young layer stays laminar
+#      longer in SST, below that: reported as measured).
+#   P3 The mid-span recovery falls from the 2D 0.1553 by 60-85 % of step3d_sidewalls' fall at spanwise level 1 (the
+#      side-wall layer's displacement grows mostly downstream of the step, in the adverse gradient, where both layers
+#      grow; the hand estimate's ratio is 0.028 / 0.040 = 0.70), so the 3D recovery lies between the nominal 3D value
+#      and the 2D one; REQ-S3 passes if the fall is at least 0.0046.
+#   P4 About 2-4 h.
+
+[case]
+name = "step3d_sidewall_start"
+model = "openfoam_step3d_rans"
+description = "Backward-facing step in 3D with the side wall slip upstream of x = -0.30 m and no-slip downstream: a thinner side-wall boundary layer at the step (bracket on the unstated side-wall inflow); spanwise level 1, x-y level 0.5."
+assumptions = [
+  "As step3d_sidewalls, except the side walls' boundary layers start at x = -0.30 m (slip upstream of it), a bracket: the case description does not give them.",
+  "Inflow re-matched to the stated edge velocity at x = -4 H at mid-span (44.2 m/s); 2D stage at part 2's 41.95 m/s.",
+]
+limitations = [
+  "One x-y and one spanwise mesh level (the coarser of step3d_sidewalls'); the thin side-wall layer starts from a slip-to-wall jump.",
+]
+
+[parameters]
+step_height_m = 0.0127
+inlet_height_ratio = 8.0
+reynolds_number_h = 37500.0
+inlet_velocity_m_per_s = 41.61
+inlet_velocity_2d_m_per_s = 41.95
+reference_velocity_m_per_s = 44.2
+upstream_length_m = 1.153
+downstream_length_over_h = 50.0
+inlet_turbulence_intensity = 0.01
+inlet_viscosity_ratio = 10.0
+mesh_level = 0.5
+turbulence_model = "kOmegaSST"
+half_span_m = 0.0755
+side_wall = 1.0
+spanwise_level = 1.0
+side_wall_start_m = -0.30
+
+[numerics]
+residual_p = 1e-6
+residual_U = 2e-7
+residual_turb = 2e-6
+max_iterations = 20000           # stage 2 ends here at the latest (stage 1: 300 iterations)
+stage1_iterations = 300
+max_iterations_2d = 80000
+stage1_iterations_2d = 500
+consistent = true
+relax_p = 1.0
+relax_U = 0.9
+relax_turb = 0.7
+n_procs = 6
+probe_interval = 50
+solver_timeout_s = 36000
+
+[verification]
+continuity_tol = 1e-6
+mass_balance_tol = 1e-6
+recovery_settled_tol = 2e-4
+mesh_match_tol_m = 1e-9
+inflow_theta_mm = 1.697          # Re_theta 5000 at U_ref 44.2 m/s, nu 1.497e-5
+inflow_u_ref_m_per_s = 44.2
+inflow_theta_rel_tol = 0.05
+inflow_u_rel_tol = 0.02
+yplus_max = 1.0
+limit_xr_rel_tol = 1e-3
+limit_cp_abs_tol = 5e-4
+limit_cf_rel_tol = 5e-3
+
+[[requirements]]
+id = "REQ-S3-HIGH"
+text = "Part 2's REQ-S3 (upper side): the recovery Cp(30 H) - Cp(-4 H) at mid-span at most the measured 0.1307 + 0.02."
+metric = "cp_recovery_30h"
+operator = "<="
+limit = 0.1507
+units = "-"
+
+[[requirements]]
+id = "REQ-S3-LOW"
+text = "Part 2's REQ-S3 (lower side): the recovery at mid-span at least the measured 0.1307 - 0.02."
+metric = "cp_recovery_30h"
+operator = ">="
+limit = 0.1107
+units = "-"

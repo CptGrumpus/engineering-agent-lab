@@ -58,6 +58,7 @@ is the `verify-against-reference` skill.
 | `cadquery_ccx_vessel` | pressure vessel shell with a radial nozzle (study 18): quarter model, internal pressure with closed-end thrusts, stresses linearised along classification lines at the fillet toes and through the crotch (Pm, PL, P + Q); optional `scl_toe_offset_mm` | CadQuery + Gmsh C3D10 + CalculiX | `models/fea/pressure_vessel.py` |
 | `ccx_vessel_head_axi` | cylindrical shell closed by a hemispherical head (study 18, the head-to-shell junction): axisymmetric, structured mesh generated in Python, lines through the wall on element boundaries | CAX8 + CalculiX | `models/fea/vessel_head_axi.py` |
 | `openfoam_step_rans` | backward-facing step, Driver and Seegmiller (study 19 part 2): 2D steady RANS, k-omega SST, walls resolved; inflow boundary layer matched at x = -4 H; two-stage run (first-order k, omega start-up, then limitedLinear) | OpenFOAM 14 (in WSL, nice 19, one core) | `models/cfd/step_openfoam.py`, `run_step.sh` |
+| `openfoam_step3d_rans` | the study-19 step in 3D (part 3): part 2's 2D model extruded over half the tunnel's span, the side wall a no-slip wall (side_wall 1) or a symmetry plane (0: the exact 2D limit), optionally slip upstream of side_wall_start_m (a thinner side-wall layer); each point solves the 2D model first (inlet_velocity_2d_m_per_s, part 2's inflow) and starts the 3D model from it, layer by layer | OpenFOAM 14 in WSL, `n_procs` MPI ranks (scotch, unbound, nice 19) | `models/cfd/step3d_openfoam.py`, `run_step3d.sh`, `studies/step_flow_3d.py` |
 | `openfoam_pipe_rans` | fully developed turbulent pipe flow (study 19): axisymmetric periodic wedge, RANS (k-omega SST), bulk velocity held by meanVelocityForce; low-Reynolds or wall-function wall treatment; friction factor | OpenFOAM v14 in WSL | `models/cfd/pipe_openfoam.py`, `models/cfd/run_pipe.sh` |
 | `pyleecan_gmsh_ccx_rotor` | IPM rotor lamination at overspeed (study 7): half a pole in plane stress, linearized bridge stress | Pyleecan export (its own environment) + Gmsh + CalculiX | `models/motor/export_rotor_pole.py`, `models/fea/rotor_ccx.py` |
 | `ccx_oring` | O-ring face seal (study 12): axisymmetric upper half of the cross-section, neo-Hookean (E from Shore A by Gent), a steel cover pressed down by half the squeeze, optional groove walls, node-to-surface penalty contact | Gmsh (Python API, CAX8R / CAX6) + CalculiX NLGEOM | `models/fea/oring_ccx.py` |
@@ -177,6 +178,10 @@ Run every command from the repository root.
   (predicted 4-6 / 9-12 / 22-30 h, took 9.9 / 9.3 / 11.0 h): the time hardly depends on the fluid level at all.
   Time one coupling window per participant before predicting, and predict a mesh level's time from the slower
   participant, never by scaling with the fluid cell count.
+- **MPI OpenFOAM: one job at a time, with all the ranks allowed.** The 3D step (566 k cells) ran 0.77 s per
+  iteration on 6 ranks, but two 3-rank jobs side by side ran 2.2-2.5 s each (study 19 part 3, 2026-11-27): the
+  ranks compete for memory bandwidth and cache, so concurrent MPI jobs lose throughput. Chain cases instead.
+  Time a few hundred iterations on the real mesh first; early iterations are slower (more GAMG cycles).
 - One FEMM at a time; OpenFOAM under `nice -n 19`; several single-core jobs at once are fine on this machine, but
   watch memory more than CPU.
 

@@ -405,6 +405,21 @@ Traps found while building the studies in this repo, by tool.
 - Steady laminar SIMPLE: `residualControl` uses normalised initial residuals,
   which stall for fields that are exactly zero or uniform. See
   convergence-diagnosis.md.
+- **Each foamRun writes its function objects' files into `postProcessing/<name>/<its own start time>/`.** A
+  two-stage run (start-up, then `startFrom latestTime`) has `yPlus/0/` (the start-up stage) and `yPlus/500/` (the
+  real run). Study 19 part 2 read `yPlus/0/yPlus.dat` and so checked the y+ of iteration 500, not of the converged
+  field (found 2026-11-27; at level 0.5 the start-up max was 1.44, the converged 0.47). Read the last start-time
+  directory, or the final field's patch values.
+- **3D, sublayer-resolved, from a uniform start diverged in 30 iterations** (FPE in GAMG's coarsest level) where
+  the same 2D mesh starts fine (study 19 part 3). Start the 3D case from the 2D solution copied to every spanwise
+  layer: blockMesh numbers cells block by block, i fastest, then j, then k, so the map is index arithmetic
+  (`models/cfd/step3d_openfoam.py` `extrude_index`); check it on the cell centres after the run (exact to 1e-13 m).
+- MPI in WSL: `nice -n 19 mpirun -np N --bind-to none foamRun -parallel` (the ranks inherit nice; unbound so a
+  shared machine's scheduler places them), `decomposePar -force` with `method scotch`, then `reconstructPar
+  -latestTime` before `writeCellCentres`. Function-object files (probes, surfaceFieldValue) are written once, at
+  the case level. Killing the Windows-side task (TaskStop) ended the WSL ranks too; check with `ps` in WSL.
+- `growth_for` (the step writers' geometric grading) searches growth ratios up to 2 only: with too few cells for the
+  length it returns 2 and the cells no longer fill it. Assert the filled length after calling it.
 - Write ASCII fields with `writePrecision 12` so mesh-convergence differences
   are resolved.
 
