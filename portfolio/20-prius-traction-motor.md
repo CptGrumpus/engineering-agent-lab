@@ -295,7 +295,7 @@ earlier version drew a plain ring 19.4 mm long, the machine file's overhang: hal
 does not give how the coils are arranged, so that part is a plausible layout, marked synthetic in the source: each
 group as two concentric coils, the three groups of a pole pair in three radial tiers (they overlap in angle, so they
 cannot share a radius), straight legs and a rounded top. Each turn keeps the slot zone's cross-section and matches its
-exact hand volume to 10⁻⁸. The tiers fill the slot depth (82.0-115.2 mm radius), 1.0 mm clear of the bore, and no two
+exact hand volume to 2 × 10⁻⁸. The tiers fill the slot depth (82.0-115.2 mm radius), 1.0 mm clear of the bore, and no two
 turns share volume.
 
 **Two independent checks on the end turns.** From the turns, the copper weighs 6.57 kg, 3.3 % under the bill of
