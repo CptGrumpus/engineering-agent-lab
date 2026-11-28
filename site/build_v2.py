@@ -397,19 +397,10 @@ QUESTION = {
 # the drawing that opens a page made of several studies: the one that best shows the part
 SETUP = {"cantilever_bracket": "fea", "strap": "strap", "cold_plate": "cold_plate", "bracket_arm": "modal", "turbulent_flow": "pipe"}
 # the as-built render that opens a study page, above the setup drawing (the user, 2026-11-28: the render is the
-# picture a visitor reads at a glance, so it leads; its checks and its dimensioned drawing stay in the body section
-# the caption links to). Card key: (render id, alt, caption, the body section's anchor).
-LEAD_RENDER = {
-    "motor": ("motor_cad",
-              "3D render of the Prius traction motor with the rotor drawn out above the stator: the end turns of the "
-              "three phases in three shades of copper around the stator's bore, blue magnets in V pairs in the rotor, "
-              "and the mounting ears and edge notches on the stator",
-              "<b>The motor as built, the rotor drawn out above the stator.</b> Three shades of copper: the end turns "
-              "of the three phases, their crowns 38.1 mm (1.5 in) from the stack, as the teardown measured. Blue: the "
-              "16 magnets, two per pole in a V. Rendered from the CAD, whose volume matches the sum of the parts' hand "
-              "volumes to 0.04 %. The end turns' layout and shape are assumed; the colours tell the parts apart and "
-              "aren't finishes.", "the-motor-as-built"),
-}
+# picture a visitor reads at a glance, so it leads). The fragment marks it <figure class="lead-render"> where it sits
+# in the story; the build lifts it to the top and its caption links back to that section, which keeps the checks.
+LEAD_FIG = re.compile(r'\s*<figure class="lead-render"><div class="plate"><img src="(v2/vp_\w+\.webp)" alt="([^"]*)"[^>]*>'
+                      r'</div><figcaption>(.*?)</figcaption></figure>', re.S)
 
 
 def setup_key(gk: str):
@@ -736,12 +727,18 @@ def study_page(gk: str) -> dict:
                       f'<img src="v2/dwg_{top}.webp" alt="{esc(alt)}"></a>'
                       f'<figcaption><b>The setup.</b> {cap}</figcaption></figure>')
     lead_html = ""
-    if gk in LEAD_RENDER:
-        rid, alt, cap, anchor = LEAD_RENDER[gk]
-        assert (HERE / "v2" / f"vp_{rid}.webp").exists() and anchor in [hid for hid, _ in toc], (gk, anchor)
-        lead_html = (f'    <figure class="study-setup study-lead"><a class="plate" href="v2/vp_{rid}.webp" title="Open the render full size">'
-                     f'<img src="v2/vp_{rid}.webp" alt="{esc(alt)}"></a>'
-                     f'<figcaption>{cap} <a href="#{anchor}">How it was built and checked</a></figcaption></figure>\n')
+    leads = list(LEAD_FIG.finditer(main))
+    assert len(leads) <= 1 and main.count("lead-render") == len(leads), (gk, "one lead render a page, in the expected form")
+    if leads:
+        m = leads[0]
+        src, alt, cap = m.groups()
+        heads = re.findall(r'<h[23] id="([^"]+)">(.*?)</h[23]>', main[:m.start()])
+        assert (HERE / src).exists() and heads, (gk, src)
+        hid, htext = heads[-1]
+        main = main[:m.start()] + main[m.end():]
+        lead_html = (f'    <figure class="study-setup study-lead"><a class="plate" href="{src}" title="Open the render full size">'
+                     f'<img src="{src}" alt="{alt}"></a><figcaption>{cap} '
+                     f'<a href="#{hid}">More under “{re.sub(r"<[^>]+>", "", htext)}”</a></figcaption></figure>\n')
     body = f'''  <div class="wrap">
     <nav class="crumbs" aria-label="Breadcrumb"><a href="index.html#work">All studies</a><span>/</span><span>{DISC[group]}</span></nav>
     <header class="study-hero">

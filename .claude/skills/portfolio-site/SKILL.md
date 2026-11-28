@@ -218,9 +218,11 @@ that the colours tell parts apart and aren't finishes. To show what's inside a s
 the materials along the cut from the CAD's own outlines (`make_drawings.motor_cad` classifies points on the cut with
 matplotlib's Path), so the section can't disagree with the model.
 An as-built render is the picture a visitor reads at a glance, so it opens the study page, not the back of it (the
-user, 2026-11-28): add the card to `build_v2.LEAD_RENDER` (render id, alt, caption, the anchor of the body section
-that holds the checks and the dimensioned drawing) and take the render's figure out of the fragment; the build
-asserts the anchor exists. Page 20 is done; the other pages with as-built renders still carry theirs near the end.
+user, 2026-11-28; all ten pages with one): mark its figure in the fragment `<figure class="lead-render">`, where
+it sits in the story, and the build (`build_v2.LEAD_FIG`) lifts it under the question with a "More under ..." link
+back to that section, which keeps the checks and the drawing. One per page, asserted. A second render that sat beside
+it (the nozzle's padded alternative) stays in the body: reword anything in it that leaned on the moved one ("the same
+nozzle").
 When a part hides what the view is for, draw it on one repeat only and say so: the motor's end turns cover every
 slot in the front view, so one pole pair of four carries them. When a section cuts parts that have no outline in
 that plane (the end turns), work the cut out from the model's own parameters and assert it against the CAD solids
