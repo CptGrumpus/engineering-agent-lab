@@ -142,6 +142,16 @@ Done today, each with predictions committed first, runs scored, page section, fi
   - Next for the roller, after p02 is scored: an end-region case with the end layers refined at a fixed in-plane
     mesh (does the end peak converge?), then the crown window (1.3 to 2.5 x) on the FE if it does. Do not start it
     while both overnight jobs share the CPU.
+- **Update (01:49, 2026-11-28; from date):** the user approved the push; pushed 5ee25ab..e21818c after a privacy
+  fix (the subagent's symmetry run logs and one BACKLOG path held the home path). The roller end peak traced to the
+  mesh's drawing of the crown (`scripts/roller_crown_layers.py`: the half-space model fed the FE's piecewise-linear
+  crown peaks at the end, 667.5 MPa with 0.2 mm end layers, 617.5 with 0.05 mm, exact crown 616.6 at mid-length).
+  ccx is about one core, so the FE check started now instead of waiting: **`cases/roller_fe_end.toml` running since
+  01:48** (run 20261128-014852_roller_fe_end; end layers 0.1 / 0.05 / 0.025 mm at 0.08 mm contact elements, two
+  steps; about 9 h), detached through WMI (cmd.exe PID 103300), log `~\AppData\Local\Temp\claude\cb67dd1e648f8970\
+  bb8dfa24-b62b-4d91-99a6-82b7c61401a4\scratchpad\roller_end.log`. Predictions in the case. When it lands: score it
+  with roller_fe_mesh, then page 10's verdict. Also queued (user, through the dashboard session, 01:26): the motor
+  CAD's end windings as end turns from the client data (the CAD's 19.37 mm ring is half the teardown's 1.5 in).
 - Pushes: the dashboard session pushes with the user's approval; check `git log origin/main..HEAD` before any push of
   your own (memory shared-git-index).
 
