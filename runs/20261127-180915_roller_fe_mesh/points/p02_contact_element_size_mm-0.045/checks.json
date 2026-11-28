@@ -1,0 +1,51 @@
+{
+  "label": "p02_contact_element_size_mm-0.045",
+  "status": "FAIL",
+  "checks": [
+    {
+      "id": "load_bracketed",
+      "description": "the target load lies between two completed steps (0 = yes)",
+      "kind": "validity",
+      "value": 0.0,
+      "tolerance": 0.0,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "equilibrium",
+      "description": "max over the steps of |roller reaction + plate reaction| / roller reaction",
+      "kind": "numerical",
+      "value": 0.0,
+      "tolerance": 1e-05,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "contact_integral",
+      "description": "|contact pressure integrated over the patch / roller reaction - 1| at the target load (the nodal pressures' smearing of the contact edge)",
+      "kind": "numerical",
+      "value": 0.05922804400688597,
+      "tolerance": 0.03,
+      "comparison": "<=",
+      "status": "FAIL"
+    },
+    {
+      "id": "hertz_mid_pressure",
+      "description": "|peak pressure at mid-length - Hertz p0 for the local line load there| / p0 (long-roller limit)",
+      "kind": "numerical",
+      "value": 0.02030519681357279,
+      "tolerance": 0.03,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "elastic",
+      "description": "max subsurface shear / shear yield (Tresca, yield / 2)",
+      "kind": "validity",
+      "value": 0.322537686226501,
+      "tolerance": 1.0,
+      "comparison": "<=",
+      "status": "PASS"
+    }
+  ]
+}

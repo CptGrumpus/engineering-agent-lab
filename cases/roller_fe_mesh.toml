@@ -24,6 +24,31 @@
 #      650 MPa the crown recommendation changes (a stronger crown: the half-space window runs to 2.5 x).
 #   P4 About 12 hours in all.
 
+# Results (run 20261127-180915_roller_fe_mesh, 18:09-08:45, 14 h 36 min; 1 h 32 / 4 h 32 / 8 h 32 min per point):
+# VERIFICATION FAIL: contact_integral fails at every mesh, hertz_mid_pressure at 0.08 mm, and the peak's
+# discretization check (6.7 %, oscillatory) at run level. REQ-C1-3D (peak <= 650 MPa) PASSES at 0.08 mm (647.1, at
+# mid-length) and FAILS at 0.06 and 0.045 mm (724.1, 715.7 MPa, at 0.46 mm from the end face), all unverified.
+#   P1 HELD: equilibrium, the load bracket and the elastic check pass at every mesh; contact_integral fails at every
+#      mesh (10.8 / 11.2 / 5.9 %; predicted about 12 / 9 / 7: it fell only at the finest); hertz_mid_pressure passes
+#      at the two finer meshes (0.03 %, 2.0 %) and fails at 0.08 mm (3.2 %).
+#   P2 FAILED: the peak left mid-length at the two finer meshes (to 0.46 mm from the end face). At mid-length the
+#      pressure is 647.1 / 634.5 / 640.5 MPa: each inside its predicted band (650 / 643 / 638 +-15), but not
+#      falling as the mesh refines (oscillatory, 1.25 x half-range 7.9 MPa, 1.2 %); 3-5 % over the half-space's 616.8
+#      at the same load (the end-compliance effect). The largest subsurface shear moves 0.2 % (193.9 / 193.6 / 193.5).
+#   P3 FAILED as read: REQ-C1-3D fails at the two finer meshes on the end peak. At mid-length it passes at all three,
+#      the finest at 640.5 +- 7.9 MPa, under 650 by 1.5 % (by 0.3 % at the top of the band). The end peak was traced
+#      before this run finished (2026-11-28 01:49, scripts/roller_crown_layers.py, e9c0544) to the mesh's drawing
+#      of the crown. The crown is applied as shifts at layer planes 0.2 mm apart at the end, so the log crown is
+#      piecewise linear where it climbs steeply. The half-space model fed that profile peaks at the end too: 667.5
+#      MPa with 0.2 mm end layers, 617.5 with 0.05 mm, against 616.6 at mid-length for the exact crown.
+#      cases/roller_fe_end.toml (running since 01:48) refines the end layers at a fixed in-plane mesh to test that in
+#      the FE. The crown verdict waits for it.
+#   P4 FAILED: 14 h 36 min against about 12 (1.5 / 3 / 7 h predicted per point).
+# What it shows: at mid-length the FE agrees with Hertz for its own line load within 2 % and reads 635-647 MPa, 3-5 %
+# above the half-space, inside the 650 limit with a thin margin. The end peak at the two finer meshes comes from the
+# end layers the case fixed (its stated limitation). The traced cause is the drawn crown, not the contact physics,
+# but that is confirmed only when roller_fe_end lands.
+
 [case]
 name = "roller_fe_mesh"
 model = "ccx_roller_3d"

@@ -1,0 +1,191 @@
+{
+  "run_id": "20261127-180915_roller_fe_mesh",
+  "verified_utc": "2026-11-28T13:45:08+00:00",
+  "tolerances": {
+    "equilibrium_rel_tol": 1e-05,
+    "hertz_rel_tol": 0.03,
+    "integral_rel_tol": 0.03,
+    "mesh_noise_rel": 0.001,
+    "gci_max": 0.03
+  },
+  "points": [
+    {
+      "label": "p00_contact_element_size_mm-0.08",
+      "status": "FAIL",
+      "checks": [
+        {
+          "id": "load_bracketed",
+          "description": "the target load lies between two completed steps (0 = yes)",
+          "kind": "validity",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "equilibrium",
+          "description": "max over the steps of |roller reaction + plate reaction| / roller reaction",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 1e-05,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "contact_integral",
+          "description": "|contact pressure integrated over the patch / roller reaction - 1| at the target load (the nodal pressures' smearing of the contact edge)",
+          "kind": "numerical",
+          "value": 0.10778142083601527,
+          "tolerance": 0.03,
+          "comparison": "<=",
+          "status": "FAIL"
+        },
+        {
+          "id": "hertz_mid_pressure",
+          "description": "|peak pressure at mid-length - Hertz p0 for the local line load there| / p0 (long-roller limit)",
+          "kind": "numerical",
+          "value": 0.0320385861010426,
+          "tolerance": 0.03,
+          "comparison": "<=",
+          "status": "FAIL"
+        },
+        {
+          "id": "elastic",
+          "description": "max subsurface shear / shear yield (Tresca, yield / 2)",
+          "kind": "validity",
+          "value": 0.3231915771946517,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p01_contact_element_size_mm-0.06",
+      "status": "FAIL",
+      "checks": [
+        {
+          "id": "load_bracketed",
+          "description": "the target load lies between two completed steps (0 = yes)",
+          "kind": "validity",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "equilibrium",
+          "description": "max over the steps of |roller reaction + plate reaction| / roller reaction",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 1e-05,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "contact_integral",
+          "description": "|contact pressure integrated over the patch / roller reaction - 1| at the target load (the nodal pressures' smearing of the contact edge)",
+          "kind": "numerical",
+          "value": 0.1117809553186695,
+          "tolerance": 0.03,
+          "comparison": "<=",
+          "status": "FAIL"
+        },
+        {
+          "id": "hertz_mid_pressure",
+          "description": "|peak pressure at mid-length - Hertz p0 for the local line load there| / p0 (long-roller limit)",
+          "kind": "numerical",
+          "value": 0.0003298621770959631,
+          "tolerance": 0.03,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "elastic",
+          "description": "max subsurface shear / shear yield (Tresca, yield / 2)",
+          "kind": "validity",
+          "value": 0.3227443424242037,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "label": "p02_contact_element_size_mm-0.045",
+      "status": "FAIL",
+      "checks": [
+        {
+          "id": "load_bracketed",
+          "description": "the target load lies between two completed steps (0 = yes)",
+          "kind": "validity",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "equilibrium",
+          "description": "max over the steps of |roller reaction + plate reaction| / roller reaction",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 1e-05,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "contact_integral",
+          "description": "|contact pressure integrated over the patch / roller reaction - 1| at the target load (the nodal pressures' smearing of the contact edge)",
+          "kind": "numerical",
+          "value": 0.05922804400688597,
+          "tolerance": 0.03,
+          "comparison": "<=",
+          "status": "FAIL"
+        },
+        {
+          "id": "hertz_mid_pressure",
+          "description": "|peak pressure at mid-length - Hertz p0 for the local line load there| / p0 (long-roller limit)",
+          "kind": "numerical",
+          "value": 0.02030519681357279,
+          "tolerance": 0.03,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "elastic",
+          "description": "max subsurface shear / shear yield (Tresca, yield / 2)",
+          "kind": "validity",
+          "value": 0.322537686226501,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ]
+    }
+  ],
+  "run_checks": [
+    {
+      "id": "discretization_peak_contact_pressure_MPa",
+      "description": "relative discretization uncertainty of peak_contact_pressure_MPa, oscillatory (R = -0.109): 1.25 x half-range of the 3 finest solutions",
+      "kind": "numerical",
+      "value": 0.06727930098982939,
+      "tolerance": 0.03,
+      "comparison": "<=",
+      "status": "FAIL",
+      "metric": "peak_contact_pressure_MPa"
+    }
+  ],
+  "run_check_detail": {
+    "meshes_used": [
+      "p02_contact_element_size_mm-0.045",
+      "p01_contact_element_size_mm-0.06",
+      "p00_contact_element_size_mm-0.08"
+    ],
+    "peak_contact_pressure_MPa": {
+      "regime": "oscillatory",
+      "convergence_ratio": -0.10926770212616276,
+      "uncertainty": 0.06727930098982939
+    }
+  },
+  "status": "FAIL"
+}

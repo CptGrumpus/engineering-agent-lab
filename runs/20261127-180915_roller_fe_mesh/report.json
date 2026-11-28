@@ -1,0 +1,322 @@
+{
+  "points": [
+    {
+      "label": "p00_contact_element_size_mm-0.08",
+      "parameters": {
+        "roller_radius_mm": 50.0,
+        "roller_length_mm": 30.0,
+        "plate_width_mm": 60.0,
+        "block_half_width_mm": 60.0,
+        "block_depth_mm": 50.0,
+        "youngs_modulus_MPa": 210000.0,
+        "poisson_ratio": 0.3,
+        "yield_strength_MPa": 1200.0,
+        "contact_element_size_mm": 0.08,
+        "far_element_size_mm": 4.0,
+        "refined_zone_mm": 1.6,
+        "end_layer_mm": 0.2,
+        "layer_growth": 1.3,
+        "max_layer_mm": 1.0,
+        "penalty_stiffness_factor": 50.0,
+        "line_load_N_per_mm": 500.0,
+        "profile": "log",
+        "crown_A_um": 1.793145692168688,
+        "crown_zm_um": 30.0,
+        "cap_um": 60.0,
+        "approach_mm": 0.0155,
+        "approach_factors": [
+          0.92,
+          0.97,
+          1.02,
+          1.07
+        ]
+      },
+      "derived": {
+        "hertz_long_roller": {
+          "E_star_MPa": 115384.61538461539,
+          "half_width_mm": 0.5252319183236601,
+          "peak_pressure_MPa": 606.0368288349923,
+          "max_shear_MPa": 181.98262131343319,
+          "max_shear_depth_mm": 0.4129117977874304
+        },
+        "lundberg_A_um": 1.3793428401297598,
+        "total_load_N": 15000.0
+      },
+      "simulation_status": "completed",
+      "verification_status": "FAIL",
+      "checks": [
+        {
+          "id": "load_bracketed",
+          "description": "the target load lies between two completed steps (0 = yes)",
+          "kind": "validity",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "equilibrium",
+          "description": "max over the steps of |roller reaction + plate reaction| / roller reaction",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 1e-05,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "contact_integral",
+          "description": "|contact pressure integrated over the patch / roller reaction - 1| at the target load (the nodal pressures' smearing of the contact edge)",
+          "kind": "numerical",
+          "value": 0.10778142083601527,
+          "tolerance": 0.03,
+          "comparison": "<=",
+          "status": "FAIL"
+        },
+        {
+          "id": "hertz_mid_pressure",
+          "description": "|peak pressure at mid-length - Hertz p0 for the local line load there| / p0 (long-roller limit)",
+          "kind": "numerical",
+          "value": 0.0320385861010426,
+          "tolerance": 0.03,
+          "comparison": "<=",
+          "status": "FAIL"
+        },
+        {
+          "id": "elastic",
+          "description": "max subsurface shear / shear yield (Tresca, yield / 2)",
+          "kind": "validity",
+          "value": 0.3231915771946517,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-C1-3D",
+          "text": "The peak contact pressure anywhere along the crowned roller shall not exceed 650 MPa (study 10's REQ on the peak pressure), on the 3D finite-element model.",
+          "metric": "peak_contact_pressure_MPa",
+          "operator": "<=",
+          "limit": 650.0,
+          "units": "MPa",
+          "value": 647.0930124466237,
+          "margin": 2.906987553376325,
+          "verdict": "PASS (unverified)"
+        }
+      ]
+    },
+    {
+      "label": "p01_contact_element_size_mm-0.06",
+      "parameters": {
+        "roller_radius_mm": 50.0,
+        "roller_length_mm": 30.0,
+        "plate_width_mm": 60.0,
+        "block_half_width_mm": 60.0,
+        "block_depth_mm": 50.0,
+        "youngs_modulus_MPa": 210000.0,
+        "poisson_ratio": 0.3,
+        "yield_strength_MPa": 1200.0,
+        "contact_element_size_mm": 0.06,
+        "far_element_size_mm": 4.0,
+        "refined_zone_mm": 1.6,
+        "end_layer_mm": 0.2,
+        "layer_growth": 1.3,
+        "max_layer_mm": 1.0,
+        "penalty_stiffness_factor": 50.0,
+        "line_load_N_per_mm": 500.0,
+        "profile": "log",
+        "crown_A_um": 1.793145692168688,
+        "crown_zm_um": 30.0,
+        "cap_um": 60.0,
+        "approach_mm": 0.0155,
+        "approach_factors": [
+          0.92,
+          0.97,
+          1.02,
+          1.07
+        ]
+      },
+      "derived": {
+        "hertz_long_roller": {
+          "E_star_MPa": 115384.61538461539,
+          "half_width_mm": 0.5252319183236601,
+          "peak_pressure_MPa": 606.0368288349923,
+          "max_shear_MPa": 181.98262131343319,
+          "max_shear_depth_mm": 0.4129117977874304
+        },
+        "lundberg_A_um": 1.3793428401297598,
+        "total_load_N": 15000.0
+      },
+      "simulation_status": "completed",
+      "verification_status": "FAIL",
+      "checks": [
+        {
+          "id": "load_bracketed",
+          "description": "the target load lies between two completed steps (0 = yes)",
+          "kind": "validity",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "equilibrium",
+          "description": "max over the steps of |roller reaction + plate reaction| / roller reaction",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 1e-05,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "contact_integral",
+          "description": "|contact pressure integrated over the patch / roller reaction - 1| at the target load (the nodal pressures' smearing of the contact edge)",
+          "kind": "numerical",
+          "value": 0.1117809553186695,
+          "tolerance": 0.03,
+          "comparison": "<=",
+          "status": "FAIL"
+        },
+        {
+          "id": "hertz_mid_pressure",
+          "description": "|peak pressure at mid-length - Hertz p0 for the local line load there| / p0 (long-roller limit)",
+          "kind": "numerical",
+          "value": 0.0003298621770959631,
+          "tolerance": 0.03,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "elastic",
+          "description": "max subsurface shear / shear yield (Tresca, yield / 2)",
+          "kind": "validity",
+          "value": 0.3227443424242037,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-C1-3D",
+          "text": "The peak contact pressure anywhere along the crowned roller shall not exceed 650 MPa (study 10's REQ on the peak pressure), on the 3D finite-element model.",
+          "metric": "peak_contact_pressure_MPa",
+          "operator": "<=",
+          "limit": 650.0,
+          "units": "MPa",
+          "value": 724.137979665659,
+          "margin": -74.13797966565903,
+          "verdict": "FAIL (unverified)"
+        }
+      ]
+    },
+    {
+      "label": "p02_contact_element_size_mm-0.045",
+      "parameters": {
+        "roller_radius_mm": 50.0,
+        "roller_length_mm": 30.0,
+        "plate_width_mm": 60.0,
+        "block_half_width_mm": 60.0,
+        "block_depth_mm": 50.0,
+        "youngs_modulus_MPa": 210000.0,
+        "poisson_ratio": 0.3,
+        "yield_strength_MPa": 1200.0,
+        "contact_element_size_mm": 0.045,
+        "far_element_size_mm": 4.0,
+        "refined_zone_mm": 1.6,
+        "end_layer_mm": 0.2,
+        "layer_growth": 1.3,
+        "max_layer_mm": 1.0,
+        "penalty_stiffness_factor": 50.0,
+        "line_load_N_per_mm": 500.0,
+        "profile": "log",
+        "crown_A_um": 1.793145692168688,
+        "crown_zm_um": 30.0,
+        "cap_um": 60.0,
+        "approach_mm": 0.0155,
+        "approach_factors": [
+          0.92,
+          0.97,
+          1.02,
+          1.07
+        ]
+      },
+      "derived": {
+        "hertz_long_roller": {
+          "E_star_MPa": 115384.61538461539,
+          "half_width_mm": 0.5252319183236601,
+          "peak_pressure_MPa": 606.0368288349923,
+          "max_shear_MPa": 181.98262131343319,
+          "max_shear_depth_mm": 0.4129117977874304
+        },
+        "lundberg_A_um": 1.3793428401297598,
+        "total_load_N": 15000.0
+      },
+      "simulation_status": "completed",
+      "verification_status": "FAIL",
+      "checks": [
+        {
+          "id": "load_bracketed",
+          "description": "the target load lies between two completed steps (0 = yes)",
+          "kind": "validity",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "equilibrium",
+          "description": "max over the steps of |roller reaction + plate reaction| / roller reaction",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 1e-05,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "contact_integral",
+          "description": "|contact pressure integrated over the patch / roller reaction - 1| at the target load (the nodal pressures' smearing of the contact edge)",
+          "kind": "numerical",
+          "value": 0.05922804400688597,
+          "tolerance": 0.03,
+          "comparison": "<=",
+          "status": "FAIL"
+        },
+        {
+          "id": "hertz_mid_pressure",
+          "description": "|peak pressure at mid-length - Hertz p0 for the local line load there| / p0 (long-roller limit)",
+          "kind": "numerical",
+          "value": 0.02030519681357279,
+          "tolerance": 0.03,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "elastic",
+          "description": "max subsurface shear / shear yield (Tresca, yield / 2)",
+          "kind": "validity",
+          "value": 0.322537686226501,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-C1-3D",
+          "text": "The peak contact pressure anywhere along the crowned roller shall not exceed 650 MPa (study 10's REQ on the peak pressure), on the 3D finite-element model.",
+          "metric": "peak_contact_pressure_MPa",
+          "operator": "<=",
+          "limit": 650.0,
+          "units": "MPa",
+          "value": 715.7194531372495,
+          "margin": -65.7194531372495,
+          "verdict": "FAIL (unverified)"
+        }
+      ]
+    }
+  ],
+  "run_id": "20261127-180915_roller_fe_mesh",
+  "generated_utc": "2026-11-28T13:45:09+00:00",
+  "verification_status": "FAIL"
+}
