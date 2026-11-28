@@ -158,7 +158,7 @@ The line where reattachment happens stays nearly straight across the span to wit
 step. The main case grows them from the same inlet as the floor's. At 4 step heights upstream their momentum
 thickness is then 1.69-1.71 mm, 2-3 % above the floor's. A bracket starts them 0.30 m upstream instead, which gives
 0.51 mm, 0.30 of the floor's. The recovery moves only from 0.132 to 0.135: a third of the boundary layer at the step
-still gives 88 % of the drop. The recovery counts from 4 step heights upstream, where both runs match the stated
+still gives 88 % of the drop (compared on the same mesh). The recovery counts from 4 step heights upstream, where both runs match the stated
 speed, so what lowers it is how much the side-wall layers grow from there to 30 step heights. In both runs their
 displacement thickness grows by about the same 1.1 mm. Both ends of the bracket pass. A layer thicker than the floor's would lower the recovery further; that direction is stated, not run.
 
@@ -184,7 +184,8 @@ the fields would locate it.
   part 2's (17,700 cells per plane): its 2D solution differs from part 2's finest by 0.0019 in recovery and 0.2 % in
   reattachment.
 
-**Predictions against outcome:** the side walls lower the recovery by 0.018-0.035 (held, 0.023); the recovery then
+**Predictions against outcome:** the side walls lower the recovery by 0.018-0.035 (held, 0.023 and 0.024 on the
+two spanwise meshes); the recovery then
 passes (held, unverified); reattachment between 2.5 % below and 0.5 % above the 2D (held, 0.2 % below); every check
 passes (failed: the stall); thinner side-wall layers give 60-85 % of the drop (88 %, just outside).
 

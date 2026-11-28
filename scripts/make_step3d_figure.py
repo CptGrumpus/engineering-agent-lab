@@ -113,7 +113,7 @@ def main(out: Path) -> None:
     first = sel & (zs <= zs[sel].min() + 1e-9)
     xs, zs, cf = np.concatenate([xs, xs[first]]), np.concatenate([zs, 0 * zs[first]]), np.concatenate([cf, cf[first]])
     sel = np.concatenate([sel, first[first]])
-    lim = float(np.percentile(np.abs(cf[sel]), 99))
+    lim = float(np.abs(cf[sel]).max())  # the true extremes, not a percentile cap
     tc = cx.tricontourf(xs[sel], zs[sel], cf[sel], levels=24, cmap="RdBu_r", norm=TwoSlopeNorm(0, -lim, lim))
     cx.tricontour(xs[sel], zs[sel], cf[sel], levels=[0.0], colors=TEXT, linewidths=1.2)
     cb = fig.colorbar(tc, ax=cx, pad=0.02)
