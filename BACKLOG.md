@@ -107,13 +107,20 @@ Done today, each with predictions committed first, runs scored, page section, fi
 - **Standing rule adopted** (user, 2026-11-27): simple model first, a fuller check where the margin is as small as the
   simplification's likely error (build-model skill "Choosing checks" item 5; memory simple-first-verify-fuller). The
   revisit list (2, 10, 25, 11; notes on 15 and 13) is done.
-- **Evening (19:15):** study 20's detailed motor CAD done (8080af1; CAD roadmap row 20). **Study 19 part 3 (3D step
-  with the tunnel's side walls) is being built by a background subagent of the engineering session** (started before
-  the 18:45 /clear; id a1bef8d24923ab9e9). Its files are uncommitted and its own: `models/cfd/step3d_openfoam.py`,
-  `models/cfd/run_step3d.sh`, `studies/step_flow_3d.py`, `cases/step3d_symmetry.toml`, `tests/test_step_flow_3d.py`,
-  and edits to `harness/registry.py`, `studies/step_flow.py`, `README.md`, `validation/step_driver_seegmiller/compare.py`,
-  skills run-case, verify-against-reference, tool-notes. Do not touch them until it reports. The roller FE run
-  (above) was alive at 18:50 (ccx.exe started 18:09, about one core busy).
+- **Evening (19:15):** study 20's detailed motor CAD done (8080af1; CAD roadmap row 20). The roller FE run (above) was
+  alive at 18:50 (ccx.exe started 18:09, about one core busy).
+- **Study 19 part 3 (3D step with the tunnel's side walls), 20:10:** built and committed (414e3f0 model, study, three
+  cases with predictions; 93c825e protocol log; 6273f68 the symmetry case's convergence criterion). **Running since
+  20:05, one 6-rank OpenFOAM job at a time, chained:** `harness pipeline` on `cases/step3d_symmetry.toml` (the exact 2D
+  limit, about 2 h), then `step3d_sidewalls.toml` (spanwise levels 1 and 1.41, about 5-8 h), then
+  `step3d_sidewall_start.toml` (thinner side-wall layer, about 2-4 h); log in the engineering session's scratch
+  (`chain.log`). When each lands: score its predictions in the case's Results; for the side-wall cases run
+  `validation/step_driver_seegmiller/compare.py <run> <point> --out validation/step_driver_seegmiller/part3`
+  (and `part3_thin` for the bracket), then curate and commit the runs, write page 19's Part 3 section, the PORTFOLIO
+  row, the BACKLOG row below, and the figure (`scripts/make_step3d_figure.py`, uncommitted until the runs exist; output
+  portfolio/img/step3d_sidewalls.png). Unconverged scratch tests already put the mid-span recovery at 0.131-0.132
+  (measured 0.1307; 2D 0.1553 on the same mesh). The first symmetry run (20261127-194248) was stopped by me after 192
+  3D iterations, before any result (Uz is zero there and stalls OpenFOAM's residual control): kept, not evidence.
 - Pushes: the dashboard session pushes with the user's approval; check `git log origin/main..HEAD` before any push of
   your own (memory shared-git-index).
 
@@ -161,7 +168,7 @@ stands (build-model skill, "Choosing checks" item 5). Finished studies to revisi
 | 15, 21, 22, 4, 13 | various | wide | none needed: say so on the page with the estimate | **Done for 15 and 13** (2026-11-27: 15's side walls +0.19 K against 4.0 K, from study 11 part 2; 13's beam at slenderness 127, the end fixity named); 4, 21, 22 are already 3D solids |
 | 16, 20 | axisymmetric bolt, 2D motor | - | 16: shown it cannot change the verdict; 20: closed | none |
 | 18, 23, 24, 26, 28 | - | - | already checked with a fuller model | done |
-| 19 step flow (part 2) | 2D, no tunnel side walls (the page's explanation of the 0.022 pressure-recovery miss) | fails by 0.0027 over its 0.02 limit | **Hand estimate done (2026-11-27):** side-wall blockage lowers the recovery by 0.028-0.052, at least the miss; next: 3D RANS with the side walls (span 12 H, half-span by symmetry; hours of CPU: after the roller FE study) | open |
+| 19 step flow (part 2) | 2D, no tunnel side walls (the page's explanation of the 0.022 pressure-recovery miss) | fails by 0.0027 over its 0.02 limit | **Hand estimate done (2026-11-27):** side-wall blockage lowers the recovery by 0.028-0.052, at least the miss. **3D RANS with the side walls (part 3) built, running since 20:05** (cases step3d_symmetry, step3d_sidewalls, step3d_sidewall_start; half span by symmetry, 566,400 / 796,500 cells, 6 ranks) | running |
 
 Study 24 part 2 (user's go-ahead 2026-11-26 evening, "keep working"): semi-elliptical surface crack, 3D FE against
 Newman-Raju. surface_crack_mesh (r0) scored: requirements pass, Newman-Raju within 2.4 % on the front average; the
