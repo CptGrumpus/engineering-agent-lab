@@ -23,3 +23,5 @@ No new measured data: part 3 is compared with the same three tables part 2 opene
 | 18:55-19:40 | Scratch tests of the 3D pipeline (no comparison with the data): a 2D run at mesh level 0.5, a 3D smoke run, SIMPLE against SIMPLEC from the 2D field (unconverged: mid-span recovery 0.131-0.132). | Setup, numerics and inflow match. |
 | 19:42 | Cases `step3d_symmetry`, `step3d_sidewalls`, `step3d_sidewall_start` committed with predictions (414e3f0); the evidence chain started at 19:42. | Predictions before the evidence. |
 | about 19:48 | The portfolio figure script was tested on the unconverged scratch SIMPLEC field, which plots the measured points: its mid-span pressure already lay on the measured curve. | Declared: seen after the predictions were committed, before any evidence run finished. No input changed. |
+| 21:58 | `step3d_symmetry` scored (no data involved: the 3D model against the 2D model). | Pipeline check. |
+| 22:30 | `step3d_sidewalls`, `step3d_sidewall_start` started (numerics changed before, after the symmetry run's continuity failure; predictions unchanged). | Evidence runs. |

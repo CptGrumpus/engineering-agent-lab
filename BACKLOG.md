@@ -112,18 +112,24 @@ Done today, each with predictions committed first, runs scored, page section, fi
 - **User's decisions (20:59):** the four O-ring runs/ report.json files with regenerated timestamps restored to the
   committed evidence; REPO_AUDIT.md tracked (696cde7). The dashboard session was sent the motor CAD request and a
   hold on tonight's two results (roller FE, step part 3) until they are scored; it pushes with the user's approval.
-- **Study 19 part 3 (3D step with the tunnel's side walls), written 20:05:** built and committed (414e3f0 model, study, three
-  cases with predictions; 93c825e protocol log; 6273f68 the symmetry case's convergence criterion). **Running since
-  20:05, one 6-rank OpenFOAM job at a time, chained:** `harness pipeline` on `cases/step3d_symmetry.toml` (the exact 2D
-  limit, about 2 h), then `step3d_sidewalls.toml` (spanwise levels 1 and 1.41, about 5-8 h), then
-  `step3d_sidewall_start.toml` (thinner side-wall layer, about 2-4 h); log in the engineering session's scratch
-  (`chain.log`). When each lands: score its predictions in the case's Results; for the side-wall cases run
-  `validation/step_driver_seegmiller/compare.py <run> <point> --out validation/step_driver_seegmiller/part3`
-  (and `part3_thin` for the bracket), then curate and commit the runs, write page 19's Part 3 section, the PORTFOLIO
-  row, the BACKLOG row below, and the figure (`scripts/make_step3d_figure.py`, uncommitted until the runs exist; output
-  portfolio/img/step3d_sidewalls.png). Unconverged scratch tests already put the mid-span recovery at 0.131-0.132
-  (measured 0.1307; 2D 0.1553 on the same mesh). The first symmetry run (20261127-194248) was stopped by me after 192
-  3D iterations, before any result (Uz is zero there and stalls OpenFOAM's residual control): kept, not evidence.
+- **Study 19 part 3 (3D step with the tunnel's side walls), written 22:35:** model, study and three cases committed
+  (414e3f0, 93c825e, 6273f68, 9c8edc5). **Symmetry limit scored** (run 20261127-200510, 1 h 53 min): with the side wall
+  a symmetry plane the 3D model reproduces the 2D model on the same mesh (recovery 2.1e-5, Xr/H 7.6e-5), but
+  VERIFICATION FAIL on 2 of 16 checks: spurious Uz 1.3e-3 U_ref (located: first cell column behind the step face, in
+  the stagnant corner eddy) and continuity 1.84e-6 against 1e-6 (SIMPLEC with p relTol 0.05). Results in the case
+  header; not rerun. The side-wall cases then got p relTol 0.01 and a 12,000-iteration cap before their first run.
+  **Running since 22:30, detached from every Claude session** (started through WMI, cmd.exe PID 98136; one 6-rank job
+  at a time): `harness pipeline` on `cases/step3d_sidewalls.toml` (run 20261127-223049, spanwise levels 1 and 1.41),
+  then `cases/step3d_sidewall_start.toml`. Expected: sidewalls level 1 about 00:30-01:00, level 1.41 about 03:00-04:00,
+  sidewall_start about 05:00-06:00 (worst case at the caps about 11:30). Log:
+  C:\Users\mrstego\AppData\Local\Temp\claude\cb67dd1e648f8970\bb8dfa24-b62b-4d91-99a6-82b7c61401a4\scratchpad\chain2.log
+  (each case's start, its harness output, its exit code). To stop it: kill the `harness pipeline` python process (the
+  WSL ranks end with it). When each lands: score its predictions in the case's Results; run
+  `validation/step_driver_seegmiller/compare.py <run> <point> --out validation/step_driver_seegmiller/part3 --title
+  "Study 19 part 3: the step in 3D with the side walls"` on the finest side-wall point (`part3_thin` for the bracket);
+  curate and commit the runs (`git add -f`, no `__pycache__`); render `scripts/make_step3d_figure.py` (output
+  portfolio/img/step3d_sidewalls.png); write page 19's Part 3 section, the PORTFOLIO row and the review row below.
+  Unconverged scratch tests put the mid-span recovery at 0.131-0.132 (measured 0.1307; 2D 0.1553 on the same mesh).
 - Pushes: the dashboard session pushes with the user's approval; check `git log origin/main..HEAD` before any push of
   your own (memory shared-git-index).
 
@@ -171,7 +177,7 @@ stands (build-model skill, "Choosing checks" item 5). Finished studies to revisi
 | 15, 21, 22, 4, 13 | various | wide | none needed: say so on the page with the estimate | **Done for 15 and 13** (2026-11-27: 15's side walls +0.19 K against 4.0 K, from study 11 part 2; 13's beam at slenderness 127, the end fixity named); 4, 21, 22 are already 3D solids |
 | 16, 20 | axisymmetric bolt, 2D motor | - | 16: shown it cannot change the verdict; 20: closed | none |
 | 18, 23, 24, 26, 28 | - | - | already checked with a fuller model | done |
-| 19 step flow (part 2) | 2D, no tunnel side walls (the page's explanation of the 0.022 pressure-recovery miss) | fails by 0.0027 over its 0.02 limit | **Hand estimate done (2026-11-27):** side-wall blockage lowers the recovery by 0.028-0.052, at least the miss. **3D RANS with the side walls (part 3) built, running since 20:05** (cases step3d_symmetry, step3d_sidewalls, step3d_sidewall_start; half span by symmetry, 566,400 / 796,500 cells, 6 ranks) | running |
+| 19 step flow (part 2) | 2D, no tunnel side walls (the page's explanation of the 0.022 pressure-recovery miss) | fails by 0.0027 over its 0.02 limit | **Hand estimate done (2026-11-27):** side-wall blockage lowers the recovery by 0.028-0.052, at least the miss. **3D RANS with the side walls (part 3):** symmetry limit reproduces the 2D model to 2e-5 (run FAIL on two numerical checks, located); step3d_sidewalls and step3d_sidewall_start running since 22:30 (half span by symmetry, 566,400 / 796,500 cells, 6 ranks) | running |
 
 Study 24 part 2 (user's go-ahead 2026-11-26 evening, "keep working"): semi-elliptical surface crack, 3D FE against
 Newman-Raju. surface_crack_mesh (r0) scored: requirements pass, Newman-Raju within 2.4 % on the front average; the
