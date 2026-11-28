@@ -112,7 +112,7 @@ Done today, each with predictions committed first, runs scored, page section, fi
 - **User's decisions (20:59):** the four O-ring runs/ report.json files with regenerated timestamps restored to the
   committed evidence; REPO_AUDIT.md tracked (696cde7). The dashboard session was sent the motor CAD request and a
   hold on tonight's two results (roller FE, step part 3) until they are scored; it pushes with the user's approval.
-- **Study 19 part 3 (3D step with the tunnel's side walls), written 22:35:** model, study and three cases committed
+- **Study 19 part 3 (3D step with the tunnel's side walls), written 22:31:** model, study and three cases committed
   (414e3f0, 93c825e, 6273f68, 9c8edc5). **Symmetry limit scored** (run 20261127-200510, 1 h 53 min): with the side wall
   a symmetry plane the 3D model reproduces the 2D model on the same mesh (recovery 2.1e-5, Xr/H 7.6e-5), but
   VERIFICATION FAIL on 2 of 16 checks: spurious Uz 1.3e-3 U_ref (located: first cell column behind the step face, in
