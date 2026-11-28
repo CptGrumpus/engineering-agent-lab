@@ -178,6 +178,16 @@ Predict convergence on the reported quantity, not the solver's residual norm (El
 - **A validity check's premise can fail in the limit case run to check the model.** "Peak at mid-thickness"
   failed on the thin plate, where the profile is uniform to 1e-4 and the maximum lands on a mid-side node. Write
   validity checks so they skip where their premise does not apply (or state it in the check), before the run.
+- **A peak that grows when only one mesh direction is refined may be the geometry's drawing, not physics.** The
+  3D roller applied its crown as a drop of each layer plane, so the surface is straight between planes; the log
+  crown climbs from 6.5 to 30 um over the last 0.2 mm, and the 0.2 mm end layer cut it short with a kink. Refining
+  the in-plane contact mesh only sharpened that kink's spike (631.6 -> 724.1 MPa 0.46 mm from the end, over the
+  650 limit), and the end values jumped from step to step while mid-length rose smoothly. Test it in the fast
+  model: feed it the profile exactly as the mesh draws it (`scripts/roller_crown_layers.py`: the half-space model,
+  which has no end face, peaked at the end too, 667.5 MPa, and fell to the exact crown's 616.6 with 0.05 mm end
+  layers at growth 1.2). Size the layers by the profile's curvature (the interpolation error grows as h^2 A / u^2
+  near a log crown's end, u the distance from the end) before reading an end peak (study 10 part 2, 2026-11-28;
+  the FE confirmation is `cases/roller_fe_end.toml`).
 
 ## Artifacts
 
