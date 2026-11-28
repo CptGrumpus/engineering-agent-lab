@@ -188,6 +188,13 @@ Run every command from the repository root.
 - **Keep long solver logs thinned, not dropped.** The step backends keep files under 5 MB; a 3D foamRun log is
   about 1 KB per iteration, so the first 3D symmetry run lost its stage-2 log. `studies/step_flow_3d.py`
   `thin_log` keeps the header, every 50th iteration and the last ones.
+- **Keep what would locate a residual stall.** The 3D step with side walls stalled its p residual at 17x its target
+  for 10,000 iterations on both meshes (study 19 part 3, 2026-11-28), and the backend keeps no fields, so the stall
+  could not be placed: only the largest spanwise velocity (8 % of U_ref behind the step lip, near the side wall)
+  hinted where. For a new 3D CFD configuration, write the final fields of one point (or the residual field) so a
+  stall can be located without a rerun; on the step a rerun costs 3-4 h of all six ranks.
+- **Run every script before committing it, a subagent's too.** The step figure script went in with a line break
+  inside a string literal (a syntax error) and was found only when the figure was first needed.
 - **MPI OpenFOAM: one job at a time, with all the ranks allowed.** The 3D step (566 k cells) ran 0.77 s per
   iteration on 6 ranks, but two 3-rank jobs side by side ran 2.2-2.5 s each (study 19 part 3, 2026-11-27): the
   ranks compete for memory bandwidth and cache, so concurrent MPI jobs lose throughput. Chain cases instead.

@@ -128,7 +128,9 @@ and to what both models leave out. Study 7: ElmerFEM matched the FEMM motor mode
 the 18 % back-EMF excess is not a solver artefact. Its first attempt meshed the steel twice over
 the bore and read 10x low while its own mesh study converged; only the area balance caught it.
 Predict convergence on the reported quantity, not the solver's residual norm (Elmer's stalled at
-1.4e-3 while the flux linkage was stable to 1e-9 Wb).
+1.4e-3 while the flux linkage was stable to 1e-9 Wb). A stable output does not turn a failed residual check into a
+pass: the 3D step with side walls held its recovery to 1e-6 over the last 2,000 iterations while p stalled at 17x
+its target (study 19 part 3, 2026-11-28). Report it as measured and unverified, and say what would locate the stall.
 
 ## Rules
 
@@ -141,6 +143,10 @@ Predict convergence on the reported quantity, not the solver's residual norm (El
   data, and none exists for synthetic cases.
 - When test data does exist, compare against it once, blind, after the predictions are written
   (`frame-requirements`, "Blind validation against test data").
+- **A scoring script outside the harness must carry the point's verification status.** The step's `compare.py`
+  printed PASS against the measurements for a point whose run had failed `converged` and `continuity`. It now reads
+  the point's `checks.json` and marks every verdict "(unverified)" when a check failed, as the harness report does
+  (2026-11-28). Part 2's finest point had also failed `converged`; its page had reported that.
 - **Code checks are verified against the code body's own worked examples** (steel frame study, 2026-11-25: AISC 360
   member checks against nine v16.0 Design Examples; the frame analysis against Example C.1A, which also gives a
   Direct Analysis Method benchmark with published drifts, moments and reactions). Match to the printed precision
