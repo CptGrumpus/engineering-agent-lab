@@ -235,7 +235,14 @@ as a pass (study 19 part 3: the 3D step's residual stall): warn chips that end "
 the card and group answers saying so in words; the figure function asserts the comparison's verification status, so
 a later rerun that passes forces the marker to be changed on purpose. A later part's runs may not share the earlier
 part's name prefix (`step3d_` against `step_`): add it to `extras.RUN_PREFIX` (a tuple works) or the evidence list
-drops them silently; check the run links on the built page.
+drops them silently; check the run links on the built page. When the run failed verification on a check other than
+convergence (study 10's 3D FE: the contact integral), use the status `unverified` ("Met; run not verified"), not
+`unsettled`. A cross-check that agrees with a verified design model gets its own requirement row, so the design's row
+can stay met while the cross-check's says unverified; retire a "pending" status and its card label once its check
+lands (grep site/ for the key so the CSS class goes too). A readings-over-the-limit story that turns out to be
+unsettled values is drawn, not only told: plot the unsettled meshes grey with a note "not a result", and recompute the
+study's settledness test inside the figure function from the kept steps, asserting it picks out exactly the readings
+the study says.
 Check a study-session colour scale before using its figure: the nozzle's plastic-strain panel capped the scale at
 the 98th percentile without saying so, so the brightest colour stood for everything from 1.6 to 2.7 %. Run the scale to
 the true peak (label it "peak") and leave zero as plain metal, not the colour map's lightest step. When a Part 2

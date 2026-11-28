@@ -2688,6 +2688,100 @@ def roller_halfspace():
     print("fig roller_halfspace")
 
 
+ROLLER_HS = ("20261127-172125_roller_hs_crown", "p03_crown_A_factor-1.3")
+ROLLER_FE = [("20261127-180915_roller_fe_mesh", "p00_contact_element_size_mm-0.08"),
+             ("20261127-180915_roller_fe_mesh", "p01_contact_element_size_mm-0.06"),
+             ("20261127-180915_roller_fe_mesh", "p02_contact_element_size_mm-0.045"),
+             ("20261128-014852_roller_fe_end", "p00_end_layer_mm-0.1"),
+             ("20261128-014852_roller_fe_end", "p01_end_layer_mm-0.05"),
+             ("20261128-014852_roller_fe_end", "p02_end_layer_mm-0.025")]
+
+
+def roller_fe():
+    """Study 10 part 2: the 3D finite-element cross-check of the crowned roller (A = 1.79 µm) against the half-space
+    design model. Left, pressure along the roller at 500 N/mm: the half-space design, the FE meshes whose end region
+    is settled between the two load steps that bracket the target, and, in grey, the three whose end is not. Right,
+    the peak at mid-length on all six meshes against the limit, hollow because every FE run failed verification (its
+    contact integral), with each unsettled mesh's first-reported end reading marked as not a result. The settled test
+    is the study's end_consistency (the end/mid ratio moving at most 0.03 between the bracketing steps), redone here
+    from the steps kept in point.json."""
+    hs = point(*ROLLER_HS)
+    assert verified(ROLLER_HS[0])[ROLLER_HS[1]]
+    p_hs = hs["metrics"]["peak_contact_pressure_MPa"]
+    a_hs = np.loadtxt(RUNS / ROLLER_HS[0] / "points" / ROLLER_HS[1] / "pressure_along_roller.csv", delimiter=",", skiprows=1)
+    lim = limits("roller_fe_mesh")["peak_contact_pressure_MPa"][1]
+    rows = []
+    for run, lab in ROLLER_FE:
+        assert not verified(run)[lab]                                       # drawn as not verified
+        d = point(run, lab)
+        so, L2 = d["solver_outputs"], d["parameters"]["roller_length_mm"] / 2
+        assert abs(d["parameters"]["crown_A_um"] - hs["solver_outputs"]["crown_A_um"]) < 1e-9
+        steps, target = so["steps"], so["target_quarter_load_N"]
+        j = next(i for i, s in enumerate(steps) if abs(s["F_top_N"]) >= target)
+        ratio = []
+        for s in steps[j - 1:j + 1]:
+            z, p = np.abs(np.asarray(s["z_profile_mm"])), np.asarray(s["p_along_z_MPa"])
+            ratio.append(p[z > 0.8 * L2].max() / s["p_mid_MPa"])
+        settled = abs(ratio[1] - ratio[0]) <= 0.03
+        prof = np.loadtxt(RUNS / run / "points" / lab / "pressure_along_roller.csv", delimiter=",", skiprows=1)
+        mid = so["at_target"]["p_mid_MPa"]
+        assert abs(prof[0, 1] - mid) < 1e-6
+        first = d["metrics"]["peak_contact_pressure_MPa"]
+        assert settled == (first <= lim), (lab, settled, first)               # unsettled: exactly the readings over 650
+        rows.append(dict(el=d["parameters"]["contact_element_size_mm"], end=d["parameters"]["end_layer_mm"], mid=mid,
+                         first=first, settled=settled, prof=prof))
+    mids = [r["mid"] for r in rows]
+    assert round(min(mids), 1) == 634.5 and round(max(mids), 1) == 647.1 and max(mids) < lim
+
+    fig, gs = fk.new(FULL, 3.9, 1, 2, wspace=0.2, top=1.0, width_ratios=[1.25, 1])
+    ax = fig.add_subplot(gs[0, 0])
+    fk.style(ax)
+    ax.set_xlim(0, 15.4)
+    ax.set_ylim(450, 780)
+    fk.limit(ax, lim, f"limit {lim:g} MPa", bad="above", axis="y", at=0.02)
+    for r in rows:
+        if not r["settled"]:
+            ax.plot(r["prof"][:, 0], r["prof"][:, 1], color=fk.HELD, linewidth=1.1, zorder=2)
+    for r in rows:
+        if r["settled"]:
+            ax.plot(r["prof"][:, 0], r["prof"][:, 1], color=REF, linewidth=1.6, zorder=3)
+    ax.plot(a_hs[:, 0], a_hs[:, 1], color=MODEL, zorder=4)
+    fk.label(ax, 4.5, p_hs, f"half-space model {p_hs:.0f} MPa", dy=-8, va="top", color=INK2, size=8.5)
+    s0 = next(r for r in rows if r["settled"])["prof"]
+    fk.callout(ax, (6.0, float(np.interp(6.0, s0[:, 0], s0[:, 1]))), (-14, 24),
+               f"3D FE: {min(mids):.0f}-{max(mids):.0f} MPa at mid-length,\njust under the limit", ha="left", va="bottom")
+    spike = max(rows, key=lambda r: r["first"])
+    k = int(np.argmax(spike["prof"][:, 1]))
+    fk.callout(ax, (13.6, float(np.interp(13.6, spike["prof"][:, 0], spike["prof"][:, 1]))), (-14, -40),
+               "grey: three meshes whose end jumps\nbetween load steps, not a result", ha="right", va="center")
+    ax.set_xlabel("distance from mid-length, mm (the end is at 15)")
+    ax.set_ylabel("contact pressure, MPa")
+    fk.panel(ax, "Pressure along the roller at 500 N/mm")
+
+    ax = fig.add_subplot(gs[0, 1])
+    fk.style(ax)
+    x = np.arange(len(rows))
+    ax.set_xlim(-0.6, len(rows) - 0.4)
+    ax.set_ylim(600, 740)
+    fk.limit(ax, lim, f"limit {lim:g}", bad="above", axis="y", at=0.98)
+    ax.axhline(p_hs, color=MODEL, linewidth=1.4, linestyle=(0, (4, 2.5)), zorder=2)
+    fk.label(ax, -0.5, p_hs, f"half-space {p_hs:.0f}", dy=-5, va="top", color=INK2, size=8.5)
+    for i, r in enumerate(rows):
+        fk.status_dot(ax, i, r["mid"], "held", size=54)
+        if not r["settled"]:
+            ax.scatter([i], [r["first"]], marker="x", s=36, color=fk.HELD, linewidth=1.5, zorder=4)
+    fk.label(ax, 2.35, 703, "× first read at the end:\nnot settled, not a result", ha="left", va="center", color=INK2, size=8.5)
+    ax.set_xticks(x, [f"{r['el']:g}\n{r['end']:g}" for r in rows])
+    ax.set_xlabel("contact element / end layer, mm")
+    ax.set_ylabel("peak at mid-length, MPa")
+    fk.panel(ax, "Mid-length on six meshes")
+    fk.heading(fig, "The 3D model also puts the crowned roller's peak at mid-length, just under the limit",
+               "Crown A = 1.79 µm. The FE's contact pressures add up to 6-11 % more than the load, so its results are not verified")
+    fk.key(fig, [("half-space design", "line", MODEL), ("3D FE, end settled", "line", REF), ("end not settled", "line", fk.HELD),
+                 ("not verified", "held", None)], y_in=0.66)
+    fk.save(fig, "roller_fe")
+
+
 def steel_knee():
     """Study 28 part 2: the study session's figure (scripts/make_steel_knee_figure.py), converted for the site."""
     from PIL import Image
@@ -2872,7 +2966,7 @@ ALL = {f.__name__: f for f in (cfd_tolerance, cfd_duct, cfd_response, cfd_field,
                                qc_liftoff, qc_iso, coldplate_response, pipe_friction, motor_comparison,
                                motor_rotor, pv_nozzle, step_comparison, step_sidewalls, random_vibration, bracket_uncertainty,
                                fan_rotor, fan_rotor_campbell, crack_growth, motor_efficiency, motor_airgap, oring_seal, shaft_fillet,
-                               enclosure_revb, enclosure_field, steel_frame, flag_fsi, crack_surface, keyed_shaft, steel_knee, rotor_solid, strap_3d, nozzle_limit, nozzle_yield, oring_cover, duct_section, roller_halfspace)}
+                               enclosure_revb, enclosure_field, steel_frame, flag_fsi, crack_surface, keyed_shaft, steel_knee, rotor_solid, strap_3d, nozzle_limit, nozzle_yield, oring_cover, duct_section, roller_halfspace, roller_fe)}
 # not on the site (the earlier model's thermal result): motor_thermal
 
 if __name__ == "__main__":
