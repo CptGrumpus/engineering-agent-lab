@@ -122,7 +122,7 @@ Done today, each with predictions committed first, runs scored, page section, fi
   at a time): `harness pipeline` on `cases/step3d_sidewalls.toml` (run 20261127-223049, spanwise levels 1 and 1.41),
   then `cases/step3d_sidewall_start.toml`. Expected: sidewalls level 1 about 00:30-01:00, level 1.41 about 03:00-04:00,
   sidewall_start about 05:00-06:00 (worst case at the caps about 11:30). Log:
-  C:\Users\mrstego\AppData\Local\Temp\claude\cb67dd1e648f8970\bb8dfa24-b62b-4d91-99a6-82b7c61401a4\scratchpad\chain2.log
+  ~\AppData\Local\Temp\claude\cb67dd1e648f8970\bb8dfa24-b62b-4d91-99a6-82b7c61401a4\scratchpad\chain2.log
   (each case's start, its harness output, its exit code). To stop it: kill the `harness pipeline` python process (the
   WSL ranks end with it). When each lands: score its predictions in the case's Results; run
   `validation/step_driver_seegmiller/compare.py <run> <point> --out validation/step_driver_seegmiller/part3 --title
