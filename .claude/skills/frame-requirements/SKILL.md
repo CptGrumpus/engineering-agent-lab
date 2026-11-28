@@ -174,6 +174,11 @@ prediction is written into a case file.
 - Predict the quantity that is measured. A loss model that leaves terms out by design (mechanical, inverter
   harmonics) gives an upper bound, not a prediction of a measured efficiency: estimate the missing terms, or set the
   limit with them in mind (study 7: 5.2 points high against a 2-point limit).
+- Predict a bracket from what the measured quantity is referenced to. When the metric counts from a station where
+  the inflow is matched, an unstated upstream input acts only through what changes after that station. The step's
+  side-wall layers a third as thick at the step gave 88 % of the recovery drop, against a predicted 60-85 %: the
+  recovery counts from -4 H, where both runs matched the stated speed, and the side-wall displacement thickness grew
+  by about the same 1.1 mm from there to 30 H at either inflow (study 19 part 3, 2026-11-28).
 - Internal checks verify the solver on your inputs, not the inputs: study 7 passed every one (power balance, winding
   theory, mesh studies) with the magnet flux 24 % high.
 - After a blind miss, keep the verdict on the record. Test data used to diagnose or calibrate stops being evidence;
