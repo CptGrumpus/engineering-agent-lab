@@ -201,6 +201,12 @@ Run every command from the repository root.
 `points/<label>/{timeseries.csv, point.json}`; for Modelica, also `inputs/EngLab.mo` and
 `build/{build.mos, omc_build.log}`. See `runs/README.md`.
 
+Committing a run (runs/ is gitignored): `scripts/scrub_paths.py runs/<run_id>` first (solver logs print the home
+path: OpenFOAM's `Case :` line, Gmsh, FreeCAD), then `git add -f` without `*.inp`, `*.dat`, `__pycache__`, and
+`tests/test_privacy.py` before the commit and again before any push. A fix to a tracked file in a run folder is
+`git add -u <run dir>` (a plain `git add` refuses the ignored path and may leave other files staged). A subagent's
+3D step run went in unscrubbed (10 OpenFOAM logs, 2026-11-27); only the pre-push privacy test caught it.
+
 If a point fails with `output grid mismatch`, the executable ignored the requested time
 settings. Check the flags in `harness/backend_base.py` against `<exe> -help`. Do not relax
 the grid check.
