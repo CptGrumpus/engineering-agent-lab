@@ -192,7 +192,9 @@ Run every command from the repository root.
   for 10,000 iterations on both meshes (study 19 part 3, 2026-11-28), and the backend keeps no fields, so the stall
   could not be placed: only the largest spanwise velocity (8 % of U_ref behind the step lip, near the side wall)
   hinted where. For a new 3D CFD configuration, write the final fields of one point (or the residual field) so a
-  stall can be located without a rerun; on the step a rerun costs 3-4 h of all six ranks.
+  stall can be located without a rerun. On the step a full rerun costs 3-4 h of all six ranks. A stall set early
+  (by iteration 2,000 there) can be located by a rerun stopped soon after, with the step's opt-in stall diagnostics
+  (`snapshot_start`, `snapshot_interval`, `stall_probes_m`; `cases/step3d_stall_locate.toml`): about 1 h.
 - **Run every script before committing it, a subagent's too.** The step figure script went in with a line break
   inside a string literal (a syntax error) and was found only when the figure was first needed.
 - **MPI OpenFOAM: one job at a time, with all the ranks allowed.** The 3D step (566 k cells) ran 0.77 s per

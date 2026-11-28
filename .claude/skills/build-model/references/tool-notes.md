@@ -429,6 +429,12 @@ Traps found while building the studies in this repo, by tool.
   cell column behind the step face, inside the nearly stagnant corner eddy (local Ux about 0.1 m/s); every
   output matched the 2D model to 1e-4. To locate such things: `foamPostProcess -func writeCellVolumes` and
   `-func "div(phi)"` on the final time, then rank cells by |field| x volume (scratch uzwhere.py, 2026-11-27).
+  In openfoam.org v14 writeCellVolumes writes the field `Vc`, not `V`. v14's `residuals` function object logs
+  totals only (no residual fields, unlike OpenFOAM.com's `solverInfo`). For fields at late iterations, use
+  `writeObjects` with `writeControl timeStep; writeInterval N; startTime T;` (it fires when the time index divides
+  by N) and reconstruct those times with `reconstructPar -time "t1,t2,..."`. The 3D step's opt-in
+  `snapshot_start`, `snapshot_interval` and `stall_probes_m` numerics do all of this
+  (`studies/step_flow_3d.py stall_diagnostics`, 2026-11-28).
 - MPI in WSL: `nice -n 19 mpirun -np N --bind-to none foamRun -parallel` (the ranks inherit nice; unbound so a
   shared machine's scheduler places them), `decomposePar -force` with `method scotch`, then `reconstructPar
   -latestTime` before `writeCellCentres`. Function-object files (probes, surfaceFieldValue) are written once, at

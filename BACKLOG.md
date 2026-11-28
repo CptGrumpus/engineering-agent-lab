@@ -171,6 +171,14 @@ Done today, each with predictions committed first, runs scored, page section, fi
   so the drawn crown may not be the whole cause (candidates to test when p02 lands: the free end face, which the
   half-space leaves out; nodal pressure recovery near the slave surface's edge, given contact_integral's 6-11 %
   excess). p02 (0.025 mm) running since 08:27, likely 13:00-14:30. Page 10's verdict waits for it.
+- **Update (09:20, 2026-11-28; from date):** the user approved the push (the dashboard pushed 6957adc..f0ae6d7) and
+  the stall-locating rerun. Stall diagnostics added to the 3D step backend (ffdec92, tested, smoke-run end to end);
+  **`cases/step3d_stall_locate.toml` queued** (step3d_sidewalls p00 to iteration 3,000 with the diagnostics, about
+  1 h 5 min): `stall.cmd` launched through WMI at 09:19 (cmd.exe PID 91656) waits for roller_fe_end (PID 103300) to
+  end, then runs it; log `stall.log` in the same scratchpad. When it lands: score P1-P6 (an exact repeat to 3,000
+  first: compare the Time = 3000 lines), commit the run (scrub, `git add -f`), then page 19's "Reported, not
+  hidden" paragraph and the dashboard. Do not edit models/cfd/step3d_openfoam.py, run_step3d.sh or
+  studies/step_flow_3d.py before the run starts (the harness copies them at start).
 - Pushes: the dashboard session pushes with the user's approval; check `git log origin/main..HEAD` before any push of
   your own (memory shared-git-index).
 
