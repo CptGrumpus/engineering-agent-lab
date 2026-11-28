@@ -12,3 +12,14 @@ within 15 % rms, REQ-S3 Cp(30 H) - Cp(-4 H) within 0.02.
 | 23:35 | Cases `step_mesh`, `step_outlet`, `step_inlet_tu` committed with predictions (75b4fbf) and started; their inputs are fixed. | Protocol: predictions before the data. |
 | 23:40 | **Opened** the headers and the alpha-0 rows of `bkst-tauw.dat` (Table 3, Cf along the step-side wall, with uncertainties) and the first rows of `bkst-cp.dat` (Table 2, Cp on the step-side wall, four wall angles). | To write the comparison script's parser. No model input changed after this. |
 | 2026-11-23 10:13 | **Scored once**: `compare.py 20261122-233146_step_mesh p02_mesh_level-1.4142` (finest level, as planned in the handoff). Opened the rest of `bkst-tauw.dat` and `bkst-cp.dat` (alpha 0) through the script. Result (RESULTS.md): REQ-S1 PASS (Xr/H 6.404 against 6.26, +2.3 %), REQ-S2 PASS (Cf rms 7.0 %, ours low at every station, -1 to -10 %), REQ-S3 **FAIL** (recovery 0.1534 against 0.1307, +0.0227, limit 0.02). | The finest level stopped at its 80000-iteration cap with U residuals 3.6e-7 / 4.7e-7 against 2e-7 (p and k, omega met): a verification FAIL, reported. Its effect on the recovery is bounded by the level-to-level spread (0.0011), well under the 0.0027 by which REQ-S3 fails; the coarser, converged levels give 0.1545 and 0.1541, further from the measurement. Not re-scored. |
+
+## Part 3: the step in 3D with the tunnel's side walls (2026-11-27): not blind
+
+No new measured data: part 3 is compared with the same three tables part 2 opened and scored on 2026-11-23, through
+`compare.py --out part3/` (part 2's results above are left as they were). The limits are part 2's, unchanged.
+
+| Time (2026-11-27) | What | Why |
+|---|---|---|
+| 18:55-19:40 | Scratch tests of the 3D pipeline (no comparison with the data): a 2D run at mesh level 0.5, a 3D smoke run, SIMPLE against SIMPLEC from the 2D field (unconverged: mid-span recovery 0.131-0.132). | Setup, numerics and inflow match. |
+| 19:42 | Cases `step3d_symmetry`, `step3d_sidewalls`, `step3d_sidewall_start` committed with predictions (414e3f0); the evidence chain started at 19:42. | Predictions before the evidence. |
+| about 19:48 | The portfolio figure script was tested on the unconverged scratch SIMPLEC field, which plots the measured points: its mid-span pressure already lay on the measured curve. | Declared: seen after the predictions were committed, before any evidence run finished. No input changed. |
