@@ -224,7 +224,7 @@ CARDS = [
     ("flag", "17", "fluid", "New · Fluid-structure interaction", "Flexible flag behind a cylinder, fluid and structure solved together", "Every stage of the Turek-Hron benchmark reproduced: the solid and the fluid each against their own published tests, then coupled. The swinging flag's tip lands within 1.1 % on the finest mesh and converges over three time steps to 0.71 %. Three results are reported, not tuned: one force swing's 1.39 % uncertainty, FSI2's mesh study and one lift.", "limits", "CalculiX · OpenFOAM · preCICE"),
     ("cold_plate", "15", "fluid", "New · Multiphysics", "Cold plate, the full thermal chain", "Passes on all three counts, from the coolant flow through the plate's conduction to its thermal stress: 40.99 °C, a 7.20 K coolant rise and 46.8 MPa.", "pass", "OpenFOAM · CalculiX"),
     ("pipe", "19", "fluid", "New · Turbulence", "Turbulent pipe friction, against measured data", "Passes: extrapolated to zero cell size, the turbulence model lands 2.4 % above Prandtl's law against a 5 % limit. The first mesh agreed to 0.9 %, with the wrong sign. Wall functions sit 5 % low on every mesh.", "pass", "OpenFOAM"),
-    ("step", "19", "fluid", "New · Measured data", "Flow over a backward-facing step, against measurements", "Two of three agreed limits pass: reattachment 2.3 % long and skin friction 7.0 % rms. The pressure recovers 0.023 too far against a 0.02 limit, most likely because a 2D model has no tunnel side walls.", "most", "OpenFOAM"),
+    ("step", "19", "fluid", "New · Measured data", "Flow over a backward-facing step, against measurements", "Two of three agreed limits pass in 2D: reattachment 2.3 % long and skin friction 7.0 % rms. The pressure recovers 0.023 too far against a 0.02 limit. Part 3 adds the tunnel's side walls in 3D and the recovery lands 0.001 from the measurement, but those runs stalled short of convergence, so that result is unverified.", "most", "OpenFOAM"),
     ("cfd", "05", "fluid", "CFD", "Coolant channel pressure budget", "Fails. It needs 33.4 Pa against a 30 Pa budget, and no gap size fixes it.", "fail", "OpenFOAM"),
     ("thermal", "06", "fluid", "Heat transfer", "Heat-sink fin temperature", "The tip sits at 73.2 °C, and still 65.9 °C with every input at its worst.", "pass", "CalculiX"),
     ("heat", "11", "fluid", "Heat transfer", "Cold-plate channel heat transfer", "Passes, verified: the wall peaks at 44.03 °C against 45, and the coolant warms 7.2 K. Part 2 adds the passage's side walls: 44.25 °C with a 2 mm aluminium plate, so it still passes, but a plate under about 0.23 mm would fail at the corners.", "pass", "OpenFOAM"),
@@ -271,19 +271,21 @@ GROUPS["bracket_arm"] = dict(parts=["modal", "random_vib", "bracket_uq"], main="
                                     "fatigue damage 0.0024 against 0.5 and 0.345 mm of tip movement against 1 mm. With the damping, "
                                     "test level, fatigue strength and thickness uncertain, the chance of failing that test is "
                                     "about 2 in a million; damping is the input to measure.")
-GROUPS["turbulent_flow"] = dict(parts=["pipe", "step"], main="pipe", no="19", d="Two parts",
+GROUPS["turbulent_flow"] = dict(parts=["pipe", "step"], main="pipe", no="19", d="Three parts",
                                 title="Turbulent flow: pipe friction, then flow over a step",
                                 label="Study 19 · OpenFOAM, against measured data", verdict="most", tools="OpenFOAM",
                                 answer="Attached flow first: resolved at the wall, the friction factor lands 2.4 % above "
                                        "Prandtl's law against a 5 % limit, while wall functions sit 5 % low. Then separated flow "
                                        "behind a step, scored once against measurements: reattachment and skin friction pass, "
-                                       "and the pressure recovers 0.023 too far against a 0.02 limit.")
+                                       "and the pressure recovers 0.023 too far against a 0.02 limit. A 3D model with the "
+                                       "tunnel's side walls puts the recovery 0.001 from the measurement, but its runs "
+                                       "stalled short of convergence, so that result is unverified.")
 PART_OF = {p: g for g, gd in GROUPS.items() for p in gd["parts"]}
 PART_LABEL = {"fea": "01 · Stress check", "cantilever_opt": "01b · Optimised",
               "strap": "02 · Cable hole", "fatigue": "03 · Fatigue life", "strap_proof": "14 · Proof test",
               "heat": "11 · Coolant channel", "cold_plate": "15 · Full thermal chain",
               "modal": "04 · Modal analysis", "random_vib": "21 · Random vibration", "bracket_uq": "22 · How robust the pass is",
-              "pipe": "19 · Pipe friction", "step": "19, part 2 · Flow over a step"}
+              "pipe": "19 · Pipe friction", "step": "19, parts 2 and 3 · Flow over a step"}
 
 GALLERY, _seen = [], set()        # (key, no, group, d, title, answer, verdict, tools, thumb key)
 for k, n, g, d, title, a, v, tools in CARDS:

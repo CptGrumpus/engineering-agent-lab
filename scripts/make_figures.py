@@ -1719,6 +1719,107 @@ def step_comparison():
     fk.save(fig, "step_comparison")
 
 
+STEP3_RUN, STEP3_PT = "20261127-223049_step3d_sidewalls", "p01_spanwise_level-1.4142"
+STEP3_THIN_RUN, STEP3_THIN_PT = "20261128-054328_step3d_sidewall_start", "p00_baseline"
+
+
+def step_sidewalls():
+    """Study 19 part 3: the step in 3D with the tunnel's side walls. Left, the pressure along the floor at mid-span
+    (part 2's 2D model, the 3D model, its thinner-side-wall-layer bracket, the measurements, the limit's window at
+    30 H). Right, the floor's skin friction from mid-span to the side wall, on a scale that runs to the true extremes
+    (the study session's own figure caps it at the 99th percentile). The 3D runs failed verification (residual
+    stall), so their results carry the hollow not-verified mark, never the filled one."""
+    import matplotlib.colors as mc
+    sys.path.insert(0, str(REPO / "validation" / "step_driver_seegmiller"))
+    import compare as sc
+    data = Path.home() / "data" / "ercoftac_case030" / "files"
+    V = REPO / "validation" / "step_driver_seegmiller"
+    res = json.loads((V / "part3" / "comparison.json").read_text(encoding="utf-8"))
+    thin = json.loads((V / "part3_thin" / "comparison.json").read_text(encoding="utf-8"))
+    res2 = json.loads((V / "comparison.json").read_text(encoding="utf-8"))
+    assert (res["run"], res["point"]) == (STEP3_RUN, STEP3_PT) and (thin["run"], thin["point"]) == (STEP3_THIN_RUN, STEP3_THIN_PT)
+    assert (res2["run"], res2["point"]) == (STEP_RUN, STEP_PT)
+    assert res["verification"]["status"] == "FAIL" and thin["verification"]["status"] == "FAIL"     # drawn as not verified
+    o2 = point(STEP_RUN, STEP_PT)["solver_outputs"]
+    o3 = point(STEP3_RUN, STEP3_PT)["solver_outputs"]
+    ot = point(STEP3_THIN_RUN, STEP3_THIN_PT)["solver_outputs"]
+    cp_m = sc.measured_cp(data)
+    cp_m0 = float(np.interp(-4.0, cp_m[:, 0], cp_m[:, 1]))
+    meas = float(np.interp(30.0, cp_m[:, 0], cp_m[:, 1]) - cp_m0)
+    s3, s3t, s2 = res["REQ-S3"], thin["REQ-S3"], res2["REQ-S3"]
+    assert abs(meas - s3["measured"]) < 5e-4 and s3["pass"] and s3t["pass"] and not s2["pass"]
+
+    fig, gs = fk.new(FULL, 4.1, 1, 2, wspace=0.26, top=1.0, width_ratios=[1.05, 1])
+    gs.update(right=0.905)
+    ax = fig.add_subplot(gs[0, 0])
+    fk.style(ax)
+
+    def curve(o, **kw):
+        x, c = np.array(o["profiles"]["x_p_over_h"]), np.array(o["profiles"]["cp"])
+        k = (x >= -4) & (x <= 36)
+        ax.plot(x[k], c[k], **kw)
+        return float(np.interp(30.0, x, c))
+    y2 = curve(o2, color=fk.HELD, linewidth=1.8, zorder=2.5)
+    yt = curve(ot, color=MODEL, linewidth=1.4, linestyle=(0, (4, 2.5)), zorder=2.8)
+    y3 = curve(o3, color=MODEL, zorder=3)
+    m = (cp_m[:, 0] >= -4) & (cp_m[:, 0] <= 36)
+    fk.dots(ax, cp_m[m, 0], cp_m[m, 1] - cp_m0, color=REF, size=30)
+    ax.errorbar([30.0], [meas], yerr=[[s3["limit"]], [s3["limit"]]], fmt="none", ecolor=INK2, elinewidth=1.2, capsize=4, zorder=3.5)
+    fk.status_dot(ax, 30, y2, "misses", size=48)
+    fk.status_dot(ax, 30, y3, "held", size=48)
+    ax.set_xlim(-4.5, 36)
+    ax.set_ylim(-0.08, 0.2)
+    fk.label(ax, 21, y2 + 0.012, f"2D, no side walls: {s2['ours']:.3f}", ha="center", va="bottom", color=INK2, size=8.5)
+    fk.callout(ax, (19, float(np.interp(19, ot["profiles"]["x_p_over_h"], ot["profiles"]["cp"]))), (10, -40),
+               f"dashed: thinner side-wall\nlayers, {s3t['ours']:.3f}", ha="center", va="top")
+    fk.label(ax, 35.5, -0.005, f"3D with side walls: {s3['ours']:.3f}\nmeasured {s3['measured']:.3f}, bar: limit ±{s3['limit']:.2f}",
+             ha="right", va="center", color=INK2, size=8.5)
+    ax.set_xlabel("distance from the step, step heights")
+    ax.set_ylabel("pressure coefficient, from 4 step heights upstream")
+    fk.panel(ax, f"Pressure at mid-span: recovery {s3['difference']:+.3f}")
+
+    ax = fig.add_subplot(gs[0, 1])
+    for sp in ax.spines.values():
+        sp.set_visible(False)
+    ax.tick_params(length=0, pad=4)
+    mp = o3["floor_cf_map"]
+    H = o3["H_m"] * 1e3
+    xs, zs, cf = np.asarray(mp["x_over_h"]), np.asarray(mp["z_mm"]) / H, 1e3 * np.asarray(mp["cf"])
+    half = o3["half_span_m"] * 1e3 / H
+    first = zs <= zs.min() + 1e-9                          # mid-span is a symmetry plane: its values are the first layer's
+    xs, zs, cf = np.r_[xs, xs[first]], np.r_[zs, 0 * zs[first]], np.r_[cf, cf[first]]
+    sel = xs <= 36.5
+    lo, hi = float(cf[sel].min()), float(cf[sel].max())
+    lv = np.arange(-1.5, 2.0001, 0.25)
+    assert lv[0] <= lo and hi <= lv[-1], (lo, hi)          # the scale holds every value: nothing is clipped
+    cs = ax.tricontourf(xs[sel], zs[sel], cf[sel], levels=lv, cmap="RdBu_r", norm=mc.Normalize(-2.0, 2.0), zorder=2)
+    ax.tricontour(xs[sel], zs[sel], cf[sel], levels=[0.0], colors=INK, linewidths=1.3, zorder=3)
+    ax.plot([0, 36], [half, half], color=INK, linewidth=2.2, zorder=4, solid_capstyle="butt")
+    ax.set_xlim(0, 36)
+    ax.set_ylim(0, half * 1.005)
+    box = dict(facecolor=fk.SURFACE, alpha=0.86, edgecolor="none", pad=1.6)
+    ax.text(35.3, half - 0.18, "side wall", fontsize=8.5, color=INK, ha="right", va="top", bbox=box, zorder=5)
+    ax.text(35.3, 0.15, "mid-span (symmetry plane)", fontsize=8.5, color=INK, ha="right", va="bottom", bbox=box, zorder=5)
+    ax.text(3.9, 3.6, "reversed\nflow", fontsize=8, color=INK, ha="center", va="center", bbox=box, zorder=5)
+    ax.annotate("flow reattaches\nalong this line", (res["REQ-S1"]["ours"] + 0.05, 1.7), xytext=(13.5, 1.7), fontsize=8.5,
+                color=INK, ha="left", va="center", bbox=box, zorder=5,
+                arrowprops=dict(arrowstyle="-", color=INK, linewidth=0.9, shrinkA=2, shrinkB=1))
+    ax.set_xlabel("distance from the step, step heights")
+    ax.set_ylabel("distance from mid-span, step heights")
+    fk.panel(ax, "Floor skin friction across the half span")
+    pos = ax.get_position()
+    cax = fig.add_axes([0.925, pos.y0 + 0.04, 0.014, pos.height - 0.08])
+    cb = fig.colorbar(cs, cax=cax, ticks=[-1.5, -1, -0.5, 0, 0.5, 1, 1.5, 2])
+    cb.outline.set_visible(False)
+    cb.ax.tick_params(length=0, labelsize=8.5, colors=INK2)
+    cb.set_label("skin friction coefficient × 1000", color=INK2, fontsize=9)
+    fk.heading(fig, "With the tunnel's side walls in the model, the pressure recovery lands on the measurement",
+               "3D k-omega SST over half the span. The 3D runs stopped short of their convergence target, so the result is not verified")
+    fk.key(fig, [("measured", "dot", REF), ("3D model", "line", MODEL), ("2D model", "line", fk.HELD), ("not verified", "held", None),
+                 ("misses", "misses", None)], y_in=0.66)
+    fk.save(fig, "step_sidewalls")
+
+
 # ---------------------------------------------------------------------------------------- study 21, random vibration
 
 RV_RUN, RV_PT = "20261123-100907_bracket_random_mesh", "p02_element_size_mm-1.2207"
@@ -2769,7 +2870,7 @@ ALL = {f.__name__: f for f in (cfd_tolerance, cfd_duct, cfd_response, cfd_field,
                                strut_sweep, strut_response, proof_response, joint_response, contact_response, fea_response, strap_response,
                                fatigue_sn, fin_response, fin_h_sweep, qc_bump_sweep, cad_sweep, heat_response,
                                qc_liftoff, qc_iso, coldplate_response, pipe_friction, motor_comparison,
-                               motor_rotor, pv_nozzle, step_comparison, random_vibration, bracket_uncertainty,
+                               motor_rotor, pv_nozzle, step_comparison, step_sidewalls, random_vibration, bracket_uncertainty,
                                fan_rotor, fan_rotor_campbell, crack_growth, motor_efficiency, motor_airgap, oring_seal, shaft_fillet,
                                enclosure_revb, enclosure_field, steel_frame, flag_fsi, crack_surface, keyed_shaft, steel_knee, rotor_solid, strap_3d, nozzle_limit, nozzle_yield, oring_cover, duct_section, roller_halfspace)}
 # not on the site (the earlier model's thermal result): motor_thermal

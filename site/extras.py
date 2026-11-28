@@ -40,7 +40,7 @@ STUDY_DOCS = {
     "fan_rotor": "23-fan-rotor-critical-speeds", "crack": "24-cracked-plate-growth", "oring": "25-oring-face-seal", "shaft": "26-shaft-shoulder-fatigue",
     "enclosure": "27-sealed-enclosure-thermal", "steel_frame": "28-steel-portal-frame-aisc", "flag": "17-fsi-flag-turek-hron",
 }
-RUN_PREFIX = {"pipe": "pipe_", "step": "step_"}
+RUN_PREFIX = {"pipe": "pipe_", "step": ("step_", "step3d_")}
 # runs a write-up cites by a pattern instead of one by one: listed with the ones it names
 RUN_GLOB = {"enclosure": ["*_enclosure_fix_k5_eps0p*", "*_enclosure_k*_eps0p*_e"]}
 # studies whose page cites a chosen set of runs instead of every run its write-up mentions, and links no write-up
@@ -673,6 +673,9 @@ REQS = [
         ("Reattachment length against the measured 6.26 step heights", "within 10 %", "6.40 step heights, 2.3 % long", "met"),
         ("Skin friction on the floor, 10 to 30 step heights", "within 15 % rms", "7.0 % rms, low at every station", "met"),
         ("Pressure recovery to 30 step heights", "within 0.02", "0.153 against 0.131 measured: 0.023 high", "fail"),
+        ("Part 3, 3D with the tunnel's side walls: reattachment length", "within 10 %", "6.40 step heights, 2.3 % long; 2.8 % with thinner side-wall layers; the runs stalled short of convergence", "unsettled"),
+        ("Part 3: skin friction on the floor, 10 to 30 step heights", "within 15 % rms", "9.2 % rms; 8.8 % with thinner side-wall layers", "unsettled"),
+        ("Part 3: pressure recovery to 30 step heights", "within 0.02", "0.132 against 0.131 measured: 0.001 high; 0.135 with thinner side-wall layers", "unsettled"),
         ("Design use: flow reattached before the heated surface at 8 step heights", "≤ 8 H", "6.40 H", "met")]),
     ("motor", "20", "Traction motor", [
         ("Model against the test: magnet flux (back-EMF and locked-rotor torque)", "within 5 % and 10 %", "about 18 % high in both (back-EMF 17.7 %, torque 17 to 19 %); one cause; steel, end effects and the solver ruled out; magnets on the drawing's stops as modelled; magnetisation level leads, a question for the client; nothing tuned", "open"),

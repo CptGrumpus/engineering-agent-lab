@@ -227,6 +227,13 @@ that plane (the end turns), work the cut out from the model's own parameters and
 (`solid.isInside` at each run's middle and just past its ends). When the study session changes a CAD module, its
 handover lists the functions it removed: grep the drawing and scene scripts for them before the next build. Own a
 correction on the page in plain words (the 19.4 mm ring that the teardown's 1.5 in replaced).
+A result that meets its limits on a run that failed verification is shown as unverified everywhere it appears, never
+as a pass (study 19 part 3: the 3D step's residual stall): warn chips that end "unverified", the requirement status
+`unsettled` ("Met; run not settled"), the hollow not-verified marker in the chart (`fk.status_dot(..., "held")`), and
+the card and group answers saying so in words; the figure function asserts the comparison's verification status, so
+a later rerun that passes forces the marker to be changed on purpose. A later part's runs may not share the earlier
+part's name prefix (`step3d_` against `step_`): add it to `extras.RUN_PREFIX` (a tuple works) or the evidence list
+drops them silently; check the run links on the built page.
 Check a study-session colour scale before using its figure: the nozzle's plastic-strain panel capped the scale at
 the 98th percentile without saying so, so the brightest colour stood for everything from 1.6 to 2.7 %. Run the scale to
 the true peak (label it "peak") and leave zero as plain metal, not the colour map's lightest step. When a Part 2
