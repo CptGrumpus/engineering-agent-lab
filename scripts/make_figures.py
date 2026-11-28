@@ -1820,6 +1820,104 @@ def step_sidewalls():
     fk.save(fig, "step_sidewalls")
 
 
+STALL_RUN, STALL_PT = "20261128-112429_step3d_stall_locate", "p00_baseline"
+
+
+def step_stall():
+    """Study 19 part 3: where the 3D step's stall lives. Left, a side view just behind the step: the 2,000 cells with
+    the largest continuity error (stall_cells.csv), summed across the span into each cell column of the flow plane and
+    shaded by its share of the run's total error. Right, the spanwise velocity at the probes just under the lip,
+    18 mm from the side wall and at mid-span, over the last 1,000 iterations with a linear trend removed (as the
+    harness's probe_history): jitter with no period, ten times larger under the lip. The run is a diagnostic stopped
+    at iteration 3,000, so it fails convergence by design; the figure asserts that, and the numbers the page quotes
+    (scripts/step3d_stall_summary.py)."""
+    import csv
+    import re as _re
+    import matplotlib.colors as mc
+    case = RUNS / STALL_RUN / "points" / STALL_PT / "solver" / "case3d"
+    pt = point(STALL_RUN, STALL_PT)
+    so = pt["solver_outputs"]
+    assert not verified(STALL_RUN)[STALL_PT] and so["iterations"] == 3000
+    st = so["stall"]["continuity"]
+    assert st["cells_50pct"] == 2842 and st["cells"] == 566400
+    rows = list(csv.DictReader(open(case / "stall_cells.csv", encoding="utf-8")))
+    c = {k: np.array([float(r[k]) for r in rows]) for k in ("x_mm", "y_mm", "z_mm", "continuity_err_m3_per_s")}
+    e = np.abs(c["continuity_err_m3_per_s"])
+    hot = np.argsort(-e)[:2000]
+    share = {}
+    for i in hot:
+        k = (round(c["x_mm"][i], 3), round(c["y_mm"][i], 3))
+        share[k] = share.get(k, 0.0) + e[i] / st["total_m3_per_s"]
+    near = [i for i in hot if c["x_mm"][i] < 1.3]
+    assert abs(e[near].sum() / e[hot].sum() - 0.47) < 0.005          # page: 47 % of the hot cells' error
+    H = so["H_m"] * 1e3 if "H_m" in so else 12.7
+
+    fig, gs = fk.new(FULL, 3.9, 1, 2, wspace=0.24, top=1.0, width_ratios=[1, 1.15])
+    ax = fig.add_subplot(gs[0, 0])
+    for sp in ax.spines.values():
+        sp.set_visible(False)
+    ax.tick_params(length=0, pad=4)
+    x0, x1, y1 = -5.0, 14.0, 29.0
+    ax.set_xlim(x0, x1)
+    ax.set_ylim(-1.2, y1)
+    ax.add_patch(fk.plt.Rectangle((x0, -1.2), -x0, H + 1.2, facecolor="#d9d8d3", edgecolor="none", zorder=1))
+    ax.plot([x0, 0, 0, x1], [H, H, 0, 0], color=INK, linewidth=1.6, zorder=4, solid_capstyle="butt")
+    ks = [k for k in share if x0 < k[0] < x1 and k[1] < y1]
+    norm = mc.LogNorm(1e-4, 1e-2)
+    xs = np.array([k[0] for k in ks]); ys = np.array([k[1] for k in ks]); vs = np.array([share[k] for k in ks])
+    o = np.argsort(vs)
+    sc = ax.scatter(xs[o], ys[o], c=np.clip(vs[o], 1e-4, None), cmap=fk.SEQ, norm=norm, s=18, marker="s", linewidths=0, zorder=3)
+    ax.text(-2.5, H / 2, "step", fontsize=9, color=INK2, ha="center", va="center", zorder=5)
+    ax.text(-2.5, H + 1.0, "flow →", fontsize=9, color=INK2, ha="center", va="bottom", zorder=5)
+    fk.callout(ax, (1.0, 12.0), (18, 16), "first two cell columns behind the\nstep face: 47 % of the hot cells' error", ha="left", va="bottom")
+    ax.set_xticks([0, 5, 10])
+    ax.set_yticks([0, 5, 10])
+    ax.set_xlabel("distance from the step face, mm")
+    ax.set_ylabel("height above the floor, mm")
+    fk.panel(ax, "Where the leftover error sits")
+    cax = ax.inset_axes([0.47, 0.9, 0.46, 0.035])
+    cb = fig.colorbar(sc, cax=cax, orientation="horizontal", ticks=[1e-4, 1e-3, 1e-2])
+    cb.ax.set_xticklabels(["0.01 %", "0.1 %", "1 %"])
+    cb.outline.set_visible(False)
+    cb.ax.tick_params(length=0, labelsize=8, colors=INK2, pad=2)
+    cax.text(-0.08, 0.5, "share of the\nerror, per column", transform=cax.transAxes, fontsize=8, color=INK2, ha="right", va="center")
+
+    ax = fig.add_subplot(gs[0, 1])
+    fk.style(ax)
+    f = sorted((case / "postProcessing" / "stallProbe").iterdir(), key=lambda d: float(d.name))[-1] / "U"
+    data = []
+    for line in f.read_text().splitlines():
+        if line.strip() and not line.startswith("#"):
+            data.append([float(line.split()[0])] + [float(v.split()[2]) for v in _re.findall(r"\(([^)]*)\)", line)])
+    data = np.array(data)
+    data = data[data[:, 0] > data[-1, 0] - 1000]
+    it = data[:, 0]
+    pr = so["stall_probes"]["probes"]
+    res = []
+    for k in (0, 1):
+        uz = data[:, 1 + k] / 44.2
+        r = uz - np.polyval(np.polyfit(it - it[0], uz, 1), it - it[0])
+        assert abs(r.std() / pr[k]["uz_detrended_std"] - 1) < 1e-3, (r.std(), pr[k]["uz_detrended_std"])
+        res.append(r * 1e5)
+    ratio = pr[0]["uz_detrended_std"] / pr[1]["uz_detrended_std"]
+    ax.plot(it, res[0], color=MODEL, linewidth=0.9, zorder=3)
+    ax.plot(it, res[1], color=INK, linewidth=1.4, zorder=4)
+    ax.set_xlim(it[0], it[-1])
+    lim = 1.15 * np.abs(res[0]).max()
+    ax.set_ylim(-lim, lim)
+    fk.label(ax, it[0] + 15, lim * 0.93, f"under the lip, 18 mm from the side wall:\nspanwise velocity {abs(pr[0]['uz_over_uref_mean']) * 100:.0f} % of the reference, jittering",
+             va="top", color=INK2, size=8.5)
+    fk.label(ax, it[-1] - 15, -lim * 0.93, f"mid-span: {ratio:.0f} times smaller", ha="right", va="bottom", color=INK2, size=8.5)
+    ax.set_xlabel("iteration")
+    ax.set_ylabel("spanwise velocity, trend removed,\n× 10⁻⁵ of the reference speed")
+    fk.panel(ax, "Jitter with no period, under the lip")
+    fk.heading(fig, "The 3D step's stall, located: a noise floor in the first cells behind the step face",
+               f"Diagnostic rerun to iteration 3,000. Half the continuity error sits in {st['cells_50pct']:,} cells, "
+               f"{100 * st['cells_50pct'] / st['cells']:.1f} % of the mesh; the recovery is read far from them")
+    fk.key(fig, [("under the lip", "line", MODEL), ("mid-span", "line", INK)], y_in=0.66)
+    fk.save(fig, "step_stall")
+
+
 # ---------------------------------------------------------------------------------------- study 21, random vibration
 
 RV_RUN, RV_PT = "20261123-100907_bracket_random_mesh", "p02_element_size_mm-1.2207"
@@ -2964,7 +3062,7 @@ ALL = {f.__name__: f for f in (cfd_tolerance, cfd_duct, cfd_response, cfd_field,
                                strut_sweep, strut_response, proof_response, joint_response, contact_response, fea_response, strap_response,
                                fatigue_sn, fin_response, fin_h_sweep, qc_bump_sweep, cad_sweep, heat_response,
                                qc_liftoff, qc_iso, coldplate_response, pipe_friction, motor_comparison,
-                               motor_rotor, pv_nozzle, step_comparison, step_sidewalls, random_vibration, bracket_uncertainty,
+                               motor_rotor, pv_nozzle, step_comparison, step_sidewalls, step_stall,random_vibration, bracket_uncertainty,
                                fan_rotor, fan_rotor_campbell, crack_growth, motor_efficiency, motor_airgap, oring_seal, shaft_fillet,
                                enclosure_revb, enclosure_field, steel_frame, flag_fsi, crack_surface, keyed_shaft, steel_knee, rotor_solid, strap_3d, nozzle_limit, nozzle_yield, oring_cover, duct_section, roller_halfspace, roller_fe)}
 # not on the site (the earlier model's thermal result): motor_thermal

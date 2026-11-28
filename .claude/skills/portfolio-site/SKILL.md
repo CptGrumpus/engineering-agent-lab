@@ -243,6 +243,11 @@ lands (grep site/ for the key so the CSS class goes too). A readings-over-the-li
 unsettled values is drawn, not only told: plot the unsettled meshes grey with a note "not a result", and recompute the
 study's settledness test inside the figure function from the kept steps, asserting it picks out exactly the readings
 the study says.
+Check that a handover's statistic was computed over the cells it describes (study 19's stall: "nothing reverses" came
+from a flip fraction over the largest-change cells, far downstream, while 56 % of the stalled cells reversed): read the
+function that produced it, re-rank the saved cells yourself, and ask for any number no committed script prints. Before
+telling the study session a file is missing, list the run's tracked files without filters (`git ls-files runs/<run>`,
+no `grep -v`): I once filtered out `solver/case*` and reported committed files as absent.
 Check a study-session colour scale before using its figure: the nozzle's plastic-strain panel capped the scale at
 the 98th percentile without saying so, so the brightest colour stood for everything from 1.6 to 2.7 %. Run the scale to
 the true peak (label it "peak") and leave zero as plain metal, not the colour map's lightest step. When a Part 2
