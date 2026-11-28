@@ -175,9 +175,14 @@ repeated the original run exactly, digit for digit, to iteration 3,000.
 - **Where:** half the continuity error sits in 2,842 cells, 0.5 % of the mesh. Most of them are in the first two
   cell columns behind the step's vertical face, from the floor up to the lip, all across the span. These are the
   cells where the exact-2D-limit run (below) failed its spanwise-velocity check.
-- **What it is:** a noise floor, not an unsteady feature of the flow. Nothing oscillates or reverses. Every change
-  in the flow decays at the same rate everywhere (to 0.91 of itself per 100 iterations). The residual is held up by
-  a jitter from one iteration to the next, largest just under the lip, 10 times its size at mid-span.
+- **What it is:** a noise floor, not an unsteady feature of the flow.
+  - In those cells the flow barely moves late in the run, about 7 millionths of the reference speed per 100
+    iterations. Its direction reverses between successive intervals in 56 % of them, as random jitter would.
+  - The probe just under the lip shows the same: the spanwise velocity holds at 8 % of the reference speed and jitters
+    with no period. Each iteration carries little memory of the last (correlation 0.06-0.23, depending on the trend
+    removed). The jitter is about 10 times its size at mid-span.
+  - Where the flow still changes most, far downstream, it decays smoothly without reversing (over the whole domain,
+    to 0.91 of itself per 100 iterations).
 - **Its effect:** the recovery is read 4 step heights upstream and 30 downstream, far from those cells, and it had
   settled.
 
@@ -237,7 +242,7 @@ passes (failed: the stall); thinner side-wall layers give 60-85 % of the drop (8
   [side walls](../runs/20261127-223049_step3d_sidewalls/report.md) (two spanwise meshes),
   [thinner side-wall layers](../runs/20261128-054328_step3d_sidewall_start/report.md),
   [the stall located](../runs/20261128-112429_step3d_stall_locate/report.md) (an exact repeat to iteration 3,000 with
-  the cell-by-cell diagnostics, `stall_cells.csv`); comparisons
+  the cell-by-cell diagnostics, `stall_cells.csv`; the page's numbers from `scripts/step3d_stall_summary.py`); comparisons
   `validation/step_driver_seegmiller/part3/RESULTS.md` and `part3_thin/RESULTS.md`; case files `cases/step3d_*.toml`
   (predictions before each run, results scored after); code `models/cfd/step3d_openfoam.py`,
   `studies/step_flow_3d.py`, `tests/test_step_flow_3d.py`; figure `scripts/make_step3d_figure.py`

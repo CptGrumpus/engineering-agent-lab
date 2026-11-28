@@ -194,8 +194,11 @@ Done today, each with predictions committed first, runs scored, page section, fi
   repeated step3d_sidewalls p00 exactly to iteration 3,000 (2D and 3D logs identical). The stall is located: half the
   continuity error is in 2,842 cells (0.5 %), most in the first two cell columns behind the step face, floor to lip,
   across the span. Those are the symmetry case's uz_zero cells, not the side wall I predicted. It is not a mode:
-  nothing reverses, every change decays at the domain's 0.91 per 100 iterations, and the residual floor is jitter
-  from one iteration to the next (lag-1 correlation 0.13), largest under the lip 18 mm from the side wall. Page 19
+  in those cells U barely moves (median 6.5e-6 U_ref per 100 iterations) and its change reverses in 56 % of them,
+  as jitter does. The probe under the lip jitters without a period (lag-1 0.06-0.23 by the trend removed), about
+  10x mid-span. The largest changes are far downstream and decay smoothly (0.91 per 100 iterations). Corrected
+  after the dashboard's review: the first version said "nothing reverses" and "lag-1 0.13"; the numbers now come
+  from `scripts/step3d_stall_summary.py`. Page 19
   updated; verdicts stay unverified. **Open (offer to the user, not started):** the same run to 3,000 with part 2's
   SIMPLE (consistent no, relax_p 0.3), about 1 h, to test whether the floor clears. Nothing runs now.
 - Pushes: the dashboard session pushes with the user's approval; check `git log origin/main..HEAD` before any push of

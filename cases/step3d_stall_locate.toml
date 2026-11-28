@@ -66,16 +66,24 @@
 #      grew 1.14 x over the last interval, but at most 1.2e-5 q per 100 iterations (the original run's recovery then
 #      settled to 1e-6 by 12,000).
 #   P5 FAILED in part: the range at the largest-|Uz| probe is 10.8 times mid-span's (2.9e-4 against 2.6e-5 U_ref), as
-#      predicted. But it has no period: Uz holds -0.0802 U_ref and jitters from one iteration to the next (detrended std
-#      5.2e-5 U_ref, lag-1 correlation 0.13), with no oscillation. 1.4 mm from the side wall: range 1.2e-4, a
-#      111-iteration line in its spectrum, lag-1 correlation 0.84.
+#      predicted (detrended std 10.4 times). But it has no period: Uz holds -0.0802 U_ref and jitters from one
+#      iteration to the next (detrended std 5.2e-5 U_ref; lag-1 autocorrelation of the residual 0.23 with a linear
+#      trend removed, 0.06 with a quadratic), with no oscillation. Mid-span's small motion is slow (0.95 / 0.69). 1.4 mm
+#      from the side wall: range 1.2e-4, a 111-iteration line in its spectrum, lag-1 0.84. (Corrected 2026-11-28, from
+#      a review by the dashboard session: the first version quoted 0.13, the raw last 300 iterations, from a scratch
+#      calculation; every number here now comes from scripts/step3d_stall_summary.py.)
 #   P6 FAILED, on the fast side: 51 min against about 1 h 5 min. The machine was free (0.725 s per iteration against
 #      0.88 s when step3d_sidewalls shared it).
 # What it shows: the stall is located. It is a noise floor in the first cell columns behind the step face, the same
 # cells where the symmetry case failed its spanwise-velocity check (x/H 0.025, inside the near-stagnant corner eddy).
-# It is not a mode: nothing oscillates or reverses, every change decays at the domain's rate, and the residual is held
-# up by iteration-to-iteration jitter. The jitter is largest just under the lip 18 mm from the side wall, 10 times
-# mid-span's. The recovery is read at -4 H and 30 H, far from those cells, and it settled; the stall's effect on the
+# It is not a mode. In the continuity hot cells (top 2,000) U barely moves (median 4.4e-6 U_ref per 100 iterations;
+# 6.5e-6 in the 903 behind the step face, which hold 47 % of their error), and its change reverses between the two
+# intervals in 57 % of them (56 % behind the face), as random jitter does. The probe there jitters without a period
+# and with little memory between iterations. The jitter is largest just under the lip 18 mm from the side wall, about
+# 10 times mid-span's. The cells that still change most lie far downstream (x 266-629 mm, median 9.1e-5 U_ref) and
+# decay smoothly without reversing (0.91 per 100 iterations, volume-weighted over the domain). (Corrected 2026-11-28,
+# from the dashboard session's review: the first version said "nothing oscillates or reverses" from the sign-flip
+# statistic over the largest-change cells, which does not describe the stalled cells.) The recovery is read at -4 H and 30 H, far from those cells, and it settled; the stall's effect on the
 # verdicts is bounded by that settling. The verdicts stay unverified (the harness rule: a failed residual check is not
 # turned into a pass by a stable output). Neither pre-written outcome fits exactly (local to the lip and side wall
 # and oscillating; or spread over the domain). Both name the same next test, the run with part 2's SIMPLE: offered to

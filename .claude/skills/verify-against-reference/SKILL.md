@@ -210,10 +210,16 @@ its target (study 19 part 3, 2026-11-28). Report it as measured and unverified, 
   symmetry case had located its spanwise-velocity failure in the first cell column behind the step face. When the
   side-wall runs stalled, I predicted the stall at the side wall, where the largest symptom was (|Uz| 8 % of U_ref).
   The stall-locating rerun put it in the same cells as the symmetry case, behind the step face, across the span. It
-  was a noise floor: nothing reversed, changes decayed at the domain's rate, and successive iterations' jitter was
-  uncorrelated (lag-1 0.13). Read the limit case's located failures first. Tell a noise floor from a mode by
-  whether the change between snapshots reverses and decays, and by whether successive iterations are correlated
-  (study 19 part 3, `cases/step3d_stall_locate.toml`).
+  was a noise floor: in those cells U barely moved, and its change reversed in about half of them (56 %), as random
+  jitter does; the probe there jittered with no period and little memory between iterations (lag-1 0.06-0.23). Read
+  the limit case's located failures first. Tell a noise floor from a mode by the reversal fraction and the
+  iteration-to-iteration correlation in the located cells (study 19 part 3, `cases/step3d_stall_locate.toml`).
+- **Compute a statistic over the cells it describes.** The stall summary's sign-flip fraction is taken over the
+  cells ranked by change, which sat 266-629 mm downstream and never reversed. I first quoted it as "nothing
+  reverses" for the stall, whose own cells reversed 56 % of the time. A review by the other session caught it. It
+  also caught a probe number (lag-1 0.13) from a scratch calculation that no reader could reproduce. Before a page
+  quotes a statistic, check which cells it ranks. Quote only numbers a committed script prints
+  (`scripts/step3d_stall_summary.py`).
 - **A pre-written "if this prediction fails" branch assumes how it fails.** roller_fe_end's P3 said a persistent
   end peak would mean the roller's own end effect, and a stronger crown next. It failed at one point of three, not
   persistently, so that branch did not apply. Read the failure's form before taking the branch, and say on the
