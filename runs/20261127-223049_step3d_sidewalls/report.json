@@ -1,0 +1,327 @@
+{
+  "points": [
+    {
+      "label": "p00_spanwise_level-1",
+      "parameters": {
+        "step_height_m": 0.0127,
+        "inlet_height_ratio": 8.0,
+        "reynolds_number_h": 37500.0,
+        "inlet_velocity_m_per_s": 40.91,
+        "inlet_velocity_2d_m_per_s": 41.95,
+        "reference_velocity_m_per_s": 44.2,
+        "upstream_length_m": 1.153,
+        "downstream_length_over_h": 50.0,
+        "inlet_turbulence_intensity": 0.01,
+        "inlet_viscosity_ratio": 10.0,
+        "mesh_level": 0.5,
+        "turbulence_model": "kOmegaSST",
+        "half_span_m": 0.0755,
+        "side_wall": 1.0,
+        "spanwise_level": 1.0,
+        "side_wall_start_m": -1.153
+      },
+      "derived": {
+        "nu_m2_per_s": 1.4969066666666669e-05,
+        "cells": 566400,
+        "cells_2d": 17700,
+        "nz": 32,
+        "y1_m": 6e-06,
+        "y1z_m": 6e-06,
+        "growth_z": 1.2925282580217856,
+        "dz_mid_m": 0.017091992645836968,
+        "dx_lip_m": 0.000635,
+        "side_wall_split": null
+      },
+      "simulation_status": "completed",
+      "verification_status": "FAIL",
+      "checks": [
+        {
+          "id": "converged",
+          "description": "3D: SIMPLE residual control reached (0 = yes)",
+          "kind": "numerical",
+          "value": 1.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "FAIL"
+        },
+        {
+          "id": "converged_2d",
+          "description": "2D solution (initial field and same-mesh comparison): residual control reached (0 = yes)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "continuity",
+          "description": "3D: time-step continuity error, sum local (last iteration)",
+          "kind": "numerical",
+          "value": 4.89131019492e-06,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "FAIL"
+        },
+        {
+          "id": "mass_balance",
+          "description": "3D: |inlet + outlet volume flow| / inlet flow",
+          "kind": "numerical",
+          "value": 2.9348740228258865e-10,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "recovery_settled",
+          "description": "3D: range of the probe recovery Cp(30 H) - Cp(-4 H) at mid-span over the last 10 % of the iterations",
+          "kind": "numerical",
+          "value": 3.03673794860293e-07,
+          "tolerance": 0.0002,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "mesh_matches_2d",
+          "description": "max |x-y cell centre of the 3D mesh - its 2D cell's| (m): the 3D x-y plane is the 2D mesh, and the cell map is right",
+          "kind": "numerical",
+          "value": 1.0000333894311098e-13,
+          "tolerance": 1e-09,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "inflow_theta",
+          "description": "|momentum thickness at x = -4 H, mid-span - stated| / stated",
+          "kind": "validity",
+          "value": 0.02627208627268935,
+          "tolerance": 0.05,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "inflow_velocity",
+          "description": "|edge velocity at x = -4 H, mid-span - stated reference| / reference",
+          "kind": "validity",
+          "value": 0.0003937801900451683,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "yplus_walls",
+          "description": "max y+ on every wall but the step face, side wall included (viscous sublayer resolved)",
+          "kind": "validity",
+          "value": 0.4577682044711,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "mesh",
+          "description": "checkMesh failures other than the aspect-ratio test (0 = none)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "reattachment_found",
+          "description": "reattachment point on the floor at mid-span missing (0 = found, 1 = none)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-S3-HIGH",
+          "text": "Part 2's REQ-S3 (upper side): the recovery Cp(30 H) - Cp(-4 H) at mid-span at most the measured 0.1307 + 0.02.",
+          "metric": "cp_recovery_30h",
+          "operator": "<=",
+          "limit": 0.1507,
+          "units": "-",
+          "value": 0.13211579138720345,
+          "margin": 0.018584208612796554,
+          "verdict": "PASS (unverified)"
+        },
+        {
+          "id": "REQ-S3-LOW",
+          "text": "Part 2's REQ-S3 (lower side): the recovery at mid-span at least the measured 0.1307 - 0.02.",
+          "metric": "cp_recovery_30h",
+          "operator": ">=",
+          "limit": 0.1107,
+          "units": "-",
+          "value": 0.13211579138720345,
+          "margin": 0.02141579138720344,
+          "verdict": "PASS (unverified)"
+        }
+      ]
+    },
+    {
+      "label": "p01_spanwise_level-1.4142",
+      "parameters": {
+        "step_height_m": 0.0127,
+        "inlet_height_ratio": 8.0,
+        "reynolds_number_h": 37500.0,
+        "inlet_velocity_m_per_s": 40.91,
+        "inlet_velocity_2d_m_per_s": 41.95,
+        "reference_velocity_m_per_s": 44.2,
+        "upstream_length_m": 1.153,
+        "downstream_length_over_h": 50.0,
+        "inlet_turbulence_intensity": 0.01,
+        "inlet_viscosity_ratio": 10.0,
+        "mesh_level": 0.5,
+        "turbulence_model": "kOmegaSST",
+        "half_span_m": 0.0755,
+        "side_wall": 1.0,
+        "spanwise_level": 1.4142,
+        "side_wall_start_m": -1.153
+      },
+      "derived": {
+        "nu_m2_per_s": 1.4969066666666669e-05,
+        "cells": 796500,
+        "cells_2d": 17700,
+        "nz": 45,
+        "y1_m": 6e-06,
+        "y1z_m": 4.242681374628766e-06,
+        "growth_z": 1.19917134543087,
+        "dz_mid_m": 0.0125433945021433,
+        "dx_lip_m": 0.000635,
+        "side_wall_split": null
+      },
+      "simulation_status": "completed",
+      "verification_status": "FAIL",
+      "checks": [
+        {
+          "id": "converged",
+          "description": "3D: SIMPLE residual control reached (0 = yes)",
+          "kind": "numerical",
+          "value": 1.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "FAIL"
+        },
+        {
+          "id": "converged_2d",
+          "description": "2D solution (initial field and same-mesh comparison): residual control reached (0 = yes)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "continuity",
+          "description": "3D: time-step continuity error, sum local (last iteration)",
+          "kind": "numerical",
+          "value": 6.19943366347e-06,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "FAIL"
+        },
+        {
+          "id": "mass_balance",
+          "description": "3D: |inlet + outlet volume flow| / inlet flow",
+          "kind": "numerical",
+          "value": 2.9348757917536365e-10,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "recovery_settled",
+          "description": "3D: range of the probe recovery Cp(30 H) - Cp(-4 H) at mid-span over the last 10 % of the iterations",
+          "kind": "numerical",
+          "value": 3.077382393079642e-07,
+          "tolerance": 0.0002,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "mesh_matches_2d",
+          "description": "max |x-y cell centre of the 3D mesh - its 2D cell's| (m): the 3D x-y plane is the 2D mesh, and the cell map is right",
+          "kind": "numerical",
+          "value": 1.0000333894311098e-12,
+          "tolerance": 1e-09,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "inflow_theta",
+          "description": "|momentum thickness at x = -4 H, mid-span - stated| / stated",
+          "kind": "validity",
+          "value": 0.02674213188044441,
+          "tolerance": 0.05,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "inflow_velocity",
+          "description": "|edge velocity at x = -4 H, mid-span - stated reference| / reference",
+          "kind": "validity",
+          "value": 0.0008368502533935405,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "yplus_walls",
+          "description": "max y+ on every wall but the step face, side wall included (viscous sublayer resolved)",
+          "kind": "validity",
+          "value": 0.4576517803611,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "mesh",
+          "description": "checkMesh failures other than the aspect-ratio test (0 = none)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "reattachment_found",
+          "description": "reattachment point on the floor at mid-span missing (0 = found, 1 = none)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-S3-HIGH",
+          "text": "Part 2's REQ-S3 (upper side): the recovery Cp(30 H) - Cp(-4 H) at mid-span at most the measured 0.1307 + 0.02.",
+          "metric": "cp_recovery_30h",
+          "operator": "<=",
+          "limit": 0.1507,
+          "units": "-",
+          "value": 0.13174423855675624,
+          "margin": 0.018955761443243763,
+          "verdict": "PASS (unverified)"
+        },
+        {
+          "id": "REQ-S3-LOW",
+          "text": "Part 2's REQ-S3 (lower side): the recovery at mid-span at least the measured 0.1307 - 0.02.",
+          "metric": "cp_recovery_30h",
+          "operator": ">=",
+          "limit": 0.1107,
+          "units": "-",
+          "value": 0.13174423855675624,
+          "margin": 0.02104423855675623,
+          "verdict": "PASS (unverified)"
+        }
+      ]
+    }
+  ],
+  "run_id": "20261127-223049_step3d_sidewalls",
+  "generated_utc": "2026-11-28T10:43:23+00:00",
+  "verification_status": "FAIL"
+}

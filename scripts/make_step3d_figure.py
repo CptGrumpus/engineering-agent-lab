@@ -81,8 +81,7 @@ def main(out: Path) -> None:
                 label=f"3D, thinner side-wall layer: {ot['cp_recovery_30h']:.3f}")
     ax.plot(cp_m[:, 0], cp_m[:, 1] - cp_m0, "o", ms=4.5, color=TEXT, mfc="none", label=f"measured: {meas:.3f}")
     ax.errorbar([30.0], [meas], yerr=[[0.02], [0.02]], fmt="none", ecolor=TEXT_2, elinewidth=1.4, capsize=4, zorder=5)
-    ax.text(30.0, meas - 0.024, "REQ-S3 window:
-measured +- 0.02", fontsize=7.5, color=TEXT_2, ha="center", va="top")
+    ax.text(30.0, meas - 0.024, "REQ-S3 window:\nmeasured +- 0.02", fontsize=7.5, color=TEXT_2, ha="center", va="top")
     ax.set_xlim(-6, 36)
     ax.set_xlabel("x / H (step at 0)")
     ax.set_ylabel("C_p - C_p(-4 H), step-side wall, mid-span")
@@ -101,8 +100,9 @@ measured +- 0.02", fontsize=7.5, color=TEXT_2, ha="center", va="top")
     bx.set_xlim(-2, 36)
     bx.set_xlabel("x / H")
     bx.set_ylabel("C_f x 1000")
-    bx.set_title(f"(b) Skin friction; reattachment {o3['xr_over_h']:.2f} H (2D {o2['xr_over_h']:.2f}, measured 6.26)",
-                 fontsize=10, color=TEXT, loc="left")
+    # the side walls' effect on reattachment is read against the 2D solution on the 3D model's own x-y mesh
+    bx.set_title(f"(b) Skin friction; reattachment {o3['xr_over_h']:.2f} H\n(2D on the same mesh "
+                 f"{o3['precursor_2d']['xr_over_h']:.2f}, measured 6.26)", fontsize=10, color=TEXT, loc="left")
     bx.legend(frameon=False, fontsize=7.5, loc="lower right")
 
     # (c) floor skin friction map

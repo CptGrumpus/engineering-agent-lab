@@ -79,7 +79,18 @@ def ours(run_id: str, label: str) -> dict:
     return {"xr_over_h": o["xr_over_h"], "x_cf": np.array([r["x_over_h"] for r in rows]),
             "cf": np.array([r["cf"] for r in rows]), "x_cp": np.array(o["profiles"]["x_p_over_h"]),
             "cp": np.array(o["profiles"]["cp"]), "x_up": np.array(o["profiles"]["x_up_over_h"]),
-            "cf_up": np.array(o["profiles"]["cf_up"]), "inflow": o["inflow"], "label": label, "run": run_id}
+            "cf_up": np.array(o["profiles"]["cf_up"]), "inflow": o["inflow"], "label": label, "run": run_id,
+            "verification": verification(pdir)}
+
+
+def verification(pdir: Path) -> dict:
+    """The point's own checks (checks.json, written by the harness). A verdict on a point whose checks failed is not
+    supported by evidence and is marked unverified, as in the harness report."""
+    f = pdir / "checks.json"
+    if not f.exists():
+        return {"status": "MISSING", "failed": []}
+    c = json.loads(f.read_text(encoding="utf-8"))
+    return {"status": c["status"], "failed": [k["id"] for k in c["checks"] if k["status"] != "PASS"]}
 
 
 def main():
@@ -108,7 +119,7 @@ def main():
     cp_meas = float(np.interp(30.0, cp[:, 0], cp[:, 1]) - np.interp(-4.0, cp[:, 0], cp[:, 1]))
     cp_ours = float(np.interp(30.0, m["x_cp"], m["cp"]) - np.interp(-4.0, m["x_cp"], m["cp"]))
     s3 = cp_ours - cp_meas
-    res = {"run": a.run_id, "point": a.label,
+    res = {"run": a.run_id, "point": a.label, "verification": m["verification"],
            "REQ-S1": {"ours": m["xr_over_h"], "measured": xr_meas, "measured_uncertainty": xr_unc, "rel_error": s1,
                       "limit": LIMITS["REQ-S1"], "pass": abs(s1) <= LIMITS["REQ-S1"]},
            "REQ-S2": {"stations_x_over_h": cf[sel, 0].tolist(), "measured": cf[sel, 1].tolist(),
@@ -121,10 +132,15 @@ def main():
                                       "measured": float(cf[np.argmin(np.abs(cf[:, 0] + 3.956)), 1])}}
     (out / "comparison.json").write_text(json.dumps(res, indent=2), encoding="utf-8")
     figure(m, cf, cp, res, out)
-    v = lambda ok: "PASS" if ok else "FAIL"  # noqa: E731
+    ver = m["verification"]
+    tag = "" if ver["status"] == "PASS" else " (unverified)"
+    v = lambda ok: ("PASS" if ok else "FAIL") + tag  # noqa: E731
     md = [f"# {a.title}\n",
-          f"Model: run `{a.run_id}`, point `{a.label}`. Limits agreed before the data was opened (PROTOCOL.md).\n",
-          "| Requirement | Ours | Measured | Error | Limit | Verdict |", "|---|---|---|---|---|---|",
+          f"Model: run `{a.run_id}`, point `{a.label}`. Limits agreed before the data was opened (PROTOCOL.md).\n"]
+    if tag:
+        md.append(f"> **Verification {ver['status']}** (failed checks: {', '.join(ver['failed']) or 'none listed'}): "
+                  "the verdicts below are not supported by evidence and must not be used for acceptance.\n")
+    md += ["| Requirement | Ours | Measured | Error | Limit | Verdict |", "|---|---|---|---|---|---|",
           f"| REQ-S1 reattachment Xr/H | {m['xr_over_h']:.3f} | {xr_meas:.2f} +- {xr_unc:.2f} | {100 * s1:+.1f} % | 10 % | **{v(res['REQ-S1']['pass'])}** |",
           f"| REQ-S2 Cf, 10 <= x/H <= 30 ({int(sel.sum())} stations) | | | rms {100 * s2:.1f} % | 15 % | **{v(res['REQ-S2']['pass'])}** |",
           f"| REQ-S3 Cp(30 H) - Cp(-4 H) | {cp_ours:.4f} | {cp_meas:.4f} | {s3:+.4f} | 0.02 | **{v(res['REQ-S3']['pass'])}** |",

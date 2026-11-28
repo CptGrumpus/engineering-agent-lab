@@ -1,0 +1,142 @@
+# Study 19 part 3: the backward-facing step (Driver and Seegmiller, ERCOFTAC classic case 030) in 3D, with the wind
+# tunnel's side walls. Decision, model and what is not blind: see cases/step3d_symmetry.toml (same mesh, same pipeline;
+# that case checks the 3D pipeline against the 2D model with the side wall as a symmetry plane).
+# NOT BLIND: part 2 opened and scored the measurements (2026-11-23); limits unchanged (REQ-S3: the recovery within 0.02
+# of the measured 0.1307, so between 0.1107 and 0.1507; REQ-S1 Xr/H within 10 % of 6.26; REQ-S2 Cf within 15 % rms),
+# scored after this run by validation/step_driver_seegmiller/compare.py --out validation/step_driver_seegmiller/part3.
+#
+# Case 2: the side wall as a no-slip wall (low-Re, as the floors), its boundary layer grown from the same uniform inlet
+# as the floor's (the stated assumption: it starts like the floor's), at two spanwise meshes: spanwise_level 1 (32
+# cells, 6 um at the wall, growth 1.29) and 1.41 (45 cells, 4.2 um, growth 1.20); the x-y mesh is level 0.5.
+# Inflow re-matched: the side walls' displacement speeds up the core, so the 3D inlet velocity is lowered to keep the
+# stated edge velocity at x = -4 H (44.2 m/s, mid-span): a scratch test (900 iterations, U_in 41.95) gave 45.32 m/s at x
+# = -4 H against the 2D model's 44.08, so U_in = 41.95 x 44.2 / 45.32 = 40.91 m/s (the check inflow_velocity, 2 %,
+# confirms it). The 2D stage keeps part 2's 41.95 m/s, so each point's 2D solution is part 2's model exactly (edge
+# velocity 44.08 m/s at x = -4 H: the same Reynolds number as the 3D model's to 0.3 %); the side-wall effect is read
+# against it (cp_recovery_change) and against step3d_symmetry's 3D point (the same mesh with the side wall as a symmetry
+# plane).
+# Numerics: SIMPLEC (consistent; relaxation p 1, U 0.9, k / omega 0.7) in the 3D stage, part 2's residual targets (p
+# 1e-6, U 2e-7, k / omega 2e-6), 300 start-up iterations (first-order k, omega) from the 2D field, then to the targets
+# or 20,000 iterations; the 2D stage keeps part 2's SIMPLE (the steady solution does not depend on the relaxation:
+# step3d_symmetry checks it). Scratch tests from the 2D field with the side walls (2026-11-27 19:12-19:40, 6 ranks):
+# after 300 stage-2 iterations SIMPLEC had p 1.2e-4 against SIMPLE's (part 2's numerics) 4.8e-4, and its p and U
+# residuals fell a decade per about 500-600 iterations against SIMPLE's 1,100-2,300, at 0.89 s per iteration against
+# 0.78; its probe recovery was flat to 1e-4 from the 20th stage-2 iteration, while SIMPLE's still rose from 0.135 to
+# 0.139 over 300. SIMPLEC is used. Besides the residuals, recovery_settled: the probe recovery Cp(30 H) - Cp(-4 H) at
+# mid-span may move at most 2e-4 over the last 10 % of the iterations (a tenth of what would matter here).
+# Predictions, written BEFORE the evidence run. Known beforehand: the hand estimate (nominal side walls: recovery lower
+# by 0.039-0.042) and the two scratch tests above (900 iterations, unconverged; SIMPLE / SIMPLEC: mid-span recovery
+# 0.1312 / 0.1315, a fall of 0.024 from the 2D 0.1553; Xr/H 6.345 / 6.403, still moving; Cf(20 H) 1.719 / 1.760e-3;
+# the side wall's theta at -4 H 1.686 mm against the floor's 1.645).
+#   P1 Every point check passes on both spanwise levels (side-wall y+ under 1: 0.47 in the scratch test).
+#   P2 At mid-span the recovery to 30 H falls by 0.018-0.035 from the 2D solution on the same mesh (0.1553): the 3D
+#      recovery 0.120-0.137, so REQ-S3 PASSES against the measured 0.1307 (the window is 0.1107-0.1507). The page's
+#      explanation then holds: the side walls account for the miss. The hand estimate's 0.040 is expected to be high
+#      (it lets the whole displacement growth speed up the core uniformly).
+#   P3 Mid-span Xr/H between 2.5 % below and 0.5 % above the 2D 6.418 (the side walls relieve the adverse pressure
+#      gradient; the scratch values had not settled); REQ-S1 passes. Cf at mid-span within 4 % of the 2D's between 10
+#      and 30 H (the side walls raise both the reference speed at -4 H and the downstream core speed); REQ-S2 still
+#      passes (rms 5-10 %).
+#   P4 The side wall's momentum thickness at x = -4 H (channel mid-height) within 10 % of the floor's at mid-span
+#      (both grow from the same inlet); its displacement thickness grows 1.3-2x by 30 H.
+#   P5 The spanwise refinement changes the mid-span recovery by under 0.002 (5 % of the side-wall effect) and Xr/H by
+#      under 0.5 % (the refinement_* checks: 0.002 and 0.03 absolute).
+#   P6 About 5-8 h for both points (the finer spanwise mesh, 796,500 cells, about 1.1 s per iteration).
+#   (revised with the change below, before the run) About 6-9 h for both points: 1.08 s per
+#   iteration at 566,400 cells, about 1.5 s at 796,500, 4,000-6,000 iterations each.
+
+# Changed after step3d_symmetry (run 20261127-200510), before this case's first run (2026-11-27 22:30): p relTol
+# 0.01 instead of 0.05 in the 3D stage, and the iteration cap 12,000 instead of 20,000. That run passed the exact 2D
+# limit but FAILED `continuity` (1.84e-6 against part 2's 1e-6): with SIMPLEC the pressure equation's coefficients are
+# larger, so the same normalised residual leaves a larger flux imbalance, and the imbalance after each pressure solve is
+# relTol x the initial one. A restart from the same state (scratch t_sym, 40 iterations) with relTol 0.01 cut it 5.4x
+# at once (8.9e-6 to 1.6e-6) for 24 % more time per iteration (1.08 against 0.87 s). The criterion is part 2's,
+# unchanged. The cap: SIMPLEC fell a decade per 500-700 iterations in every test; 12,000 is three times what six
+# decades need. The evidence chain's first start of this case (21:58) was stopped after 30 s, in its 2D stage, when
+# step3d_symmetry's result came in; its folder (no solver output) was deleted.
+
+[case]
+name = "step3d_sidewalls"
+model = "openfoam_step3d_rans"
+description = "Backward-facing step (Driver and Seegmiller, ERCOFTAC 030) in 3D over half the tunnel span with the side wall as a no-slip wall, its boundary layer from the same inlet as the floor's; spanwise levels 1 and 1.41 (x-y mesh level 0.5)."
+assumptions = [
+  "Steady, incompressible RANS, k-omega SST (openfoam.org v14), every wall resolved (y+ under 1), the side wall included.",
+  "Geometry from the case description: step H 12.7 mm, inlet duct 8 H, parallel top wall; half span 75.5 mm (span 151 mm), mid-span a symmetry plane; Re_H 37500.",
+  "The side walls' boundary layers start at the same uniform inlet as the floor's and the top wall's, 1.153 m upstream of the step (not in the case description: stated, bracketed by step3d_sidewall_start).",
+  "Inflow re-matched to the stated edge velocity at x = -4 H at mid-span (44.2 m/s); 2D stage at part 2's 41.95 m/s.",
+]
+limitations = [
+  "One x-y mesh level (0.5): its 2D values differ from part 2's finest by 0.0019 in recovery and 0.2 % in Xr/H (stated, from the 2D levels).",
+  "Two spanwise levels: a change, not a formal uncertainty.",
+  "Linear eddy-viscosity model: no secondary flow of the second kind in the corners.",
+]
+
+[parameters]
+step_height_m = 0.0127
+inlet_height_ratio = 8.0
+reynolds_number_h = 37500.0
+inlet_velocity_m_per_s = 40.91
+inlet_velocity_2d_m_per_s = 41.95
+reference_velocity_m_per_s = 44.2
+upstream_length_m = 1.153
+downstream_length_over_h = 50.0
+inlet_turbulence_intensity = 0.01
+inlet_viscosity_ratio = 10.0
+mesh_level = 0.5
+turbulence_model = "kOmegaSST"
+half_span_m = 0.0755
+side_wall = 1.0
+spanwise_level = 1.0
+side_wall_start_m = -1.153
+
+[sweep]
+parameter = "spanwise_level"
+values = [1.0, 1.4142]
+
+[numerics]
+residual_p = 1e-6
+residual_U = 2e-7
+residual_turb = 2e-6
+max_iterations = 12000           # stage 2 ends here at the latest (stage 1: 300 iterations)
+stage1_iterations = 300
+max_iterations_2d = 80000
+stage1_iterations_2d = 500
+consistent = true
+relax_p = 1.0
+relax_U = 0.9
+relax_turb = 0.7
+p_rel_tol = 0.01                 # 3D stage only (see the header)
+n_procs = 6
+probe_interval = 50
+solver_timeout_s = 36000
+
+[verification]
+continuity_tol = 1e-6
+mass_balance_tol = 1e-6
+recovery_settled_tol = 2e-4
+mesh_match_tol_m = 1e-9
+inflow_theta_mm = 1.697          # Re_theta 5000 at U_ref 44.2 m/s, nu 1.497e-5
+inflow_u_ref_m_per_s = 44.2
+inflow_theta_rel_tol = 0.05
+inflow_u_rel_tol = 0.02
+yplus_max = 1.0
+limit_xr_rel_tol = 1e-3
+limit_cp_abs_tol = 5e-4
+limit_cf_rel_tol = 5e-3
+refinement_change_abs = { cp_recovery_30h = 0.002, xr_over_h = 0.03 }
+
+[[requirements]]
+id = "REQ-S3-HIGH"
+text = "Part 2's REQ-S3 (upper side): the recovery Cp(30 H) - Cp(-4 H) at mid-span at most the measured 0.1307 + 0.02."
+metric = "cp_recovery_30h"
+operator = "<="
+limit = 0.1507
+units = "-"
+
+[[requirements]]
+id = "REQ-S3-LOW"
+text = "Part 2's REQ-S3 (lower side): the recovery at mid-span at least the measured 0.1307 - 0.02."
+metric = "cp_recovery_30h"
+operator = ">="
+limit = 0.1107
+units = "-"
