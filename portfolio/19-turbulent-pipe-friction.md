@@ -2,10 +2,12 @@
 
 [Portfolio index](../PORTFOLIO.md) · Thermal and fluids
 
-> **Study 19 has two parts.** Part 1 (below): attached flow, pipe friction against a correlation of measurements.
+> **Study 19 has three parts.** Part 1 (below): attached flow, pipe friction against a correlation of measurements.
 > [Part 2](#part-2-separated-flow-behind-a-step-against-measurements): separated flow behind a backward-facing step,
 > scored once against Driver and Seegmiller's measurements: reattachment and skin friction pass, pressure recovery
-> fails by 0.0027 against a 0.02 limit.
+> fails by 0.0027 against a 0.02 limit. [Part 3](#part-3-the-step-in-3d-with-the-tunnels-side-walls): the step in 3D
+> with the tunnel's side walls: the recovery comes to 0.132 against 0.131 measured, and all three limits pass on the
+> numbers, unverified (the pressure residual stalled short of its target).
 
 | | |
 |---|---|
@@ -126,12 +128,75 @@ walls would settle it ([`sidewall_estimate.py`](../validation/step_driver_seegmi
 **Predictions against outcome:** reattachment within about 3 % (held, +2.3 %); skin friction passes, low near 10
 step heights (passed, but low at 16-28 instead); pressure recovery passes, moderate confidence (missed).
 
+## Part 3: the step in 3D, with the tunnel's side walls
+
+**The question.** Part 2 missed the pressure recovery by 0.0027 over its limit and put the miss down to the tunnel's
+side walls, which a 2D model leaves out. A hand estimate said the effect is big enough. Does a 3D model with the side
+walls confirm it, against the same three limits, and do the two passes still hold?
+
+**The answer: all three limits pass on the numbers, but unverified.** The side walls explain the miss: on the same
+mesh the 2D model recovers 0.155 and the 3D model 0.132, against 0.131 measured. The verdicts are not accepted,
+because the 3D runs stopped short of their convergence criterion (below).
+
+| | 3D, side-wall layers from the inlet | 3D, thinner side-wall layers | Measured | Limit |
+|---|---|---|---|---|
+| Reattachment length (step heights) | 6.40, +2.3 % | 6.44, +2.8 % | 6.26 ± 0.10 | 10 % |
+| Skin friction, 10-30 step heights | 9.2 % rms | 8.8 % rms | | 15 % rms |
+| Pressure recovery to 30 step heights | 0.132, +0.001 | 0.135, +0.004 | 0.131 | 0.02 |
+| Verdict | **Pass (unverified)** on all three | **Pass (unverified)** on all three | | |
+
+![The step in 3D: pressure recovery and skin friction at mid-span against the measurements, and the floor's skin friction across the span](img/step3d_sidewalls.png)
+
+The model covers half the tunnel's span (151 mm, 12 step heights), with a symmetry plane at mid-span, and every wall
+is resolved, side wall included. Behind reattachment the side walls' boundary layers thicken, squeeze the core flow
+and hold the pressure down. The 3D pressure curve (a, solid blue) follows the measurements from the peak to 35 step
+heights, where the 2D curve stays high. Reattachment hardly moves at mid-span (0.2 % from the 2D on the same mesh).
+The line where reattachment happens stays nearly straight across the span to within about 20 mm of the side wall
+(c). The skin friction stays low at the measured stations, 5-12 % (2D: 1-10 %).
+
+**The one input the case description does not give** is how thick the side walls' own boundary layers are at the
+step. The main case grows them from the same inlet as the floor's. At 4 step heights upstream their momentum
+thickness is then 1.69-1.71 mm, 2-3 % above the floor's. A bracket starts them 0.30 m upstream instead, which gives
+0.51 mm, 0.30 of the floor's. The recovery moves only from 0.132 to 0.135: a third of the boundary layer at the step
+still gives 88 % of the drop. The recovery counts from 4 step heights upstream, where both runs match the stated
+speed, so what lowers it is how much the side-wall layers grow from there to 30 step heights. In both runs their
+displacement thickness grows by about the same 1.1 mm. Both ends of the bracket pass. A layer thicker than the floor's would lower the recovery further; that direction is stated, not run.
+
+**Reported, not hidden: the runs stalled.** In both side-wall runs, on both spanwise meshes, the pressure residual
+stopped falling at about 2 × 10⁻⁵ after 2,000 iterations, 17-21 times part 2's target. It stayed there to the
+12,000-iteration cap, and the continuity error sat at 4-8 × 10⁻⁶ against 10⁻⁶. Every number the verdicts use
+had settled: over the last 2,000 iterations the recovery moved by 10⁻⁶, and refining the mesh across the span
+changed it by 0.0004, against a margin of 0.019. So the stall is probably local. The largest spanwise velocity sits
+in the same place just behind the step lip in every run, which hints where. The runs did not keep their flow fields,
+though, so the stall is not located, and a verdict on an unconverged run is not accepted here. One rerun that keeps
+the fields would locate it.
+
+**How I know the 3D model is the 2D model plus side walls.**
+- **The exact 2D limit first:** with the side wall made a symmetry plane, the flow is 2D, and the 3D pipeline must
+  reproduce the 2D model on the same mesh. It does: reattachment to 8 × 10⁻⁵ relative, recovery to 2 × 10⁻⁵. That
+  run also failed two numerical checks: a spanwise velocity of 0.13 % of the reference speed in the near-stagnant
+  eddy behind the step face, and a continuity error of 1.8 × 10⁻⁶. Both are located, and their effect on the
+  outputs is within the agreement above.
+- **Inflow matched again:** the side walls' boundary layers speed up the core, so the 3D inlet velocity was lowered
+  to keep the stated speed at 4 step heights upstream (within 0.2 %; momentum thickness within 2.7 %).
+- **Every wall resolved:** first cells under y+ 1 on every wall, the side wall included.
+- **Spanwise mesh refinement** (32 to 45 cells): recovery 0.0004, reattachment 0.06 %. One x-y mesh, coarser than
+  part 2's (17,700 cells per plane): its 2D solution differs from part 2's finest by 0.0019 in recovery and 0.2 % in
+  reattachment.
+
+**Predictions against outcome:** the side walls lower the recovery by 0.018-0.035 (held, 0.023); the recovery then
+passes (held, unverified); reattachment between 2.5 % below and 0.5 % above the 2D (held, 0.2 % below); every check
+passes (failed: the stall); thinner side-wall layers give 60-85 % of the drop (88 %, just outside).
+
 ## Limits
 
 - Smooth walls only; no roughness (the Colebrook range).
 - The reference is a correlation of measurements, with about ±2 % scatter, not the measurements themselves.
 - One turbulence model (k-omega SST as implemented in openfoam.org v14).
 - Part 2: 2D, so no tunnel side walls (the pressure-recovery miss); one geometry and Reynolds number.
+- Part 3: verdicts unverified (the pressure residual stalled, not located); one x-y mesh and two spanwise meshes; the
+  side walls' inflow bracketed on the thin side only; a linear eddy-viscosity model, so no secondary flow in the
+  corners.
 
 ## Evidence
 
@@ -149,3 +214,9 @@ step heights (passed, but low at 16-28 instead); pressure recovery passes, moder
   [inlet turbulence](../runs/20261123-035753_step_inlet_tu/report.md); the one comparison
   `validation/step_driver_seegmiller/RESULTS.md` and its protocol log `PROTOCOL.md`; case files `cases/step_*.toml`;
   code `models/cfd/step_openfoam.py`, `studies/step_flow.py`, `tests/test_step_flow.py`
+- part 3: [exact 2D limit](../runs/20261127-200510_step3d_symmetry/report.md),
+  [side walls](../runs/20261127-223049_step3d_sidewalls/report.md) (two spanwise meshes),
+  [thinner side-wall layers](../runs/20261128-054328_step3d_sidewall_start/report.md); comparisons
+  `validation/step_driver_seegmiller/part3/RESULTS.md` and `part3_thin/RESULTS.md`; case files `cases/step3d_*.toml`
+  (predictions before each run, results scored after); code `models/cfd/step3d_openfoam.py`,
+  `studies/step_flow_3d.py`, `tests/test_step_flow_3d.py`; figure `scripts/make_step3d_figure.py`

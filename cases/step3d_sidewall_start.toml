@@ -42,6 +42,38 @@
 # unchanged. The cap: SIMPLEC fell a decade per 500-700 iterations in every test; 12,000 is three times what six
 # decades need.
 
+# Results (run 20261128-054328_step3d_sidewall_start, 05:43-08:24, 2 h 41 min, 6 ranks; 3D stage 12,000 iterations,
+# 0.73 s per iteration): VERIFICATION FAIL, 9 of 11 checks pass. REQ-S3 PASSES on the number (mid-span recovery 0.1349,
+# window 0.1107-0.1507), shown as unverified by the run's status. Against the measurements (compare.py,
+# validation/step_driver_seegmiller/part3_thin): Xr/H 6.436 against 6.26 (+2.8 %), Cf rms 8.8 %, recovery 0.1349
+# against 0.1307 (+0.0042): all three PASS (unverified).
+#   P1 FAILED in the same two checks as step3d_sidewalls, the same way: the p residual stalled at 2.0-2.1e-5 from
+#      iteration 2,000 to the cap (target 1e-6), Uz at 3.8-4.0e-6 from iteration 6,000 (target 2e-7), continuity
+#      4.4-7.6e-6 (final 5.2e-6 against 1e-6). The largest spanwise velocity, 11.8 % of U_ref, is in the same cell as
+#      in step3d_sidewalls' level-1 point (x 1.0 mm, y 12.3 mm, 18.5 mm from the side wall, just behind the step
+#      lip): with or without a side-wall layer upstream, the same place. The probe recovery moved 4e-6 between
+#      iterations 4,000 and 12,000 (recovery_settled 6.4e-7 against 2e-4). Every other check passes: mass balance
+#      2.8e-8, inflow theta within 1.5 % and U_e within 0.2 % of the stated values, y+ 0.54, cell map 1e-12 m.
+#   P2 HELD: the side wall's theta at -4 H (channel mid-height) 0.507 mm, 0.30 of the floor's 1.672 (predicted
+#      0.2-0.45); its displacement thickness 0.74 mm at -4 H (step3d_sidewalls: 2.28) and 1.81 mm at 30 H (3.39).
+#   P3 FAILED, just outside its range: the mid-span recovery fell 0.0204 from the 2D 0.1553, 88 % of
+#      step3d_sidewalls' 0.0232 at the same spanwise level (predicted 60-85 %), to 0.1349. A third of the side-wall
+#      layer at the step, and about half its displacement thickness at 30 H, still gives most of the fall. The
+#      inflow layer matters less than the hand estimate's ratio (0.70) assumed: the recovery counts from -4 H, where
+#      both runs match the stated edge velocity, and the side wall's displacement thickness grows from -4 H to 30 H
+#      by about the same in both (1.06 mm here, 1.11 mm in step3d_sidewalls). REQ-S3 passes (the fall exceeds
+#      0.0046). Xr/H 6.436, 0.28 % above the 2D 6.418 (step3d_sidewalls: 0.16 % below); Cf(20 H) 2.6 % above the 2D's.
+#   P4 HELD (revised range): 2 h 41 min against 2-3 h, but at 0.73 s per iteration (predicted 1.08) over 12,000
+#      iterations (assumed 4,000-6,000).
+# Across the span: Xr/H 6.44 at mid-span, 6.43 at 20 mm from the side wall, 6.72 at 5 mm, 7.6 in the wall's first
+# cells (step3d_sidewalls: 6.21 at 5 mm).
+# What it shows: the side walls' effect on the recovery depends little on the one input the case description does
+# not give. With the side walls' layers from the inlet the recovery is 0.1321, with layers a third as thick at the
+# step 0.1349; both lie within 0.0042 of the measured 0.1307, and REQ-S1, S2 and S3 pass at both ends of the bracket.
+# A thicker layer than the floor's would lower the recovery further (stated, not run). The verdicts stay
+# unverified: the same pressure stall, in both runs, and the same cell behind the step lip holds the largest
+# spanwise velocity.
+
 [case]
 name = "step3d_sidewall_start"
 model = "openfoam_step3d_rans"

@@ -1,0 +1,126 @@
+{
+  "run_id": "20261128-054328_step3d_sidewall_start",
+  "verified_utc": "2026-11-28T13:24:42+00:00",
+  "tolerances": {
+    "continuity_tol": 1e-06,
+    "mass_balance_tol": 1e-06,
+    "recovery_settled_tol": 0.0002,
+    "mesh_match_tol_m": 1e-09,
+    "inflow_theta_mm": 1.697,
+    "inflow_u_ref_m_per_s": 44.2,
+    "inflow_theta_rel_tol": 0.05,
+    "inflow_u_rel_tol": 0.02,
+    "yplus_max": 1.0,
+    "limit_xr_rel_tol": 0.001,
+    "limit_cp_abs_tol": 0.0005,
+    "limit_cf_rel_tol": 0.005
+  },
+  "points": [
+    {
+      "label": "p00_baseline",
+      "status": "FAIL",
+      "checks": [
+        {
+          "id": "converged",
+          "description": "3D: SIMPLE residual control reached (0 = yes)",
+          "kind": "numerical",
+          "value": 1.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "FAIL"
+        },
+        {
+          "id": "converged_2d",
+          "description": "2D solution (initial field and same-mesh comparison): residual control reached (0 = yes)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "continuity",
+          "description": "3D: time-step continuity error, sum local (last iteration)",
+          "kind": "numerical",
+          "value": 5.15639677925e-06,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "FAIL"
+        },
+        {
+          "id": "mass_balance",
+          "description": "3D: |inlet + outlet volume flow| / inlet flow",
+          "kind": "numerical",
+          "value": 2.7685772838647888e-08,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "recovery_settled",
+          "description": "3D: range of the probe recovery Cp(30 H) - Cp(-4 H) at mid-span over the last 10 % of the iterations",
+          "kind": "numerical",
+          "value": 6.418384069506455e-07,
+          "tolerance": 0.0002,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "mesh_matches_2d",
+          "description": "max |x-y cell centre of the 3D mesh - its 2D cell's| (m): the 3D x-y plane is the 2D mesh, and the cell map is right",
+          "kind": "numerical",
+          "value": 1.000088900582341e-12,
+          "tolerance": 1e-09,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "inflow_theta",
+          "description": "|momentum thickness at x = -4 H, mid-span - stated| / stated",
+          "kind": "validity",
+          "value": 0.014873583841121757,
+          "tolerance": 0.05,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "inflow_velocity",
+          "description": "|edge velocity at x = -4 H, mid-span - stated reference| / reference",
+          "kind": "validity",
+          "value": 0.0017926225678734204,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "yplus_walls",
+          "description": "max y+ on every wall but the step face, side wall included (viscous sublayer resolved)",
+          "kind": "validity",
+          "value": 0.5371484931691,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "mesh",
+          "description": "checkMesh failures other than the aspect-ratio test (0 = none)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "reattachment_found",
+          "description": "reattachment point on the floor at mid-span missing (0 = found, 1 = none)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ]
+    }
+  ],
+  "status": "FAIL"
+}
