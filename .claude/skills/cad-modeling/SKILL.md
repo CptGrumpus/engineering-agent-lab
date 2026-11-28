@@ -83,6 +83,21 @@ for the whole part, `tests/test_intermediate_shaft.py`).
   recorded four hub keys; the drawing shows two).
 - Weigh the part against the client's bill of materials. The motor core was 0.9 % light without the drawing's ears and
   notches and 0.02 % off with them: the check confirms the features and the density together.
+- **Take every overall dimension from the client's data, not a tool's default.** The motor's first end winding was a
+  ring as long as the machine file's overhang (19.4 mm), half the teardown's stated 1.5 in; the dashboard session
+  caught it reviewing the render. The ring's own volume test passed: a self-consistent check cannot see a wrong input.
+- **Windings from the analysed model's layout** (store the slot phases with the section): coils, spans and phases come
+  from it; what the data does not give (concentric or lap, tiers, the turn's shape) is drawn plausibly and marked
+  `[synthetic]`. Gate with numbers the CAD did not set: copper from the turns against the BOM (it must come in
+  under, since leads and jumpers are not drawn: 6.57 against 6.8 kg) and the mean turn against the length the
+  resistance model used (116.0 against 120.6 mm) (`models/cad/prius_motor.py`, 2026-11-28).
+- **A shape swept radially on a cylinder, exactly:** build its (theta, z) region as a face on the inner cylinder
+  (`Geom_CylindricalSurface`; segments, and circles in (s = r theta, z) as `Geom2d_Ellipse` in (u, v) with semi-axes
+  rho and rho / r), then `Face.thicken(d)`: the offset runs along the normal, so the side walls are radial. Volume
+  (r_out^2 - r_in^2) / 2 x the (theta, z) area = d w L when r is the band's mean radius (to 1.5e-8 on 48 end turns).
+- A mirror image cannot be a STEP instance, but a part symmetric about a line turned 180 deg about that line is its
+  mirror: the motor's -z end turns are the +z ones turned over about their middle radial line (test it against
+  `mirror`); 3.78 -> 3.32 MB.
 
 ## Mesh
 

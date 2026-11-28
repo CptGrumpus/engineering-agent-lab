@@ -15,8 +15,11 @@ Sources (the client data pack, validation/motor_ornl/CLIENT_DATA.md):
   dimensioned; width measured). The audit's "four keys" (teardown) is not what the drawing shows; the drawing is used.
 - Stack lengths from the bill of materials (ORNL/TM-2010/253 Table 2.7): stator 84.0 mm, rotor 83.6 mm, magnets
   83.1 mm (the 2D model used 83.82 mm for both cores).
-- End windings: [simplified] one ring per end, the slot zone's radial extent, axially the machine file's end-winding
-  overhang (19.37 mm), its outer corners rounded [synthetic 6 mm]. The real end turns' shape is not in the data.
+- End windings: the 24 coils' end turns at both ends, wired as the analysed model's single-layer winding (the
+  section's slot_phases; 8 coils per phase in series, BOM), each outer coil's crown at the teardown's 1.5 in
+  extension (TM-2004/137 p. 7; the machine file's 19.37 mm Lewout, which an earlier ring used, is half that). The
+  coils' arrangement (concentric pairs, three radial tiers, rounded-rectangle turns) is [synthetic]: the data does
+  not give it. Checked against the BOM's 6.8 kg of copper and the efficiency study's 120.6 mm end connection.
 Not drawn: the shaft and hub (no drawing; the BOM rotor mass includes them), the rotor end plates, the transaxle case
 the motor bolts into through its ears.
 
@@ -59,8 +62,9 @@ DESIGNS = {"rev5": {
     "key_top_r": 4.152 / 2 * IN,         # dimensioned
     "key_w": 5.04,                       # measured 5.038 (both keys)
     # end windings
-    "end_overhang": 19.366,              # machine file Lewout
-    "end_round": 6.0,                    # [synthetic]
+    "end_extension": 1.5 * IN,           # teardown (TM-2004/137 p. 7): "end winding extensions per side is approximately 1.5 in"
+    "end_corner": 1.6,                   # [synthetic] the outer coil's corner radius in bundle widths (feasible 1.5-2.06)
+    "turns_per_coil": 9, "strands": 13, "strand_d": 0.912,   # BOM: 9 turns, 13 wires of AWG 19 in parallel
 }}
 
 
@@ -90,6 +94,10 @@ def write_section(export_json: str, out: str | Path = SECTION) -> dict:
            "winding_edges": [edge(e) for e in wind["loops"][0]],
            "pole_voids": [[edge(e) for e in s["loops"][0]] for s in pole if s["kind"] == "void"],
            "pole_magnets": [[edge(e) for e in s["loops"][0]] for s in pole if s["kind"] == "magnet"]}
+    # the winding layout: each slot's phase and the sign of its turns (slot k centred at 3.75 + 7.5 k deg)
+    zones = {int(s["label"].rsplit("-S", 1)[1]): s for s in g["surfaces"] if s["kind"] == "winding"}
+    sec["slot_phases"] = ["ABC"[zones[k]["phase"]] + ("+" if zones[k]["turns"] > 0 else "-") for k in sorted(zones)]
+    sec["turns_per_slot"] = sorted({abs(s["turns"]) for s in zones.values()})
     Path(out).write_text(json.dumps(sec, indent=1) + "\n", encoding="utf-8")
     return sec
 
@@ -347,41 +355,160 @@ def winding_radii(sec) -> tuple[float, float]:
     return r_in, r_out
 
 
-def end_ring_profile(D, sec):
-    """The end-winding ring's half section (r, z) from the stack end, as edges: radial extent of the slot zone, axial
-    the overhang, the two outer corners rounded."""
-    r0, r1 = winding_radii(sec)
-    h, f = D["end_overhang"], D["end_round"]
-    s = f / math.sqrt(2)
-    return [("line", (r0, 0.0), (r1, 0.0)), ("line", (r1, 0.0), (r1, h - f)),
-            ("arc", (r1, h - f), (r1 - f + s, h - f + s), (r1 - f, h)), ("line", (r1 - f, h), (r0 + f, h)),
-            ("arc", (r0 + f, h), (r0 + f - s, h - f + s), (r0, h - f)), ("line", (r0, h - f), (r0, 0.0))]
+# ------------------------------------------------------------------------------------------------ end windings
+# The winding is the analysed model's (the section's slot_phases: A+ A+ C- C- B+ B+ A- A- C+ C+ B- B- per pole pair,
+# 9 turns per slot): single layer, 24 coils, 8 per phase in series as the BOM gives. Each pole pair holds three
+# phase groups, each joining a two-slot belt to the opposite belt six slots on. What the data does not give, and is
+# drawn here as a plausible layout [synthetic]: each group as two concentric coils (outer s -> s + 7, inner
+# s + 1 -> s + 6; mean span 6), the three groups of a pole pair in three radial tiers (they overlap in angle, so they
+# cannot share a radius), the end turn's shape (straight legs, a rounded-rectangle top) and its corner radius.
+# From the data: the extension, 1.5 in per side (teardown), reached by every outer coil's crown.
+
+def slot_deg(sec, k: float) -> float:
+    """Centre angle of slot k (the model's frame: slot 0 at half a pitch)."""
+    return 360.0 / sec["slots"] * (k + 0.5)
 
 
-def end_ring_volume_hand(D, sec) -> float:
-    """Pappus: the rectangle minus the two corner spandrels, each about its own centroid radius."""
-    r0, r1 = winding_radii(sec)
-    h, f = D["end_overhang"], D["end_round"]
-    vol = math.pi * (r1 * r1 - r0 * r0) * h
-    sp = f * f * (1 - math.pi / 4)
-    off = f * (10 - 3 * math.pi) / (3 * (4 - math.pi))   # spandrel centroid from the corner, along each axis
-    for rc in (r1 - off, r0 + off):
-        vol -= 2 * math.pi * rc * sp
-    return vol
+def zone_area(sec) -> float:
+    return abs(loop_area([_from_json(e) for e in sec["winding_edges"]]))
 
 
-def build_end_rings(D, sec) -> list[cq.Solid]:
-    L = D["stator_stack"]
+def coil_layout(sec) -> list[dict]:
+    """The 24 coils, from the slot phases: groups start at the first three belts of each pole pair."""
+    ph, n = sec["slot_phases"], sec["slots"]
+    per = 2 * n // sec["poles"]                         # slots per pole pair (12)
+    coils = []
+    for s in range(0, n, 2):
+        if s % per >= per // 2:
+            continue
+        back = (s + per // 2) % n
+        assert ph[s] == ph[s + 1] and ph[back] == ph[back + 1] and ph[s][0] == ph[back][0] and ph[s] != ph[back]
+        for role, a, b in (("outer", s, s + per // 2 + 1), ("inner", s + 1, s + per // 2)):
+            coils.append({"phase": ph[s][0], "tier": (s % per) // 2, "sector": s // per, "role": role,
+                          "slots": (a, b), "span": b - a})
+    return coils
+
+
+def end_tiers(D, sec) -> list[dict]:
+    """The three tiers' radial bands, inner to outer from the slot zone's inner radius. A coil's bundle keeps the
+    slot zone's area A [synthetic: the end region's packing is not given]; across the turn it is one slot pitch wide
+    at the band's mean radius (w = alpha r_t, so a group's coil sides touch), radially d = A / w."""
+    A, alpha = zone_area(sec), 2 * math.pi / sec["slots"]
+    r = winding_radii(sec)[0]
     out = []
-    for sign in (1, -1):
-        prof = end_ring_profile(D, sec)
-        edges = []
-        for e in prof:
-            v = [cq.Vector(p[0], 0, L / 2 * sign + p[1] * sign) for p in e[1:]]
-            edges.append(cq.Edge.makeLine(*v) if e[0] == "line" else cq.Edge.makeThreePointArc(*v))
-        face = cq.Face.makeFromWires(cq.Wire.assembleEdges(edges))
-        out.append(cq.Solid.revolve(face, 360.0, cq.Vector(0, 0, 0), cq.Vector(0, 0, 1)))
+    for _ in range(3):
+        d = (-alpha * r + math.sqrt((alpha * r) ** 2 + 2 * alpha * A)) / alpha     # alpha d (r + d / 2) = A
+        out.append({"r_in": r, "r_out": r + d, "r_t": r + d / 2, "d": d, "w": alpha * (r + d / 2)})
+        r += d
     return out
+
+
+def end_turn_shape(D, sec, coil) -> dict:
+    """The end turn's centreline in its tier's unrolled surface (s = r_t theta, z from the stack face): legs at the
+    two slot centres, corners of radius R, a straight top; the outer coil's outer edge at the extension, the inner
+    coil nested one bundle width inside (same corner centres). L is the centreline length."""
+    T = end_tiers(D, sec)[coil["tier"]]
+    w = T["w"]
+    H, R = D["end_extension"] - w / 2, D["end_corner"] * w
+    if coil["role"] == "inner":
+        H, R = H - w, R - w
+    S = coil["span"] * w
+    return {"H": H, "R": R, "S": S, "w": w, "L": 2 * (H - R) + (S - 2 * R) + math.pi * R, "tier": T}
+
+
+def _end_turn_face(r_face, r_t, sL, S, z0, H, R, w) -> cq.Face:
+    """The turn's region on the cylinder r_face, its (u, v) = (s / r_t, z): the band of width w about the
+    centreline, bounded by lines (axial lines and circles on the cylinder) and the corners, circles of radius
+    R +- w / 2 in (s, z) and so ellipses in (u, v) (semi-axes rho along z, rho / r_t along u)."""
+    from OCP.BRepBuilderAPI import BRepBuilderAPI_MakeEdge, BRepBuilderAPI_MakeFace, BRepBuilderAPI_MakeWire
+    from OCP.BRepLib import BRepLib
+    from OCP.GCE2d import GCE2d_MakeSegment
+    from OCP.Geom import Geom_CylindricalSurface
+    from OCP.Geom2d import Geom2d_Ellipse, Geom2d_TrimmedCurve
+    from OCP.gp import gp_Ax2d, gp_Ax3, gp_Dir, gp_Dir2d, gp_Pnt, gp_Pnt2d
+
+    surf = Geom_CylindricalSurface(gp_Ax3(gp_Pnt(0, 0, 0), gp_Dir(0, 0, 1), gp_Dir(1, 0, 0)), r_face)
+    sR, zc, h = sL + S, z0 + H - R, w / 2
+    edges = []
+
+    def seg(p, q):
+        c = GCE2d_MakeSegment(gp_Pnt2d(p[0] / r_t, p[1]), gp_Pnt2d(q[0] / r_t, q[1])).Value()
+        edges.append(BRepBuilderAPI_MakeEdge(c, surf).Edge())
+
+    def arc(cs, rho, a0, a1):
+        # P(t) = C + rho cos t (0, 1) + (rho / r_t) sin t (-1, 0): s = cs - rho sin t, z = zc + rho cos t, so the
+        # (s, z) angle a is t + 90 deg
+        e = Geom2d_Ellipse(gp_Ax2d(gp_Pnt2d(cs / r_t, zc), gp_Dir2d(0, 1)), rho, rho / r_t, True)
+        t0, t1 = a0 - math.pi / 2, a1 - math.pi / 2
+        tc = Geom2d_TrimmedCurve(e, min(t0, t1), max(t0, t1))
+        if t0 > t1:
+            tc.Reverse()
+        edges.append(BRepBuilderAPI_MakeEdge(tc, surf).Edge())
+
+    seg((sL - h, z0), (sL - h, zc))                                  # outer edge: left leg, over the top, down
+    arc(sL + R, R + h, math.pi, math.pi / 2)
+    seg((sL + R, z0 + H + h), (sR - R, z0 + H + h))
+    arc(sR - R, R + h, math.pi / 2, 0.0)
+    seg((sR + h, zc), (sR + h, z0))
+    seg((sR + h, z0), (sR - h, z0))                                  # the right leg's foot on the stack face
+    seg((sR - h, z0), (sR - h, zc))                                  # inner edge back
+    arc(sR - R, R - h, 0.0, math.pi / 2)
+    seg((sR - R, z0 + H - h), (sL + R, z0 + H - h))
+    arc(sL + R, R - h, math.pi / 2, math.pi)
+    seg((sL + h, zc), (sL + h, z0))
+    seg((sL + h, z0), (sL - h, z0))                                  # the left leg's foot
+    mw = BRepBuilderAPI_MakeWire()
+    for e in edges:
+        BRepLib.BuildCurves3d_s(e)
+        mw.Add(e)
+    return cq.Face(BRepBuilderAPI_MakeFace(surf, mw.Wire(), True).Face())
+
+
+def build_end_turn(D, sec, coil) -> cq.Solid:
+    """The coil's end turn at the +z end: its (theta, z) region on the tier's inner cylinder, thickened radially by
+    the band depth (offset along the cylinder's normal, so the side walls are radial)."""
+    sh = end_turn_shape(D, sec, coil)
+    T = sh["tier"]
+    sL = T["r_t"] * math.radians(slot_deg(sec, coil["slots"][0]))
+    face = _end_turn_face(T["r_in"], T["r_t"], sL, sh["S"], D["stator_stack"] / 2, sh["H"], sh["R"], sh["w"])
+    return face.thicken(T["d"])
+
+
+def end_turn_volume_hand(D, sec, coil) -> float:
+    """Exact for the radially swept region: (r_out^2 - r_in^2) / 2 times its (theta, z) area, which is (its (s, z)
+    area w L) / r_t; with r_t the band's mean radius, d w L. w L: a band of constant width about lines and arcs."""
+    sh = end_turn_shape(D, sec, coil)
+    return sh["tier"]["d"] * sh["w"] * sh["L"]
+
+
+def turn_over_axis(sec, coil) -> tuple:
+    """The radial line through the turn's middle: the turn is symmetric about it, so turning it over 180 deg about
+    that line gives its mirror image at the other end (and a rigid placement the STEP can instance)."""
+    a = math.radians(slot_deg(sec, sum(coil["slots"]) / 2))
+    return (math.cos(a), math.sin(a), 0.0)
+
+
+def build_end_turns(D, sec) -> list[dict]:
+    """Both ends' 48 end turns: the +z turn of each coil and, at -z, the same turn turned over."""
+    out = []
+    for c in coil_layout(sec):
+        s = build_end_turn(D, sec, c)
+        out += [{"coil": c, "end": "a", "solid": s},
+                {"coil": c, "end": "b", "solid": s.rotate((0, 0, 0), turn_over_axis(sec, c), 180.0)}]
+    return out
+
+
+def copper(D, sec) -> dict:
+    """Copper from the turns (BOM: 9 turns per coil, 13 wires of AWG 19 in parallel): each coil's mean turn is two
+    stack lengths plus its two end-turn centrelines. Leads and the jumpers between coils are not drawn."""
+    a = math.pi / 4 * D["strand_d"] ** 2
+    n = D["turns_per_coil"] * D["strands"]
+    coils = coil_layout(sec)
+    ends = [end_turn_shape(D, sec, c)["L"] for c in coils]
+    vol = sum(n * a * (2 * D["stator_stack"] + 2 * L) for L in ends)
+    return {"kg": vol * 1e-9 * DENSITY["copper"], "mean_end_turn_mm": sum(ends) / len(ends),
+            "mean_turn_mm": 2 * D["stator_stack"] + 2 * sum(ends) / len(ends), "copper_fill_of_zone": n * a / zone_area(sec),
+            "end_turn_mm_by_tier": {t: sum(L for L, c in zip(ends, coils) if c["tier"] == t) / 8 for t in range(3)}}
 
 
 def build_rotor(D, sec) -> cq.Solid:
@@ -409,7 +536,7 @@ def build_magnets(D, sec) -> list[cq.Solid]:
 
 def build(design: str = "rev5") -> dict:
     D, sec = DESIGNS[design], section()
-    return {"stator": build_stator(D, sec), "windings": build_windings(D, sec), "end_rings": build_end_rings(D, sec),
+    return {"stator": build_stator(D, sec), "windings": build_windings(D, sec), "end_turns": build_end_turns(D, sec),
             "rotor": build_rotor(D, sec), "magnets": build_magnets(D, sec)}
 
 
@@ -422,8 +549,10 @@ def masses(parts: dict) -> dict:
 
 
 def export(design: str, path: str | Path) -> dict:
-    """One STEP assembly. The 48 slot windings and the 16 magnets are instances (slot 0's winding and pole 0's two
-    magnets, placed by rotation), which keeps the file about 1.3 MB smaller than separate solids."""
+    """One STEP assembly. The 48 slot windings, the 48 end turns and the 16 magnets are instances (slot 0's
+    winding, the first pole pair's end turns at each end, pole 0's two magnets, placed by rotation), which keeps the
+    file small. The end turns sit in one sub-assembly per phase (end_windings_A / _B / _C), named
+    end_turn_<end a +z | b -z>_<phase><pole pair>_<outer | inner>."""
     D, sec = DESIGNS[design], section()
     parts = build(design)
     asm = cq.Assembly(name=f"prius_motor_{design}")
@@ -433,8 +562,21 @@ def export(design: str, path: str | Path) -> dict:
     for k in range(sec["slots"]):
         asm.add(w0, name=f"slot_winding_{k:02d}", color=copper,
                 loc=cq.Location(cq.Vector(0, 0, 0), cq.Vector(0, 0, 1), 360.0 / sec["slots"] * k))
-    for i, r in enumerate(parts["end_rings"]):
-        asm.add(r, name=f"end_winding_{'a' if i == 0 else 'b'}", color=copper)
+    first = {(t["coil"]["tier"], t["coil"]["role"]): t for t in parts["end_turns"]
+             if t["coil"]["sector"] == 0 and t["end"] == "a"}
+    pair_deg = 360.0 / (sec["poles"] // 2)
+    for ph in "ABC":
+        sub = cq.Assembly(name=f"end_windings_{ph}")
+        for t in parts["end_turns"]:
+            c = t["coil"]
+            if c["phase"] != ph:
+                continue
+            f = first[(c["tier"], c["role"])]
+            loc = cq.Location(cq.Vector(0, 0, 0), cq.Vector(0, 0, 1), pair_deg * c["sector"])
+            if t["end"] == "b":
+                loc = loc * cq.Location(cq.Vector(0, 0, 0), cq.Vector(*turn_over_axis(sec, f["coil"])), 180.0)
+            sub.add(f["solid"], name=f"end_turn_{t['end']}_{ph}{c['sector']}_{c['role']}", color=copper, loc=loc)
+        asm.add(sub, name=f"end_windings_{ph}")
     asm.add(parts["rotor"], name="rotor_core", color=steel)
     per_pole = len(sec["pole_magnets"])
     for k in range(sec["poles"]):
@@ -451,4 +593,6 @@ if __name__ == "__main__":
     else:
         out = Path(__file__).resolve().parents[2] / "portfolio" / "cad" / "prius_motor_rev5.step"
         parts = export("rev5", out)
-        print(out, {k: round(v, 4) for k, v in masses(parts).items()})
+        cu = copper(DESIGNS["rev5"], section())
+        print(out, {k: round(v, 4) for k, v in masses(parts).items()},
+              {k: (round(v, 4) if isinstance(v, float) else v) for k, v in cu.items()})

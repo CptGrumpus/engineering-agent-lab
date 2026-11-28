@@ -45,7 +45,7 @@ Legend: **match** (within drawing precision), **minor** (differs, effect estimat
 | Parallel paths | series in the 2004 model, parallel in 2003 (teardown p. 4) | Npcp 1 | match | 72 series turns per phase |
 | Coil pitch | not stated | 6 slots (full pitch, 48 slots / 8 poles) | not checked | Standard for a single-layer, q = 2 winding |
 | Strands | not stated; slot fill 0.84 by "squares of insulated wires" over net slot area (teardown p. 7) | 13 x 0.912 mm per turn (Pyleecan) | not checked | Rough check: 117 strands at about 0.95 mm insulated is 105 mm² of squares in a slot of about 150 mm² gross, 125-130 mm² net: 0.81-0.84. Consistent; matters for resistance only |
-| End windings | about 1.5 in per side (teardown p. 7) | Pyleecan Lewout 19.4 mm (unused); the efficiency study's own end connection has 38.4 mm axial height | match | Pyleecan's value is not used anywhere |
+| End windings | about 1.5 in per side (teardown p. 7) | Pyleecan Lewout 19.4 mm (unused); the efficiency study's own end connection has 38.4 mm axial height | match | Pyleecan's value is not used in the analysis. The detailed CAD first drew a 19.4 mm ring from it (2026-11-27); since 2026-11-28 its end turns reach the teardown's 1.5 in |
 
 ## Rotor
 

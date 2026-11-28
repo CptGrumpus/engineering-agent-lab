@@ -260,7 +260,8 @@ and is a question for the client.
 
 The motor is delivered as a detailed CadQuery assembly ([`models/cad/prius_motor.py`](../models/cad/prius_motor.py),
 [STEP](cad/prius_motor_rev5.step)): the stator core with its three mounting ears, nine edge notches and 48 slots, the
-slot windings and an end-winding ring at each end, the rotor core with its V pockets and hub keys, and the 16 magnets.
+slot windings and the 24 coils' end turns at both ends, the rotor core with its V pockets and hub keys, and the 16
+magnets.
 The cross-section is the analysed one (revision 5), from the same Pyleecan export the independent Elmer model used,
 so the CAD and the analysis share one geometry. Stack lengths are the bill of materials': stator 84.0 mm, rotor
 83.6 mm, magnets 83.1 mm.
@@ -280,18 +281,34 @@ question.) The 16 magnets weigh 1.233 kg against the bill of materials' 16 × 77
 **How I know the CAD is right.** Every part matches its exact section area (lines and arcs summed by Green's theorem)
 or a hand volume to 10⁻⁹; each ear's area also matches an independent count on a 0.01 mm grid within 0.3 %. The
 magnets sit in their pockets and the windings in their slots without overlap, and the air gap is the model's
-0.775 mm. The STEP file re-imports with all 68 solids and the same total volume.
+0.775 mm. The STEP file re-imports with all 114 solids and the same total volume.
 
 **What the drawing corrected.** The drawing audit had recorded four hub keys; the drawing shows two, 180° apart and
 5.04 mm wide (the teardown's count was not re-read). The drawing's view is also turned half a slot pitch from the
 model's frame, so its features were placed by where they sit relative to the slots: every ear and notch is on a
 tooth centre.
 
-**Simplified or not drawn.** Each end winding is a ring the length of the machine file's overhang (19.4 mm) with
-rounded corners. It packs copper at 0.58 against the slots' 0.54: plausible, but the real end turns' shape is not in
-the data. Not drawn: the shaft, the rotor's hub and end plates, and the transaxle case the ears bolt into. None of
-them is in the client data, and the bill of materials' 10.2 kg rotor includes the first three (the drawn rotor core
-is 5.20 kg).
+**The end windings.** The end turns are wired as the analysed model's winding: single layer, two-slot phase belts,
+each pole pair's three phase groups joining a belt to the opposite one six slots on, 8 coils per phase in series as
+the bill of materials gives. Every outer coil's crown sits at the teardown's "approximately 1.5 in" extension. (An
+earlier version drew a plain ring 19.4 mm long, the machine file's overhang: half the teardown's figure.) The data
+does not give how the coils are arranged, so that part is a plausible layout, marked synthetic in the source: each
+group as two concentric coils, the three groups of a pole pair in three radial tiers (they overlap in angle, so they
+cannot share a radius), straight legs and a rounded top. Each turn keeps the slot zone's cross-section and matches its
+exact hand volume to 10⁻⁸. The tiers fill the slot depth (82.0-115.2 mm radius), 1.0 mm clear of the bore, and no two
+turns share volume.
+
+**Two independent checks on the end turns.** From the turns, the copper weighs 6.57 kg, 3.3 % under the bill of
+materials' 6.8 kg, which also counts the leads and the jumpers between coils (not drawn). The mean end turn, 116.0 mm,
+is 3.8 % under the 120.6 mm the efficiency study assumed for its computed phase resistance (a semicircle over the coil
+span). With the phases in separate tiers their end turns differ (111.5, 116.1 and 120.3 mm), so their resistances
+would differ by about 2 %. A real three-tier winding has that asymmetry too; whether this one is three-tier is not in
+the data.
+
+**Simplified or not drawn.** Where a coil side leaves its slot and re-forms into its tier, the transition (a few mm
+in a real winding) is not drawn: the turn starts on the stack face. Not drawn: the leads and jumpers, the shaft, the
+rotor's hub and end plates, and the transaxle case the ears bolt into. None of the last four is in the client data,
+and the bill of materials' 10.2 kg rotor includes the shaft, hub and end plates (the drawn rotor core is 5.20 kg).
 
 ## Limits
 

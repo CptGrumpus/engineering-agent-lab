@@ -125,7 +125,7 @@ def test_rotor_volume_is_the_annulus_plus_keys_less_the_pockets(parts):
     assert parts["rotor"].Volume() == pytest.approx(area * D["rotor_stack"], rel=1e-9)
 
 
-def test_magnets_windings_and_end_rings(parts):
+def test_magnets_and_slot_windings(parts):
     assert len(parts["magnets"]) == 16 and len(parts["windings"]) == 48
     for m in parts["magnets"][:2]:
         assert m.Volume() == pytest.approx(18.9 * 6.5 * D["magnet_length"], rel=1e-9)
@@ -134,9 +134,97 @@ def test_magnets_windings_and_end_rings(parts):
     zone = abs(pm.loop_area([pm._from_json(e) for e in SEC["winding_edges"]]))
     assert parts["windings"][0].Volume() == pytest.approx(zone * D["stator_stack"], rel=1e-9)
     assert parts["stator"].intersect(parts["windings"][0]).Volume() < 1e-6
-    for ring in parts["end_rings"]:
-        assert ring.Volume() == pytest.approx(pm.end_ring_volume_hand(D, SEC), rel=1e-9)
     assert SEC["stator_Rint"] - SEC["rotor_Rext"] == pytest.approx(0.7747, abs=1e-4)   # the air gap
+
+
+def _vol(shape):
+    from OCP.BRepGProp import BRepGProp
+    from OCP.GProp import GProp_GProps
+    p = GProp_GProps()
+    BRepGProp.VolumeProperties_s(shape.wrapped, p, 1e-9)
+    return p.Mass()
+
+
+def test_coil_layout_is_the_analysed_single_layer_winding():
+    coils = pm.coil_layout(SEC)
+    assert len(coils) == 24 and all(sum(c["phase"] == ph for c in coils) == 8 for ph in "ABC")   # BOM: 8 per phase
+    used = sorted(k for c in coils for k in c["slots"])
+    assert used == list(range(48))                         # every slot side once: single layer
+    for c in coils:
+        a, b = c["slots"]
+        assert SEC["slot_phases"][a][0] == SEC["slot_phases"][b][0] == c["phase"]
+        assert SEC["slot_phases"][a] != SEC["slot_phases"][b]          # go and return: opposite turn signs
+    assert sorted({c["span"] for c in coils}) == [5, 7] and sum(c["span"] for c in coils) / 24 == 6   # full pitch
+    assert SEC["turns_per_slot"] == [D["turns_per_coil"]]
+    # the layout repeats every pole pair, which the STEP's instancing by 90 deg relies on
+    assert SEC["slot_phases"] == SEC["slot_phases"][:12] * 4
+    # slot centres: the winding zone of slot 0 is centred at half a pitch
+    pts = [p for e in SEC["winding_edges"] for p in (e["b"], e["e"])]
+    assert math.degrees(math.atan2(sum(p[1] for p in pts), sum(p[0] for p in pts))) == pytest.approx(
+        pm.slot_deg(SEC, 0), abs=1e-6)
+
+
+def test_end_turns_against_exact_hand_volumes(parts):
+    turns = parts["end_turns"]
+    assert len(turns) == 48
+    A = pm.zone_area(SEC)
+    for T in pm.end_tiers(D, SEC):
+        assert T["d"] * T["w"] == pytest.approx(A, rel=1e-12)          # the bundle keeps the slot zone's area
+    for t in turns:
+        s, c = t["solid"], t["coil"]
+        assert s.isValid()
+        assert _vol(s) == pytest.approx(pm.end_turn_volume_hand(D, SEC, c), rel=1e-7)
+        bb = s.BoundingBox()
+        far = D["stator_stack"] / 2 + D["end_extension"]
+        sign = 1 if t["end"] == "a" else -1
+        assert (bb.zmax if sign > 0 else -bb.zmin) == pytest.approx(far if c["role"] == "outer" else far - pm.end_turn_shape(D, SEC, c)["w"], abs=1e-6)
+        assert (bb.zmin if sign > 0 else -bb.zmax) == pytest.approx(D["stator_stack"] / 2, abs=1e-6)   # on the stack face
+    # the -z turn (the +z turn turned over about its middle radial line, so the STEP can instance it) is the +z
+    # turn's mirror image
+    for t in [u for u in turns if u["end"] == "b" and u["coil"]["sector"] == 0]:
+        a = next(u for u in turns if u["coil"] == t["coil"] and u["end"] == "a")["solid"]
+        mir = a.mirror("XY")
+        assert _vol(t["solid"].intersect(mir)) == pytest.approx(_vol(mir), rel=1e-7)
+    # the face before thickening, on the tier's inner cylinder: (r_in / r_t) w L, OCC's area against the hand length
+    c = pm.coil_layout(SEC)[4]
+    sh = pm.end_turn_shape(D, SEC, c)
+    T = sh["tier"]
+    face = pm._end_turn_face(T["r_in"], T["r_t"], 0.0, sh["S"], 0.0, sh["H"], sh["R"], sh["w"])
+    assert face.isValid() and face.Area() == pytest.approx(T["r_in"] / T["r_t"] * sh["w"] * sh["L"], rel=1e-9)
+
+
+def test_end_turn_clearances(parts):
+    turns = parts["end_turns"]
+    tiers = pm.end_tiers(D, SEC)
+    # clear of the bore (the rotor goes in axially): the inner tier starts at the slot zone's inner radius
+    assert tiers[0]["r_in"] - SEC["stator_Rint"] > 1.0
+    assert tiers[-1]["r_out"] < SEC["stator_Rext"] - 15                  # on the yoke face, well inside the OD
+    for t in turns:
+        rmin = min(math.hypot(v.X, v.Y) for v in t["solid"].Vertices())
+        assert rmin >= tiers[t["coil"]["tier"]]["r_in"] - 1e-6
+    # the first pole pair's six turns at one end overlap in angle: no two of them share volume (tiers apart
+    # radially, a group's two coils nested and touching)
+    first = [t for t in turns if t["coil"]["sector"] == 0 and t["end"] == "a"]
+    for i in range(len(first)):
+        for j in range(i + 1, len(first)):
+            assert first[i]["solid"].intersect(first[j]["solid"]).Volume() < 1e-6
+    # neighbouring pole pairs' turns of the same tier do not meet; nor do the turns and the stator core
+    a0 = next(t for t in turns if t["coil"]["sector"] == 0 and t["coil"]["tier"] == 2 and t["end"] == "a" and t["coil"]["role"] == "outer")
+    a1 = next(t for t in turns if t["coil"]["sector"] == 1 and t["coil"]["tier"] == 2 and t["end"] == "a" and t["coil"]["role"] == "outer")
+    assert a0["solid"].intersect(a1["solid"]).Volume() < 1e-6
+    for t in first:
+        assert parts["stator"].intersect(t["solid"]).Volume() < 1e-6
+
+
+def test_copper_against_the_bom_and_the_efficiency_study(parts):
+    cu = pm.copper(D, SEC)
+    # BOM 6.8 kg includes the leads and the jumpers between coils, which are not drawn: the turns come in under it
+    assert 0.94 * 6.8 < cu["kg"] < 6.8
+    # the efficiency study's end connection (semicircle over the 6-slot span at the slot mid radius): 120.6 mm
+    assert cu["mean_end_turn_mm"] == pytest.approx(120.6, rel=0.06)
+    # the solids carry the same copper: zone and bundle volumes times the copper fraction of the zone
+    vol = sum(w.Volume() for w in parts["windings"]) + sum(_vol(t["solid"]) for t in parts["end_turns"])
+    assert vol * cu["copper_fill_of_zone"] * 1e-9 * pm.DENSITY["copper"] == pytest.approx(cu["kg"], rel=1e-7)
 
 
 def test_masses_against_the_bill_of_materials(parts):
@@ -154,9 +242,9 @@ def test_step_round_trip(tmp_path):
     text = path.read_text(encoding="utf-8", errors="replace")
     assert "('Author')" in text and "Users" not in text
     solids = cq.importers.importStep(str(path)).solids().vals()
-    assert len(solids) == 1 + 48 + 2 + 1 + 16
+    assert len(solids) == 1 + 48 + 48 + 1 + 16
     built = (parts["stator"].Volume() + sum(w.Volume() for w in parts["windings"])
-             + sum(r.Volume() for r in parts["end_rings"]) + parts["rotor"].Volume()
+             + sum(t["solid"].Volume() for t in parts["end_turns"]) + parts["rotor"].Volume()
              + sum(m.Volume() for m in parts["magnets"]))
     assert sum(s.Volume() for s in solids) == pytest.approx(built, rel=1e-6)
     # the instanced magnets land where the built ones are (centres of mass, as sets)
@@ -164,3 +252,9 @@ def test_step_round_trip(tmp_path):
                    if abs(s.Volume() - parts["magnets"][0].Volume()) < 1e-3)
     ref = sorted((round(m.Center().x, 3), round(m.Center().y, 3)) for m in parts["magnets"])
     assert small == ref
+    # and the instanced end turns where the built ones are (centres of mass, as sets)
+    # (the only solids beyond the stack faces)
+    got = np.array([s.Center().toTuple() for s in solids if abs(s.Center().z) > D["stator_stack"] / 2])
+    ref = np.array([t["solid"].Center().toTuple() for t in parts["end_turns"]])
+    assert len(got) == len(ref) == 48
+    assert max(np.min(np.linalg.norm(got - r, axis=1)) for r in ref) < 1e-3

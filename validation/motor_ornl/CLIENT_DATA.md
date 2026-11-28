@@ -32,7 +32,7 @@ pass (`RESULTS.md`) and revisions 1-4 (`CALIBRATION_PLAN.md`) stay as the record
 | Slots, slot depth, opening | 48, 33.5 mm, 1.93 mm (BOM) | 48, 33.53, 1.93 | match |
 | Turns per coil, coils in series, paths | 9, 8 per phase, one path (BOM; design report; teardown) | 9, 72 series turns, 1 | match |
 | Strands | 13 in parallel, AWG 19 = 0.912 mm (BOM) | 13 x 0.912 mm | match |
-| Stator copper mass | **6.8 kg** (BOM) | 6.72 kg from the efficiency study's turn length (408.8 mm) | match: confirms the end-winding length |
+| Stator copper mass | **6.8 kg** (BOM) | 6.72 kg from the efficiency study's turn length (408.8 mm); 6.57 kg (-3.3 %) from the detailed CAD's turns, end turns at the teardown's 1.5 in extension, mean 116.0 mm (2026-11-28, `models/cad/prius_motor.py`; leads and jumpers not drawn) | match: confirms the end-winding length |
 | **Phase resistance** | **0.069 ohm at 21 C**, average of phase-to-phase / 2 (BOM; a routine test) | 59.6 mOhm at 20 C computed | **differs (-14 %)**: use the measured value from now on (leads, joints and insulation build make a computed value low) |
 | **Magnet size** | **83.1 x 18.9 x 6.5 mm**, 10.2 cm3, 77 g each, 16 magnets, 1.232 kg (BOM) | blind: 18.9 x 6.80 (pocket filled); revision 4: 19.24 x 5.31 (design report) | **revision 4 was wrong**: 77 g / 10.2 cm3 = 7.55 g/cm3, bare NdFeB; at 5.31 mm the magnet would need 9.1 g/cm3. The magnet nearly fills its 6.80 mm pocket (0.3 mm left for the polymer) |
 | **Magnet remanence** | **12.55 kG = 1.255 T at 20 C**, about 11.55 kG at 100 C, 10.9 kG at 150 C (BOM Fig. 2.72, hysteresisgraph): about -0.10 %/C | 1.243 T (teardown Fig. 14, extrapolated) | match within 1 %: the material was right all along |
