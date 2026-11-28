@@ -6,7 +6,7 @@
 # Two stages as the 2D model (models/cfd/step_openfoam.py): a start-up with first-order k and omega, then the
 # second-order run. The 0/ fields are written by models/cfd/step3d_openfoam.py (from the 2D solution).
 # Exit codes: 10 bad case dir, 11 OpenFOAM environment, 20 blockMesh, 21 decomposePar, 22 foamRun,
-# 23 writeCellCentres, 24 reconstructPar.
+# 23 writeCellCentres, 24 reconstructPar, 25 the stall diagnostics' cell volumes or div(phi).
 cd "$1" || exit 10
 source "$2" || exit 11
 NP="${3:-1}"
@@ -30,7 +30,15 @@ mv system/controlDict.stage2 system/controlDict && mv system/fvSchemes.stage2 sy
 "${RUN[@]}" > log.foamRun 2>&1 || exit 22
 if [ "$NP" -gt 1 ]; then
   reconstructPar -latestTime > log.reconstructPar 2>&1 || exit 24
+  # stall diagnostics (models/cfd/step3d_openfoam.py stall_functions): the snapshot times as well
+  if [ -f system/snapshotTimes ]; then
+    reconstructPar -time "$(cat system/snapshotTimes)" > log.reconstructPar.snapshots 2>&1 || exit 24
+  fi
   rm -rf processor*
 fi
 foamPostProcess -func writeCellCentres -latestTime > log.writeCellCentres 2>&1 || exit 23
+if [ -f system/snapshotTimes ]; then
+  foamPostProcess -func writeCellVolumes -latestTime > log.writeCellVolumes 2>&1 || exit 25
+  foamPostProcess -func "div(phi)" -latestTime > log.divPhi 2>&1 || exit 25
+fi
 exit 0

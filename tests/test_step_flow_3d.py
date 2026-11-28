@@ -92,3 +92,62 @@ def test_initial_field_is_copied_to_every_layer(tmp_path):
     vals = np.array(body, dtype=float)
     assert len(vals) == g["cells"]
     np.testing.assert_array_equal(vals, np.arange(n2, dtype=float)[W3.extrude_index(g)])
+
+
+def test_stall_diagnostics_are_off_by_default(tmp_path):
+    W3.write_case(P, NUM, tmp_path)
+    cd2 = (tmp_path / "system/controlDict.stage2").read_text(encoding="utf-8")
+    assert "writeObjects" not in cd2 and "stallProbe" not in cd2
+    assert not (tmp_path / "system/snapshotTimes").exists()
+
+
+def test_stall_diagnostics_written_to_stage_2_only(tmp_path):
+    num = NUM | {"max_iterations": 3000, "stage1_iterations": 300, "snapshot_start": 2800, "snapshot_interval": 100,
+                 "stall_probes_m": [[0.00096, 0.01229, 0.05695], [0.00096, 0.01229, 0.00855]]}
+    W3.write_case(P, num, tmp_path)
+    cd1 = (tmp_path / "system/controlDict").read_text(encoding="utf-8")
+    cd2 = (tmp_path / "system/controlDict.stage2").read_text(encoding="utf-8")
+    assert "writeObjects" not in cd1 and "stallProbe" not in cd1
+    assert re.search(r"snapshots\s+\{ type writeObjects;.*objects \(U p\);.*writeInterval 100; startTime 2800;", cd2)
+    assert re.search(r"stallProbe \{ type probes;.*writeInterval 1;.*\(0\.00096 0\.01229 0\.05695\) "
+                     r"\(0\.00096 0\.01229 0\.00855\)", cd2)
+    assert cd2.count("{") == cd2.count("}")
+    assert (tmp_path / "system/snapshotTimes").read_text(encoding="utf-8").strip() == "2800,2900,3000"
+
+
+@pytest.mark.parametrize("start,dt", [(300, 100), (2850, 100), (2800, 0), (3000, 100)])
+def test_snapshots_must_fit_stage_2(tmp_path, start, dt):
+    num = NUM | {"max_iterations": 3000, "stage1_iterations": 300, "snapshot_start": start, "snapshot_interval": dt}
+    with pytest.raises(ValueError, match="snapshots"):
+        W3.write_case(P, num, tmp_path)
+
+
+def test_stall_diagnostics_locate_a_local_mode():
+    from studies.step_flow_3d import stall_diagnostics
+
+    rng = np.random.default_rng(1)
+    n, H, W = 20000, 0.0127, 0.0755
+    C = np.column_stack([rng.uniform(-0.05, 0.6, n), rng.uniform(0, 0.114, n), rng.uniform(0, W, n)])
+    C[:200] = [0.001, 0.0123, 0.057] + rng.uniform(-1, 1, (200, 3)) * [0.002, 0.001, 0.002]  # cells behind the lip
+    V = rng.uniform(0.5, 1.5, n) * 1e-9
+    blob = np.linalg.norm((C - [0.001, 0.0123, 0.057]) / [0.004, 0.002, 0.004], axis=1) < 1
+    nb = int(blob.sum())
+    assert 200 <= nb < 210
+    div = np.where(blob, 1e-2, 1e-6) / V * 1e-9           # the blob carries almost all of the flux imbalance
+    U1 = np.tile([40.0, 0.0, 0.0], (n, 1))
+    drift = np.column_stack([np.zeros(n), np.zeros(n), 1e-7 * np.ones(n)])
+    osc = np.zeros((n, 3))
+    osc[blob, 2] = 1e-3
+    U2, U3 = U1 + drift + osc, U1 + 2 * drift  # the blob's Uz swings out and back: a reversal; the rest drifts
+    p = np.zeros(n)
+    res, rows = stall_diagnostics(C, V, div, [(2800, U1, p), (2900, U2, p), (3000, U3, p)], H, W, 44.2, 977.0, top=50)
+    c = res["continuity"]
+    assert c["cells_50pct"] <= nb and c["cells_90pct"] <= nb
+    x50, d50 = c["top_50pct"]["x_over_h"][1], c["top_50pct"]["side_wall_dist_mm"][1]
+    assert abs(x50 - 0.001 / H) < 0.4 and abs(d50 - (W - 0.057) * 1e3) < 4
+    ch = res["change"]
+    assert ch["u_cells_50pct"] <= nb
+    assert ch["u_sign_flip_frac_top"] == 1.0
+    assert ch["u_ratio_last_over_previous_top"] == pytest.approx(1.0, rel=1e-3)
+    assert abs(ch["u_top_50pct"]["side_wall_dist_mm"][1] - (W - 0.057) * 1e3) < 4
+    assert len(rows) >= 50 and {"x_mm", "continuity_err_m3_per_s", "du_over_uref", "u_sign_flip"} <= set(rows[0])

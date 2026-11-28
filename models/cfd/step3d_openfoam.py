@@ -175,6 +175,30 @@ def _field_text(values: np.ndarray) -> str:
     return f"nonuniform List<vector>\n{len(a)}\n(\n{body}\n)"
 
 
+def stall_functions(numerics: dict, n1: int, iters: int, case: Path) -> str:
+    """Optional diagnostics for a stalled run (stage 2 only; they do not change the solution):
+    snapshot_start / snapshot_interval: U and p written at snapshot_start, + interval, ..., max_iterations
+    (writeObjects; the run script reconstructs those times, listed in system/snapshotTimes, and writes the cell volumes
+    and div(phi) at the last one); stall_probes_m: points [x, y, z] (m) probed every iteration."""
+    out = ""
+    start = numerics.get("snapshot_start")
+    if start is not None:
+        start, dt = int(start), int(numerics.get("snapshot_interval", 0))
+        if not (n1 < start < iters and dt > 0 and (iters - start) % dt == 0):
+            raise ValueError(f"snapshots from {start} every {dt} must fit stage 2 ({n1} to {iters}) and end at {iters}")
+        out += (f'    snapshots  {{ type writeObjects; libs ("libutilityFunctionObjects.so"); objects (U p); '
+                f"writeControl timeStep; writeInterval {dt}; startTime {start}; }}\n")
+        (Path(case) / "system").mkdir(parents=True, exist_ok=True)
+        (Path(case) / "system/snapshotTimes").write_text(",".join(str(t) for t in range(start, iters + 1, dt)) + "\n",
+                                                         encoding="utf-8")
+    pts = numerics.get("stall_probes_m") or []
+    if pts:
+        txt = " ".join(f"({_g(float(a))} {_g(float(b))} {_g(float(c))})" for a, b, c in pts)
+        out += (f'    stallProbe {{ type probes; libs ("libsampling.so"); writeControl timeStep; writeInterval 1; '
+                f"fields (p U); probeLocations ({txt}); }}\n")
+    return out
+
+
 def write_case(params: dict, numerics: dict, case: Path, initial: dict | None = None) -> dict:
     """Write the 3D case. initial: 2D internal fields {"U": (n2d, 3), "p", "k", "omega", "nut": (n2d,)} to copy to
     every spanwise layer (None: the 2D writer's uniform start)."""
@@ -194,6 +218,7 @@ def write_case(params: dict, numerics: dict, case: Path, initial: dict | None = 
     iters = int(numerics.get("max_iterations", 20000))
     n1 = int(numerics.get("stage1_iterations", 500))
     every = int(numerics.get("probe_interval", 50))
+    stall = stall_functions(numerics, n1, iters, case)
     for fname, start, end in (("controlDict", "startTime", n1), ("controlDict.stage2", "latestTime", iters)):
         S2._write(case / "system" / fname, "dictionary", "controlDict", f"""
 solver          incompressibleFluid;
@@ -217,7 +242,7 @@ functions
     inletFlow  {{ type surfaceFieldValue; libs ("libfieldFunctionObjects.so"); executeControl writeTime; writeControl writeTime; writeFields false; log false; patch inlet; fields (phi); operation sum; }}
     outletFlow {{ type surfaceFieldValue; libs ("libfieldFunctionObjects.so"); executeControl writeTime; writeControl writeTime; writeFields false; log false; patch outlet; fields (phi); operation sum; }}
     probes     {{ type probes; libs ("libsampling.so"); writeControl timeStep; writeInterval {every}; fields (p U); probeLocations ({probe_txt}); }}
-}}
+{stall if fname == "controlDict.stage2" else ""}}}
 """)
     nproc = int(numerics.get("n_procs", 1))
     S2._write(case / "system/decomposeParDict", "dictionary", "decomposeParDict",

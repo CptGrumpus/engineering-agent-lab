@@ -16,6 +16,7 @@ Reference: (1) side_wall = 0 (the side wall a symmetry plane) is the 2D flow exa
 
 from __future__ import annotations
 
+import csv
 import importlib.util
 import subprocess
 import tempfile
@@ -38,7 +39,8 @@ WALLS = ("upperWall", "upstreamFloor", "stepFace", "lowerWall", "sideWall")
 FIELDS = ("U", "p", "k", "omega", "nut")
 SIDE_STATIONS_OVER_H = (-4.0, 10.0, 20.0, 30.0)
 SECTIONS_OVER_H = (-4.0, 30.0)
-NUMERICS_3D_ONLY = ("consistent", "relax_p", "relax_U", "relax_turb", "p_rel_tol")
+NUMERICS_3D_ONLY = ("consistent", "relax_p", "relax_U", "relax_turb", "p_rel_tol", "snapshot_start", "snapshot_interval",
+                    "stall_probes_m")
 
 
 def _load(path: Path, name: str):
@@ -110,6 +112,95 @@ def thin_log(path: Path, every: int = 50, tail_blocks: int = 3) -> Path | None:
     return dst
 
 
+def _share_cells(w: np.ndarray, share: float) -> tuple[np.ndarray, int]:
+    """Cells ordered by weight, largest first, and how many of them hold `share` of the total."""
+    o = np.argsort(-w)
+    tot = float(w.sum())
+    n = int(np.searchsorted(np.cumsum(w[o]) / tot, share)) + 1 if tot > 0 else 0
+    return o, min(n, len(w))
+
+
+def _where(C: np.ndarray, ids: np.ndarray, H: float, W: float) -> dict | None:
+    """10th, 50th and 90th percentiles of x/H, y/H and the distance from the side wall (mm) over the cells ids (None
+    when there are none: a field that did not change at all)."""
+    if len(ids) == 0:
+        return None
+    pc = lambda a: [float(v) for v in np.percentile(a, [10, 50, 90])]  # noqa: E731
+    return {"x_over_h": pc(C[ids, 0] / H), "y_over_h": pc(C[ids, 1] / H), "side_wall_dist_mm": pc((W - C[ids, 2]) * 1e3)}
+
+
+def stall_diagnostics(C, V, div, snaps, H, W, u_ref, q, top=2000):
+    """Where a stalled run's error lives. C (n, 3) cell centres, V (n,) volumes, div (n,) div(phi) after the last
+    iteration (its |div| V is the cell's flux imbalance: the continuity check's error); snaps: [(iteration, U (n, 3),
+    p (n,)), ...] at the last snapshot times, oldest first. A local non-decaying mode shows as the change between the
+    last two snapshots concentrated in a few cells, as large as the change before (ratio near 1, a decaying field gives
+    under 1), and, if it oscillates, reversing sign between the two intervals. Returns (summary, rows for a CSV)."""
+    C, V, div = np.asarray(C, float), np.asarray(V, float), np.asarray(div, float)
+    e = np.abs(div) * V
+    o, n50 = _share_cells(e, 0.5)
+    _, n90 = _share_cells(e, 0.9)
+    res = {"continuity": {"total_m3_per_s": float(e.sum()), "cells": len(e), "cells_50pct": n50, "cells_90pct": n90,
+                          "volume_frac_50pct": float(V[o[:n50]].sum() / V.sum()), "max_at_mm": (C[o[0]] * 1e3).tolist(),
+                          "top_50pct": _where(C, o[:n50], H, W)}}
+    pick = set(o[:top].tolist())
+    du = dp = flip_u = None
+    if len(snaps) >= 3:
+        (t1, U1, p1), (t2, U2, p2), (t3, U3, p3) = [(t, np.asarray(u, float), np.asarray(p, float)) for t, u, p in snaps[-3:]]
+        d12, d23 = U2 - U1, U3 - U2
+        du = np.linalg.norm(d23, axis=1) / u_ref
+        du12 = np.linalg.norm(d12, axis=1) / u_ref
+        dp, dp12 = (p3 - p2) / q, (p2 - p1) / q
+        flip_u = np.einsum("ij,ij->i", d23, d12) < 0
+        flip_p = dp * dp12 < 0
+        ou, nu50 = _share_cells(du * V, 0.5)
+        op, np50 = _share_cells(np.abs(dp) * V, 0.5)
+        tu, tp = ou[:nu50], op[:np50]
+        res["change"] = {
+            "iterations": [int(t1), int(t2), int(t3)],
+            "u_max_over_uref": float(du.max()), "u_max_at_mm": (C[ou[0]] * 1e3).tolist(), "u_cells_50pct": nu50,
+            "u_top_50pct": _where(C, tu, H, W),
+            "u_ratio_last_over_previous": float((du * V).sum() / max((du12 * V).sum(), 1e-300)),
+            "u_ratio_last_over_previous_top": float((du[tu] * V[tu]).sum() / max((du12[tu] * V[tu]).sum(), 1e-300)),
+            "u_sign_flip_frac_top": float(flip_u[tu].mean()) if len(tu) else float("nan"),
+            "p_max_over_q": float(np.abs(dp).max()), "p_max_at_mm": (C[op[0]] * 1e3).tolist(), "p_cells_50pct": np50,
+            "p_top_50pct": _where(C, tp, H, W),
+            "p_ratio_last_over_previous": float((np.abs(dp) * V).sum() / max((np.abs(dp12) * V).sum(), 1e-300)),
+            "p_sign_flip_frac_top": float(flip_p[tp].mean()) if len(tp) else float("nan")}
+        pick |= set(ou[:top].tolist())
+    ids = np.array(sorted(pick), dtype=int)
+    rows = [{"x_mm": C[i, 0] * 1e3, "y_mm": C[i, 1] * 1e3, "z_mm": C[i, 2] * 1e3, "volume_mm3": V[i] * 1e9,
+             "continuity_err_m3_per_s": e[i], "du_over_uref": float(du[i]) if du is not None else float("nan"),
+             "dp_over_q": float(dp[i]) if dp is not None else float("nan"),
+             "u_sign_flip": int(flip_u[i]) if flip_u is not None else -1} for i in ids]
+    return res, rows
+
+
+def probe_history(pdir: Path, u_ref: float, q: float, window: int = 1000) -> dict:
+    """The stall probes (every iteration): per probe, the last `window` iterations' Uz / U_ref and p / q ranges and
+    the strongest period of Uz (FFT of the linearly detrended signal), and Uz / U_ref over the last 300 iterations."""
+    dirs = _num_dirs(pdir)
+    if not dirs:
+        return {}
+    U = _dat_rows(dirs[-1] / "U")
+    P = _dat_rows(dirs[-1] / "p")
+    it = U[:, 0]
+    m = it > it[-1] - window
+    out = {"iterations": [float(it[m][0]), float(it[-1])], "probes": []}
+    for k in range((U.shape[1] - 1) // 3):
+        uz = U[m, 3 + 3 * k] / u_ref
+        pk = P[m, 1 + k] / q
+        t = it[m] - it[m][0]
+        res = uz - np.polyval(np.polyfit(t, uz, 1), t)
+        amp = np.abs(np.fft.rfft(res))[1:]
+        f = np.fft.rfftfreq(len(res), 1.0)[1:]
+        j = int(np.argmax(amp))
+        out["probes"].append({"uz_over_uref_range": float(np.ptp(uz)), "uz_over_uref_mean": float(uz.mean()),
+                              "uz_detrended_std": float(res.std()), "p_over_q_range": float(np.ptp(pk)),
+                              "uz_period_iterations": float(1.0 / f[j]),
+                              "uz_last300": (U[it > it[-1] - 300, 3 + 3 * k] / u_ref).tolist()})
+    return out
+
+
 def _keep(case: Path, prefix: str) -> dict:
     for log in ("log.foamRun", "log.foamRun.stage1"):
         if (case / log).exists() and (case / log).stat().st_size >= 5e6:
@@ -168,6 +259,8 @@ class OpenFOAMStep3D(Backend):
             out, series = self._post(params, g3, c3, C2)
         except Exception as e:  # noqa: BLE001
             return failed(f"3D post-processing: {type(e).__name__}: {e}") | {"files": files, "cleanup": work}
+        if (c3 / "stall_cells.csv").exists():
+            files["case3d/stall_cells.csv"] = c3 / "stall_cells.csv"
         out["precursor_2d"] = {k: out2[k] for k in ("iterations", "converged", "final_initial_residuals", "xr_over_h",
                                                      "cf_x20h", "cp_recovery_30h", "u_ref_m_per_s", "re_theta_inflow",
                                                      "continuity_sum_local", "yplus", "inflow")}
@@ -301,6 +394,21 @@ class OpenFOAMStep3D(Backend):
         out["profiles"] = {"x_up_over_h": (xu / H).tolist(), "cf_up": cfu.tolist(), "x_p_over_h": (xp / H).tolist(),
                            "cp": cp.tolist(), "inflow_y_mm": ((y[col] - H) * 1e3).tolist(),
                            "inflow_u_over_uref": (U[col, 0] / u_ref).tolist()}
+        snap_file = case / "system/snapshotTimes"
+        if snap_file.exists():
+            times = [t for t in snap_file.read_text(encoding="utf-8").strip().split(",") if t]
+            snaps = [(int(t), of.read_internal_field(case / t / "U", n), of.read_internal_field(case / t / "p", n).ravel())
+                     for t in times]
+            # writeCellVolumes names the field Vc in openfoam.org v14 (V in older versions)
+            Vc = of.read_internal_field(tdir / ("Vc" if (tdir / "Vc").exists() else "V"), n).ravel()
+            Dv = of.read_internal_field(tdir / "div(phi)", n).ravel()
+            out["stall"], rows = stall_diagnostics(C, Vc, Dv, snaps, H, W, u_ref, q)
+            with open(case / "stall_cells.csv", "w", newline="", encoding="utf-8") as f:
+                w = csv.DictWriter(f, fieldnames=list(rows[0]))
+                w.writeheader()
+                w.writerows(rows)
+        if (case / "postProcessing/stallProbe").exists():
+            out["stall_probes"] = probe_history(case / "postProcessing/stallProbe", u_ref, q)
         return out, series
 
     def tool_versions(self):
