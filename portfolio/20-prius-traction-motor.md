@@ -256,6 +256,43 @@ and is a question for the client.
   ORNL's own *model* results (not measurements). They are logged with their time and declared in every case that
   followed; extraction is whitelist-only since.
 
+## The motor as built
+
+The motor is delivered as a detailed CadQuery assembly ([`models/cad/prius_motor.py`](../models/cad/prius_motor.py),
+[STEP](cad/prius_motor_rev5.step)): the stator core with its three mounting ears, nine edge notches and 48 slots, the
+slot windings and an end-winding ring at each end, the rotor core with its V pockets and hub keys, and the 16 magnets.
+The cross-section is the analysed one (revision 5), from the same Pyleecan export the independent Elmer model used,
+so the CAD and the analysis share one geometry. Stack lengths are the bill of materials': stator 84.0 mm, rotor
+83.6 mm, magnets 83.1 mm.
+
+The features the 2D model leaves out come from the client's lamination drawing. It dimensions the ear holes
+(0.360 in), the ear root reliefs (R0.234 in) and both notch sizes, but not where they sit or the ear's outline, so
+those were measured from the drawing's vector paths ([`scripts/motor_drawing_stator.py`](../scripts/motor_drawing_stator.py)).
+The page was scaled by the 10.600 in outer diameter; the 6.375 in bore then reads within 0.075 mm, and the three
+holes 9.10-9.17 mm against the drawn 9.144.
+
+**The mass check closes.** The core as drawn weighs 19.05 kg at the stand-in steel's density (7650 kg/m³), the bill of
+materials' 19.05 kg to 0.02 %. Without the ears and notches it is 18.88 kg, 0.9 % light: the drawing's features are
+what the 2D model was missing. (This is a solid stack; a stacking factor below 1 would make it lighter, so the
+agreement also says the real core is close to full density at that steel's value. The grade is still a client
+question.) The 16 magnets weigh 1.233 kg against the bill of materials' 16 × 77 g.
+
+**How I know the CAD is right.** Every part matches its exact section area (lines and arcs summed by Green's theorem)
+or a hand volume to 10⁻⁹; each ear's area also matches an independent count on a 0.01 mm grid within 0.3 %. The
+magnets sit in their pockets and the windings in their slots without overlap, and the air gap is the model's
+0.775 mm. The STEP file re-imports with all 68 solids and the same total volume.
+
+**What the drawing corrected.** The drawing audit had recorded four hub keys; the drawing shows two, 180° apart and
+5.04 mm wide (the teardown's count was not re-read). The drawing's view is also turned half a slot pitch from the
+model's frame, so its features were placed by where they sit relative to the slots: every ear and notch is on a
+tooth centre.
+
+**Simplified or not drawn.** Each end winding is a ring the length of the machine file's overhang (19.4 mm) with
+rounded corners. It packs copper at 0.58 against the slots' 0.54: plausible, but the real end turns' shape is not in
+the data. Not drawn: the shaft, the rotor's hub and end plates, and the transaxle case the ears bolt into. None of
+them is in the client data, and the bill of materials' 10.2 kg rotor includes the first three (the drawn rotor core
+is 5.20 kg).
+
 ## Limits
 
 - 2D magnetostatics: no end effects, no eddy currents in the magnets, no AC copper loss.
@@ -286,6 +323,9 @@ and is a question for the client.
   `scripts/motor_locked_rotor.py`
 - Blind comparison: `validation/motor_ornl/RESULTS.md`, the data extracted from ORNL/TM-2006/423, and
   `scripts/motor_blind_comparison.py`; protocol log `reports/motor/blind_comparison_log.md`
+- Detailed CAD: [`models/cad/prius_motor.py`](../models/cad/prius_motor.py) (section kept in
+  `models/cad/prius_rev5_section.json`), [STEP](cad/prius_motor_rev5.step), tests `tests/test_prius_motor_cad.py`; the
+  drawing's features measured by `scripts/motor_drawing_stator.py` into `validation/motor_ornl/drawing_stator/`
 - Code: `models/motor/`, `studies/motor_em.py`, `studies/motor_torque.py`, `studies/motor_lut.py`,
   `studies/motor_efficiency.py`, `studies/motor_thermal.py` (with `models/motor/thermal_network.py`,
   `models/motor/stator_section_ccx.py`), `studies/rotor_stress.py`

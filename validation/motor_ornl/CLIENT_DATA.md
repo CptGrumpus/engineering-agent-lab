@@ -28,7 +28,7 @@ pass (`RESULTS.md`) and revisions 1-4 (`CALIBRATION_PLAN.md`) stay as the record
 | Stack | stator 84.0 mm, rotor 83.6 mm (BOM); 3.3 in (teardown) | 83.82 mm | match (0.3 %) |
 | Lamination thickness | **0.33 mm** (BOM); 0.014 in = 0.36 mm (teardown) | 0.35 mm (stand-in grade) | minor |
 | Lamination grade | not given anywhere found | M330-35A stand-in | open: ask the client; three grades moved back-EMF 0.13 % |
-| Stator core mass | **19.05 kg** (BOM) | 18.8 kg solid from the model's area x stack x 7650 (ears not modelled) | match: confirms the stator geometry |
+| Stator core mass | **19.05 kg** (BOM) | 18.8 kg solid from the model's area x stack x 7650 (ears not modelled); **19.05 kg** (-0.02 %) from the detailed CAD with the drawing's ears and notches, 84.0 mm stack (2026-11-27, `models/cad/prius_motor.py`) | match: confirms the stator geometry |
 | Slots, slot depth, opening | 48, 33.5 mm, 1.93 mm (BOM) | 48, 33.53, 1.93 | match |
 | Turns per coil, coils in series, paths | 9, 8 per phase, one path (BOM; design report; teardown) | 9, 72 series turns, 1 | match |
 | Strands | 13 in parallel, AWG 19 = 0.912 mm (BOM) | 13 x 0.912 mm | match |

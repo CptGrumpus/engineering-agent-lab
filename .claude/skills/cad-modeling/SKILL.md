@@ -65,6 +65,24 @@ for the whole part, `tests/test_intermediate_shaft.py`).
   shank in its tapped hole) are measured against their own hand formulas, not exempted (models/cad/oring_cover.py).
 - OpenCASCADE's default `Volume()` is good to only about 1e-6 on saddle-cut faces; for a 1e-8 test call
   `BRepGProp.VolumeProperties_s(shape, props, 1e-9)` (agrees with the quadrature to 1e-13).
+- **An extruded section with many features (a lamination): one closed outline, no booleans.** Write every feature
+  (ears, notches, reliefs) as edges of the outer wire and the slots as the inner wire, then `Face.makeFromWires` and
+  `Solid.extrudeLinear`. A relief tangent to an ear's flank is the tangent contact OCC booleans fail on. Check the
+  face by its exact area: lines plus each arc's circular segment by Green's theorem (`loop_area`, 1e-13 on a
+  400-edge stator); check each feature's edges by closing them with the outer circle and comparing a closed form or an
+  independent grid count (`models/cad/prius_motor.py`, 2026-11-27).
+- Repeated parts in a STEP assembly: add one shape several times with a rotated `cq.Location`; the writer instances
+  it. 48 windings and 16 magnets as instances cut the motor from 4.3 to 2.8 MB. Test the round trip: solid count,
+  total volume, and the instances' centres against the built parts.
+- **Undimensioned features from a client's PDF drawing:** measure the vector paths (PyMuPDF `get_drawings`). Scale by
+  a dimensioned circle with an ellipse fit (pages are scaled unevenly, 1.1 % on the motor drawing), then check against
+  a second dimensioned circle and the dimensioned features. Dimension and extension lines land in the measurement
+  windows: plot each feature locally before trusting a number (`scripts/motor_drawing_stator.py`). Check each view's
+  registration against the model frame: the drawing's slots sat half a pitch from the model's, so features placed by
+  angle alone would have landed on slots instead of teeth. Read the drawing, not an audit's summary of it (an audit
+  recorded four hub keys; the drawing shows two).
+- Weigh the part against the client's bill of materials. The motor core was 0.9 % light without the drawing's ears and
+  notches and 0.02 % off with them: the check confirms the features and the density together.
 
 ## Mesh
 
