@@ -44,3 +44,38 @@ def test_log_profile_reaches_zm_at_the_end():
 def test_lundberg_parameter():
     # 2 Q / (pi l E'), E' = E / (1 - nu^2): 2 x 500 / (pi x 230769) mm
     assert R3.lundberg_A_um(P) == pytest.approx(1e3 * 2 * 500 / (math.pi * 210000 / 0.91), rel=1e-12)
+
+
+def _step(F, mid, profile, zs):
+    k = int(np.argmax(profile))
+    keys = ("approach_mm", "q_mid_N_per_mm", "contact_integral_N", "tau_max_MPa")
+    return {"F_top_N": -F, "F_bottom_N": F, "p_mid_MPa": mid, "p_peak_MPa": float(profile[k]),
+            "p_peak_z_mm": float(zs[k]), "z_profile_mm": list(zs), "p_along_z_MPa": list(profile)} | dict.fromkeys(keys, 1.0)
+
+
+# roller_fe_end p01 (end layer 0.05 mm), the bracketing pair at 0.98 / 1.02 of the approach, reduced to four layers
+ZS = np.array([0.0, 7.0, 12.04, 14.628])
+LO = _step(3652.9, 639.6, np.array([639.6, 637.0, 601.2, 466.3]), ZS)
+HI_JUMP = _step(3831.1, 653.1, np.array([653.1, 650.0, 609.7, 692.0]), ZS)
+HI_STEADY = _step(3831.1, 653.1, np.array([653.1, 650.0, 614.0, 480.0]), ZS)
+
+
+def test_target_peak_comes_from_the_interpolated_profile_not_each_steps_maximum():
+    from studies.roller_3d import interpolate_to_target
+
+    t, j, w, bracketed, zs, pz = interpolate_to_target([LO, HI_JUMP], 3750.0)
+    assert bracketed and j == 1 and w == pytest.approx((3750.0 - 3652.9) / (3831.1 - 3652.9))
+    assert t["p_peak_MPa"] == pytest.approx(pz.max()) and t["p_peak_z_mm"] == 0.0
+    assert t["p_peak_MPa"] == pytest.approx((1 - w) * 639.6 + w * 653.1)     # mid-length, not
+    assert (1 - w) * LO["p_peak_MPa"] + w * HI_JUMP["p_peak_MPa"] > 660       # the blend of the two steps' maxima
+    with pytest.raises(ValueError):
+        interpolate_to_target([LO, _step(3831.1, 653.1, np.array([653.1, 650.0, 609.7]), ZS[:3])], 3750.0)
+
+
+def test_end_consistency_flags_a_jumping_end_and_passes_a_steady_one():
+    from studies.roller_3d import END_CONSISTENCY_TOL, end_consistency
+
+    jump, r = end_consistency([LO, HI_JUMP], 1, 15.0)
+    assert r == pytest.approx([601.2 / 639.6, 692.0 / 653.1]) and jump > 0.1 > END_CONSISTENCY_TOL
+    steady, r = end_consistency([LO, HI_STEADY], 1, 15.0)
+    assert r[1] == pytest.approx(614.0 / 653.1) and steady < 0.005 < END_CONSISTENCY_TOL

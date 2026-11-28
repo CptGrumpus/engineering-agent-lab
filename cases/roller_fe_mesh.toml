@@ -48,6 +48,11 @@
 # above the half-space, inside the 650 limit with a thin margin. The end peak at the two finer meshes comes from the
 # end layers the case fixed (its stated limitation). The traced cause is the drawn crown, not the contact physics,
 # but that is confirmed only when roller_fe_end lands.
+# Follow-up (2026-11-28, after roller_fe_end landed at 11:24): the drawn-crown diagnosis did not hold for the FE.
+# Across the four steps here the end layer's pressure does not follow the load (0.06 mm: 751 / 771 / 697 / 816 MPa
+# for evenly rising loads). Its end/mid ratio moves 0.149 / 0.106 between the bracketing steps at 0.06 / 0.045 mm,
+# against 0.004 at 0.08 mm (scripts/roller_step_consistency.py). The end peaks at the two finer meshes are unsettled
+# values, not results. The study now checks this (end_consistency); see cases/roller_fe_end.toml's Results.
 
 [case]
 name = "roller_fe_mesh"

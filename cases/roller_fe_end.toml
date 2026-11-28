@@ -31,6 +31,39 @@
 #   P5 About 9 hours (2.3 / 3.0 / 3.6 h), sharing the machine with roller_fe_mesh's last point and the step chain.
 #   If P3 fails (the end peak stays with the crown drawn finely), the end effect is the 3D roller's own (its free end
 #   face), and the next case is a stronger crown on the FE model (the half-space window runs to 2.5 x Lundberg).
+#
+# Results (run 20261128-014852_roller_fe_end, 01:48-11:24, 9 h 35 min; 2 h 43 / 3 h 55 / 2 h 57 min per point):
+# VERIFICATION FAIL: contact_integral fails at every point (10.0 / 9.6 / 10.0 %). REQ-C1-3D as reported: PASS at 0.1
+# and 0.025 mm (647.0 MPa, at mid-length), FAIL at 0.05 mm (668.1 MPa, 0.37 mm from the end), all unverified.
+#   P1 FAILED in one part: equilibrium, the load bracket and the elastic check pass at every point and contact_integral
+#      fails at every point (predicted about 11 %), as predicted; hertz_mid_pressure passes narrowly at every point
+#      (2.9 / 2.7 / 2.9 % against 3 %), where about 3.2 % (a narrow fail) was predicted.
+#   P2 HELD: mid-length 647.0 / 647.0 / 647.0 MPa (647.02, 646.96, 646.96).
+#   P3 FAILED at 0.05 mm, held at 0.025 mm. At 0.025 mm the end region's largest pressure (beyond 12 mm from
+#      mid-length) is 0.933 / 0.938 of mid-length's at the two steps, 2.65 mm from the end, a change of 0.005. At
+#      0.1 mm, 0.932 / 0.937 at 2.60 mm (P3 allowed it to read at or above mid-length; it did not). At 0.05 mm, 0.940
+#      at the lower step (2.96 mm from the end), then 1.060 at the upper: one layer 0.37 mm from the end read 466.3 MPa
+#      at the lower step and 692.0 at the upper, +48 % for 4.9 % more load, while mid-length rose 2.1 %.
+#   P4 FAILED as reported: 0.05 mm FAILS at 668.1 MPa. That value is not a pressure the model computed anywhere. The
+#      study blended each step's own maximum (639.6 at mid-length, 692.0 at the end) with the load weight, at the
+#      upper step's position; the interpolated profile reads 589 MPa there and peaks at 647.0 near mid-length.
+#      Fixed 2026-11-28 (studies/roller_3d.py interpolate_to_target: the peak from the interpolated profile).
+#   P5 HELD on the total, 9 h 35 min against about 9; the per-point times (2.7 / 3.9 / 3.0 h, predicted 2.3 / 3.0 /
+#      3.6) followed the machine's load, not the node count.
+# What it shows: the end peak is neither the drawn crown nor the free end face. Both would show at both load steps and
+# get stronger or weaker steadily as the end layers refine. Here it appears at one point of three (the middle end
+# layer) and at one step of two. scripts/roller_step_consistency.py, run over both FE runs, finds the same signature
+# in roller_fe_mesh. Its end layer 0.46 mm from the end reads 751 / 771 / 697 / 816 MPa over four evenly rising loads
+# at 0.06 mm, and 738 / 746 / 698 / 873 at 0.045 mm; its 0.08 mm point holds 0.96-0.98 of mid-length for three steps,
+# then jumps to 1.14 at the fourth. The end/mid ratio between the bracketing steps moves 0.149 / 0.106 there, and
+# 0.004 / 0.005 / 0.005 on the settled meshes (0.08 mm in roller_fe_mesh; 0.1 and 0.025 mm here). The FE model's end
+# pressure is therefore not settled on four meshes of six, and an unsettled value is not evidence either way. The
+# study now checks it (end_consistency, tolerance 0.03, this P3's own criterion, committed before the run): it fails
+# exactly the three points that read over 650 at the end (724.1, 715.7, 668.1) and passes the other three. Where
+# the end is settled, it sits at 0.93-0.98 of mid-length: the crowned roller's peak is at mid-length, 634.5-647.1 MPa
+# on every mesh of both runs. That is under 650, with a 0.4-2.4 % margin, and unverified on contact_integral (6-11 %).
+# The pre-written branch for a failed P3 (a stronger crown) is not taken: it assumed a steady end effect, and this
+# one is not steady.
 
 [case]
 name = "roller_fe_end"

@@ -7,7 +7,8 @@ Metrics:   at the target line load: the peak contact pressure anywhere and where
            pressure at mid-length, their ratio, and the largest shear below the surface (Tresca) anywhere.
 Reference: Hertz line contact at mid-length for the local line load there (the long-roller limit, exact for a
            section far from the ends); equilibrium (roller and plate reactions, and the integrated contact pressure);
-           the load bracketed by the steps.
+           the load bracketed by the steps; the end region's pressure, against mid-length's, the same at the two
+           bracketing steps (a node that jumps between two nearby loads is not settled).
 Run-level: GCI over contact_element_size_mm (layers along the roller refined with end_layer_mm in the same ratio).
 """
 
@@ -125,6 +126,55 @@ def read_steps(W, params, work: Path, approaches) -> list[dict]:
     return steps
 
 
+# The end region and how far its pressure may move against mid-length's between the two steps that bracket the load:
+# layers beyond 0.8 of the half-length from mid-length (12 mm of the 30 mm roller), 0.03 of mid-length's pressure
+# (roller_fe_end's P3, committed before its run on 2026-11-28; the steady meshes moved 0.004-0.005 there).
+END_ZONE = 0.8
+END_CONSISTENCY_TOL = 0.03
+
+
+def bracket(steps: list[dict], target: float) -> tuple[int, float, bool]:
+    """The upper of the two steps that bracket the target load, the interpolation weight and whether it brackets."""
+    F = np.array([abs(s["F_top_N"]) for s in steps])
+    j = int(np.searchsorted(F, target))
+    bracketed = 0 < j < len(F)
+    j = min(max(j, 1), len(F) - 1)
+    return j, float((target - F[j - 1]) / (F[j] - F[j - 1])), bool(bracketed)
+
+
+def interpolate_to_target(steps: list[dict], target: float) -> tuple[dict, int, float, bool, np.ndarray, np.ndarray]:
+    """Linear interpolation in load between the bracketing steps. The peak and where it sits come from the
+    interpolated pressure profile along the roller, not from each step's own maximum: the two can sit at different
+    layers (roller_fe_end p01: 640 MPa at mid-length at one step, 692 MPa 0.37 mm from the end at the other, blended
+    into 668.1 MPa at a layer whose interpolated pressure is 589)."""
+    j, w, bracketed = bracket(steps, target)
+    lo, hi = steps[j - 1], steps[j]
+    interp = {k: float((1 - w) * lo[k] + w * hi[k])
+              for k in ("approach_mm", "F_top_N", "F_bottom_N", "p_mid_MPa", "q_mid_N_per_mm", "contact_integral_N",
+                        "tau_max_MPa")}
+    zs = np.asarray(hi["z_profile_mm"], dtype=float)
+    if not np.array_equal(np.asarray(lo["z_profile_mm"], dtype=float), zs):
+        raise ValueError("the bracketing steps report different layers along the roller")
+    pz = (1 - w) * np.asarray(lo["p_along_z_MPa"], dtype=float) + w * np.asarray(hi["p_along_z_MPa"], dtype=float)
+    k = int(np.argmax(pz))
+    interp["p_peak_MPa"], interp["p_peak_z_mm"] = float(pz[k]), float(zs[k])
+    return interp, j, w, bracketed, zs, pz
+
+
+def end_consistency(steps: list[dict], j: int, half_length_mm: float, zone: float = END_ZONE) -> tuple[float, list]:
+    """How far the end region's largest pressure, relative to mid-length's, moves between the bracketing steps
+    j - 1 and j. A settled end follows the load as mid-length does (0.004-0.005 on the steady meshes); a node whose
+    contact pressure jumps between two nearby loads (466 -> 692 MPa for 4.9 % more load, roller_fe_end p01) is not
+    evidence of a peak there, nor of its absence."""
+    ratios = []
+    for s in (steps[j - 1], steps[j]):
+        z = np.abs(np.asarray(s["z_profile_mm"], dtype=float))
+        p = np.asarray(s["p_along_z_MPa"], dtype=float)
+        end = z > zone * half_length_mm
+        ratios.append(float(p[end].max()) / s["p_mid_MPa"] if end.any() else 0.0)
+    return abs(ratios[1] - ratios[0]), ratios
+
+
 class CalculiXRoller3D(Backend):
     sources = (WRITER, SECTION)
 
@@ -174,22 +224,12 @@ class CalculiXRoller3D(Backend):
 
         if len(steps) < 2:
             return failed(f"only {len(steps)} steps completed") | {"files": files(), "cleanup": work}
-        target = info["target_quarter_load_N"]
-        F = np.array([abs(s["F_top_N"]) for s in steps])
-        j = int(np.searchsorted(F, target))
-        bracketed = 0 < j < len(F)
-        j = min(max(j, 1), len(F) - 1)
-        w = (target - F[j - 1]) / (F[j] - F[j - 1])
-        interp = {k: float((1 - w) * steps[j - 1][k] + w * steps[j][k])
-                  for k in ("approach_mm", "F_top_N", "F_bottom_N", "p_peak_MPa", "p_mid_MPa", "q_mid_N_per_mm",
-                            "contact_integral_N",
-                            "tau_max_MPa")}
-        interp["p_peak_z_mm"] = steps[j]["p_peak_z_mm"]
-        outputs = {**info, "steps": steps, "bracketed": bool(bracketed), "interp_weight": float(w),
+        try:
+            interp, j, w, bracketed, zs, pz = interpolate_to_target(steps, info["target_quarter_load_N"])
+        except ValueError as e:
+            return failed(str(e)) | {"files": files(), "cleanup": work}
+        outputs = {**info, "steps": steps, "bracketed": bracketed, "interp_weight": w, "bracket_steps": [j - 1, j],
                    "at_target": interp, "contact_reach_ok": True}
-        zs = np.asarray(steps[j]["z_profile_mm"])
-        pz = (1 - w) * np.asarray(steps[j - 1]["p_along_z_MPa"]) + w * np.asarray(steps[j]["p_along_z_MPa"]) \
-            if len(steps[j - 1]["p_along_z_MPa"]) == len(zs) else np.asarray(steps[j]["p_along_z_MPa"])
         series = {"z_mm": zs, "peak_pressure_MPa": pz}
         return {"success": True, "message": f"CalculiX contact: {info['nodes']} nodes, {len(steps)} steps, load "
                 f"{'bracketed' if bracketed else 'NOT bracketed'}", "nfev": None, "series": series,
@@ -231,6 +271,8 @@ class Roller3DStudy(Study):
         q_corr = t["q_mid_N_per_mm"] * abs(t["F_top_N"]) / t["contact_integral_N"]
         loc = hertz.line_contact(q_corr, R, E, nu)
         target = out["target_quarter_load_N"]
+        j = bracket(out["steps"], target)[0]
+        jump, _ = end_consistency(out["steps"], j, float(p["roller_length_mm"]) / 2)
         checks = [
             check("load_bracketed", "the target load lies between two completed steps (0 = yes)",
                   0.0 if out["bracketed"] else 1.0, 0.0, kind="validity"),
@@ -242,6 +284,9 @@ class Roller3DStudy(Study):
                   abs(t["contact_integral_N"] / abs(t["F_top_N"]) - 1), tol["integral_rel_tol"]),
             check("hertz_mid_pressure", "|peak pressure at mid-length - Hertz p0 for the local line load there| / p0 "
                   "(long-roller limit)", abs(t["p_mid_MPa"] / loc["peak_pressure_MPa"] - 1), tol["hertz_rel_tol"]),
+            check("end_consistency", f"change between the two steps bracketing the load of the largest pressure beyond "
+                  f"{END_ZONE:g} of the half-length from mid-length, relative to mid-length's (a settled end follows "
+                  f"the load)", jump, float(tol.get("end_consistency_tol", END_CONSISTENCY_TOL))),
             check("elastic", "max subsurface shear / shear yield (Tresca, yield / 2)",
                   m["max_subsurface_shear_MPa"] / (float(p["yield_strength_MPa"]) / 2), 1.0, kind="validity"),
         ]
