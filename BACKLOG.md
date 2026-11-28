@@ -109,7 +109,7 @@ Done today, each with predictions committed first, runs scored, page section, fi
   revisit list (2, 10, 25, 11; notes on 15 and 13) is done.
 - **Evening (19:15):** study 20's detailed motor CAD done (8080af1; CAD roadmap row 20). The roller FE run (above) was
   alive at 18:50 (ccx.exe started 18:09, about one core busy).
-- **Study 19 part 3 (3D step with the tunnel's side walls), 20:10:** built and committed (414e3f0 model, study, three
+- **Study 19 part 3 (3D step with the tunnel's side walls), written 20:05:** built and committed (414e3f0 model, study, three
   cases with predictions; 93c825e protocol log; 6273f68 the symmetry case's convergence criterion). **Running since
   20:05, one 6-rank OpenFOAM job at a time, chained:** `harness pipeline` on `cases/step3d_symmetry.toml` (the exact 2D
   limit, about 2 h), then `step3d_sidewalls.toml` (spanwise levels 1 and 1.41, about 5-8 h), then
