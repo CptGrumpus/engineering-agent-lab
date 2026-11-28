@@ -1,0 +1,130 @@
+# Study 19 part 3: the backward-facing step (Driver and Seegmiller, ERCOFTAC classic case 030) in 3D, with the wind
+# tunnel's side walls.
+# Decision: part 2's 2D model (k-omega SST, walls resolved) failed one requirement, REQ-S3 pressure recovery
+# Cp(30 H) - Cp(-4 H): 0.1534 against the measured 0.1307 (+0.0227, limit 0.02). Its page blames the tunnel's side-wall
+# boundary layers (span 151 mm = 11.9 H), and a hand estimate (validation/step_driver_seegmiller/sidewall_estimate.py)
+# puts their effect at 0.028-0.052, at least the miss. Does a 3D RANS model with the side walls confirm it: does the
+# mid-span recovery come within 0.02 of the measurement, and do REQ-S1 (reattachment within 10 %) and REQ-S2 (Cf over
+# 10-30 H within 15 % rms) still pass? The portfolio's standing rule (simple model first; a fuller model where the
+# margin, here 0.0027, is as small as the simplification's plausible error) applied to study 19.
+# NOT BLIND: the measurements were opened and scored once for part 2 (2026-11-23, validation/step_driver_seegmiller/
+# PROTOCOL.md). The limits are part 2's, agreed before any data was opened, and are not changed. The side walls' own
+# inflow boundary layer is not in the case description: assumed to grow from the same uniform inlet as the floor's and
+# the top wall's (the 2D model already treats the top wall so), i.e. it starts like the floor's; step3d_sidewall_start
+# brackets a thinner one.
+#
+# Model (models/cfd/step3d_openfoam.py, studies/step_flow_3d.py): part 2's 2D mesh at mesh_level 0.5 (17,700 cells;
+# the coarsest level whose wall cells stay under y+ 1: 0.47 measured in the scratch 2D run) extruded over half the span,
+# z = 0 the mid-span symmetry plane, z = 75.5 mm the side wall; 32 spanwise cells graded from 6 um at the side wall
+# (growth 1.29, as the level's own wall grading) to 17 mm at mid-span: 566,400 cells. Each point first solves part 2's
+# 2D model on the same x-y mesh (its inflow: U_in 41.95 m/s) and starts the 3D model from it, every spanwise layer a
+# copy (a uniform 3D start diverged in 30 iterations, scratch, 18:51). 6 MPI ranks (scotch), nice 19, one job at a
+# time (two 3-rank jobs side by side ran 2.2-2.5 s per iteration each against 0.77 s for one 6-rank job).
+# Scratch 2D run at level 0.5 (the same model and inputs as this case's 2D stage, 2026-11-27 18:55-19:09): converged in
+# 20,716 iterations, Xr/H 6.418, Cf(20 H) 1.741e-3, recovery 0.1553, U_e 44.08 m/s, theta 1.692 mm (part 2's levels
+# 0.71 / 1 / 1.41: Xr 6.414 / 6.408 / 6.404, recovery 0.1545 / 0.1541 / 0.1534). It also showed part 2's y+ check read
+# the start-up stage's y+ (iteration 500; a max of 1.44 there, 0.47 converged): fixed in studies/step_flow.py.
+# Numerics: SIMPLEC (consistent; relaxation p 1, U 0.9, k / omega 0.7) in the 3D stage, part 2's residual targets
+# (p 1e-6, U 2e-7, k / omega 2e-6), 300 start-up iterations (first-order k, omega) from the 2D field, then to the
+# targets or 20,000 iterations; the 2D stage keeps part 2's SIMPLE (the steady solution does not depend on the
+# relaxation: step3d_symmetry checks it).
+# Scratch tests from the 2D field with the side walls (2026-11-27 19:12-19:40, 6 ranks): after 300
+# stage-2 iterations SIMPLEC had p 1.2e-4 against SIMPLE's (part 2's numerics) 4.8e-4, and its p and U residuals fell a
+# decade per about 500-600 iterations against SIMPLE's 1,100-2,300, at 0.89 s per iteration against 0.78; its probe
+# recovery was flat to 1e-4 from the 20th stage-2 iteration, while SIMPLE's still rose from 0.135 to 0.139 over 300.
+# SIMPLEC is used. Besides the residuals, recovery_settled: the probe recovery
+# Cp(30 H) - Cp(-4 H) at mid-span may move at most 2e-4 over the last 10 % of the iterations (a tenth of what would
+# matter here).
+#
+# Case 1: the exact limit. With the side wall a symmetry plane the 3D model is the 2D flow; the 3D solution must
+# equal the 2D solution on the same x-y mesh (both in this point), which checks the 3D mesh, patches, MPI
+# decomposition and reconstruction, and the mid-span post-processing before the side wall is switched on.
+# Predictions, written BEFORE the evidence run:
+#   P1 The 2D stage repeats the scratch 2D run exactly (Xr/H 6.418, recovery 0.1553: same code and inputs).
+#   P2 The 3D solution equals it: Xr/H within 0.1 %, recovery within 5e-4, Cf(20 H) within 0.5 %, Xr/H the same at
+#      every spanwise layer to 0.1 % (the checks limit_*); the 3D cell centres match their 2D cells to 1e-13 m.
+#   P3 Every other check passes (converged, continuity, mass balance, recovery settled, inflow at mid-span as the 2D
+#      model's: theta within 0.5 % of 1.692 mm, U_e 44.08, so both validity checks pass; y+ 0.47, the side wall
+#      being a symmetry plane has none).
+#   P4 About 2-4 h (12-15 min for the 2D stage, then 8,000-16,000 3D iterations at about 0.8 s).
+#
+# First attempt (run 20261127-194248_step3d_symmetry, started 19:42, stopped by me at 19:59 in the 3D start-up,
+# iteration 192 of 300, before any result): Uz is identically zero here (both z planes are symmetry planes), and its
+# normalised residual stalled at 1.7e-3 while Uy fell to 7e-5 (the zero-field trap in the build-model tool notes).
+# OpenFOAM's residual control takes U's largest component, so the run could never stop before its 20,000-iteration cap
+# and the check `converged` could never pass. Changed before any result, for this case only (step3d_sidewalls has a real
+# Uz): `converged` compares the final initial residuals of Ux, Uy, p, k and omega with the same targets; a new check
+# `uz_zero` requires max |Uz| / U_ref under 1e-4; the run ends at 8,000 iterations (7,700 of stage 2: the side-wall
+# scratch test fell a decade per 500-600; this case starts from the answer). The stopped run is kept, not as evidence.
+#   P4 (revised with the change) About 2 h: 12 min for the 2D stage, 8,000 3D iterations at about 0.85 s.
+
+[case]
+name = "step3d_symmetry"
+model = "openfoam_step3d_rans"
+description = "Backward-facing step (Driver and Seegmiller, ERCOFTAC 030) in 3D over half the tunnel span with the side wall as a symmetry plane: the exact 2D limit of the 3D pipeline, against the 2D model on the same x-y mesh (level 0.5)."
+assumptions = [
+  "Steady, incompressible RANS, k-omega SST (openfoam.org v14), walls resolved (y+ under 1), as part 2.",
+  "Geometry from the case description: step H 12.7 mm, inlet duct 8 H, parallel top wall; half span 75.5 mm (span 151 mm); Re_H 37500.",
+  "Side wall as a symmetry plane (slip): the flow is 2D, so the 3D result must equal the 2D solution on the same x-y mesh.",
+  "Inflow as part 2: uniform 41.95 m/s 1.153 m upstream of the step, Tu 1 %, viscosity ratio 10.",
+]
+limitations = [
+  "One x-y mesh level (0.5) and one spanwise mesh; this case checks the pipeline, not the physics.",
+]
+
+[parameters]
+step_height_m = 0.0127
+inlet_height_ratio = 8.0
+reynolds_number_h = 37500.0
+inlet_velocity_m_per_s = 41.95
+inlet_velocity_2d_m_per_s = 41.95
+reference_velocity_m_per_s = 44.2
+upstream_length_m = 1.153
+downstream_length_over_h = 50.0
+inlet_turbulence_intensity = 0.01
+inlet_viscosity_ratio = 10.0
+mesh_level = 0.5
+turbulence_model = "kOmegaSST"
+half_span_m = 0.0755
+side_wall = 0.0
+spanwise_level = 1.0
+side_wall_start_m = -1.153
+
+[numerics]
+residual_p = 1e-6
+residual_U = 2e-7
+residual_turb = 2e-6
+max_iterations = 8000            # the run always ends here (see the header: Uz stalls OpenFOAM's residual control)
+stage1_iterations = 300
+max_iterations_2d = 80000
+stage1_iterations_2d = 500
+consistent = true
+relax_p = 1.0
+relax_U = 0.9
+relax_turb = 0.7
+n_procs = 6
+probe_interval = 50
+solver_timeout_s = 36000
+
+[verification]
+continuity_tol = 1e-6
+mass_balance_tol = 1e-6
+recovery_settled_tol = 2e-4
+mesh_match_tol_m = 1e-9
+inflow_theta_mm = 1.697          # Re_theta 5000 at U_ref 44.2 m/s, nu 1.497e-5
+inflow_u_ref_m_per_s = 44.2
+inflow_theta_rel_tol = 0.05
+inflow_u_rel_tol = 0.02
+yplus_max = 1.0
+limit_xr_rel_tol = 1e-3
+limit_cp_abs_tol = 5e-4
+limit_cf_rel_tol = 5e-3
+uz_zero_tol = 1e-4
+
+[[requirements]]
+id = "REQ-S3-LIMIT"
+text = "Exact limit (internal): with the side wall a symmetry plane, the 3D recovery equals the 2D model's on the same mesh within 5e-4."
+metric = "cp_recovery_change_abs"
+operator = "<="
+limit = 5e-4
+units = "-"

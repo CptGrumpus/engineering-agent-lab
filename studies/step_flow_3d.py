@@ -38,7 +38,7 @@ WALLS = ("upperWall", "upstreamFloor", "stepFace", "lowerWall", "sideWall")
 FIELDS = ("U", "p", "k", "omega", "nut")
 SIDE_STATIONS_OVER_H = (-4.0, 10.0, 20.0, 30.0)
 SECTIONS_OVER_H = (-4.0, 30.0)
-NUMERICS_3D_ONLY = ("consistent", "relax_p", "relax_U", "relax_turb")
+NUMERICS_3D_ONLY = ("consistent", "relax_p", "relax_U", "relax_turb", "p_rel_tol")
 
 
 def _load(path: Path, name: str):
@@ -85,7 +85,35 @@ def latest_yplus(case: Path) -> dict:
     return {"start_time_dir": dirs[-1].name, "patches": yp}
 
 
+def thin_log(path: Path, every: int = 50, tail_blocks: int = 3) -> Path | None:
+    """A copy of a foamRun log with the header, every `every`-th iteration, the last iterations and the footer: the
+    full 3D log (12 lines per iteration) passes the 5 MB keep limit (the first symmetry run lost its stage-2 log)."""
+    path = Path(path)
+    if not path.exists():
+        return None
+    lines = path.read_text(encoding="utf-8", errors="replace").splitlines()
+    starts = [i for i, ln in enumerate(lines) if ln.startswith("Time = ")]
+    if not starts:
+        return None
+    out = lines[:starts[0]]
+    bounds = list(zip(starts, starts[1:] + [len(lines)]))
+    for k, (a, b) in enumerate(bounds):
+        it = lines[a].split("=")[1].strip().rstrip("s")
+        try:
+            keep = int(float(it)) % every == 0
+        except ValueError:
+            keep = True
+        if keep or k >= len(bounds) - tail_blocks:
+            out += lines[a:b]
+    dst = path.with_name(path.name + f".every{every}")
+    dst.write_text("\n".join(out) + "\n", encoding="utf-8")
+    return dst
+
+
 def _keep(case: Path, prefix: str) -> dict:
+    for log in ("log.foamRun", "log.foamRun.stage1"):
+        if (case / log).exists() and (case / log).stat().st_size >= 5e6:
+            thin_log(case / log)
     return {prefix + str(f.relative_to(case)).replace("\\", "/"): f
             for f in sorted(case.glob("system/*")) + sorted(case.glob("constant/*")) + sorted(case.glob("0/*"))
             + sorted(case.glob("log.*")) + sorted(case.glob("versions.txt"))
@@ -251,7 +279,8 @@ class OpenFOAMStep3D(Backend):
                "yplus": {k: v for k, v in yp["patches"].items() if k in WALLS}, "yplus_start_dir": yp["start_time_dir"],
                "checkmesh_failed_checks": cm.count("***"), "checkmesh_only_aspect": all(
                    "aspect ratio" in ln.lower() for ln in cm.splitlines() if "***" in ln),
-               "mesh_xy_match_m": xy_match, "uz_max_over_uref": float(np.max(np.abs(U[:, 2]))) / u_ref, "flow_in_m3_per_s": flows["inletFlow"], "flow_out_m3_per_s": flows["outletFlow"],
+               "mesh_xy_match_m": xy_match, "uz_max_over_uref": float(np.max(np.abs(U[:, 2]))) / u_ref,
+               "uz_max_at_mm": (C[int(np.argmax(np.abs(U[:, 2])))] * 1e3).tolist(), "flow_in_m3_per_s": flows["inletFlow"], "flow_out_m3_per_s": flows["outletFlow"],
                "mass_balance_rel": abs(flows["inletFlow"] + flows["outletFlow"]) / abs(flows["inletFlow"]),
                "recovery_probe_last10pct_range": float(np.ptp(rec_hist[last])),
                "recovery_probe_history": {"iteration": it.tolist(), "recovery": rec_hist.tolist()},

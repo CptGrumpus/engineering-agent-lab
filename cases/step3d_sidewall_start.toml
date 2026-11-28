@@ -30,6 +30,17 @@
 #      grow; the hand estimate's ratio is 0.028 / 0.040 = 0.70), so the 3D recovery lies between the nominal 3D value
 #      and the 2D one; REQ-S3 passes if the fall is at least 0.0046.
 #   P4 About 2-4 h.
+#   (revised with the change below, before the run) About 2-3 h: 1.08 s per iteration,
+#   4,000-6,000 iterations.
+
+# Changed after step3d_symmetry (run 20261127-200510), before this case's first run (2026-11-27 22:30): p relTol
+# 0.01 instead of 0.05 in the 3D stage, and the iteration cap 12,000 instead of 20,000. That run passed the exact 2D
+# limit but FAILED `continuity` (1.84e-6 against part 2's 1e-6): with SIMPLEC the pressure equation's coefficients are
+# larger, so the same normalised residual leaves a larger flux imbalance, and the imbalance after each pressure solve is
+# relTol x the initial one. A restart from the same state (scratch t_sym, 40 iterations) with relTol 0.01 cut it 5.4x
+# at once (8.9e-6 to 1.6e-6) for 24 % more time per iteration (1.08 against 0.87 s). The criterion is part 2's,
+# unchanged. The cap: SIMPLEC fell a decade per 500-700 iterations in every test; 12,000 is three times what six
+# decades need.
 
 [case]
 name = "step3d_sidewall_start"
@@ -65,7 +76,7 @@ side_wall_start_m = -0.30
 residual_p = 1e-6
 residual_U = 2e-7
 residual_turb = 2e-6
-max_iterations = 20000           # stage 2 ends here at the latest (stage 1: 300 iterations)
+max_iterations = 12000           # stage 2 ends here at the latest (stage 1: 300 iterations)
 stage1_iterations = 300
 max_iterations_2d = 80000
 stage1_iterations_2d = 500
@@ -73,6 +84,7 @@ consistent = true
 relax_p = 1.0
 relax_U = 0.9
 relax_turb = 0.7
+p_rel_tol = 0.01                 # 3D stage only (see the header)
 n_procs = 6
 probe_interval = 50
 solver_timeout_s = 36000

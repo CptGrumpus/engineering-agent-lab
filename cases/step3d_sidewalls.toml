@@ -42,6 +42,18 @@
 #   P5 The spanwise refinement changes the mid-span recovery by under 0.002 (5 % of the side-wall effect) and Xr/H by
 #      under 0.5 % (the refinement_* checks: 0.002 and 0.03 absolute).
 #   P6 About 5-8 h for both points (the finer spanwise mesh, 796,500 cells, about 1.1 s per iteration).
+#   (revised with the change below, before the run) About 6-9 h for both points: 1.08 s per
+#   iteration at 566,400 cells, about 1.5 s at 796,500, 4,000-6,000 iterations each.
+
+# Changed after step3d_symmetry (run 20261127-200510), before this case's first run (2026-11-27 22:30): p relTol
+# 0.01 instead of 0.05 in the 3D stage, and the iteration cap 12,000 instead of 20,000. That run passed the exact 2D
+# limit but FAILED `continuity` (1.84e-6 against part 2's 1e-6): with SIMPLEC the pressure equation's coefficients are
+# larger, so the same normalised residual leaves a larger flux imbalance, and the imbalance after each pressure solve is
+# relTol x the initial one. A restart from the same state (scratch t_sym, 40 iterations) with relTol 0.01 cut it 5.4x
+# at once (8.9e-6 to 1.6e-6) for 24 % more time per iteration (1.08 against 0.87 s). The criterion is part 2's,
+# unchanged. The cap: SIMPLEC fell a decade per 500-700 iterations in every test; 12,000 is three times what six
+# decades need. The evidence chain's first start of this case (21:58) was stopped after 30 s, in its 2D stage, when
+# step3d_symmetry's result came in; its folder (no solver output) was deleted.
 
 [case]
 name = "step3d_sidewalls"
@@ -85,7 +97,7 @@ values = [1.0, 1.4142]
 residual_p = 1e-6
 residual_U = 2e-7
 residual_turb = 2e-6
-max_iterations = 20000           # stage 2 ends here at the latest (stage 1: 300 iterations)
+max_iterations = 12000           # stage 2 ends here at the latest (stage 1: 300 iterations)
 stage1_iterations = 300
 max_iterations_2d = 80000
 stage1_iterations_2d = 500
@@ -93,6 +105,7 @@ consistent = true
 relax_p = 1.0
 relax_U = 0.9
 relax_turb = 0.7
+p_rel_tol = 0.01                 # 3D stage only (see the header)
 n_procs = 6
 probe_interval = 50
 solver_timeout_s = 36000

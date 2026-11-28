@@ -175,7 +175,7 @@ wallDist             {{ method meshWave; }}
     _write(case / "system/fvSolution", "dictionary", "fvSolution", f"""
 solvers
 {{
-    p {{ solver GAMG; smoother GaussSeidel; tolerance 1e-10; relTol 0.05; }}
+    p {{ solver GAMG; smoother GaussSeidel; tolerance 1e-10; relTol {_g(float(numerics.get("p_rel_tol", 0.05)))}; }}
     "(U|k|omega)" {{ solver smoothSolver; smoother symGaussSeidel; tolerance 1e-12; relTol 0.05; }}
 }}
 SIMPLE

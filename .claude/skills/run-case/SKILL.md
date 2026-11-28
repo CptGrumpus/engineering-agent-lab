@@ -178,6 +178,16 @@ Run every command from the repository root.
   (predicted 4-6 / 9-12 / 22-30 h, took 9.9 / 9.3 / 11.0 h): the time hardly depends on the fluid level at all.
   Time one coupling window per participant before predicting, and predict a mesh level's time from the slower
   participant, never by scaling with the fluid cell count.
+- **Overnight runs from a session that will end (a subagent): launch them outside its process tree.** A
+  background Bash task belongs to the session, and stopping it stops the WSL ranks too. Write the chain as a
+  `.cmd` (one `harness pipeline` after another, appending to a log) and start it through WMI:
+  `Invoke-CimMethod -ClassName Win32_Process -MethodName Create -Arguments @{CommandLine = 'cmd.exe /c
+  "<path>.cmd"'; CurrentDirectory = '<repo>'; ProcessStartupInformation = (New-CimInstance -ClassName
+  Win32_ProcessStartup -ClientOnly -Property @{ShowWindow = [uint16]0})}`. wsl and the venv work from it (tested
+  2026-11-27, study 19 part 3). Note the PID and the log path in the BACKLOG handoff.
+- **Keep long solver logs thinned, not dropped.** The step backends keep files under 5 MB; a 3D foamRun log is
+  about 1 KB per iteration, so the first 3D symmetry run lost its stage-2 log. `studies/step_flow_3d.py`
+  `thin_log` keeps the header, every 50th iteration and the last ones.
 - **MPI OpenFOAM: one job at a time, with all the ranks allowed.** The 3D step (566 k cells) ran 0.77 s per
   iteration on 6 ranks, but two 3-rank jobs side by side ran 2.2-2.5 s each (study 19 part 3, 2026-11-27): the
   ranks compete for memory bandwidth and cache, so concurrent MPI jobs lose throughput. Chain cases instead.

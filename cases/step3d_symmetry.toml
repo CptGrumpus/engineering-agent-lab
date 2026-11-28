@@ -57,6 +57,30 @@
 # `uz_zero` requires max |Uz| / U_ref under 1e-4; the run ends at 8,000 iterations (7,700 of stage 2: the side-wall
 # scratch test fell a decade per 500-600; this case starts from the answer). The stopped run is kept, not as evidence.
 #   P4 (revised with the change) About 2 h: 12 min for the 2D stage, 8,000 3D iterations at about 0.85 s.
+#
+# Results (run 20261127-200510_step3d_symmetry, 20:05-21:58, 1 h 53 min, 6 ranks; 2D stage 20,716 iterations, 3D stage
+# 8,000 at 0.85 s): VERIFICATION FAIL, 14 of 16 point checks pass. REQ-S3-LIMIT PASS on the number (|recovery change|
+# 2.1e-5 against 5e-4), shown as unverified by the run's status.
+#   P1 HELD: the 2D stage repeated the scratch 2D run exactly (20,716 iterations, Xr/H 6.418, recovery 0.1553, Cf(20 H)
+#      1.741e-3).
+#   P2 HELD: the 3D solution equals it: Xr/H 6.4186 against 6.4181 (7.6e-5), recovery -2.1e-5, Cf(20 H) 5.1e-5
+#      relative, Xr/H uniform across the span to 1.4e-4; cell centres on their 2D cells to 1.0e-13 m.
+#   P3 FAILED in two checks. uz_zero: max |Uz| / U_ref 1.33e-3 against 1e-4. A scratch rerun to 1,300 iterations (the
+#      same run to that point: identical residuals) put it in the first cell column behind the step face (x/H 0.025,
+#      y/H 0.4-0.99), 7-9 mm from the outer symmetry plane, inside the nearly stagnant corner eddy (local Ux about
+#      0.1 m/s); the probes elsewhere read 1e-6 m/s, and its effect on every output is what the limit checks measure
+#      (2e-5 to 1.4e-4). Not diagnosed further (a spanwise mode of the corner eddy or a discretisation artefact).
+#      continuity: 1.84e-6 against part 2's 1e-6, spread over the domain (90 % of the volume-weighted error in about
+#      69,000 cells, mostly near the floor), not at the Uz cells: SIMPLEC's larger pressure coefficients leave a larger
+#      flux imbalance at the same normalised residual, and relTol 0.05 keeps 5 % of it each iteration; p relTol 0.01
+#      cut it 5.4x in a restart (scratch), adopted for the side-wall cases before they ran. Every other check passes:
+#      converged (largest residual 0.91 of its target), mass balance 9.4e-11, recovery settled 5.7e-7, inflow theta
+#      within 0.3 % and U_e within 0.3 % of the stated values, y+ 0.47.
+#   P4 HELD: 1 h 53 min.
+# What it shows: the 3D pipeline (mesh, patches, decomposition, reconstruction, mid-span post-processing) reproduces
+# the 2D model to 2e-5 in recovery and 1e-4 in reattachment, so what the side walls change in step3d_sidewalls is the
+# side walls. The run stays FAIL and is not rerun: both failures are measured, located, and bounded by the limit checks.
+# The stage-2 log (11 MB) was not kept (the 5 MB keep limit); the backend now keeps every 50th iteration of it.
 
 [case]
 name = "step3d_symmetry"

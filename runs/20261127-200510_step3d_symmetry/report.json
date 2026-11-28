@@ -1,0 +1,201 @@
+{
+  "points": [
+    {
+      "label": "p00_baseline",
+      "parameters": {
+        "step_height_m": 0.0127,
+        "inlet_height_ratio": 8.0,
+        "reynolds_number_h": 37500.0,
+        "inlet_velocity_m_per_s": 41.95,
+        "inlet_velocity_2d_m_per_s": 41.95,
+        "reference_velocity_m_per_s": 44.2,
+        "upstream_length_m": 1.153,
+        "downstream_length_over_h": 50.0,
+        "inlet_turbulence_intensity": 0.01,
+        "inlet_viscosity_ratio": 10.0,
+        "mesh_level": 0.5,
+        "turbulence_model": "kOmegaSST",
+        "half_span_m": 0.0755,
+        "side_wall": 0.0,
+        "spanwise_level": 1.0,
+        "side_wall_start_m": -1.153
+      },
+      "derived": {
+        "nu_m2_per_s": 1.4969066666666669e-05,
+        "cells": 566400,
+        "cells_2d": 17700,
+        "nz": 32,
+        "y1_m": 6e-06,
+        "y1z_m": 6e-06,
+        "growth_z": 1.2925282580217856,
+        "dz_mid_m": 0.017091992645836968,
+        "dx_lip_m": 0.000635,
+        "side_wall_split": null
+      },
+      "simulation_status": "completed",
+      "verification_status": "FAIL",
+      "checks": [
+        {
+          "id": "converged",
+          "description": "3D, side wall a symmetry plane: largest final initial residual of Ux, Uy, p, k, omega over its target (Uz excluded: it is zero, see uz_zero)",
+          "kind": "numerical",
+          "value": 0.9068692120620001,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "uz_zero",
+          "description": "3D, side wall a symmetry plane: max |Uz| / U_ref (the flow is 2D)",
+          "kind": "numerical",
+          "value": 0.0013262785720606057,
+          "tolerance": 0.0001,
+          "comparison": "<=",
+          "status": "FAIL"
+        },
+        {
+          "id": "converged_2d",
+          "description": "2D solution (initial field and same-mesh comparison): residual control reached (0 = yes)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "continuity",
+          "description": "3D: time-step continuity error, sum local (last iteration)",
+          "kind": "numerical",
+          "value": 1.83921179145e-06,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "FAIL"
+        },
+        {
+          "id": "mass_balance",
+          "description": "3D: |inlet + outlet volume flow| / inlet flow",
+          "kind": "numerical",
+          "value": 9.416072312322154e-11,
+          "tolerance": 1e-06,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "recovery_settled",
+          "description": "3D: range of the probe recovery Cp(30 H) - Cp(-4 H) at mid-span over the last 10 % of the iterations",
+          "kind": "numerical",
+          "value": 5.740482128258062e-07,
+          "tolerance": 0.0002,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "mesh_matches_2d",
+          "description": "max |x-y cell centre of the 3D mesh - its 2D cell's| (m): the 3D x-y plane is the 2D mesh, and the cell map is right",
+          "kind": "numerical",
+          "value": 1.0000333894311098e-13,
+          "tolerance": 1e-09,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "inflow_theta",
+          "description": "|momentum thickness at x = -4 H, mid-span - stated| / stated",
+          "kind": "validity",
+          "value": 0.0031593878074546904,
+          "tolerance": 0.05,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "inflow_velocity",
+          "description": "|edge velocity at x = -4 H, mid-span - stated reference| / reference",
+          "kind": "validity",
+          "value": 0.0027288057149322553,
+          "tolerance": 0.02,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "yplus_walls",
+          "description": "max y+ on every wall but the step face, side wall included (viscous sublayer resolved)",
+          "kind": "validity",
+          "value": 0.4658380296305,
+          "tolerance": 1.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "mesh",
+          "description": "checkMesh failures other than the aspect-ratio test (0 = none)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "reattachment_found",
+          "description": "reattachment point on the floor at mid-span missing (0 = found, 1 = none)",
+          "kind": "numerical",
+          "value": 0.0,
+          "tolerance": 0.0,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "limit_xr",
+          "description": "side wall as symmetry = 2D: |Xr/H 3D - 2D| / 2D",
+          "kind": "numerical",
+          "value": 7.583924462584157e-05,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "limit_cp_recovery",
+          "description": "side wall as symmetry = 2D: |recovery 3D - 2D|",
+          "kind": "numerical",
+          "value": 2.0994701946663863e-05,
+          "tolerance": 0.0005,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "limit_cf20",
+          "description": "side wall as symmetry = 2D: |Cf(20 H) 3D - 2D| / 2D",
+          "kind": "numerical",
+          "value": 5.1133438165318346e-05,
+          "tolerance": 0.005,
+          "comparison": "<=",
+          "status": "PASS"
+        },
+        {
+          "id": "limit_spanwise_uniform",
+          "description": "side wall as symmetry = 2D: max |Xr/H(z) - Xr/H(mid-span)| / Xr/H",
+          "kind": "numerical",
+          "value": 0.00013991368619480727,
+          "tolerance": 0.001,
+          "comparison": "<=",
+          "status": "PASS"
+        }
+      ],
+      "requirements": [
+        {
+          "id": "REQ-S3-LIMIT",
+          "text": "Exact limit (internal): with the side wall a symmetry plane, the 3D recovery equals the 2D model's on the same mesh within 5e-4.",
+          "metric": "cp_recovery_change_abs",
+          "operator": "<=",
+          "limit": 0.0005,
+          "units": "-",
+          "value": 2.0994701946663863e-05,
+          "margin": 0.00047900529805333615,
+          "verdict": "PASS (unverified)"
+        }
+      ]
+    }
+  ],
+  "run_id": "20261127-200510_step3d_symmetry",
+  "generated_utc": "2026-11-28T02:57:57+00:00",
+  "verification_status": "FAIL"
+}

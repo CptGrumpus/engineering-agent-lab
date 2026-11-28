@@ -419,6 +419,16 @@ Traps found while building the studies in this repo, by tool.
   while Uy fell to 7e-5, and OpenFOAM's U criterion takes the largest component, so the run could never stop
   (study 19 part 3, first attempt stopped after 192 iterations). Judge the other components yourself, check
   that the zero component is zero, and give such a run a fixed iteration budget.
+- **SIMPLEC (`consistent yes`) leaves a larger continuity error at the same residual targets.** Its pressure
+  equation has larger coefficients, so a normalised p residual of 1e-6 is a larger flux imbalance, and the
+  error after each pressure solve is relTol x the initial one. The 3D step converged to part 2's residual
+  targets with sum local 1.84e-6 (part 2's SIMPLE runs: 2.6e-8) and failed the 1e-6 check; p relTol 0.01
+  instead of 0.05 cut it 5.4x at once for 24 % more time per iteration (study 19 part 3). Set relTol with the
+  solver, not the check.
+- In the 3D step with both z planes symmetry planes, a spurious Uz of 1.3e-3 U_ref appeared only in the first
+  cell column behind the step face, inside the nearly stagnant corner eddy (local Ux about 0.1 m/s); every
+  output matched the 2D model to 1e-4. To locate such things: `foamPostProcess -func writeCellVolumes` and
+  `-func "div(phi)"` on the final time, then rank cells by |field| x volume (scratch uzwhere.py, 2026-11-27).
 - MPI in WSL: `nice -n 19 mpirun -np N --bind-to none foamRun -parallel` (the ranks inherit nice; unbound so a
   shared machine's scheduler places them), `decomposePar -force` with `method scotch`, then `reconstructPar
   -latestTime` before `writeCellCentres`. Function-object files (probes, surfaceFieldValue) are written once, at
