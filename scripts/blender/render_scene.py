@@ -101,9 +101,11 @@ if FIXED is not None:
 centre, scale = (lo + hi) / 2, 2.0 / float((hi - lo).max())
 
 
-def make_mesh(name, pts, tris):
+def make_mesh(name, pts, tris, groups=None):
     me = bpy.data.meshes.new(name)
     me.from_pydata(((pts - centre) * scale).tolist(), [], tris.tolist())
+    if groups is not None:                 # per-triangle material index, set before validate() drops any face
+        me.polygons.foreach_set("material_index", np.asarray(groups, dtype=np.int32))
     me.validate(clean_customdata=False)
     me.shade_smooth()
     me.set_sharp_from_angle(angle=math.radians(meta.get("sharp_angle_deg", 32)))
@@ -112,7 +114,10 @@ def make_mesh(name, pts, tris):
     return ob, me
 
 
-part, part_me = make_mesh("part", xyz, data["tris"])
+# optional plain-material groups: "group" (per triangle, in the npz) indexes meta["materials"], a list of
+# {base_color, metallic, roughness}; an assembly then reads part by part (copper windings, dark magnets)
+GROUPS = data["group"] if ("group" in data and "value" not in data) else None
+part, part_me = make_mesh("part", xyz, data["tris"], GROUPS)
 
 # ----------------------------------------------------------------------------- materials
 
@@ -177,6 +182,16 @@ else:
     nt.links.new(bs.outputs["BSDF"], out.inputs["Surface"])
     flat_mat = None
 part_me.materials.append(beauty_mat)
+if GROUPS is not None:                     # group 0 is beauty_mat above; groups 1.. from meta["materials"][1:]
+    for k, m in enumerate(meta["materials"][1:], start=1):
+        gm = bpy.data.materials.new(f"group{k}")
+        nt, out = node_tree(gm)
+        bs = nt.nodes.new("ShaderNodeBsdfPrincipled")
+        bs.inputs["Base Color"].default_value = (*srgb_to_linear(m["base_color"]), 1)
+        bs.inputs["Metallic"].default_value = m.get("metallic", 1.0)
+        bs.inputs["Roughness"].default_value = m.get("roughness", 0.32)
+        nt.links.new(bs.outputs["BSDF"], out.inputs["Surface"])
+        part_me.materials.append(gm)
 
 def feature_edges(pts, tris, angle_deg):
     """Edges where the surface folds by more than angle_deg: the outline an FE

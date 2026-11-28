@@ -208,6 +208,15 @@ leave room round the framed feature; framing the whole vessel instead made the n
 whose feature is small against the part (10 mm welds on a 1 m section) needs an enlarged detail: an inset axes at
 an exact scale (`make_drawings.nozzle_pad`, 4 : 1), and `note(..., scale=k)` in it so the leader dots stay the size
 of the main view's.
+An assembly in one grey loses the parts that sit flush: the motor's windings fill their slots and the magnets their
+pockets, so in plain metal the stator face read as solid and the magnets vanished. A plain CAD scene can carry
+per-part materials: save a per-triangle `group` array in the scene's npz and pass `materials` (a list of
+{base_color, metallic, roughness}, group 0 also as `base_color`) to `write_scene`; `scripts/blender/render_scene.py`
+assigns them, and scenes without a group render as before (`make_study_renders.scene_motor_cad`). Say in the caption
+that the colours tell parts apart and aren't finishes. To show what's inside a stacked part, draw it partly out
+(the motor's rotor lifted two thirds of its stack) rather than exploding everything. For a drawing's section, read
+the materials along the cut from the CAD's own outlines (`make_drawings.motor_cad` classifies points on the cut with
+matplotlib's Path), so the section can't disagree with the model.
 Check a study-session colour scale before using its figure: the nozzle's plastic-strain panel capped the scale at
 the 98th percentile without saying so, so the brightest colour stood for everything from 1.6 to 2.7 %. Run the scale to
 the true peak (label it "peak") and leave zero as plain metal, not the colour map's lightest step. When a Part 2

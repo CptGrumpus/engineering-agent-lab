@@ -1775,9 +1775,212 @@ def keyed_shaft():
            source="Drawn from models/cad/intermediate_shaft.py")
 
 
+def mm2(x: float) -> str:
+    """mm to two decimals, rounding half up (the drawing's 6.375 in bore is 161.925 mm, not 161.92)."""
+    from decimal import ROUND_HALF_UP, Decimal
+    return str(Decimal(repr(round(x, 6))).quantize(Decimal("0.01"), ROUND_HALF_UP))
+
+
+def _motor_pts(M, edges, step=0.4):
+    """A loop of prius_motor's ("line", a, b) / ("arc", a, m, b) edges as points about `step` mm apart."""
+    out = []
+    for e in edges:
+        if e[0] == "line":
+            out.append(e[1])
+            continue
+        a, m, b = e[1], e[2], e[3]
+        c = M._circle_centre(a, m, b)
+        r = float(np.hypot(a[0] - c[0], a[1] - c[1]))
+        t0, tm, t1 = (np.arctan2(p[1] - c[1], p[0] - c[0]) for p in (a, m, b))
+        d1, d2 = (tm - t0) % (2 * np.pi), (t1 - t0) % (2 * np.pi)
+        sweep = d2 if d1 < d2 else d2 - 2 * np.pi
+        k = max(2, int(abs(sweep) * r / step) + 1)
+        out += [(c[0] + r * np.cos(t0 + sweep * i / k), c[1] + r * np.sin(t0 + sweep * i / k)) for i in range(k)]
+    return np.array(out)
+
+
+def motor_cad():
+    # study 20: the Prius motor as built (models/cad/prius_motor.py, rev5): front view, the half-section A-A through a
+    # slot and a magnet, and detail B of a mounting ear. The view is turned so A-A stands vertical: the model's ray at
+    # 63.75 deg (slot 8's centre, through pole 1's first magnet) is drawn at 90 deg.
+    from matplotlib.path import Path as MPath
+    from models.cad import prius_motor as M
+    D, sec = M.DESIGNS["rev5"], M.section()
+    R, Rb, Rr, Rk = sec["stator_Rext"], sec["stator_Rint"], sec["rotor_Rext"], sec["rotor_Rint"]
+    RAY = 3.75 + 7.5 * 8
+    ROT = 90.0 - RAY
+    IN = M.IN
+    COPPER, MAG, MAGE = "#f3d9c6", "#a9bbdd", ACC
+
+    def rot(P, deg=ROT):
+        t = np.radians(deg)
+        return P @ np.array([[np.cos(t), np.sin(t)], [-np.sin(t), np.cos(t)]])
+
+    outer = _motor_pts(M, M.stator_outer_edges(D, sec))
+    inner = _motor_pts(M, M.stator_inner_edges(sec))
+    holes = [_motor_pts(M, M.hole_edges(D, a)) for a in D["ears_deg"]]
+    w0 = [M._from_json(e) for e in sec["winding_edges"]]
+    winds = [_motor_pts(M, [M._rot_edge(e, 360.0 / sec["slots"] * k) for e in w0]) for k in range(sec["slots"])]
+    bore = _motor_pts(M, M.rotor_inner_edges(D, sec))
+    voids, mags = [], []
+    for k in range(sec["poles"]):
+        v, m = M.pole_loops(sec, k)
+        voids += [_motor_pts(M, lp, 0.1) for lp in v]
+        mags += [_motor_pts(M, lp, 0.1) for lp in m]
+
+    def front(ax, lw=1.0):
+        poly(ax, rot(outer), fc=FILL, lw=lw)
+        poly(ax, rot(inner), fc=PLATE, lw=lw * 0.6)
+        for h in holes:
+            poly(ax, rot(h), fc=PLATE, lw=lw * 0.6)
+        for w in winds:
+            poly(ax, rot(w), fc=COPPER, ec=HOT, lw=lw * 0.45, z=3)
+        ax.add_patch(Circle((0, 0), Rr, fc=FILL, ec=INK, lw=lw * 0.8, zorder=3))
+        poly(ax, rot(bore), fc=PLATE, lw=lw * 0.8, z=3.2)
+        for v in voids:
+            poly(ax, rot(v), fc=PLATE, lw=lw * 0.4, z=3.3)
+        for m in mags:
+            poly(ax, rot(m), fc=MAG, ec=MAGE, lw=lw * 0.5, z=3.4)
+
+    # the section's materials along the model's ray, classified from the same loops (so it can't disagree with the CAD)
+    r = np.arange(0.0, R + 0.5, 0.005)
+    ray = np.c_[r * np.cos(np.radians(RAY)), r * np.sin(np.radians(RAY))]
+    inside = lambda P: MPath(P).contains_points(ray)  # noqa: E731
+    lam = inside(outer) & ~inside(inner)
+    wnd = np.any([inside(w) for w in winds], axis=0)
+    mag = np.any([inside(m) for m in mags], axis=0)
+    rot_steel = (r <= Rr) & ~inside(bore) & ~np.any([inside(v) for v in voids + mags], axis=0)
+    cls = np.select([lam, wnd, mag, rot_steel], [1, 2, 3, 4], 0)
+    runs, i0 = [], 0
+    for i in range(1, len(r) + 1):
+        if i == len(r) or cls[i] != cls[i0]:
+            if cls[i0]:
+                runs.append((int(cls[i0]), r[i0], r[i - 1]))
+            i0 = i
+    kinds = [k for k, _, _ in runs]
+    assert kinds.count(3) == 1 and kinds.count(2) == 1 and kinds[-1] == 1, runs     # one magnet, one slot, then the yoke
+    span = {1: D["stator_stack"], 2: D["stator_stack"], 3: D["magnet_length"], 4: D["rotor_stack"]}
+    mag_run = next(x for x in runs if x[0] == 3)
+    wnd_run = next(x for x in runs if x[0] == 2)
+
+    fig, ax = new(9.5, (-285, 425), (-190, 180))
+    front(ax)
+    centre(ax, (-R - 18, 0), (R + 18, 0))
+    centre(ax, (0, -R - 18), (0, 0))
+    ax.add_patch(Arc((0, 0), 2 * D["ear_hole_r"], 2 * D["ear_hole_r"], theta1=0, theta2=360, color=DIMC, lw=0.5,
+                     ls=(0, (9, 3, 2, 3)), zorder=4))
+    # A-A: the half-section along the vertical ray, viewed from the right
+    ax.plot([0, 0], [0, R + 16], color=INK, lw=0.6, ls=(0, (9, 3, 2, 3)), zorder=5)
+    ax.plot([0, 0], [R + 6, R + 18], color=INK, lw=2.0, zorder=5)
+    ax.annotate("", (14, R + 18), (0, R + 18), arrowprops=dict(arrowstyle="-|>", color=INK, lw=1.0, mutation_scale=9), zorder=5)
+    text(ax, 18, R + 18, "A", fs=8.5, color=INK, bold=True, ha="left", box=False)
+    dim(ax, (-R, 0), (R, 0), -(R + 24), f"Ø{2 * R:.2f} ({2 * R / IN:.3f} in)")
+    # notes, from the CAD's numbers
+    a_ear = D["ears_deg"][0] + ROT
+    hc = D["ear_hole_r"] * np.array([np.cos(np.radians(a_ear)), np.sin(np.radians(a_ear))])
+    note(ax, tuple(hc * (1 - D["ear_hole_d"] / 2 / D["ear_hole_r"])), (-280, 160),
+         f"3 × Ø{D['ear_hole_d']:.2f} ({D['ear_hole_d'] / IN:.3f} in) through,\non R{D['ear_hole_r']:.2f}, 120° apart")
+    a_s = D["small_notches_deg"][1] + ROT
+    note(ax, ((R - D["notch_small"][1]) * np.cos(np.radians(a_s)), (R - D["notch_small"][1]) * np.sin(np.radians(a_s))),
+         (-280, 55), f"3 × notch {D['notch_small'][0]:.2f} wide × {D['notch_small'][1]:.2f} deep\n"
+         f"({D['notch_small'][0] / IN:.3f} × {D['notch_small'][1] / IN:.3f} in)")
+    a_l = D["large_notches_deg"][3] + ROT
+    wl, dl, rl = D["notch_large"]
+    note(ax, ((R - dl) * np.cos(np.radians(a_l)), (R - dl) * np.sin(np.radians(a_l))), (-280, -70),
+         f"6 × notch {wl:.2f} wide × {dl:.2f} deep, R{rl:.2f}\n({wl / IN:.3f} × {dl / IN:.3f} in, R{rl / IN:.3f})")
+    text(ax, -280, -112, "Ears and notches sit on\ntooth centres, every 30°.", fs=7, ha="left", va="top", box=False)
+    a_t = 153.75 + 1.9                                       # a tooth tip, upper left (tooth centres at 3.75 + 7.5 k here)
+    note(ax, (Rb * np.cos(np.radians(a_t)), Rb * np.sin(np.radians(a_t))), (-280, 105),
+         f"48 slots; bore Ø{mm2(2 * Rb)} ({2 * Rb / IN:.3f} in)")
+    a_k = D["keys_deg"][0] + ROT
+    note(ax, (D["key_top_r"] * np.cos(np.radians(a_k)), D["key_top_r"] * np.sin(np.radians(a_k))), (0, 8),
+         f"rotor bore Ø{2 * Rk:.2f}\n({2 * Rk / IN:.3f} in), 2 keys\n{2 * D['key_top_r']:.2f} ({2 * D['key_top_r'] / IN:.3f} in)\n"
+         f"across, {D['key_w']:.2f} wide", ha="center", fs=6.5)
+    cen = [rot(m).mean(axis=0) for m in mags]                # the magnet nearest 40 deg, upper right
+    pm_ = min(cen, key=lambda c: abs(np.degrees(np.arctan2(c[1], c[0])) - 40))
+    note(ax, tuple(pm_), (160, 150), "8 poles: 16 magnets\n18.9 × 6.5 × 83.1,\nin V pockets", fs=7)
+    note(ax, (Rr * np.cos(np.radians(-40)), Rr * np.sin(np.radians(-40))), (150, -128),
+         f"rotor Ø{mm2(2 * Rr)}\n({2 * Rr / IN:.3f} in);\nair gap {Rb - Rr:.3f}", fs=7)
+
+    # section A-A, half, the shaft axis across the sheet
+    X0, Y0 = 330.0, -165.0
+    ax.plot([X0 - 72, X0 + 72], [Y0, Y0], color=DIMC, lw=0.6, ls=(0, (9, 3, 2, 3)), zorder=3)
+    style = {1: dict(fc=FILL, hatch="////", lw=1.0), 2: dict(fc=COPPER, ec=HOT, lw=0.9), 3: dict(fc=MAG, ec=MAGE, lw=0.9),
+             4: dict(fc=FILL, hatch="\\\\\\\\", lw=1.0)}
+    for k, r0, r1 in runs:
+        L = span[k] / 2
+        rect(ax, X0 - L, Y0 + r0, X0 + L, Y0 + r1, **style[k])
+    r_in, r_out = M.winding_radii(sec)
+    for sg in (-1, 1):                                       # the simplified end windings, dashed
+        prof = M.end_ring_profile(D, sec)
+        pts = _motor_pts(M, [(e[0],) + tuple((p[1], p[0]) for p in e[1:]) for e in prof], 0.5)
+        ax.add_patch(Polygon(np.c_[X0 + sg * (D["stator_stack"] / 2 + pts[:, 0]), Y0 + pts[:, 1]], closed=True, fc="none",
+                             ec=HOT, lw=0.8, ls=(0, (3, 2)), zorder=4))
+    S2 = D["stator_stack"] / 2
+    dim(ax, (X0 - S2, Y0 + R), (X0 + S2, Y0 + R), 9, f"{D['stator_stack']:.1f} stator stack")
+    dim(ax, (X0 - D["rotor_stack"] / 2, Y0 + 30), (X0 + D["rotor_stack"] / 2, Y0 + 30), 0, f"{D['rotor_stack']:.1f} rotor stack")
+    dim(ax, (X0 + S2, Y0 + r_out + 4), (X0 + S2 + D["end_overhang"], Y0 + r_out + 4), 8, f"{D['end_overhang']:.1f}",
+        outside=True)
+    note(ax, (X0 + S2 + 10, Y0 + (r_in + r_out) / 2), (X0 + 52, Y0 + 152), "end windings,\nsimplified", color=HOT, fs=6.8,
+         ha="left")
+    note(ax, (X0 - 30, Y0 + (mag_run[1] + mag_run[2]) / 2), (X0 - 56, Y0 + 56),
+         f"magnet, {D['magnet_length']:.1f} long", color=ACC, fs=6.8, ha="right")
+    note(ax, (X0 - 30, Y0 + (wnd_run[1] + wnd_run[2]) / 2), (X0 - 62, Y0 + 100), "slot winding", color=HOT, fs=6.8, ha="right")
+    note(ax, (X0 - 30, Y0 + R - 8), (X0 - 62, Y0 + 128), "stator core", fs=6.8, ha="right")
+    note(ax, (X0 + 20, Y0 + mag_run[1] - 3), (X0 + 52, Y0 + 52), "rotor core", fs=6.8, ha="left")
+    text(ax, X0, Y0 - 12, "A-A, half section", fs=7.5, color=INK, bold=True, box=False)
+
+    # detail B: the ear on the right, 2.5 : 1
+    ge = M.ear_geometry(D, R)
+    a_r = np.radians(D["ears_deg"][2] + ROT)                # the ear on the right, in the drawn frame
+    Q = np.array([[np.cos(a_r), -np.sin(a_r)], [np.sin(a_r), np.cos(a_r)]])
+
+    def loc(p):                                              # the ear's local frame (x out along its axis) to the sheet
+        return tuple(Q @ np.asarray(p, float))
+    ec_ = np.array(loc((D["ear_hole_r"] - 6.0, 0.0)))
+    half = 30.0
+    ax.add_patch(Circle(tuple(loc((D["ear_hole_r"] - 2.0, 0.0))), 24, fc="none", ec=HOT, lw=0.9, ls=(0, (4, 2)), zorder=6))
+    text(ax, ec_[0] + 22, ec_[1] + 26, "B", fs=8.5, color=HOT, bold=True, box=False)
+    k, BX, BY = 2.2, 262.0, 26.0
+    lo = ax.transData.transform((BX, BY))
+    hi = ax.transData.transform((BX + k * 2 * half, BY + k * 2 * half))
+    inv = fig.transFigure.inverted()
+    (fx0, fy0), (fx1, fy1) = inv.transform(lo), inv.transform(hi)
+    axd = fig.add_axes([fx0, fy0, fx1 - fx0, fy1 - fy0])
+    axd.set_xlim(ec_[0] - half, ec_[0] + half)
+    axd.set_ylim(ec_[1] - half, ec_[1] + half)
+    axd.set_aspect("equal")
+    axd.axis("off")
+    box = [(ec_[0] - half, ec_[1] - half), (ec_[0] + half, ec_[1] - half), (ec_[0] + half, ec_[1] + half),
+           (ec_[0] - half, ec_[1] + half)]
+    axd.add_patch(Polygon(box, closed=True, fc=PLATE, ec="none", zorder=0))
+    axd.add_patch(Polygon(box, closed=True, fc="none", ec=HOT, lw=0.9, ls=(0, (4, 2)), zorder=7, clip_on=False))
+    front(axd, lw=1.4)
+    h0 = np.array(loc((D["ear_hole_r"], 0.0)))
+    centre(axd, tuple(h0 - [12, 0]), tuple(h0 + [12, 0]))
+    centre(axd, tuple(h0 - [0, 12]), tuple(h0 + [0, 12]))
+    text(axd, ec_[0] - half + 1.5, ec_[1] + half - 1.5, f"Detail B · {k:g} : 1", fs=8, color=HOT, bold=True, ha="left", va="top")
+    s45 = np.sqrt(0.5)
+    note(axd, loc((D["ear_hole_r"] + D["ear_end_r"] * s45, D["ear_end_r"] * s45)), tuple(h0 + [22, 21]),
+         f"R{D['ear_end_r']:.2f} about the hole", fs=7, scale=k, ha="right")
+    C, Cm = ge["C"], (ge["C"][0], -ge["C"][1])
+    low = np.array(Cm) - D["relief_r"] * np.array(Cm) / np.hypot(*Cm)      # the relief's innermost point
+    note(axd, loc(low), tuple(h0 + [-34, -24]), f"R{D['relief_r']:.2f} ({D['relief_r'] / IN:.3f} in),\nboth reliefs",
+         fs=7, scale=k, ha="left")
+    note(axd, loc((D["ear_hole_r"] - D["ear_hole_d"] / 2 * s45, D["ear_hole_d"] / 2 * s45)), tuple(h0 + [-34, 14]),
+         f"Ø{D['ear_hole_d']:.2f}", fs=7, scale=k, ha="left")
+    note(axd, loc(((ge["F"][0] + ge["T"][0]) / 2, -(ge["F"][1] + ge["T"][1]) / 2)), tuple(h0 + [3, -22]),
+         f"flanks {D['ear_flank_deg']:.0f}°\noff the radius", fs=7, scale=k, ha="left")
+
+    text(ax, -280, -178, "From the study: the analysed section (revision 5), the drawing's ears, notches and hub keys, the parts "
+         "list's stack lengths. Not drawn: shaft, hub, end plates.", fs=6.8, ha="left", va="top", box=False)
+    finish(fig, "motor_cad", "Study 20 · the 2004 Prius traction motor as built · front view, half section A-A, detail B (mounting ear)",
+           source="Drawn from models/cad/prius_motor.py")
+
+
 ALL = {f.__name__: f for f in (fea, cantilever_opt, strap, modal, strut, contact, bolted_joint, pv_nozzle, bracket_opt, cad,
                                cfd, thermal, heat, cold_plate, pipe, suspension, baseline, motor, step, random_vib, fan_rotor,
-                               fatigue, strap_proof, bracket_uq, crack, flag, motor_stops, oring, shaft, enclosure, steel_frame, keyed_shaft, knee, rotor_detail, nozzle_pad)}
+                               fatigue, strap_proof, bracket_uq, crack, flag, motor_stops, oring, shaft, enclosure, steel_frame, keyed_shaft, knee, rotor_detail, nozzle_pad, motor_cad)}
 
 if __name__ == "__main__":
     for name in sys.argv[1:] or ALL:

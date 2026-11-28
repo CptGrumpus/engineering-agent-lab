@@ -888,13 +888,65 @@ def scene_lap_cad():
                        sharp_angle_deg=40, title="lap_cad", expected_volume_mm3=float(sum(hv.values())))
 
 
+MOTOR_LIFT = 55.0      # mm the rotor and its magnets are drawn up out of the stator, about two thirds of the stack
+
+
+def scene_motor_cad():
+    """Study 20: the Prius motor as built (models/cad/prius_motor.py, rev5: the stator core with the drawing's ears and
+    notches, the 48 slot windings, the rotor with its V pockets and hub keys, the 16 magnets), the rotor drawn up out of
+    the stator so its magnets and the stator's slots both show. The end-winding rings are left out: they are
+    simplified in the CAD, and would hide the slots. Gate: the hand volumes, without the CAD kernel: each section's
+    exact area (lines and arcs by Green's theorem, prius_motor.loop_area) times its stack length. Lifting is a
+    translation. CAD axes kept: the shaft along z, standing up."""
+    import math
+
+    from models.cad import prius_motor as M
+    D, sec = M.DESIGNS["rev5"], M.section()
+    parts = M.build("rev5")
+    zone = abs(M.loop_area([M._from_json(e) for e in sec["winding_edges"]]))
+    voids, mags = M.pole_loops(sec, 0)
+    pocket = sum(abs(M.loop_area(lp)) for lp in voids + mags)              # the regions tile, so the sum is the union
+    rotor = (math.pi * (sec["rotor_Rext"] ** 2 - sec["rotor_Rint"] ** 2) + 2 * M.key_area(D, sec) - sec["poles"] * pocket)
+    magnet = sum(abs(M.loop_area(lp)) for lp in mags)
+    expected = (M.stator_section_area(D, sec)["lamination"] * D["stator_stack"] + sec["slots"] * zone * D["stator_stack"]
+                + rotor * D["rotor_stack"] + sec["poles"] * magnet * D["magnet_length"])
+    named = [("stator", 0, parts["stator"]), ("rotor", 1, parts["rotor"])]
+    named += [(f"winding_{k}", 2, w) for k, w in enumerate(parts["windings"])]
+    named += [(f"magnet_{k}", 3, m) for k, m in enumerate(parts["magnets"])]
+    xyz, tris, group, n0 = [], [], [], 0
+    for name, g, solid in named:
+        verts, faces = solid.tessellate(0.01, 0.1)
+        p = np.array([v.toTuple() for v in verts])
+        if g in (1, 3):
+            p = p + [0.0, 0.0, MOTOR_LIFT]
+        xyz.append(p)
+        tris.append(np.array(faces) + n0)
+        group.append(np.full(len(faces), g, dtype=np.int32))
+        n0 += len(p)
+    scene = write_scene(BUILD / "motor_cad", np.vstack(xyz), np.vstack(tris), elev=34, azim=-58, resolution=[1500, 1300],
+                        distance_factor=3.4, sharp_angle_deg=40, title="motor_cad", expected_volume_mm3=float(expected),
+                        base_color=MOTOR_MATERIALS[0]["base_color"], materials=MOTOR_MATERIALS)
+    with np.load(scene) as d:                      # the per-triangle part groups ride along in the scene file
+        arrays = dict(d)
+    np.savez_compressed(scene, **arrays, group=np.concatenate(group))
+    return scene
+
+
+# stator lamination, rotor lamination (a shade darker so the two stacks read apart), copper, magnets; for telling the
+# parts apart, not a finish specification
+MOTOR_MATERIALS = [{"base_color": [0.80, 0.81, 0.83], "metallic": 1.0, "roughness": 0.36},
+                   {"base_color": [0.70, 0.72, 0.75], "metallic": 0.9, "roughness": 0.34},
+                   {"base_color": [0.86, 0.47, 0.25], "metallic": 1.0, "roughness": 0.30},
+                   {"base_color": [0.22, 0.33, 0.58], "metallic": 0.3, "roughness": 0.42}]   # the STEP file's magnet blue
+
+
 SCENES = {"cold_plate_3d": scene_cold_plate_3d, "strap_proof": scene_strap_proof, "bolted_joint_pressure": scene_bolted_joint, "joint_section": scene_joint_section, "cold_plate": scene_cold_plate,
           "strut": scene_strut, "pv_nozzle": lambda: scene_pv_nozzle(), "steel_frame": scene_steel_frame, "fan_rotor": scene_fan_rotor, "enclosure": scene_enclosure,
           # studies 24-26: the study session's scenes (scripts/scenes_24_26.py imports from here, so imported lazily)
           "crack": lambda: __import__("scenes_24_26").scene_cracked_plate(),
           "oring": lambda: __import__("scenes_24_26").scene_oring(),
           "shaft": lambda: __import__("scenes_24_26").scene_shaft_fillet(),
-          "shaft_cad": scene_shaft_cad, "knee_cad": scene_knee_cad, "rotor_cad": scene_rotor_cad, "nozzle_cad": scene_nozzle_cad, "nozzle_t12_cad": lambda: scene_nozzle_cad("t12", "nozzle_t12_cad"), "roller_cad": scene_roller_cad, "seal_cad": scene_seal_cad, "plate_cad": scene_plate_cad, "enclosure_cad": scene_enclosure_cad, "lap_cad": scene_lap_cad,
+          "shaft_cad": scene_shaft_cad, "knee_cad": scene_knee_cad, "rotor_cad": scene_rotor_cad, "nozzle_cad": scene_nozzle_cad, "nozzle_t12_cad": lambda: scene_nozzle_cad("t12", "nozzle_t12_cad"), "roller_cad": scene_roller_cad, "seal_cad": scene_seal_cad, "plate_cad": scene_plate_cad, "enclosure_cad": scene_enclosure_cad, "lap_cad": scene_lap_cad, "motor_cad": scene_motor_cad,
           "surface_crack": lambda: __import__("scenes_24_26").scene_surface_crack()}
 
 
