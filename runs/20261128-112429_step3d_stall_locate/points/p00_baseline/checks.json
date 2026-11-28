@@ -1,0 +1,105 @@
+{
+  "label": "p00_baseline",
+  "status": "FAIL",
+  "checks": [
+    {
+      "id": "converged",
+      "description": "3D: SIMPLE residual control reached (0 = yes)",
+      "kind": "numerical",
+      "value": 1.0,
+      "tolerance": 0.0,
+      "comparison": "<=",
+      "status": "FAIL"
+    },
+    {
+      "id": "converged_2d",
+      "description": "2D solution (initial field and same-mesh comparison): residual control reached (0 = yes)",
+      "kind": "numerical",
+      "value": 0.0,
+      "tolerance": 0.0,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "continuity",
+      "description": "3D: time-step continuity error, sum local (last iteration)",
+      "kind": "numerical",
+      "value": 5.92718506752e-06,
+      "tolerance": 1e-06,
+      "comparison": "<=",
+      "status": "FAIL"
+    },
+    {
+      "id": "mass_balance",
+      "description": "3D: |inlet + outlet volume flow| / inlet flow",
+      "kind": "numerical",
+      "value": 9.120097950268938e-10,
+      "tolerance": 1e-06,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "recovery_settled",
+      "description": "3D: range of the probe recovery Cp(30 H) - Cp(-4 H) at mid-span over the last 10 % of the iterations",
+      "kind": "numerical",
+      "value": 8.156673890230559e-06,
+      "tolerance": 0.0002,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "mesh_matches_2d",
+      "description": "max |x-y cell centre of the 3D mesh - its 2D cell's| (m): the 3D x-y plane is the 2D mesh, and the cell map is right",
+      "kind": "numerical",
+      "value": 1.0000333894311098e-13,
+      "tolerance": 1e-09,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "inflow_theta",
+      "description": "|momentum thickness at x = -4 H, mid-span - stated| / stated",
+      "kind": "validity",
+      "value": 0.02626645997773189,
+      "tolerance": 0.05,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "inflow_velocity",
+      "description": "|edge velocity at x = -4 H, mid-span - stated reference| / reference",
+      "kind": "validity",
+      "value": 0.00039391864932118866,
+      "tolerance": 0.02,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "yplus_walls",
+      "description": "max y+ on every wall but the step face, side wall included (viscous sublayer resolved)",
+      "kind": "validity",
+      "value": 0.4577682051152,
+      "tolerance": 1.0,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "mesh",
+      "description": "checkMesh failures other than the aspect-ratio test (0 = none)",
+      "kind": "numerical",
+      "value": 0.0,
+      "tolerance": 0.0,
+      "comparison": "<=",
+      "status": "PASS"
+    },
+    {
+      "id": "reattachment_found",
+      "description": "reattachment point on the floor at mid-span missing (0 = found, 1 = none)",
+      "kind": "numerical",
+      "value": 0.0,
+      "tolerance": 0.0,
+      "comparison": "<=",
+      "status": "PASS"
+    }
+  ]
+}

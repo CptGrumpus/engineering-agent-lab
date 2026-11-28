@@ -1,0 +1,31 @@
+FoamFile
+{
+    format      ascii;
+    class       dictionary;
+    object      controlDict;
+}
+
+solver          incompressibleFluid;
+startFrom       latestTime;
+startTime       0;
+stopAt          endTime;
+endTime         3000;
+deltaT          1;
+writeControl    timeStep;
+writeInterval   3000;
+writeFormat     ascii;
+writePrecision  12;
+writeCompression off;
+timeFormat      general;
+timePrecision   8;
+runTimeModifiable false;
+functions
+{
+    #includeFunc wallShearStress
+    #includeFunc yPlus
+    inletFlow  { type surfaceFieldValue; libs ("libfieldFunctionObjects.so"); executeControl writeTime; writeControl writeTime; writeFields false; log false; patch inlet; fields (phi); operation sum; }
+    outletFlow { type surfaceFieldValue; libs ("libfieldFunctionObjects.so"); executeControl writeTime; writeControl writeTime; writeFields false; log false; patch outlet; fields (phi); operation sum; }
+    probes     { type probes; libs ("libsampling.so"); writeControl timeStep; writeInterval 50; fields (p U); probeLocations ((-0.0508 0.012703 0.00854599632292) (0.381 3e-06 0.00854599632292) (-0.0508 0.0635 0.00854599632292)); }
+    snapshots  { type writeObjects; libs ("libutilityFunctionObjects.so"); objects (U p); writeControl timeStep; writeInterval 100; startTime 2800; }
+    stallProbe { type probes; libs ("libsampling.so"); writeControl timeStep; writeInterval 1; fields (p U); probeLocations ((0.000961606347063 0.0122909748197 0.0569548958099) (0.000961606347063 0.0122909748197 0.008545996323) (0.000961606347063 0.0122909748197 0.07409388898)); }
+}

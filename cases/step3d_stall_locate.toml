@@ -44,6 +44,42 @@
 #      next).
 #   P6 About 1 h 5 min: the 2D stage 13 min (step3d_sidewalls p00: 12.6 min), the 3D start-up 6 min, 2,700 iterations
 #      at 0.88 s (40 min), the diagnostics about 5 min. Started after roller_fe_end ends (the two would slow each other).
+#
+# Results (run 20261128-112429_step3d_stall_locate, 11:24-12:15, 51 min; 3D stage 2,700 iterations at 0.725 s):
+# VERIFICATION FAIL on `converged` and `continuity` only, by design. REQ-S3 both sides PASS (unverified): 0.13206.
+#   P1 HELD: an exact repeat. The 3D log blocks at Time = 1000, 2000 and 3000 are identical to step3d_sidewalls p00's
+#      (timing lines aside); at 3000 p's initial residual is 1.82458558287e-05 and the continuity sum local is
+#      5.92718506752e-06. The 2D stage's log is identical too (4,128 lines).
+#   P2 HELD: `converged` and `continuity` fail, the other nine checks pass; recovery 0.13206 (0.1321 +- 2e-4).
+#   P3 FAILED: the error is local, but at the step face, not at the side wall. Half of it sits in 2,842 cells (0.50 %
+#      of the mesh, against under 2,000 predicted). Percentiles 10/50/90: x/H -62 / 0.13 / 1.1, y/H 0.005 / 0.73 /
+#      3.1, distance from the side wall 5 / 40 / 67 mm (median predicted within 25 mm). The kept cells (stall_cells.csv,
+#      45 % of the error) put 37 % of the total within 1.2 H behind the step face and 32 % within 0.5 H. Most of it is
+#      in the first two cell columns (x 0.32 and 0.96 mm), from floor to lip: 13.5 % at y/H < 0.1, 10.3 % at
+#      0.1-0.9, 12.9 % at 0.9-1.1. Across the span, the share per mm is about the same near the side wall (first
+#      15 mm) and near mid-span (0.8 %/mm), and under half that in between. 90 % of the error is in 57,674 cells (the symmetry
+#      case: about 69,000).
+#   P4 FAILED: U's change between 2,900 and 3,000 is concentrated (half in 2,847 cells), but not there. It sits far
+#      downstream (x/H 30 / 42 / 49; the largest, 5.6e-4 U_ref, at the outlet, mid-span), across the span (median 40 mm
+#      from the side wall), and decays at 0.914 per 100 iterations, as the whole domain does (0.909). No cell of its top
+#      half reverses sign between the two intervals. p's change sits in the inlet duct's core (x/H -81 / -41 / 9). It
+#      grew 1.14 x over the last interval, but at most 1.2e-5 q per 100 iterations (the original run's recovery then
+#      settled to 1e-6 by 12,000).
+#   P5 FAILED in part: the range at the largest-|Uz| probe is 10.8 times mid-span's (2.9e-4 against 2.6e-5 U_ref), as
+#      predicted. But it has no period: Uz holds -0.0802 U_ref and jitters from one iteration to the next (detrended std
+#      5.2e-5 U_ref, lag-1 correlation 0.13), with no oscillation. 1.4 mm from the side wall: range 1.2e-4, a
+#      111-iteration line in its spectrum, lag-1 correlation 0.84.
+#   P6 FAILED, on the fast side: 51 min against about 1 h 5 min. The machine was free (0.725 s per iteration against
+#      0.88 s when step3d_sidewalls shared it).
+# What it shows: the stall is located. It is a noise floor in the first cell columns behind the step face, the same
+# cells where the symmetry case failed its spanwise-velocity check (x/H 0.025, inside the near-stagnant corner eddy).
+# It is not a mode: nothing oscillates or reverses, every change decays at the domain's rate, and the residual is held
+# up by iteration-to-iteration jitter. The jitter is largest just under the lip 18 mm from the side wall, 10 times
+# mid-span's. The recovery is read at -4 H and 30 H, far from those cells, and it settled; the stall's effect on the
+# verdicts is bounded by that settling. The verdicts stay unverified (the harness rule: a failed residual check is not
+# turned into a pass by a stable output). Neither pre-written outcome fits exactly (local to the lip and side wall
+# and oscillating; or spread over the domain). Both name the same next test, the run with part 2's SIMPLE: offered to
+# the user, not started.
 
 [case]
 name = "step3d_stall_locate"

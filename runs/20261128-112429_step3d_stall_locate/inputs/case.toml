@@ -1,0 +1,134 @@
+# Study 19 part 3: locate the pressure-residual stall of the 3D step with side walls (user, 2026-11-28 ~09:00: "Yes"
+# to "a rerun that keeps the flow fields would show where the residual sticks"; the dashboard session relayed the same).
+#
+# Why: step3d_sidewalls (run 20261127-223049) and step3d_sidewall_start (20261128-054328) FAILED `converged` and
+# `continuity` on every point: the p residual fell to 2e-5 by iteration 2,000 and stalled at 1.7-2.1e-5 (target 1e-6)
+# to the 12,000 cap, continuity 4-8e-6 (limit 1e-6), while every output the verdicts use settled (recovery 1e-6 over
+# the last 2,000 iterations). Page 19 calls the verdicts unverified. Those runs kept no fields, so the stall was not
+# located; only the largest |Uz| (8-12 % of U_ref, in the same place in every run: just behind the step lip, about
+# 18 mm from the side wall) hinted where. The stall is set by iteration 2,000, so this rerun stops at 3,000 (about an
+# hour instead of 3-4 h) and collects what locates it (the backend's stall diagnostics, models/cfd/step3d_openfoam.py
+# stall_functions and studies/step_flow_3d.py stall_diagnostics, tested in tests/test_step_flow_3d.py and smoke-run
+# end to end at 60 iterations, 2026-11-28 09:11):
+#   - div(phi) x cell volume at iteration 3,000: each cell's flux imbalance, the quantity the continuity check sums;
+#     the cells holding half and 90 % of it, and where they are;
+#   - U and p at 2,800 / 2,900 / 3,000: where the solution still moves, whether it decays there (the last interval's
+#     change over the one before) and whether it reverses between the intervals;
+#   - three probes every iteration from 300 on, at the largest-|Uz| cell, at mid-span and 1.4 mm from the side wall
+#     (same x and y): whether Uz oscillates there, its range and its period.
+# Same parameters, numerics and decomposition as step3d_sidewalls' p00 (spanwise level 1, x-y level 0.5, SIMPLEC,
+# p relTol 0.01, 6 ranks); only the end (3,000) and the diagnostics differ, and neither changes the iterations.
+# What each outcome means: a stall local to the lip and side wall that does not decay (an oscillation there) is a
+# limit cycle of steady RANS in that corner: the outputs' settling then bounds its effect, and the next test is
+# whether part 2's SIMPLE damps it. An error spread over the domain points at the numerics (SIMPLEC and its relaxation
+# against the mesh), and the next test is the same run with part 2's SIMPLE.
+#
+# Predictions, written BEFORE the run:
+#   P1 The rerun repeats step3d_sidewalls p00 exactly to iteration 3,000 (same inputs, decomposition and solver; the
+#      symmetry case's scratch rerun repeated its run exactly): at Time = 3000 p's initial residual 1.82458558287e-05
+#      and continuity sum local 5.92718506752e-06, as in that run's log; the 2D stage identical too.
+#   P2 `converged` and `continuity` FAIL (by design); every other check passes. Mid-span recovery 0.1321 +- 2e-4
+#      (the full run's value at 12,000: 0.13212; its probe moved 5e-5 between 3,000 and 12,000).
+#   P3 The continuity error is local: half of it in under 2,000 cells (0.35 % of 566,400), with their median within
+#      3 H of the step and 25 mm of the side wall and between y/H 0.5 and 1.5 (the lip's height). Basis: the symmetry
+#      case, with the same mesh and no side wall, spread its error over the domain (90 % in about 69,000 cells) at
+#      1.8e-6 with relTol 0.05; at relTol 0.01 that spread part would be about 0.3-0.4e-6, so most of the side-wall
+#      runs' 5e-6 is the stall's.
+#   P4 U's change between 2,900 and 3,000 sits in the same region (half of it, volume-weighted, in under 5,000 cells,
+#      median within 25 mm of the side wall and 3 H of the step) and does not decay there (the last interval's change
+#      at least 0.8 of the one before in those cells), while over the whole domain it still decays (ratio under 1:
+#      Uz fell a decade per 1,500-2,000 iterations, about 0.88 per 100).
+#   P5 At the largest-|Uz| probe, Uz oscillates over the last 1,000 iterations with a range at least 10 times the
+#      mid-span probe's and a clear period (tens to a few hundred iterations: at iterations 3,000-3,002 of
+#      step3d_sidewalls p's residual changed by 1-7 % and the continuity error by 12-16 % from one iteration to the
+#      next).
+#   P6 About 1 h 5 min: the 2D stage 13 min (step3d_sidewalls p00: 12.6 min), the 3D start-up 6 min, 2,700 iterations
+#      at 0.88 s (40 min), the diagnostics about 5 min. Started after roller_fe_end ends (the two would slow each other).
+
+[case]
+name = "step3d_stall_locate"
+model = "openfoam_step3d_rans"
+description = "Backward-facing step in 3D with the side walls (step3d_sidewalls' spanwise level 1), rerun to iteration 3,000 with the stall diagnostics: the continuity error per cell, U and p at iterations 2,800 / 2,900 / 3,000, and probes every iteration behind the step lip."
+assumptions = [
+  "Steady, incompressible RANS, k-omega SST (openfoam.org v14), every wall resolved (y+ under 1), the side wall included.",
+  "Geometry from the case description: step H 12.7 mm, inlet duct 8 H, parallel top wall; half span 75.5 mm (span 151 mm), mid-span a symmetry plane; Re_H 37500.",
+  "The side walls' boundary layers start at the same uniform inlet as the floor's and the top wall's, 1.153 m upstream of the step (not in the case description: stated, bracketed by step3d_sidewall_start).",
+  "Inflow re-matched to the stated edge velocity at x = -4 H at mid-span (44.2 m/s); 2D stage at part 2's 41.95 m/s.",
+]
+limitations = [
+  "A diagnostic rerun: stopped at iteration 3,000 by design, so `converged` and `continuity` fail by construction; its requirement values repeat step3d_sidewalls' at that iteration, not at 12,000.",
+  "One spanwise level (1) and one x-y level (0.5): the stall's location on this mesh.",
+  "Linear eddy-viscosity model: no secondary flow of the second kind in the corners.",
+]
+
+[parameters]
+step_height_m = 0.0127
+inlet_height_ratio = 8.0
+reynolds_number_h = 37500.0
+inlet_velocity_m_per_s = 40.91
+inlet_velocity_2d_m_per_s = 41.95
+reference_velocity_m_per_s = 44.2
+upstream_length_m = 1.153
+downstream_length_over_h = 50.0
+inlet_turbulence_intensity = 0.01
+inlet_viscosity_ratio = 10.0
+mesh_level = 0.5
+turbulence_model = "kOmegaSST"
+half_span_m = 0.0755
+side_wall = 1.0
+spanwise_level = 1.0
+side_wall_start_m = -1.153
+
+[numerics]
+residual_p = 1e-6
+residual_U = 2e-7
+residual_turb = 2e-6
+max_iterations = 3000            # stopped here by design: the stall is set from iteration 2,000
+stage1_iterations = 300
+max_iterations_2d = 80000
+stage1_iterations_2d = 500
+consistent = true
+relax_p = 1.0
+relax_U = 0.9
+relax_turb = 0.7
+p_rel_tol = 0.01                 # 3D stage only (see the header)
+n_procs = 6
+probe_interval = 50
+solver_timeout_s = 14400
+snapshot_start = 2800            # U and p at 2,800 / 2,900 / 3,000 (writeObjects), div(phi) and cell volumes at 3,000
+snapshot_interval = 100
+# probes every iteration at x 0.96 mm, y 12.29 mm (just behind the step lip, below its 12.7 mm height): the cell of
+# step3d_sidewalls p00's largest |Uz| (z 56.95 mm, 18.5 mm from the side wall), the mid-span layer (z 8.55 mm) and
+# 1.4 mm from the side wall (z 74.09 mm)
+stall_probes_m = [[0.000961606347063, 0.0122909748197, 0.0569548958099], [0.000961606347063, 0.0122909748197, 0.008545996323], [0.000961606347063, 0.0122909748197, 0.07409388898]]
+
+[verification]
+continuity_tol = 1e-6
+mass_balance_tol = 1e-6
+recovery_settled_tol = 2e-4
+mesh_match_tol_m = 1e-9
+inflow_theta_mm = 1.697          # Re_theta 5000 at U_ref 44.2 m/s, nu 1.497e-5
+inflow_u_ref_m_per_s = 44.2
+inflow_theta_rel_tol = 0.05
+inflow_u_rel_tol = 0.02
+yplus_max = 1.0
+limit_xr_rel_tol = 1e-3
+limit_cp_abs_tol = 5e-4
+limit_cf_rel_tol = 5e-3
+refinement_change_abs = { cp_recovery_30h = 0.002, xr_over_h = 0.03 }
+
+[[requirements]]
+id = "REQ-S3-HIGH"
+text = "Part 2's REQ-S3 (upper side): the recovery Cp(30 H) - Cp(-4 H) at mid-span at most the measured 0.1307 + 0.02."
+metric = "cp_recovery_30h"
+operator = "<="
+limit = 0.1507
+units = "-"
+
+[[requirements]]
+id = "REQ-S3-LOW"
+text = "Part 2's REQ-S3 (lower side): the recovery at mid-span at least the measured 0.1307 - 0.02."
+metric = "cp_recovery_30h"
+operator = ">="
+limit = 0.1107
+units = "-"
