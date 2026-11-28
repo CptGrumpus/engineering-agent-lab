@@ -888,16 +888,17 @@ def scene_lap_cad():
                        sharp_angle_deg=40, title="lap_cad", expected_volume_mm3=float(sum(hv.values())))
 
 
-MOTOR_LIFT = 55.0      # mm the rotor and its magnets are drawn up out of the stator, about two thirds of the stack
+MOTOR_LIFT = 140.0     # mm the rotor and its magnets are drawn up out of the stator: clear of the end turns' crowns
+                       # (80.1 mm from the middle) by 18 mm, so the magnets show over them
 
 
 def scene_motor_cad():
     """Study 20: the Prius motor as built (models/cad/prius_motor.py, rev5: the stator core with the drawing's ears and
-    notches, the 48 slot windings, the rotor with its V pockets and hub keys, the 16 magnets), the rotor drawn up out of
-    the stator so its magnets and the stator's slots both show. The end-winding rings are left out: they are
-    simplified in the CAD, and would hide the slots. Gate: the hand volumes, without the CAD kernel: each section's
-    exact area (lines and arcs by Green's theorem, prius_motor.loop_area) times its stack length. Lifting is a
-    translation. CAD axes kept: the shaft along z, standing up."""
+    notches, the 48 slot windings and their 48 end turns, the rotor with its V pockets and hub keys, the 16 magnets),
+    the rotor drawn up clear of the end turns so its magnets show. The end turns are coloured by phase (three radial
+    tiers, one per phase). Gate: the hand volumes, without the CAD kernel: each section's exact area (lines and arcs
+    by Green's theorem, prius_motor.loop_area) times its stack length, plus each end turn's d w L
+    (prius_motor.end_turn_volume_hand). Lifting is a translation. CAD axes kept: the shaft along z, standing up."""
     import math
 
     from models.cad import prius_motor as M
@@ -909,10 +910,13 @@ def scene_motor_cad():
     rotor = (math.pi * (sec["rotor_Rext"] ** 2 - sec["rotor_Rint"] ** 2) + 2 * M.key_area(D, sec) - sec["poles"] * pocket)
     magnet = sum(abs(M.loop_area(lp)) for lp in mags)
     expected = (M.stator_section_area(D, sec)["lamination"] * D["stator_stack"] + sec["slots"] * zone * D["stator_stack"]
-                + rotor * D["rotor_stack"] + sec["poles"] * magnet * D["magnet_length"])
+                + rotor * D["rotor_stack"] + sec["poles"] * magnet * D["magnet_length"]
+                + 2 * sum(M.end_turn_volume_hand(D, sec, c) for c in M.coil_layout(sec)))
     named = [("stator", 0, parts["stator"]), ("rotor", 1, parts["rotor"])]
     named += [(f"winding_{k}", 2, w) for k, w in enumerate(parts["windings"])]
     named += [(f"magnet_{k}", 3, m) for k, m in enumerate(parts["magnets"])]
+    assert len(parts["end_turns"]) == 48
+    named += [(f"end_turn_{k}", 4 + "ACB".index(t["coil"]["phase"]), t["solid"]) for k, t in enumerate(parts["end_turns"])]
     xyz, tris, group, n0 = [], [], [], 0
     for name, g, solid in named:
         verts, faces = solid.tessellate(0.01, 0.1)
@@ -923,7 +927,7 @@ def scene_motor_cad():
         tris.append(np.array(faces) + n0)
         group.append(np.full(len(faces), g, dtype=np.int32))
         n0 += len(p)
-    scene = write_scene(BUILD / "motor_cad", np.vstack(xyz), np.vstack(tris), elev=34, azim=-58, resolution=[1500, 1300],
+    scene = write_scene(BUILD / "motor_cad", np.vstack(xyz), np.vstack(tris), elev=30, azim=-58, resolution=[1500, 1500],
                         distance_factor=3.4, sharp_angle_deg=40, title="motor_cad", expected_volume_mm3=float(expected),
                         base_color=MOTOR_MATERIALS[0]["base_color"], materials=MOTOR_MATERIALS)
     with np.load(scene) as d:                      # the per-triangle part groups ride along in the scene file
@@ -932,12 +936,16 @@ def scene_motor_cad():
     return scene
 
 
-# stator lamination, rotor lamination (a shade darker so the two stacks read apart), copper, magnets; for telling the
-# parts apart, not a finish specification
+# stator lamination, rotor lamination (a shade darker so the two stacks read apart), copper, magnets, then the end
+# turns of phases A, C and B (inner, middle and outer tier); for telling the parts apart, not a finish specification
 MOTOR_MATERIALS = [{"base_color": [0.80, 0.81, 0.83], "metallic": 1.0, "roughness": 0.36},
                    {"base_color": [0.70, 0.72, 0.75], "metallic": 0.9, "roughness": 0.34},
                    {"base_color": [0.86, 0.47, 0.25], "metallic": 1.0, "roughness": 0.30},
-                   {"base_color": [0.22, 0.33, 0.58], "metallic": 0.3, "roughness": 0.42}]   # the STEP file's magnet blue
+                   {"base_color": [0.22, 0.33, 0.58], "metallic": 0.3, "roughness": 0.42},   # the STEP file's magnet blue
+                   {"base_color": [0.90, 0.62, 0.30], "metallic": 1.0, "roughness": 0.32},   # A: bright copper
+                   {"base_color": [0.78, 0.38, 0.20], "metallic": 1.0, "roughness": 0.32},   # C: red copper
+                   {"base_color": [0.52, 0.26, 0.16], "metallic": 1.0, "roughness": 0.34}]   # B: dark enamel
+
 
 
 SCENES = {"cold_plate_3d": scene_cold_plate_3d, "strap_proof": scene_strap_proof, "bolted_joint_pressure": scene_bolted_joint, "joint_section": scene_joint_section, "cold_plate": scene_cold_plate,

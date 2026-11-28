@@ -217,6 +217,16 @@ that the colours tell parts apart and aren't finishes. To show what's inside a s
 (the motor's rotor lifted two thirds of its stack) rather than exploding everything. For a drawing's section, read
 the materials along the cut from the CAD's own outlines (`make_drawings.motor_cad` classifies points on the cut with
 matplotlib's Path), so the section can't disagree with the model.
+An as-built render is the picture a visitor reads at a glance, so it opens the study page, not the back of it (the
+user, 2026-11-28): add the card to `build_v2.LEAD_RENDER` (render id, alt, caption, the anchor of the body section
+that holds the checks and the dimensioned drawing) and take the render's figure out of the fragment; the build
+asserts the anchor exists. Page 20 is done; the other pages with as-built renders still carry theirs near the end.
+When a part hides what the view is for, draw it on one repeat only and say so: the motor's end turns cover every
+slot in the front view, so one pole pair of four carries them. When a section cuts parts that have no outline in
+that plane (the end turns), work the cut out from the model's own parameters and assert it against the CAD solids
+(`solid.isInside` at each run's middle and just past its ends). When the study session changes a CAD module, its
+handover lists the functions it removed: grep the drawing and scene scripts for them before the next build. Own a
+correction on the page in plain words (the 19.4 mm ring that the teardown's 1.5 in replaced).
 Check a study-session colour scale before using its figure: the nozzle's plastic-strain panel capped the scale at
 the 98th percentile without saying so, so the brightest colour stood for everything from 1.6 to 2.7 %. Run the scale to
 the true peak (label it "peak") and leave zero as plain metal, not the colour map's lightest step. When a Part 2

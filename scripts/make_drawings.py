@@ -1802,7 +1802,8 @@ def _motor_pts(M, edges, step=0.4):
 def motor_cad():
     # study 20: the Prius motor as built (models/cad/prius_motor.py, rev5): front view, the half-section A-A through a
     # slot and a magnet, and detail B of a mounting ear. The view is turned so A-A stands vertical: the model's ray at
-    # 63.75 deg (slot 8's centre, through pole 1's first magnet) is drawn at 90 deg.
+    # 63.75 deg (slot 8's centre, through pole 1's first magnet) is drawn at 90 deg. The end turns would hide every
+    # slot in the front view, so they are drawn on one pole pair of the four; the section shows the ones it cuts.
     from matplotlib.path import Path as MPath
     from models.cad import prius_motor as M
     D, sec = M.DESIGNS["rev5"], M.section()
@@ -1811,6 +1812,8 @@ def motor_cad():
     ROT = 90.0 - RAY
     IN = M.IN
     COPPER, MAG, MAGE = "#f3d9c6", "#a9bbdd", ACC
+    PHASE = {"A": "#f4cf9f", "C": "#e6a983", "B": "#c98d70"}        # the end turns' tiers: inner, middle, outer
+    SHOWN = 2                                                        # the pole pair whose end turns the front view draws
 
     def rot(P, deg=ROT):
         t = np.radians(deg)
@@ -1828,13 +1831,26 @@ def motor_cad():
         voids += [_motor_pts(M, lp, 0.1) for lp in v]
         mags += [_motor_pts(M, lp, 0.1) for lp in m]
 
-    def front(ax, lw=1.0):
+    coils, tiers, pitch = M.coil_layout(sec), M.end_tiers(D, sec), 360.0 / sec["slots"]
+    assert len(coils) == 24 and len(tiers) == 3
+
+    def band(c):                                             # an end turn seen along the shaft: its tier's ring over
+        T = tiers[c["tier"]]                                 # the coil's slots, half a pitch past each leg's centre
+        t = np.radians(np.linspace(M.slot_deg(sec, c["slots"][0]) - pitch / 2, M.slot_deg(sec, c["slots"][1]) + pitch / 2, 60))
+        return np.r_[np.c_[T["r_in"] * np.cos(t), T["r_in"] * np.sin(t)],
+                     np.c_[T["r_out"] * np.cos(t[::-1]), T["r_out"] * np.sin(t[::-1])]]
+    shown = [c for c in coils if c["sector"] == SHOWN and c["role"] == "outer"]     # the inner coil lies under the outer
+    assert [c["phase"] for c in shown] == ["A", "C", "B"], shown
+
+    def front(ax, lw=1.0, turns=True):
         poly(ax, rot(outer), fc=FILL, lw=lw)
         poly(ax, rot(inner), fc=PLATE, lw=lw * 0.6)
         for h in holes:
             poly(ax, rot(h), fc=PLATE, lw=lw * 0.6)
         for w in winds:
             poly(ax, rot(w), fc=COPPER, ec=HOT, lw=lw * 0.45, z=3)
+        for c in shown if turns else []:
+            poly(ax, rot(band(c)), fc=PHASE[c["phase"]], ec=HOT, lw=lw * 0.8, z=3.1)
         ax.add_patch(Circle((0, 0), Rr, fc=FILL, ec=INK, lw=lw * 0.8, zorder=3))
         poly(ax, rot(bore), fc=PLATE, lw=lw * 0.8, z=3.2)
         for v in voids:
@@ -1863,6 +1879,44 @@ def motor_cad():
     mag_run = next(x for x in runs if x[0] == 3)
     wnd_run = next(x for x in runs if x[0] == 2)
 
+    # the end turns the cut crosses. Each turn is a band of width w about its centreline in its tier's unrolled
+    # surface (s = r_t theta, z from the stack face: prius_motor.end_turn_shape); along the ray that gives one run
+    # of z per turn. Checked below against the CAD's own solids, so the section can't disagree with them.
+    zs = np.arange(0.0, D["end_extension"] + 2.0, 0.005)
+    cut = []
+    for c in coils:
+        sh = M.end_turn_shape(D, sec, c)
+        T, w, H, Rc, S = sh["tier"], sh["w"], sh["H"], sh["R"], sh["S"]
+        zc = H - Rc
+        for turn_ in (0.0, 360.0):
+            x = T["r_t"] * np.radians(RAY + turn_ - M.slot_deg(sec, c["slots"][0]))
+            if not -w / 2 <= x <= S + w / 2:
+                continue
+            dist = np.full(len(zs), np.inf)
+            legs = min(abs(x), abs(x - S))
+            dist = np.where(zs <= zc, legs, dist)
+            if Rc <= x <= S - Rc:
+                dist = np.minimum(dist, np.abs(zs - H))
+            for cx, side in ((Rc, x <= Rc), (S - Rc, x >= S - Rc)):
+                if side:
+                    dist = np.minimum(dist, np.where(zs >= zc, np.abs(np.hypot(x - cx, zs - zc) - Rc), np.inf))
+            inz = zs[dist <= w / 2]
+            if len(inz):
+                assert np.all(np.diff(inz) < 0.006), c       # one run
+                cut.append((c, float(inz[0]), float(inz[-1])))
+    cut.sort(key=lambda t: (t[0]["tier"], t[1]))
+    assert [(t[0]["phase"], t[0]["role"]) for t in cut] == [("C", "inner"), ("C", "outer"), ("B", "inner"), ("B", "outer")], cut
+    assert abs(max(t[2] for t in cut) - D["end_extension"]) < 0.01          # the outer tier's crown is at the extension
+    import cadquery as cq
+    ca, sa = np.cos(np.radians(RAY)), np.sin(np.radians(RAY))
+    S2 = D["stator_stack"] / 2
+    for c, z0, z1 in cut:                                    # the runs against the solid: inside at the middle, outside
+        solid, rt = M.build_end_turn(D, sec, c), tiers[c["tier"]]["r_t"]     # just past each end
+        at = lambda z: solid.isInside(cq.Vector(rt * ca, rt * sa, S2 + z), 1e-6)  # noqa: E731
+        assert at((z0 + z1) / 2) and not at(z1 + 0.05) and (z0 < 0.01 or not at(z0 - 0.05)), (c, z0, z1)
+    idle = next(c for c in coils if c["phase"] == "A" and c["sector"] == 0 and c["role"] == "outer")
+    assert not M.build_end_turn(D, sec, idle).isInside(cq.Vector(tiers[0]["r_t"] * ca, tiers[0]["r_t"] * sa, S2 + 5.0), 1e-6)
+
     fig, ax = new(9.5, (-285, 425), (-190, 180))
     front(ax)
     centre(ax, (-R - 18, 0), (R + 18, 0))
@@ -1889,6 +1943,13 @@ def motor_cad():
     note(ax, ((R - dl) * np.cos(np.radians(a_l)), (R - dl) * np.sin(np.radians(a_l))), (-280, -70),
          f"6 × notch {wl:.2f} wide × {dl:.2f} deep, R{rl:.2f}\n({wl / IN:.3f} × {dl / IN:.3f} in, R{rl / IN:.3f})")
     text(ax, -280, -112, "Ears and notches sit on\ntooth centres, every 30°.", fs=7, ha="left", va="top", box=False)
+    a_e = np.radians(M.slot_deg(sec, shown[1]["slots"][0]) + 2.2 * pitch + ROT)        # on phase C's band, lower left
+    note(ax, (tiers[1]["r_t"] * np.cos(a_e), tiers[1]["r_t"] * np.sin(a_e)), (-280, -146),
+         "End turns, drawn on one pole pair\nof four: phases A, C, B in three tiers", fs=7)
+    for c in shown:
+        a_c = np.radians((M.slot_deg(sec, c["slots"][0]) + M.slot_deg(sec, c["slots"][1])) / 2 + ROT)
+        text(ax, tiers[c["tier"]]["r_t"] * np.cos(a_c), tiers[c["tier"]]["r_t"] * np.sin(a_c), c["phase"], fs=6.5, color=INK,
+             bold=True, box=False)
     a_t = 153.75 + 1.9                                       # a tooth tip, upper left (tooth centres at 3.75 + 7.5 k here)
     note(ax, (Rb * np.cos(np.radians(a_t)), Rb * np.sin(np.radians(a_t))), (-280, 105),
          f"48 slots; bore Ø{mm2(2 * Rb)} ({2 * Rb / IN:.3f} in)")
@@ -1903,31 +1964,36 @@ def motor_cad():
          f"rotor Ø{mm2(2 * Rr)}\n({2 * Rr / IN:.3f} in);\nair gap {Rb - Rr:.3f}", fs=7)
 
     # section A-A, half, the shaft axis across the sheet
-    X0, Y0 = 330.0, -165.0
-    ax.plot([X0 - 72, X0 + 72], [Y0, Y0], color=DIMC, lw=0.6, ls=(0, (9, 3, 2, 3)), zorder=3)
+    X0, Y0 = 326.0, -165.0
+    EXT = D["end_extension"]
+    ax.plot([X0 - S2 - EXT - 8, X0 + S2 + EXT + 8], [Y0, Y0], color=DIMC, lw=0.6, ls=(0, (9, 3, 2, 3)), zorder=3)
     style = {1: dict(fc=FILL, hatch="////", lw=1.0), 2: dict(fc=COPPER, ec=HOT, lw=0.9), 3: dict(fc=MAG, ec=MAGE, lw=0.9),
              4: dict(fc=FILL, hatch="\\\\\\\\", lw=1.0)}
     for k, r0, r1 in runs:
         L = span[k] / 2
         rect(ax, X0 - L, Y0 + r0, X0 + L, Y0 + r1, **style[k])
-    r_in, r_out = M.winding_radii(sec)
-    for sg in (-1, 1):                                       # the simplified end windings, dashed
-        prof = M.end_ring_profile(D, sec)
-        pts = _motor_pts(M, [(e[0],) + tuple((p[1], p[0]) for p in e[1:]) for e in prof], 0.5)
-        ax.add_patch(Polygon(np.c_[X0 + sg * (D["stator_stack"] / 2 + pts[:, 0]), Y0 + pts[:, 1]], closed=True, fc="none",
-                             ec=HOT, lw=0.8, ls=(0, (3, 2)), zorder=4))
-    S2 = D["stator_stack"] / 2
+    for sg in (-1, 1):                                       # the end turns the cut crosses, the same at both ends
+        for c, z0, z1 in cut:
+            T = tiers[c["tier"]]
+            xa, xb = sorted((X0 + sg * (S2 + z0), X0 + sg * (S2 + z1)))
+            rect(ax, xa, Y0 + T["r_in"], xb, Y0 + T["r_out"], fc=PHASE[c["phase"]], ec=HOT, lw=0.9, z=2.5)
+        for ph in "CB":
+            zz = [z for c, z0, z1 in cut if c["phase"] == ph for z in (z0, z1)]
+            T = tiers["ACB".index(ph)]
+            text(ax, X0 + sg * (S2 + (min(zz) + max(zz)) / 2), Y0 + T["r_t"], ph, fs=6.5, color=INK, bold=True, box=False)
     dim(ax, (X0 - S2, Y0 + R), (X0 + S2, Y0 + R), 9, f"{D['stator_stack']:.1f} stator stack")
+    top = tiers[2]["r_out"]                                  # the outer tier's edge: where the end dimensions start
+    dim(ax, (X0 - S2 - EXT, Y0 + top), (X0 + S2 + EXT, Y0 + top), R - top + 22, f"{2 * (S2 + EXT):.1f} over the end turns")
+    dim(ax, (X0 + S2, Y0 + top), (X0 + S2 + EXT, Y0 + top), R - top + 9, f"{EXT:.1f}", fs=6.8)
     dim(ax, (X0 - D["rotor_stack"] / 2, Y0 + 30), (X0 + D["rotor_stack"] / 2, Y0 + 30), 0, f"{D['rotor_stack']:.1f} rotor stack")
-    dim(ax, (X0 + S2, Y0 + r_out + 4), (X0 + S2 + D["end_overhang"], Y0 + r_out + 4), 8, f"{D['end_overhang']:.1f}",
-        outside=True)
-    note(ax, (X0 + S2 + 10, Y0 + (r_in + r_out) / 2), (X0 + 52, Y0 + 152), "end windings,\nsimplified", color=HOT, fs=6.8,
-         ha="left")
-    note(ax, (X0 - 30, Y0 + (mag_run[1] + mag_run[2]) / 2), (X0 - 56, Y0 + 56),
+    note(ax, (X0 - 30, Y0 + (mag_run[1] + mag_run[2]) / 2), (X0 - 90, Y0 + 60),
          f"magnet, {D['magnet_length']:.1f} long", color=ACC, fs=6.8, ha="right")
-    note(ax, (X0 - 30, Y0 + (wnd_run[1] + wnd_run[2]) / 2), (X0 - 62, Y0 + 100), "slot winding", color=HOT, fs=6.8, ha="right")
-    note(ax, (X0 - 30, Y0 + R - 8), (X0 - 62, Y0 + 128), "stator core", fs=6.8, ha="right")
-    note(ax, (X0 + 20, Y0 + mag_run[1] - 3), (X0 + 52, Y0 + 52), "rotor core", fs=6.8, ha="left")
+    note(ax, (X0 - 30, Y0 + (wnd_run[1] + tiers[0]["r_out"]) / 2), (X0 - 90, Y0 + (wnd_run[1] + tiers[0]["r_out"]) / 2),
+         "slot winding", color=HOT, fs=6.8, ha="right")
+    note(ax, (X0 - 30, Y0 + R - 8), (X0 - 90, Y0 + R - 8), "stator core", fs=6.8, ha="right")
+    note(ax, (X0 - 30, Y0 + mag_run[1] - 3), (X0 - 90, Y0 + 44), "rotor core", fs=6.8, ha="right")
+    note(ax, (X0 + S2 + 22, Y0 + tiers[1]["r_in"] + 3), (X0 + S2 + 5, Y0 + 80),
+         f"end turns, {EXT / IN:.1f} in out:\nphase C's leg and\ncrown, B's crown", color=HOT, fs=6.5, ha="left", va="top")
     text(ax, X0, Y0 - 12, "A-A, half section", fs=7.5, color=INK, bold=True, box=False)
 
     # detail B: the ear on the right, 2.5 : 1
@@ -1955,7 +2021,7 @@ def motor_cad():
            (ec_[0] - half, ec_[1] + half)]
     axd.add_patch(Polygon(box, closed=True, fc=PLATE, ec="none", zorder=0))
     axd.add_patch(Polygon(box, closed=True, fc="none", ec=HOT, lw=0.9, ls=(0, (4, 2)), zorder=7, clip_on=False))
-    front(axd, lw=1.4)
+    front(axd, lw=1.4, turns=False)
     h0 = np.array(loc((D["ear_hole_r"], 0.0)))
     centre(axd, tuple(h0 - [12, 0]), tuple(h0 + [12, 0]))
     centre(axd, tuple(h0 - [0, 12]), tuple(h0 + [0, 12]))
@@ -1973,7 +2039,8 @@ def motor_cad():
          f"flanks {D['ear_flank_deg']:.0f}°\noff the radius", fs=7, scale=k, ha="left")
 
     text(ax, -280, -178, "From the study: the analysed section (revision 5), the drawing's ears, notches and hub keys, the parts "
-         "list's stack lengths. Not drawn: shaft, hub, end plates.", fs=6.8, ha="left", va="top", box=False)
+         "list's stack lengths, the teardown's 1.5 in end-turn\nextension. Assumed: the end turns' layout and shape (the data "
+         "gives the winding, not its end shape). Not drawn: shaft, hub, end plates.", fs=6.8, ha="left", va="top", box=False)
     finish(fig, "motor_cad", "Study 20 · the 2004 Prius traction motor as built · front view, half section A-A, detail B (mounting ear)",
            source="Drawn from models/cad/prius_motor.py")
 
