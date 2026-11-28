@@ -190,6 +190,14 @@ Done today, each with predictions committed first, runs scored, page section, fi
   the margin. **Open (offer to the user, not started):** a 3D FE run with the contact mesh and end layers refined
   together and 3-4 load steps, to settle the FE's thin margin. **step3d_stall_locate running since 11:24** (run
   20261128-112429; about 1 h 5 min).
+- **Update (12:21, 2026-11-28; from date):** step3d_stall_locate landed 12:15 (51 min) and is scored (e2d0c25). It
+  repeated step3d_sidewalls p00 exactly to iteration 3,000 (2D and 3D logs identical). The stall is located: half the
+  continuity error is in 2,842 cells (0.5 %), most in the first two cell columns behind the step face, floor to lip,
+  across the span. Those are the symmetry case's uz_zero cells, not the side wall I predicted. It is not a mode:
+  nothing reverses, every change decays at the domain's 0.91 per 100 iterations, and the residual floor is jitter
+  from one iteration to the next (lag-1 correlation 0.13), largest under the lip 18 mm from the side wall. Page 19
+  updated; verdicts stay unverified. **Open (offer to the user, not started):** the same run to 3,000 with part 2's
+  SIMPLE (consistent no, relax_p 0.3), about 1 h, to test whether the floor clears. Nothing runs now.
 - Pushes: the dashboard session pushes with the user's approval; check `git log origin/main..HEAD` before any push of
   your own (memory shared-git-index).
 
@@ -237,7 +245,7 @@ stands (build-model skill, "Choosing checks" item 5). Finished studies to revisi
 | 15, 21, 22, 4, 13 | various | wide | none needed: say so on the page with the estimate | **Done for 15 and 13** (2026-11-27: 15's side walls +0.19 K against 4.0 K, from study 11 part 2; 13's beam at slenderness 127, the end fixity named); 4, 21, 22 are already 3D solids |
 | 16, 20 | axisymmetric bolt, 2D motor | - | 16: shown it cannot change the verdict; 20: closed | none |
 | 18, 23, 24, 26, 28 | - | - | already checked with a fuller model | done |
-| 19 step flow (part 2) | 2D, no tunnel side walls (the page's explanation of the 0.022 pressure-recovery miss) | fails by 0.0027 over its 0.02 limit | **Hand estimate done (2026-11-27):** side-wall blockage lowers the recovery by 0.028-0.052, at least the miss. **3D RANS with the side walls (part 3, done 2026-11-28):** symmetry limit reproduces the 2D model to 2e-5; side walls: recovery 0.1317 against the measured 0.1307 (2D 0.1553 same mesh), 0.1349 with thinner side-wall layers; REQ-S1/S2/S3 pass on the numbers at both ends of the bracket, unverified: every 3D run FAILED `converged` and `continuity` (p residual stalled at 17-21x its target, not located; outputs settled to 1e-6) | done, unverified; a rerun keeping the fields would locate the stall (offered) |
+| 19 step flow (part 2) | 2D, no tunnel side walls (the page's explanation of the 0.022 pressure-recovery miss) | fails by 0.0027 over its 0.02 limit | **Hand estimate done (2026-11-27):** side-wall blockage lowers the recovery by 0.028-0.052, at least the miss. **3D RANS with the side walls (part 3, done 2026-11-28):** symmetry limit reproduces the 2D model to 2e-5; side walls: recovery 0.1317 against the measured 0.1307 (2D 0.1553 same mesh), 0.1349 with thinner side-wall layers; REQ-S1/S2/S3 pass on the numbers at both ends of the bracket, unverified: every 3D run FAILED `converged` and `continuity` (p residual stalled at 17-21x its target; outputs settled to 1e-6). **Stall located (run 20261128-112429, e2d0c25):** a non-oscillating noise floor in the first two cell columns behind the step face (half the continuity error in 2,842 cells), the symmetry case's uz_zero cells | done, unverified; a SIMPLE rerun to 3,000 (about 1 h) would test whether the floor clears (offered) |
 
 Study 24 part 2 (user's go-ahead 2026-11-26 evening, "keep working"): semi-elliptical surface crack, 3D FE against
 Newman-Raju. surface_crack_mesh (r0) scored: requirements pass, Newman-Raju within 2.4 % on the front average; the

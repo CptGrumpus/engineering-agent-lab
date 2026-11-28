@@ -206,6 +206,14 @@ its target (study 19 part 3, 2026-11-28). Report it as measured and unverified, 
   pressure the model computed nowhere: the interpolated profile read 589 there. When two steps' maxima can sit in
   different places, the interpolated maximum and its location must come from the interpolated field
   (`studies/roller_3d.py` interpolate_to_target, tested).
+- **Predict where a full case's numerical trouble sits from where its limit case's failed check sat.** The 3D step's
+  symmetry case had located its spanwise-velocity failure in the first cell column behind the step face. When the
+  side-wall runs stalled, I predicted the stall at the side wall, where the largest symptom was (|Uz| 8 % of U_ref).
+  The stall-locating rerun put it in the same cells as the symmetry case, behind the step face, across the span. It
+  was a noise floor: nothing reversed, changes decayed at the domain's rate, and successive iterations' jitter was
+  uncorrelated (lag-1 0.13). Read the limit case's located failures first. Tell a noise floor from a mode by
+  whether the change between snapshots reverses and decays, and by whether successive iterations are correlated
+  (study 19 part 3, `cases/step3d_stall_locate.toml`).
 - **A pre-written "if this prediction fails" branch assumes how it fails.** roller_fe_end's P3 said a persistent
   end peak would mean the roller's own end effect, and a stronger crown next. It failed at one point of three, not
   persistently, so that branch did not apply. Read the failure's form before taking the branch, and say on the

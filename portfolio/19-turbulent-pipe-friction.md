@@ -7,7 +7,8 @@
 > scored once against Driver and Seegmiller's measurements: reattachment and skin friction pass, pressure recovery
 > fails by 0.0027 against a 0.02 limit. [Part 3](#part-3-the-step-in-3d-with-the-tunnels-side-walls): the step in 3D
 > with the tunnel's side walls: the recovery comes to 0.132 against 0.131 measured, and all three limits pass on the
-> numbers, unverified (the pressure residual stalled short of its target).
+> numbers, unverified (the pressure residual stalled short of its target, in a few cells just behind the step face:
+> located, not cleared).
 
 | | |
 |---|---|
@@ -166,10 +167,26 @@ displacement thickness grows by about the same 1.1 mm. Both ends of the bracket 
 stopped falling at about 2 × 10⁻⁵ after 2,000 iterations, 17-21 times part 2's target. It stayed there to the
 12,000-iteration cap, and the continuity error sat at 4-8 × 10⁻⁶ against 10⁻⁶. Every number the verdicts use
 had settled: over the last 2,000 iterations the recovery moved by 10⁻⁶, and refining the mesh across the span
-changed it by 0.0004, against a margin of 0.019. So the stall is probably local. The largest spanwise velocity sits
-in the same place just behind the step lip in every run, which hints where. The runs did not keep their flow fields,
-though, so the stall is not located, and a verdict on an unconverged run is not accepted here. One rerun that keeps
-the fields would locate it.
+changed it by 0.0004, against a margin of 0.019.
+
+**The stall, located.** A rerun to iteration 3,000 kept what the long runs had not: each cell's flux imbalance, the
+flow field at three late iterations, and probes read every iteration. Its predictions were committed first. It
+repeated the original run exactly, digit for digit, to iteration 3,000.
+- **Where:** half the continuity error sits in 2,842 cells, 0.5 % of the mesh. Most of them are in the first two
+  cell columns behind the step's vertical face, from the floor up to the lip, all across the span. These are the
+  cells where the exact-2D-limit run (below) failed its spanwise-velocity check.
+- **What it is:** a noise floor, not an unsteady feature of the flow. Nothing oscillates or reverses. Every change
+  in the flow decays at the same rate everywhere (to 0.91 of itself per 100 iterations). The residual is held up by
+  a jitter from one iteration to the next, largest just under the lip, 10 times its size at mid-span.
+- **Its effect:** the recovery is read 4 step heights upstream and 30 downstream, far from those cells, and it had
+  settled.
+
+So the stall is located and its effect is bounded. A failed residual check still means an unverified verdict here,
+so the verdicts stay unverified. The one test left, if it matters, is the same run with part 2's SIMPLE algorithm,
+which under-relaxes the pressure and may damp that jitter.
+
+I had predicted the stall would sit at the side wall, where the spanwise velocity is largest. It sat where the
+simpler limit case had already flagged a problem, and I've recorded that as a lesson.
 
 **How I know the 3D model is the 2D model plus side walls.**
 - **The exact 2D limit first:** with the side wall made a symmetry plane, the flow is 2D, and the 3D pipeline must
@@ -195,7 +212,8 @@ passes (failed: the stall); thinner side-wall layers give 60-85 % of the drop (8
 - The reference is a correlation of measurements, with about ±2 % scatter, not the measurements themselves.
 - One turbulence model (k-omega SST as implemented in openfoam.org v14).
 - Part 2: 2D, so no tunnel side walls (the pressure-recovery miss); one geometry and Reynolds number.
-- Part 3: verdicts unverified (the pressure residual stalled, not located); one x-y mesh and two spanwise meshes; the
+- Part 3: verdicts unverified (the pressure residual stalled; located in the first cells behind the step face, a
+  non-oscillating noise floor, not cleared); one x-y mesh and two spanwise meshes; the
   side walls' inflow bracketed on the thin side only; a linear eddy-viscosity model, so no secondary flow in the
   corners.
 
@@ -217,7 +235,9 @@ passes (failed: the stall); thinner side-wall layers give 60-85 % of the drop (8
   code `models/cfd/step_openfoam.py`, `studies/step_flow.py`, `tests/test_step_flow.py`
 - part 3: [exact 2D limit](../runs/20261127-200510_step3d_symmetry/report.md),
   [side walls](../runs/20261127-223049_step3d_sidewalls/report.md) (two spanwise meshes),
-  [thinner side-wall layers](../runs/20261128-054328_step3d_sidewall_start/report.md); comparisons
+  [thinner side-wall layers](../runs/20261128-054328_step3d_sidewall_start/report.md),
+  [the stall located](../runs/20261128-112429_step3d_stall_locate/report.md) (an exact repeat to iteration 3,000 with
+  the cell-by-cell diagnostics, `stall_cells.csv`); comparisons
   `validation/step_driver_seegmiller/part3/RESULTS.md` and `part3_thin/RESULTS.md`; case files `cases/step3d_*.toml`
   (predictions before each run, results scored after); code `models/cfd/step3d_openfoam.py`,
   `studies/step_flow_3d.py`, `tests/test_step_flow_3d.py`; figure `scripts/make_step3d_figure.py`
