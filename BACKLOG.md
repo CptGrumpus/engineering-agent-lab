@@ -162,6 +162,15 @@ Done today, each with predictions committed first, runs scored, page section, fi
   `scripts/make_step3d_figure.py` (fixed; adds the thin-layer line), write page 19's Part 3 with the verdicts as
   unverified, PORTFOLIO and review rows, send the dashboard the paths. Locating the stall needs a rerun that keeps
   the fields (3-4 h of six ranks): offer it to the user, don't start it while the roller runs share the CPU.
+- **Update (08:47, 2026-11-28; from date):** study 19 part 3 done (d4eacd3, 35a5ef6; the dashboard put it on the
+  site, 159be44): the bracket landed 08:24, the same stall, recovery 0.1349; page 19's Part 3 written, every verdict
+  unverified. Roller FE mesh study landed 08:45 and is scored (4c4a3d2): mid-length 647.1 / 634.5 / 640.5 MPa,
+  end peak 724.1 / 715.7 at the two finer meshes. **roller_fe_end:** p00 (0.1 mm end layers) has its peak at
+  mid-length (647.0), but p01 (0.05 mm) peaks at the end again, 668.1 MPa at 0.37 mm from the end face (mid 647.0),
+  where the half-space model fed the 0.05 mm drawn crown showed no end peak (617.5). P3 is failing at 0.05 mm,
+  so the drawn crown may not be the whole cause (candidates to test when p02 lands: the free end face, which the
+  half-space leaves out; nodal pressure recovery near the slave surface's edge, given contact_integral's 6-11 %
+  excess). p02 (0.025 mm) running since 08:27, likely 13:00-14:30. Page 10's verdict waits for it.
 - Pushes: the dashboard session pushes with the user's approval; check `git log origin/main..HEAD` before any push of
   your own (memory shared-git-index).
 
