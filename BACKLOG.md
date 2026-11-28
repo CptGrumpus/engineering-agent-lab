@@ -130,6 +130,18 @@ Done today, each with predictions committed first, runs scored, page section, fi
   curate and commit the runs (`git add -f`, no `__pycache__`); render `scripts/make_step3d_figure.py` (output
   portfolio/img/step3d_sidewalls.png); write page 19's Part 3 section, the PORTFOLIO row and the review row below.
   Unconverged scratch tests put the mid-span recovery at 0.131-0.132 (measured 0.1307; 2D 0.1553 on the same mesh).
+- **Overnight status (01:02, 2026-11-28; from date):**
+  - Roller FE: p01 (0.06 mm) landed 00:13 after 4.5 h (planned 3). Mid-length 634.5 MPa (P2 said 643 +-15: in),
+    but the peak moved to the end: 724.1 MPa at 0.46 mm from the end face (at 0.08 mm the same spot read 631.6
+    and the peak was mid-length, 647.1). The end value rises as the in-plane mesh refines while the end layers
+    stay fixed (0.2 mm, the case's stated limitation), the signature of an unresolved or singular end. P3 (passes
+    at the two finer meshes) is failing as read. p02 (0.045 mm) running since 00:13, likely about 10:00.
+  - Step part 3: sidewalls level 1 at iteration 9,433 of 12,000; p initial residual flat at 1.9e-5 since
+    iteration 3,000 (control asks 1e-6) and continuity sum local about 5e-6: it will stop at the cap about 01:45
+    and the continuity check will probably FAIL again. The later points then run later than planned.
+  - Next for the roller, after p02 is scored: an end-region case with the end layers refined at a fixed in-plane
+    mesh (does the end peak converge?), then the crown window (1.3 to 2.5 x) on the FE if it does. Do not start it
+    while both overnight jobs share the CPU.
 - Pushes: the dashboard session pushes with the user's approval; check `git log origin/main..HEAD` before any push of
   your own (memory shared-git-index).
 
