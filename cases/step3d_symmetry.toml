@@ -47,6 +47,16 @@
 #      model's: theta within 0.5 % of 1.692 mm, U_e 44.08, so both validity checks pass; y+ 0.47, the side wall
 #      being a symmetry plane has none).
 #   P4 About 2-4 h (12-15 min for the 2D stage, then 8,000-16,000 3D iterations at about 0.8 s).
+#
+# First attempt (run 20261127-194248_step3d_symmetry, started 19:42, stopped by me at 19:59 in the 3D start-up,
+# iteration 192 of 300, before any result): Uz is identically zero here (both z planes are symmetry planes), and its
+# normalised residual stalled at 1.7e-3 while Uy fell to 7e-5 (the zero-field trap in the build-model tool notes).
+# OpenFOAM's residual control takes U's largest component, so the run could never stop before its 20,000-iteration cap
+# and the check `converged` could never pass. Changed before any result, for this case only (step3d_sidewalls has a real
+# Uz): `converged` compares the final initial residuals of Ux, Uy, p, k and omega with the same targets; a new check
+# `uz_zero` requires max |Uz| / U_ref under 1e-4; the run ends at 8,000 iterations (7,700 of stage 2: the side-wall
+# scratch test fell a decade per 500-600; this case starts from the answer). The stopped run is kept, not as evidence.
+#   P4 (revised with the change) About 2 h: 12 min for the 2D stage, 8,000 3D iterations at about 0.85 s.
 
 [case]
 name = "step3d_symmetry"
@@ -84,7 +94,7 @@ side_wall_start_m = -1.153
 residual_p = 1e-6
 residual_U = 2e-7
 residual_turb = 2e-6
-max_iterations = 20000           # stage 2 ends here at the latest (stage 1: 300 iterations)
+max_iterations = 8000            # the run always ends here (see the header: Uz stalls OpenFOAM's residual control)
 stage1_iterations = 300
 max_iterations_2d = 80000
 stage1_iterations_2d = 500
@@ -109,6 +119,7 @@ yplus_max = 1.0
 limit_xr_rel_tol = 1e-3
 limit_cp_abs_tol = 5e-4
 limit_cf_rel_tol = 5e-3
+uz_zero_tol = 1e-4
 
 [[requirements]]
 id = "REQ-S3-LIMIT"

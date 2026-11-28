@@ -414,6 +414,11 @@ Traps found while building the studies in this repo, by tool.
   the same 2D mesh starts fine (study 19 part 3). Start the 3D case from the 2D solution copied to every spanwise
   layer: blockMesh numbers cells block by block, i fastest, then j, then k, so the map is index arithmetic
   (`models/cfd/step3d_openfoam.py` `extrude_index`); check it on the cell centres after the run (exact to 1e-13 m).
+- **A velocity component that is zero everywhere stalls `residualControl` for the whole vector.** A 3D case with
+  both z planes symmetry planes (the 2D limit of the 3D step) has Uz = 0; its normalised residual sat at 1.7e-3
+  while Uy fell to 7e-5, and OpenFOAM's U criterion takes the largest component, so the run could never stop
+  (study 19 part 3, first attempt stopped after 192 iterations). Judge the other components yourself, check
+  that the zero component is zero, and give such a run a fixed iteration budget.
 - MPI in WSL: `nice -n 19 mpirun -np N --bind-to none foamRun -parallel` (the ranks inherit nice; unbound so a
   shared machine's scheduler places them), `decomposePar -force` with `method scotch`, then `reconstructPar
   -latestTime` before `writeCellCentres`. Function-object files (probes, surfaceFieldValue) are written once, at

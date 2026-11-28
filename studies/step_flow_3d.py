@@ -251,7 +251,7 @@ class OpenFOAMStep3D(Backend):
                "yplus": {k: v for k, v in yp["patches"].items() if k in WALLS}, "yplus_start_dir": yp["start_time_dir"],
                "checkmesh_failed_checks": cm.count("***"), "checkmesh_only_aspect": all(
                    "aspect ratio" in ln.lower() for ln in cm.splitlines() if "***" in ln),
-               "mesh_xy_match_m": xy_match, "flow_in_m3_per_s": flows["inletFlow"], "flow_out_m3_per_s": flows["outletFlow"],
+               "mesh_xy_match_m": xy_match, "uz_max_over_uref": float(np.max(np.abs(U[:, 2]))) / u_ref, "flow_in_m3_per_s": flows["inletFlow"], "flow_out_m3_per_s": flows["outletFlow"],
                "mass_balance_rel": abs(flows["inletFlow"] + flows["outletFlow"]) / abs(flows["inletFlow"]),
                "recovery_probe_last10pct_range": float(np.ptp(rec_hist[last])),
                "recovery_probe_history": {"iteration": it.tolist(), "recovery": rec_hist.tolist()},
@@ -313,8 +313,24 @@ class StepFlow3DStudy(Study):
         out, m, p = point["solver_outputs"], point["metrics"], point["parameters"]
         o2 = out["precursor_2d"]
         ypmax = max(v[1] for k, v in out["yplus"].items() if k != "stepFace")
-        checks = [
-            check("converged", "3D: SIMPLE residual control reached (0 = yes)", 0.0 if out["converged"] else 1.0, 0.0),
+        symmetric = int(round(float(p["side_wall"]))) == 0
+        if symmetric:
+            # Uz is identically zero with both z planes symmetry planes: its normalised residual stalls (1.7e-3 in the
+            # first attempt, 2026-11-27), so OpenFOAM's residual control, which takes U's largest component, can never
+            # stop the run. Judge the other fields against the same targets, and check that Uz is zero.
+            num = case["numerics"]
+            tgt = {"Ux": num["residual_U"], "Uy": num["residual_U"], "p": num["residual_p"], "k": num["residual_turb"],
+                   "omega": num["residual_turb"]}
+            res = out["final_initial_residuals"]
+            conv = [check("converged", "3D, side wall a symmetry plane: largest final initial residual of Ux, Uy, p, k, "
+                          "omega over its target (Uz excluded: it is zero, see uz_zero)",
+                          max(res[k] / v for k, v in tgt.items()), 1.0),
+                    check("uz_zero", "3D, side wall a symmetry plane: max |Uz| / U_ref (the flow is 2D)",
+                          out["uz_max_over_uref"], tol["uz_zero_tol"])]
+        else:
+            conv = [check("converged", "3D: SIMPLE residual control reached (0 = yes)", 0.0 if out["converged"] else 1.0,
+                          0.0)]
+        checks = conv + [
             check("converged_2d", "2D solution (initial field and same-mesh comparison): residual control reached "
                   "(0 = yes)", 0.0 if o2["converged"] else 1.0, 0.0),
             check("continuity", "3D: time-step continuity error, sum local (last iteration)", out["continuity_sum_local"],
@@ -338,7 +354,7 @@ class StepFlow3DStudy(Study):
             check("reattachment_found", "reattachment point on the floor at mid-span missing (0 = found, 1 = none)",
                   0.0 if out["reattachment_crossings_over_h"] else 1.0, 0.0),
         ]
-        if int(round(float(p["side_wall"]))) == 0:
+        if symmetric:
             xr_z = np.asarray(out["xr_by_z"]["xr_over_h"], float)
             checks += [
                 check("limit_xr", "side wall as symmetry = 2D: |Xr/H 3D - 2D| / 2D", abs(m["xr_change_rel"]),
