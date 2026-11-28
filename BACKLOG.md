@@ -179,6 +179,17 @@ Done today, each with predictions committed first, runs scored, page section, fi
   first: compare the Time = 3000 lines), commit the run (scrub, `git add -f`), then page 19's "Reported, not
   hidden" paragraph and the dashboard. Do not edit models/cfd/step3d_openfoam.py, run_step3d.sh or
   studies/step_flow_3d.py before the run starts (the harness copies them at start).
+- **Update (11:35, 2026-11-28; from date):** roller_fe_end landed 11:24 and is scored (82fe616). Mid-length 647.0
+  MPa at all three end layers. The 0.05 mm end peak (668.1) was each load step's own maximum blended across layers,
+  and the end layer behind it jumped 466 -> 692 MPa for 4.9 % more load. `scripts/roller_step_consistency.py` finds
+  the same unsettled end in roller_fe_mesh's two finer meshes (751 / 771 / 697 / 816 MPa over evenly rising loads).
+  Neither the drawn crown nor the free end face explains a peak that comes and goes. The study now takes the peak
+  from the interpolated profile and checks end_consistency (0.03, P3's criterion): it fails exactly the three
+  readings over 650 and passes the other three (end at 0.93-0.98 of mid-length). Page 10 updated: passes on both
+  models; the FE at 634.5-647.1 (0.4-2.4 % margin, unverified on contact_integral) confirms where the peak sits, not
+  the margin. **Open (offer to the user, not started):** a 3D FE run with the contact mesh and end layers refined
+  together and 3-4 load steps, to settle the FE's thin margin. **step3d_stall_locate running since 11:24** (run
+  20261128-112429; about 1 h 5 min).
 - Pushes: the dashboard session pushes with the user's approval; check `git log origin/main..HEAD` before any push of
   your own (memory shared-git-index).
 
@@ -220,7 +231,7 @@ stands (build-model skill, "Choosing checks" item 5). Finished studies to revisi
 | Study | Simplification | Margin | Fuller check | Status |
 |---|---|---|---|---|
 | 2 strap cable hole (3, 14 share the model) | plane stress (thin analysed layer) | 16 mm hole: 117 MPa, about 2.5 % under the allowable; the page itself says the mid-thickness peak in the 4 mm plate "runs a few percent higher" | 3D solid through the 4 mm thickness, the peak at mid-thickness against plane stress; does 16 mm still pass, and what hole size does | **Done (part 2, runs 20261127-151903/-151911/-152203):** mid-thickness 1.5 % over plane stress; 16 mm passes by 1 % (118.8 MPa); largest hole 16.3 mm (was 16.7) |
-| 10 roller contact | plane strain (no roller ends) | 609 against 650 MPa (6 %), shear 184 against 200 (8 %) | 3D roller of real length with its ends (edge loading), then crowning if the ends fail | **Done (part 2, runs 20261127-172125 .. -172828):** half-space contact; straight roller fails (singular ends); log crown A = 1.3 x Lundberg passes at 617 MPa, window 1.1-2.5 x. **Open:** the one coarse 3D FE cross-check (Lundberg A) reads 5 % higher at mid-length (2 % of it known mesh bias) and 23 % higher at the end: a 3D FE mesh study at the chosen crown (hours) must settle it before the crown is released |
+| 10 roller contact | plane strain (no roller ends) | 609 against 650 MPa (6 %), shear 184 against 200 (8 %) | 3D roller of real length with its ends (edge loading), then crowning if the ends fail | **Done (part 2, runs 20261127-172125 .. -172828):** half-space contact; straight roller fails (singular ends); log crown A = 1.3 x Lundberg passes at 617 MPa, window 1.1-2.5 x. **3D FE cross-check done (runs 20261127-180915, 20261128-014852; 82fe616):** six meshes at the chosen crown; the peak at mid-length, 634.5-647.1 MPa (0.4-2.4 % under 650), the end at 0.93-0.98 of mid-length where settled; the three end readings over 650 were unsettled values (end_consistency now checks it). Unverified (contact_integral 6-11 %). **Open:** contact mesh and end layers refined together with 3-4 load steps, to settle the FE margin |
 | 25 O-ring face seal | axisymmetric, flat rigid cover | squeeze 17.2 % against 15 % minimum | 3D cover segment between two bolts: the gap opens between bolts, squeeze at the worst point | **Done (part 2, runs 20261127-161150 .. -162214):** a 4 mm cover lifts about 15 um, 3 mm 29 um, against 75.5 um: the flat-cover assumption holds; flatness tolerance matters more; one convergence check fails (slow convergence at the rigid washer patch, traced) |
 | 11 cold-plate channel | 2D, side walls neglected | wall 44.03 against 45 C (about 1 K) | 3D duct with side walls (the 3D duct check showed 3 % on the flow) | **Done (part 2, runs 20261127-170402 .. -170502):** fully developed section with the plate as a conducting sheet: 44.25 C with 2 mm aluminium (margin 0.75 K); fails below about 0.23 mm of aluminium; one exact check misses at the coarsest grid |
 | 15, 21, 22, 4, 13 | various | wide | none needed: say so on the page with the estimate | **Done for 15 and 13** (2026-11-27: 15's side walls +0.19 K against 4.0 K, from study 11 part 2; 13's beam at slenderness 127, the end fixity named); 4, 21, 22 are already 3D solids |

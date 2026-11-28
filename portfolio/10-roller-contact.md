@@ -4,10 +4,10 @@
 
 | | |
 |---|---|
-| **Answer** | Yes. Peak contact pressure 609 MPa against a 650 MPa limit, and maximum shear below the surface 184 MPa against 200 MPa. **Part 2, with the roller's ends:** a straight roller fails. Square ends, or a 1 mm edge break, load the ends at 2,700-3,000 MPa and more, against 650. **With a logarithmic crown it passes at 617 MPa** on the half-space model (one coarse 3D FE check reads about 5 % higher at mid-length: not yet settled) (A = 1.8 µm, crown drop 3.7 µm at 1 mm from the end); the crown works from about 3 to 7 µm of drop, so it needs a grinding tolerance of about ±2 µm. |
+| **Answer** | Yes. Peak contact pressure 609 MPa against a 650 MPa limit, and maximum shear below the surface 184 MPa against 200 MPa. **Part 2, with the roller's ends:** a straight roller fails. Square ends, or a 1 mm edge break, load the ends at 2,700-3,000 MPa and more, against 650. **With a logarithmic crown it passes at 617 MPa** on the half-space model (A = 1.8 µm, crown drop 3.7 µm at 1 mm from the end). The 3D FE model also puts the peak at mid-length, at 635-647 MPa over six meshes: under the limit by only 0.4-2.4 %, and unverified. The crown works from about 3 to 7 µm of drop, so it needs a grinding tolerance of about ±2 µm. |
 | **Discipline** | Structures and vibration |
 | **Tools** | Gmsh 4.15, CalculiX 2.22 (surface-to-surface contact) |
-| **Methods** | Nonlinear contact FEA (penalty, frictionless), plane strain, displacement control, Hertz line contact as the exact reference, mesh refinement; part 2: 3D contact along the roller by half-space influence coefficients (Boussinesq, Love), checked against Hertz line and elliptical contact, with crowning profiles |
+| **Methods** | Nonlinear contact FEA (penalty, frictionless), plane strain, displacement control, Hertz line contact as the exact reference, mesh refinement; part 2: 3D contact along the roller by half-space influence coefficients (Boussinesq, Love), checked against Hertz line and elliptical contact, with crowning profiles; a 3D CalculiX contact model of the crowned roller as a cross-check |
 
 ![Von Mises stress at the contact, whole roller and a section through the contact, rendered in Blender](img/render_contact.png)
 
@@ -81,7 +81,7 @@ long roller.
   length.
 - **Why not the 3D finite-element model?** It is built (study 10's section extruded along the roller, the profile as a
   micron drop), but one solve takes about an hour; the half-space method is the standard tool for roller profiles and
-  solves a design in seconds. One FE solve was run as a cross-check; it disagrees by more than the margin allows (below).
+  solves a design in seconds. The FE model was run as a cross-check, on seven meshes in all (below).
 
 ### How I know it's right
 
@@ -92,10 +92,10 @@ long roller.
 - **The failures behave as theory says**: the square end's peak grows as the end cells shrink, roughly as their size
   to the power -0.47, the signature of a singular edge, so its runs fail their convergence check by design.
 
-### The cross-check against the 3D finite-element model: not settled
+### The cross-check against the 3D finite-element model
 
-One 3D FE solve was run as a cross-check (scratch, 2026-11-27, a single coarse mesh: 0.08 mm contact elements, the
-crown at Lundberg's own A, three approach steps), and compared with the half-space model at the loads the FE steps
+**A first coarse check.** One 3D FE solve (scratch, 2026-11-27, a single coarse mesh: 0.08 mm contact elements, the
+crown at Lundberg's own A, three approach steps) was compared with the half-space model at the loads the FE steps
 reached:
 
 | Load | FE mid-length | Half-space mid-length | FE peak (where) | Half-space peak (where) |
@@ -110,12 +110,52 @@ closer look at the FE explains most of it: its nodal contact pressures integrate
 at the 451 N/mm mean load, against the half-space's 458, with a mid-length pressure that matches Hertz for 514 within
 1 %. The FE puts more of the load in the middle. That is what the half-space's known limit predicts: it continues past
 the roller's end face, so it makes the ends too stiff and draws load to them. For the crowned design, whose peak is
-at mid-length, the effect raises the pressure, and its size (2-5 %) is comparable to the design's 5.1 % margin. Under the portfolio's standing rule that is too close to
-call. **The crowned design passes on the half-space model, which meets every one of its exact checks, but the
-independent 3D model has not confirmed it.** The 3D FE mesh study at the chosen crown (case `roller_fe_mesh`, three
-contact meshes, its predictions committed first: about 650 / 643 / 638 MPa) was started on 2026-11-27 at 18:09 and
-runs overnight. Until it lands the recommendation is "crown it, about 3.7 µm at 1 mm from the end, subject to that
-check"; if the FE puts the peak over 650 MPa, the crown gets stronger (the half-space window runs to 2.5 x).
+at mid-length, the effect raises the pressure, and its size (2-5 %) is comparable to the design's 5.1 % margin. Under
+the portfolio's standing rule that is too close to call, so the FE model was run properly at the chosen crown.
+
+**Six meshes at the chosen crown.** Two FE runs at A = 1.79 µm, their predictions committed first: three contact
+meshes with the layers along the roller 0.2 mm at the end (case `roller_fe_mesh`), then three end-layer sizes at the
+coarsest contact mesh (case `roller_fe_end`):
+
+| Contact elements | End layer | Mid-length | End region, against mid-length | Peak as first reported |
+|---|---|---|---|---|
+| 0.08 mm | 0.2 mm | 647.1 MPa | 0.98, settled | 647.1 MPa (pass) |
+| 0.06 mm | 0.2 mm | 634.5 MPa | not settled | 724.1 MPa (fail) |
+| 0.045 mm | 0.2 mm | 640.5 MPa | not settled | 715.7 MPa (fail) |
+| 0.08 mm | 0.1 mm | 647.0 MPa | 0.93-0.94, settled | 647.0 MPa (pass) |
+| 0.08 mm | 0.05 mm | 647.0 MPa | not settled | 668.1 MPa (fail) |
+| 0.08 mm | 0.025 mm | 647.0 MPa | 0.93-0.94, settled | 647.0 MPa (pass) |
+
+Three of the six meshes first read over 650 MPa near the roller's end. Looking at every load step showed that those
+readings are not results. Each point solves two to four approach steps and interpolates to 500 N/mm between the two
+that bracket it. On a settled mesh the end follows the load as mid-length does: its pressure against mid-length's
+moves 0.004-0.005 between the two steps. On the other three, one layer near the end jumps:
+- 751, 771, 697, then 816 MPa over four evenly rising loads on the 0.06 mm mesh;
+- 466 to 692 MPa for 4.9 % more load at the 0.05 mm end layer, while mid-length rose 2 %.
+
+That pattern rules out both physical causes I had in line. A coarsely drawn crown (my first diagnosis, made with the
+half-space model fed the FE's piecewise crown) and the roller's free end face would each act at every load. Each would
+also change steadily as the end layers refine. This end peak comes and goes: at one end-layer size of three, and at
+one load step of two.
+
+One reading was also a scoring error of mine. At the 0.05 mm end layer the study blended the two steps' maximum
+pressures, which sat at different places along the roller, into 668.1 MPa: a pressure the model computed nowhere.
+The interpolated profile reads 589 MPa at that spot and peaks at 647.0 at mid-length. Two changes followed:
+- the study now reads the peak from the interpolated profile;
+- a new check makes the end region's pressure, against mid-length's, agree within 0.03 between the two steps (the
+  criterion I wrote down before the run). It fails exactly the three readings over 650 and passes the other three.
+
+**Where the FE's ends are settled, its peak is at mid-length, as on the half-space model.** Mid-length reads
+634.5-647.1 MPa across all six meshes: under the 650 limit by 0.4-2.4 %. That is 3-5 % above the half-space's 617,
+the end effect the coarse check found. The FE's own checks are not all met: its nodal contact pressures add up to
+6-11 % more than the load, because the contact mesh smears the edge of the patch. So every FE verdict stays
+unverified.
+
+**So the crowned design passes on both models, but the FE's margin is too thin to count as independent
+confirmation.** The design number is the half-space's 617 MPa, which meets all of that model's exact checks. The 3D FE
+model confirms where the peak sits and that it stays under the limit, but only by 0.4-2.4 %. The recommendation stands:
+crown it, about 3.7 µm at 1 mm from the end. Before relying on the FE's thin margin, the next FE run would refine the
+contact mesh and the end layers together, with enough load steps to show the end is settled.
 
 ### What the checks caught
 
@@ -128,6 +168,12 @@ check"; if the FE puts the peak over 650 MPa, the crown gets stronger (the half-
   so `8.73e-05` became `8.73e-0` and a node jumped. The deck now writes 12 significant digits.
 - **A trial lost to a timeout.** The first 3D FE trial was killed at 30 minutes by a time limit inside the command,
   at 47 % of its load; long solves now run in the background with none.
+- **A failing peak the model never computed.** The 0.05 mm end-layer run reported 668 MPa at the roller's end.
+  The study had blended two load steps' maxima that sat 14.6 mm apart. The fix reads the peak from the interpolated
+  profile, and a new check rejects an end pressure that doesn't follow the load.
+- **A diagnosis that didn't survive its test.** I traced the first end peaks to the coarsely drawn crown and set up a
+  run to confirm it, with the result predicted first. The run showed the peaks come and go between meshes and load
+  steps, which no drawing effect does, and the page says so.
 
 ### The roller as built
 
@@ -142,6 +188,9 @@ synthetic.
 
 - Both bodies are half-spaces: the roller's end face and the plate's edges are left out. That overstates a sharp end's
   peak somewhat, but the failing profiles fail by 3 to 4 times, and the crowned design's peak is at mid-length.
+- The 3D FE cross-check is unverified. Its nodal contact pressures add up to 6-11 % more than the load, and on three
+  meshes of six the end region's pressure was not settled between load steps. Its mid-length margin (0.4-2.4 %) is
+  thinner than that uncertainty.
 - No misalignment. A tilted roller loads one end; a crown's tolerance to tilt is a separate check.
 - Contact pressure only; the subsurface shear (part 1's second requirement) is not computed along the roller.
 - The roller's length (30 mm) and the crown are a design input, marked synthetic.
@@ -157,3 +206,7 @@ synthetic.
   predicted: the peak has no converged value); cases `cases/roller_hs_*.toml`; code `models/contact/roller_halfspace.py`,
   `studies/roller_halfspace.py` (tests `tests/test_roller_halfspace.py`), the 3D FE model `models/fea/roller_3d.py`;
   figure `scripts/make_roller_halfspace_figure.py`
+- Part 2, the 3D FE cross-check: [three contact meshes](../runs/20261127-180915_roller_fe_mesh/report.md) and
+  [three end layers](../runs/20261128-014852_roller_fe_end/report.md) (both VERIFICATION FAIL on the contact integral;
+  scored in `cases/roller_fe_mesh.toml` and `cases/roller_fe_end.toml`); the load-step check
+  `scripts/roller_step_consistency.py`; study `studies/roller_3d.py` (tests `tests/test_roller_3d.py`)

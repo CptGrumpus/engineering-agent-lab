@@ -166,6 +166,9 @@ its target (study 19 part 3, 2026-11-28). Report it as measured and unverified, 
   model met both Hertz references to 1e-4 and converged to 0.03 %, yet one coarse 3D FE solve read 5 % higher at
   mid-length (2 % of it known mesh bias) against a 5.1 % margin. When an independent fuller model disagrees by more
   than about half the margin, state the verdict as conditional on settling it, on the page and in the backlog.
+  When the fuller model then agrees on the controlling location but its own margin (0.4-2.4 %) is thinner than its
+  unverified checks (contact integral 6-11 %), report it as a cross-check of the location, not confirmation of the
+  margin (study 10 part 2, roller_fe_mesh and roller_fe_end).
 - **Test a reference against its own limit before trusting it against the model.** The Hertz elliptical-contact
   reference first disagreed with the half-space solver by 2.4x; its long-ellipse limit (minor semi-axis -> 2 p0 R
   / E*, Hertz's line contact) showed the reference was the one wrong (a factor I had "fixed" in), and the test
@@ -184,16 +187,29 @@ its target (study 19 part 3, 2026-11-28). Report it as measured and unverified, 
 - **A validity check's premise can fail in the limit case run to check the model.** "Peak at mid-thickness"
   failed on the thin plate, where the profile is uniform to 1e-4 and the maximum lands on a mid-side node. Write
   validity checks so they skip where their premise does not apply (or state it in the check), before the run.
-- **A peak that grows when only one mesh direction is refined may be the geometry's drawing, not physics.** The
-  3D roller applied its crown as a drop of each layer plane, so the surface is straight between planes; the log
-  crown climbs from 6.5 to 30 um over the last 0.2 mm, and the 0.2 mm end layer cut it short with a kink. Refining
-  the in-plane contact mesh only sharpened that kink's spike (631.6 -> 724.1 MPa 0.46 mm from the end, over the
-  650 limit), and the end values jumped from step to step while mid-length rose smoothly. Test it in the fast
-  model: feed it the profile exactly as the mesh draws it (`scripts/roller_crown_layers.py`: the half-space model,
-  which has no end face, peaked at the end too, 667.5 MPa, and fell to the exact crown's 616.6 with 0.05 mm end
-  layers at growth 1.2). Size the layers by the profile's curvature (the interpolation error grows as h^2 A / u^2
-  near a log crown's end, u the distance from the end) before reading an end peak (study 10 part 2, 2026-11-28;
-  the FE confirmation is `cases/roller_fe_end.toml`).
+- **A geometry drawn by the mesh can make a peak; test that in the fast model, then confirm it in the slow one.**
+  The 3D roller applies its crown as a drop of each layer plane, straight between planes, and the half-space model
+  fed that piecewise profile peaked at the end with 0.2 mm end layers (667.5 MPa, against 616.6 for the exact
+  crown) and lost the peak at 0.05 mm (`scripts/roller_crown_layers.py`). Size the layers by the profile's
+  curvature (the interpolation error grows as h^2 A / u^2 near a log crown's end) before reading an end peak. But
+  the fast model's agreement is not the FE's diagnosis: the FE confirmation run (`cases/roller_fe_end.toml`) showed
+  the FE's end peaks were something else (next two rules). Study 10 part 2, 2026-11-28.
+- **Check that a local value follows the load between the steps before reading it.** The 3D roller's end layer
+  read 751 / 771 / 697 / 816 MPa over four evenly rising loads, and 466 -> 692 MPa for 4.9 % more load on another
+  mesh, while mid-length rose smoothly. A peak that appears at one mesh of three and one step of two is not
+  settled, and it is no evidence of a peak there or of its absence. No geometric or physical cause (a drawn crown,
+  a free end face) comes and goes like that. Tabulate every step's local maximum against a smooth reference value
+  (`scripts/roller_step_consistency.py`), and make it a check (`end_consistency`: the end/mid ratio within 0.03
+  between the bracketing steps). It failed exactly the three readings over the limit and passed the other three.
+- **Interpolate the field, then take its maximum, never the other way round.** The roller study blended each load
+  step's own maximum (640 MPa at mid-length, 692 MPa 14.6 mm away at the end) into 668.1 MPa at the end, a
+  pressure the model computed nowhere: the interpolated profile read 589 there. When two steps' maxima can sit in
+  different places, the interpolated maximum and its location must come from the interpolated field
+  (`studies/roller_3d.py` interpolate_to_target, tested).
+- **A pre-written "if this prediction fails" branch assumes how it fails.** roller_fe_end's P3 said a persistent
+  end peak would mean the roller's own end effect, and a stronger crown next. It failed at one point of three, not
+  persistently, so that branch did not apply. Read the failure's form before taking the branch, and say on the
+  record why it was not taken.
 
 ## Artifacts
 
