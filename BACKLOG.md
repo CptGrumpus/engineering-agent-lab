@@ -107,6 +107,13 @@ Done today, each with predictions committed first, runs scored, page section, fi
 - **Standing rule adopted** (user, 2026-11-27): simple model first, a fuller check where the margin is as small as the
   simplification's likely error (build-model skill "Choosing checks" item 5; memory simple-first-verify-fuller). The
   revisit list (2, 10, 25, 11; notes on 15 and 13) is done.
+- **Evening (19:15):** study 20's detailed motor CAD done (8080af1; CAD roadmap row 20). **Study 19 part 3 (3D step
+  with the tunnel's side walls) is being built by a background subagent of the engineering session** (started before
+  the 18:45 /clear; id a1bef8d24923ab9e9). Its files are uncommitted and its own: `models/cfd/step3d_openfoam.py`,
+  `models/cfd/run_step3d.sh`, `studies/step_flow_3d.py`, `cases/step3d_symmetry.toml`, `tests/test_step_flow_3d.py`,
+  and edits to `harness/registry.py`, `studies/step_flow.py`, `README.md`, `validation/step_driver_seegmiller/compare.py`,
+  skills run-case, verify-against-reference, tool-notes. Do not touch them until it reports. The roller FE run
+  (above) was alive at 18:50 (ccx.exe started 18:09, about one core busy).
 - Pushes: the dashboard session pushes with the user's approval; check `git log origin/main..HEAD` before any push of
   your own (memory shared-git-index).
 
