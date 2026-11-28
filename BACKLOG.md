@@ -152,6 +152,16 @@ Done today, each with predictions committed first, runs scored, page section, fi
   bb8dfa24-b62b-4d91-99a6-82b7c61401a4\scratchpad\roller_end.log`. Predictions in the case. When it lands: score it
   with roller_fe_mesh, then page 10's verdict. Also queued (user, through the dashboard session, 01:26): the motor
   CAD's end windings as end turns from the client data (the CAD's 19.37 mm ring is half the teardown's 1.5 in).
+- **Update (05:50, 2026-11-28; from date):** motor end turns done (624af5d; the dashboard drew them, 72286c0).
+  Step side walls landed 05:43 and are scored (7879de1): VERIFICATION FAIL on both spanwise levels (p residual
+  stalled at 1.7-1.9e-5 against 1e-6 from iteration 2,000 to the 12,000 cap; continuity 4.9-6.2e-6). Every output
+  the verdicts use settled (probe recovery 1e-6 over the last 2,000 iterations; spanwise change 3.7e-4). Mid-span
+  recovery 0.1317 against the measured 0.1307 (2D 0.1553): REQ-S1/S2/S3 all PASS (unverified). compare.py now
+  tags unverified points. **step3d_sidewall_start running since 05:43** (one point; chain2.cmd PID 98136, log
+  chain2.log in the same scratchpad; likely to stop at the cap about 09:00-09:30). When it lands: score it, render
+  `scripts/make_step3d_figure.py` (fixed; adds the thin-layer line), write page 19's Part 3 with the verdicts as
+  unverified, PORTFOLIO and review rows, send the dashboard the paths. Locating the stall needs a rerun that keeps
+  the fields (3-4 h of six ranks): offer it to the user, don't start it while the roller runs share the CPU.
 - Pushes: the dashboard session pushes with the user's approval; check `git log origin/main..HEAD` before any push of
   your own (memory shared-git-index).
 
